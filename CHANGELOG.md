@@ -7,6 +7,13 @@ based on Keep a Changelog, and releases follow Semantic Versioning.
 
 ## [0.23.0] - 2026-09-30
 
+### Awareness pipeline
+
+- Add asynchronous subconscious and conscious execution with current-state prose inputs, strict action arbitration, and batch narration. Subconscious uses GPT-6 Luna with reasoning none; the other roles use Grok.
+- Record actual SDK tokens and response-shape diagnostics. Monetary cost remains unknown until verified prices are available.
+- Use the latest output instructions for new and continuing battles until normal completion is verified; preserve historical records and bound domain assets.
+- Verify the real generated prompts and actual awareness usage in public completion observations.
+
 ### Added
 
 - Fixed Neva/Rio V3 candidates use the normal candidate review, exact digest

@@ -1,0 +1,19 @@
+{
+  "taskCandidateId": "design-draft",
+  "canonicalApplied": false,
+  "startObserved": "2026-10-05T11:18:03+09:00",
+  "startMethod": "worktimectl start plus observed presence_seconds at initial preflight",
+  "completedAt": "2026-10-05T11:54:04+09:00",
+  "elapsedSeconds": 2161,
+  "activeTimeHours": null,
+  "effortPersonHours": null,
+  "elapsedIsEffort": false,
+  "candidateStartRecorded": true,
+  "candidateFinishRecorded": true,
+  "sourceScope": "design draft authoring and local review only",
+  "missing": [
+    "canonical scope decision",
+    "measured active time and effort; not inferred from elapsed"
+  ],
+  "nextCheckpoint": "owner review of Q01/Q02 and canonical planning scope"
+}

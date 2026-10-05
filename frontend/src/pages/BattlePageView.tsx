@@ -40,6 +40,7 @@ export function BattlePageView(input: {
   } = input;
   const bf = battle.battlefield;
   const finished = battle.status === "finished";
+  const incomplete = battle.status === "incomplete";
   const winner =
     battle.winnerSide === "a"
       ? battle.sideA
@@ -68,8 +69,9 @@ export function BattlePageView(input: {
 
   return (
     <>
+      {incomplete && <p role="status">{battle.incompleteReason ?? "試合処理を継続できず、勝敗は未確定です。"}</p>}
       <div className="page-header">
-        <h1>{finished ? "試合の記録" : "バトル"}</h1>
+        <h1>{finished || incomplete ? "試合の記録" : "バトル"}</h1>
         <Link to="/history" className="btn ghost page-header-back">
           記録一覧
         </Link>

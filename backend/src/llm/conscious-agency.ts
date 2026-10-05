@@ -5,7 +5,7 @@ import {
   projectPsycheReactionV1, type AgencyFactV1, type CharacterAgentState,
   type CharacterBattleCompilerInputsV2, type CharacterBattleCompilerInputsV3,
   type CharacterBattleCompilerInputsV4,
-  BattleAssetManifestV3Schema, BattleAssetManifestV4Schema, snapshotDialoguePipelineSettings,
+  BattleAssetManifestV3Schema, BattleAssetManifestV4Schema, BattleAssetManifestV5Schema, snapshotDialoguePipelineSettings,
   type BattleCharacterAssetBinding, type BattleState, type DialoguePipelineSettings,
 } from "@kshiai/shared";
 import type { CharacterExpressionCompactInputV3, CharacterAgentAdvanceResult, CharacterActionDecisionInput } from "./types.js";
@@ -28,6 +28,7 @@ export function isV4ConsciousCompiler(
 export function privateBattleGoal(state: BattleState, side: "a" | "b"): string {
   const agent = side === "a" ? state.agentStateA : state.agentStateB;
   const schemaVersion = state.assetManifest?.schemaVersion;
+  if (schemaVersion === 5) return "";
   if (schemaVersion === 3 || schemaVersion === 4) {
     return agent?.consciousAgencyV2?.upperGoal?.statement ?? agent?.consciousAgencyV1?.upperGoal?.statement ?? "";
   }
@@ -36,17 +37,24 @@ export function privateBattleGoal(state: BattleState, side: "a" | "b"): string {
 
 export function legacyPublicOpeningPlan(state: BattleState, side: "a" | "b"): string | undefined {
   const schemaVersion = state.assetManifest?.schemaVersion;
-  if (schemaVersion === 3 || schemaVersion === 4) return undefined;
+  if (schemaVersion === 3 || schemaVersion === 4 || schemaVersion === 5) return undefined;
   return (side === "a" ? state.agentStateA : state.agentStateB)?.currentGoal?.slice(0, 1200);
 }
 
 /** Compare typed frozen fields, without a serialization/parse round trip. */
-export function assertConsciousBinding(state: BattleState, settings: DialoguePipelineSettings): void {
-  const schemaVersion = state.assetManifest?.schemaVersion;
-  if (settings.schemaVersion !== 3 && schemaVersion !== 3 && schemaVersion !== 4) return;
-  const manifest = schemaVersion === 4
+function parseConsciousManifest(state: BattleState, schemaVersion: number | undefined) {
+  return schemaVersion === 5
+    ? BattleAssetManifestV5Schema.safeParse(state.assetManifest)
+    : schemaVersion === 4
     ? BattleAssetManifestV4Schema.safeParse(state.assetManifest)
     : BattleAssetManifestV3Schema.safeParse(state.assetManifest);
+}
+
+function assertCurrentDialoguePipelineBinding(
+  state: BattleState,
+  settings: DialoguePipelineSettings,
+  manifest: ReturnType<typeof parseConsciousManifest>,
+): void {
   if (settings.schemaVersion !== 3 || !manifest.success) {
     throw new Error("BATTLE_CONTRACT_MISMATCH");
   }
@@ -58,12 +66,30 @@ export function assertConsciousBinding(state: BattleState, settings: DialoguePip
   if (!stored || keys.some((key) => expected[key] !== actual[key] || expected[key] !== stored[key])) {
     throw new Error("BATTLE_CONTRACT_MISMATCH");
   }
+}
+
+function assertConsciousAgencyStateBinding(state: BattleState, schemaVersion: number | undefined): void {
+  if (schemaVersion === 5) {
+    for (const agent of [state.agentStateA, state.agentStateB]) {
+      if (agent?.consciousAgencyV1 || agent?.consciousAgencyV2 || agent?.reactionStateV1) {
+        throw new Error("BATTLE_CONTRACT_MISMATCH");
+      }
+    }
+    return;
+  }
   const dynamic = state.assetManifest?.schemaVersion === 4 && state.assetManifest.consciousOutputContract === "dynamic-v4";
   if (!(dynamic ? state.agentStateA?.consciousAgencyV2 : state.agentStateA?.consciousAgencyV1) ||
       !(dynamic ? state.agentStateB?.consciousAgencyV2 : state.agentStateB?.consciousAgencyV1) ||
       !state.agentStateA?.reactionStateV1 || !state.agentStateB?.reactionStateV1) {
     throw new Error("BATTLE_CONTRACT_MISMATCH");
   }
+}
+
+export function assertConsciousBinding(state: BattleState, settings: DialoguePipelineSettings): void {
+  const schemaVersion = state.assetManifest?.schemaVersion;
+  if (settings.schemaVersion !== 3 && schemaVersion !== 3 && schemaVersion !== 4 && schemaVersion !== 5) return;
+  assertCurrentDialoguePipelineBinding(state, settings, parseConsciousManifest(state, schemaVersion));
+  assertConsciousAgencyStateBinding(state, schemaVersion);
 }
 
 /** Reconstruct the closed request at the external provider boundary. */

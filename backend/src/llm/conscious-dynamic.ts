@@ -1,3 +1,4 @@
+// R: Generate and validate phase-scoped conscious decisions with bounded targeted repair.
 import { createHash } from "node:crypto";
 import { ProviderJsonSyntaxError } from "./provider-json.js";
 import { z } from "zod";
@@ -10,10 +11,9 @@ import {
 import type { CharacterExpressionCompactInputV4, CharacterActionDecisionContext, CharacterAgentAdvanceResult } from "./types.js";
 import type { ChatOpts } from "./openai-compatible.js";
 
-export type DynamicInput = Omit<CharacterExpressionCompactInputV4, "phase" | "turnObservation"> & {
-  phase: AgencyPhase;
-  turnObservation?: CharacterExpressionCompactInputV4["turnObservation"];
-};
+import { prepareConsciousPromptContext, renderConsciousPromptInput, type ConsciousInput, type ConsciousRepairInput } from "./conscious-prompt-input.js";
+export { prepareSpeechHistory } from "./conscious-prompt-input.js";
+export type DynamicInput = ConsciousInput;
 export type Field = ConsciousGenerationFieldV4;
 export type GenerationPlan = {
   phase: AgencyPhase;
@@ -196,41 +196,17 @@ function payloadRepair(plan: GenerationPlan, raw: unknown, output: ConsciousOutp
   return fields.length ? { choice, preserved, fields } : undefined;
 }
 
-function factContent(input: DynamicInput, sourcePath: string): unknown {
-  let value: unknown = input;
-  for (const key of sourcePath.slice(1).split("/")) {
-    if (value === null || typeof value !== "object" || !Object.hasOwn(value, key)) return null;
-    value = Reflect.get(value, key);
-  }
-  return value;
-}
-
-export function prepareSpeechHistory(input: DynamicInput["utteranceHistory"]) {
-  let latestSelfIndex: number | null = null;
-  let latestCounterpartIndex: number | null = null;
-  input.recent.forEach((entry, index) => {
-    if (entry.speaker === "self") latestSelfIndex = index;
-    if (entry.speaker === "counterpart") latestCounterpartIndex = index;
-  });
-  return { recent: input.recent, latestSelfIndex, latestCounterpartIndex };
-}
-
 export async function runConsciousGeneration(input: DynamicInput, ownerInput: object, chat: (system: string, user: string, opts: ChatOpts) => Promise<unknown>): Promise<ConsciousOutputV4> {
   const control = controls.get(ownerInput);
   const plan = generationPlan(input, control?.targets);
-  const request = {
-    ...input, utteranceHistory: prepareSpeechHistory(input.utteranceHistory), facts: input.facts.map((fact) => ({ ref: fact.ref, kind: fact.kind, content: factContent(input, fact.sourcePath) })), goalPolicy: plan.fields.includes("initialGoal") ? input.goalPolicy : undefined,
-    decision: input.decision ? { ...input.decision, availableActions: undefined } : undefined,
-    choices: plan.choices, manifestations: plan.manifestations.map((m, i) => ({ key: `manifestation-${i}`, ...m })),
-    observableManifestations: undefined,
-  };
+  const request = prepareConsciousPromptContext(input, plan.choices, plan.fields.includes("initialGoal"));
   const generationTrace: ConsciousOutputV4["generationTrace"] = { targets: plan.fields, repairTargets: [], calls: 0, schemaDigests: [] };
-  const call = async (active: GenerationPlan, extra?: unknown) => {
+  const call = async (active: GenerationPlan, extra?: ConsciousRepairInput) => {
     const generated = zodResponseFormat(generationSchema(active), "conscious_dynamic_v4");
     const schema = z.record(z.unknown()).parse(generated.json_schema.schema);
     generationTrace.calls++;
     generationTrace.schemaDigests.push(createHash("sha256").update(JSON.stringify(schema)).digest("hex"));
-    try { return await chat(generationPrompt(active), JSON.stringify({ context: request, repair: extra }), {
+    try { return await chat(generationPrompt(active), renderConsciousPromptInput(request, extra), {
     tier: "fast", label: extra ? "consciousDynamicRepair" : "consciousDynamic", temperature: 0.35,
     responseFormat: { type: "json_schema", json_schema: { name: "conscious_dynamic_v4", strict: true, schema } },
     }); } catch (error) {

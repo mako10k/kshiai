@@ -1,0 +1,408 @@
+{
+  "candidate": {
+    "candidateId": "awareness-real-trial-2026-10-05",
+    "preparationOnly": true,
+    "versions": {
+      "characterDefinition": 3,
+      "battleBindingFormat": 5,
+      "consciousnessPipeline": "awareness-v5"
+    },
+    "policyRevision": "awareness-v5-usage-v1",
+    "scenario": {
+      "combatTicks": 3,
+      "setting": "明るい平坦な訓練場。障害物や武器はない。互いに見えている。",
+      "stop": "3 tick後は新規進行を止め、既存要求と実況の読戻しを行う。勝敗は捏造しない。"
+    },
+    "characters": [
+      {
+        "sheet": {
+          "id": "awareness-trial-a",
+          "ownerUserId": "awareness-trial-owner",
+          "displayName": "アオ",
+          "tags": [],
+          "createdAt": "2026-10-05T00:00:00.000Z",
+          "updatedAt": "2026-10-05T00:00:00.000Z",
+          "appearance": {
+            "summary": "成人の人間。素手で軽装。",
+            "visualPrompt": "adult human, unarmed"
+          },
+          "traits": [],
+          "parameters": {
+            "hp": 100,
+            "maxHp": 100,
+            "mp": 40,
+            "maxMp": 40,
+            "stamina": 50,
+            "maxStamina": 50,
+            "atk": 12,
+            "def": 10,
+            "spd": 10,
+            "mag": 10,
+            "res": 10,
+            "focus": 10,
+            "luck": 10
+          },
+          "basicAttack": {
+            "name": "基本アクション",
+            "description": "消耗時にも使える、そのキャラクターらしい基本行動。",
+            "targetParameter": "hp",
+            "scalingParameter": "atk",
+            "resistanceParameter": "def",
+            "power": 0.75
+          },
+          "skills": [],
+          "weapon": null,
+          "armor": null,
+          "combatFlags": {
+            "canFight": true,
+            "irreversibleIncapacitated": false
+          },
+          "narrativeBlurb": "成人の人間。素手。勝ちたいが、痛みや接近には自然に身構える。特殊能力や特別な反射訓練はない。"
+        },
+        "definition": {
+          "identity": {
+            "displayName": "アオ",
+            "names": [],
+            "presentation": {
+              "form": null,
+              "gender": null,
+              "ageDescription": null,
+              "pronouns": []
+            },
+            "tags": []
+          },
+          "appearance": {
+            "publicSummary": "成人の人間。素手で軽装。",
+            "details": [],
+            "visualPrompt": "adult human, unarmed",
+            "portrait": null
+          },
+          "profileBackground": [],
+          "psycheDisposition": {
+            "dynamicsVersion": "psyche-trait-profile-v1",
+            "dynamics": {
+              "adverseSensitivity": 500,
+              "uncertaintySensitivity": 500,
+              "recoverySpeed": 500,
+              "irritationPersistence": 500,
+              "anxietyPersistence": 500,
+              "approachTendency": 500,
+              "withdrawalTendency": 500,
+              "impulseInhibition": 500,
+              "expressionRestraint": 500
+            },
+            "coreNeeds": [],
+            "tendencies": [],
+            "description": null
+          },
+          "speechPolicy": {
+            "selfAwareness": "aware",
+            "frequency": "measured",
+            "phasePolicy": {
+              "prologue": "allow",
+              "turn": "allow",
+              "aftermath": "allow"
+            },
+            "reactTo": [
+              "direct_address",
+              "self_impact",
+              "counterpart_impact",
+              "ambient_change"
+            ],
+            "silenceRules": [],
+            "register": "既存プロフィールからは特定しない",
+            "cadence": "既存プロフィールからは特定しない",
+            "sentenceLength": "mixed",
+            "vocabularyHabits": [],
+            "addressRules": [],
+            "selfReferenceNameId": null,
+            "examples": [],
+            "counterexamples": [],
+            "description": null
+          },
+          "relationshipSeeds": [],
+          "combat": {
+            "parameters": {
+              "hp": 100,
+              "maxHp": 100,
+              "mp": 40,
+              "maxMp": 40,
+              "stamina": 50,
+              "maxStamina": 50,
+              "atk": 12,
+              "def": 10,
+              "spd": 10,
+              "mag": 10,
+              "res": 10,
+              "focus": 10,
+              "luck": 10
+            },
+            "flags": {
+              "canFight": true,
+              "irreversibleIncapacitated": false
+            }
+          },
+          "capabilities": {
+            "basicAction": {
+              "id": "basic-action",
+              "name": "基本アクション",
+              "description": {
+                "text": "消耗時にも使える、そのキャラクターらしい基本行動。",
+                "consumerTags": [
+                  "profile-generator",
+                  "battle-mechanics",
+                  "conscious-action",
+                  "conscious-expression"
+                ],
+                "sourceSupportRefs": []
+              },
+              "kind": "basic",
+              "mechanics": {
+                "targetParameter": "hp",
+                "scalingParameter": "atk",
+                "resistanceParameter": "def",
+                "power": 0.75,
+                "costMp": 0,
+                "costStamina": 0,
+                "effects": [],
+                "constraints": {
+                  "reach": "same_area",
+                  "requiresSight": false,
+                  "mobility": "limited",
+                  "requiresSpeech": false,
+                  "requiresUsableHeldObject": false
+                }
+              },
+              "tacticTags": [],
+              "expressionNotes": null
+            },
+            "skills": []
+          },
+          "inventory": [],
+          "initialLoadout": [],
+          "expressionNotes": {
+            "text": "成人の人間。素手。勝ちたいが、痛みや接近には自然に身構える。特殊能力や特別な反射訓練はない。",
+            "consumerTags": [
+              "profile-generator",
+              "deep-psyche",
+              "conscious-expression"
+            ],
+            "sourceSupportRefs": []
+          },
+          "schemaVersion": 3,
+          "actionNorms": [],
+          "consciousGuidance": [],
+          "mechanicalConflictFallbacks": []
+        }
+      },
+      {
+        "sheet": {
+          "id": "awareness-trial-b",
+          "ownerUserId": "awareness-trial-owner",
+          "displayName": "クロ",
+          "tags": [],
+          "createdAt": "2026-10-05T00:00:00.000Z",
+          "updatedAt": "2026-10-05T00:00:00.000Z",
+          "appearance": {
+            "summary": "成人の人間。素手で軽装。",
+            "visualPrompt": "adult human, unarmed"
+          },
+          "traits": [],
+          "parameters": {
+            "hp": 100,
+            "maxHp": 100,
+            "mp": 40,
+            "maxMp": 40,
+            "stamina": 50,
+            "maxStamina": 50,
+            "atk": 12,
+            "def": 10,
+            "spd": 10,
+            "mag": 10,
+            "res": 10,
+            "focus": 10,
+            "luck": 10
+          },
+          "basicAttack": {
+            "name": "基本アクション",
+            "description": "消耗時にも使える、そのキャラクターらしい基本行動。",
+            "targetParameter": "hp",
+            "scalingParameter": "atk",
+            "resistanceParameter": "def",
+            "power": 0.75
+          },
+          "skills": [],
+          "weapon": null,
+          "armor": null,
+          "combatFlags": {
+            "canFight": true,
+            "irreversibleIncapacitated": false
+          },
+          "narrativeBlurb": "成人の人間。素手。相手の出方を見ながら近づく。痛みや危険には自然に反応する。特殊能力や特別な反射訓練はない。"
+        },
+        "definition": {
+          "identity": {
+            "displayName": "クロ",
+            "names": [],
+            "presentation": {
+              "form": null,
+              "gender": null,
+              "ageDescription": null,
+              "pronouns": []
+            },
+            "tags": []
+          },
+          "appearance": {
+            "publicSummary": "成人の人間。素手で軽装。",
+            "details": [],
+            "visualPrompt": "adult human, unarmed",
+            "portrait": null
+          },
+          "profileBackground": [],
+          "psycheDisposition": {
+            "dynamicsVersion": "psyche-trait-profile-v1",
+            "dynamics": {
+              "adverseSensitivity": 500,
+              "uncertaintySensitivity": 500,
+              "recoverySpeed": 500,
+              "irritationPersistence": 500,
+              "anxietyPersistence": 500,
+              "approachTendency": 500,
+              "withdrawalTendency": 500,
+              "impulseInhibition": 500,
+              "expressionRestraint": 500
+            },
+            "coreNeeds": [],
+            "tendencies": [],
+            "description": null
+          },
+          "speechPolicy": {
+            "selfAwareness": "aware",
+            "frequency": "measured",
+            "phasePolicy": {
+              "prologue": "allow",
+              "turn": "allow",
+              "aftermath": "allow"
+            },
+            "reactTo": [
+              "direct_address",
+              "self_impact",
+              "counterpart_impact",
+              "ambient_change"
+            ],
+            "silenceRules": [],
+            "register": "既存プロフィールからは特定しない",
+            "cadence": "既存プロフィールからは特定しない",
+            "sentenceLength": "mixed",
+            "vocabularyHabits": [],
+            "addressRules": [],
+            "selfReferenceNameId": null,
+            "examples": [],
+            "counterexamples": [],
+            "description": null
+          },
+          "relationshipSeeds": [],
+          "combat": {
+            "parameters": {
+              "hp": 100,
+              "maxHp": 100,
+              "mp": 40,
+              "maxMp": 40,
+              "stamina": 50,
+              "maxStamina": 50,
+              "atk": 12,
+              "def": 10,
+              "spd": 10,
+              "mag": 10,
+              "res": 10,
+              "focus": 10,
+              "luck": 10
+            },
+            "flags": {
+              "canFight": true,
+              "irreversibleIncapacitated": false
+            }
+          },
+          "capabilities": {
+            "basicAction": {
+              "id": "basic-action",
+              "name": "基本アクション",
+              "description": {
+                "text": "消耗時にも使える、そのキャラクターらしい基本行動。",
+                "consumerTags": [
+                  "profile-generator",
+                  "battle-mechanics",
+                  "conscious-action",
+                  "conscious-expression"
+                ],
+                "sourceSupportRefs": []
+              },
+              "kind": "basic",
+              "mechanics": {
+                "targetParameter": "hp",
+                "scalingParameter": "atk",
+                "resistanceParameter": "def",
+                "power": 0.75,
+                "costMp": 0,
+                "costStamina": 0,
+                "effects": [],
+                "constraints": {
+                  "reach": "same_area",
+                  "requiresSight": false,
+                  "mobility": "limited",
+                  "requiresSpeech": false,
+                  "requiresUsableHeldObject": false
+                }
+              },
+              "tacticTags": [],
+              "expressionNotes": null
+            },
+            "skills": []
+          },
+          "inventory": [],
+          "initialLoadout": [],
+          "expressionNotes": {
+            "text": "成人の人間。素手。相手の出方を見ながら近づく。痛みや危険には自然に反応する。特殊能力や特別な反射訓練はない。",
+            "consumerTags": [
+              "profile-generator",
+              "deep-psyche",
+              "conscious-expression"
+            ],
+            "sourceSupportRefs": []
+          },
+          "schemaVersion": 3,
+          "actionNorms": [],
+          "consciousGuidance": [],
+          "mechanicalConflictFallbacks": []
+        }
+      }
+    ]
+  },
+  "candidateSha256": "a1e4a95291289f9a6cf5d2fb77120bd362c75b58d223845c1b8f3212e5b1ac7c",
+  "configuration": {
+    "openaiKeyPresent": true,
+    "xaiKeyPresent": true,
+    "subconscious": {
+      "provider": "openai",
+      "model": "gpt-6-luna",
+      "reasoning": "none"
+    },
+    "conscious": {
+      "provider": "xai",
+      "model": "grok-4.5"
+    },
+    "adjudication": {
+      "provider": "xai",
+      "model": "grok-4.5"
+    },
+    "narration": {
+      "provider": "xai",
+      "model": "grok-4.3"
+    },
+    "endpoints": [
+      "https://api.openai.com/v1",
+      "https://api.x.ai/v1"
+    ],
+    "remoteModelAvailability": "unverified"
+  }
+}

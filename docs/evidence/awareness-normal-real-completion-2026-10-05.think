@@ -1,0 +1,21 @@
+domain NormalRealCompletion:
+  description "One owner-authorized isolated real-model completion observation."
+evidence OWNER:
+  "Owner replies please proceed to the recommendation to measure real-model latency and battle completion after new normal waiting limits."
+evidence LOCAL:
+  "Normal usage-v2 has latent60 conscious90 adjudication60 narration60 global600 seconds and max36ticks max200physical attempts; offline tests and build passed. Existing fixed candidate contains two synthetic characters and three-tick historical observation."
+premise BOUNDARY:
+  "Use fresh temporary SQLite and existing assets as read-only seed input. Do not change historical candidate identity or past policy. One new battle uses normal usage-v2 and advances at most36ticks or terminal state; no retry or deployment. Token observations remain authoritative and price remains unknown."
+premise UNKNOWN:
+  "Provider availability, output validity, runtime completion and actual total tokens remain unverified. A 0.50USD target is not a certified price cap."
+premise OPTIONS:
+  "The unchanged three-tick harness cannot observe full completion. A temporary derivative with an explicitly recorded 36tick stop and normal policy can do so without changing the old trial contract."
+decision RUN based_on OWNER, LOCAL, BOUNDARY, UNKNOWN, OPTIONS:
+  "Validate the temporary normal-completion derivative offline then execute it once using existing provider credential route. Read back terminal state, usage, pending work and elapsed times. Stop on failure and report evidence without retrying or claiming unseen success."
+
+evidence RESULT:
+  "One run made8attempts; all HTTP responses completed with full reported tokens. One conscious response was invalid JSON; narrator receipt1 failed with receipts missing and unexpected top-level turn,narrator,speeches,recognitionUpdates. The harness stopped at combatTick1; battle and runtime remain active in the isolated DB. No timeout or unresolved physical attempt remains."
+premise CAUSE_UNKNOWN:
+  "The raw model response is not retained. SDK completion is different from domain output acceptance. Why the models emitted these outputs is not established. This measurement does not prove full combat completion."
+decision RECOMMEND based_on RESULT, CAUSE_UNKNOWN, BOUNDARY:
+  "Preserve this failed completion observation and do not resend. Recommend inspecting conscious empty or invalid content handling and frozen narrator output contract against phase instructions, then bounded offline regression verification before any separately authorized paid rerun. Do not normalize invalid output into an unapproved success or relax authoritative schemas."

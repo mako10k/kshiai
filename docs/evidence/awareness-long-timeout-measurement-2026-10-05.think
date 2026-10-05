@@ -1,0 +1,14 @@
+domain MeasurementReadback:
+  description "Bounded recommendations from the single long-timeout experiment."
+evidence SDK:
+  "Five provider attempts completed and returned usage; two Luna calls took approximately 3.8 and 7.3 seconds."
+evidence REJECTION:
+  "Runtime is incomplete at tick0 with reflexDesires[0].action expected object received string."
+evidence LEDGERS:
+  "Provider ledger marks all five calls completed while four runtime reservations retain physicalOutstanding true."
+premise UNKNOWN:
+  "The actual generated payload was not retained. Why action became a string and the producing condition of stale reservations remain unknown. Price has not been independently validated."
+premise SCOPE:
+  "Owner authorized one extended-timeout measurement. Further implementation or another paid trial is a successor task."
+decision NEXT based_on SDK, REJECTION, LEDGERS, UNKNOWN, SCOPE:
+  "Recommend reviewing the explicit output contract and reservation settlement after terminal schema failure before another paid trial. Preserve observations and stop this measurement without retries."

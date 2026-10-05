@@ -1,0 +1,39 @@
+{
+  "kind": "batch",
+  "mutations": [
+    {
+      "kind": "project.set",
+      "set": {
+        "title": "Speech continuity recovery and six-state pipeline design proposal",
+        "description": "Retain completed speech/fade repair and LIVE deployment evidence; append only the owner-requested six-state design-authoring work. The design draft does not accept architecture, implement runtime or authorize paid generation or deployment. Parent delivery replan remains separately pending.",
+        "finish": "DESIGN_DRAFT_READY"
+      }
+    },
+    {
+      "kind": "milestone.add",
+      "id": "DESIGN_DRAFT_READY",
+      "milestone": {
+        "title": "Owner-requested six-state pipeline basic-design draft authored"
+      }
+    },
+    {
+      "kind": "task.add",
+      "id": "design-draft",
+      "from": "LIVE",
+      "to": "DESIGN_DRAFT_READY",
+      "task": {
+        "title": "Author and review the asynchronous awareness-projected pipeline draft",
+        "description": "Requirements U01-U12, basic design v1, Proposed ADR0050 pair, Q01-Q08, bounded review and document checks. This task is authoring only and current artifacts already exist; no acceptance or implementation claim. Proposed historical recording; actual start/end await canonical scope reconciliation.",
+        "duration": "0.75h",
+        "status": "planned",
+        "source": "docs/battle-consciousness-basic-design-2026-10-05.md",
+        "requirements": [
+          {
+            "resourceId": "DEV",
+            "units": 1
+          }
+        ]
+      }
+    }
+  ]
+}

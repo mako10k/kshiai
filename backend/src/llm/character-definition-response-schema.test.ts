@@ -1,3 +1,4 @@
+// R: Verify historical schema alias repair without depending on an SDK defect.
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import { z } from "zod";
@@ -11,13 +12,20 @@ const PREFIX = `${NAME}_properties_capabilities_properties_basicAction_propertie
 
 describe("shared character-definition alias projection", () => {
   it("repairs only the five aliases, retains defaults and leaves input untouched", () => {
-    const original = zodResponseFormat(CharacterDefinitionV3Schema, NAME).json_schema.schema;
+    const generated = zodResponseFormat(CharacterDefinitionV3Schema, NAME).json_schema.schema;
+    assertXaiResponseSchema(generated);
+    // SDK6 fixes these aliases; construct the SDK5 defect explicitly to keep repair coverage.
+    const shape = z.object({ definitions: z.record(z.unknown()) }).passthrough();
+    const original = shape.parse(generated);
+    for (const field of ["reach", "requiresSight", "mobility", "requiresSpeech", "requiresUsableHeldObject"]) {
+      const key = `${PREFIX}${field}`;
+      original.definitions[key] = { $ref: `#/definitions/${key}` };
+    }
     const before = structuredClone(original);
     assert.throws(() => assertXaiResponseSchema(original), /circular reference/);
     const normalized = characterDefinitionResponseSchema(original, NAME, []);
     assert.deepEqual(original, before);
     assertXaiResponseSchema(normalized);
-    const shape = z.object({ definitions: z.record(z.unknown()) }).passthrough();
     const old = shape.parse(original);
     const restored = shape.parse(normalized);
     const expected = {

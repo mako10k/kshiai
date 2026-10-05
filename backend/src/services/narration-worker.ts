@@ -25,6 +25,7 @@ import {
   cutoverNarrationBattleIds,
   runCutoverBackgroundOperation,
 } from "./cutover-admission.js";
+import { processAwarenessNarrationWorker, type AwarenessNarrationWorkerOptions, type VerifiedNarrationDispatchAdmission } from "./awareness-narration-worker.js";
 
 export const NARRATION_WORKER_MAX_ATTEMPTS = 2;
 export const NARRATION_TOTAL_HTTP_ATTEMPTS = 4;
@@ -78,7 +79,7 @@ type NarrationPublicEventPayload = {
   combatTurn: number | null;
   status: EntryRow["status"];
   narrative?: NarrativeBlock;
-  fallbackReason?: NarrationFallbackReason;
+  fallbackReason?: string;
 };
 
 export type NarrationGenerationResult = {
@@ -91,17 +92,17 @@ export type NarrationGenerationResult = {
   estimatedCostUsd: number | null;
 };
 
-export type NarrationGenerator = (
+export type NarrationGenerator = ((
   input: unknown,
   context?: {
     heartbeat: () => Promise<void>;
     remainingHttpAttempts: number;
     remainingTokens: number;
   },
-) => Promise<NarrationGenerationResult>;
+) => Promise<NarrationGenerationResult>) & { readonly awareness?: AwarenessNarrationWorkerOptions };
 
-export function createLlmNarrationGenerator(llm: LlmProvider): NarrationGenerator {
-  return async (raw) => {
+export function createLlmNarrationGenerator(llm: LlmProvider, admission?: VerifiedNarrationDispatchAdmission): NarrationGenerator {
+  const generator: NarrationGenerator = async (raw) => {
     if (!raw || typeof raw !== "object") throw new Error("narration_input_invalid");
     const input = raw as { kind?: unknown; request?: unknown };
     if (!input.request || typeof input.request !== "object") {
@@ -197,6 +198,7 @@ export function createLlmNarrationGenerator(llm: LlmProvider): NarrationGenerato
       estimatedCostUsd: null,
     };
   };
+  return Object.assign(generator, { awareness: { provider: llm.awareness?.narration, admission } });
 }
 
 function json(value: unknown): string {
@@ -883,8 +885,30 @@ async function finalizeNarrationAttempt(
 async function processNextNarrationCore(
   input: ProcessNarrationInput,
 ): Promise<NarrationWorkerResult> {
-  const existingBattle = await query("SELECT 1 FROM battles WHERE id = $1", [input.battleId]);
+  const existingBattle = await query<{ state_json: unknown }>("SELECT state_json FROM battles WHERE id = $1", [input.battleId]);
   if (existingBattle.rowCount === 0) return "acknowledged";
+  const stored = existingBattle.rows[0]!.state_json;
+  let candidate: unknown;
+  try { candidate = typeof stored === "string" ? JSON.parse(stored) : stored; }
+  catch { candidate = null; }
+  const manifest: unknown = candidate && typeof candidate === "object" ? Reflect.get(candidate, "assetManifest") : null;
+  if (manifest && typeof manifest === "object" && Reflect.get(manifest, "schemaVersion") === 5) {
+    return processAwarenessNarrationWorker({ ...input, options: input.generator.awareness ?? {} }, {
+      acquire: acquireFencedLease,
+      release(connection, scope, fence) {
+        return releaseNarrationLease(connection, { ...input, ...scope }, fence);
+      },
+      appendEvent(connection, event) {
+        return appendPublicEvent({ connection, battleId: event.battleId, receiptId: event.receiptId,
+          narrationSequence: event.sequence,
+          kind: event.status === "generating" ? "started" : event.status,
+          payload: { turnReceiptId: event.receiptId, narrationSequence: event.sequence,
+            phase: event.phase, combatTurn: event.combatTurn, status: event.status,
+            ...(event.narrative ? { narrative: event.narrative } : {}),
+            ...(event.fallbackReason ? { fallbackReason: event.fallbackReason } : {}) }, now: event.now });
+      },
+    });
+  }
   const nowDate = input.now ?? new Date();
   const now = nowDate.toISOString();
   if (input.receiptId && input.outboxId && input.deliveryGeneration !== undefined) {

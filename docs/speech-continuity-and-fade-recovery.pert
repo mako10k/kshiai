@@ -1,9 +1,9 @@
 project SPEECH_CONTINUITY_FADE:
-  version 4
-  title "Recover conversational continuity and remove speech fade"
-  description "Owner reports repeated latest-match speech and requests fade correction. ADR0027 and ADR0047 retain character-owned speech, legal intentional repetition and silence, mechanical observer-safe preparation and historical bindings. No text-pattern rejection or fabricated speech. Owner explicitly requests full removal of speech fade; all arrived rows display immediately. Existing commit/deploy direction applies."
+  version 5
+  title "Speech recovery and economic consciousness policy design"
+  description "Owner requests latest output contracts for new and continuing battles, implementation-derived prompt tests, public deployment, new battle completion and prompt freezing only after verified completion."
   duration_unit hour
-  finish LIVE
+  finish AWARENESS_PUBLIC_COMPLETED
 resource DEV:
   title "Developer"
   capacity 1
@@ -34,3 +34,444 @@ task release VERIFIED -> LIVE:
   status done
   requires:
     DEV 1
+
+milestone POLICY_DRAFT_READY:
+  title "Economic consciousness operating-policy candidate authored and reviewed"
+
+task policy-draft LIVE -> POLICY_DRAFT_READY:
+  title "Specify activation latency budget and finite failure policies"
+  description "Owner proceed on 2026-10-05. Draft policy, ADR0050 revision3 projection, bounded review and audit. Candidate policies do not accept runtime contracts."
+  duration 1h
+  status done
+  requires:
+    DEV 1
+  source "docs/battle-consciousness-operating-policy-2026-10-05.md"
+
+task model-compatibility POLICY_DRAFT_READY -> COMPATIBILITY_READY:
+  title "Prepare Luna none SDK request compatibility and frozen role design"
+  description "Owner selects Luna none subconscious and Grok conscious/adjudication/narration. Prepare existing transport and regression tests; full pipeline role dispatch stays unactivated until architecture acceptance."
+  duration 1h
+  status done
+  requires:
+    DEV 1
+  source "docs/battle-consciousness-model-compatibility-2026-10-05.md"
+
+task prose-input COMPATIBILITY_READY -> PROSE_READY:
+  title "Render existing conscious model input as prose"
+  duration 1h
+  status done
+  requires:
+    DEV 1
+  source "backend/src/llm/conscious-prompt-input.ts"
+
+task awareness-types PROSE_READY -> AWARENESS_TYPES_READY:
+  title "Implement typed awareness states and deterministic reducers"
+  duration 3h
+  status done
+  requires:
+    DEV 1
+  source "packages/shared/src/awareness-pipeline.ts"
+
+task awareness-modules AWARENESS_TYPES_READY -> AWARENESS_MODULES_READY:
+  title "Implement role provider and durable sidecar ports"
+  duration 4h
+  status done
+  requires:
+    DEV 1
+  source "docs/battle-consciousness-implementation-decisions-2026-10-05.md"
+
+task awareness-connect AWARENESS_MODULES_READY -> AWARENESS_CONNECTED:
+  title "Connect new immutable generation through battle execution and narration"
+  duration 6h
+  status done
+  requires:
+    DEV 1
+  source "backend/src/services/battle-service.ts"
+
+task awareness-verify AWARENESS_CONNECTED -> AWARENESS_VERIFIED:
+  title "Verify entire new path plus old pinned generation regressions"
+  duration 3h
+  status suspended
+  requires:
+    DEV 1
+  source "docs/adr/0050-asynchronous-awareness-projected-character-pipeline.md"
+
+task usage-measurement AWARENESS_CONNECTED -> AWARENESS_VERIFIED:
+  title "Record actual LLM tokens and report measured usage costs with explicit version labels"
+  duration 3h
+  status done
+  requires:
+    DEV 1
+  source "docs/adr/0051-observed-llm-usage-accounting.md"
+
+task usage-verify AWARENESS_CONNECTED -> AWARENESS_VERIFIED:
+  title "Verify recorded usage and version labels across actual battle and SDK paths"
+  duration 0.5h
+  status done
+  requires:
+    DEV 1
+  source "docs/llm-usage-measurement.md"
+
+task real-model-trial-preparation AWARENESS_CONNECTED -> AWARENESS_VERIFIED:
+  title "実モデル短期試行の固定入力と読戻し準備"
+  duration 1h
+  status done
+  requires:
+    DEV 1
+  source "docs/battle-awareness-real-trial-preparation-2026-10-05.md"
+
+task real-model-trial-harness AWARENESS_CONNECTED -> AWARENESS_VERIFIED:
+  title "隔離実モデル試行ハーネスとオフライン検証"
+  duration 1h
+  status done
+  requires:
+    DEV 1
+  source "docs/battle-awareness-real-trial-preparation-2026-10-05.md"
+
+task real-model-trial-observation AWARENESS_CONNECTED -> AWARENESS_VERIFIED:
+  title "承認済み実モデル一試行と実利用量の読戻し"
+  duration 0.5h
+  status done
+  requires:
+    DEV 1
+  source "docs/battle-awareness-real-trial-preparation-2026-10-05.md"
+
+task real-model-trial-retry AWARENESS_CONNECTED -> AWARENESS_VERIFIED:
+  title "承認済み同一候補リトライ一回と利用量読戻し"
+  duration 0.5h
+  status done
+  requires:
+    DEV 1
+  source "docs/evidence/awareness-real-trial-retry-2026-10-05.json"
+
+task long-timeout-measurement AWARENESS_CONNECTED -> AWARENESS_VERIFIED:
+  title "隔離試行の長時間ポリシーと実モデル再計測"
+  duration 1h
+  status done
+  requires:
+    DEV 1
+  source "docs/adr/0052-isolated-long-timeout-measurement.md"
+
+task response-completion-repair AWARENESS_CONNECTED -> AWARENESS_VERIFIED:
+  title "Repair awareness response contract and physical completion accounting"
+  description "Owner authorized 2026-10-05; offline response contract and physical slot correction. See docs/battle-awareness-response-repair-2026-10-05.md."
+  duration 1h
+  status done
+  requires:
+    DEV 1
+
+task normal-waiting-deadlines AWARENESS_CONNECTED -> AWARENESS_VERIFIED:
+  title "Bind adequate normal awareness waiting deadlines"
+  description "Owner 2026-10-05 requests adequate normal deadlines; ADR0054, new usage-v2, old policies immutable, SDK and runtime bound together; offline verification."
+  duration 0.5h
+  status done
+  requires:
+    DEV 1
+
+task normal-real-completion AWARENESS_CONNECTED -> AWARENESS_VERIFIED:
+  title "Observe one normal-policy real-model battle to termination"
+  description "Owner authorized one isolated normal usage-v2 run, max36ticks/600seconds/200attempts, no retries or deployment; record terminal state and usage without asserting product acceptance."
+  duration 0.5h
+  status done
+  requires:
+    DEV 1
+
+task awareness-prompt-inspection AWARENESS_CONNECTED -> AWARENESS_VERIFIED:
+  title "Inspect all awareness role prompts and output contracts"
+  description "Owner requests prompt inspection after contradictory narration instructions; read-only source and offline reconstruction, evidence report and recommendations, no implementation repair or paid retry."
+  duration 0.5h
+  status done
+  requires:
+    DEV 1
+
+task awareness-prompt-repair AWARENESS_CONNECTED -> AWARENESS_VERIFIED:
+  title "Unify latest prompt contracts for new and continuing battles before public completion"
+  duration 1h
+  status done
+  source "docs/adr/0056-latest-prompt-contract-until-completion.md"
+
+task awareness-public-deploy AWARENESS_VERIFIED -> AWARENESS_PUBLIC_DEPLOYED:
+  title "Integrate scoped source and execute official staging and public promotion"
+  duration 0.5h
+  status planned
+  requires:
+    DEV 1
+  source "docs/battle-awareness-prompt-repair-release-2026-10-05.md"
+
+task awareness-public-completion AWARENESS_PUBLIC_DEPLOYED -> AWARENESS_PUBLIC_COMPLETED:
+  title "Verify a fresh public battle finishes with narration and actual token accounting"
+  duration 0.5h
+  status planned
+  requires:
+    DEV 1
+  source "docs/adr/0056-latest-prompt-contract-until-completion.md"
+
+work_event WE-c0fdfbf654c97a31afb2cbde650c58056030ee2372d236ffee6835c10100d74f:
+  model 1
+  task policy-draft
+  kind start
+  occurred_at 2026-10-05T04:12:08.043562+00:00
+  planned_value 1h
+
+work_event WE-14e6bab09f24843152182df6a23aa2bb3e81737977037828d066c5ed4984c134:
+  model 1
+  task policy-draft
+  kind finish
+  occurred_at 2026-10-05T04:19:18.957022+00:00
+
+milestone COMPATIBILITY_READY:
+  title "Owner-selected Luna/Grok transport compatibility prepared"
+
+work_event WE-a42987dfa7f0e0b3b03318f51be274553bd7c55bfeda2e6c0d626875c70779c4:
+  model 1
+  task model-compatibility
+  kind start
+  occurred_at 2026-10-05T04:34:10.475127+00:00
+  planned_value 1h
+
+work_event WE-5e33da57d9d88c444e6970b0ea6f031fe6890d0714265a90ed4e88766fe6130b:
+  model 1
+  task model-compatibility
+  kind finish
+  occurred_at 2026-10-05T04:46:28.945582+00:00
+
+milestone PROSE_READY:
+  title "PROSE_READY"
+
+milestone AWARENESS_TYPES_READY:
+  title "AWARENESS_TYPES_READY"
+
+milestone AWARENESS_MODULES_READY:
+  title "AWARENESS_MODULES_READY"
+
+milestone AWARENESS_CONNECTED:
+  title "AWARENESS_CONNECTED"
+
+milestone AWARENESS_VERIFIED:
+  title "AWARENESS_VERIFIED"
+
+work_event WE-0e9f3315f15b615043c646532f99302375e116fcb4b4bedc8f74b3d5f9bfe7d7:
+  model 1
+  task prose-input
+  kind finish
+  occurred_at 2026-10-05T05:47:58.735116+00:00
+
+work_event WE-a79515f1012f68a42a6e11bb35e8a6afaa3cb611efced94830c7ab247835e623:
+  model 1
+  task awareness-types
+  kind finish
+  occurred_at 2026-10-05T05:47:58.735116+00:00
+
+work_event WE-a6a1db94035c5fa8dcf496f72cf430104d0912710699d46aaab95c1dfc4e57dc:
+  model 1
+  task awareness-modules
+  kind start
+  occurred_at 2026-10-05T05:47:58.735116+00:00
+  planned_value 4h
+
+work_event WE-e9162c32a2cda8f7552b351702642dac8262a426dad499b0bc285e087f6d121b:
+  model 1
+  task awareness-modules
+  kind finish
+  occurred_at 2026-10-05T06:59:07+00:00
+
+work_event WE-a1490f035ed4528fc9bfdcba44d85b7556a65288a79663c255dc358d3b91b7b5:
+  model 1
+  task awareness-connect
+  kind start
+  occurred_at 2026-10-05T07:01:00+00:00
+  planned_value 6h
+
+work_event WE-9a43130f9cba5cabb28c3d3d07cfc656cf75220687d8d1f347439dc88203dd6e:
+  model 1
+  task awareness-connect
+  kind finish
+  occurred_at 2026-10-05T07:17:25+00:00
+
+work_event WE-f9950ecb38b63fa638b7981f733c97ebe4af40e208bb8e31939f5d6f22221166:
+  model 1
+  task awareness-verify
+  kind start
+  occurred_at 2026-10-05T07:18:20+00:00
+  planned_value 3h
+
+work_event WE-ec5ddb74e81291a88a73fe57ac1b27249fbcaab0a8f63f41da5228da8b5fc46e:
+  model 1
+  task awareness-verify
+  kind suspend
+  occurred_at 2026-10-05T07:34:49+00:00
+  reason "Owner holds old cutover trial contract change; proceed with accepted ADR0051 usage measurement separately"
+
+work_event WE-09cbbb0ecbd1399c274ae84ed95d0013abb80dfa7807217f8de1ed060392100b:
+  model 1
+  task usage-measurement
+  kind start
+  occurred_at 2026-10-05T07:35:13+00:00
+  planned_value 3h
+
+work_event WE-3720e931304f0ea8bc16d0249b4fbc651af903cbe70e452aaf09ca1d7776abe1:
+  model 1
+  task usage-measurement
+  kind finish
+  occurred_at 2026-10-05T07:45:26+00:00
+
+work_event WE-8fb86227ad0e8bafee60b7a0d093d5a01e10a944401422c19f8b7e1c442d99a1:
+  model 1
+  task usage-verify
+  kind start
+  occurred_at 2026-10-05T07:47:42+00:00
+  planned_value 0.5h
+
+work_event WE-135d4e208c6915a394f0665a7b5a71fb5011223ca3578f776f4ebab1a4f408c8:
+  model 1
+  task usage-verify
+  kind finish
+  occurred_at 2026-10-05T07:55:37+00:00
+  active_time 19/144h
+  effort 0.131623ph
+
+work_event real-trial-prep-start-20261005:
+  model 1
+  task real-model-trial-preparation
+  kind start
+  occurred_at 2026-10-05T08:41:16+00:00
+  planned_value 1h
+
+work_event real-trial-prep-finish-20261005:
+  model 1
+  task real-model-trial-preparation
+  kind finish
+  occurred_at 2026-10-05T08:45:28+00:00
+  effort 0.07ph
+
+work_event real-trial-harness-start-20261005:
+  model 1
+  task real-model-trial-harness
+  kind start
+  occurred_at 2026-10-05T08:49:57+00:00
+  planned_value 1h
+
+work_event real-trial-harness-finish-20261005:
+  model 1
+  task real-model-trial-harness
+  kind finish
+  occurred_at 2026-10-05T09:05:22+00:00
+  effort 0.256944ph
+
+work_event real-trial-observation-start-20261005:
+  model 1
+  task real-model-trial-observation
+  kind start
+  occurred_at 2026-10-05T09:35:16+00:00
+  planned_value 0.5h
+
+work_event real-trial-observation-finish-20261005:
+  model 1
+  task real-model-trial-observation
+  kind finish
+  occurred_at 2026-10-05T09:40:24+00:00
+  effort 0.085556ph
+
+work_event trial-retry-start-20261005:
+  model 1
+  task real-model-trial-retry
+  kind start
+  occurred_at 2026-10-05T09:52:33+00:00
+  planned_value 0.5h
+
+work_event trial-retry-finish-20261005:
+  model 1
+  task real-model-trial-retry
+  kind finish
+  occurred_at 2026-10-05T09:55:06+00:00
+  effort 0.0425ph
+
+work_event long-timeout-measure-start-20261005:
+  model 1
+  task long-timeout-measurement
+  kind start
+  occurred_at 2026-10-05T10:19:46+00:00
+  planned_value 1h
+
+work_event long-timeout-measure-finish-20261005:
+  model 1
+  task long-timeout-measurement
+  kind finish
+  occurred_at 2026-10-05T10:35:17+00:00
+  effort 0.2586111111111111ph
+
+work_event response-completion-repair-start-20261005:
+  model 1
+  task response-completion-repair
+  kind start
+  occurred_at 2026-10-05T10:40:41+00:00
+  planned_value 1h
+
+work_event response-completion-repair-finish-20261005:
+  model 1
+  task response-completion-repair
+  kind finish
+  occurred_at 2026-10-05T10:57:12+00:00
+  effort 0.2752777777777778ph
+
+work_event normal-waiting-deadlines-start-20261005:
+  model 1
+  task normal-waiting-deadlines
+  kind start
+  occurred_at 2026-10-05T11:08:27+00:00
+  planned_value 0.5h
+
+work_event normal-waiting-deadlines-finish-20261005:
+  model 1
+  task normal-waiting-deadlines
+  kind finish
+  occurred_at 2026-10-05T11:16:45+00:00
+  effort 0.13833333333333334ph
+
+work_event normal-real-completion-start-20261005:
+  model 1
+  task normal-real-completion
+  kind start
+  occurred_at 2026-10-05T11:27:52+00:00
+  planned_value 0.5h
+
+work_event normal-real-completion-finish-20261005:
+  model 1
+  task normal-real-completion
+  kind finish
+  occurred_at 2026-10-05T11:30:22+00:00
+  effort 0.041666666666666664ph
+
+work_event awareness-prompt-inspection-start-20261005:
+  model 1
+  task awareness-prompt-inspection
+  kind start
+  occurred_at 2026-10-05T11:36:52+00:00
+  planned_value 0.5h
+
+work_event awareness-prompt-inspection-finish-20261005:
+  model 1
+  task awareness-prompt-inspection
+  kind finish
+  occurred_at 2026-10-05T11:43:33+00:00
+  effort 0.11138888888888888ph
+
+work_event latest-contract-repair-start-20261005:
+  model 1
+  task awareness-prompt-repair
+  kind start
+  occurred_at 2026-10-05T20:58:01+09:00
+  planned_value 1h
+
+milestone AWARENESS_PUBLIC_DEPLOYED:
+  title "Latest awareness source deployed to approved public environment"
+
+milestone AWARENESS_PUBLIC_COMPLETED:
+  title "New public battle completion narration and observed token readback verified"
+
+work_event latest-contract-repair-finish-20261005:
+  model 1
+  task awareness-prompt-repair
+  kind finish
+  occurred_at 2026-10-05T21:28:00+09:00
+  effort 0.5ph

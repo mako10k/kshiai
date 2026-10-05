@@ -69,7 +69,7 @@ function SemanticCandidateReview(props: {
   const review = props.review;
   return (
     <section className="card">
-      <h2>保存済みの構造化候補（V3）</h2>
+      <h2>保存済みの構造化候補（キャラクター定義 v3）</h2>
       <p>{review.limitation}</p>
       {review.fields.map((field) => (
         <details key={field.key}>
@@ -114,7 +114,7 @@ function DeferredValues(props: {
   values: NonNullable<CharacterAuthoringReview["semanticCandidateReview"]>["deferredValues"];
 }) {
   return <section><h3>後で解決する値</h3>
-    <p>元データのコピーを保持することと、V3 側の値を延期することは別です。保持した元データは、延期した機能で自動使用されません。</p>
+    <p>元データのコピーを保持することと、キャラクター定義 v3側の値を延期することは別です。保持した元データは、延期した機能で自動使用されません。</p>
     {props.values?.map((value) => <details key={value.targetPath}>
       <summary>{value.targetPath} — {value.requiringCapability}</summary><p>{value.reason}</p>
       <p>元データ: {value.candidateSourcePaths.join(", ")}</p>

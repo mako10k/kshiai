@@ -50,6 +50,8 @@ jobs:
       - run: npm run build
       - run: npm run lint
       - run: npm test
+      - name: Verify accepted awareness execution and prompt contracts
+        run: npm run test:awareness
       - name: Verify generated files are clean
         run: git diff --exit-code
 

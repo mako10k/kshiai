@@ -1,5 +1,17 @@
+import { validateConsequenceParameters } from "./battle-consequence-validation.js";
+import {
+  validateBattleAgencyBindings,
+  validateIncompleteBattleResult,
+  validateFrozenBattleReceipts,
+  validateBattleUniqueReferences,
+  validateBattleAdjudication,
+  validateBattleObservationRevisions,
+} from "./battle-state-validation.js";
 // R: Define versioned battle state, asset bindings, receipts and public projections.
 import { z } from "zod";
+import { AwarenessPromptRevisionSchema, type AwarenessPromptRevision } from "./awareness-prompt-revision.js";
+import { AwarenessFrozenNarrationSchema, type AwarenessFrozenNarration } from "./awareness-narration-source.js";
+import { AwarenessPolicyV1Schema, type AwarenessPolicyV1 } from "./awareness-policy.js";
 import { NarrativeBlockSchema, type NarrativeBlock } from "./narrative.js";
 import {
   CombatReadyCharacterSheetSchema,
@@ -123,6 +135,7 @@ export type {
 export const BattleStatusSchema = z.enum([
   "active",
   "finished",
+  "incomplete",
 ]);
 export type BattleStatus = z.infer<typeof BattleStatusSchema>;
 
@@ -1784,31 +1797,7 @@ export const BattleTurnRecordSchema = z.object({
     const expected = side === "a"
       ? record.sideAChange.parameterChanges
       : record.sideBChange.parameterChanges;
-    const owners = new Map<string, number[]>();
-    for (const receipt of record.consequenceReceipts) {
-      for (const [key, value] of Object.entries(receipt.parameterChanges[side])) {
-        owners.set(key, [...(owners.get(key) ?? []), value]);
-      }
-    }
-    for (const [key, value] of Object.entries(expected)) {
-      const values = owners.get(key) ?? [];
-      if (values.length === 0 || values.reduce((sum, item) => sum + item, 0) !== value) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          path: ["consequenceReceipts"],
-          message: `parameter delta ${side}.${key} must equal its source-owned contributions`,
-        });
-      }
-    }
-    for (const key of owners.keys()) {
-      if (!(key in expected)) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          path: ["consequenceReceipts"],
-          message: `receipt owns absent parameter delta ${side}.${key}`,
-        });
-      }
-    }
+    validateConsequenceParameters(record.consequenceReceipts, side, expected, ctx);
   }
   const validateIndexes = (
     key: "semanticOperationIndexes" | "worldOperationIndexes",
@@ -1894,7 +1883,9 @@ export const BattleTurnEngineContinuationSchema = z.object({
   situation: SituationSchema,
   finisherA: FinisherStateSchema.nullable(),
   finisherB: FinisherStateSchema.nullable(),
-  actions: z.array(ResolvedBattleActionSchema).length(2),
+  actions: z.array(ResolvedBattleActionSchema).max(2),
+  absentIntentSides: z.array(z.enum(["a", "b"])).max(2).default([]),
+  strictCharacterIntents: z.boolean().default(false),
   events: z.array(TurnEventSchema),
   mechanicalEvidence: CommittedMechanicalEvidenceSetSchema,
   pendingEffects: PendingBattleEffectListSchema.default([]),
@@ -1912,6 +1903,13 @@ export const BattleTurnEngineContinuationSchema = z.object({
     transition: BattleWorldTransitionSchema.nullable(),
   }).optional(),
 }).strict().superRefine((continuation, context) => {
+  const actors = continuation.actions.map((action) => action.actorSide);
+  const absent = continuation.absentIntentSides;
+  if (new Set(actors).size !== actors.length || new Set(absent).size !== absent.length ||
+      ["a", "b"].some((side) => Number(actors.some((actor) => actor === side)) + Number(absent.some((actor) => actor === side)) !== 1)) {
+    context.addIssue({ code: z.ZodIssueCode.custom, path: ["actions"], message: "each actor must have exactly one action or an explicit absent intent" });
+  }
+
   if (continuation.nextBucketIndex > continuation.temporalResolution.buckets.length) {
     context.addIssue({
       code: z.ZodIssueCode.custom,
@@ -1975,6 +1973,7 @@ interface BattleAssetManifestFields {
 export type BattleAssetManifest = BattleAssetManifestFields & (
   | { schemaVersion: 2 | 3; consciousOutputContract?: never }
   | { schemaVersion: 4; consciousOutputContract?: "dynamic-v4" }
+  | { schemaVersion: 5; consciousOutputContract: "awareness-v5"; awarenessPolicy: AwarenessPolicyV1; promptRevision: AwarenessPromptRevision; outputRevision: string }
 );
 
 export const BattleBasicAttackSourceSchema = z.discriminatedUnion("kind", [
@@ -2178,6 +2177,17 @@ export const BattleAssetManifestV4Schema = BattleAssetManifestSharedSchema.exten
 }).strict();
 export type BattleAssetManifestV4 = z.infer<typeof BattleAssetManifestV4Schema>;
 
+/** Complete immutable assets and execution policy for newly created awareness battles. */
+export const BattleAssetManifestV5Schema = BattleAssetManifestV4Schema.extend({
+  schemaVersion: z.literal(5),
+  consciousOutputContract: z.literal("awareness-v5"),
+  awarenessPolicy: AwarenessPolicyV1Schema,
+  promptRevision: AwarenessPromptRevisionSchema,
+  outputRevision: z.literal("awareness-output-v1"),
+  rules: BattleAssetManifestV4Schema.shape.rules.extend({ psycheReaction: z.literal("awareness-v5") }).strict(),
+}).strict();
+export type BattleAssetManifestV5 = z.infer<typeof BattleAssetManifestV5Schema>;
+
 export function upgradeLegacyBattleCharacterBindingV1(
   binding: z.infer<typeof LegacyBattleCharacterAssetBindingV1Schema>,
 ): BattleCharacterAssetBinding {
@@ -2198,6 +2208,7 @@ export const BattleAssetManifestSchema: z.ZodType<
   z.ZodTypeDef,
   unknown
 > = z.union([
+  BattleAssetManifestV5Schema,
   BattleAssetManifestV4Schema,
   BattleAssetManifestV3Schema,
   BattleAssetManifestV2Schema,
@@ -2298,7 +2309,7 @@ export type BattlePhaseReceipt = {
   fromRevision: number;
   toRevision: number;
   committedAt: string;
-  narrationInput?: BattleFrozenNarrationInput | BattleDeferredNarrationInput;
+  narrationInput?: BattleFrozenNarrationInput | BattleDeferredNarrationInput | AwarenessFrozenNarration;
   narrationInputDigest?: string;
   narrationDeferred?: boolean;
 };
@@ -2358,6 +2369,7 @@ export interface BattleState {
   id: string;
   pipelineAuthorityVersion?: 1;
   status: BattleStatus;
+  incompleteReason?: string;
   turn: number;
   turnLimit: number;
   combatTick?: number;
@@ -2436,6 +2448,7 @@ export const BattleStateSchema: z.ZodType<
   /** Present after narrator/speech/perception authority migration. */
   pipelineAuthorityVersion: z.literal(1).optional(),
   status: BattleStatusSchema,
+  incompleteReason: z.string().min(1).max(200).optional(),
   turn: z.number().int().nonnegative(),
   turnLimit: z.number().int().positive(),
   /** Engine beat count; public turn may stay still across several beats. */
@@ -2645,7 +2658,7 @@ export const BattleStateSchema: z.ZodType<
     toRevision: z.number().int().positive(),
     committedAt: z.string().datetime(),
     /** Frozen internal request for the later narration worker; never public DTO data. */
-    narrationInput: z.union([z.object({
+    narrationInput: z.union([AwarenessFrozenNarrationSchema, z.object({
       schemaVersion: z.literal(1),
       scene: z.string().max(1200),
       perspective: NarrationPerspectiveSchema,
@@ -2791,94 +2804,19 @@ export const BattleStateSchema: z.ZodType<
   createdAt: z.string(),
   updatedAt: z.string(),
  }).superRefine((state, ctx) => {
-  const dynamic = state.assetManifest?.schemaVersion === 4 && state.assetManifest.consciousOutputContract === "dynamic-v4";
-  for (const side of ["agentStateA", "agentStateB"] as const) {
-    const agent = state[side];
-    if (dynamic ? !agent?.consciousAgencyV2 || Boolean(agent.consciousAgencyV1) : Boolean(agent?.consciousAgencyV2)) {
-      ctx.addIssue({ code: z.ZodIssueCode.custom, path: [side], message: "conscious state must match frozen output contract" });
-    }
-  }
-  const reservations = state.consciousRepairReservations ?? [];
-  if (new Set(reservations).size !== reservations.length) {
-    ctx.addIssue({ code: z.ZodIssueCode.custom, path: ["consciousRepairReservations"], message: "repair reservations must be unique" });
-  }
-  const effectIds = (state.pendingEffects ?? []).map((effect) => effect.effectId);
-  if (new Set(effectIds).size !== effectIds.length) {
-    ctx.addIssue({
-      code: z.ZodIssueCode.custom,
-      path: ["pendingEffects"],
-      message: "pending effect IDs must be unique within a battle",
-    });
-  }
-  if (state.adjudication) {
-    if (
-      state.status !== "finished" ||
-      state.finishReason !== "turn_limit"
-    ) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        path: ["adjudication"],
-        message: "adjudication is valid only for a finished turn-limit battle",
-      });
-    }
-    if (state.adjudication.turn !== state.turn) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        path: ["adjudication", "turn"],
-        message: "adjudication turn must match battle turn",
-      });
-    }
-    if (state.adjudication.winnerSide !== state.winnerSide) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        path: ["adjudication", "winnerSide"],
-        message: "adjudication winner must match canonical battle winner",
-      });
-    }
-  }
-  const revision = state.semanticState?.revision;
-  if (revision === undefined) return;
-  for (const [field, observation] of [
-    ["observationStateA", state.observationStateA],
-    ["observationStateB", state.observationStateB],
-    ["observationStatePublic", state.observationStatePublic],
-  ] as const) {
-    if (observation && observation.snapshot.revision !== revision) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        path: [field, "snapshot", "revision"],
-        message: "observation revision must match semantic state",
-      });
-    }
-  }
-  for (const [field, frame] of [
-    ["perceptionFrameA", state.perceptionFrameA],
-    ["perceptionFrameB", state.perceptionFrameB],
-  ] as const) {
-    if (frame && frame.revision !== revision) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        path: [field, "revision"],
-        message: "perception frame revision must match semantic state",
-      });
-    }
-  }
-  if (
-    state.latestSemanticTransition &&
-    state.latestSemanticTransition.toRevision !== revision
-  ) {
-    ctx.addIssue({
-      code: z.ZodIssueCode.custom,
-      path: ["latestSemanticTransition", "toRevision"],
-      message: "latest semantic transition must match semantic state",
-    });
-  }
+  validateBattleAgencyBindings(state, ctx);
+  validateIncompleteBattleResult(state, ctx);
+  validateFrozenBattleReceipts(state, ctx);
+  validateBattleUniqueReferences(state, ctx);
+  validateBattleAdjudication(state, ctx);
+  validateBattleObservationRevisions(state, ctx);
 });
 
 /** Public battle view — no parameter numbers. */
 export const BattlePublicSchema = z.object({
   id: z.string(),
   status: BattleStatusSchema,
+  incompleteReason: z.string().min(1).max(200).optional(),
   turn: z.number(),
   turnLimit: z.number(),
   /** Intra-turn beat index when the public-turn clock is bound. */
@@ -3021,6 +2959,7 @@ export type BattlePublic = z.infer<typeof BattlePublicSchema>;
 export const BattleListItemSchema = z.object({
   id: z.string(),
   status: BattleStatusSchema,
+  incompleteReason: z.string().min(1).max(200).optional(),
   turn: z.number(),
   turnLimit: z.number(),
   sideAName: z.string(),

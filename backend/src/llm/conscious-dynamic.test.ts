@@ -1,3 +1,5 @@
+// R: Verify phase-scoped conscious generation and targeted repair preserve valid decisions.
+import { prepareConsciousPromptContext } from "./conscious-prompt-input.js";
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import { buildCharacterSelfProfileAnchor, buildTurnObservationPacket, initialConsciousAgencyV2 } from "@kshiai/shared";
@@ -49,9 +51,11 @@ describe("dynamic provider boundary (no network or live quality claims)", () => 
     assert.match(turnPrompt, /Choose null when silence fits/);
     for (const utterance of ["その間合い、試させてもらう。", null]) {
       const output = await runConsciousGeneration(i, i, async (_system, user) => {
-        const request = JSON.parse(user);
-        assert.deepEqual(request.context.structuredSelf.speech, i.structuredSelf.speech);
-        assert.deepEqual(request.context.utteranceHistory, { ...i.utteranceHistory, latestSelfIndex: null, latestCounterpartIndex: null });
+        assert.match(user, /## あなたが現在知っていること/);
+        assert.doesNotMatch(user, /^\s*\{/);
+        const context = prepareConsciousPromptContext(i, generationPlan(i).choices, false);
+        assert.deepEqual(context.structuredSelf.speech, i.structuredSelf.speech);
+        assert.deepEqual(context.utteranceHistory, { ...i.utteranceHistory, latestSelfIndex: null, latestCounterpartIndex: null });
         return { intent, nextAction: { choiceKey: "choice-0" }, nextUtterance: utterance };
       });
       assert.deepEqual(output.nextUtterance, { valid: true, value: utterance });
@@ -80,8 +84,7 @@ describe("dynamic provider boundary (no network or live quality claims)", () => 
     const result = await runConsciousGeneration(i, i, async (_system, user, opts) => {
       calls++;
       if (calls === 1) return { intent, nextAction: { choiceKey: "choice-0" }, nextUtterance: 1 };
-      const req = JSON.parse(user);
-      assert.deepEqual(req.repair.repairFields, ["nextUtterance"]);
+      assert.match(user, /今回修正する項目（repairFields）：順序付きの一覧（1件）\n\s+- 位置 0：nextUtterance/);
       assert.deepEqual(Object.keys(opts.responseFormat?.json_schema.schema.properties ?? {}), ["nextUtterance"]);
       return { nextUtterance: "来てみて。", nextAction: null };
     });
@@ -94,9 +97,8 @@ describe("dynamic provider boundary (no network or live quality claims)", () => 
     bindConsciousGenerationControl(i, { reserveRepair: async () => true, validateAction: () => null });
     const result = await runConsciousGeneration(i, i, async (_system, user) => {
       if (++calls === 1) return { intent, nextAction: { choiceKey: "old-key" }, nextUtterance: "そのまま。" };
-      const req = JSON.parse(user);
-      assert.deepEqual(req.repair.repairFields, ["intent", "nextAction"]);
-      assert.ok(req.repair.errors.some((e: { code: string }) => e.code === "not_in_current_candidates"));
+      assert.match(user, /今回修正する項目（repairFields）：順序付きの一覧（2件）\n\s+- 位置 0：intent\n\s+- 位置 1：nextAction/);
+      assert.match(user, /not_in_current_candidates/);
       return { intent, nextAction: { choiceKey: "choice-0" } };
     });
     assert.deepEqual(result.errors, []);
@@ -135,6 +137,8 @@ describe("dynamic provider boundary (no network or live quality claims)", () => 
     t.mock.method(globalThis, "fetch", async (_url: unknown, init: RequestInit) => {
       calls++;
       const body = JSON.parse(String(init.body));
+      assert.match(body.messages[1].content, /## あなたが現在知っていること/);
+      assert.match(body.messages[1].content, /choice-0/);
       assert.equal(body.response_format.type, "json_schema");
       assert.equal(body.response_format.json_schema.strict, true);
       assert.equal(Object.hasOwn(body.response_format.json_schema.schema.properties, "initialGoal"), false);
@@ -164,10 +168,9 @@ describe("dynamic provider boundary (no network or live quality claims)", () => 
     bindConsciousGenerationControl(i, { reserveRepair: async () => true, validateAction: () => null });
     const result = await runConsciousGeneration(i, i, async (_system, user, opts) => {
       if (++calls === 1) return { intent, nextAction: { choiceKey: "choice-1", description: "観測済みの足場を確かめる", subjectRefs: [] } };
-      const request = JSON.parse(user);
-      assert.deepEqual(request.repair.repairFields, ["nextAction"]);
-      assert.deepEqual(request.repair.payloadFields, ["subjectRefs"]);
-      assert.equal(request.repair.fixedAction.description, "観測済みの足場を確かめる");
+      assert.match(user, /今回修正する項目（repairFields）：順序付きの一覧（1件）\n\s+- 位置 0：nextAction/);
+      assert.match(user, /修正する行為の項目（payloadFields）：順序付きの一覧（1件）\n\s+- 位置 0：subjectRefs/);
+      assert.match(user, /変更しない行為（fixedAction）：次の項目[\s\S]*?"description"：観測済みの足場を確かめる/);
       const actionSchema = opts.responseFormat?.json_schema.schema.properties;
       assert.ok(actionSchema);
       return { nextAction: { subjectRefs: ["profile:a:weapon"], description: "上書きを試す" } };

@@ -1,0 +1,16 @@
+domain ADR0051:
+  description "Accepted observed-token accounting and explicit version labels."
+evidence OWNER_ACCEPTANCE:
+  "Owner asks to establish object-specific version display rules, defers pricing proof and requests reliable actual-token recording and measurable usage cost; old cutover trial change is held."
+evidence BASELINE:
+  "ADR0050 is Accepted; exact quote admission prevents unpriced calls and existing SDK accounting retains only optional total usage."
+premise INHERITANCE:
+  "Inherit ADR0050 pipeline/state/privacy/output/time/count semantics. Replace compulsory certified cost/input token proof only for newly bound awareness-v5-usage-v1 policy. Unknown spend is not zero and USD0.50 is not guaranteed without complete pricing."
+decision D01 based_on OWNER_ACCEPTANCE, BASELINE, INHERITANCE:
+  "Persist every SDK physical attempt and provider-reported token categories, IDs, scope, timing and status without prompt/secret content; calculate explicitly estimated costs from versioned price tables with unknown coverage."
+decision D02 based_on OWNER_ACCEPTANCE, INHERITANCE:
+  "Permit new observed-policy calls without certified pricing, retain prior certified-policy behavior and every inherited cap other than unproven input/cost admission; leave held trial change unresolved."
+decision D03 based_on OWNER_ACCEPTANCE:
+  "Require object name with displayed version and retain stored machine identifiers."
+decision ACCEPTANCE based_on OWNER_ACCEPTANCE, D01, D02, D03:
+  "Owner-directed local implementation is authorized. This does not authorize paid execution, deployment, migration of existing battles, or the held trial contract revision."

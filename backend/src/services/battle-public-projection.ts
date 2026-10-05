@@ -138,6 +138,7 @@ export function projectBattlePublic(
   return {
     id: state.id,
     status: state.status,
+    ...(state.status === "incomplete" ? { incompleteReason: "試合処理を継続できなかったため、勝敗を確定せず終了しました。" } : {}),
     turn: state.turn,
     turnLimit: state.turnLimit,
     ...publicTurnClockFields(state),

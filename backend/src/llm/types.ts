@@ -755,6 +755,8 @@ export type RefereeFinalState = {
 
 export interface LlmProvider {
   readonly name: string;
+  readonly awareness?: import("./awareness-provider-factory.js").AwarenessProviderRoles;
+  readonly awarenessBillingContracts?: readonly import("./awareness-dispatch-admission.js").AwarenessVerifiedBillingContract[];
   readonly semanticAuthoringProvider?: import("../services/semantic-authoring/execution.js").FocusedProviderTransportV1;
   readonly semanticAuthoringWorkerPolicy?: import("@kshiai/shared").WorkerExecutionPolicyV1;
   /** Optional dual-tier model ids for diagnostics. */

@@ -159,16 +159,8 @@
       "ref": "verification/vt104-routes-cutover-http-20260930"
     },
     {
-      "path": "backend/src/routes-cutover-confirm.test.ts",
-      "ref": "verification/vt104-routes-cutover-confirm-20260930"
-    },
-    {
       "path": "backend/src/services/cutover-background-dispatch.test.ts",
       "ref": "verification/vt104-cutover-background-dispatch-20260930"
-    },
-    {
-      "path": "backend/src/services/cutover-trial-dispatch.test.ts",
-      "ref": "verification/vt104-cutover-trial-dispatch-20260930"
     },
     {
       "path": "backend/src/services/narration-worker.test.ts",

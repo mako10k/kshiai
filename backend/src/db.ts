@@ -1,4 +1,9 @@
+import { llmUsageSchemaSql } from "./repositories/llm-usage-schema.js";
+import { awarenessNarratorStorageSchemaSql } from "./repositories/awareness-narrator-storage-schema.js";
+import { battleAwarenessCreationSchemaSql } from "./repositories/battle-awareness-creation-schema.js";
 // R: Provide SQLite and PostgreSQL connections and transactional schema initialization.
+import { awarenessNarrationStorageSchemaSql } from "./repositories/awareness-narration-storage-schema.js";
+import { battleAwarenessSchemaSql } from "./repositories/battle-awareness-schema.js";
 import fs from "node:fs";
 import path from "node:path";
 import SqliteDatabase from "better-sqlite3";
@@ -747,6 +752,19 @@ function ensureSqliteFamilyAuthoringJobs(database: SqliteDatabase.Database): voi
     VALUES ('environment-global', 0)
     ON CONFLICT (scheduler_id) DO NOTHING;
   `);
+  database.exec(battleAwarenessSchemaSql);
+  database.exec(battleAwarenessCreationSchemaSql);
+  database.exec(awarenessNarrationStorageSchemaSql);
+  database.exec(awarenessNarratorStorageSchemaSql);
+  database.exec(llmUsageSchemaSql);
+  const awarenessBatchColumns = database.pragma("table_info(battle_awareness_narration_batches)");
+  if (!Array.isArray(awarenessBatchColumns)) throw new Error("AWARENESS_BATCH_SCHEMA_UNAVAILABLE");
+  for (const name of ["context_json", "context_digest"]) {
+    if (!awarenessBatchColumns.some((column: unknown) => typeof column === "object" && column !== null &&
+        "name" in column && column.name === name)) {
+      database.exec(`ALTER TABLE battle_awareness_narration_batches ADD COLUMN ${name} TEXT`);
+    }
+  }
   for (const table of [
     "character_authoring_jobs",
     "battlefield_authoring_jobs",

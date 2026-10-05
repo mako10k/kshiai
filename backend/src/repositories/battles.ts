@@ -28,6 +28,15 @@ export async function saveBattle(
   await writeBattle({ query }, state, meta);
 }
 
+/** Atomic seam for a canonical commit paired with a private runtime transition. */
+export function saveBattleInTransaction(
+  connection: DatabaseConnection,
+  state: BattleState,
+  meta: Parameters<typeof saveBattle>[1],
+): Promise<void> {
+  return writeBattle(connection, state, meta);
+}
+
 /** Reserve domain repair without checkpointing an unfinished phase as canonical state. */
 export async function reserveConsciousRepair(input: { battleId: string; key: string; expectedRevision: number }): Promise<{ reserved: boolean; keys: string[] }> {
   return withTransaction(async (connection) => {
@@ -61,6 +70,7 @@ export async function isBattleDiscarded(id: string): Promise<boolean> {
 export async function insertNewBattle(
   state: BattleState,
   meta: { sideAUserId: string; sideACharacterId: string; sideBCharacterId: string },
+  initialize?: (connection: DatabaseConnection) => Promise<void>,
 ): Promise<"created" | "conflict"> {
   const validated = BattleStateSchema.parse(state);
   if (validated.sideA.characterId !== meta.sideACharacterId ||
@@ -81,6 +91,7 @@ export async function insertNewBattle(
         meta.sideBCharacterId, state.createdAt, state.updatedAt,
         state.battleRevision ?? 0, context?.runId ?? null],
     );
+    if (inserted.rowCount === 1 && initialize) await initialize(connection);
     return inserted.rowCount === 1 ? "created" : "conflict";
   });
 }
@@ -145,27 +156,34 @@ export async function saveBattleWithNarrationOutbox(
     expectedRevision?: number;
   },
 ): Promise<void> {
-  await withTransaction(async (connection) => {
-    await writeBattle(connection, state, meta);
-    const receiptIds = new Set(state.advanceOperation?.receiptIds ?? []);
-    for (const receipt of state.phaseReceipts ?? []) {
-      if (!receiptIds.has(receipt.id)) continue;
-      if (receipt.narrationDeferred) continue;
-      if (!receipt.narrationInput || !receipt.narrationInputDigest) {
-        throw new Error("NARRATION_INPUT_MISSING");
-      }
-      await enqueueNarrationInTransaction(connection, {
-        battleId: state.id,
-        receiptId: receipt.id,
-        sequence: receipt.sequence,
-        phase: receipt.phase,
-        combatTurn: receipt.combatTurn,
-        frozenInput: receipt.narrationInput,
-        inputDigest: receipt.narrationInputDigest,
-        now: receipt.committedAt,
-      });
+  await withTransaction((connection) => saveBattleWithNarrationOutboxInTransaction(connection, state, meta));
+}
+
+/** Persist canonical facts and immutable narration sources in the caller's transaction. */
+export async function saveBattleWithNarrationOutboxInTransaction(
+  connection: DatabaseConnection,
+  state: BattleState,
+  meta: Parameters<typeof saveBattle>[1],
+): Promise<void> {
+  await writeBattle(connection, state, meta);
+  const receiptIds = new Set(state.advanceOperation?.receiptIds ?? []);
+  for (const receipt of state.phaseReceipts ?? []) {
+    if (!receiptIds.has(receipt.id)) continue;
+    if (receipt.narrationDeferred) continue;
+    if (!receipt.narrationInput || !receipt.narrationInputDigest) {
+      throw new Error("NARRATION_INPUT_MISSING");
     }
-  });
+    await enqueueNarrationInTransaction(connection, {
+      battleId: state.id,
+      receiptId: receipt.id,
+      sequence: receipt.sequence,
+      phase: receipt.phase,
+      combatTurn: receipt.combatTurn,
+      frozenInput: receipt.narrationInput,
+      inputDigest: receipt.narrationInputDigest,
+      now: receipt.committedAt,
+    });
+  }
 }
 
 function parseBattleState(rawJson: unknown, idHint = "?"): BattleState {
@@ -179,6 +197,9 @@ function parseBattleStateDetailed(
   const raw = typeof rawJson === "string" ? JSON.parse(rawJson) : rawJson;
   const parsed = BattleStateSchema.safeParse(raw);
   if (parsed.success) return { state: ensureSemanticState(parsed.data), repaired: false };
+  if (typeof raw === "object" && raw !== null && "assetManifest" in raw &&
+      typeof raw.assetManifest === "object" && raw.assetManifest !== null &&
+      "schemaVersion" in raw.assetManifest && raw.assetManifest.schemaVersion === 5) throw parsed.error;
   console.warn(
     "[battles] schema soft-repair",
     idHint,
@@ -192,6 +213,7 @@ function parseBattleStateDetailed(
 }
 
 function ensureSemanticState(state: BattleState): BattleState {
+  if (state.assetManifest?.schemaVersion === 5) return state;
   const semanticState = state.semanticState ?? createBattleSemanticState({
     scene: state.situation.scene,
     notes: state.situation.notes,
@@ -361,7 +383,7 @@ function degradedListItem(rawJson: unknown): BattleListItem | null {
   const situation = value.situation && typeof value.situation === "object"
     ? value.situation as Record<string, unknown>
     : {};
-  const status = value.status === "finished" ? "finished" : "active";
+  const status = value.status === "finished" ? "finished" : value.status === "incomplete" ? "incomplete" : "active";
   const winnerSide = value.winnerSide === "a" || value.winnerSide === "b" ||
       value.winnerSide === "draw"
     ? value.winnerSide

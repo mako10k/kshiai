@@ -50,7 +50,7 @@ describe("persistent battle E2E runner", () => {
   it("classifies every observation provider operation under one revision", () => {
     assert.equal(
       OBSERVATION_PROVIDER_OPERATION_TAXONOMY_REVISION,
-      "battle-provider-operations-v2",
+      "battle-provider-operations-v3",
     );
     assert.deepEqual(OBSERVATION_PROVIDER_OPERATION_LAYERS, {
       concretizeBattlefield: "encounter",
@@ -71,6 +71,10 @@ describe("persistent battle E2E runner", () => {
       narrateJudgment: "narration",
       narrateAftermath: "narration",
       referee: "referee",
+      "awareness-v5:subconscious": "deepPsyche",
+      "awareness-v5:conscious": "characterExpression",
+      "awareness-v5:narration-frozen": "narration",
+      "awareness-v5:narration-batch": "narration",
     });
   });
 
@@ -110,7 +114,7 @@ describe("persistent battle E2E runner", () => {
       runId: "run-ledger",
       battleId: "battle-ledger",
       battleObservationRunId: "run-ledger",
-      taxonomyRevision: "battle-provider-operations-v2",
+      taxonomyRevision: "battle-provider-operations-v3",
       approvedAttemptCeiling: 5,
       reservedAttempts: 3,
       status: "active",

@@ -100,3 +100,17 @@ current check.
 - [0045: Preserve action intent producer values](0045-preserve-action-intent-producer-values.md) — Accepted; structural action contracts and value-preserving projections, without synthetic fallback judgment.
 
 - [ADR-0046: 既存の条件付き契約を型と実行時で一致させる](0046-align-conditional-contracts.md) — Accepted
+
+- [ADR-0050: 顕在度に応じた自然文コンテキストと非同期キャラ意識パイプライン](0050-asynchronous-awareness-projected-character-pipeline.md) — Superseded by ADR0051; 意識パイプライン awareness-v5の状態・合流契約を後継ADRが継承。
+
+- [ADR0051: Observed LLM usage accounting and explicit version labels](0051-observed-llm-usage-accounting.md) — Accepted; inherits ADR0050 pipeline and replaces mandatory pricing proof for new usage-measured policy.
+
+- [ADR0052: Isolated long-timeout awareness measurement](0052-isolated-long-timeout-measurement.md) — Accepted; explicit internal measurement policy with longer coherent deadlines, ordinary policies unchanged.
+- [ADR-0053: Explicit action output guidance and physical response evidence](0053-awareness-response-completion-repair.md) — Superseded by ADR0056
+- [ADR-0054: Adequate waiting deadlines for new awareness battles](0054-normal-awareness-waiting-deadlines.md) — Accepted
+
+- [0055: Consistent awareness narration contracts and diagnostics](0055-consistent-awareness-narration-contract.md) — Superseded by ADR0056.
+
+- [ADR-0056: 正常完走の確認まで出力契約を最新版で実行する](0056-latest-prompt-contract-until-completion.md) — Accepted
+
+- [ADR-0057: Awarenessの公開完走を実利用量で検証する](0057-awareness-public-observation-accounting.md) — Accepted
