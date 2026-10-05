@@ -1,0 +1,14 @@
+evidence CLOUD:
+  "Exact failed revision kshiai-api-00168-zud logs ERR_MODULE_NOT_FOUND: Cannot find package openai imported from /app/backend/dist/llm/openai-compatible.js; Node22 exits1 before port8080 listening. Service traffic API confirms previous speech-9ce565d at100percent. Stage migrations passed; Worker and paid battle step skipped."
+evidence LAYOUT:
+  "Lockfile installs openai6.49 at backend/node_modules/openai. Root node_modules/openai absent. Docker dependencies stage npm ci installs backend and shared workspaces; runtime copies only root node_modules. Independent bounded local reproduction with compiled backend and root-only dependency layout emits same missing-package error."
+evidence DETECTION:
+  "Both exact PR and main CI passed. backend-image job builds and scans vulnerabilities but never imports compiled modules from final image. Normal local tests retain backend/node_modules and therefore differ from final runtime layout."
+premise INFERENCE:
+  "Runtime copy omits workspace-local installed production dependencies, directly producing missing openai. SDK placement change triggered this existing packaging assumption. Container startup probe error is consequence, not evidence of a too-short timeout."
+premise ALTERNATIVES:
+  "Port/deadline tuning cannot fix the proven module resolution failure. Changing hoisting or duplicating openai at root changes package ownership unnecessarily. Lazy import merely postpones failure. Preserve dependency layout in image."
+premise UNKNOWN:
+  "After package inclusion, cloud initialization and model battle completion still require actual staging and public observations; no local check alone establishes these."
+decision REPAIR based_on CLOUD, LAYOUT, DETECTION, INFERENCE, ALTERNATIVES, UNKNOWN:
+  "Preserve backend and shared workspace production node_modules in final image, ensuring empty directories exist for deterministic COPY. Add final-image compiled LLM/routes import smoke under NODE_ENV=test and legacy auth with no keys, index startup, DB initialization or provider calls. Verify same controlled layout after inclusion and all required CI checks on a new scoped PR. Release rc4 rather than moving immutable failed rc3, repeat official staged verification then authorized public promotion and completion."

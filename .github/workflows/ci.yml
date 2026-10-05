@@ -1,3 +1,4 @@
+# R: Run the source and artifact checks that govern integration and release.
 name: CI
 
 on:
@@ -85,6 +86,15 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: Build backend image
         run: docker build --file backend/Dockerfile --tag kshiai-backend:ci .
+      - name: Import compiled API modules from the runtime image
+        run: |
+          docker run --rm --entrypoint node \
+            --env NODE_ENV=test --env AUTH_PROVIDER=legacy --env LLM_PROVIDER=mock \
+            kshiai-backend:ci --input-type=module --eval '
+              await import("./backend/dist/llm/index.js");
+              await import("./backend/dist/routes.js");
+              console.log("Compiled API runtime module graph imported successfully");
+            '
       - name: Scan backend image
         uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
         with:

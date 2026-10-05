@@ -1,0 +1,71 @@
+{
+  "target": {
+    "publicUrl": "https://kshiai.mk10.org",
+    "cloudRunService": "kshiai-api",
+    "worker": "kshiai-web",
+    "project": "kshiai",
+    "region": "asia-northeast1"
+  },
+  "source": {
+    "pullRequest": 152,
+    "mergedCommit": "1ec8b649443b3295d080ad76d951aaee40ecbc26",
+    "releaseTag": "v0.23.0-rc.3",
+    "annotatedTagObject": "fc99d7cc6f1dbe38c82588dfae34e49ff39280a3",
+    "ciRun": 37310442891,
+    "allRequiredChecks": "success"
+  },
+  "stage": {
+    "runId": 37311012189,
+    "createdAt": "2026-10-05T12:39:07Z",
+    "inputs": {
+      "tag": "v0.23.0-rc.3",
+      "battle_causal_narration_mode": "narration_guarded",
+      "dialogue_context_projection_override": "none",
+      "expected_dialogue_projection": "compact",
+      "e2e_max_advances": "24",
+      "e2e_provider_operation_ceiling": "200",
+      "character_create_smoke": "false",
+      "battle_pacing_policy": "current"
+    },
+    "status": "failure",
+    "completedAt": "2026-10-05T12:43:14Z",
+    "failedStep": "Deploy tagged Cloud Run revision without traffic",
+    "failedRevision": "kshiai-api-00168-zud",
+    "imageDigest": "sha256:caf0876899dfa7d2d7e1d677956d006fdc8b7df9f14b43d7f3a4b19f8213c8d4",
+    "observedError": "Container failed to start and listen on PORT=8080 within allocated timeout",
+    "rootCause": "workspace_local_production_dependencies_omitted_from_runtime_image",
+    "forwardOnlyMigrationStep": "success",
+    "workerUploadStep": "skipped",
+    "stagedBattleObservationStep": "skipped"
+  },
+  "promotion": "not_started",
+  "publicCompletion": "unverified",
+  "planningRecord": {
+    "formalStart": "rejected_PT_DAG_207",
+    "reason": "AWARENESS_VERIFIED includes owner-held old cutover verification; attempted route correction rejected PTDAG-204; no plan write occurred",
+    "actualObservedStageDispatchStart": "2026-10-05T12:39:07Z"
+  },
+  "publicReadback": {
+    "checkedAt": "2026-10-05T12:46:56.698318+00:00",
+    "url": "https://kshiai.mk10.org/api/health",
+    "ok": true,
+    "revision": "kshiai-api-speech-9ce565d",
+    "database": "postgres",
+    "scope": "HTTP readback, not a traffic-allocation API read"
+  },
+  "diagnosticAccess": {
+    "gcloudIdentity": "mako10k@mk10.org",
+    "loggingRead": "success_after_owner_reauthentication",
+    "docker": "unavailable_broken_WSL_integration_link",
+    "isolatedLocalStartup": "SQLite mock API reached listening state, not equivalent to cloud PostgreSQL runtime",
+    "nextObservation": "startup logs for exact failed revision after gcloud reauthentication"
+  },
+  "observedAt": "2026-10-05T12:46:56.698352+00:00",
+  "goalState": "active_public_deployment_and_completion_unverified",
+  "cloudServiceReadback": {
+    "productionRevision": "kshiai-api-speech-9ce565d",
+    "productionPercent": 100,
+    "failedStagingRevision": "kshiai-api-00168-zud",
+    "stagingTag": "stage-37311012189-1"
+  }
+}
