@@ -1,3 +1,4 @@
+# R: Package the compiled API with the complete production workspace dependency layout.
 FROM node:22-bookworm-slim AS dependencies
 
 WORKDIR /app
@@ -11,7 +12,8 @@ COPY frontend/package.json frontend/package.json
 COPY packages/shared/package.json packages/shared/package.json
 RUN npm ci --omit=dev \
   --workspace @kshiai/shared \
-  --workspace @kshiai/backend
+  --workspace @kshiai/backend \
+  && mkdir -p backend/node_modules packages/shared/node_modules
 
 FROM node:22-bookworm-slim AS build
 
@@ -39,6 +41,8 @@ RUN apt-get update \
   && apt-get install -y --no-install-recommends --only-upgrade libpcre2-8-0 \
   && rm -rf /var/lib/apt/lists/*
 COPY --from=dependencies --chown=node:node /app/node_modules node_modules
+COPY --from=dependencies --chown=node:node /app/backend/node_modules backend/node_modules
+COPY --from=dependencies --chown=node:node /app/packages/shared/node_modules packages/shared/node_modules
 COPY --from=dependencies --chown=node:node /app/backend/package.json backend/package.json
 COPY --from=dependencies --chown=node:node /app/packages/shared/package.json packages/shared/package.json
 COPY --from=build --chown=node:node /app/backend/dist backend/dist
