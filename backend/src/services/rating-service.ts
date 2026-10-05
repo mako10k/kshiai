@@ -1,14 +1,19 @@
+// R: Apply the existing dual-track battle rating rules through explicit accounting storage.
+import { saveCharacterBattleAccounting, saveCharacterBattleAccountingInTransaction } from "../repositories/character-battle-accounting.js";
 import {
   applyElo,
   ensureRecord,
   ensureRecordOverall,
   isProvisional,
+  CharacterSheetSchema,
   type CharacterRecord,
   type CharacterSheet,
   type BattleState,
   type RankedOutcome,
 } from "@kshiai/shared";
 import * as charRepo from "../repositories/characters.js";
+import type { DatabaseConnection } from "../db.js";
+import { config } from "../config.js";
 
 function outcomeForSide(
   winnerSide: BattleState["winnerSide"],
@@ -102,6 +107,24 @@ function applyEloTrack(
  * - public: cross-account only (shown to everyone)
  */
 export async function settleBattleRating(state: BattleState): Promise<BattleState> {
+  return settleRating(state, charRepo.getSheet, saveCharacterBattleAccounting);
+}
+
+/** Caller owns the canonical transaction; no independent accounting commit occurs. */
+export async function settleBattleRatingInTransaction(connection: DatabaseConnection, state: BattleState): Promise<BattleState> {
+  if (state.status !== "finished" || (state.ratingSettlement?.applied && !state.ratingSettlement.voided)) return state;
+  const rows = await connection.query<{ id: string; sheet_json: unknown }>(
+    `SELECT id,sheet_json FROM characters WHERE id IN ($1,$2) ORDER BY id${config.databaseUrl ? " FOR UPDATE" : ""}`,
+    [state.sideA.characterId, state.sideB.characterId]);
+  const sheets = new Map(rows.rows.map((row) => [row.id, CharacterSheetSchema.parse(
+    typeof row.sheet_json === "string" ? JSON.parse(row.sheet_json) : row.sheet_json)]));
+  return settleRating(state, async (id) => sheets.get(id) ?? null,
+    (sheet) => saveCharacterBattleAccountingInTransaction(connection, sheet));
+}
+
+async function settleRating(state: BattleState,
+  getSheet: (id: string) => Promise<CharacterSheet | null>,
+  saveAccounting: (sheet: CharacterSheet) => Promise<void>): Promise<BattleState> {
   if (state.status !== "finished") return state;
   if (state.ratingSettlement?.applied && !state.ratingSettlement.voided) {
     return state;
@@ -109,8 +132,8 @@ export async function settleBattleRating(state: BattleState): Promise<BattleStat
 
   const idA = state.sideA.characterId;
   const idB = state.sideB.characterId;
-  const sheetA = await charRepo.getSheet(idA);
-  const sheetB = await charRepo.getSheet(idB);
+  const sheetA = await getSheet(idA);
+  const sheetB = await getSheet(idB);
   if (!sheetA || !sheetB) return state;
   if (sheetA.deletedAt || sheetB.deletedAt) return state;
 
@@ -137,8 +160,8 @@ export async function settleBattleRating(state: BattleState): Promise<BattleStat
     publicB = pB.snap;
   }
 
-  await charRepo.saveSheet(nextA);
-  await charRepo.saveSheet(nextB);
+  await saveAccounting(nextA);
+  await saveAccounting(nextB);
 
   const settlement = {
     applied: true,

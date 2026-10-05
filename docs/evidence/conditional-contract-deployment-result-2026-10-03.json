@@ -1,0 +1,156 @@
+{
+  "observedAt": "2026-10-02T15:46:47.688697+00:00",
+  "authority": "Owner instruction on 2026-10-03: commit current repair, sequential analogous repairs and commits, deploy; ADR0045/0046 value-preservation bounds",
+  "sourceSha": "98f4c4fa80733b52a7aa16ca4b931ec3335d7498",
+  "ci": {
+    "runId": 37027361469,
+    "url": "https://github.com/mako10k/kshiai/actions/runs/37027361469",
+    "conclusion": "success",
+    "headSha": "98f4c4fa80733b52a7aa16ca4b931ec3335d7498",
+    "status": "completed"
+  },
+  "cloudBuild": {
+    "id": "393dee9f-7069-4161-93d4-d6b148af22ba",
+    "region": "asia-northeast1",
+    "status": "SUCCESS",
+    "source": "474 tracked build-context files, 4.9 MiB; exact git archive of sourceSha; env/local DB/node_modules excluded",
+    "image": "asia-northeast1-docker.pkg.dev/kshiai/kshiai/backend@sha256:806621954aaa839f5fb80da91fcf625d6d1475b87a50fa4cf6291a2afd4ee060"
+  },
+  "cloudRun": {
+    "service": "kshiai-api",
+    "revision": "kshiai-api-contract-98f4c4f",
+    "traffic": [
+      {
+        "percent": 100,
+        "revisionName": "kshiai-api-contract-98f4c4f",
+        "tag": "contract-98f4c4f",
+        "url": "https://contract-98f4c4f---kshiai-api-crpgn6evfa-an.a.run.app"
+      },
+      {
+        "revisionName": "kshiai-api-v2-retired-fce86a5",
+        "tag": "v2-retire-458af76",
+        "url": "https://v2-retire-458af76---kshiai-api-crpgn6evfa-an.a.run.app"
+      },
+      {
+        "revisionName": "kshiai-api-v2-retired-fce86a5",
+        "tag": "v3-trial-36954429062-1",
+        "url": "https://v3-trial-36954429062-1---kshiai-api-crpgn6evfa-an.a.run.app"
+      }
+    ],
+    "runtimeConfigurationPreserved": true,
+    "annotationChanges": {
+      "run.googleapis.com/client-version": {
+        "before": "587.0.0",
+        "after": "578.0.0"
+      }
+    }
+  },
+  "worker": {
+    "version": "46c49e30-a740-40b9-ac4e-c46ab15d8ede",
+    "deployment": "a3921757-5d1a-41eb-b467-b9ebdae3c84e",
+    "trafficPercent": 100,
+    "backendOrigin": "https://contract-98f4c4f---kshiai-api-crpgn6evfa-an.a.run.app",
+    "bindingsAndRuntimePreserved": true
+  },
+  "preview": {
+    "health": {
+      "ok": true,
+      "llm": "fallback:xai>openai>venice",
+      "auth": "supabase",
+      "models": {
+        "engine": "grok-4.5",
+        "fast": "grok-4.3"
+      },
+      "service": "kshiai",
+      "database": "postgres",
+      "revision": "kshiai-api-contract-98f4c4f"
+    },
+    "runtimeConfigurationPreserved": true,
+    "workerBindingsPreserved": true,
+    "annotationChanges": {
+      "run.googleapis.com/client-version": {
+        "before": "587.0.0",
+        "after": "578.0.0"
+      }
+    },
+    "workerVersionPreview": "HTTP403; no preview access settings changed; public assets will be checked after promotion"
+  },
+  "public": {
+    "health": {
+      "ok": true,
+      "llm": "fallback:xai>openai>venice",
+      "auth": "supabase",
+      "models": {
+        "engine": "grok-4.5",
+        "fast": "grok-4.3"
+      },
+      "service": "kshiai",
+      "database": "postgres",
+      "revision": "kshiai-api-contract-98f4c4f"
+    },
+    "runtime": "cloudflare-worker",
+    "rootStatus": 200,
+    "assets": [
+      {
+        "path": "assets/index-Bi6INbNV.js",
+        "sha256": "4fdb145a9b3044a2b36a40aad9257270c9d315367b03537cc1bf558249678020"
+      },
+      {
+        "path": "assets/index-Dor-Pfq6.css",
+        "sha256": "37af3065253b64bd75f7f5bd75176d457196b94ec32ce7cb68fea52a21b80d6b"
+      },
+      {
+        "path": "battlefields/arena.jpg",
+        "sha256": "126d34d6cbf2ae11357d57595de51145908f54e4b01b9e5c5316c9f110f66458"
+      },
+      {
+        "path": "battlefields/forest.jpg",
+        "sha256": "ccedf989d9189384f60d62a2a99d1eadd70c413b41bbba8dff18c604cd854e85"
+      },
+      {
+        "path": "battlefields/school.jpg",
+        "sha256": "a89789cdfd1bb301480b16a7bfc115cc648f200081af1ac2780c7ea93b0b1071"
+      },
+      {
+        "path": "battlefields/sea.jpg",
+        "sha256": "b10e5401c46dd8093bd5960aa047eb4c4b612922bc3821bc22982d2f8e0b8974"
+      },
+      {
+        "path": "battlefields/urban.jpg",
+        "sha256": "fbafa650423e4b714c4075052ec2809e42a3fda5f683c5959fce6d58d66ada9c"
+      },
+      {
+        "path": "favicon.svg",
+        "sha256": "7cffb8c29e627bd727fa78637add441cea2c8147e526ca23432e123d5519c589"
+      },
+      {
+        "path": "index.html",
+        "sha256": "b774c7aec0bc7d8a7f91ba9a40c1587828a11a5a8c439f50444120db6942ede0"
+      }
+    ],
+    "indexHtmlCanonicalRedirect": 307
+  },
+  "runtimeErrorLogs": {
+    "revision": "kshiai-api-contract-98f4c4f",
+    "severity": ">=ERROR",
+    "freshness": "15m",
+    "limit": 20,
+    "observedCount": 0
+  },
+  "validation": {
+    "focusedDiagnosticTests": 204,
+    "governedTests": 230,
+    "additionalProviderTransportTests": 3,
+    "build": "pass",
+    "typecheck": "pass",
+    "static": "pass",
+    "adrAudit": "pass; 3 files"
+  },
+  "limitations": [
+    "No authenticated production battle advance or paid LLM call performed. Local V4 free-only norm integration proves preservation and successful progression with a complete producer judgment.",
+    "Worker version preview returned HTTP403; direct backend tagged health and configuration verified before promotion; canonical public API and all nine assets verified after promotion.",
+    "index.html redirects307 to canonical root; followed redirect and checked exact SHA256.",
+    "Governed active42/provisional2/disabled149; targeted204 diagnostics do not reseal stale historical acceptance.",
+    "No main merge, formal release/tag, DB schema/data migration, provider or authentication configuration change."
+  ]
+}

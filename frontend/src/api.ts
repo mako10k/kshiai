@@ -1,3 +1,4 @@
+/** R: Provide typed frontend access to the application API. */
 import type {
   BattlefieldPresetPublic,
   BattleAdvanceStreamEvent,
@@ -374,7 +375,7 @@ async function currentAccessToken(): Promise<string | undefined> {
 
 export const api = {
   health: () => request<{ ok: boolean; llm: string }>("/api/health"),
-  me: () => request<{ user: UserPublic }>("/api/me"),
+  me: () => request<{ user: UserPublic; reviewConfirmOnly?: boolean }>("/api/me"),
   /** Operator balance metrics (aggregates; no combat effect). */
   balanceSummary: (limit?: number) =>
     request<{
@@ -536,9 +537,9 @@ export const api = {
         body: JSON.stringify({ visibility }),
       },
     ),
-  getCharacter: (id: string) =>
+  getCharacter: (id: string, battleId?: string) =>
     request<{ character: CharacterPublic; isOwner: boolean }>(
-      `/api/characters/${id}`,
+      `/api/characters/${id}${battleId ? `?battleId=${encodeURIComponent(battleId)}` : ""}`,
     ),
   listCharacterBattles: (
     id: string,
@@ -597,10 +598,12 @@ export const api = {
         updatedAt: string;
       } | null;
     }>("/api/character-drafts/latest"),
-  confirmCharacterDraft: (id: string) =>
+  confirmCharacterDraft: (id: string, candidateDigest?: string | null) =>
     request<{ character: CharacterPublic; assistantMessage: string }>(
       `/api/characters/${id}/confirm`,
-      { method: "POST" },
+      candidateDigest === undefined
+        ? { method: "POST" }
+        : { method: "POST", body: JSON.stringify({ candidateDigest }) },
     ),
   discardCharacterDraft: (id: string) =>
     request<{ ok: boolean }>(`/api/character-drafts/${id}`, {

@@ -1,0 +1,54 @@
+{
+  "schema": "kshiai/vt104-validation/v1",
+  "version": "0.23.0",
+  "source_tree": "308a31cecc24f08612a368c339b93a2442fb696a",
+  "source_manifest_sha256": "45dde4ef7384b4ea8c6ec7700b37118616770c5db778c65ae1e3cce18597eab5",
+  "source_paths_verified": 526,
+  "version_lock_changelog_check": "passed",
+  "build": "passed; frontend chunk >500kB warning retained",
+  "unit_tests": {
+    "active_files": 19,
+    "cases": 140,
+    "failed": 0,
+    "provisional_excluded": 2,
+    "disabled_excluded": 146
+  },
+  "release_tests": {
+    "cases": 23,
+    "failed": 0
+  },
+  "typecheck": "passed all workspaces/deployment",
+  "local_browser_evidence": "vt103 unchanged 22-path implementation source verified; Mock provider and disposable SQLite",
+  "llmthink_audit": {
+    "fatal_count": 0,
+    "error_count": 0,
+    "warning_count": 0,
+    "info_count": 1,
+    "hint_count": 20
+  },
+  "sealgraph_fsck": "ok",
+  "independent_review": "source identity and shared-production proposal reviewed; production opening gate incorporated",
+  "live_metadata": "vt104-live-metadata-2026-09-30.json",
+  "cloud_writes": false,
+  "secret_payload_read": true,
+  "db_queries": "single TLS-verified REPEATABLE READ READ ONLY transaction",
+  "required_exact_release_ci_checks": "not observed; four check slots null",
+  "vt104_done": false,
+  "missing": [
+    "owner candidate/content selection",
+    "executable stopped entry/worker/queue controls",
+    "measured 30-minute feasibility and snapshot/restore proof",
+    "exact main release commit, CI and separate release/production/data authority"
+  ],
+  "logs_sha256": {
+    "/tmp/vt104-build.log": "0087376b703c8643fa2d84ee062357fb3545fa3fdccec7e1e963bbeb148c0871",
+    "/tmp/vt104-npm-test.log": "865c72124b11b5c35108a7f117f8bc4af47279ed82c5f37d528b9ccfc1e04b89",
+    "/tmp/vt104-typecheck.log": "9bedf2a72b0d4375015a723a4bf27c1cc239197c55d866bf852d8052766e4523",
+    "/tmp/vt104-release-tests.log": "efb82a8f0ce40d96e3d219b86a41434bc6becc651ad5f890d91191533eeb79e1"
+  },
+  "secret_payload_persisted": false,
+  "db_writes": false,
+  "local_wip_freeze": "in-scope local WIP; SHA supplied by post-commit readback",
+  "pushed": false,
+  "plan_checks": "child and parent document/check, both schedules and next successful; historical warnings retained"
+}

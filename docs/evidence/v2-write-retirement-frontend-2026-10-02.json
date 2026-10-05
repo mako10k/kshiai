@@ -1,0 +1,18 @@
+{
+  "sourceSha": "458af76a306b222133a383d5bbdc6eecb197b7a9",
+  "assetFiles": {
+    "frontend/dist/index.html": "fda0b6af5e49fea5f3d3c5cff00077fa1d4752b3c74dbedbbdb1979e98fffe5c",
+    "frontend/dist/favicon.svg": "7cffb8c29e627bd727fa78637add441cea2c8147e526ca23432e123d5519c589",
+    "frontend/dist/assets/index-Dor-Pfq6.css": "37af3065253b64bd75f7f5bd75176d457196b94ec32ce7cb68fea52a21b80d6b",
+    "frontend/dist/assets/index-DSIk10rP.js": "9063f85b81d953998cd75f5e059a0a198b1ea067ddb2eb1dc69a465687027e4d",
+    "frontend/dist/battlefields/arena.jpg": "126d34d6cbf2ae11357d57595de51145908f54e4b01b9e5c5316c9f110f66458",
+    "frontend/dist/battlefields/urban.jpg": "fbafa650423e4b714c4075052ec2809e42a3fda5f683c5959fce6d58d66ada9c",
+    "frontend/dist/battlefields/sea.jpg": "b10e5401c46dd8093bd5960aa047eb4c4b612922bc3821bc22982d2f8e0b8974",
+    "frontend/dist/battlefields/forest.jpg": "ccedf989d9189384f60d62a2a99d1eadd70c413b41bbba8dff18c604cd854e85",
+    "frontend/dist/battlefields/school.jpg": "a89789cdfd1bb301480b16a7bfc115cc648f200081af1ac2780c7ea93b0b1071"
+  },
+  "authBuildVerified": true,
+  "workerDryRunExitCode": 0,
+  "publicProjectUrl": "https://cvrbhpkfqkpqdegxfrlq.supabase.co",
+  "backendOriginCandidate": "https://v2-retire-458af76---kshiai-api-crpgn6evfa-an.a.run.app"
+}

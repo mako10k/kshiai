@@ -1,7 +1,7 @@
 import { isDeepStrictEqual } from "node:util";
 import { z } from "zod";
 import { zodResponseFormat } from "openai/helpers/zod";
-import { CharacterSemanticMigrationChangeSetV1Schema } from "@kshiai/shared";
+import { CharacterSemanticMigrationProviderGrammarV1Schema } from "@kshiai/shared";
 import { assertXaiResponseSchema } from "./provider-response-schema.js";
 
 const FORMAT_NAME = "character_semantic_migration_change_set_v1";
@@ -10,7 +10,7 @@ const VALUE_DEFINITION = `${FORMAT_NAME}_properties_operations_items_properties_
 /** Same JSON value domain, different grammar representation; no depth cap. */
 export function characterMigrationChangeSetResponseSchema() {
   const schema = z.object({ definitions: z.record(z.unknown()) }).passthrough().parse(
-    zodResponseFormat(CharacterSemanticMigrationChangeSetV1Schema, FORMAT_NAME).json_schema.schema,
+    zodResponseFormat(CharacterSemanticMigrationProviderGrammarV1Schema, FORMAT_NAME).json_schema.schema,
   );
   const reference = { $ref: `#/definitions/${VALUE_DEFINITION}` };
   const expectedJsonDefinition = { anyOf: [

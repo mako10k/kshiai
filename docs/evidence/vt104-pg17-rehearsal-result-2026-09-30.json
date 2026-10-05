@@ -1,0 +1,649 @@
+{
+  "schema": "kshiai/vt104-local-recovery-rehearsal/v1",
+  "syntheticOnly": true,
+  "productionConnection": false,
+  "productionSnapshot": false,
+  "productionRecoveryProof": false,
+  "server": "17.11",
+  "initialMigrations": [
+    "0001_initial_postgres.sql",
+    "0002_runtime_constraints.sql",
+    "0003_distributed_runtime.sql",
+    "0004_supabase_auth.sql",
+    "0005_normalize_legacy_battlefields.sql",
+    "0006_character_drafts.sql",
+    "0007_account_kind.sql",
+    "0007_friendships.sql",
+    "0008_developer_account_kind.sql",
+    "0009_dialogue_pipeline_settings.sql",
+    "0010_user_public_profile.sql",
+    "0011_asset_generations.sql",
+    "0012_battle_revision.sql",
+    "0013_battle_presentations.sql",
+    "0014_ordered_narration_worker.sql",
+    "0015_pipeline_recovery_fencing.sql",
+    "0016_provider_operation_accounting.sql",
+    "0017_structured_character_assets.sql",
+    "0018_structured_battlefield_assets.sql",
+    "0019_structured_narration_assets.sql",
+    "0020_character_authoring_jobs.sql",
+    "0021_owner_notifications.sql",
+    "0022_family_authoring_jobs.sql",
+    "0023_authoring_dispatch.sql",
+    "0024_character_semantic_migration.sql",
+    "0025_semantic_authoring_runs.sql"
+  ],
+  "pendingAppliedLocally": [
+    "0026_character_focused_authoring_payloads.sql",
+    "0027_character_revision_scope_resolution.sql",
+    "0028_semantic_authoring_provider_timeout.sql",
+    "0029_battle_discard_receipts.sql"
+  ],
+  "before": {
+    "label": "before-pending-migrations",
+    "source": "vt104_synthetic_source",
+    "restoredDatabase": "vt104_synthetic_before",
+    "dumpMs": 164.47347999999965,
+    "restoreMs": 300.4943150000008,
+    "archiveBytes": 135341,
+    "archiveSha256": "263153acc659a61658a00b42d89039a7f5347a011211d7b0cf6bf9f157d9a364",
+    "readback": {
+      "tables": [
+        {
+          "table": "asset_authoring_outbox",
+          "count": 0,
+          "digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        {
+          "table": "asset_authoring_scheduler",
+          "count": 1,
+          "digest": "59406555de03493da55d53d856c0fbb213792ff58d248d85da57154c1e0999a6"
+        },
+        {
+          "table": "asset_current_generations",
+          "count": 2,
+          "digest": "822eeef67b0de16aac0d881a3a72d114e628c5f5e6c644145b1399c27efb67d0"
+        },
+        {
+          "table": "asset_generations",
+          "count": 2,
+          "digest": "3906e8cb5569a63b0809de1d784bbc8f63aa7ce3775664792cf3939251b5d847"
+        },
+        {
+          "table": "balance_events",
+          "count": 267,
+          "digest": "f560665f2222dff0c9a38d52cb0a6012494eb47890f9e8c33e9be452269ff462"
+        },
+        {
+          "table": "battle_leases",
+          "count": 0,
+          "digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        {
+          "table": "battle_narration_attempts",
+          "count": 0,
+          "digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        {
+          "table": "battle_narration_entries",
+          "count": 0,
+          "digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        {
+          "table": "battle_narration_events",
+          "count": 18,
+          "digest": "f991b4de494fd102d3d33e1bdbe2074b242c35898e07f88d98466b9b3d537cf1"
+        },
+        {
+          "table": "battle_narration_leases",
+          "count": 0,
+          "digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        {
+          "table": "battle_narration_outbox",
+          "count": 18,
+          "digest": "cf046a20089651b3704e51b5b73b8359dfed269057dd63ef16888fe649358b29"
+        },
+        {
+          "table": "battle_narration_retention",
+          "count": 0,
+          "digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        {
+          "table": "battle_presentations",
+          "count": 18,
+          "digest": "faa3d79d99a0f30b514f355b957714832e4f37399ae8c0fd776e8050c227ccb5"
+        },
+        {
+          "table": "battlefield_asset_states",
+          "count": 0,
+          "digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        {
+          "table": "battlefield_authoring_attempts",
+          "count": 0,
+          "digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        {
+          "table": "battlefield_authoring_jobs",
+          "count": 0,
+          "digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        {
+          "table": "battlefields",
+          "count": 0,
+          "digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        {
+          "table": "battles",
+          "count": 186,
+          "digest": "1a4f113ace3e2fc3ed172c6126ca638030f8e2b14d071e99fcc7e19d23a580ee"
+        },
+        {
+          "table": "character_asset_states",
+          "count": 0,
+          "digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        {
+          "table": "character_authoring_attempts",
+          "count": 0,
+          "digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        {
+          "table": "character_authoring_jobs",
+          "count": 0,
+          "digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        {
+          "table": "character_drafts",
+          "count": 0,
+          "digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        {
+          "table": "character_migration_preservation_capsules",
+          "count": 0,
+          "digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        {
+          "table": "character_semantic_migration_attempts",
+          "count": 0,
+          "digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        {
+          "table": "character_semantic_migration_events",
+          "count": 0,
+          "digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        {
+          "table": "character_semantic_migration_provider_receipts",
+          "count": 0,
+          "digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        {
+          "table": "character_semantic_migration_provider_requests",
+          "count": 0,
+          "digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        {
+          "table": "characters",
+          "count": 2,
+          "digest": "b7e2792ae828925bb7dfc2b48145b8ad5bc71b53129e32331bfc9ab8584f862c"
+        },
+        {
+          "table": "dialogue_pipeline_settings",
+          "count": 0,
+          "digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        {
+          "table": "friend_requests",
+          "count": 0,
+          "digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        {
+          "table": "friendships",
+          "count": 0,
+          "digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        {
+          "table": "idempotency_keys",
+          "count": 18,
+          "digest": "c0ad003ae857f85ac9d3e5ac7ddbd816cb90fa26b1e87c81bec1770fbb891089"
+        },
+        {
+          "table": "image_gen_events",
+          "count": 0,
+          "digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        {
+          "table": "kshiai_schema_migrations",
+          "count": 26,
+          "digest": "03c4732dd16c4f1800d8dcc6b4dd7ca1e0fdbeca374681452aeaee6c3ce5c43f"
+        },
+        {
+          "table": "narration_style_asset_states",
+          "count": 0,
+          "digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        {
+          "table": "narration_style_authoring_attempts",
+          "count": 0,
+          "digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        {
+          "table": "narration_style_authoring_jobs",
+          "count": 0,
+          "digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        {
+          "table": "narration_styles",
+          "count": 0,
+          "digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        {
+          "table": "owner_notifications",
+          "count": 0,
+          "digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        {
+          "table": "provider_operation_attempts",
+          "count": 0,
+          "digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        {
+          "table": "provider_operation_runs",
+          "count": 1,
+          "digest": "b25f032b3789b42ac4f142262b684a427eda1acd571dc22c75e9731e88fc2e11"
+        },
+        {
+          "table": "semantic_authoring_answers",
+          "count": 0,
+          "digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        {
+          "table": "semantic_authoring_commands",
+          "count": 0,
+          "digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        {
+          "table": "semantic_authoring_final_candidates",
+          "count": 0,
+          "digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        {
+          "table": "semantic_authoring_provider_requests",
+          "count": 0,
+          "digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        {
+          "table": "semantic_authoring_questions",
+          "count": 0,
+          "digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        {
+          "table": "semantic_authoring_runs",
+          "count": 0,
+          "digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        {
+          "table": "sessions",
+          "count": 0,
+          "digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        {
+          "table": "user_favorites",
+          "count": 0,
+          "digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        {
+          "table": "users",
+          "count": 1,
+          "digest": "c188000aba6c79777d2e861e7c0c2f9c8a4bf68eeda9989d4d634cfa8420a281"
+        }
+      ],
+      "contentsDigest": "2da4c4509220af107445d4bd31b91e3f36e95560d216297bdf651c369637d181",
+      "catalogDigest": "5a3e701228b1ad3b6516d8eab39f8cf2081d2388b174667a1430b5adf9f1c4ec",
+      "indexesDigest": "ac4d63ffc599a4fe951dc2451b9254ea3b3f0b0a28aa0c931f3b0651aa4e01c3",
+      "sequencesDigest": "fa6018e3fe82316c012eb7482354d2fe5b62c9c8e3885be5de3a2fc075149760",
+      "access": []
+    },
+    "matched": true
+  },
+  "cutover": {
+    "targets": 18,
+    "finished": 168,
+    "cutoverMs": 656.0887350000003,
+    "replay": "replayed",
+    "retainedTablesMatched": true,
+    "finishedRowsDigest": "1c50c37966b9313e9802a5d33f917581c5dc64f33e2ce10a876b80f08f9dadf2"
+  },
+  "after": {
+    "label": "after-cutover",
+    "source": "vt104_synthetic_source",
+    "restoredDatabase": "vt104_synthetic_after",
+    "dumpMs": 213.45325299999968,
+    "restoreMs": 361.9965480000001,
+    "archiveBytes": 137905,
+    "archiveSha256": "77fa80772c1fe5f4a2be4662146e333a563fca2432f59d84aa75084bece73052",
+    "readback": {
+      "tables": [
+        {
+          "table": "asset_authoring_outbox",
+          "count": 0,
+          "digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        {
+          "table": "asset_authoring_scheduler",
+          "count": 1,
+          "digest": "59406555de03493da55d53d856c0fbb213792ff58d248d85da57154c1e0999a6"
+        },
+        {
+          "table": "asset_current_generations",
+          "count": 2,
+          "digest": "822eeef67b0de16aac0d881a3a72d114e628c5f5e6c644145b1399c27efb67d0"
+        },
+        {
+          "table": "asset_generations",
+          "count": 2,
+          "digest": "3906e8cb5569a63b0809de1d784bbc8f63aa7ce3775664792cf3939251b5d847"
+        },
+        {
+          "table": "balance_events",
+          "count": 267,
+          "digest": "f560665f2222dff0c9a38d52cb0a6012494eb47890f9e8c33e9be452269ff462"
+        },
+        {
+          "table": "battle_discard_receipts",
+          "count": 18,
+          "digest": "c7a8c177ea43fed6594ac588a9030a19d8b963505ecbcf78ec68864c92f65be5"
+        },
+        {
+          "table": "battle_leases",
+          "count": 0,
+          "digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        {
+          "table": "battle_narration_attempts",
+          "count": 0,
+          "digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        {
+          "table": "battle_narration_entries",
+          "count": 0,
+          "digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        {
+          "table": "battle_narration_events",
+          "count": 0,
+          "digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        {
+          "table": "battle_narration_leases",
+          "count": 0,
+          "digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        {
+          "table": "battle_narration_outbox",
+          "count": 0,
+          "digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        {
+          "table": "battle_narration_retention",
+          "count": 0,
+          "digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        {
+          "table": "battle_presentations",
+          "count": 0,
+          "digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        {
+          "table": "battlefield_asset_states",
+          "count": 0,
+          "digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        {
+          "table": "battlefield_authoring_attempts",
+          "count": 0,
+          "digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        {
+          "table": "battlefield_authoring_jobs",
+          "count": 0,
+          "digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        {
+          "table": "battlefields",
+          "count": 0,
+          "digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        {
+          "table": "battles",
+          "count": 168,
+          "digest": "ea51c2cbf72c677ce30dd487ae8ae756c1f8c3f925da45cec6d1870528e683c3"
+        },
+        {
+          "table": "character_asset_states",
+          "count": 0,
+          "digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        {
+          "table": "character_authoring_attempts",
+          "count": 0,
+          "digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        {
+          "table": "character_authoring_jobs",
+          "count": 0,
+          "digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        {
+          "table": "character_drafts",
+          "count": 0,
+          "digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        {
+          "table": "character_focused_authoring_payloads",
+          "count": 0,
+          "digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        {
+          "table": "character_migration_preservation_capsules",
+          "count": 0,
+          "digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        {
+          "table": "character_semantic_migration_attempts",
+          "count": 0,
+          "digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        {
+          "table": "character_semantic_migration_events",
+          "count": 0,
+          "digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        {
+          "table": "character_semantic_migration_provider_receipts",
+          "count": 0,
+          "digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        {
+          "table": "character_semantic_migration_provider_requests",
+          "count": 0,
+          "digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        {
+          "table": "characters",
+          "count": 2,
+          "digest": "b7e2792ae828925bb7dfc2b48145b8ad5bc71b53129e32331bfc9ab8584f862c"
+        },
+        {
+          "table": "dialogue_pipeline_settings",
+          "count": 0,
+          "digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        {
+          "table": "friend_requests",
+          "count": 0,
+          "digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        {
+          "table": "friendships",
+          "count": 0,
+          "digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        {
+          "table": "idempotency_keys",
+          "count": 0,
+          "digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        {
+          "table": "image_gen_events",
+          "count": 0,
+          "digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        {
+          "table": "kshiai_schema_migrations",
+          "count": 30,
+          "digest": "bedfce5b31f4f8124b1a78b35af0878008dadfa15be5eef1a6365b6f23fd5cb6"
+        },
+        {
+          "table": "narration_style_asset_states",
+          "count": 0,
+          "digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        {
+          "table": "narration_style_authoring_attempts",
+          "count": 0,
+          "digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        {
+          "table": "narration_style_authoring_jobs",
+          "count": 0,
+          "digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        {
+          "table": "narration_styles",
+          "count": 0,
+          "digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        {
+          "table": "owner_notifications",
+          "count": 0,
+          "digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        {
+          "table": "provider_operation_attempts",
+          "count": 0,
+          "digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        {
+          "table": "provider_operation_runs",
+          "count": 1,
+          "digest": "b25f032b3789b42ac4f142262b684a427eda1acd571dc22c75e9731e88fc2e11"
+        },
+        {
+          "table": "semantic_authoring_answers",
+          "count": 0,
+          "digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        {
+          "table": "semantic_authoring_commands",
+          "count": 0,
+          "digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        {
+          "table": "semantic_authoring_final_candidates",
+          "count": 0,
+          "digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        {
+          "table": "semantic_authoring_provider_requests",
+          "count": 0,
+          "digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        {
+          "table": "semantic_authoring_questions",
+          "count": 0,
+          "digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        {
+          "table": "semantic_authoring_runs",
+          "count": 0,
+          "digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        {
+          "table": "sessions",
+          "count": 0,
+          "digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        {
+          "table": "user_favorites",
+          "count": 0,
+          "digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        {
+          "table": "users",
+          "count": 1,
+          "digest": "c188000aba6c79777d2e861e7c0c2f9c8a4bf68eeda9989d4d634cfa8420a281"
+        }
+      ],
+      "contentsDigest": "84b8e770b75554a80a4a977e1088b7c23ca7700c7cedc55f9946f0e80135449d",
+      "catalogDigest": "6ba525d08e0ba7736a0238871d345889089977bf3e8de20ae6817a77e3b9d923",
+      "indexesDigest": "72f34c89b3ebb580ef82589011b23643caca987cce5ea8e3ddf9da7f89a5df2b",
+      "sequencesDigest": "fa6018e3fe82316c012eb7482354d2fe5b62c9c8e3885be5de3a2fc075149760",
+      "access": [
+        {
+          "anon_any": false,
+          "authenticated_any": false
+        }
+      ]
+    },
+    "matched": true
+  },
+  "limitations": [
+    "Synthetic status/JSON rows are not full domain battle fixtures",
+    "186 rows does not model production byte size or contention",
+    "Local superuser/anon/authenticated roles do not model Supabase roles/extensions/auth/storage",
+    "Raw ACL owner-only vs default representation differs; effective privileges, owner and anon/authenticated denial compared instead",
+    "Same-host local dump/restore does not prove production retrieval or recovery timing",
+    "No cloud stop or production dump/restore performed"
+  ],
+  "verification_status": "observed-local-rehearsal; no authoritative verification Seal or production readiness claim",
+  "local_server_stopped": true,
+  "source_hashes": {
+    "docs/evidence/vt104-pg17-rehearsal-2026-09-30.mjs": "e33db4e6bbfc0a2409a11c541c75a893e2c70694bfd21ff5576252c45362242c",
+    "backend/src/repositories/battle-cutover.ts": "9fae0ddf12262b9b8132c551189a18f0d98f31a61d4d5ca6a9ede7d599a95719",
+    "backend/src/db.ts": "725ae8b77d1194e44c3cea17c9458f42458d04b6fd5c8e83fef958806dc35501",
+    "backend/src/postgres-config.ts": "d7d4548434eef8685dc1caa2afc725595d7b1b05010db46a97b5b382b456e347",
+    "backend/migrations/0001_initial_postgres.sql": "30fabcf25a4442cac55c660c797a25fcca008d7160e6f09641ff587f5e44d407",
+    "backend/migrations/0002_runtime_constraints.sql": "2ff8251980c0047c8265caa2d35344cb16087d011f534af8f267c8396ae7b816",
+    "backend/migrations/0003_distributed_runtime.sql": "94b2f064c13b6f5ddc9a849399985856923a846d65c5bdb3271ec2e71a238ef9",
+    "backend/migrations/0004_supabase_auth.sql": "b307ba23db805389007e3000f537c846bc7137b6d8e2de05830304861354fbd3",
+    "backend/migrations/0005_normalize_legacy_battlefields.sql": "8bf75eb28ab4596f2f8a656ca128a12b5ba6971c710080918166b7881ef3ae39",
+    "backend/migrations/0006_character_drafts.sql": "658f63bea247bfc67d8dbf773d0a63ba2affe344fc2e5aae5d8535d109c250e4",
+    "backend/migrations/0007_account_kind.sql": "a8780c43eb02e0669941a8248bb70f114927c9cd1aeb1bfa8c90f2901128f96b",
+    "backend/migrations/0007_friendships.sql": "95b3b4e91905784d09d8600c6818deba7564148a34916e3ebff17b4738444e67",
+    "backend/migrations/0008_developer_account_kind.sql": "b76b70b30bff2c814c17d5e573733ab9fe5b1124c7ad7c55e565a4d1aa142e8d",
+    "backend/migrations/0009_dialogue_pipeline_settings.sql": "f8772ec5626f05925752c35e34060cb42ae6c534c008aee68af62dc67d53a432",
+    "backend/migrations/0010_user_public_profile.sql": "995f77450abb33c8446bd7bb06d02cae694fdcde89c0b8e7c0f3b01c8d640d4e",
+    "backend/migrations/0011_asset_generations.sql": "10dcf9a2c4f363df6831191f1d0f379b5725b12f6e7bc339e45e74cc11c9a50b",
+    "backend/migrations/0012_battle_revision.sql": "3e84524968a2c56ea035008d782876b3f675ecf6ecc15fca5c9c5110ceaa5b05",
+    "backend/migrations/0013_battle_presentations.sql": "035b53e705aef027eb795ebed01009a254aba0e135153a82d825d5b8b350fdf2",
+    "backend/migrations/0014_ordered_narration_worker.sql": "845d0d3e75bd69c46ce85444422d9f68729692fec8a37fc88a98dbe8f9aa7f68",
+    "backend/migrations/0015_pipeline_recovery_fencing.sql": "87f22d6f1762c1304a67d91415fbfafcbf52cccdb6e778ece0e810802c47d9ee",
+    "backend/migrations/0016_provider_operation_accounting.sql": "3395d47d2cda0291a1658730731d04667ec6993af27fa2175a65f2459a5e79fb",
+    "backend/migrations/0017_structured_character_assets.sql": "b3ca027b4bbee51cb3db5e016efc7c1b7b85d6c8157da9594d6a7c48bf0349c1",
+    "backend/migrations/0018_structured_battlefield_assets.sql": "56c6511aba48b7b97b22561d64b882b51c4f4b9fed9aef4d7a6d7c14ee910fb2",
+    "backend/migrations/0019_structured_narration_assets.sql": "3eae1ea325d3976ec10f37cc2c8404e3ae2cddb102e3afda894ad3ccca482685",
+    "backend/migrations/0020_character_authoring_jobs.sql": "b8a6b2472a709305d4b0c0e06caba57b538f05cbe87abca1d8d1b455c4fdf5f6",
+    "backend/migrations/0021_owner_notifications.sql": "573c64ed06e9f5cb7a47be417711ad0118822bbe39c3c72a2ee064d01f5c4b68",
+    "backend/migrations/0022_family_authoring_jobs.sql": "a99240ef1e1e7ce850c570aaa8869a7dda39182eaa51b5f02decaec8d064e131",
+    "backend/migrations/0023_authoring_dispatch.sql": "7c2af337df18d4c5487cd99d6a04e8cefce14d1c079c2ae306ea90b5f084cae7",
+    "backend/migrations/0024_character_semantic_migration.sql": "e4fd60311ab5ade4fd6d3cf03eba27d951ad7d225237585bdde663752ccb0c6f",
+    "backend/migrations/0025_semantic_authoring_runs.sql": "b6b53172d7fefa01bb695324c3faf7e4dfd562c16873f60f107b5e7c221b6f0a",
+    "backend/migrations/0026_character_focused_authoring_payloads.sql": "1ab70354148824ab090fbdb89f698b8a0fa5b613514c9ab8aaef5854a4d8bde5",
+    "backend/migrations/0027_character_revision_scope_resolution.sql": "64e92425e05e2ef7268becc55fb2537baafb4d6ecf26afee4adc8c76aacfe7e3",
+    "backend/migrations/0028_semantic_authoring_provider_timeout.sql": "c510ee0d86d4c7dbc8e9854716ab5b52def7a697afd435d4cf9972989be06b8f",
+    "backend/migrations/0029_battle_discard_receipts.sql": "932895ea9df2cc8a495af10e78cc5a6545abb183b79b550eab9d930653188aa7"
+  }
+}

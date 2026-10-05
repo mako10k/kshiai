@@ -1,0 +1,54 @@
+{
+  "schema": "kshiai/vt103-validation/v1",
+  "date": "2026-09-30",
+  "browser": {
+    "passed": 1,
+    "failed": 0,
+    "real_http_frontend_database_engine": true,
+    "provider": "MockLlmProvider",
+    "database": "disposable SQLite"
+  },
+  "unit": {
+    "active_files": 19,
+    "cases": 140,
+    "failed": 0,
+    "excluded_provisional": 2,
+    "excluded_disabled": 146
+  },
+  "focused_cases": 6,
+  "typecheck": "passed-all-workspaces-and-deployment",
+  "strict_import_graph_probe": "not-passed: four existing battle-service undefined diagnostics; new test diagnostics repaired",
+  "source_manifest": "vt103-implementation-source-2026-09-30.json",
+  "task_actuals": {
+    "start": "2026-09-30T12:04:42+09:00",
+    "finish": "2026-09-30T13:26:18+09:00",
+    "seconds": 4896,
+    "active_time": "34/25h",
+    "effort": null,
+    "basis": "observed task interval without recorded suspension; elapsed includes tool waits and delegation; person effort independently unmeasured"
+  },
+  "logs_sha256": {
+    "/tmp/vt103-gui-final.log": "28c2ece40d0a658037c8b3f4b09c8d8265438b1220b96c0bcd8f231aba2eed6c",
+    "/tmp/vt103-npm-test-final.log": "58f59adc9e3ffa6bc26c03d468c182ec16b7c26b8b04c975dd87f0276ce4fb26",
+    "/tmp/vt103-typecheck-final.log": "9b0a460c9ec64d1ebb02bc2b0b62656b840ee24c652ccfbf1a764dcd7472b4ab",
+    "/tmp/vt103-targeted-final.log": "b331f160496b6f77058d487a8350c199ebd090374c6b49f9d9f3796227e41851"
+  },
+  "sealgraph_fsck": "ok",
+  "remaining_internal_agent_hours": {
+    "vt103": [
+      0,
+      0
+    ],
+    "stage_trial": [
+      1.25,
+      3
+    ],
+    "parent_csm001": [
+      4.25,
+      10
+    ],
+    "confidence": "low"
+  },
+  "stage_or_production_write": false,
+  "committed_or_pushed": false
+}

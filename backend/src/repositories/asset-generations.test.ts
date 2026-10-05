@@ -30,21 +30,21 @@ describe("immutable asset generations", () => {
 
   it("appends changed content and keeps historical generations readable", async () => {
     const first = await generations.createAssetGeneration({
-      assetType: "character",
+      assetType: "test-asset",
       assetId: "char-1",
       schemaVersion: 1,
       content: { displayName: "初代", nested: { b: 2, a: 1 } },
       createdAt: "2026-08-12T00:00:00.000Z",
     });
     const unchanged = await generations.createAssetGeneration({
-      assetType: "character",
+      assetType: "test-asset",
       assetId: "char-1",
       schemaVersion: 1,
       content: { nested: { a: 1, b: 2 }, displayName: "初代" },
       createdAt: "2026-08-12T00:01:00.000Z",
     });
     const second = await generations.createAssetGeneration({
-      assetType: "character",
+      assetType: "test-asset",
       assetId: "char-1",
       schemaVersion: 1,
       content: { displayName: "二代目", nested: { a: 1, b: 2 } },
@@ -60,7 +60,7 @@ describe("immutable asset generations", () => {
       { displayName: "初代", nested: { a: 1, b: 2 } },
     );
     assert.equal(
-      (await generations.getCurrentAssetGeneration("character", "char-1"))
+      (await generations.getCurrentAssetGeneration("test-asset", "char-1"))
         ?.generationId,
       second.generationId,
     );

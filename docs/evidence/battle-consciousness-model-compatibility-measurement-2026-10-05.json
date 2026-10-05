@@ -1,0 +1,9 @@
+{
+  "task": "model-compatibility",
+  "start": "2026-10-05T04:34:10.475127+00:00",
+  "finish": "2026-10-05T04:46:28.945582+00:00",
+  "elapsed_seconds": 738.470455,
+  "active_time": null,
+  "effort": null,
+  "note": "Observed wall time only. Independent active/effort telemetry and committed task baseline unavailable; velocity not adopted."
+}

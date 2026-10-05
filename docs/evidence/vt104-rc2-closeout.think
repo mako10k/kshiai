@@ -1,0 +1,12 @@
+domain CLOSE:
+  description "Preserve completed RC2 preparation and truthful continuation before21:10JST owner stop."
+evidence OWNER:
+  "Read source thread01a0f543-5fe2-7cc2-b08b-880ccfd3df1a: actual user requested all active threads stop at convenientpoint, handoff, appropriatecommit andremotePUSH within15minutes at20:55JST. No sharedworkdaystop/end authority."
+evidence DONE:
+  "4ab1971 sourceCI4 successful, annotatedRC2remotepeeledsameSHA, prepare36857282507 CloudBuild8b93/image2e7051ec Registry independentlyverified. CompiledCLI13localPGchecks pass. Shared read-onlypoolerpreview18/168/14; directlocalrouteENETUNREACH."
+pending OPEN:
+  "Actual GCPdirectDBprobe,Cloudflarepreviewsetting,exact sharedstop/disposal/migration/deploypacket,callback,provider budget andGoogle realbattleproof incomplete. Proposedprestopprobe audit0 only; no newprobe executionapproved."
+premise CONTROLS:
+  "KeepRC2 on4ab source; closeoutcommit changesonlydocs/PERT/provenance. Preserve boundedreadonlyplan withoutsecretvalues. Do notfinishvt104 orfullgoal; recordactual task suspend,remainingeffort lowconfidence,canonicalanalysis andnext."
+decision SYNC based_on OWNER, DONE, OPEN, CONTROLS:
+  "AuthorJapanesehandoff andcurrentevidence,focusedWIPcloseoutcommit,push existingbranchonce throughmainsecdat,independentremoteSHA/localHEADreadback,cleanstatus. Pausegoal onlyafterauthorizedpreservation; sharedworktime unchanged."

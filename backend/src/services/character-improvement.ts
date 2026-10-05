@@ -1,3 +1,5 @@
+import { assertCharacterV3UpdateTarget } from "./character-update-policy.js";
+/** R: Analyze battle history into operational coaching notes and revision prompts. */
 import {
   ensureImprovementMemo,
   getImprovementAnalysisEligibility,
@@ -58,6 +60,7 @@ export async function analyzeCharacterImprovement(input: {
   assistantMessage: string;
 }> {
   const { sheet, llm } = input;
+  await assertCharacterV3UpdateTarget(sheet.id);
   const combatReadySheet = requireCombatReadyCharacterSheet(sheet);
   const finishedBattles = await battleRepo.countFinishedBattlesForCharacter(sheet.id);
   const currentMemo = ensureImprovementMemo(sheet.improvementMemo);
@@ -121,6 +124,7 @@ export async function generateCharacterImprovementPrompt(input: {
   llm: LlmProvider;
 }): Promise<{ prompt: string; assistantMessage: string }> {
   const { sheet, llm } = input;
+  await assertCharacterV3UpdateTarget(sheet.id);
   const combatReadySheet = requireCombatReadyCharacterSheet(sheet);
   const memo = ensureImprovementMemo(sheet.improvementMemo);
   if (memo.strengths.length === 0 && memo.improvements.length === 0) {

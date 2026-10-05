@@ -1,3 +1,9 @@
+import { llmUsageSchemaSql } from "./repositories/llm-usage-schema.js";
+import { awarenessNarratorStorageSchemaSql } from "./repositories/awareness-narrator-storage-schema.js";
+import { battleAwarenessCreationSchemaSql } from "./repositories/battle-awareness-creation-schema.js";
+// R: Provide SQLite and PostgreSQL connections and transactional schema initialization.
+import { awarenessNarrationStorageSchemaSql } from "./repositories/awareness-narration-storage-schema.js";
+import { battleAwarenessSchemaSql } from "./repositories/battle-awareness-schema.js";
 import fs from "node:fs";
 import path from "node:path";
 import SqliteDatabase from "better-sqlite3";
@@ -28,11 +34,20 @@ export function databaseKind(): "postgres" | "sqlite" {
   return config.databaseUrl ? "postgres" : "sqlite";
 }
 
-export function getDb(): SqliteDatabase.Database {
+export function getDb(options: { initializeSchema?: boolean } = {}): SqliteDatabase.Database {
   if (databaseKind() !== "sqlite") {
     throw new Error("Synchronous SQLite access is unavailable in PostgreSQL mode");
   }
   if (sqlite) return sqlite;
+  if (config.cutover && !options.initializeSchema) {
+    // Configured runtime connects to an explicitly initialized schema; it never backfills at cold start.
+    const connection = new SqliteDatabase(config.databasePath, { fileMustExist: true });
+    connection.pragma("foreign_keys = ON");
+    const controlTable = connection.prepare("SELECT name FROM sqlite_master WHERE type='table' AND name='cutover_control_active'").get();
+    if (!controlTable) { connection.close(); throw new Error("CUTOVER_SCHEMA_NOT_INITIALIZED"); }
+    sqlite = connection;
+    return sqlite;
+  }
   fs.mkdirSync(path.dirname(config.databasePath), { recursive: true });
   sqlite = new SqliteDatabase(config.databasePath);
   sqlite.pragma("foreign_keys = ON");
@@ -312,6 +327,10 @@ export function getDb(): SqliteDatabase.Database {
       ON narration_style_authoring_attempts (owner_user_id, updated_at DESC);
     CREATE INDEX IF NOT EXISTS idx_narration_style_authoring_asset
       ON narration_style_authoring_attempts (narration_style_id, updated_at DESC);
+    CREATE TABLE IF NOT EXISTS battle_discard_receipts (
+      battle_id TEXT PRIMARY KEY,
+      cutover_id TEXT NOT NULL
+    );
     CREATE TABLE IF NOT EXISTS battles (
       id TEXT PRIMARY KEY,
       state_json TEXT NOT NULL,
@@ -595,7 +614,62 @@ export function getDb(): SqliteDatabase.Database {
   ensureSqliteOwnerNotifications(sqlite);
   ensureSqliteFamilyAuthoringJobs(sqlite);
   ensureSqliteSemanticAuthoring(sqlite);
+  ensureSqliteCutoverControl(sqlite);
   return sqlite;
+}
+
+function ensureSqliteCutoverControl(database: SqliteDatabase.Database): void {
+  database.exec(`
+    CREATE TABLE IF NOT EXISTS cutover_control_revisions (
+      cutover_id TEXT NOT NULL,
+      revision INTEGER NOT NULL CHECK (revision > 0),
+      artifact_id TEXT NOT NULL CHECK (artifact_id <> ''),
+      phase TEXT NOT NULL CHECK (phase IN ('closed', 'trial', 'open')),
+      policy_json TEXT NOT NULL,
+      operation_id TEXT NOT NULL,
+      operator_id TEXT NOT NULL,
+      previous_revision INTEGER,
+      recovery_mode TEXT NOT NULL CHECK (recovery_mode IN ('snapshot-eligible', 'forward-only')),
+      stopped_barrier_receipt_id TEXT,
+      created_at TEXT NOT NULL,
+      PRIMARY KEY (cutover_id, revision),
+      UNIQUE (cutover_id, operation_id),
+      CHECK ((revision = 1 AND previous_revision IS NULL) OR
+             (revision > 1 AND previous_revision = revision - 1))
+    );
+    CREATE TABLE IF NOT EXISTS cutover_control_active (
+      singleton_id TEXT PRIMARY KEY CHECK (singleton_id = 'active'),
+      cutover_id TEXT NOT NULL,
+      revision INTEGER NOT NULL,
+      artifact_id TEXT NOT NULL,
+      FOREIGN KEY (cutover_id, revision)
+        REFERENCES cutover_control_revisions(cutover_id, revision)
+    );
+    CREATE TABLE IF NOT EXISTS cutover_operation_permits (
+      permit_id TEXT PRIMARY KEY,
+      cutover_id TEXT NOT NULL,
+      control_revision INTEGER NOT NULL,
+      binding_operation_id TEXT NOT NULL,
+      reservation_attempt_id TEXT NOT NULL,
+      request_digest TEXT NOT NULL CHECK (length(request_digest) = 64),
+      actor_id TEXT NOT NULL,
+      operation_kind TEXT NOT NULL CHECK (operation_kind IN ('http', 'task', 'provider', 'background')),
+      method TEXT, path TEXT, battle_id TEXT, background_kind TEXT,
+      owner_attempt_id TEXT, candidate_digest TEXT,
+      state TEXT NOT NULL CHECK (state IN (
+        'reserved-not-sent', 'sending', 'result-accounting-pending',
+        'settled', 'indeterminate', 'cancelled-before-send'
+      )),
+      result_digest TEXT, reconciliation_receipt_id TEXT,
+      reconciliation_operation_id TEXT, reconciliation_operator_id TEXT,
+      created_at TEXT NOT NULL, updated_at TEXT NOT NULL,
+      FOREIGN KEY (cutover_id, control_revision)
+        REFERENCES cutover_control_revisions(cutover_id, revision),
+      UNIQUE (cutover_id, binding_operation_id, reservation_attempt_id)
+    );
+    CREATE INDEX IF NOT EXISTS idx_cutover_permits_barrier
+      ON cutover_operation_permits (cutover_id, state);
+  `);
 }
 
 function ensureSqliteAuthoringJobs(database: SqliteDatabase.Database): void {
@@ -678,6 +752,19 @@ function ensureSqliteFamilyAuthoringJobs(database: SqliteDatabase.Database): voi
     VALUES ('environment-global', 0)
     ON CONFLICT (scheduler_id) DO NOTHING;
   `);
+  database.exec(battleAwarenessSchemaSql);
+  database.exec(battleAwarenessCreationSchemaSql);
+  database.exec(awarenessNarrationStorageSchemaSql);
+  database.exec(awarenessNarratorStorageSchemaSql);
+  database.exec(llmUsageSchemaSql);
+  const awarenessBatchColumns = database.pragma("table_info(battle_awareness_narration_batches)");
+  if (!Array.isArray(awarenessBatchColumns)) throw new Error("AWARENESS_BATCH_SCHEMA_UNAVAILABLE");
+  for (const name of ["context_json", "context_digest"]) {
+    if (!awarenessBatchColumns.some((column: unknown) => typeof column === "object" && column !== null &&
+        "name" in column && column.name === name)) {
+      database.exec(`ALTER TABLE battle_awareness_narration_batches ADD COLUMN ${name} TEXT`);
+    }
+  }
   for (const table of [
     "character_authoring_jobs",
     "battlefield_authoring_jobs",

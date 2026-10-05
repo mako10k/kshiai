@@ -1,3 +1,4 @@
+// R: Generate and publish ordered narration from committed battle inputs under lease fences.
 import {
   JudgmentPresentationProjectionSchema,
   NarrativeBlockSchema,
@@ -20,6 +21,11 @@ import {
   isProviderOperationAccountingError,
   withBattleProviderOperationContext,
 } from "../llm/provider-accounting.js";
+import {
+  cutoverNarrationBattleIds,
+  runCutoverBackgroundOperation,
+} from "./cutover-admission.js";
+import { processAwarenessNarrationWorker, type AwarenessNarrationWorkerOptions, type VerifiedNarrationDispatchAdmission } from "./awareness-narration-worker.js";
 
 export const NARRATION_WORKER_MAX_ATTEMPTS = 2;
 export const NARRATION_TOTAL_HTTP_ATTEMPTS = 4;
@@ -73,7 +79,7 @@ type NarrationPublicEventPayload = {
   combatTurn: number | null;
   status: EntryRow["status"];
   narrative?: NarrativeBlock;
-  fallbackReason?: NarrationFallbackReason;
+  fallbackReason?: string;
 };
 
 export type NarrationGenerationResult = {
@@ -86,17 +92,17 @@ export type NarrationGenerationResult = {
   estimatedCostUsd: number | null;
 };
 
-export type NarrationGenerator = (
+export type NarrationGenerator = ((
   input: unknown,
   context?: {
     heartbeat: () => Promise<void>;
     remainingHttpAttempts: number;
     remainingTokens: number;
   },
-) => Promise<NarrationGenerationResult>;
+) => Promise<NarrationGenerationResult>) & { readonly awareness?: AwarenessNarrationWorkerOptions };
 
-export function createLlmNarrationGenerator(llm: LlmProvider): NarrationGenerator {
-  return async (raw) => {
+export function createLlmNarrationGenerator(llm: LlmProvider, admission?: VerifiedNarrationDispatchAdmission): NarrationGenerator {
+  const generator: NarrationGenerator = async (raw) => {
     if (!raw || typeof raw !== "object") throw new Error("narration_input_invalid");
     const input = raw as { kind?: unknown; request?: unknown };
     if (!input.request || typeof input.request !== "object") {
@@ -192,6 +198,7 @@ export function createLlmNarrationGenerator(llm: LlmProvider): NarrationGenerato
       estimatedCostUsd: null,
     };
   };
+  return Object.assign(generator, { awareness: { provider: llm.awareness?.narration, admission } });
 }
 
 function json(value: unknown): string {
@@ -324,7 +331,7 @@ async function acquireFencedLease(input: {
     const result = await connection.query<{ fencing_token: number }>(
       `INSERT INTO battle_narration_leases
         (battle_id, owner_id, fencing_token, expires_at, updated_at)
-       VALUES ($1, $2, 1, $3, $4)
+       SELECT $1, $2, 1, $3, $4 WHERE EXISTS (SELECT 1 FROM battles WHERE id = $1)
        ON CONFLICT (battle_id) DO UPDATE
          SET owner_id = EXCLUDED.owner_id,
              fencing_token = battle_narration_leases.fencing_token + 1,
@@ -336,7 +343,10 @@ async function acquireFencedLease(input: {
       [input.battleId, input.ownerId, input.expiresAt, input.now],
     );
     const token = result.rows[0]?.fencing_token;
-    if (token === undefined) throw new Error("NARRATION_LEASE_BUSY");
+    if (token === undefined) {
+      if ((await connection.query("SELECT 1 FROM battles WHERE id = $1", [input.battleId])).rowCount === 0) throw new Error("BATTLE_NOT_FOUND");
+      throw new Error("NARRATION_LEASE_BUSY");
+    }
     return Number(token);
   });
 }
@@ -380,7 +390,7 @@ function deterministicFallback(entry: EntryRow): NarrativeBlock {
   };
 }
 
-export async function processNextNarration(input: {
+type ProcessNarrationInput = {
   battleId: string;
   receiptId?: string;
   outboxId?: string;
@@ -389,27 +399,48 @@ export async function processNextNarration(input: {
   generator: NarrationGenerator;
   now?: Date;
   leaseMs?: number;
-}): Promise<"idle" | "acknowledged" | "deferred" | "completed" | "retry_queued" | "failed"> {
-  const nowDate = input.now ?? new Date();
-  const now = nowDate.toISOString();
-  if (input.receiptId && input.outboxId && input.deliveryGeneration !== undefined) {
-    const disposition = await withTransaction(async (connection) => {
-      const delivery = await connection.query<{
-        status: string;
-        delivery_generation: number;
-      }>(
-        `SELECT status, delivery_generation
+};
+
+type NarrationWorkerResult =
+  | "idle"
+  | "acknowledged"
+  | "deferred"
+  | "completed"
+  | "retry_queued"
+  | "failed";
+
+async function releaseNarrationLease(
+  connection: DatabaseConnection,
+  input: ProcessNarrationInput,
+  fence: number,
+): Promise<void> {
+  await connection.query(
+    `DELETE FROM battle_narration_leases
+      WHERE battle_id = $1 AND owner_id = $2 AND fencing_token = $3`,
+    [input.battleId, input.ownerId, fence],
+  );
+}
+
+async function inspectNarrationDelivery(
+  connection: DatabaseConnection,
+  input: ProcessNarrationInput,
+): Promise<"acknowledged" | "ready" | "deferred"> {
+  const delivery = await connection.query<{
+    status: string;
+    delivery_generation: number;
+  }>(
+    `SELECT status, delivery_generation
            FROM battle_narration_outbox
           WHERE outbox_id = $1 AND battle_id = $2 AND receipt_id = $3`,
-        [input.outboxId, input.battleId, input.receiptId],
-      );
-      const outbox = delivery.rows[0];
-      if (!outbox || Number(outbox.delivery_generation) !== input.deliveryGeneration ||
-          outbox.status === "completed") {
-        return "acknowledged" as const;
-      }
-      const predecessor = await connection.query(
-        `SELECT 1
+    [input.outboxId, input.battleId, input.receiptId],
+  );
+  const outbox = delivery.rows[0];
+  if (!outbox || Number(outbox.delivery_generation) !== input.deliveryGeneration ||
+      outbox.status === "completed") {
+    return "acknowledged" as const;
+  }
+  const predecessor = await connection.query(
+    `SELECT 1
            FROM battle_narration_entries current_entry
            JOIN battle_narration_entries earlier
              ON earlier.battle_id = current_entry.battle_id
@@ -418,80 +449,37 @@ export async function processNextNarration(input: {
             AND current_entry.receipt_id = $2
             AND earlier.status IN ('queued', 'generating')
           LIMIT 1`,
-        [input.battleId, input.receiptId],
-      );
-      if (predecessor.rowCount === 0) return "ready" as const;
-      await connection.query(
-        `UPDATE battle_narration_outbox
+    [input.battleId, input.receiptId],
+  );
+  if (predecessor.rowCount === 0) return "ready" as const;
+  await connection.query(
+    `UPDATE battle_narration_outbox
             SET status = 'pending', dispatched_at = NULL
           WHERE outbox_id = $1 AND delivery_generation = $2
             AND status = 'dispatched'`,
-        [input.outboxId, input.deliveryGeneration],
-      );
-      return "deferred" as const;
-    });
-    if (disposition !== "ready") return disposition;
-  }
-  const expiresAt = new Date(
-    nowDate.getTime() + (input.leaseMs ?? 60_000),
-  ).toISOString();
-  const fence = await acquireFencedLease({
-    battleId: input.battleId,
-    ownerId: input.ownerId,
-    now,
-    expiresAt,
-  });
-  const claimed = await withTransaction(async (connection) => {
-    if (input.receiptId && input.outboxId && input.deliveryGeneration !== undefined) {
-      const delivery = await connection.query<{
-        status: string;
-        delivery_generation: number;
-      }>(
-        `SELECT status, delivery_generation
-           FROM battle_narration_outbox
-          WHERE outbox_id = $1 AND battle_id = $2 AND receipt_id = $3`,
-        [input.outboxId, input.battleId, input.receiptId],
-      );
-      const outbox = delivery.rows[0];
-      if (!outbox || Number(outbox.delivery_generation) !== input.deliveryGeneration ||
-          outbox.status === "completed") {
-        await connection.query(
-          `DELETE FROM battle_narration_leases
-            WHERE battle_id = $1 AND owner_id = $2 AND fencing_token = $3`,
-          [input.battleId, input.ownerId, fence],
-        );
-        return { disposition: "acknowledged" as const };
-      }
-      const predecessor = await connection.query(
-        `SELECT 1
-           FROM battle_narration_entries current_entry
-           JOIN battle_narration_entries earlier
-             ON earlier.battle_id = current_entry.battle_id
-            AND earlier.sequence < current_entry.sequence
-          WHERE current_entry.battle_id = $1
-            AND current_entry.receipt_id = $2
-            AND earlier.status IN ('queued', 'generating')
-          LIMIT 1`,
-        [input.battleId, input.receiptId],
-      );
-      if (predecessor.rowCount > 0) {
-        await connection.query(
-          `UPDATE battle_narration_outbox
-              SET status = 'pending', dispatched_at = NULL
-            WHERE outbox_id = $1 AND delivery_generation = $2
-              AND status = 'dispatched'`,
-          [input.outboxId, input.deliveryGeneration],
-        );
-        await connection.query(
-          `DELETE FROM battle_narration_leases
-            WHERE battle_id = $1 AND owner_id = $2 AND fencing_token = $3`,
-          [input.battleId, input.ownerId, fence],
-        );
-        return { disposition: "deferred" as const };
-      }
+    [input.outboxId, input.deliveryGeneration],
+  );
+  return "deferred" as const;
+}
+
+type ClaimedNarration = { disposition: "claimed"; entry: EntryRow; attemptId: string };
+type NarrationClaim = ClaimedNarration | { disposition: "acknowledged" | "deferred" };
+
+async function claimNarrationEntry(
+  connection: DatabaseConnection,
+  input: ProcessNarrationInput,
+  fence: number,
+  now: string,
+): Promise<NarrationClaim> {
+  if (input.receiptId && input.outboxId && input.deliveryGeneration !== undefined) {
+    const disposition = await inspectNarrationDelivery(connection, input);
+    if (disposition !== "ready") {
+      await releaseNarrationLease(connection, input, fence);
+      return { disposition };
     }
-    const selected = await connection.query<EntryRow>(
-      `SELECT battle_id, receipt_id, sequence, phase, combat_turn, input_json,
+  }
+  const selected = await connection.query<EntryRow>(
+    `SELECT battle_id, receipt_id, sequence, phase, combat_turn, input_json,
               input_digest, status, attempt_count
          FROM battle_narration_entries
         WHERE battle_id = $1
@@ -499,63 +487,110 @@ export async function processNextNarration(input: {
           ${input.receiptId ? "AND receipt_id = $2" : ""}
         ORDER BY sequence ASC
         LIMIT 1`,
-      input.receiptId ? [input.battleId, input.receiptId] : [input.battleId],
-    );
-    const entry = selected.rows[0];
-    if (!entry) {
-      if (input.outboxId && input.deliveryGeneration !== undefined) {
-        await connection.query(
-          `UPDATE battle_narration_outbox
+    input.receiptId ? [input.battleId, input.receiptId] : [input.battleId],
+  );
+  const entry = selected.rows[0];
+  if (!entry) {
+    if (input.outboxId && input.deliveryGeneration !== undefined) {
+      await connection.query(
+        `UPDATE battle_narration_outbox
               SET status = 'completed'
             WHERE outbox_id = $1 AND delivery_generation = $2`,
-          [input.outboxId, input.deliveryGeneration],
-        );
-      }
-      await connection.query(
-        `DELETE FROM battle_narration_leases
-          WHERE battle_id = $1 AND owner_id = $2 AND fencing_token = $3`,
-        [input.battleId, input.ownerId, fence],
+        [input.outboxId, input.deliveryGeneration],
       );
-      return { disposition: "acknowledged" as const };
     }
-    const attemptId = newId("narration_attempt");
-    const updated = await connection.query(
-      `UPDATE battle_narration_entries
+    await releaseNarrationLease(connection, input, fence);
+    return { disposition: "acknowledged" as const };
+  }
+  const attemptId = newId("narration_attempt");
+  const updated = await connection.query(
+    `UPDATE battle_narration_entries
           SET status = 'generating', active_attempt_id = $3,
               attempt_count = attempt_count + 1, updated_at = $4
         WHERE battle_id = $1 AND receipt_id = $2
           AND status IN ('queued', 'generating')`,
-      [entry.battle_id, entry.receipt_id, attemptId, now],
-    );
-    if (updated.rowCount !== 1) throw new Error("NARRATION_CLAIM_CONFLICT");
-    await connection.query(
-      `INSERT INTO battle_narration_attempts
+    [entry.battle_id, entry.receipt_id, attemptId, now],
+  );
+  if (updated.rowCount !== 1) throw new Error("NARRATION_CLAIM_CONFLICT");
+  await connection.query(
+    `INSERT INTO battle_narration_attempts
         (attempt_id, battle_id, receipt_id, fencing_token, status,
          provider, model, route, started_at)
        VALUES ($1, $2, $3, $4, 'generating', 'pending', NULL, 'fast', $5)`,
-      [attemptId, entry.battle_id, entry.receipt_id, fence, now],
-    );
-    await appendPublicEvent({
-      connection,
-      battleId: entry.battle_id,
-      receiptId: entry.receipt_id,
+    [attemptId, entry.battle_id, entry.receipt_id, fence, now],
+  );
+  await appendPublicEvent({
+    connection,
+    battleId: entry.battle_id,
+    receiptId: entry.receipt_id,
+    narrationSequence: Number(entry.sequence),
+    kind: "started",
+    payload: {
+      turnReceiptId: entry.receipt_id,
       narrationSequence: Number(entry.sequence),
-      kind: "started",
-      payload: {
-        turnReceiptId: entry.receipt_id,
-        narrationSequence: Number(entry.sequence),
-        phase: entry.phase,
-        combatTurn: entry.combat_turn,
-        status: "generating",
-      },
-      now,
-    });
-    return { disposition: "claimed" as const, entry, attemptId };
+      phase: entry.phase,
+      combatTurn: entry.combat_turn,
+      status: "generating",
+    },
+    now,
   });
-  if (claimed.disposition !== "claimed") return claimed.disposition;
+  return { disposition: "claimed" as const, entry, attemptId };
+}
 
+type NarrationAttemptOutcome = {
+  generated: NarrationGenerationResult | null;
+  returnedGeneration: NarrationGenerationResult | null;
+  fallbackReason: NarrationFallbackReason | null;
+  failureHttpAttempts: number;
+  failureTokenCount: number | null;
+  failureEstimatedCostUsd: number | null;
+  ceilingReached: boolean;
+  finishedAt: string;
+  elapsedMs: number;
+};
+
+function narrationBudgetReached(httpAttempts: number, tokenCount: number): boolean {
+  return httpAttempts >= NARRATION_TOTAL_HTTP_ATTEMPTS || tokenCount >= NARRATION_TOTAL_TOKEN_CEILING;
+}
+
+function failureUsageNumber(error: unknown, key: string): number | null {
+  if (!error || typeof error !== "object") return null;
+  const value: unknown = Reflect.get(error, key);
+  return typeof value === "number" ? value : null;
+}
+
+function narrationFailureUsage(
+  error: unknown,
+  returned: NarrationGenerationResult | null,
+): Pick<NarrationGenerationResult, "httpAttempts" | "tokenCount" | "estimatedCostUsd"> {
+  return {
+    httpAttempts: returned?.httpAttempts ?? failureUsageNumber(error, "httpAttempts") ?? 0,
+    tokenCount: returned?.tokenCount ?? failureUsageNumber(error, "tokenCount"),
+    estimatedCostUsd: returned?.estimatedCostUsd ?? failureUsageNumber(error, "estimatedCostUsd"),
+  };
+}
+
+function narrationGenerationBudgetFailure(
+  generated: NarrationGenerationResult,
+  priorHttpAttempts: number,
+  priorTokenCount: number,
+): "http_attempt_ceiling" | "token_ceiling" | null {
+  NarrativeBlockSchema.parse(generated.narrative);
+  const totalHttpAttempts = priorHttpAttempts + generated.httpAttempts;
+  const totalTokenCount = priorTokenCount + (generated.tokenCount ?? 0);
+  if (totalHttpAttempts > NARRATION_TOTAL_HTTP_ATTEMPTS) return "http_attempt_ceiling";
+  if (totalTokenCount > NARRATION_TOTAL_TOKEN_CEILING) return "token_ceiling";
+  return null;
+}
+
+async function generateClaimedNarration(
+  input: ProcessNarrationInput,
+  claimed: ClaimedNarration,
+  fence: number,
+): Promise<NarrationAttemptOutcome> {
   const started = Date.now();
   let generated: NarrationGenerationResult | null = null;
+  let returnedGeneration: NarrationGenerationResult | null = null;
   let fallbackReason: NarrationFallbackReason | null = null;
   let failureHttpAttempts = 0;
   let failureTokenCount: number | null = null;
@@ -574,8 +609,7 @@ export async function processNextNarration(input: {
   const priorHttpAttempts = Number(priorUsage.rows[0]?.http_attempts ?? 0);
   const priorTokenCount = Number(priorUsage.rows[0]?.token_count ?? 0);
   try {
-    if (priorHttpAttempts >= NARRATION_TOTAL_HTTP_ATTEMPTS ||
-        priorTokenCount >= NARRATION_TOTAL_TOKEN_CEILING) {
+    if (narrationBudgetReached(priorHttpAttempts, priorTokenCount)) {
       ceilingReached = true;
       throw new Error("narration_budget_exhausted");
     }
@@ -594,30 +628,19 @@ export async function processNextNarration(input: {
         remainingTokens: NARRATION_TOTAL_TOKEN_CEILING - priorTokenCount,
       },
     );
-    NarrativeBlockSchema.parse(generated.narrative);
-    const totalHttpAttempts = priorHttpAttempts + generated.httpAttempts;
-    const totalTokenCount = priorTokenCount +
-      (generated.tokenCount ?? 0);
-    if (totalHttpAttempts > NARRATION_TOTAL_HTTP_ATTEMPTS) {
+    returnedGeneration = generated;
+    const budgetFailure = narrationGenerationBudgetFailure(generated, priorHttpAttempts, priorTokenCount);
+    if (budgetFailure) {
       ceilingReached = true;
-      throw new Error("http_attempt_ceiling");
-    }
-    if (totalTokenCount > NARRATION_TOTAL_TOKEN_CEILING) {
-      ceilingReached = true;
-      throw new Error("token_ceiling");
+      throw new Error(budgetFailure);
     }
   } catch (error) {
     if (isProviderOperationAccountingError(error)) ceilingReached = true;
-    const usage = error && typeof error === "object"
-      ? error as { httpAttempts?: unknown; tokenCount?: unknown; estimatedCostUsd?: unknown }
-      : null;
-    failureHttpAttempts = typeof usage?.httpAttempts === "number" ? usage.httpAttempts : 0;
-    failureTokenCount = typeof usage?.tokenCount === "number" ? usage.tokenCount : null;
-    failureEstimatedCostUsd = typeof usage?.estimatedCostUsd === "number"
-      ? usage.estimatedCostUsd
-      : null;
-    if (priorHttpAttempts + failureHttpAttempts >= NARRATION_TOTAL_HTTP_ATTEMPTS ||
-        priorTokenCount + (failureTokenCount ?? 0) >= NARRATION_TOTAL_TOKEN_CEILING) {
+    const failureUsage = narrationFailureUsage(error, returnedGeneration);
+    failureHttpAttempts = failureUsage.httpAttempts;
+    failureTokenCount = failureUsage.tokenCount;
+    failureEstimatedCostUsd = failureUsage.estimatedCostUsd;
+    if (narrationBudgetReached(priorHttpAttempts + failureHttpAttempts, priorTokenCount + (failureTokenCount ?? 0))) {
       ceilingReached = true;
     }
     fallbackReason = narrationFallbackReason(error, ceilingReached);
@@ -625,148 +648,302 @@ export async function processNextNarration(input: {
   }
   const finishedAt = new Date().toISOString();
   const elapsedMs = Math.max(0, Date.now() - started);
-  return withTransaction(async (connection) => {
-    const lease = await connection.query<{ fencing_token: number }>(
-      `SELECT fencing_token FROM battle_narration_leases
-        WHERE battle_id = $1 AND owner_id = $2
-          AND fencing_token = $3 AND expires_at > $4`,
-      [input.battleId, input.ownerId, fence, finishedAt],
-    );
-    if (lease.rowCount !== 1) throw new Error("NARRATION_STALE_FENCE");
-    if (generated) {
-      await connection.query(
-        `UPDATE battle_narration_attempts
+  return {
+    generated,
+    returnedGeneration,
+    fallbackReason,
+    failureHttpAttempts,
+    failureTokenCount,
+    failureEstimatedCostUsd,
+    ceilingReached,
+    finishedAt,
+    elapsedMs,
+  };
+}
+
+async function recordRemovedBattleAttempt(
+  connection: DatabaseConnection,
+  input: ProcessNarrationInput,
+  claimed: ClaimedNarration,
+  fence: number,
+  outcome: NarrationAttemptOutcome,
+): Promise<NarrationWorkerResult> {
+  const {
+    generated,
+    returnedGeneration,
+    fallbackReason,
+    failureHttpAttempts,
+    failureTokenCount,
+    failureEstimatedCostUsd,
+    finishedAt,
+    elapsedMs,
+  } = outcome;
+  await connection.query(
+    `UPDATE battle_narration_attempts
+            SET status = $2, provider = $3, model = $4, route = $5,
+                http_attempts = $6, token_count = $7, estimated_cost_usd = $8,
+                elapsed_ms = $9, finished_at = $10, fallback_reason = $11
+          WHERE attempt_id = $1 AND fencing_token = $12`,
+    [claimed.attemptId, generated ? "completed" : "failed",
+      returnedGeneration?.provider ?? "unavailable", returnedGeneration?.model ?? null,
+      returnedGeneration?.route ?? "deterministic", generated?.httpAttempts ?? failureHttpAttempts,
+      generated?.tokenCount ?? failureTokenCount,
+      generated?.estimatedCostUsd ?? failureEstimatedCostUsd,
+      elapsedMs, finishedAt, fallbackReason, fence],
+  );
+  return "acknowledged";
+}
+
+
+async function publishCompletedNarration(
+  connection: DatabaseConnection,
+  input: ProcessNarrationInput,
+  claimed: ClaimedNarration,
+  fence: number,
+  outcome: NarrationAttemptOutcome,
+): Promise<NarrationWorkerResult> {
+  const { generated, finishedAt, elapsedMs } = outcome;
+  if (!generated) throw new Error("NARRATION_GENERATION_MISSING");
+  await connection.query(
+    `UPDATE battle_narration_attempts
             SET status = 'completed', provider = $2, model = $3, route = $4,
                 http_attempts = $5, token_count = $6, estimated_cost_usd = $7,
                 elapsed_ms = $8, finished_at = $9
           WHERE attempt_id = $1 AND fencing_token = $10`,
-        [claimed.attemptId, generated.provider, generated.model, generated.route,
-          generated.httpAttempts, generated.tokenCount, generated.estimatedCostUsd,
-          elapsedMs, finishedAt, fence],
-      );
-      const committed = await connection.query(
-        `UPDATE battle_narration_entries
+    [claimed.attemptId, generated.provider, generated.model, generated.route,
+      generated.httpAttempts, generated.tokenCount, generated.estimatedCostUsd,
+      elapsedMs, finishedAt, fence],
+  );
+  const committed = await connection.query(
+    `UPDATE battle_narration_entries
             SET status = 'completed', terminal_narrative_json = $3,
                 active_attempt_id = NULL, updated_at = $4
           WHERE battle_id = $1 AND receipt_id = $2
             AND active_attempt_id = $5`,
-        [input.battleId, claimed.entry.receipt_id, json(generated.narrative), finishedAt,
-          claimed.attemptId],
-      );
-      if (committed.rowCount !== 1) throw new Error("NARRATION_STALE_ATTEMPT");
-      const presentation = await connection.query(
-        `INSERT INTO battle_presentations
+    [input.battleId, claimed.entry.receipt_id, json(generated.narrative), finishedAt,
+      claimed.attemptId],
+  );
+  if (committed.rowCount !== 1) throw new Error("NARRATION_STALE_ATTEMPT");
+  const presentation = await connection.query(
+    `INSERT INTO battle_presentations
           (battle_id, receipt_id, sequence, phase, combat_turn, input_digest,
            narrative_json, created_at)
          VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
          ON CONFLICT (battle_id, receipt_id) DO UPDATE
            SET narrative_json = EXCLUDED.narrative_json
            WHERE battle_presentations.input_digest = EXCLUDED.input_digest`,
-        [input.battleId, claimed.entry.receipt_id, claimed.entry.sequence,
-          claimed.entry.phase, claimed.entry.combat_turn, claimed.entry.input_digest,
-          json(generated.narrative), finishedAt],
-      );
-      if (presentation.rowCount !== 1) throw new Error("PRESENTATION_DIGEST_CONFLICT");
-      await appendPublicEvent({
-        connection,
-        battleId: input.battleId,
-        receiptId: claimed.entry.receipt_id,
-        narrationSequence: Number(claimed.entry.sequence),
-        kind: "completed",
-        payload: {
-          turnReceiptId: claimed.entry.receipt_id,
-          narrationSequence: Number(claimed.entry.sequence),
-          phase: claimed.entry.phase,
-          combatTurn: claimed.entry.combat_turn,
-          status: "completed",
-          narrative: generated.narrative,
-        },
-        now: finishedAt,
-      });
-      if (input.outboxId && input.deliveryGeneration !== undefined) {
-        await connection.query(
-          `UPDATE battle_narration_outbox
+    [input.battleId, claimed.entry.receipt_id, claimed.entry.sequence,
+      claimed.entry.phase, claimed.entry.combat_turn, claimed.entry.input_digest,
+      json(generated.narrative), finishedAt],
+  );
+  if (presentation.rowCount !== 1) throw new Error("PRESENTATION_DIGEST_CONFLICT");
+  await appendPublicEvent({
+    connection,
+    battleId: input.battleId,
+    receiptId: claimed.entry.receipt_id,
+    narrationSequence: Number(claimed.entry.sequence),
+    kind: "completed",
+    payload: {
+      turnReceiptId: claimed.entry.receipt_id,
+      narrationSequence: Number(claimed.entry.sequence),
+      phase: claimed.entry.phase,
+      combatTurn: claimed.entry.combat_turn,
+      status: "completed",
+      narrative: generated.narrative,
+    },
+    now: finishedAt,
+  });
+  if (input.outboxId && input.deliveryGeneration !== undefined) {
+    await connection.query(
+      `UPDATE battle_narration_outbox
               SET status = 'completed'
             WHERE outbox_id = $1 AND delivery_generation = $2`,
-          [input.outboxId, input.deliveryGeneration],
-        );
-      }
-      await connection.query(
-        `DELETE FROM battle_narration_leases
-          WHERE battle_id = $1 AND owner_id = $2 AND fencing_token = $3`,
-        [input.battleId, input.ownerId, fence],
-      );
-      return "completed";
-    }
+      [input.outboxId, input.deliveryGeneration],
+    );
+  }
+  await releaseNarrationLease(connection, input, fence);
+  return "completed";
+}
 
-    const attempts = Number(claimed.entry.attempt_count) + 1;
-    const terminal = ceilingReached || attempts >= NARRATION_WORKER_MAX_ATTEMPTS;
-    await connection.query(
-      `UPDATE battle_narration_attempts
-          SET status = $2, provider = 'unavailable', route = 'deterministic',
+
+async function recordFailedNarrationAttempt(
+  connection: DatabaseConnection,
+  claimed: ClaimedNarration,
+  fence: number,
+  outcome: NarrationAttemptOutcome,
+  terminal: boolean,
+): Promise<void> {
+  const {
+    returnedGeneration,
+    fallbackReason,
+    failureHttpAttempts,
+    failureTokenCount,
+    failureEstimatedCostUsd,
+    finishedAt,
+    elapsedMs,
+  } = outcome;
+  await connection.query(
+    `UPDATE battle_narration_attempts
+          SET status = $2, provider = $10, model = $11, route = $12,
               http_attempts = $3, token_count = $4, estimated_cost_usd = $5,
               elapsed_ms = $6, fallback_reason = $7, error_class = $7,
               finished_at = $8
         WHERE attempt_id = $1 AND fencing_token = $9`,
-      [claimed.attemptId, terminal ? "failed" : "abandoned", failureHttpAttempts,
-        failureTokenCount, failureEstimatedCostUsd, elapsedMs,
-        fallbackReason ?? "other", finishedAt, fence],
-    );
-    if (!terminal) {
-      await connection.query(
-        `UPDATE battle_narration_entries
-            SET status = 'queued', active_attempt_id = NULL, updated_at = $3
-          WHERE battle_id = $1 AND receipt_id = $2 AND active_attempt_id = $4`,
-        [input.battleId, claimed.entry.receipt_id, finishedAt, claimed.attemptId],
-      );
-      await connection.query(
-        `DELETE FROM battle_narration_leases
-          WHERE battle_id = $1 AND owner_id = $2 AND fencing_token = $3`,
-        [input.battleId, input.ownerId, fence],
-      );
-      return "retry_queued";
-    }
-    const fallback = deterministicFallback(claimed.entry);
+    [claimed.attemptId, terminal ? "failed" : "abandoned", failureHttpAttempts,
+      failureTokenCount, failureEstimatedCostUsd, elapsedMs,
+      fallbackReason ?? "other", finishedAt, fence, returnedGeneration?.provider ?? "unavailable",
+      returnedGeneration?.model ?? null, returnedGeneration?.route ?? "deterministic"],
+  );
+}
+
+async function publishFailedNarration(
+  connection: DatabaseConnection,
+  input: ProcessNarrationInput,
+  claimed: ClaimedNarration,
+  fence: number,
+  outcome: NarrationAttemptOutcome,
+): Promise<NarrationWorkerResult> {
+  const { fallbackReason, ceilingReached, finishedAt } = outcome;
+
+  const attempts = Number(claimed.entry.attempt_count) + 1;
+  const terminal = ceilingReached || attempts >= NARRATION_WORKER_MAX_ATTEMPTS;
+  await recordFailedNarrationAttempt(connection, claimed, fence, outcome, terminal);
+  if (!terminal) {
     await connection.query(
       `UPDATE battle_narration_entries
+            SET status = 'queued', active_attempt_id = NULL, updated_at = $3
+          WHERE battle_id = $1 AND receipt_id = $2 AND active_attempt_id = $4`,
+      [input.battleId, claimed.entry.receipt_id, finishedAt, claimed.attemptId],
+    );
+    await releaseNarrationLease(connection, input, fence);
+    return "retry_queued";
+  }
+  const fallback = deterministicFallback(claimed.entry);
+  await connection.query(
+    `UPDATE battle_narration_entries
           SET status = 'failed', terminal_narrative_json = $3,
               fallback_reason = $4, active_attempt_id = NULL, updated_at = $5
         WHERE battle_id = $1 AND receipt_id = $2 AND active_attempt_id = $6`,
-      [input.battleId, claimed.entry.receipt_id, json(fallback),
-        fallbackReason ?? "other", finishedAt, claimed.attemptId],
-    );
-    await appendPublicEvent({
-      connection,
-      battleId: input.battleId,
-      receiptId: claimed.entry.receipt_id,
+    [input.battleId, claimed.entry.receipt_id, json(fallback),
+      fallbackReason ?? "other", finishedAt, claimed.attemptId],
+  );
+  await appendPublicEvent({
+    connection,
+    battleId: input.battleId,
+    receiptId: claimed.entry.receipt_id,
+    narrationSequence: Number(claimed.entry.sequence),
+    kind: "failed",
+    payload: {
+      turnReceiptId: claimed.entry.receipt_id,
       narrationSequence: Number(claimed.entry.sequence),
-      kind: "failed",
-      payload: {
-        turnReceiptId: claimed.entry.receipt_id,
-        narrationSequence: Number(claimed.entry.sequence),
-        phase: claimed.entry.phase,
-        combatTurn: claimed.entry.combat_turn,
-        status: "failed",
-        narrative: fallback,
-        fallbackReason: fallbackReason ?? "other",
-      },
-      now: finishedAt,
-    });
-    if (input.outboxId && input.deliveryGeneration !== undefined) {
-      await connection.query(
-        `UPDATE battle_narration_outbox
+      phase: claimed.entry.phase,
+      combatTurn: claimed.entry.combat_turn,
+      status: "failed",
+      narrative: fallback,
+      fallbackReason: fallbackReason ?? "other",
+    },
+    now: finishedAt,
+  });
+  if (input.outboxId && input.deliveryGeneration !== undefined) {
+    await connection.query(
+      `UPDATE battle_narration_outbox
             SET status = 'completed'
           WHERE outbox_id = $1 AND delivery_generation = $2`,
-        [input.outboxId, input.deliveryGeneration],
-      );
-    }
-    await connection.query(
-      `DELETE FROM battle_narration_leases
-        WHERE battle_id = $1 AND owner_id = $2 AND fencing_token = $3`,
-      [input.battleId, input.ownerId, fence],
+      [input.outboxId, input.deliveryGeneration],
     );
-    return "failed";
-  });
+  }
+  await connection.query(
+    `DELETE FROM battle_narration_leases
+        WHERE battle_id = $1 AND owner_id = $2 AND fencing_token = $3`,
+    [input.battleId, input.ownerId, fence],
+  );
+  return "failed";
+}
+
+async function finalizeNarrationAttempt(
+  connection: DatabaseConnection,
+  input: ProcessNarrationInput,
+  claimed: ClaimedNarration,
+  fence: number,
+  outcome: NarrationAttemptOutcome,
+): Promise<NarrationWorkerResult> {
+  const { finishedAt, generated } = outcome;
+  const exists = await connection.query("SELECT 1 FROM battles WHERE id = $1", [input.battleId]);
+  if (exists.rowCount === 0) return recordRemovedBattleAttempt(connection, input, claimed, fence, outcome);
+  const lease = await connection.query<{ fencing_token: number }>(
+    `SELECT fencing_token FROM battle_narration_leases
+        WHERE battle_id = $1 AND owner_id = $2
+          AND fencing_token = $3 AND expires_at > $4`,
+    [input.battleId, input.ownerId, fence, finishedAt],
+  );
+  if (lease.rowCount !== 1) throw new Error("NARRATION_STALE_FENCE");
+  return generated
+    ? publishCompletedNarration(connection, input, claimed, fence, outcome)
+    : publishFailedNarration(connection, input, claimed, fence, outcome);
+}
+
+async function processNextNarrationCore(
+  input: ProcessNarrationInput,
+): Promise<NarrationWorkerResult> {
+  const existingBattle = await query<{ state_json: unknown }>("SELECT state_json FROM battles WHERE id = $1", [input.battleId]);
+  if (existingBattle.rowCount === 0) return "acknowledged";
+  const stored = existingBattle.rows[0]!.state_json;
+  let candidate: unknown;
+  try { candidate = typeof stored === "string" ? JSON.parse(stored) : stored; }
+  catch { candidate = null; }
+  const manifest: unknown = candidate && typeof candidate === "object" ? Reflect.get(candidate, "assetManifest") : null;
+  if (manifest && typeof manifest === "object" && Reflect.get(manifest, "schemaVersion") === 5) {
+    return processAwarenessNarrationWorker({ ...input, options: input.generator.awareness ?? {} }, {
+      acquire: acquireFencedLease,
+      release(connection, scope, fence) {
+        return releaseNarrationLease(connection, { ...input, ...scope }, fence);
+      },
+      appendEvent(connection, event) {
+        return appendPublicEvent({ connection, battleId: event.battleId, receiptId: event.receiptId,
+          narrationSequence: event.sequence,
+          kind: event.status === "generating" ? "started" : event.status,
+          payload: { turnReceiptId: event.receiptId, narrationSequence: event.sequence,
+            phase: event.phase, combatTurn: event.combatTurn, status: event.status,
+            ...(event.narrative ? { narrative: event.narrative } : {}),
+            ...(event.fallbackReason ? { fallbackReason: event.fallbackReason } : {}) }, now: event.now });
+      },
+    });
+  }
+  const nowDate = input.now ?? new Date();
+  const now = nowDate.toISOString();
+  if (input.receiptId && input.outboxId && input.deliveryGeneration !== undefined) {
+    const disposition = await withTransaction(connection => inspectNarrationDelivery(connection, input));
+    if (disposition !== "ready") return disposition;
+  }
+  const expiresAt = new Date(
+    nowDate.getTime() + (input.leaseMs ?? 60_000),
+  ).toISOString();
+  let fence: number;
+  try {
+    fence = await acquireFencedLease({ battleId: input.battleId, ownerId: input.ownerId, now, expiresAt });
+  } catch (error) {
+    if (error instanceof Error && error.message === "BATTLE_NOT_FOUND") return "acknowledged";
+    throw error;
+  }
+  const claimed = await withTransaction(connection => claimNarrationEntry(connection, input, fence, now));
+  if (claimed.disposition !== "claimed") return claimed.disposition;
+
+  const outcome = await generateClaimedNarration(input, claimed, fence);
+  return withTransaction(connection => finalizeNarrationAttempt(connection, input, claimed, fence, outcome));
+}
+
+
+export async function processNextNarration(
+  input: ProcessNarrationInput,
+): Promise<NarrationWorkerResult> {
+  const operationId = input.outboxId && input.deliveryGeneration !== undefined
+    ? `narration-worker:${input.outboxId}:${input.deliveryGeneration}`
+    : `narration-worker:${newId("operation")}`;
+  return runCutoverBackgroundOperation({
+    operationId,
+    kind: "narration-worker",
+    battleId: input.battleId,
+  }, () => processNextNarrationCore(input));
 }
 
 export type NarrationOutboxDelivery = {
@@ -779,14 +956,22 @@ export type NarrationOutboxDelivery = {
 export async function recoverStaleNarrationOutbox(
   now = new Date(),
   staleMs = 5 * 60 * 1000,
+  battleIds?: readonly string[],
 ): Promise<number> {
+  if (battleIds?.length === 0) return 0;
   const cutoff = new Date(now.getTime() - Math.max(60_000, staleMs)).toISOString();
+  const battleFilter = battleIds
+    ? `AND battle_narration_outbox.battle_id IN (${battleIds.map(
+      (_, index) => `$${index + 3}`,
+    ).join(", ")})`
+    : "";
   const recovered = await query(
     `UPDATE battle_narration_outbox
         SET status = 'pending', dispatched_at = NULL,
             delivery_generation = delivery_generation + 1
       WHERE status = 'dispatched'
         AND dispatched_at <= $1
+        ${battleFilter}
         AND EXISTS (
           SELECT 1
             FROM battle_narration_entries entry
@@ -807,7 +992,7 @@ export async function recoverStaleNarrationOutbox(
                ))
              )
         )`,
-    [cutoff, now.toISOString()],
+    [cutoff, now.toISOString(), ...(battleIds ?? [])],
   );
   return recovered.rowCount;
 }
@@ -815,7 +1000,15 @@ export async function recoverStaleNarrationOutbox(
 export async function dispatchNarrationOutbox(
   dispatcher: (delivery: NarrationOutboxDelivery) => Promise<void>,
   limit = 20,
+  battleIds?: readonly string[],
 ): Promise<{ delivered: number; failed: number }> {
+  if (battleIds?.length === 0) return { delivered: 0, failed: 0 };
+  const battleFilter = battleIds
+    ? `AND outbox.battle_id IN (${battleIds.map(
+      (_, index) => `$${index + 1}`,
+    ).join(", ")})`
+    : "";
+  const limitParameter = (battleIds?.length ?? 0) + 1;
   const pending = await query<{
     outbox_id: string;
     battle_id: string;
@@ -829,6 +1022,7 @@ export async function dispatchNarrationOutbox(
          ON entry.battle_id = outbox.battle_id
         AND entry.receipt_id = outbox.receipt_id
       WHERE outbox.status = 'pending'
+        ${battleFilter}
         AND entry.status IN ('queued', 'generating')
         AND NOT EXISTS (
           SELECT 1 FROM battle_narration_entries earlier
@@ -837,8 +1031,8 @@ export async function dispatchNarrationOutbox(
              AND earlier.status IN ('queued', 'generating')
         )
       ORDER BY outbox.created_at, outbox.outbox_id
-      LIMIT $1`,
-    [Math.max(1, Math.min(100, Math.trunc(limit)))],
+      LIMIT $${limitParameter}`,
+    [...(battleIds ?? []), Math.max(1, Math.min(100, Math.trunc(limit)))],
   );
   let delivered = 0;
   let failed = 0;
@@ -870,11 +1064,20 @@ export async function dispatchNarrationOutbox(
   return { delivered, failed };
 }
 
-export async function nextNarrationBattleId(): Promise<string | null> {
+export async function nextNarrationBattleId(
+  battleIds?: readonly string[],
+): Promise<string | null> {
+  if (battleIds?.length === 0) return null;
+  const battleFilter = battleIds
+    ? `AND entry.battle_id IN (${battleIds.map(
+      (_, index) => `$${index + 1}`,
+    ).join(", ")})`
+    : "";
   const result = await query<{ battle_id: string }>(
     `SELECT battle_id
        FROM battle_narration_entries entry
       WHERE status IN ('queued', 'generating')
+        ${battleFilter}
         AND NOT EXISTS (
           SELECT 1 FROM battle_narration_entries earlier
            WHERE earlier.battle_id = entry.battle_id
@@ -883,6 +1086,7 @@ export async function nextNarrationBattleId(): Promise<string | null> {
         )
       ORDER BY updated_at, battle_id
       LIMIT 1`,
+    battleIds ? [...battleIds] : [],
   );
   return result.rows[0]?.battle_id ?? null;
 }
@@ -892,7 +1096,8 @@ export async function processNextNarrationAcrossBattles(input: {
   generator: NarrationGenerator;
   leaseMs?: number;
 }): Promise<"idle" | "acknowledged" | "deferred" | "completed" | "retry_queued" | "failed"> {
-  const battleId = await nextNarrationBattleId();
+  const allowedBattleIds = await cutoverNarrationBattleIds();
+  const battleId = await nextNarrationBattleId(allowedBattleIds ?? undefined);
   if (!battleId) return "idle";
   return withBattleProviderOperationContext(
     battleId,

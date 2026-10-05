@@ -1,0 +1,10 @@
+domain V2_CLOSEOUT:
+  description "Produce the requested scoped handoff after the running CI finishes."
+evidence OWNER:
+  "Owner now requests stop today's task after CI finishes, create handoff, WIPcommit and push. Goal2 permits originpush; goal3 deployment done. No merge/release/destructive cleanup or shared workday state change requested."
+evidence VERIFIED:
+  "CI37000442643 on a0e5f47 terminalsuccess all4jobs. Product source fce86 originverified, sourceCI4success, exactdigest/public andpreview health200,9assetsmatched, recoveredautomaticmode. Completion audit fatal/error0; independentreviews no productblocker. Existing dirty trialPERT and60 unrelated earlier trial/Makoto records remain local and must be preserved."
+premise BOUNDS:
+  "Commit only new V2 closeout handoff, its audit and sanitized CIreadback. Do not stage all dirtyfiles, reset, remove worktree, merge, tag, release or change shared worktimectl state. Product code/image unchanged. SingleWIPcommit/push with independentremoteSHA readback; preserve and inventory earlier uncommitted files. Broader canonicalPERTparent csm001/cm114 staysopen, followonproposal remainsownercontrolled."
+decision CLOSE based_on OWNER, VERIFIED, BOUNDS:
+  "Create concrete continuation handoff with exactbranch/worktree/source/image/currentruntime, CIproof, completioncriteria, limitations, localunsynchronizedinventory and bounded nextcheck. Finish scopedWIPcommit/push/readback; finalstateclaims distinguish greena0e5CI from newhand offdocs-onlyCI. CurrentV2retirementfunctionalremaining0; userrequestedcloseoutremaining5-10internalminutes lowconfidence, broaderV3parentnotcomplete."

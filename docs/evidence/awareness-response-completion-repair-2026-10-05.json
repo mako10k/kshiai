@@ -1,0 +1,75 @@
+{
+  "observation": "offline-repair-verification-no-paid-provider-request",
+  "observedAt": "2026-10-05T10:56:36.822868+00:00",
+  "authorities": [
+    "ADR0051",
+    "ADR0053",
+    "owner 2026-10-05 repair authorization"
+  ],
+  "reproduction": {
+    "oldRejectionSettlementRegressionExit": 1,
+    "newRejectionSettlementPassed": true
+  },
+  "sdkToRuntimeOfflineReadback": [
+    {
+      "directory": "/tmp/kshiai-awareness-paid-trial-ffgDdG",
+      "sdkStatuses": [
+        "completed",
+        "completed",
+        "completed",
+        "completed",
+        "completed"
+      ],
+      "usageMissing": [],
+      "incompleteReason": "[\n  {\n    \"code\": \"invalid_type\",\n    \"expected\": \"object\",\n    \"received\": \"string\",\n    \"path\": [\n      \"reflexDesires\",\n      0,\n      \"action\"\n    ],\n    \"message\": \"Expected object, received stri",
+      "physicalOutstanding": 0,
+      "costUnknownIds": [
+        "encounter:attempt_8803a83254408554d2b139b8",
+        "awareness-real-trial-2026-10-05:thought:a:1:0",
+        "awareness-real-trial-2026-10-05:thought:b:1:0",
+        "awareness-real-trial-2026-10-05:latent:a:0",
+        "awareness-real-trial-2026-10-05:latent:b:0"
+      ],
+      "jobs": {
+        "a": {
+          "status": "cancelled",
+          "physicalStatus": "finished"
+        },
+        "b": {
+          "status": "cancelled",
+          "physicalStatus": "finished"
+        }
+      },
+      "battleStatus": "incomplete",
+      "combatTicks": 0
+    }
+  ],
+  "verification": {
+    "distinctRelevantTests": 88,
+    "relevantFailures": 0,
+    "fullTestsPassed": 163,
+    "fullTestsFailed": 2,
+    "heldFailures": [
+      "routes-cutover-confirm.test.ts",
+      "cutover-trial-dispatch.test.ts"
+    ],
+    "allWorkspaceTypecheck": "passed",
+    "fullBuild": "passed",
+    "finalChangedBackendBuild": "passed",
+    "independentReadback": "matched"
+  },
+  "promptRevision": {
+    "newBattles": "awareness-prompt-v2",
+    "existingBindings": "awareness-prompt-v1 preserved",
+    "output": "awareness-output-v1 unchanged",
+    "addedSubconsciousCharacters": 1235,
+    "addedConsciousCharacters": 1204
+  },
+  "limits": [
+    "No new paid trial or deployment.",
+    "Model compliance improvement is unverified with real output.",
+    "Historical trial DBs remain unchanged.",
+    "Unknown monetary cost remains unknown.",
+    "Host backwards clock was observed; test-only elapsed clock stabilized, production guard preserved, underlying host cause unknown."
+  ]
+}

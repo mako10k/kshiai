@@ -1,0 +1,20 @@
+domain AwarenessRepair:
+  description "Correct explicit output guidance and physical-response accounting under owner authorization."
+evidence OWNER:
+  "Owner asked to implement the proposed response-format and waiting-reservation repair. No new paid trial is requested."
+evidence SHAPE:
+  "Observed runtime rejected reflexDesires[0].action as string. Existing prompt says preserve offered structure but availableActions uses a different schema from CharacterActionIntentSchema."
+evidence ACCOUNTING:
+  "All five SDK attempts completed; execution failure handlers always settle physicalClosed=false and factory loses physical completion on schema error."
+evidence NARRATION:
+  "The narration worker similarly ignores rejected physical promises in late receipt handling and sets physicalFinished only after provider validation success; postresponse schema failure loses completion evidence."
+evidence CLOCK:
+  "A subsequent offline happy run recorded updatedAt earlier than runtime startedAt and failed the existing world-commit backwards-clock guard. Host clock cause is unknown. Stabilize test fixture elapsed Date.now with monotonic time; leave production guard unchanged."
+premise CAUSE:
+  "The failure handler deterministically retains slots on postresponse validation rejection. Missing exact output guidance is confirmed but its contribution to this model response is not proven without raw output."
+premise UNKNOWN:
+  "Transport rejection or timeout does not confirm provider completion. Unknown cost must stay unknown even when physical completion is known."
+premise ALTERNATIVES:
+  "Marking all thrown calls closed would wrongly release timeout slots. Relaxing authoritative action schema would change accepted semantics. Another paid trial alone would not repair deterministic accounting."
+decision FIX based_on OWNER, SHAPE, ACCOUNTING, NARRATION, CLOCK, CAUSE, UNKNOWN, ALTERNATIVES:
+  "Keep authoritative outputs strict. Add compact prose output contract as awareness-prompt-v2 for new battles and retain awareness-prompt-v1 routing for existing bindings. Carry invocation-local observed physical completion across schema/JSON failure as a narrow typed error; release physical slot only on observed complete response, retain unknown cost, discard late canonical results. Verify success, invalid output, timeout, late completion, concurrent role isolation and immutable prompt routing offline."

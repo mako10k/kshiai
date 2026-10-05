@@ -1,0 +1,237 @@
+{
+  "thought_id": "docs-evidence-v2-public-scaling-recovery-2026-10-02",
+  "id_source": "file",
+  "report": {
+    "engine_version": "0.1.0",
+    "document_id": "docs-evidence-v2-public-scaling-recovery-2026-10-02",
+    "generated_at": "2026-10-02T11:14:21.645Z",
+    "summary": {
+      "fatal_count": 0,
+      "error_count": 0,
+      "warning_count": 0,
+      "info_count": 0,
+      "hint_count": 9
+    },
+    "results": [
+      {
+        "issue_id": "ISSUE-001",
+        "category": "contradiction_candidate",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "RECOVERY",
+            "role": "decision",
+            "step_id": "S-RECOVERY"
+          },
+          {
+            "ref_id": "PREVENTION",
+            "role": "decision",
+            "step_id": "S-PREVENTION"
+          }
+        ],
+        "message": "RECOVERY と PREVENTION は同一根拠 LIVE, PLATFORM, MECHANISM, BOUNDS を共有しており、緊張関係にある可能性がある。",
+        "rationale": "複数の decision が同じ based_on 参照を共有しているため、観点と結論の整合性を再確認するべきである。",
+        "metadata": {
+          "shared_refs": [
+            "LIVE",
+            "PLATFORM",
+            "MECHANISM",
+            "BOUNDS"
+          ],
+          "line": 13,
+          "column": 10,
+          "end_column": 18
+        }
+      },
+      {
+        "issue_id": "ISSUE-002",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "OWNER",
+            "role": "evidence",
+            "step_id": "S-OWNER"
+          }
+        ],
+        "message": "evidence OWNER は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 4,
+          "column": 3,
+          "text": "Goal1 retires ordinary V2 creation/update with historical reads retained. Goal3 expressly permits necessary production deployment. This recovery changes only existing service scaling; no rollback, migration, deletion, provider activation or release.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-003",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "LIVE",
+            "role": "evidence",
+            "step_id": "S-LIVE"
+          }
+        ],
+        "message": "evidence LIVE は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 6,
+          "column": 3,
+          "text": "Fresh GCP describe and public GET on 2026-10-02 show kshiai-api asia-northeast1 project kshiai manualInstanceCount0 scalingMode manual, 100percent and both tags on kshiai-api-v2-retired-fce86a5. Public API503 Service disabled. The same new image previously responded200 while only tagged. Current template resources, env and secret pins unchanged. Application error query empty, but this alone cannot prove application correctness.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-004",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "PLATFORM",
+            "role": "evidence",
+            "step_id": "S-PLATFORM"
+          }
+        ],
+        "message": "evidence PLATFORM は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 8,
+          "column": 3,
+          "text": "Official https://docs.cloud.google.com/run/docs/configuring/services/manual-scaling says manual0 disables allocated-traffic revisions; tag-only revisions without minimum can serve one instance on demand. auto restores default autoscaling without creating a revision.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-005",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "MECHANISM",
+            "role": "premise",
+            "step_id": "S-MECHANISM"
+          }
+        ],
+        "message": "premise MECHANISM は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 10,
+          "column": 3,
+          "text": "Producing condition is retained service-level manualzero with allocated public traffic. Trigger was allocating100percent to the verified revision. Detection escape was checking tag-only health and revision template without service-level scaling/allocated-traffic fit. App crash or bad origin-secret cannot explain the matching platform Service disabled condition as well; later health verification remains necessary.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-006",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "BOUNDS",
+            "role": "premise",
+            "step_id": "S-BOUNDS"
+          }
+        ],
+        "message": "premise BOUNDS は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 12,
+          "column": 3,
+          "text": "Main sole executor, maximum1 additional external write: gcloud run services update kshiai-api --project=kshiai --region=asia-northeast1 --scaling=auto --quiet. Existing max20 and default minimum0 retained; demand-driven execution costs resume. No always-on manual1. Gate current all routes on fce86 and template identity; readback scaling automatic, exact revision/template/traffic preserved; public and preview health200 and frontend asset identity. No blind retry if ambiguous.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-007",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "RECOVERY",
+            "role": "decision",
+            "step_id": "S-RECOVERY"
+          }
+        ],
+        "message": "decision RECOVERY は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 14,
+          "column": 3,
+          "text": "Use autoscaling on the verified V3-only revision. Leaving disabled loses required reads; manual1 creates idle billing; old V2 rollback violates retirement; duplicate image/revision unnecessary. Internal remaining estimate15-30minutes lowconfidence, external CI waits separate. Completion remains unproven until runtime, writer closure, read preservation, origin and CI receipts audited.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-008",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "PREVENTION",
+            "role": "decision",
+            "step_id": "S-PREVENTION"
+          }
+        ],
+        "message": "decision PREVENTION は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 16,
+          "column": 3,
+          "text": "Add service-level scaling and effective instance allocation as explicit pre-cutover gates beside revision-template checks; separately verify source correction by mode readback and detection improvement by executing allocation-aware check before completion. Preserve original incident and failed health as evidence.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-009",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "RECOVERY",
+            "role": "decision",
+            "step_id": "S-RECOVERY"
+          },
+          {
+            "ref_id": "PREVENTION",
+            "role": "decision",
+            "step_id": "S-PREVENTION"
+          }
+        ],
+        "message": "RECOVERY と PREVENTION は意味的に近接している可能性がある。",
+        "metadata": {
+          "line": 13,
+          "column": 10,
+          "end_column": 18,
+          "similarity": 0.67,
+          "semantic_distance": 0.33,
+          "embedding_provider": "ollama",
+          "embedding_model": "nomic-embed-text"
+        }
+      }
+    ],
+    "query_results": []
+  }
+}

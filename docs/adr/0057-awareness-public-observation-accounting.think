@@ -1,0 +1,16 @@
+domain PublicAwarenessObservation:
+  description "Conformance evidence for the owner-authorized awareness public deployment and completion."
+evidence OWNER_ACCEPTANCE:
+  "Owner adopts normal awareness policy including200 physical attempts, requests actual usage recording, public deployment and new battle completion."
+evidence GAP:
+  "Ordinary persistent E2E only verifies old taxonomy and old provider projections. Unknown awareness operation names fail classification before HTTP. Its stage/observe ceilings are configurable inputs, default169."
+premise DESIGN:
+  "Extend provider taxonomy to classify actual awareness subconscious, conscious and narration names into existing role layers. Keep unknown labels rejected and old layers intact. Revision the taxonomy. Supplement public E2E with strict stored V5 manifest/runtime and actual usage readback, preserving ordinary public API/SSE, narration convergence, accounts, safety and promotion checks. Its observation provider ceiling and runtime200 bound remain distinct assertions. The public job calls API and does not need direct provider keys."
+premise LIMITS:
+  "Do not change old held stage-v3 trial, retry, models, normal policy or output schema. Do not declare full36 tick boundary test from24 public advances. Public completion means actual bound terminal rules plus successful narration and token ledger, not advancing to36."
+premise UNKNOWN:
+  "Public stage may expose fixture or provider-key deployment gaps. Exact scoped source/tag/checks and runtime readback remain required before promotion."
+premise OPTIONS:
+  "Simply increasing old observation input does not verify usage. Removing observation guards weakens acceptance. Classified new labels and additional actual-ledger checks preserve controls while implementing adopted awareness verification."
+decision ACCEPTANCE based_on OWNER_ACCEPTANCE, GAP, DESIGN, LIMITS, UNKNOWN, OPTIONS:
+  "Prepare revisioned current observation taxonomy and typed actual-awareness verification. Use already configurable200 observation input with independent normal200 physical bound, retain existing staging/promotion safeguards and held trial scope, verify offline before any release execution."

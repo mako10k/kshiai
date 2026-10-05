@@ -1,0 +1,1790 @@
+{
+  "schema": "kshiai.vt104.character-candidates.v1",
+  "status": "proposed-content-selection",
+  "semanticRevision": "original immutable fixture definitions; vt103 temporary g2 edits excluded",
+  "records": [
+    {
+      "id": "neva",
+      "source": {
+        "candidateId": "stage-trial-neva",
+        "displayName": "夜航の灯守・ネヴァ",
+        "tags": [
+          "new-v3-candidate",
+          "lantern-keeper",
+          "observant"
+        ],
+        "traits": [
+          "静かな観察者",
+          "危機では大胆",
+          "約束を守る"
+        ],
+        "narrativeBlurb": "夜道の灯を絶やさず、相手の焦りが見えるまで歩みを止めない。"
+      },
+      "envelope": {
+        "envelopeVersion": 2,
+        "definitionSchema": {
+          "family": "character",
+          "version": 3
+        },
+        "definition": {
+          "identity": {
+            "displayName": "夜航の灯守・ネヴァ",
+            "names": [
+              {
+                "id": "name-neva-keeper",
+                "kind": "epithet",
+                "value": "灯守",
+                "description": {
+                  "text": "夜の航路を守る役目を自ら名乗る呼び名。",
+                  "consumerTags": [
+                    "profile-generator",
+                    "battle-mechanics"
+                  ],
+                  "sourceSupportRefs": [
+                    "identity.names.0"
+                  ]
+                }
+              }
+            ],
+            "presentation": {
+              "form": null,
+              "gender": null,
+              "ageDescription": null,
+              "pronouns": []
+            },
+            "tags": [
+              "new-v3-candidate",
+              "lantern-keeper",
+              "observant"
+            ]
+          },
+          "appearance": {
+            "publicSummary": "濃紺の外套と、風を含んだ小さな灯籠を携えた旅人。",
+            "details": [],
+            "visualPrompt": "a solitary lantern keeper in a navy travel cloak at night",
+            "portrait": null
+          },
+          "profileBackground": [
+            {
+              "id": "background-night-route",
+              "kind": "role",
+              "summary": "夜航路の灯守として、迷う旅人に目印を残してきた。",
+              "description": {
+                "text": "嵐の夜ほど灯を高く掲げ、帰路を失う者を待つ役目。",
+                "consumerTags": [
+                  "profile-generator",
+                  "battle-mechanics"
+                ],
+                "sourceSupportRefs": [
+                  "identity.displayName"
+                ]
+              },
+              "selfAwareness": "aware"
+            }
+          ],
+          "psycheDisposition": {
+            "dynamicsVersion": "psyche-trait-profile-v1",
+            "dynamics": {
+              "adverseSensitivity": 620,
+              "uncertaintySensitivity": 760,
+              "recoverySpeed": 420,
+              "irritationPersistence": 280,
+              "anxietyPersistence": 460,
+              "approachTendency": 540,
+              "withdrawalTendency": 630,
+              "impulseInhibition": 780,
+              "expressionRestraint": 700
+            },
+            "coreNeeds": [
+              {
+                "id": "need-keep-the-light",
+                "description": {
+                  "text": "混乱の中でも、誰かが帰れる目印を残したい。",
+                  "consumerTags": [
+                    "profile-generator",
+                    "battle-mechanics"
+                  ],
+                  "sourceSupportRefs": [
+                    "profileBackground.0"
+                  ]
+                },
+                "selfAwareness": "aware"
+              }
+            ],
+            "tendencies": [
+              {
+                "id": "tendency-measure-first",
+                "label": "一度測ってから踏み込む",
+                "backgroundRefs": [
+                  "background-night-route"
+                ],
+                "triggerKinds": [
+                  "uncertainty",
+                  "threat"
+                ],
+                "selfAwareness": "aware",
+                "tendencyDescription": {
+                  "text": "不確かな攻勢にはすぐ反応せず、相手の癖を測る。",
+                  "consumerTags": [
+                    "profile-generator",
+                    "battle-mechanics"
+                  ],
+                  "sourceSupportRefs": [
+                    "psycheDisposition.coreNeeds.0"
+                  ]
+                },
+                "manifestationDescription": {
+                  "text": "最初の一手では距離を保ち、相手の動きが読めた瞬間だけ踏み込む。",
+                  "consumerTags": [
+                    "profile-generator",
+                    "battle-mechanics"
+                  ],
+                  "sourceSupportRefs": [
+                    "psycheDisposition.tendencies.0"
+                  ]
+                }
+              }
+            ],
+            "description": {
+              "text": "静けさを臆病さではなく、灯を守るための間として扱う。",
+              "consumerTags": [
+                "profile-generator",
+                "battle-mechanics"
+              ],
+              "sourceSupportRefs": [
+                "psycheDisposition.tendencies.0"
+              ]
+            }
+          },
+          "speechPolicy": {
+            "selfAwareness": "aware",
+            "frequency": "measured",
+            "phasePolicy": {
+              "prologue": "allow",
+              "turn": "allow",
+              "aftermath": "allow"
+            },
+            "reactTo": [
+              "direct_address",
+              "self_impact",
+              "counterpart_impact",
+              "ambient_change"
+            ],
+            "silenceRules": [],
+            "register": "既存プロフィールからは特定しない",
+            "cadence": "既存プロフィールからは特定しない",
+            "sentenceLength": "mixed",
+            "vocabularyHabits": [],
+            "addressRules": [],
+            "selfReferenceNameId": null,
+            "examples": [],
+            "counterexamples": [],
+            "description": null
+          },
+          "relationshipSeeds": [],
+          "combat": {
+            "parameters": {
+              "hp": 108,
+              "maxHp": 108,
+              "mp": 36,
+              "maxMp": 36,
+              "stamina": 50,
+              "maxStamina": 50,
+              "atk": 11,
+              "def": 12,
+              "spd": 9,
+              "mag": 10,
+              "res": 10,
+              "focus": 15,
+              "luck": 10
+            },
+            "flags": {
+              "canFight": true,
+              "irreversibleIncapacitated": false
+            }
+          },
+          "capabilities": {
+            "basicAction": {
+              "id": "basic-action",
+              "name": "灯杖の一閃",
+              "description": {
+                "text": "灯杖を低く払って相手の間合いを測る一撃。",
+                "consumerTags": [
+                  "profile-generator",
+                  "battle-mechanics",
+                  "conscious-action",
+                  "conscious-expression"
+                ],
+                "sourceSupportRefs": []
+              },
+              "kind": "basic",
+              "mechanics": {
+                "targetParameter": "hp",
+                "scalingParameter": "atk",
+                "resistanceParameter": "def",
+                "power": 0.8,
+                "costMp": 0,
+                "costStamina": 0,
+                "effects": [],
+                "constraints": {
+                  "reach": "same_area",
+                  "requiresSight": false,
+                  "mobility": "limited",
+                  "requiresSpeech": false,
+                  "requiresUsableHeldObject": false
+                }
+              },
+              "tacticTags": [],
+              "expressionNotes": null
+            },
+            "skills": [
+              {
+                "id": "skill-lantern-feint",
+                "name": "灯影の誘い",
+                "description": {
+                  "text": "灯りを一瞬だけずらし、相手の視線を外してから打ち込む。",
+                  "consumerTags": [
+                    "profile-generator",
+                    "battle-mechanics",
+                    "conscious-action",
+                    "conscious-expression"
+                  ],
+                  "sourceSupportRefs": []
+                },
+                "kind": "special",
+                "mechanics": {
+                  "targetParameter": "hp",
+                  "scalingParameter": "atk",
+                  "resistanceParameter": "def",
+                  "power": 1.15,
+                  "costMp": 8,
+                  "costStamina": 4,
+                  "effects": [],
+                  "constraints": {
+                    "reach": "same_area",
+                    "requiresSight": false,
+                    "mobility": "limited",
+                    "requiresSpeech": false,
+                    "requiresUsableHeldObject": false
+                  }
+                },
+                "tacticTags": [],
+                "expressionNotes": null
+              },
+              {
+                "id": "skill-wick-guard",
+                "name": "芯火の守り",
+                "description": {
+                  "text": "芯火を安定させ、次の攻防に備える。",
+                  "consumerTags": [
+                    "profile-generator",
+                    "battle-mechanics",
+                    "conscious-action",
+                    "conscious-expression"
+                  ],
+                  "sourceSupportRefs": []
+                },
+                "kind": "defend",
+                "mechanics": {
+                  "targetParameter": "hp",
+                  "scalingParameter": "atk",
+                  "resistanceParameter": "def",
+                  "power": 0.5,
+                  "costMp": 5,
+                  "costStamina": 0,
+                  "effects": [],
+                  "constraints": {
+                    "reach": "same_area",
+                    "requiresSight": false,
+                    "mobility": "limited",
+                    "requiresSpeech": false,
+                    "requiresUsableHeldObject": false
+                  }
+                },
+                "tacticTags": [],
+                "expressionNotes": null
+              }
+            ]
+          },
+          "inventory": [],
+          "initialLoadout": [],
+          "expressionNotes": {
+            "text": "夜道の灯を絶やさず、相手の焦りが見えるまで歩みを止めない。",
+            "consumerTags": [
+              "profile-generator",
+              "deep-psyche",
+              "conscious-expression"
+            ],
+            "sourceSupportRefs": []
+          },
+          "schemaVersion": 3,
+          "actionNorms": [
+            {
+              "id": "norm-read-the-current",
+              "when": {
+                "match": "any",
+                "clauses": [
+                  {
+                    "kind": "counterpart_condition",
+                    "operator": "is",
+                    "value": "strained"
+                  },
+                  {
+                    "kind": "observed_event_kind",
+                    "operator": "is",
+                    "value": "damage"
+                  }
+                ]
+              },
+              "response": {
+                "disposition": "prefer",
+                "actionRefs": [
+                  "skill-lantern-feint"
+                ],
+                "actionKinds": [],
+                "tacticTags": [
+                  "measured-counter",
+                  "precision"
+                ]
+              },
+              "priority": 76,
+              "force": "preference",
+              "exceptions": [],
+              "description": {
+                "text": "相手の流れが乱れたら、灯影の誘いで主導権を取り返す。",
+                "consumerTags": [
+                  "profile-generator",
+                  "battle-mechanics"
+                ],
+                "sourceSupportRefs": [
+                  "psycheDisposition.tendencies.0"
+                ]
+              }
+            },
+            {
+              "id": "norm-protect-the-wick",
+              "when": {
+                "match": "all",
+                "clauses": [
+                  {
+                    "kind": "self_condition",
+                    "operator": "is",
+                    "value": "critical"
+                  }
+                ]
+              },
+              "response": {
+                "disposition": "prefer",
+                "actionRefs": [
+                  "skill-wick-guard",
+                  "basic-action"
+                ],
+                "actionKinds": [],
+                "tacticTags": [
+                  "preserve-light"
+                ]
+              },
+              "priority": 92,
+              "force": "commitment",
+              "exceptions": [],
+              "description": {
+                "text": "灯を失いそうなときは、攻め急がず芯火の守りを優先する。",
+                "consumerTags": [
+                  "profile-generator",
+                  "battle-mechanics"
+                ],
+                "sourceSupportRefs": [
+                  "psycheDisposition.coreNeeds.0"
+                ]
+              }
+            }
+          ],
+          "consciousGuidance": [
+            {
+              "id": "guidance-leave-a-way-home",
+              "applicability": {
+                "match": "all",
+                "clauses": [
+                  {
+                    "kind": "battle_phase",
+                    "operator": "is",
+                    "value": "turn"
+                  }
+                ]
+              },
+              "statement": "勝つために相手を追い詰めても、帰る余地まで消さない。",
+              "priority": 68,
+              "force": "commitment",
+              "selfAwareness": "aware",
+              "exceptions": [],
+              "description": {
+                "text": "灯守として、勝敗と退路を同時に考える。",
+                "consumerTags": [
+                  "profile-generator",
+                  "battle-mechanics"
+                ],
+                "sourceSupportRefs": [
+                  "psycheDisposition.coreNeeds.0"
+                ]
+              }
+            }
+          ],
+          "mechanicalConflictFallbacks": [
+            {
+              "id": "fallback-keep-the-wick",
+              "applicability": {
+                "match": "all",
+                "clauses": [
+                  {
+                    "kind": "self_condition",
+                    "operator": "is",
+                    "value": "critical"
+                  }
+                ]
+              },
+              "orderedActionRefs": [
+                "skill-wick-guard",
+                "basic-action"
+              ],
+              "priority": 96,
+              "receiptContract": "character-mechanical-conflict-receipt-v1"
+            }
+          ]
+        },
+        "disclosurePolicy": {
+          "version": 1,
+          "rules": [
+            {
+              "valuePath": "identity.displayName",
+              "channel": "profile",
+              "target": {
+                "kind": "public"
+              },
+              "prerequisites": [
+                "identified"
+              ]
+            },
+            {
+              "valuePath": "profileBackground.*.description",
+              "channel": "profile",
+              "target": {
+                "kind": "public"
+              },
+              "prerequisites": [
+                "identified"
+              ]
+            },
+            {
+              "valuePath": "psycheDisposition.tendencies.*.manifestationDescription",
+              "channel": "narrator",
+              "target": {
+                "kind": "narrator",
+                "perspective": "external"
+              },
+              "prerequisites": [
+                "observed"
+              ]
+            }
+          ]
+        },
+        "publicPresentation": {
+          "description": "夜航の灯守・ネヴァ\n\n夜航路の灯守として、迷う旅人に目印を残してきた。",
+          "projectionContractVersion": 2,
+          "projectionDigest": "e8ac100ff4723dfe44e8a0e6ea0994765535b426d44ab9b5122909375f800cb6",
+          "descriptionInputDigest": "baef741eab91aa88d832e42652901b76eda53bc9e2e818c2d0921e6b5ad081bb",
+          "segments": [
+            {
+              "id": "identity",
+              "text": "夜航の灯守・ネヴァ",
+              "kind": "fact",
+              "supportRefs": [
+                "identity.displayName"
+              ]
+            },
+            {
+              "id": "role",
+              "text": "夜航路の灯守として、迷う旅人に目印を残してきた。",
+              "kind": "fact",
+              "supportRefs": [
+                "profileBackground.background-night-route"
+              ]
+            }
+          ],
+          "claimValidation": {
+            "contractVersion": 1,
+            "validatorContract": "character-profile-claim-validator-v1",
+            "projectionDigest": "e8ac100ff4723dfe44e8a0e6ea0994765535b426d44ab9b5122909375f800cb6",
+            "segments": [
+              {
+                "segmentId": "identity",
+                "verdict": "supported",
+                "supportRefs": [
+                  "identity.displayName"
+                ],
+                "riskCodes": []
+              },
+              {
+                "segmentId": "role",
+                "verdict": "supported",
+                "supportRefs": [
+                  "profileBackground.background-night-route"
+                ],
+                "riskCodes": []
+              }
+            ]
+          }
+        },
+        "provenance": {
+          "sourceKind": "create_instruction",
+          "sourceDigest": "70d125debd01ebc5bbf201b4610000b2bd87c9e39e27063f5ba00f31d3d3d2b3",
+          "attemptId": "local-stage-trial-neva-v3",
+          "structureGeneratorContract": "local-manual-v3-candidate-2026-09-18",
+          "descriptionGeneratorContract": "local-manual-public-presentation-2026-09-18"
+        },
+        "compilerCompatibility": [
+          {
+            "consumer": "character-profile",
+            "version": 2
+          },
+          {
+            "consumer": "battle-mechanics",
+            "version": 3
+          },
+          {
+            "consumer": "psyche-trait-profile",
+            "version": 1
+          },
+          {
+            "consumer": "character-conscious-self",
+            "version": 3
+          },
+          {
+            "consumer": "character-action-norms",
+            "version": 3
+          },
+          {
+            "consumer": "character-mechanical-conflict-fallback",
+            "version": 1
+          },
+          {
+            "consumer": "character-relationship",
+            "version": 2
+          }
+        ],
+        "deferredValues": {
+          "contractVersion": 1,
+          "values": []
+        }
+      },
+      "compiler": {
+        "actionNorms": {
+          "contractVersion": 3,
+          "norms": [
+            {
+              "id": "norm-read-the-current",
+              "when": {
+                "match": "any",
+                "clauses": [
+                  {
+                    "kind": "counterpart_condition",
+                    "operator": "is",
+                    "value": "strained"
+                  },
+                  {
+                    "kind": "observed_event_kind",
+                    "operator": "is",
+                    "value": "damage"
+                  }
+                ]
+              },
+              "response": {
+                "disposition": "prefer",
+                "actionRefs": [
+                  "skill-lantern-feint"
+                ],
+                "actionKinds": [],
+                "tacticTags": [
+                  "measured-counter",
+                  "precision"
+                ]
+              },
+              "priority": 76,
+              "force": "preference",
+              "exceptions": []
+            },
+            {
+              "id": "norm-protect-the-wick",
+              "when": {
+                "match": "all",
+                "clauses": [
+                  {
+                    "kind": "self_condition",
+                    "operator": "is",
+                    "value": "critical"
+                  }
+                ]
+              },
+              "response": {
+                "disposition": "prefer",
+                "actionRefs": [
+                  "skill-wick-guard",
+                  "basic-action"
+                ],
+                "actionKinds": [],
+                "tacticTags": [
+                  "preserve-light"
+                ]
+              },
+              "priority": 92,
+              "force": "commitment",
+              "exceptions": []
+            }
+          ],
+          "actionCatalog": [
+            {
+              "actionRef": "basic-action",
+              "actionKind": "basic_action",
+              "tacticTags": []
+            },
+            {
+              "actionRef": "skill-lantern-feint",
+              "actionKind": "skill",
+              "tacticTags": []
+            },
+            {
+              "actionRef": "skill-wick-guard",
+              "actionKind": "skill",
+              "tacticTags": []
+            }
+          ]
+        },
+        "consciousGuidance": {
+          "contractVersion": 1,
+          "entries": [
+            {
+              "id": "guidance-leave-a-way-home",
+              "applicability": {
+                "match": "all",
+                "clauses": [
+                  {
+                    "kind": "battle_phase",
+                    "operator": "is",
+                    "value": "turn"
+                  }
+                ]
+              },
+              "statement": "勝つために相手を追い詰めても、帰る余地まで消さない。",
+              "priority": 68,
+              "force": "commitment",
+              "selfAwareness": "aware",
+              "exceptions": [],
+              "description": {
+                "text": "灯守として、勝敗と退路を同時に考える。",
+                "consumerTags": [
+                  "profile-generator",
+                  "battle-mechanics"
+                ],
+                "sourceSupportRefs": [
+                  "psycheDisposition.coreNeeds.0"
+                ]
+              }
+            }
+          ]
+        },
+        "mechanicalConflictFallbacks": {
+          "contractVersion": 1,
+          "entries": [
+            {
+              "id": "fallback-keep-the-wick",
+              "applicability": {
+                "match": "all",
+                "clauses": [
+                  {
+                    "kind": "self_condition",
+                    "operator": "is",
+                    "value": "critical"
+                  }
+                ]
+              },
+              "orderedActionRefs": [
+                "skill-wick-guard",
+                "basic-action"
+              ],
+              "priority": 96,
+              "receiptContract": "character-mechanical-conflict-receipt-v1"
+            }
+          ]
+        },
+        "compilerInputsV4": {
+          "psycheTraits": {
+            "adverseSensitivity": 620,
+            "uncertaintySensitivity": 760,
+            "recoverySpeed": 420,
+            "irritationPersistence": 280,
+            "anxietyPersistence": 460,
+            "approachTendency": 540,
+            "withdrawalTendency": 630,
+            "impulseInhibition": 780,
+            "expressionRestraint": 700
+          },
+          "consciousSelf": {
+            "contractVersion": 2,
+            "displayName": "夜航の灯守・ネヴァ",
+            "background": [
+              "嵐の夜ほど灯を高く掲げ、帰路を失う者を待つ役目。"
+            ],
+            "tendencies": [
+              "不確かな攻勢にはすぐ反応せず、相手の癖を測る。"
+            ],
+            "actionPrinciples": [
+              "相手の流れが乱れたら、灯影の誘いで主導権を取り返す。",
+              "灯を失いそうなときは、攻め急がず芯火の守りを優先する。"
+            ],
+            "speech": {
+              "register": "既存プロフィールからは特定しない",
+              "cadence": "既存プロフィールからは特定しない",
+              "sentenceLength": "mixed",
+              "vocabularyHabits": [],
+              "examples": []
+            }
+          },
+          "actionNorms": {
+            "contractVersion": 3,
+            "norms": [
+              {
+                "id": "norm-read-the-current",
+                "when": {
+                  "match": "any",
+                  "clauses": [
+                    {
+                      "kind": "counterpart_condition",
+                      "operator": "is",
+                      "value": "strained"
+                    },
+                    {
+                      "kind": "observed_event_kind",
+                      "operator": "is",
+                      "value": "damage"
+                    }
+                  ]
+                },
+                "response": {
+                  "disposition": "prefer",
+                  "actionRefs": [
+                    "skill-lantern-feint"
+                  ],
+                  "actionKinds": [],
+                  "tacticTags": [
+                    "measured-counter",
+                    "precision"
+                  ]
+                },
+                "priority": 76,
+                "force": "preference",
+                "exceptions": []
+              },
+              {
+                "id": "norm-protect-the-wick",
+                "when": {
+                  "match": "all",
+                  "clauses": [
+                    {
+                      "kind": "self_condition",
+                      "operator": "is",
+                      "value": "critical"
+                    }
+                  ]
+                },
+                "response": {
+                  "disposition": "prefer",
+                  "actionRefs": [
+                    "skill-wick-guard",
+                    "basic-action"
+                  ],
+                  "actionKinds": [],
+                  "tacticTags": [
+                    "preserve-light"
+                  ]
+                },
+                "priority": 92,
+                "force": "commitment",
+                "exceptions": []
+              }
+            ],
+            "actionCatalog": [
+              {
+                "actionRef": "basic-action",
+                "actionKind": "basic_action",
+                "tacticTags": []
+              },
+              {
+                "actionRef": "skill-lantern-feint",
+                "actionKind": "skill",
+                "tacticTags": []
+              },
+              {
+                "actionRef": "skill-wick-guard",
+                "actionKind": "skill",
+                "tacticTags": []
+              }
+            ]
+          },
+          "consciousGuidance": {
+            "contractVersion": 1,
+            "entries": [
+              {
+                "id": "guidance-leave-a-way-home",
+                "applicability": {
+                  "match": "all",
+                  "clauses": [
+                    {
+                      "kind": "battle_phase",
+                      "operator": "is",
+                      "value": "turn"
+                    }
+                  ]
+                },
+                "statement": "勝つために相手を追い詰めても、帰る余地まで消さない。",
+                "priority": 68,
+                "force": "commitment",
+                "selfAwareness": "aware",
+                "exceptions": [],
+                "description": {
+                  "text": "灯守として、勝敗と退路を同時に考える。",
+                  "consumerTags": [
+                    "profile-generator",
+                    "battle-mechanics"
+                  ],
+                  "sourceSupportRefs": [
+                    "psycheDisposition.coreNeeds.0"
+                  ]
+                }
+              }
+            ]
+          },
+          "mechanicalConflictFallbacks": {
+            "contractVersion": 1,
+            "entries": [
+              {
+                "id": "fallback-keep-the-wick",
+                "applicability": {
+                  "match": "all",
+                  "clauses": [
+                    {
+                      "kind": "self_condition",
+                      "operator": "is",
+                      "value": "critical"
+                    }
+                  ]
+                },
+                "orderedActionRefs": [
+                  "skill-wick-guard",
+                  "basic-action"
+                ],
+                "priority": 96,
+                "receiptContract": "character-mechanical-conflict-receipt-v1"
+              }
+            ]
+          }
+        }
+      },
+      "templateEnvelopeDigest": "50edf23389df253762378ba622537cff3d86722f613693b6a92796a7624d307f",
+      "definitionDigest": "16f454b05b9139df9602bee95ba6c131af9f8fc8330446a61614fb9171bfcb18",
+      "compilerDigest": "82fb776b81a726da057be82f64154b6861497fd77efdae09e372c2501f14f559",
+      "registrationIdentity": "unassigned: normal authoring rewrites provenance.attemptId; Stage generation ID and actual envelope digest must be reviewed and read back in vt106"
+    },
+    {
+      "id": "rio",
+      "source": {
+        "candidateId": "stage-trial-rio",
+        "displayName": "潮騒の記録士・リオ",
+        "tags": [
+          "new-v3-candidate",
+          "tide-scribe",
+          "adaptive"
+        ],
+        "traits": [
+          "変化を記録する",
+          "機を待つ",
+          "仲間の動きを読む"
+        ],
+        "narrativeBlurb": "潮の変化を読み、戦場の流れを短い記録に変えて次の一手を選ぶ。"
+      },
+      "envelope": {
+        "envelopeVersion": 2,
+        "definitionSchema": {
+          "family": "character",
+          "version": 3
+        },
+        "definition": {
+          "identity": {
+            "displayName": "潮騒の記録士・リオ",
+            "names": [
+              {
+                "id": "name-rio-scribe",
+                "kind": "epithet",
+                "value": "記録士",
+                "description": {
+                  "text": "潮の変化を記録し、次の機を探す役目を示す呼び名。",
+                  "consumerTags": [
+                    "profile-generator",
+                    "battle-mechanics"
+                  ],
+                  "sourceSupportRefs": [
+                    "identity.names.0"
+                  ]
+                }
+              }
+            ],
+            "presentation": {
+              "form": null,
+              "gender": null,
+              "ageDescription": null,
+              "pronouns": []
+            },
+            "tags": [
+              "new-v3-candidate",
+              "tide-scribe",
+              "adaptive"
+            ]
+          },
+          "appearance": {
+            "publicSummary": "青灰の記録衣と、潮の音を刻む金属板を身につけた若い旅人。",
+            "details": [],
+            "visualPrompt": "an adaptive tide scribe in blue-gray travel clothes with a resonant metal tablet",
+            "portrait": null
+          },
+          "profileBackground": [
+            {
+              "id": "background-tide-notes",
+              "kind": "role",
+              "summary": "潮の観測所で、短い記録から船の進路を組み立ててきた。",
+              "description": {
+                "text": "波の高さと音を刻み、変わり目を見つけて仲間へ知らせる役目。",
+                "consumerTags": [
+                  "profile-generator",
+                  "battle-mechanics"
+                ],
+                "sourceSupportRefs": [
+                  "identity.displayName"
+                ]
+              },
+              "selfAwareness": "aware"
+            }
+          ],
+          "psycheDisposition": {
+            "dynamicsVersion": "psyche-trait-profile-v1",
+            "dynamics": {
+              "adverseSensitivity": 540,
+              "uncertaintySensitivity": 690,
+              "recoverySpeed": 660,
+              "irritationPersistence": 220,
+              "anxietyPersistence": 350,
+              "approachTendency": 680,
+              "withdrawalTendency": 390,
+              "impulseInhibition": 610,
+              "expressionRestraint": 460
+            },
+            "coreNeeds": [
+              {
+                "id": "need-record-the-turn",
+                "description": {
+                  "text": "変化を見落とさず、次の一手に活かしたい。",
+                  "consumerTags": [
+                    "profile-generator",
+                    "battle-mechanics"
+                  ],
+                  "sourceSupportRefs": [
+                    "profileBackground.0"
+                  ]
+                },
+                "selfAwareness": "aware"
+              }
+            ],
+            "tendencies": [
+              {
+                "id": "tendency-follow-the-current",
+                "label": "流れの変化に合わせる",
+                "backgroundRefs": [
+                  "background-tide-notes"
+                ],
+                "triggerKinds": [
+                  "uncertainty",
+                  "environmental_change"
+                ],
+                "selfAwareness": "aware",
+                "tendencyDescription": {
+                  "text": "状況が変わるほど、直前の記録を捨てずに読み替える。",
+                  "consumerTags": [
+                    "profile-generator",
+                    "battle-mechanics"
+                  ],
+                  "sourceSupportRefs": [
+                    "psycheDisposition.coreNeeds.0"
+                  ]
+                },
+                "manifestationDescription": {
+                  "text": "相手の同じ動きが続かなければ、待つより返し波の好機を探す。",
+                  "consumerTags": [
+                    "profile-generator",
+                    "battle-mechanics"
+                  ],
+                  "sourceSupportRefs": [
+                    "psycheDisposition.tendencies.0"
+                  ]
+                }
+              }
+            ],
+            "description": {
+              "text": "記録を過去の固定ではなく、変化に追いつくための道具として扱う。",
+              "consumerTags": [
+                "profile-generator",
+                "battle-mechanics"
+              ],
+              "sourceSupportRefs": [
+                "psycheDisposition.tendencies.0"
+              ]
+            }
+          },
+          "speechPolicy": {
+            "selfAwareness": "aware",
+            "frequency": "measured",
+            "phasePolicy": {
+              "prologue": "allow",
+              "turn": "allow",
+              "aftermath": "allow"
+            },
+            "reactTo": [
+              "direct_address",
+              "self_impact",
+              "counterpart_impact",
+              "ambient_change"
+            ],
+            "silenceRules": [],
+            "register": "既存プロフィールからは特定しない",
+            "cadence": "既存プロフィールからは特定しない",
+            "sentenceLength": "mixed",
+            "vocabularyHabits": [],
+            "addressRules": [],
+            "selfReferenceNameId": null,
+            "examples": [],
+            "counterexamples": [],
+            "description": null
+          },
+          "relationshipSeeds": [],
+          "combat": {
+            "parameters": {
+              "hp": 96,
+              "maxHp": 96,
+              "mp": 44,
+              "maxMp": 44,
+              "stamina": 50,
+              "maxStamina": 50,
+              "atk": 12,
+              "def": 9,
+              "spd": 13,
+              "mag": 10,
+              "res": 10,
+              "focus": 16,
+              "luck": 10
+            },
+            "flags": {
+              "canFight": true,
+              "irreversibleIncapacitated": false
+            }
+          },
+          "capabilities": {
+            "basicAction": {
+              "id": "basic-action",
+              "name": "潮刻の打ち込み",
+              "description": {
+                "text": "金属板の反響で相手の歩幅を測り、短く打ち込む。",
+                "consumerTags": [
+                  "profile-generator",
+                  "battle-mechanics",
+                  "conscious-action",
+                  "conscious-expression"
+                ],
+                "sourceSupportRefs": []
+              },
+              "kind": "basic",
+              "mechanics": {
+                "targetParameter": "hp",
+                "scalingParameter": "atk",
+                "resistanceParameter": "def",
+                "power": 0.9,
+                "costMp": 0,
+                "costStamina": 0,
+                "effects": [],
+                "constraints": {
+                  "reach": "same_area",
+                  "requiresSight": false,
+                  "mobility": "limited",
+                  "requiresSpeech": false,
+                  "requiresUsableHeldObject": false
+                }
+              },
+              "tacticTags": [],
+              "expressionNotes": null
+            },
+            "skills": [
+              {
+                "id": "skill-tide-reversal",
+                "name": "返し波",
+                "description": {
+                  "text": "受けた勢いを読み替え、相手の隙へ返す。",
+                  "consumerTags": [
+                    "profile-generator",
+                    "battle-mechanics",
+                    "conscious-action",
+                    "conscious-expression"
+                  ],
+                  "sourceSupportRefs": []
+                },
+                "kind": "special",
+                "mechanics": {
+                  "targetParameter": "hp",
+                  "scalingParameter": "atk",
+                  "resistanceParameter": "def",
+                  "power": 1.25,
+                  "costMp": 9,
+                  "costStamina": 3,
+                  "effects": [],
+                  "constraints": {
+                    "reach": "same_area",
+                    "requiresSight": false,
+                    "mobility": "limited",
+                    "requiresSpeech": false,
+                    "requiresUsableHeldObject": false
+                  }
+                },
+                "tacticTags": [],
+                "expressionNotes": null
+              },
+              {
+                "id": "skill-current-note",
+                "name": "流れの記譜",
+                "description": {
+                  "text": "戦場の流れを記録し、次の判断を整える。",
+                  "consumerTags": [
+                    "profile-generator",
+                    "battle-mechanics",
+                    "conscious-action",
+                    "conscious-expression"
+                  ],
+                  "sourceSupportRefs": []
+                },
+                "kind": "defend",
+                "mechanics": {
+                  "targetParameter": "hp",
+                  "scalingParameter": "atk",
+                  "resistanceParameter": "def",
+                  "power": 0.45,
+                  "costMp": 6,
+                  "costStamina": 0,
+                  "effects": [],
+                  "constraints": {
+                    "reach": "same_area",
+                    "requiresSight": false,
+                    "mobility": "limited",
+                    "requiresSpeech": false,
+                    "requiresUsableHeldObject": false
+                  }
+                },
+                "tacticTags": [],
+                "expressionNotes": null
+              }
+            ]
+          },
+          "inventory": [],
+          "initialLoadout": [],
+          "expressionNotes": {
+            "text": "潮の変化を読み、戦場の流れを短い記録に変えて次の一手を選ぶ。",
+            "consumerTags": [
+              "profile-generator",
+              "deep-psyche",
+              "conscious-expression"
+            ],
+            "sourceSupportRefs": []
+          },
+          "schemaVersion": 3,
+          "actionNorms": [
+            {
+              "id": "norm-return-the-surge",
+              "when": {
+                "match": "all",
+                "clauses": [
+                  {
+                    "kind": "observed_event_kind",
+                    "operator": "is",
+                    "value": "situation"
+                  },
+                  {
+                    "kind": "self_condition",
+                    "operator": "is",
+                    "value": "steady"
+                  }
+                ]
+              },
+              "response": {
+                "disposition": "prefer",
+                "actionRefs": [
+                  "skill-tide-reversal"
+                ],
+                "actionKinds": [],
+                "tacticTags": [
+                  "adaptive-counter",
+                  "tempo-shift"
+                ]
+              },
+              "priority": 84,
+              "force": "preference",
+              "exceptions": [],
+              "description": {
+                "text": "戦況が動いた瞬間、落ち着きを保ったまま返し波で主導権を取りに行く。",
+                "consumerTags": [
+                  "profile-generator",
+                  "battle-mechanics"
+                ],
+                "sourceSupportRefs": [
+                  "psycheDisposition.tendencies.0"
+                ]
+              }
+            },
+            {
+              "id": "norm-rewrite-the-note",
+              "when": {
+                "match": "all",
+                "clauses": [
+                  {
+                    "kind": "self_condition",
+                    "operator": "is",
+                    "value": "critical"
+                  }
+                ]
+              },
+              "response": {
+                "disposition": "prefer",
+                "actionRefs": [
+                  "skill-current-note",
+                  "basic-action"
+                ],
+                "actionKinds": [],
+                "tacticTags": [
+                  "reassess",
+                  "preserve-tempo"
+                ]
+              },
+              "priority": 88,
+              "force": "commitment",
+              "exceptions": [],
+              "description": {
+                "text": "危機では記録を更新し、流れの記譜から立て直しを始める。",
+                "consumerTags": [
+                  "profile-generator",
+                  "battle-mechanics"
+                ],
+                "sourceSupportRefs": [
+                  "psycheDisposition.coreNeeds.0"
+                ]
+              }
+            }
+          ],
+          "consciousGuidance": [
+            {
+              "id": "guidance-learn-before-closing",
+              "applicability": {
+                "match": "all",
+                "clauses": [
+                  {
+                    "kind": "battle_phase",
+                    "operator": "is",
+                    "value": "turn"
+                  }
+                ]
+              },
+              "statement": "決着を急ぐ前に、いま変わった流れを一つだけ読み取る。",
+              "priority": 72,
+              "force": "commitment",
+              "selfAwareness": "aware",
+              "exceptions": [],
+              "description": {
+                "text": "記録士として、勝負を終える一手にも観測の余地を残す。",
+                "consumerTags": [
+                  "profile-generator",
+                  "battle-mechanics"
+                ],
+                "sourceSupportRefs": [
+                  "psycheDisposition.coreNeeds.0"
+                ]
+              }
+            }
+          ],
+          "mechanicalConflictFallbacks": [
+            {
+              "id": "fallback-rewrite-the-note",
+              "applicability": {
+                "match": "all",
+                "clauses": [
+                  {
+                    "kind": "self_condition",
+                    "operator": "is",
+                    "value": "critical"
+                  }
+                ]
+              },
+              "orderedActionRefs": [
+                "skill-current-note",
+                "basic-action"
+              ],
+              "priority": 94,
+              "receiptContract": "character-mechanical-conflict-receipt-v1"
+            }
+          ]
+        },
+        "disclosurePolicy": {
+          "version": 1,
+          "rules": [
+            {
+              "valuePath": "identity.displayName",
+              "channel": "profile",
+              "target": {
+                "kind": "public"
+              },
+              "prerequisites": [
+                "identified"
+              ]
+            },
+            {
+              "valuePath": "profileBackground.*.description",
+              "channel": "profile",
+              "target": {
+                "kind": "public"
+              },
+              "prerequisites": [
+                "identified"
+              ]
+            },
+            {
+              "valuePath": "psycheDisposition.tendencies.*.manifestationDescription",
+              "channel": "narrator",
+              "target": {
+                "kind": "narrator",
+                "perspective": "external"
+              },
+              "prerequisites": [
+                "observed"
+              ]
+            }
+          ]
+        },
+        "publicPresentation": {
+          "description": "潮騒の記録士・リオ\n\n潮の観測所で、短い記録から船の進路を組み立ててきた。",
+          "projectionContractVersion": 2,
+          "projectionDigest": "b2f02efd4324a8f10d422508b6b33b1e2ed2b4e3d230a48da6f72fa8bc3cac69",
+          "descriptionInputDigest": "3546d301ee3f89795f2f7679b7ffaf56983af5120515b494046bff2f582d882a",
+          "segments": [
+            {
+              "id": "identity",
+              "text": "潮騒の記録士・リオ",
+              "kind": "fact",
+              "supportRefs": [
+                "identity.displayName"
+              ]
+            },
+            {
+              "id": "role",
+              "text": "潮の観測所で、短い記録から船の進路を組み立ててきた。",
+              "kind": "fact",
+              "supportRefs": [
+                "profileBackground.background-tide-notes"
+              ]
+            }
+          ],
+          "claimValidation": {
+            "contractVersion": 1,
+            "validatorContract": "character-profile-claim-validator-v1",
+            "projectionDigest": "b2f02efd4324a8f10d422508b6b33b1e2ed2b4e3d230a48da6f72fa8bc3cac69",
+            "segments": [
+              {
+                "segmentId": "identity",
+                "verdict": "supported",
+                "supportRefs": [
+                  "identity.displayName"
+                ],
+                "riskCodes": []
+              },
+              {
+                "segmentId": "role",
+                "verdict": "supported",
+                "supportRefs": [
+                  "profileBackground.background-tide-notes"
+                ],
+                "riskCodes": []
+              }
+            ]
+          }
+        },
+        "provenance": {
+          "sourceKind": "create_instruction",
+          "sourceDigest": "615856b5b7d26d10ad812e0e78c040778ee4e138c3f26a3f190a786168832e7e",
+          "attemptId": "local-stage-trial-rio-v3",
+          "structureGeneratorContract": "local-manual-v3-candidate-2026-09-18",
+          "descriptionGeneratorContract": "local-manual-public-presentation-2026-09-18"
+        },
+        "compilerCompatibility": [
+          {
+            "consumer": "character-profile",
+            "version": 2
+          },
+          {
+            "consumer": "battle-mechanics",
+            "version": 3
+          },
+          {
+            "consumer": "psyche-trait-profile",
+            "version": 1
+          },
+          {
+            "consumer": "character-conscious-self",
+            "version": 3
+          },
+          {
+            "consumer": "character-action-norms",
+            "version": 3
+          },
+          {
+            "consumer": "character-mechanical-conflict-fallback",
+            "version": 1
+          },
+          {
+            "consumer": "character-relationship",
+            "version": 2
+          }
+        ],
+        "deferredValues": {
+          "contractVersion": 1,
+          "values": []
+        }
+      },
+      "compiler": {
+        "actionNorms": {
+          "contractVersion": 3,
+          "norms": [
+            {
+              "id": "norm-return-the-surge",
+              "when": {
+                "match": "all",
+                "clauses": [
+                  {
+                    "kind": "observed_event_kind",
+                    "operator": "is",
+                    "value": "situation"
+                  },
+                  {
+                    "kind": "self_condition",
+                    "operator": "is",
+                    "value": "steady"
+                  }
+                ]
+              },
+              "response": {
+                "disposition": "prefer",
+                "actionRefs": [
+                  "skill-tide-reversal"
+                ],
+                "actionKinds": [],
+                "tacticTags": [
+                  "adaptive-counter",
+                  "tempo-shift"
+                ]
+              },
+              "priority": 84,
+              "force": "preference",
+              "exceptions": []
+            },
+            {
+              "id": "norm-rewrite-the-note",
+              "when": {
+                "match": "all",
+                "clauses": [
+                  {
+                    "kind": "self_condition",
+                    "operator": "is",
+                    "value": "critical"
+                  }
+                ]
+              },
+              "response": {
+                "disposition": "prefer",
+                "actionRefs": [
+                  "skill-current-note",
+                  "basic-action"
+                ],
+                "actionKinds": [],
+                "tacticTags": [
+                  "reassess",
+                  "preserve-tempo"
+                ]
+              },
+              "priority": 88,
+              "force": "commitment",
+              "exceptions": []
+            }
+          ],
+          "actionCatalog": [
+            {
+              "actionRef": "basic-action",
+              "actionKind": "basic_action",
+              "tacticTags": []
+            },
+            {
+              "actionRef": "skill-tide-reversal",
+              "actionKind": "skill",
+              "tacticTags": []
+            },
+            {
+              "actionRef": "skill-current-note",
+              "actionKind": "skill",
+              "tacticTags": []
+            }
+          ]
+        },
+        "consciousGuidance": {
+          "contractVersion": 1,
+          "entries": [
+            {
+              "id": "guidance-learn-before-closing",
+              "applicability": {
+                "match": "all",
+                "clauses": [
+                  {
+                    "kind": "battle_phase",
+                    "operator": "is",
+                    "value": "turn"
+                  }
+                ]
+              },
+              "statement": "決着を急ぐ前に、いま変わった流れを一つだけ読み取る。",
+              "priority": 72,
+              "force": "commitment",
+              "selfAwareness": "aware",
+              "exceptions": [],
+              "description": {
+                "text": "記録士として、勝負を終える一手にも観測の余地を残す。",
+                "consumerTags": [
+                  "profile-generator",
+                  "battle-mechanics"
+                ],
+                "sourceSupportRefs": [
+                  "psycheDisposition.coreNeeds.0"
+                ]
+              }
+            }
+          ]
+        },
+        "mechanicalConflictFallbacks": {
+          "contractVersion": 1,
+          "entries": [
+            {
+              "id": "fallback-rewrite-the-note",
+              "applicability": {
+                "match": "all",
+                "clauses": [
+                  {
+                    "kind": "self_condition",
+                    "operator": "is",
+                    "value": "critical"
+                  }
+                ]
+              },
+              "orderedActionRefs": [
+                "skill-current-note",
+                "basic-action"
+              ],
+              "priority": 94,
+              "receiptContract": "character-mechanical-conflict-receipt-v1"
+            }
+          ]
+        },
+        "compilerInputsV4": {
+          "psycheTraits": {
+            "adverseSensitivity": 540,
+            "uncertaintySensitivity": 690,
+            "recoverySpeed": 660,
+            "irritationPersistence": 220,
+            "anxietyPersistence": 350,
+            "approachTendency": 680,
+            "withdrawalTendency": 390,
+            "impulseInhibition": 610,
+            "expressionRestraint": 460
+          },
+          "consciousSelf": {
+            "contractVersion": 2,
+            "displayName": "潮騒の記録士・リオ",
+            "background": [
+              "波の高さと音を刻み、変わり目を見つけて仲間へ知らせる役目。"
+            ],
+            "tendencies": [
+              "状況が変わるほど、直前の記録を捨てずに読み替える。"
+            ],
+            "actionPrinciples": [
+              "戦況が動いた瞬間、落ち着きを保ったまま返し波で主導権を取りに行く。",
+              "危機では記録を更新し、流れの記譜から立て直しを始める。"
+            ],
+            "speech": {
+              "register": "既存プロフィールからは特定しない",
+              "cadence": "既存プロフィールからは特定しない",
+              "sentenceLength": "mixed",
+              "vocabularyHabits": [],
+              "examples": []
+            }
+          },
+          "actionNorms": {
+            "contractVersion": 3,
+            "norms": [
+              {
+                "id": "norm-return-the-surge",
+                "when": {
+                  "match": "all",
+                  "clauses": [
+                    {
+                      "kind": "observed_event_kind",
+                      "operator": "is",
+                      "value": "situation"
+                    },
+                    {
+                      "kind": "self_condition",
+                      "operator": "is",
+                      "value": "steady"
+                    }
+                  ]
+                },
+                "response": {
+                  "disposition": "prefer",
+                  "actionRefs": [
+                    "skill-tide-reversal"
+                  ],
+                  "actionKinds": [],
+                  "tacticTags": [
+                    "adaptive-counter",
+                    "tempo-shift"
+                  ]
+                },
+                "priority": 84,
+                "force": "preference",
+                "exceptions": []
+              },
+              {
+                "id": "norm-rewrite-the-note",
+                "when": {
+                  "match": "all",
+                  "clauses": [
+                    {
+                      "kind": "self_condition",
+                      "operator": "is",
+                      "value": "critical"
+                    }
+                  ]
+                },
+                "response": {
+                  "disposition": "prefer",
+                  "actionRefs": [
+                    "skill-current-note",
+                    "basic-action"
+                  ],
+                  "actionKinds": [],
+                  "tacticTags": [
+                    "reassess",
+                    "preserve-tempo"
+                  ]
+                },
+                "priority": 88,
+                "force": "commitment",
+                "exceptions": []
+              }
+            ],
+            "actionCatalog": [
+              {
+                "actionRef": "basic-action",
+                "actionKind": "basic_action",
+                "tacticTags": []
+              },
+              {
+                "actionRef": "skill-tide-reversal",
+                "actionKind": "skill",
+                "tacticTags": []
+              },
+              {
+                "actionRef": "skill-current-note",
+                "actionKind": "skill",
+                "tacticTags": []
+              }
+            ]
+          },
+          "consciousGuidance": {
+            "contractVersion": 1,
+            "entries": [
+              {
+                "id": "guidance-learn-before-closing",
+                "applicability": {
+                  "match": "all",
+                  "clauses": [
+                    {
+                      "kind": "battle_phase",
+                      "operator": "is",
+                      "value": "turn"
+                    }
+                  ]
+                },
+                "statement": "決着を急ぐ前に、いま変わった流れを一つだけ読み取る。",
+                "priority": 72,
+                "force": "commitment",
+                "selfAwareness": "aware",
+                "exceptions": [],
+                "description": {
+                  "text": "記録士として、勝負を終える一手にも観測の余地を残す。",
+                  "consumerTags": [
+                    "profile-generator",
+                    "battle-mechanics"
+                  ],
+                  "sourceSupportRefs": [
+                    "psycheDisposition.coreNeeds.0"
+                  ]
+                }
+              }
+            ]
+          },
+          "mechanicalConflictFallbacks": {
+            "contractVersion": 1,
+            "entries": [
+              {
+                "id": "fallback-rewrite-the-note",
+                "applicability": {
+                  "match": "all",
+                  "clauses": [
+                    {
+                      "kind": "self_condition",
+                      "operator": "is",
+                      "value": "critical"
+                    }
+                  ]
+                },
+                "orderedActionRefs": [
+                  "skill-current-note",
+                  "basic-action"
+                ],
+                "priority": 94,
+                "receiptContract": "character-mechanical-conflict-receipt-v1"
+              }
+            ]
+          }
+        }
+      },
+      "templateEnvelopeDigest": "a9ee9fda59bb0bdb1b8d77bbff300dac57ef372dfb41e1786e67691635c38252",
+      "definitionDigest": "cda72b7a82f392ce9f2e61b74a0d0eb0a0c09b9b509fed0edf5c07c9a61de5ce",
+      "compilerDigest": "907507e004e01988a48ccbc38c1faf1ad5c57df25431cc7b4d71ab58369fab24",
+      "registrationIdentity": "unassigned: normal authoring rewrites provenance.attemptId; Stage generation ID and actual envelope digest must be reviewed and read back in vt106"
+    }
+  ]
+}

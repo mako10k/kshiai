@@ -1,0 +1,66 @@
+domain CUTOVER_PREPARATION:
+  description "Bounded vt104 recovery rehearsal and stop-control preparation."
+evidence REQUEST:
+  "Owner says proceed after shared-production upper30min preparation report. This authorizes preparation, not cloud stop, production snapshot export, restore or release."
+evidence BASE:
+  "Active cc304 worktree clean at f58ac2f; fresh authenticated fetch shows branch ahead1 behind0 and main e31c487. Existing source candidate remains exact."
+evidence RECOVERY:
+  "Production observed PostgreSQL17.6. Existing local pg_dump16.15 is incompatible for a newer major source; no production restore evidence. Official PostgreSQL APT publishes Ubuntu24.04 amd64 PostgreSQL17 packages."
+premise SCOPE:
+  "Download official package bytes to one new temporary runtime, verify package SHA256 against signed repository metadata when possible, extract without system installation. Start only a new loopback-bound TLS-verified local synthetic cluster with an isolated Unix socket, no external DB credential or private data. Exercise exact checked-in migrations with synthetic rows, pg_dump custom archive, isolated restore and independent contents/schema/constraint readback. Stop cluster afterwards."
+premise LIMIT:
+  "Synthetic rehearsal proves local tooling and schema/data preservation only. It does not establish production backup completeness, Supabase roles/extensions/RLS compatibility, production restore authority or30min feasibility. Preserve each limitation."
+premise CONTROL:
+  "Inspect current startup/route/dispatcher controls and prepare detailed proposed file set and test conditions mapped to Accepted stopped-cutover design. Do not implement unresolved external gate behavior or change Accepted semantics."
+premise RECORD:
+  "Resume canonical vt104 measuring current authorized preparation, suspend when bounded packet is complete, preserve independent person effort as unmeasured and retain unfinished task status. Write in-scope evidence only."
+pending SOURCE:
+  "Runtime dependency resolution and signed metadata may fail; then record exact failed prerequisite rather than weaken verification or install shared system packages."
+decision PREPARE based_on REQUEST, BASE, RECOVERY, SCOPE, LIMIT, CONTROL, RECORD:
+  "Execute local synthetic recovery rehearsal and bounded control inventory; report remaining real snapshot/stop/promotion gates. No production/cloud/remote writes."
+evidence ACL_DIFF:
+  "First rehearsal: all table-row hashes and indexes match restored database; second post-migration catalog comparison differs only for character_focused_authoring_payloads relacl. Source has explicit owner-only ACL while restore has NULL ACL. No other compared schema field differs."
+premise ACL_CHECK:
+  "Compare effective ACL using aclexplode(coalesce(relacl,acldefault('r',owner))) plus owner identity, RLS flags, constraints and indexes. Independently verify anon/authenticated have no privileges. Retain raw ACL representation difference as a limit, do not silently drop access-control checks. Rerun only the three synthetic databases created by this rehearsal, never configured production."
+decision VERIFY based_on ACL_DIFF, ACL_CHECK, SCOPE, LIMIT:
+  "Perform effective privilege readback and corrected synthetic comparison; preserve initial failed strict representation check."
+evidence RELEASE_REVISION:
+  "release_process flow5 requires authenticated Stage smoke including SSE battle; flow6-7 promotes exact recorded Cloud Run revision and Worker version. Environment updates create a successor revision, so changing an env-only gate cannot silently keep exact Stage revision identity."
+evidence TAG_ROUTE:
+  "Official Cloud Run manual-scaling docs explicitly state service disable0 does not disable tag-only revisions. Old tags must close; a new bounded candidate tag can be proposed under0 service traffic but its actual behavior remains untested."
+premise CANDIDATE_CONTROL:
+  "Draft Proposed ADR0040 and linked Proposed detailed control design: immutable runtime artifacts plus durable operator-owned append-only cutover control revisions and CAS active pointer; closed, bounded operator trial, open. Gate before task/provider/battle side effects, no startup seeding/dispatch in closed, retain existing authenticated owner review/confirm. Exact owner/two attempt IDs/digests/trial keys/budgets and permitted transitions require owner review. No schema or runtime implementation until Accepted direction."
+premise NEW_DATA:
+  "Operator trial itself opens game execution and produces new V3 data. Treat it as the first game opening for recovery: no automatic pre-cutover full DB restore after trial begins. Preserve new data by forward recovery; measure this branch inside30min too."
+decision PROPOSE based_on REQUEST, RELEASE_REVISION, TAG_ROUTE, CANDIDATE_CONTROL, NEW_DATA, CONTROL, LIMIT:
+  "Prepare the complete Japanese candidate, alternatives, risks and unresolved inputs for owner architecture selection. Leave Accepted ADR0039 unchanged; no production actions."
+evidence ACCEPTANCE:
+  "Owner explicitly accepts ADR0040 and linked detail candidate and authorizes local implementation. External/cloud/production/GitHub writes remain excluded by the approved question."
+premise IMPLEMENTATION:
+  "Record Accepted status and exact candidate acceptance locally, resume measured preparation, implement listed repository/control/admission/runtime/route/dispatcher/review/isolated tests. Keep authentication resolution read-only inside cutover admission instead of invoking auth.ts auto-provision or expired-session cleanup before gate. Preserve normal auth behavior when control is unconfigured. Delegate one writer for repository/migration/db and tests; main owns integration and other files."
+decision IMPLEMENT based_on ACCEPTANCE, IMPLEMENTATION, CANDIDATE_CONTROL, NEW_DATA, REQUEST:
+  "Proceed through local implementation and SQLite/PostgreSQL17/typecheck/regression/browser validation. Update candidate source hashes after runtime changes. No production operations or remote writes."
+evidence LOCAL_REVIEW:
+  "Independent current-phase review observed four counterexamples: a stale stopped receipt admits trial with an active closed confirmation; trial generation validation occurs after creation; known accounted provider failure remains indeterminate; configured SQLite startup backfills before admission. HTTP integration also observed unauthenticated route and smoke ACK bypasses. These are local implementation nonconformance, not production observations."
+premise REPAIR:
+  "Preserve Accepted exact-owner exceptions and same-artifact contract. Recheck active permits and settled exact confirmations/current generations at trial transition, validate resolved immutable participant generations before any provider/persistence, distinguish definite accounted provider outcomes from ambiguous transport, require preinitialized SQLite schema for configured runtime, and gate all public routes before auth writes with OIDC-before-task-admission. Exercise actual routes/streams and races on disposable databases."
+decision FIX_LOCAL based_on ACCEPTANCE, IMPLEMENTATION, LOCAL_REVIEW, REPAIR, NEW_DATA:
+  "Repair these producing conditions inside the authorized local implementation and test boundary. Retain failed checks as diagnostic observations. No cloud or production mutation, no arbitrary unknown settlement, and no production feasibility claim from isolated tests."
+evidence CREATION_ORDER:
+  "startBattle resolves immutable participants and calls encounter provider before saving the battle. A provider fence that requires an existing battle rejects this legitimate first call; existing encounter fallback can conceal the rejection. Trial generation precheck also incorrectly decoded V2, while accepted trial is V3."
+premise PROSPECTIVE:
+  "Decode V3 only. Permit pre-save provider work only under trusted async-local creation context bound to the exact admitted HTTP create owner/battle/generation tuple and independently read active sending create permit. Worker/task admission still requires a saved strict V4 battle. Treat CutoverUnavailable as fatal control rejection rather than ordinary provider fallback. Test the positive first-create path as well as rejected paths."
+decision CREATE_FENCE based_on ACCEPTANCE, CREATION_ORDER, PROSPECTIVE, REPAIR:
+  "Implement the prospective provider binding as an internal authorization mechanism preserving the accepted fixed trial. No public scope or provider ceiling expansion."
+evidence FUTURE_TASK:
+  "Trial task adapter initially matches a request digest and logical operation ID containing outbox/receipt/delivery IDs that do not exist until the first battle is created. Trial requests freeze before that creation, so a complete execution packet cannot predeclare these generated identities."
+premise TASK_BINDING:
+  "Predeclare a stable narration task request scope by exact saved battle ID, authenticated task route, task kind, and maximum reservations. Each physical delivery remains validated against its persisted outbox/receipt/generation and saved strict V4 owner/character generations before claim or provider use. Keep open-mode delivery idempotency identity. This changes internal binding representation, not authorized owners, battles, writes, or ceilings."
+decision TASK_FENCE based_on ACCEPTANCE, FUTURE_TASK, TASK_BINDING, REPAIR:
+  "Repair the local task adapter to make the frozen initial trial packet executable while preserving actual delivery checks and physical retry quota. Verify future-generated delivery IDs cannot expand the declared battle scope."
+evidence NORMAL_OWNER:
+  "Legacy provider accounting context is optional observability and its public run header is restricted to e2e accounts. Accepted trial scope permits the fixed existing owner without imposing e2e account eligibility. Requiring that optional run for every trial provider call blocks legitimate normal-owner trials."
+premise OWNER_SCOPE:
+  "Use the already admitted trusted async-local cutover battle operation or creation scope when optional observation context is absent. Independently verify saved strict V4 or exact prospective creation owner/generations/active permit, then reserve the fixed physical provider quota. Keep e2e observation-run access unchanged and retain physical permit result/accounting states. Capture the admitted control snapshot for participant binding through a concurrent close."
+decision OWNER_PROVIDER based_on ACCEPTANCE, NORMAL_OWNER, OWNER_SCOPE, PROSPECTIVE:
+  "Preserve normal-owner trial capability within the same fixed quota and immutable binding. Verify contextless trusted sends succeed once while unbound or wrong-generation calls cannot send."

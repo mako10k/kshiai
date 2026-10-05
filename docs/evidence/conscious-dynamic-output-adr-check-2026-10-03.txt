@@ -1,0 +1,7 @@
+
+> kshiai@0.23.0 adr:check
+> node scripts/check-adrs.mjs docs/adr/0028-versioned-conscious-agency-contract.think docs/adr/0047-phase-scoped-conscious-output-and-mechanical-completion.think
+
+docs/adr/0028-versioned-conscious-agency-contract.think: LLMTHINK audit clean; projection status=Superseded
+docs/adr/0047-phase-scoped-conscious-output-and-mechanical-completion.think: LLMTHINK audit clean; projection status=Accepted
+ADR checks passed: 2 current file(s) audited; 0 pinned historical file(s) excluded

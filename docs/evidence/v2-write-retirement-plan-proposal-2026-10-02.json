@@ -1,0 +1,56 @@
+{
+  "kind": "batch",
+  "mutations": [
+    {
+      "kind": "milestone.add",
+      "id": "cm321",
+      "milestone": {
+        "title": "V2 write retirement source and verification packet frozen"
+      }
+    },
+    {
+      "kind": "task.add",
+      "id": "cc321",
+      "from": "cm000",
+      "to": "cm321",
+      "task": {
+        "title": "Freeze reviewed V2 write retirement and current verification packet",
+        "description": "Owner follow-on objective 2026-10-02: V2 character creation/update retirement with historical display and explicit V3 migration retained. Code and scoped checks exist; freeze reviewed local source, current source-bound tests and a concrete release candidate. No remote writes or runtime completion. Remaining 0.25-0.5 agent h, provisional low confidence. 0.5p is an ordering estimate; earlier code work has no backfilled actuals.",
+        "duration": "0.5p",
+        "status": "planned",
+        "owner": "codex",
+        "requirements": [
+          {
+            "resourceId": "cr001",
+            "units": 1
+          }
+        ],
+        "source": "docs/adr/0043-v3-character-updates-with-historical-v2-display.md"
+      }
+    },
+    {
+      "kind": "task.add",
+      "id": "cc322",
+      "from": "cm321",
+      "to": "cm114",
+      "task": {
+        "title": "Retire V2 writes on exact approved runtime and verify owner paths",
+        "description": "Contribution to final authoring goal: deploy the separately approved frozen V3-only character writer and historical reader changes, then verify ordinary V2 rejection, V3 creation/update and exact old battle profiles. Current trial remains kshiai-api-00147-pos. Preview and canonical public traffic differ. Exact external write target/payload/max writes and rollback need owner decision; no first-trial deployment/disposal permission is reused. Remaining 1-2 agent h provisional low confidence; external approval/CI waits unbounded.",
+        "duration": "2p",
+        "status": "planned",
+        "owner": "user and codex",
+        "requirements": [
+          {
+            "resourceId": "cr001",
+            "units": 1
+          },
+          {
+            "resourceId": "cr002",
+            "units": 1
+          }
+        ],
+        "source": "docs/adr/0043-v3-character-updates-with-historical-v2-display.md"
+      }
+    }
+  ]
+}

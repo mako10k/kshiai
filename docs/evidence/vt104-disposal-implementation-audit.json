@@ -1,0 +1,197 @@
+{
+  "thought_id": "tmp-vt104-disposal-implementation",
+  "id_source": "file",
+  "report": {
+    "engine_version": "0.1.0",
+    "document_id": "tmp-vt104-disposal-implementation",
+    "generated_at": "2026-10-01T11:10:50.830Z",
+    "summary": {
+      "fatal_count": 0,
+      "error_count": 0,
+      "warning_count": 0,
+      "info_count": 1,
+      "hint_count": 7
+    },
+    "results": [
+      {
+        "issue_id": "ISSUE-001",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "IMPLEMENTATION",
+            "role": "domain"
+          }
+        ],
+        "message": "domain IMPLEMENTATION の description は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 2,
+          "column": 3,
+          "text": "Implement owner-approved initial-trial disposal correction while preserving current authentication.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-002",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "OWNER",
+            "role": "evidence",
+            "step_id": "S-OWNER"
+          }
+        ],
+        "message": "evidence OWNER は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 4,
+          "column": 3,
+          "text": "Owner quoted snapshot-required discard and missing receipt schema/order contradiction, then explicitly approved. Prior disclosed local scope includes detailed design, trial-only disposal/preparation entry, frozen finished-outbox accounting, tests and canonical progress. No cloud/DB actual disposal/deploy writes in this approval.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-003",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "CURRENT",
+            "role": "evidence",
+            "step_id": "S-CURRENT"
+          }
+        ],
+        "message": "evidence CURRENT は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 6,
+          "column": 3,
+          "text": "Worktree72f67ea plus in-scope docs/progress; RC4f3/image43d remains frozen. Local auth/proxy8 tests pass. Current source regular cutover requires snapshot and receipt table, shared DB lacks0029.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-004",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "CONTRACT",
+            "role": "premise",
+            "step_id": "S-CONTRACT"
+          }
+        ],
+        "message": "premise CONTRACT は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 8,
+          "column": 3,
+          "text": "Accepted requirementsR3 omit snapshot as trial gate; R4 forbids broad data/user deletion authority; R5 maintains real V3, ownership/auth/secret/accounting. New explicit trial entry uses exact frozen plan, receipt bootstrap and finished outbox accounting; old snapshot entry remains unchanged.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-005",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "DELIVERY",
+            "role": "pending",
+            "step_id": "S-DELIVERY"
+          }
+        ],
+        "message": "pending DELIVERY は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 10,
+          "column": 3,
+          "text": "New source requires fresh identity/CI/prepare before cloud execution. Real stopping/18battle deletion/14outbox account/deployment/callback/provider remain separate exact scopes. Local PostgreSQL17 process must be freshly bound and disposable DB created without replacement.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-006",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "ALTERNATIVE",
+            "role": "premise",
+            "step_id": "S-ALTERNATIVE"
+          }
+        ],
+        "message": "premise ALTERNATIVE は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 12,
+          "column": 3,
+          "text": "Do not manufacture snapshotidentity or duplicate disposal SQL outside repository. Use existing migrationasset0029 only for compatible transactional bootstrap; preserve ledger ordering. If implementation exposes contract contradiction return to design before dependent changes.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-007",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "CODE",
+            "role": "decision",
+            "step_id": "S-CODE"
+          }
+        ],
+        "message": "decision CODE は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 14,
+          "column": 3,
+          "text": "Record accepted design identity; one writer for repository/preparation module/tests, root for strict operator CLI/tests/integration. Run bounded meaningful SQLite/PostgreSQL17 tests, then standard checks; preserve credentials and unfinished state, report full goal still requires deployed owner path.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-008",
+        "category": "semantic_hint",
+        "severity": "info",
+        "target_refs": [
+          {
+            "ref_id": "DELIVERY",
+            "role": "pending",
+            "step_id": "S-DELIVERY"
+          }
+        ],
+        "message": "pending が存在するため、判断の確定度は下げて表示するべきである。",
+        "metadata": {
+          "line": 9,
+          "column": 9,
+          "end_column": 17
+        }
+      }
+    ],
+    "query_results": []
+  }
+}

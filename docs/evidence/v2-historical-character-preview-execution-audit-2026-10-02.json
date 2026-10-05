@@ -1,0 +1,133 @@
+{
+  "thought_id": "docs-evidence-v2-historical-character-preview-execution-2026-10-02",
+  "id_source": "file",
+  "report": {
+    "engine_version": "0.1.0",
+    "document_id": "docs-evidence-v2-historical-character-preview-execution-2026-10-02",
+    "generated_at": "2026-10-02T09:39:29.614Z",
+    "summary": {
+      "fatal_count": 0,
+      "error_count": 0,
+      "warning_count": 0,
+      "info_count": 0,
+      "hint_count": 5
+    },
+    "results": [
+      {
+        "issue_id": "ISSUE-001",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "HISTORICAL_PREVIEW",
+            "role": "domain"
+          }
+        ],
+        "message": "domain HISTORICAL_PREVIEW の description は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 2,
+          "column": 3,
+          "text": "Propose one bounded re-build and same-origin preview update for exact historical character reads.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-002",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "OWNER",
+            "role": "evidence",
+            "step_id": "S-OWNER"
+          }
+        ],
+        "message": "evidence OWNER は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 4,
+          "column": 3,
+          "text": "Owner accepted V2 read-only retention and reported Miki current V2 UI OK but old battle view blocked. Previous approval was one image build and four preview writes on458af76. Latest user-provided goal explicitly permits necessary production, staging and development deployments. Apply the disclosed960a995 preview candidate within that expanded authority.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-003",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "VERIFIED",
+            "role": "evidence",
+            "step_id": "S-VERIFIED"
+          }
+        ],
+        "message": "evidence VERIFIED は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 6,
+          "column": 3,
+          "text": "CLI-audited historical read fix preserves snapshots independently of obsolete executable compiler fields; real saved snapshots match exactly.257 tests, typecheck/static and CI36989694540 on960a995 all pass. Fixed source export exists.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-004",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "BOUNDS",
+            "role": "premise",
+            "step_id": "S-BOUNDS"
+          }
+        ],
+        "message": "premise BOUNDS は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 8,
+          "column": 3,
+          "text": "One executor, one e2-medium1200s Cloud Build to existing GCS and registry, one no-traffic Cloud Run revision, one Worker upload updating existing alias, one old preview tag retarget. Same callback origin, zero auth PATCH, no character/legacy battle writes, data disposal, migration, paid LLM, public promotion, release or merge. Startup system metadata writes and build/runtime costs disclosed. Fresh empty-work and baseline checks gate execution. Unknown write results are read back rather than retried.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-005",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "PROPOSE",
+            "role": "decision",
+            "step_id": "S-PROPOSE"
+          }
+        ],
+        "message": "decision PROPOSE は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 10,
+          "column": 3,
+          "text": "Execute the exact Japanese preview proposal file under the newly granted necessary deployment authority. Fixed960a995 source produces a digest that must match successful build/registry before deployment. Revisionkshiai-api-v2-history-960a995 uses existingv2-retire-458af76 alias and oldtrial tag after successful readback. Same Cloudflare preview alias and backend origin retain existing login callback. Old assets remain. Alternative retaining local fix leaves preview broken; modifying legacy compiler data or loosening battle execution validation is outside scope. Actual owner historical-profile UI verification remains the completion checkpoint.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      }
+    ],
+    "query_results": []
+  }
+}

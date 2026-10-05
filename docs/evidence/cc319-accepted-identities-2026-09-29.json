@@ -1,0 +1,17 @@
+{
+  "accepted_on": "2026-09-29",
+  "owner_answer": "この候補一式を採用して進める（推奨）",
+  "submitted_sha256": {
+    "docs/adr/0039-v3-battle-lifecycle-and-cutover.think": "edf61ccdfc2deaf8ad188eb22679e7a0f3d62d0961ba8b840ab32d6241646e6c",
+    "docs/adr/0039-v3-battle-lifecycle-and-cutover.md": "70758b64a1c3f01c54415de4f5ff0a1d3867cfbf1ed71e2e06b616ca75f73fa5",
+    "docs/battle-lifecycle-boundary-design-v2.md": "f4fb81c3548f1a25f8ffa7dde17785d352848683cb30e8c86500a244d6ddfe8a",
+    "docs/character-v3-battle-cutover-requirements-v2.md": "63d78ae5adef9ddec55e3db802b44429f5f82611e6591104f7fa8cc5a4c5a2b4"
+  },
+  "accepted_sha256": {
+    "docs/adr/0039-v3-battle-lifecycle-and-cutover.think": "4e472cae4154be6cc77190dad31b6a662fce2a33d214f366039f05c2f6a673cf",
+    "docs/adr/0039-v3-battle-lifecycle-and-cutover.md": "4c91e95fec40f968a94ef42a9844b9d77310c587332fa16cded54472c8df8524",
+    "docs/battle-lifecycle-boundary-design-v2.md": "faec83f5ec4adb55501fba3b97f58a142036785455ff94153b72d7765553eedd",
+    "docs/character-v3-battle-cutover-requirements-v2.md": "c53e38714359b057faff39987d9dd5f63fdb3fc1a5ff9656333b0ea07573ca49"
+  },
+  "implementation_start": "vt102 remains suspended for remote continuation per handoff instruction"
+}

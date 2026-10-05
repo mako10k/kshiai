@@ -1,0 +1,251 @@
+{
+  "thought_id": "docs-evidence-vt104-resume-2026-10-01",
+  "id_source": "file",
+  "report": {
+    "engine_version": "0.1.0",
+    "document_id": "docs-evidence-vt104-resume-2026-10-01",
+    "generated_at": "2026-10-01T01:01:51.057Z",
+    "summary": {
+      "fatal_count": 0,
+      "error_count": 0,
+      "warning_count": 0,
+      "info_count": 1,
+      "hint_count": 9
+    },
+    "results": [
+      {
+        "issue_id": "ISSUE-001",
+        "category": "contradiction_candidate",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "ALIGN",
+            "role": "decision",
+            "step_id": "S-ALIGN"
+          },
+          {
+            "ref_id": "PREPARE",
+            "role": "decision",
+            "step_id": "S-PREPARE"
+          }
+        ],
+        "message": "ALIGN と PREPARE は同一根拠 LIMIT を共有しており、緊張関係にある可能性がある。",
+        "rationale": "複数の decision が同じ based_on 参照を共有しているため、観点と結論の整合性を再確認するべきである。",
+        "metadata": {
+          "shared_refs": [
+            "LIMIT"
+          ],
+          "line": 11,
+          "column": 10,
+          "end_column": 15
+        }
+      },
+      {
+        "issue_id": "ISSUE-002",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "RESUME",
+            "role": "domain"
+          }
+        ],
+        "message": "domain RESUME の description は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 2,
+          "column": 3,
+          "text": "Complete remaining canonical plan alignment and prepare concrete initial V3 trial design.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-003",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "HANDOFF",
+            "role": "evidence",
+            "step_id": "S-HANDOFF"
+          }
+        ],
+        "message": "evidence HANDOFF は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 4,
+          "column": 3,
+          "text": "HEAD03ef49c and origin branch match; clean existing cc304 worktree. Latest handoff lists incomplete milestone, gate and parent updates under Accepted requirements v3.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-004",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "OWNER",
+            "role": "evidence",
+            "step_id": "S-OWNER"
+          }
+        ],
+        "message": "evidence OWNER は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 6,
+          "column": 3,
+          "text": "User requests continuation using latest committed handoff. Requirements v3 R1-R5 prioritize Google-owner V3 game; retention, email, snapshot and promotion are deferred.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-005",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "LIMIT",
+            "role": "premise",
+            "step_id": "S-LIMIT"
+          }
+        ],
+        "message": "premise LIMIT は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 8,
+          "column": 3,
+          "text": "Continue local plan correction and concrete design preparation. Proposed ADR0042 requires specific design acceptance before workflow implementation. No cloud or GitHub write, data deletion, paid call or deployment in this action.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-006",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "DETAIL",
+            "role": "pending",
+            "step_id": "S-DETAIL"
+          }
+        ],
+        "message": "pending DETAIL は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 10,
+          "column": 3,
+          "text": "Minimal workflow/control integration must be inspected; hosted artifacts and actual owner play are unverified.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-007",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "ALIGN",
+            "role": "decision",
+            "step_id": "S-ALIGN"
+          }
+        ],
+        "message": "decision ALIGN は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 12,
+          "column": 3,
+          "text": "Update child milestone/gate and parent scope and delegated rollup through standard preview and digest-guarded CLI; preserve history. Resume vt104 with observed timestamp, analyze both plans and inspect velocity.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-008",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "PREPARE",
+            "role": "decision",
+            "step_id": "S-PREPARE"
+          }
+        ],
+        "message": "decision PREPARE は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 14,
+          "column": 3,
+          "text": "Read workflows and runtime controls; prepare exact local implementation file set, acceptance checks, effects, alternatives and unknowns for owner's design decision.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-009",
+        "category": "semantic_hint",
+        "severity": "info",
+        "target_refs": [
+          {
+            "ref_id": "DETAIL",
+            "role": "pending",
+            "step_id": "S-DETAIL"
+          }
+        ],
+        "message": "pending が存在するため、判断の確定度は下げて表示するべきである。",
+        "metadata": {
+          "line": 9,
+          "column": 9,
+          "end_column": 15
+        }
+      },
+      {
+        "issue_id": "ISSUE-010",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "ALIGN",
+            "role": "decision",
+            "step_id": "S-ALIGN"
+          },
+          {
+            "ref_id": "PREPARE",
+            "role": "decision",
+            "step_id": "S-PREPARE"
+          }
+        ],
+        "message": "ALIGN と PREPARE は意味的に近接している可能性がある。",
+        "metadata": {
+          "line": 11,
+          "column": 10,
+          "end_column": 15,
+          "similarity": 0.5569,
+          "semantic_distance": 0.4431,
+          "embedding_provider": "ollama",
+          "embedding_model": "nomic-embed-text"
+        }
+      }
+    ],
+    "query_results": []
+  }
+}

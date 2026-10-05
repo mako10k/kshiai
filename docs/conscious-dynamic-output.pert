@@ -1,0 +1,49 @@
+project CONSCIOUS_DYNAMIC_OUTPUT:
+  version 6
+  title "Dynamic conscious generation and bounded repair"
+  description "Owner authorizes implementation 2026-10-03. ADR0047 governs DY1-DY6; canonical plan for this bounded work, independent of completed contract repair. No historical migration or deployment."
+  duration_unit hour
+  finish VERIFIED
+  goal_owner user
+  dag_owner user
+
+resource DEV:
+  title "Developer"
+  capacity 1
+
+milestone AUTHORIZED:
+  title "Dynamic design accepted"
+  state reached
+
+milestone CONTRACT:
+  title "Versioned state plan schemas and candidate restoration"
+
+task contract AUTHORIZED -> CONTRACT:
+  title "DY1 DY2 DY3 closed generation contracts"
+  description "Accepted ADR0047; new-state and frozen binding, minimal prompts, exact candidate restoration, normalization and dependency validation. Provisional effort estimate excludes provider and deployment waits."
+  duration 3h
+  status done
+  requires:
+    DEV 1
+
+milestone RUNTIME:
+  title "Bounded repair and restart budget integrated"
+
+task runtime CONTRACT -> RUNTIME:
+  title "DY4 DY5 provider runtime persistence and compatibility"
+  description "Accepted ADR0047; one logical repair budget reserved before calls, exact delta application and preserved independent expression; old battle contracts unchanged."
+  duration 3h
+  status done
+  requires:
+    DEV 1
+
+milestone VERIFIED:
+  title "Local behavioral verification complete"
+
+task verification RUNTIME -> VERIFIED:
+  title "DY6 regressions and repository gates"
+  description "Typed and behavioral regressions, old contract continuity, provider schema, restart/CAS, npm test typecheck and build. Report governed and direct verification separately; no live-quality assertion."
+  duration 2h
+  status done
+  requires:
+    DEV 1

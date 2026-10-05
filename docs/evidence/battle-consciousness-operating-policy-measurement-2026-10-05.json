@@ -1,0 +1,9 @@
+{
+  "task": "policy-draft",
+  "start": "2026-10-05T04:12:08.043562+00:00",
+  "finish": "2026-10-05T04:19:18.957022+00:00",
+  "elapsed_seconds": 430.91346,
+  "active_time": null,
+  "effort": null,
+  "note": "Observed wall time only. No independent active/effort telemetry; no effort inferred. Canonical task events retain observed start/end."
+}

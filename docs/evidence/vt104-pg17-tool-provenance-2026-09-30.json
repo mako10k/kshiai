@@ -1,0 +1,27 @@
+{
+  "signed_metadata_verified": true,
+  "repository": "https://apt.postgresql.org/pub/repos/apt/",
+  "packages": [
+    {
+      "Package": "postgresql-17",
+      "Version": "17.11-1.pgdg24.04+2",
+      "Filename": "pool/main/p/postgresql-17/postgresql-17_17.11-1.pgdg24.04+2_amd64.deb",
+      "SHA256": "d5b58058a82a3f344f832aea2cc54badc4f6265c25c960752cb1f5df5d2180ee",
+      "Size": "16949784"
+    },
+    {
+      "Package": "postgresql-client-17",
+      "Version": "17.11-1.pgdg24.04+2",
+      "Filename": "pool/main/p/postgresql-17/postgresql-client-17_17.11-1.pgdg24.04+2_amd64.deb",
+      "SHA256": "b3b071b67a814a382516d6f6241b529c52f909672457e2f48083acce047b634f",
+      "Size": "2052656"
+    },
+    {
+      "Package": "libpq5",
+      "Version": "18.6-1.pgdg24.04+2",
+      "Filename": "pool/main/p/postgresql-18/libpq5_18.6-1.pgdg24.04+2_amd64.deb",
+      "SHA256": "b487c5ed2ceb9244c6a9d6ae65818ed6707c3c44a2e14488394ae4194c52c53b",
+      "Size": "264072"
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+domain LongMeasurement:
+  description "Extend immutable timing for one isolated measurement trial authorized by owner."
+evidence OWNER_ACCEPTANCE:
+  "Owner explicitly asks considerably increasing timeout and measuring again after both 5-second Luna requests timed out."
+evidence CURRENT:
+  "Recorded Luna input is about 6100 characters; token consumption is unknown on timeout. Existing immutable policies and SDK/narration deadlines all need coherent propagation."
+premise SCOPE:
+  "This is a measurement exception for a new isolated trial, not a change to ordinary new battles or past snapshots. Models, inputs, output caps and no automatic retry remain unchanged."
+premise UNKNOWN:
+  "Longer timeouts do not guarantee response, schema validity or three-tick completion; price remains unverified."
+premise OPTIONS:
+  "Changing SDK timeout alone leaves worker/canonical deadlines short. Changing all production defaults changes unrelated users. A separate immutable measurement policy honors the requested experiment with coherent bound timing."
+decision ACCEPTANCE based_on OWNER_ACCEPTANCE, CURRENT, SCOPE, UNKNOWN, OPTIONS:
+  "Add observed awareness-v5-measurement-v1: latent60s/conscious90s/adjudication60s/narration60s/global600s/publication180s/terminal90s; bind only explicit internal trial start. Validate offline, then perform one paid trial with the same fixed two characters and three-tick stop. Record input character counts, actual usage and timeout uncertainty. Existing policies remain unchanged."

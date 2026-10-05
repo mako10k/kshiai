@@ -1,0 +1,8 @@
+domain V2_BOUNDARY:
+  description "Remove character V2 update targets while retaining historical display and explicit migration."
+evidence OWNER:
+  "Owner explicitly instructs V2 display retained; ordinary updates cannot target V2 except V3 migration. Old battle links must show corresponding old revision, including V2."
+evidence INVENTORY:
+  "Normal revision and legacy draft/create paths can generate V2; image/restore/copy writeV2. Battle links currently read latest character, not bound snapshot. Versioned generations and battle manifest snapshots already exist."
+decision IMPLEMENT based_on OWNER, INVENTORY:
+  "Keep V2 schemas/readers/imported historical fixtures and immutable generations. Enforce V3 before ordinary owner mutations and candidate save/activation. Require focusedV3 driver for normal create/revise/migrate; no fallback to V2. Preserve explicit V2-to-V3 migration input and manual owner-directed conversion. Remove exposed V2 portrait/restore/copy writers from ordinary routes. Historical battle-scoped GET authenticates battle plus current character view rights, resolves matching bound snapshot, returns read-only and no current fallback. No cloud writes, migration of existing records, paid calls or release."

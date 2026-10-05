@@ -1,0 +1,120 @@
+domain ConsciousRequiredFieldsRca:
+  description "Read-only RCA of missing fields in the latest production battle"
+
+problem REQUIRED_FIELDS:
+  |
+    Explain why normal-turn conscious decisions omit required fields, distinguish
+    confirmed contract wiring defects from model-behavior hypotheses, and identify
+    a repair direction that preserves producer-owned goal, intent and speech.
+    Scope is analysis only: no gameplay implementation, migration, provider call,
+    production write, or deployment is performed by this investigation.
+
+evidence LIVE_PATTERN:
+  |
+    Latest battle btl_e24ccddf1d8ec96b0073323f2bf256db finished at
+    2026-10-03 06:34:50 JST in 18 turns. Saved primary normal-turn traces cover
+    turns 1..17, both sides: 34 outputs. Eleven B outputs, turns
+    2,4,6,7,8,9,11,13,14,15,16, have the same missing fields: initialGoal,
+    nextUtterance, realizedManifestation. intent and nextAction decode validly.
+    Input phase and decoded phase are turn, and the existing upper goal is present.
+    Source: docs/evidence/conscious-required-fields-replay-2026-10-03.json.
+    Raw HTTP response bytes and exact deployed request bodies were not retained
+    in this artifact; decoded missing markers do not prove model internal intent.
+
+evidence REQUEST_WIRING:
+  |
+    backend/src/llm/conscious-agency.ts consciousRequest explicitly preserves
+    input.phase, agencyState and decision. openai-compatible.ts
+    advanceCharacterAgent contractVersion=3 calls consciousRequest, chatJson,
+    then consciousResult(raw,input.phase). The current-source path does not
+    intentionally rename turn to later or remove response fields before decoding.
+    This is source evidence, not a packet capture of each historical request.
+
+evidence MIXED_PHASE_PROMPT:
+  |
+    CONSCIOUS_V3_PROMPT contains all phase rules in one system instruction:
+    prologue/turn needs five fields; aftermath needs two expression fields;
+    later needs only intent and nextAction. Every normal V3 request receives
+    the later rule as well. The eleven observed two-field shapes match the later
+    grammar. CHARACTER_ACTION_PROPOSAL_OUTPUT_RULES adds nested action shapes;
+    it does not require removal of the other top-level conscious fields.
+
+evidence JSON_ONLY_BOUNDARY:
+  |
+    openai-compatible.ts advanceCharacterAgentCompact does not set responseFormat.
+    chatJson therefore sends response_format={type:json_object}, rather than
+    a phase-specific strict JSON schema with required field names. JSON validity
+    alone does not enforce the conscious five-field contract. Other operations
+    in the same adapter already support responseFormat and validate xAI schemas.
+
+evidence DECODER_AND_ACCEPTANCE:
+  |
+    packages/shared/src/conscious-agency.ts field uses Object.hasOwn: an omitted
+    key is missing, distinct from an explicit null. decodeConsciousOutputV3
+    checks allowed keys but preserves individual missing field markers.
+    acceptConsciousDecisionV3 requires initialGoal.valid before accepting a turn
+    decision even when the goal already exists; existing goals require explicit
+    null and cannot be replaced. Speech and manifestation are decoded separately.
+    A valid JSON response can therefore be an invalid application decision.
+
+evidence NO_APPLICATION_REPAIR:
+  |
+    chatJson parses JSON and records provider-call success. Provider HTTP retry
+    is distinct from domain repair. The normal V3 caller immediately returns
+    consciousResult and has no bounded missing-field regeneration loop.
+    Decoder-produced missing markers do not throw a transport exception.
+    battle-service.ts converts agency non-acceptance into schema_invalid and
+    accepts expression independently. Therefore HTTP success is not decision
+    acceptance and field failure does not automatically trigger another model.
+
+evidence COUNTERFACTUAL_REPLAY:
+  |
+    Offline replay of each missing-field trace reproduces goal_invalid. Changing
+    only a copied decoded initialGoal field to valid explicit null accepts
+    10 of the 11 decisions under the saved action-validation outcomes; turn 2
+    remains action_invalid due to unavailable_instrument. This isolates the
+    immediate acceptance gate; it is not evidence that omitted speech meant
+    silence, nor permission to normalize production omissions to null.
+    All 10 newly accepted decisions are wait. Field completion alone consequently
+    does not demonstrate varied tactics or solve match monotony.
+
+decision CONFIRMED_CAUSAL_CHAIN based_on REQUIRED_FIELDS, LIVE_PATTERN, JSON_ONLY_BOUNDARY, DECODER_AND_ACCEPTANCE, NO_APPLICATION_REPAIR, COUNTERFACTUAL_REPLAY:
+  |
+    Confirmed chain: an external JSON object lacks three phase-required keys;
+    the boundary accepts JSON without enforcing the phase grammar; the decoder
+    exposes missing initialGoal; agency acceptance rejects the whole intent/action
+    pair; no domain repair obtains a complete output and the rejection reason is
+    collapsed. Ten saved otherwise-valid wait proposals are blocked at this gate.
+    This is a producer-boundary and recovery gap, not a TypeScript union failure.
+
+decision PHASE_CONFUSION_HYPOTHESIS based_on LIVE_PATTERN, REQUEST_WIRING, MIXED_PHASE_PROMPT:
+  |
+    The strongest working hypothesis is output-phase confusion caused or enabled
+    by shared instructions containing incompatible phase envelopes. The repeated
+    exact later shape supports this more than isolated random key loss. However,
+    absent raw request/response capture and a controlled phase-prompt comparison,
+    the model's reason cannot be asserted as proven. Existing-goal omission or
+    suppression of all nullable fields is an alternative consistent with the data.
+
+decision REPAIR_CANDIDATE based_on CONFIRMED_CAUSAL_CHAIN, PHASE_CONFUSION_HYPOTHESIS:
+  |
+    Candidate direction, not an accepted architectural change: build only the
+    active phase instruction and enforce its required-key grammar through the
+    provider's supported strict schema. Keep reference grounding, current action
+    availability, immutable-goal ownership and partial expression acceptance in
+    domain validation. Preserve exact field-level and agency failure reasons.
+    If domain repair is adopted, specify a bounded same-context re-generation
+    contract with accounting, failure handling and independent speech ownership.
+    Never invent goal, intent, action or speech, fill missing values merely to
+    pass types, or treat absence as the producer's explicit choice of silence.
+
+decision VERIFICATION_BOUNDARY based_on REPAIR_CANDIDATE, COUNTERFACTUAL_REPLAY, MIXED_PHASE_PROMPT:
+  |
+    Next verification should test active-phase instructions and outgoing strict
+    schemas for turn/later/aftermath, missing versus explicit null, fixed upper
+    goals, current reference/action validity, independently accepted speech, and
+    useful failure feedback. Any live comparison must measure missing-field rate,
+    decision acceptance, action distribution, repeated utterances, usage and latency;
+    field-complete repeated waits are not quality acceptance. New retry or public
+    contract choices need their governing ADR before implementation. This analysis
+    does not create or execute such a policy and does not replay the live battle.

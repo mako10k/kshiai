@@ -1,0 +1,14 @@
+domain RECEIPTS:
+  description "Preserve source-owned parameter effects when their net is zero."
+evidence FAILURE:
+  "Current full V3 battle path rejects receipt owns absent parameter delta b.stamina."
+evidence SOURCE:
+  "parameterChanges omits zero deltas; buildBattleTurnRecord accumulates nonzero evidence per source but iterates only keys in sparse aggregate diff; schema rejects any owned key absent from aggregate."
+premise CONTRACT:
+  "Existing source-owned contributions must sum to before-after difference; preserve every attribution and authoritative validator."
+premise ALTERNATIVES:
+  "Deleting cancelling contributions loses cause ownership. Relaxing schema weakens authoritative contract. Preserve explicit aggregate zero for owned parameters instead."
+pending UNKNOWN:
+  "The original random action sequence is not captured; deterministic cancelling evidence must reproduce the observed structural condition."
+decision REPAIR based_on FAILURE, SOURCE, CONTRACT, ALTERNATIVES:
+  "Reproduce opposing contribution zero net, then include every owned parameter in aggregate using real before-after delta and normal remainder reconciliation. Keep schema unchanged."

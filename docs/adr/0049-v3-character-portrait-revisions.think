@@ -1,0 +1,16 @@
+domain ADR0049:
+  description "Restore existing portraits with immutable V3 revisions"
+evidence OWNER_ACCEPTANCE:
+  "Owner reports missing portrait generation UI and silent latest match, then asks to continue the repair. Restore the existing feature within ADR0043 V3-only admission and ADR0010 immutable generation rules."
+evidence GAP:
+  "Portrait UI and HTTP writers were retired because their implementations wrote V2. All current characters now have valid V3 envelopes; the retired endpoints still return unavailable and history reads only schema2."
+premise BOUNDARY:
+  "Do not restore a V2 writer or mutate media behind existing battle bindings. The image consumer receives only appearance image fields and explicit visual adjustment."
+decision ACCEPTANCE based_on OWNER_ACCEPTANCE, GAP, BOUNDARY:
+  "Accept the bounded restoration of the existing owner portrait generation and switch as immutable V3 revisions under ADR0043. No full character restore or copy implementation is included."
+decision REVISION based_on ACCEPTANCE, BOUNDARY:
+  "Before provider work require owned ready V3. Use frozen V3 appearance brief, quota, idempotency and immutable media URLs. Under transaction lock require unchanged current generation and no concurrent authoring; change only portrait and media provenance, retain exact profile receipt, other definition fields and live operational facts."
+decision HISTORY based_on REVISION:
+  "Read valid V3 portrait history. Switch only the selected media reference by appending V3; do not restore unrelated old definitions. Historical V2 views and battle snapshots remain unchanged."
+decision VERIFY based_on REVISION, HISTORY:
+  "Verify real HTTP single-call replay, failure without activation, exact unchanged old content, stable definition and profile, live record preservation, stale and non-owner and busy rejection, portrait-only switch, V2 write denial, and repository checks. Deployment alone does not mutate character data or prove image provider quality."

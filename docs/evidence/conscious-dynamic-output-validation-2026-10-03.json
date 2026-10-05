@@ -1,0 +1,57 @@
+{
+  "date": "2026-10-03",
+  "scope": "local, new-battle-only; no live provider calls or deployment",
+  "checks": [
+    {
+      "check": "build",
+      "exitCode": 0
+    },
+    {
+      "check": "typecheck",
+      "exitCode": 0
+    },
+    {
+      "check": "npm-test",
+      "exitCode": 0
+    },
+    {
+      "check": "static",
+      "exitCode": 0
+    },
+    {
+      "check": "adr",
+      "exitCode": 0
+    }
+  ],
+  "focusedDirectTests": 92,
+  "isolatedHttpDirectTests": 1,
+  "governedTests": 229,
+  "sourceDigests": {
+    "packages/shared/src/conscious-dynamic.ts": "441f9dc3be94d3fc1a2d9b25f734d32bf6cd505f5859eff9c934c5fa4a213261",
+    "packages/shared/src/battle.ts": "1d14cc9c7c4eb42265287943408ee59cd8ba42775a6a2fcb1ed29d9701cdbba5",
+    "backend/src/llm/conscious-dynamic.ts": "bb27d304037e59282df19efec4bf11cd3bb6f0ae8864285291dfa72e5c7cab6b",
+    "backend/src/llm/openai-compatible.ts": "8b55b9d53c213f3179c742c18751496479e5bc5b4d155bec0fca7f75b000fc11",
+    "backend/src/llm/types.ts": "14d85061b7d05818c0b17b01dc2b9b6f4fb319e7900fb3d7404f416a9f375741",
+    "backend/src/repositories/battles.ts": "d0a91bb2a7c03990b77617c8d20fc5d511fdf065ef05db2ed545b3e1d258dcaa",
+    "backend/src/services/battle-service.ts": "9df76d48967a411e6b3bfb46d59689af7e33339f3d90678c68c5e0dd7f435064"
+  },
+  "finalDiagnosticDeltaChecks": [
+    {
+      "check": "backend-typecheck",
+      "exitCode": 0
+    },
+    {
+      "check": "backend-build",
+      "exitCode": 0
+    },
+    {
+      "check": "provider-regressions",
+      "tests": 10,
+      "exitCode": 0
+    },
+    {
+      "check": "static",
+      "exitCode": 0
+    }
+  ]
+}

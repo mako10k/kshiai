@@ -32,49 +32,48 @@ const CharacterSemanticMigrationOperationV1ObjectSchema = z.object({
   provenance: z.enum(["unchanged", "source_derived", "model_created", "retired", "deferred"]),
   semanticDependants: z.array(CharacterMigrationPathSchema).max(64),
 }).strict();
-type OperationShape = z.infer<typeof CharacterSemanticMigrationOperationV1ObjectSchema>;
-
-const OPERATION_PROVENANCE: Record<OperationShape["operation"], OperationShape["provenance"][]> = {
-  copy: ["unchanged"], move: ["source_derived"], transform: ["source_derived"],
-  synthesize: ["source_derived", "model_created"], retire_to_capsule: ["retired"], defer: ["deferred"],
+const migrationSourcePathsSchema = z.tuple([CharacterMigrationPathSchema])
+  .rest(CharacterMigrationPathSchema)
+  .refine((paths) => paths.length <= 64, "at most 64 source paths");
+const sourcedMigrationFields = {
+  sourcePaths: migrationSourcePathsSchema,
+  deferred: z.null(),
 };
 
-function operationProvenanceIssues(operation: OperationShape): string[] {
-  const issues: string[] = [];
-  if (!OPERATION_PROVENANCE[operation.operation].includes(operation.provenance)) {
-    issues.push("provenance does not match the declared operation");
+export const CharacterSemanticMigrationOperationV1Schema = z.union([
+  CharacterSemanticMigrationOperationV1ObjectSchema.extend({
+    operation: z.literal("copy"), provenance: z.literal("unchanged"),
+    ...sourcedMigrationFields, sourcePaths: z.tuple([CharacterMigrationPathSchema]), value: z.null(),
+  }),
+  CharacterSemanticMigrationOperationV1ObjectSchema.extend({
+    operation: z.literal("move"), provenance: z.literal("source_derived"),
+    ...sourcedMigrationFields, sourcePaths: z.tuple([CharacterMigrationPathSchema]), value: z.null(),
+  }),
+  CharacterSemanticMigrationOperationV1ObjectSchema.extend({
+    operation: z.literal("transform"), provenance: z.literal("source_derived"),
+    ...sourcedMigrationFields,
+  }),
+  CharacterSemanticMigrationOperationV1ObjectSchema.extend({
+    operation: z.literal("synthesize"), provenance: z.literal("source_derived"),
+    ...sourcedMigrationFields,
+  }),
+  CharacterSemanticMigrationOperationV1ObjectSchema.extend({
+    operation: z.literal("synthesize"), provenance: z.literal("model_created"),
+    deferred: z.null(),
+  }),
+  CharacterSemanticMigrationOperationV1ObjectSchema.extend({
+    operation: z.literal("retire_to_capsule"), provenance: z.literal("retired"),
+    ...sourcedMigrationFields, value: z.null(),
+  }),
+  CharacterSemanticMigrationOperationV1ObjectSchema.extend({
+    operation: z.literal("defer"), provenance: z.literal("deferred"),
+    deferred: CharacterDeferredValueV1Schema, value: z.null(),
+  }),
+]).superRefine((operation, context) => {
+  if (operation.operation === "defer" && operation.deferred.targetPath !== operation.targetPath) {
+    context.addIssue({ code: z.ZodIssueCode.custom, message: "invalid deferred operation" });
   }
-  if (!["synthesize", "defer"].includes(operation.operation) && operation.sourcePaths.length === 0) {
-    issues.push("source paths required except for explicitly model-created synthesis or defer");
-  }
-  if (operation.provenance === "source_derived" && operation.sourcePaths.length === 0) {
-    issues.push("derivation requires evidence");
-  }
-  return issues;
-}
-
-function operationPayloadIssues(operation: OperationShape): string[] {
-  const issues: string[] = [];
-  if (operation.operation === "defer") {
-    if (!operation.deferred || operation.value !== null ||
-        operation.deferred.targetPath !== operation.targetPath) issues.push("invalid deferred operation");
-  } else if (operation.deferred !== null) issues.push("only defer may carry deferred metadata");
-  if (operation.operation === "retire_to_capsule" && operation.value !== null) {
-    issues.push("retirement must preserve source without a replacement value");
-  }
-  if (["copy", "move"].includes(operation.operation) &&
-      (operation.sourcePaths.length !== 1 || operation.value !== null)) {
-    issues.push("copy/move read one registered source; do not echo the value");
-  }
-  return issues;
-}
-
-export const CharacterSemanticMigrationOperationV1Schema = CharacterSemanticMigrationOperationV1ObjectSchema
-  .superRefine((operation, context) => {
-    for (const message of [...operationProvenanceIssues(operation), ...operationPayloadIssues(operation)]) {
-      context.addIssue({ code: z.ZodIssueCode.custom, message });
-    }
-  });
+});
 export type CharacterSemanticMigrationOperationV1 = z.infer<
   typeof CharacterSemanticMigrationOperationV1Schema
 >;
@@ -84,6 +83,10 @@ export const CharacterSemanticMigrationChangeSetV1Schema = z.object({
   operations: z.array(CharacterSemanticMigrationOperationV1Schema).max(128),
   uncertainties: z.array(z.string().min(1).max(400)).max(16),
 }).strict();
+/** Provider grammar only: received values must pass the authoritative change-set schema. */
+export const CharacterSemanticMigrationProviderGrammarV1Schema = CharacterSemanticMigrationChangeSetV1Schema.extend({
+  operations: z.array(CharacterSemanticMigrationOperationV1ObjectSchema).max(128),
+});
 export type CharacterSemanticMigrationChangeSetV1 = z.infer<
   typeof CharacterSemanticMigrationChangeSetV1Schema
 >;

@@ -29,9 +29,7 @@ import {
   skillCooldownTurns,
 } from "./skill-cooldown.js";
 
-export type ObserverSafeAvailableAction = {
-  kind: CharacterActionIntent["kind"];
-  skillId?: string;
+type ObserverSafeAvailableActionFields = {
   name: string;
   description?: string;
   skillKind?: Skill["kind"];
@@ -46,6 +44,14 @@ export type ObserverSafeAvailableAction = {
     kind: "self" | "counterpart";
     perceivedAs: string;
   };
+};
+
+type ObserverSafeAvailableActionOption = Omit<ObserverSafeAvailableActionFields, "target"> & (
+  | { kind: "skill"; skillId: string }
+  | { kind: Exclude<CharacterActionIntent["kind"], "skill">; skillId?: never }
+);
+export type ObserverSafeAvailableAction = ObserverSafeAvailableActionOption & {
+  target: ObserverSafeAvailableActionFields["target"];
 };
 
 export type ActionFeasibilityResult =
@@ -84,7 +90,7 @@ function targetsCounterpart(
 }
 
 function inferredConstraints(
-  intent: CharacterActionIntent,
+  intent: Pick<CharacterActionIntent, "kind">,
   skill: Skill | null,
   basicAttack: BasicAttackProfile,
 ): ActionFeasibilityConstraints {
@@ -332,10 +338,15 @@ export function assessCharacterActionFeasibility(input: {
   return { feasible: true };
 }
 
-type ObserverSafeActionCandidate = {
-  intent: CharacterActionIntent;
-  option: Omit<ObserverSafeAvailableAction, "target">;
-};
+type ObserverSafeActionCandidate =
+  | { intent: CharacterActionIntent; option: ObserverSafeAvailableActionOption }
+  | {
+      intent: null;
+      option: Omit<ObserverSafeAvailableActionFields, "target"> & {
+        kind: "free_action" | "reflect";
+        skillId?: never;
+      };
+    };
 
 function observerSafeActionCandidates(input: {
   actor: CombatantState;
@@ -358,11 +369,7 @@ function observerSafeActionCandidates(input: {
       },
     },
     {
-      intent: {
-        kind: "reflect",
-        reflectionAnalysis: "ここまでの戦況を整理する",
-        reflectionGuideline: "次の一手の方針を立てる",
-      },
+      intent: null,
       option: {
         kind: "reflect",
         name: "戦況を省みる",
@@ -371,7 +378,8 @@ function observerSafeActionCandidates(input: {
       },
     },
     {
-      intent: { kind: "free_action", description: "場面へ現実的に働きかける" },
+      // Listing a capability does not invent an observer reference or an intent.
+      intent: null,
       option: {
         kind: "free_action",
         name: "自由行動",
@@ -402,7 +410,7 @@ function observerSafeActionCandidates(input: {
 
 function withObserverSafeTarget(
   intent: CharacterActionIntent,
-  option: Omit<ObserverSafeAvailableAction, "target">,
+  option: ObserverSafeAvailableActionOption,
   skills: readonly Skill[],
   perceivedAs: string,
 ): ObserverSafeAvailableAction {
@@ -432,6 +440,18 @@ export function buildObserverSafeAvailableActions(input: {
     turn: input.turn,
     basicAttack,
   }).flatMap(({ intent, option }) => {
+    if (intent === null) {
+      const failure = actorWorldFailure({
+        actorSide: input.actorSide,
+        actor: input.actor,
+        worldState: input.worldState,
+        constraints: inferredConstraints({ kind: option.kind }, null, basicAttack),
+      });
+      return failure ? [] : [{
+        ...option,
+        target: { kind: "self" as const, perceivedAs: "自分" },
+      }];
+    }
     const assessed = assessCharacterActionFeasibility({
       actorSide: input.actorSide,
       intent,

@@ -1,3 +1,6 @@
+import { saveCharacterBattleAccounting } from "./character-battle-accounting.js";
+import { assertCharacterV3UpdateTarget } from "../services/character-update-policy.js";
+// R: Persist character catalogs and project authorized owner and opponent views.
 import type { CharacterSheet, CombatReadyCharacterSheet } from "@kshiai/shared";
 import {
   CharacterSheetSchema,
@@ -27,21 +30,16 @@ import {
   type AccountRealm,
 } from "../account-access.js";
 import {
-  activateAssetGeneration,
-  appendAssetGeneration,
-} from "./asset-generations.js";
-import {
   getCharacterCompatibility,
   getInFlightCharacterAuthoringAttempt,
   getLatestCharacterAuthoringAttemptForCharacter,
   getReadyCharacterGenerationHistory,
-  listReadyCharacterIds,
 } from "./character-assets-v2.js";
 import {
   listLatestAttemptsByCharacterIds,
   reviewStateFromAttempt,
 } from "./owner-notifications.js";
-import { buildImportedCharacterEnvelopeV2 } from "../services/character-authoring-service.js";
+import { filterEligibleBattleParticipants, resolveBattleParticipantEligibility } from "../services/battle-participation-eligibility.js";
 
 async function reviewMarkForCharacter(characterId: string, ownerUserId: string) {
   const latest = await getLatestCharacterAuthoringAttemptForCharacter(
@@ -176,7 +174,7 @@ export async function toPublicCharacterForViewer(
   const inFlight = isOwner
     ? await getInFlightCharacterAuthoringAttempt(sheet.id, sheet.ownerUserId)
     : null;
-  const history = isOwner && compatibility.status === "ready"
+  const history = isOwner && compatibility.schemaVersion === 3 && compatibility.status === "ready"
     ? await getReadyCharacterGenerationHistory(sheet.id)
     : null;
   const currentPortrait = history?.current.content.definition.appearance.portrait;
@@ -187,18 +185,18 @@ export async function toPublicCharacterForViewer(
       ? {
           appearance: {
             ...dto.appearance,
-            previousImageUrl: previousPortrait?.mediaId ?? null,
+            previousImageUrl: previousPortrait?.mediaId ?? dto.appearance.previousImageUrl ?? null,
           },
           canToggleImage: Boolean(currentPortrait && previousPortrait),
-          canRestoreRevision: history.previous != null,
+          canRestoreRevision: false,
           revisionSavedAt: history.previous ? history.current.createdAt : null,
           revisionLabel: history.previous ? "直前の確定世代" : null,
         }
       : {}),
     compatibility,
-    selectable: compatibility.status === "ready",
-    upgradeAction: isOwner && compatibility.status !== "ready"
-      ? { label: "このキャラを最新版に更新", targetSchemaVersion: 2 }
+    selectable: (await resolveBattleParticipantEligibility(sheet)).status === "ready",
+    upgradeAction: isOwner && compatibility.schemaVersion !== 3
+      ? { label: "このキャラをV3へ移行", targetSchemaVersion: 3 }
       : null,
     authoringProgress: inFlight
       ? toAssetAuthoringProgress(inFlight.kind, inFlight.status, inFlight.attemptId)
@@ -279,9 +277,10 @@ function clampPage(limit?: number, offset?: number) {
 export async function listCharactersForUser(
   userId: string,
   q?: string,
-  page?: { limit?: number; offset?: number },
+  page?: { limit?: number; offset?: number; battleEligibleOnly?: boolean },
 ): Promise<CharacterListPage> {
   let sheets = (await listOwnedSheets(userId)).filter(isActive);
+  if (page?.battleEligibleOnly) sheets = await filterEligibleBattleParticipants(sheets);
   if (q?.trim()) {
     const needle = q.trim().toLowerCase();
     sheets = sheets.filter(
@@ -317,10 +316,10 @@ export async function listCharactersForUser(
       return {
         ...toPublicCharacter(sheet, userId, ratingDisplay),
         compatibility,
-        selectable: compatibility.status === "ready",
-        upgradeAction: compatibility.status === "ready"
+        selectable: page?.battleEligibleOnly === true || (await resolveBattleParticipantEligibility(sheet)).status === "ready",
+        upgradeAction: compatibility.schemaVersion === 3
           ? null
-          : { label: "このキャラを最新版に更新", targetSchemaVersion: 2 },
+          : { label: "このキャラをV3へ移行", targetSchemaVersion: 3 },
         reviewState: mark.reviewState,
         reviewAttemptId: mark.reviewAttemptId,
       };
@@ -427,8 +426,7 @@ export async function listPlayableOpponentSheets(
   }
   const map = new Map(sheets.map((s) => [s.id, s]));
   const unique = [...map.values()];
-  const readyIds = await listReadyCharacterIds(unique.map((sheet) => sheet.id));
-  return unique.filter((sheet) => readyIds.has(sheet.id));
+  return filterEligibleBattleParticipants(unique);
 }
 
 export async function updateCharacterVisibility(
@@ -438,6 +436,7 @@ export async function updateCharacterVisibility(
 ): Promise<CharacterSheet | null> {
   const sheet = await getSheet(characterId);
   if (!sheet || sheet.ownerUserId !== ownerUserId) return null;
+  await assertCharacterV3UpdateTarget(sheet.id);
   const next = {
     ...sheet,
     visibility,
@@ -473,65 +472,14 @@ export async function getSheetIncludingDeleted(
 }
 
 export async function saveSheet(sheet: CharacterSheet): Promise<void> {
+  await assertCharacterV3UpdateTarget(sheet.id);
   const withRecord = requireCombatReadyCharacterSheet({
     ...ensureCharacterIdentityProperties(requireCombatReadyCharacterSheet(sheet)),
     record: sheet.record ?? defaultRecord(),
   });
-  const json = JSON.stringify(withRecord);
-  await withTransaction(async (connection) => {
-    const stored = await connection.query<{ id: string }>(
-      `SELECT id FROM characters WHERE id = $1`,
-      [withRecord.id],
-    );
-    // V2 authority is immutable. Existing operational rows may refresh only
-    // the transitional read model; they never append a legacy generation.
-    let importedGeneration: Awaited<ReturnType<typeof appendAssetGeneration>> | null = null;
-    if (!stored.rows[0]) {
-      // Programmatic seed/import of a brand-new character is explicitly marked
-      // as an import. Existing rows are never auto-upgraded by this path.
-      const envelope = buildImportedCharacterEnvelopeV2({
-        sheet: withRecord,
-        attemptId: `internal-import:${withRecord.id}`.slice(0, 160),
-      });
-      importedGeneration = await appendAssetGeneration(connection, {
-        assetType: "character",
-        assetId: withRecord.id,
-        schemaVersion: 2,
-        content: envelope,
-        createdAt: withRecord.updatedAt,
-      });
-    }
-    await connection.query(
-      `INSERT INTO characters (id, owner_user_id, sheet_json, created_at, updated_at)
-       VALUES ($1, $2, $3, $4, $5)
-       ON CONFLICT (id) DO UPDATE
-         SET owner_user_id = EXCLUDED.owner_user_id,
-             sheet_json = EXCLUDED.sheet_json,
-             updated_at = EXCLUDED.updated_at`,
-      [
-        withRecord.id,
-        withRecord.ownerUserId,
-        json,
-        withRecord.createdAt,
-        withRecord.updatedAt,
-      ],
-    );
-    if (importedGeneration) {
-      await activateAssetGeneration(
-        connection,
-        importedGeneration,
-        null,
-        withRecord.updatedAt,
-      );
-      await connection.query(
-        `INSERT INTO character_asset_states
-          (character_id, compatibility_status, current_generation_id,
-           active_attempt_id, reason_code, updated_at)
-         VALUES ($1, 'ready', $2, NULL, NULL, $3)`,
-        [withRecord.id, importedGeneration.generationId, withRecord.updatedAt],
-      );
-    }
-  });
+  await query(`UPDATE characters SET sheet_json = $2, updated_at = $3
+    WHERE id = $1 AND owner_user_id = $4`,
+    [withRecord.id, JSON.stringify(withRecord), withRecord.updatedAt, withRecord.ownerUserId]);
 }
 
 /** Persist bounded owner-private notes for a specific opponent. */
@@ -556,7 +504,7 @@ export async function saveOpponentBattleMemory(input: {
     battleCount: (previous?.battleCount ?? 0) + 1,
     lastBattleAt: input.battledAt ?? new Date().toISOString(),
   });
-  await saveSheet({
+  await saveCharacterBattleAccounting({
     ...sheet,
     opponentMemories: {
       ...(sheet.opponentMemories ?? {}),
@@ -574,6 +522,7 @@ export async function softDeleteCharacter(
 ): Promise<CharacterSheet | null> {
   const sheet = await getSheet(id);
   if (!sheet || sheet.ownerUserId !== ownerUserId) return null;
+  await assertCharacterV3UpdateTarget(sheet.id);
   const next: CharacterSheet = {
     ...sheet,
     deletedAt: new Date().toISOString(),
@@ -592,27 +541,5 @@ export async function copyCharacter(
   id: string,
   ownerUserId: string,
 ): Promise<CharacterSheet | null> {
-  const src = await getSheet(id);
-  if (!src || src.ownerUserId !== ownerUserId) return null;
-  const t = new Date().toISOString();
-  const copy: CharacterSheet = {
-    ...src,
-    id: newId("chr"),
-    displayName: `${src.displayName} の写し`,
-    createdAt: t,
-    updatedAt: t,
-    deletedAt: null,
-    parameters: { ...src.parameters },
-    skills: src.skills.map((s) => ({ ...s, id: newId("sk") })),
-    tags: [...src.tags, "copy"],
-    // Fresh rating — no carry-over from original (anti-clone farming)
-    record: defaultRecord(),
-    recordOverall: defaultRecord(),
-    // Coaching memo is battle-history bound; start empty on copy.
-    improvementMemo: undefined,
-    // Undo buffer is character-instance specific.
-    revisionSnapshot: null,
-  };
-  await saveSheet(copy);
-  return copy;
+  throw new Error("CHARACTER_V3_COPY_UNAVAILABLE");
 }

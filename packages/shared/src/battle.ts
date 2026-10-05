@@ -1,4 +1,17 @@
+import { validateConsequenceParameters } from "./battle-consequence-validation.js";
+import {
+  validateBattleAgencyBindings,
+  validateIncompleteBattleResult,
+  validateFrozenBattleReceipts,
+  validateBattleUniqueReferences,
+  validateBattleAdjudication,
+  validateBattleObservationRevisions,
+} from "./battle-state-validation.js";
+// R: Define versioned battle state, asset bindings, receipts and public projections.
 import { z } from "zod";
+import { AwarenessPromptRevisionSchema, type AwarenessPromptRevision } from "./awareness-prompt-revision.js";
+import { AwarenessFrozenNarrationSchema, type AwarenessFrozenNarration } from "./awareness-narration-source.js";
+import { AwarenessPolicyV1Schema, type AwarenessPolicyV1 } from "./awareness-policy.js";
 import { NarrativeBlockSchema, type NarrativeBlock } from "./narrative.js";
 import {
   CombatReadyCharacterSheetSchema,
@@ -80,16 +93,49 @@ import {
   type LlmProviderRouteReceipt,
 } from "./provider-route.js";
 import {
-  CharacterActionNormProgramV2Schema,
   CharacterActionNormResolutionReceiptV2Schema,
   CharacterRelationshipResolutionReceiptV2Schema,
-  CharacterRelationshipResolutionV2Schema,
-  CharacterRelationshipDescriptiveProjectionV2Schema,
 } from "./character-definition-rules.js";
+import {
+  CharacterBattleCompilerInputsV2Schema,
+  CharacterBattleCompilerInputsV3Schema,
+  CharacterConsciousSelfStaticProjectionV2Schema,
+  CharacterDeepPsycheStaticProjectionV2Schema,
+  CharacterNarratorStaticProjectionV2Schema,
+  CharacterNarratorProjectionSetV2Schema,
+  PsycheTraitProfileV1Schema,
+  type CharacterBattleCompilerInputsV2,
+  type CharacterBattleCompilerInputsV3,
+} from "./battle-character-compiler.js";
+import { BattleCharacterAssetBindingV4Schema } from "./character-definition-v3.js";
+import {
+  CharacterActionNormResolutionReceiptV3Schema,
+} from "./character-definition-v3.js";
+import type { CharacterBattleCompilerInputsV4 } from "./character-definition-v3.js";
+
+export {
+  CharacterBattleCompilerInputsV2Schema,
+  CharacterBattleCompilerInputsV3Schema,
+  CharacterConsciousSelfStaticProjectionV2Schema,
+  CharacterDeepPsycheStaticProjectionV2Schema,
+  CharacterNarratorStaticProjectionV2Schema,
+  CharacterNarratorProjectionSetV2Schema,
+  PsycheTraitProfileV1Schema,
+} from "./battle-character-compiler.js";
+export type {
+  CharacterBattleCompilerInputsV2,
+  CharacterBattleCompilerInputsV3,
+  CharacterConsciousSelfStaticProjectionV2,
+  CharacterDeepPsycheStaticProjectionV2,
+  CharacterNarratorProjectionSetV2,
+  CharacterNarratorStaticProjectionV2,
+  PsycheTraitProfileV1,
+} from "./battle-character-compiler.js";
 
 export const BattleStatusSchema = z.enum([
   "active",
   "finished",
+  "incomplete",
 ]);
 export type BattleStatus = z.infer<typeof BattleStatusSchema>;
 
@@ -284,151 +330,118 @@ export function selectPolicyIdsByPerspective(
   });
 }
 
-const CharacterActionIntentObjectSchema = z.object({
-  kind: ActionKindSchema,
+const actionIntentFields = {
   skillId: z.string().optional(),
   /** Activate the one-use finisher attached to this skill when legal. */
   useFinisher: z.boolean().optional(),
-  /** Natural-language attempt. It never asserts that the action succeeded. */
-  description: z.string().min(1).max(600).optional(),
-  desiredOutcome: z.string().min(1).max(400).optional(),
-  subjectRefs: z.array(z.string().min(1).max(120)).max(4).optional(),
+  description: z.never().optional(),
+  desiredOutcome: z.never().optional(),
+  subjectRefs: z.never().optional(),
   /** Observer-local reference to a held/worn object used by a standard action. */
   instrumentRef: z.string().min(1).max(120).optional(),
-  /** Optional control reference for a projected multi-turn opportunity. */
+  opportunityId: z.never().optional(),
+  reflectionAnalysis: z.never().optional(),
+  reflectionGuideline: z.never().optional(),
+};
+
+const standardActionIntentSchema = z.object({
+  ...actionIntentFields,
+  kind: z.enum(["basic_attack", "skill", "defend"]),
+}).strict();
+const passiveActionIntentSchema = z.object({
+  ...actionIntentFields,
+  kind: z.enum(["rest", "wait"]),
+  instrumentRef: z.never().optional(),
+}).strict();
+const repositionActionIntentSchema = z.object({
+  ...actionIntentFields,
+  kind: z.literal("reposition"),
+  skillId: z.never().optional(),
+  useFinisher: z.never().optional(),
+  instrumentRef: z.never().optional(),
+}).strict();
+const freeActionIntentSchema = z.object({
+  ...actionIntentFields,
+  kind: z.literal("free_action"),
+  /** A natural-language attempt, never authority that the action succeeded. */
+  description: z.string().min(1).max(600),
+  desiredOutcome: z.string().min(1).max(400).optional(),
+  /** References supplied by the observer-grounded decision, not capability labels. */
+  subjectRefs: z.tuple([z.string().min(1).max(120)])
+    .rest(z.string().min(1).max(120))
+    .refine((refs) => refs.length <= 4, "free actions may reference at most four subjects"),
   opportunityId: z.string().min(1).max(120).optional(),
-  /** Reflect-only: situation analysis written into private memory. */
-  reflectionAnalysis: z.string().min(1).max(400).optional(),
-  /** Reflect-only: forward action guideline written into private memory/goal. */
-  reflectionGuideline: z.string().min(1).max(400).optional(),
+  skillId: z.never().optional(),
+  useFinisher: z.never().optional(),
+  instrumentRef: z.never().optional(),
+}).strict();
+const reflectActionIntentSchema = z.object({
+  ...actionIntentFields,
+  kind: z.literal("reflect"),
+  /** Character-authored analysis and guideline for private battle memory. */
+  reflectionAnalysis: z.string().min(1).max(400),
+  reflectionGuideline: z.string().min(1).max(400),
+  skillId: z.never().optional(),
+  useFinisher: z.never().optional(),
+  instrumentRef: z.never().optional(),
 }).strict();
 
-type CharacterActionIntentObject = z.infer<
-  typeof CharacterActionIntentObjectSchema
->;
-
-function validateCharacterActionIntent(
-  intent: CharacterActionIntentObject,
-  ctx: z.RefinementCtx,
-): void {
-  if (intent.kind === "free_action") {
-    if (!intent.description) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        path: ["description"],
-        message: "free actions require a natural-language description",
-      });
-    }
-    if (!intent.subjectRefs?.length) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        path: ["subjectRefs"],
-        message: "free actions require at least one observer-safe subject reference",
-      });
-    }
-    if (intent.skillId || intent.useFinisher || intent.instrumentRef) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        path: [],
-        message: "free actions cannot carry skill, finisher, or instrument authority",
-      });
-    }
-    if (intent.reflectionAnalysis || intent.reflectionGuideline) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        path: [],
-        message: "free actions cannot carry reflect memory fields",
-      });
-    }
-    return;
-  }
-  if (intent.kind === "reposition") {
-    if (
-      intent.description ||
-      intent.desiredOutcome ||
-      intent.subjectRefs ||
-      intent.opportunityId ||
-      intent.skillId ||
-      intent.useFinisher ||
-      intent.instrumentRef ||
-      intent.reflectionAnalysis ||
-      intent.reflectionGuideline
-    ) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        path: [],
-        message: "reposition cannot carry combat, free-action, or reflect fields",
-      });
-    }
-    return;
-  }
-  if (intent.kind === "reflect") {
-    if (!intent.reflectionAnalysis || !intent.reflectionGuideline) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        path: ["reflectionAnalysis"],
-        message: "reflect requires analysis and guideline text",
-      });
-    }
-    if (
-      intent.description ||
-      intent.desiredOutcome ||
-      intent.subjectRefs ||
-      intent.opportunityId ||
-      intent.skillId ||
-      intent.useFinisher ||
-      intent.instrumentRef
-    ) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        path: [],
-        message: "reflect cannot carry combat or free-action authority fields",
-      });
-    }
-    return;
-  }
-  if (
-    intent.description ||
-    intent.desiredOutcome ||
-    intent.subjectRefs ||
-    intent.opportunityId
-  ) {
-    ctx.addIssue({
-      code: z.ZodIssueCode.custom,
-      path: [],
-      message: "only free actions may carry open attempt fields",
-    });
-  }
-  if (intent.reflectionAnalysis || intent.reflectionGuideline) {
-    ctx.addIssue({
-      code: z.ZodIssueCode.custom,
-      path: [],
-      message: "only reflect may carry reflection memory fields",
-    });
-  }
-  if (
-    intent.instrumentRef &&
-    !["basic_attack", "skill", "defend"].includes(intent.kind)
-  ) {
-    ctx.addIssue({
-      code: z.ZodIssueCode.custom,
-      path: ["instrumentRef"],
-      message: "this action kind cannot use an instrument",
-    });
-  }
+/** One structural contract for intents, engine actions and resolved snapshots. */
+function actionIntentVariants<Shape extends z.ZodRawShape>(extra: Shape) {
+  return [
+    standardActionIntentSchema.extend(extra),
+    passiveActionIntentSchema.extend(extra),
+    repositionActionIntentSchema.extend(extra),
+    freeActionIntentSchema.extend(extra),
+    reflectActionIntentSchema.extend(extra),
+  ] as const;
 }
 
-export const CharacterActionIntentSchema = CharacterActionIntentObjectSchema
-  .superRefine(validateCharacterActionIntent);
+export const CharacterActionIntentSchema = z.discriminatedUnion(
+  "kind", [...actionIntentVariants({})],
+);
 export type CharacterActionIntent = z.infer<typeof CharacterActionIntentSchema>;
 
-const BattleActionObjectSchema = CharacterActionIntentObjectSchema.extend({
-  actorSide: z.enum(["a", "b"]),
-});
-
-export const BattleActionSchema = BattleActionObjectSchema
-  .superRefine(validateCharacterActionIntent);
+export const BattleActionSchema = z.discriminatedUnion("kind", [
+  ...actionIntentVariants({ actorSide: z.enum(["a", "b"]) }),
+]);
 export type BattleAction = z.infer<typeof BattleActionSchema>;
+
+/** Preserve branch-specific payloads when projecting execution back to intent. */
+export function projectCharacterActionIntent(action: BattleAction): CharacterActionIntent {
+  switch (action.kind) {
+    case "free_action":
+      return {
+        kind: action.kind,
+        description: action.description,
+        subjectRefs: [...action.subjectRefs],
+        ...(action.desiredOutcome !== undefined ? { desiredOutcome: action.desiredOutcome } : {}),
+        ...(action.opportunityId !== undefined ? { opportunityId: action.opportunityId } : {}),
+      };
+    case "reflect":
+      return {
+        kind: action.kind,
+        reflectionAnalysis: action.reflectionAnalysis,
+        reflectionGuideline: action.reflectionGuideline,
+      };
+    case "reposition":
+      return { kind: action.kind };
+    case "rest":
+    case "wait":
+      return {
+        kind: action.kind,
+        ...(action.skillId !== undefined ? { skillId: action.skillId } : {}),
+        ...(action.useFinisher !== undefined ? { useFinisher: action.useFinisher } : {}),
+      };
+    default:
+      return {
+        kind: action.kind,
+        ...(action.skillId !== undefined ? { skillId: action.skillId } : {}),
+        ...(action.useFinisher !== undefined ? { useFinisher: action.useFinisher } : {}),
+        ...(action.instrumentRef !== undefined ? { instrumentRef: action.instrumentRef } : {}),
+      };
+  }
+}
 
 export const ActionResolutionReasonSchema = z.enum([
   "invalid_intent",
@@ -476,6 +489,7 @@ export const ActionSelectionReceiptSchema = z.object({
     "matching_policy",
     "always_policy",
     "legacy_stance",
+    "character_norm_fallback",
   ]),
   reason: z.enum([
     "player_override",
@@ -486,6 +500,7 @@ export const ActionSelectionReceiptSchema = z.object({
     "matching_policy_selected",
     "always_policy_selected",
     "no_policy_match",
+    "character_norm_rejected",
   ]),
   selectedPolicyId: z.string().min(1).max(120).nullable(),
   opponentInput: z.object({
@@ -495,21 +510,21 @@ export const ActionSelectionReceiptSchema = z.object({
 }).strict();
 export type ActionSelectionReceipt = z.infer<typeof ActionSelectionReceiptSchema>;
 
-export const ResolvedBattleActionSchema = BattleActionObjectSchema.extend({
-  id: z.string().min(1),
-  executed: z.boolean(),
-  skippedReason: z
-    .enum([
+export const ResolvedBattleActionSchema = z.discriminatedUnion("kind", [
+  ...actionIntentVariants({
+    actorSide: z.enum(["a", "b"]),
+    id: z.string().min(1),
+    executed: z.boolean(),
+    skippedReason: z.enum([
       "incapacitated_before_action",
       "battle_inactive",
       "action_infeasible",
-    ])
-    .nullable()
-    .default(null),
-  resolution: ActionResolutionSchema.optional(),
-  /** Why this request source was selected before feasibility resolution. */
-  selection: ActionSelectionReceiptSchema.optional(),
-}).superRefine(validateCharacterActionIntent);
+    ]).nullable().default(null),
+    resolution: ActionResolutionSchema.optional(),
+    /** Why this request source was selected before feasibility resolution. */
+    selection: ActionSelectionReceiptSchema.optional(),
+  }),
+]);
 export type ResolvedBattleAction = z.infer<
   typeof ResolvedBattleActionSchema
 >;
@@ -574,38 +589,7 @@ export const SituationSchema = z.object({
 });
 export type Situation = z.infer<typeof SituationSchema>;
 
-export type TurnEvent = {
-  id?: string;
-  type: "damage" | "heal" | "rest" | "parameter" | "defend" | "wait" |
-    "reflect" | "status" | "situation" | "info" | "utterance" |
-    "manifestation" | "free_action" | "reposition";
-  actorName?: string;
-  actorSide?: "a" | "b";
-  targetName?: string;
-  targetSides?: Array<"a" | "b">;
-  sourceActionId?: string;
-  sourceEffectId?: string;
-  skillName?: string;
-  parameterKey?: ParamKey;
-  parameterDirection?: "loss" | "gain";
-  intensity?: "minor" | "moderate" | "heavy" | "critical";
-  utterance?: {
-    text: string;
-    delivery: "spoken" | "visible_reaction";
-    volume: "quiet" | "normal" | "loud";
-    articulation: "clear" | "impaired";
-    language: string;
-  };
-  manifestation?: {
-    modality: "movement" | "posture" | "expression" | "voice";
-    description: string;
-    sourceEventIds: string[];
-    carrierEventId: string;
-  };
-  summary: string;
-};
-
-export const TurnEventSchema: z.ZodType<TurnEvent> = z.object({
+const TurnEventObjectSchema = z.object({
   id: z.string().min(1).optional(),
   type: z.enum([
     "damage",
@@ -650,45 +634,44 @@ export const TurnEventSchema: z.ZodType<TurnEvent> = z.object({
     carrierEventId: z.string().min(1).max(120),
   }).strict().optional(),
   summary: z.string(),
-}).superRefine((event, ctx) => {
-  if (event.sourceActionId && event.sourceEffectId) {
-    ctx.addIssue({
-      code: z.ZodIssueCode.custom,
-      path: ["sourceEffectId"],
-      message: "an event cannot have both action and scheduled-effect sources",
-    });
-  }
-  if (event.type === "utterance") {
-    if (!event.id || !event.actorSide || !event.utterance) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        path: ["utterance"],
-        message: "utterance events require id, actorSide, and utterance payload",
-      });
-    }
-  } else if (event.utterance !== undefined) {
-    ctx.addIssue({
-      code: z.ZodIssueCode.custom,
-      path: ["utterance"],
-      message: "only utterance events may carry an utterance payload",
-    });
-  }
-  if (event.type === "manifestation") {
-    if (!event.id || !event.actorSide || !event.manifestation) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        path: ["manifestation"],
-        message: "manifestation events require id, actorSide, and manifestation payload",
-      });
-    }
-  } else if (event.manifestation !== undefined) {
-    ctx.addIssue({
-      code: z.ZodIssueCode.custom,
-      path: ["manifestation"],
-      message: "only manifestation events may carry a manifestation payload",
-    });
-  }
 });
+
+const ordinaryTurnEventSchema = TurnEventObjectSchema.extend({
+  type: z.enum([
+    "damage", "heal", "rest", "parameter", "defend", "wait", "reflect",
+    "status", "situation", "info", "free_action", "reposition",
+  ]),
+  utterance: z.never().optional(),
+  manifestation: z.never().optional(),
+});
+const utteranceTurnEventSchema = TurnEventObjectSchema.extend({
+  type: z.literal("utterance"),
+  id: TurnEventObjectSchema.shape.id.unwrap(),
+  actorSide: TurnEventObjectSchema.shape.actorSide.unwrap(),
+  utterance: TurnEventObjectSchema.shape.utterance.unwrap(),
+  manifestation: z.never().optional(),
+});
+const manifestationTurnEventSchema = TurnEventObjectSchema.extend({
+  type: z.literal("manifestation"),
+  id: TurnEventObjectSchema.shape.id.unwrap(),
+  actorSide: TurnEventObjectSchema.shape.actorSide.unwrap(),
+  utterance: z.never().optional(),
+  manifestation: TurnEventObjectSchema.shape.manifestation.unwrap(),
+});
+
+export const TurnEventSchema = z.discriminatedUnion("type", [
+  ordinaryTurnEventSchema, utteranceTurnEventSchema, manifestationTurnEventSchema,
+]).and(z.union([
+  z.object({
+    sourceActionId: TurnEventObjectSchema.shape.sourceActionId,
+    sourceEffectId: z.never().optional(),
+  }),
+  z.object({
+    sourceActionId: z.never().optional(),
+    sourceEffectId: TurnEventObjectSchema.shape.sourceEffectId,
+  }),
+]));
+export type TurnEvent = z.infer<typeof TurnEventSchema>;
 
 export const PendingBattleEffectSchema = z.object({
   schemaVersion: z.literal(1),
@@ -1049,114 +1032,6 @@ export type TurnObservationPacket = z.infer<typeof TurnObservationPacketSchema>;
 const PsycheActivationSchema = z.number().int().min(0).max(1000);
 const PsycheRelationshipValueSchema = z.number().int().min(-1000).max(1000);
 
-/** Versioned, server-private inputs for the deterministic normal-turn policy. */
-export const PsycheTraitProfileV1Schema = z.object({
-  adverseSensitivity: PsycheActivationSchema,
-  uncertaintySensitivity: PsycheActivationSchema,
-  recoverySpeed: PsycheActivationSchema,
-  irritationPersistence: PsycheActivationSchema,
-  anxietyPersistence: PsycheActivationSchema,
-  approachTendency: PsycheActivationSchema,
-  withdrawalTendency: PsycheActivationSchema,
-  impulseInhibition: PsycheActivationSchema,
-  expressionRestraint: PsycheActivationSchema,
-}).strict();
-export type PsycheTraitProfileV1 = z.infer<typeof PsycheTraitProfileV1Schema>;
-
-/** Frozen descriptive disposition for the private deep-psyche consumer. */
-export const CharacterDeepPsycheStaticProjectionV2Schema = z.object({
-  contractVersion: z.literal(2),
-  background: z.array(z.object({
-    id: z.string().min(1).max(120),
-    text: z.string().min(1).max(600),
-    selfAwareness: z.enum(["unaware", "partial", "aware"]),
-  }).strict()).max(16),
-  tendencies: z.array(z.object({
-    id: z.string().min(1).max(120),
-    tendency: z.string().min(1).max(600),
-    manifestation: z.string().min(1).max(600),
-    backgroundRefs: z.array(z.string().min(1).max(120)).max(6),
-    selfAwareness: z.enum(["unaware", "partial", "aware"]),
-  }).strict()).max(12),
-  coreNeeds: z.array(z.object({
-    id: z.string().min(1).max(120),
-    text: z.string().min(1).max(600),
-    selfAwareness: z.enum(["unaware", "partial", "aware"]),
-  }).strict()).max(6),
-  relationship: CharacterRelationshipDescriptiveProjectionV2Schema
-    .nullable()
-    .optional(),
-}).strict();
-export type CharacterDeepPsycheStaticProjectionV2 = z.infer<
-  typeof CharacterDeepPsycheStaticProjectionV2Schema
->;
-
-/** Frozen self-aware profile for conscious action and expression consumers. */
-export const CharacterConsciousSelfStaticProjectionV2Schema = z.object({
-  contractVersion: z.literal(2),
-  displayName: z.string().min(1).max(48),
-  background: z.array(z.string().min(1).max(600)).max(16),
-  tendencies: z.array(z.string().min(1).max(600)).max(12),
-  actionPrinciples: z.array(z.string().min(1).max(320)).max(12),
-  speech: z.object({
-    register: z.string().max(160),
-    cadence: z.string().max(160),
-    sentenceLength: z.enum(["short", "mixed", "long"]),
-    vocabularyHabits: z.array(z.string().min(1).max(80)).max(12),
-    examples: z.array(z.string().min(1).max(240)).max(2),
-  }).strict(),
-  relationship: CharacterRelationshipDescriptiveProjectionV2Schema
-    .nullable()
-    .optional(),
-}).strict();
-export type CharacterConsciousSelfStaticProjectionV2 = z.infer<
-  typeof CharacterConsciousSelfStaticProjectionV2Schema
->;
-
-/** Static character facts compiled separately for each narrator access mode. */
-export const CharacterNarratorStaticProjectionV2Schema = z.object({
-  contractVersion: z.literal(2),
-  access: z.enum(["external", "self_inner", "omniscient"]),
-  appearance: z.array(z.string().min(1).max(600)).max(12),
-  innerBackground: z.array(z.string().min(1).max(600)).max(10),
-  innerDisposition: z.array(z.string().min(1).max(600)).max(10),
-  observablePatterns: z.array(z.string().min(1).max(600)).max(10),
-  behaviorPrinciples: z.array(z.string().min(1).max(320)).max(10),
-}).strict();
-export type CharacterNarratorStaticProjectionV2 = z.infer<
-  typeof CharacterNarratorStaticProjectionV2Schema
->;
-
-export const CharacterNarratorProjectionSetV2Schema = z.object({
-  external: CharacterNarratorStaticProjectionV2Schema,
-  selfInner: CharacterNarratorStaticProjectionV2Schema,
-  omniscient: CharacterNarratorStaticProjectionV2Schema,
-}).strict();
-export type CharacterNarratorProjectionSetV2 = z.infer<
-  typeof CharacterNarratorProjectionSetV2Schema
->;
-
-export const CharacterBattleCompilerInputsV2Schema = z.object({
-  psycheTraits: PsycheTraitProfileV1Schema,
-  deepPsyche: CharacterDeepPsycheStaticProjectionV2Schema,
-  consciousSelf: CharacterConsciousSelfStaticProjectionV2Schema,
-  narratorViews: CharacterNarratorProjectionSetV2Schema.optional(),
-  /** Optional for immutable battles created before the P2 rule-compiler slice. */
-  actionNorms: CharacterActionNormProgramV2Schema.optional(),
-  /** Exact logical-target resolution frozen at battle creation. */
-  relationship: CharacterRelationshipResolutionV2Schema.optional(),
-}).strict();
-export type CharacterBattleCompilerInputsV2 = z.infer<
-  typeof CharacterBattleCompilerInputsV2Schema
->;
-
-/** V3 uses existing asset snapshots but never passes old psyche free text. */
-export const CharacterBattleCompilerInputsV3Schema =
-  CharacterBattleCompilerInputsV2Schema.omit({ deepPsyche: true }).strict();
-export type CharacterBattleCompilerInputsV3 = z.infer<
-  typeof CharacterBattleCompilerInputsV3Schema
->;
-
 export const PsycheRelationshipStateV1Schema = z.object({
   trust: PsycheRelationshipValueSchema,
   affiliation: PsycheRelationshipValueSchema,
@@ -1413,6 +1288,29 @@ export const ConsciousIntentV1Schema = z.object({
 }).strict();
 export type ConsciousIntentV1 = z.infer<typeof ConsciousIntentV1Schema>;
 
+/** ADR-0047: new frozen generation; historical V1 rationale remains required. */
+export const ConsciousIntentV2Schema = ConsciousIntentV1Schema.omit({ rationale: true });
+export type ConsciousIntentV2 = z.infer<typeof ConsciousIntentV2Schema>;
+export type ConsciousAgencyV2 = {
+  schemaVersion: 2;
+  upperGoal: ConsciousGoalV1 | null;
+  latestDecision: { intent: ConsciousIntentV2; action: CharacterActionIntent | null; turn: number; phase: "prologue" | "turn" | "later" } | null;
+};
+export const ConsciousAgencyV2Schema: z.ZodType<ConsciousAgencyV2> = z.object({
+  schemaVersion: z.literal(2),
+  upperGoal: ConsciousGoalV1Schema.nullable(),
+  latestDecision: z.object({
+    intent: ConsciousIntentV2Schema,
+    action: CharacterActionIntentSchema.nullable(),
+    turn: z.number().int().nonnegative(),
+    phase: z.enum(["prologue", "turn", "later"]),
+  }).strict().nullable(),
+}).strict().superRefine((state, context) => {
+  if (state.upperGoal === null && state.latestDecision !== null) {
+    context.addIssue({ code: z.ZodIssueCode.custom, path: ["latestDecision"], message: "decision requires a goal" });
+  }
+});
+
 export const ConsciousDecisionV1Schema = z.object({
   intent: ConsciousIntentV1Schema,
   action: CharacterActionIntentSchema.nullable(),
@@ -1468,6 +1366,7 @@ export const CharacterAgentStateSchema = z.object({
   reactionReceiptV1: PsycheReactionReceiptV1Schema.optional(),
   /** V3-only private proposals; absence preserves legacy snapshots unchanged. */
   consciousAgencyV1: ConsciousAgencyV1Schema.optional(),
+  consciousAgencyV2: ConsciousAgencyV2Schema.optional(),
   /** Deterministic no-effect attention shadow; never exposed publicly. */
   focusStateV1: CharacterFocusStateV1Schema.optional(),
   focusReceiptV1: CharacterFocusTransitionReceiptV1Schema.optional(),
@@ -1625,6 +1524,9 @@ export type JudgmentPresentationProjection = z.infer<
 >;
 
 export const CharacterActionProposalRejectionReasonSchema = z.enum([
+  "goal_invalid",
+  "intent_invalid",
+  "action_required",
   "no_decision_context",
   "missing_proposal",
   "schema_invalid",
@@ -1808,11 +1710,17 @@ export const BattleTurnPipelineTraceSchema = z.object({
   }).strict().optional(),
   characterDefinitionRules: z.object({
     a: z.object({
-      actionNorm: CharacterActionNormResolutionReceiptV2Schema.nullable(),
+      actionNorm: z.union([
+        CharacterActionNormResolutionReceiptV2Schema,
+        CharacterActionNormResolutionReceiptV3Schema,
+      ]).nullable(),
       relationship: CharacterRelationshipResolutionReceiptV2Schema.nullable(),
     }).strict(),
     b: z.object({
-      actionNorm: CharacterActionNormResolutionReceiptV2Schema.nullable(),
+      actionNorm: z.union([
+        CharacterActionNormResolutionReceiptV2Schema,
+        CharacterActionNormResolutionReceiptV3Schema,
+      ]).nullable(),
       relationship: CharacterRelationshipResolutionReceiptV2Schema.nullable(),
     }).strict(),
   }).strict().optional(),
@@ -1889,31 +1797,7 @@ export const BattleTurnRecordSchema = z.object({
     const expected = side === "a"
       ? record.sideAChange.parameterChanges
       : record.sideBChange.parameterChanges;
-    const owners = new Map<string, number[]>();
-    for (const receipt of record.consequenceReceipts) {
-      for (const [key, value] of Object.entries(receipt.parameterChanges[side])) {
-        owners.set(key, [...(owners.get(key) ?? []), value]);
-      }
-    }
-    for (const [key, value] of Object.entries(expected)) {
-      const values = owners.get(key) ?? [];
-      if (values.length === 0 || values.reduce((sum, item) => sum + item, 0) !== value) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          path: ["consequenceReceipts"],
-          message: `parameter delta ${side}.${key} must equal its source-owned contributions`,
-        });
-      }
-    }
-    for (const key of owners.keys()) {
-      if (!(key in expected)) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          path: ["consequenceReceipts"],
-          message: `receipt owns absent parameter delta ${side}.${key}`,
-        });
-      }
-    }
+    validateConsequenceParameters(record.consequenceReceipts, side, expected, ctx);
   }
   const validateIndexes = (
     key: "semanticOperationIndexes" | "worldOperationIndexes",
@@ -1999,7 +1883,9 @@ export const BattleTurnEngineContinuationSchema = z.object({
   situation: SituationSchema,
   finisherA: FinisherStateSchema.nullable(),
   finisherB: FinisherStateSchema.nullable(),
-  actions: z.array(ResolvedBattleActionSchema).length(2),
+  actions: z.array(ResolvedBattleActionSchema).max(2),
+  absentIntentSides: z.array(z.enum(["a", "b"])).max(2).default([]),
+  strictCharacterIntents: z.boolean().default(false),
   events: z.array(TurnEventSchema),
   mechanicalEvidence: CommittedMechanicalEvidenceSetSchema,
   pendingEffects: PendingBattleEffectListSchema.default([]),
@@ -2017,6 +1903,13 @@ export const BattleTurnEngineContinuationSchema = z.object({
     transition: BattleWorldTransitionSchema.nullable(),
   }).optional(),
 }).strict().superRefine((continuation, context) => {
+  const actors = continuation.actions.map((action) => action.actorSide);
+  const absent = continuation.absentIntentSides;
+  if (new Set(actors).size !== actors.length || new Set(absent).size !== absent.length ||
+      ["a", "b"].some((side) => Number(actors.some((actor) => actor === side)) + Number(absent.some((actor) => actor === side)) !== 1)) {
+    context.addIssue({ code: z.ZodIssueCode.custom, path: ["actions"], message: "each actor must have exactly one action or an explicit absent intent" });
+  }
+
   if (continuation.nextBucketIndex > continuation.temporalResolution.buckets.length) {
     context.addIssue({
       code: z.ZodIssueCode.custom,
@@ -2036,8 +1929,7 @@ export type BattleTurnEngineContinuation = z.infer<
  * battle independent from mutable current-asset rows, including after an
  * asset generation is archived or hidden from ordinary editors.
  */
-export interface BattleAssetManifest {
-  schemaVersion: 2 | 3;
+interface BattleAssetManifestFields {
   boundAt: string;
   characters: {
     a: BattleCharacterAssetBinding;
@@ -2077,6 +1969,13 @@ export interface BattleAssetManifest {
   };
 }
 
+/** The dynamic output binding belongs only to a complete V4 manifest. */
+export type BattleAssetManifest = BattleAssetManifestFields & (
+  | { schemaVersion: 2 | 3; consciousOutputContract?: never }
+  | { schemaVersion: 4; consciousOutputContract?: "dynamic-v4" }
+  | { schemaVersion: 5; consciousOutputContract: "awareness-v5"; awarenessPolicy: AwarenessPolicyV1; promptRevision: AwarenessPromptRevision; outputRevision: string }
+);
+
 export const BattleBasicAttackSourceSchema = z.discriminatedUnion("kind", [
   z.object({
     kind: z.literal("character_generation_v2"),
@@ -2092,15 +1991,21 @@ export const BattleBasicAttackSourceSchema = z.discriminatedUnion("kind", [
 export type BattleBasicAttackSource = z.infer<
   typeof BattleBasicAttackSourceSchema
 >;
+export type BattleBasicAttackSourceV3 = {
+  kind: "character_generation_v3";
+  generationId: string;
+  definitionPath: "capabilities.basicAction";
+};
 
 export type BattleCharacterAssetBinding = {
   assetId: string;
   generationId: string;
   contentDigest: string;
   snapshot: CombatReadyCharacterSheet;
-  basicAttackSource: BattleBasicAttackSource;
+  basicAttackSource: BattleBasicAttackSource | BattleBasicAttackSourceV3;
   compilerInputsV2?: CharacterBattleCompilerInputsV2;
   compilerInputsV3?: CharacterBattleCompilerInputsV3;
+  compilerInputsV4?: CharacterBattleCompilerInputsV4;
 };
 
 export const BattleDialoguePipelineBindingSchema = z.object({
@@ -2250,6 +2155,39 @@ export const BattleAssetManifestV3Schema = BattleAssetManifestSharedSchema.exten
 }).strict();
 export type BattleAssetManifestV3 = z.infer<typeof BattleAssetManifestV3Schema>;
 
+/** Complete V4 tuple for two V3 character generations. */
+export const BattleAssetManifestV4Schema = BattleAssetManifestSharedSchema.extend({
+  schemaVersion: z.literal(4),
+  characters: z.object({
+    a: BattleCharacterAssetBindingV4Schema,
+    b: BattleCharacterAssetBindingV4Schema,
+  }).strict(),
+  /** Absence preserves historical ADR-0028 outputs. */
+  consciousOutputContract: z.literal("dynamic-v4").optional(),
+  /** ADR-0028 keeps the complete compact dialogue schema-3 tuple. */
+  dialoguePipeline: BattleDialoguePipelineBindingV3Schema,
+  rules: BattleAssetManifestSharedSchema.shape.rules.extend({
+    psycheReaction: z.literal("psyche-reaction-policy-v1"),
+    characterDefinitionRules: z.literal("character-definition-rules-v3"),
+    battleEngine: z.literal("battle-engine-v1"),
+    temporalRules: z.literal("initiative-window-v2"),
+    battlefieldDefinitionRules: z.literal("battlefield-instance-v2"),
+    narrationStyleRules: z.literal("narration-prompt-v2"),
+  }).strict(),
+}).strict();
+export type BattleAssetManifestV4 = z.infer<typeof BattleAssetManifestV4Schema>;
+
+/** Complete immutable assets and execution policy for newly created awareness battles. */
+export const BattleAssetManifestV5Schema = BattleAssetManifestV4Schema.extend({
+  schemaVersion: z.literal(5),
+  consciousOutputContract: z.literal("awareness-v5"),
+  awarenessPolicy: AwarenessPolicyV1Schema,
+  promptRevision: AwarenessPromptRevisionSchema,
+  outputRevision: z.literal("awareness-output-v1"),
+  rules: BattleAssetManifestV4Schema.shape.rules.extend({ psycheReaction: z.literal("awareness-v5") }).strict(),
+}).strict();
+export type BattleAssetManifestV5 = z.infer<typeof BattleAssetManifestV5Schema>;
+
 export function upgradeLegacyBattleCharacterBindingV1(
   binding: z.infer<typeof LegacyBattleCharacterAssetBindingV1Schema>,
 ): BattleCharacterAssetBinding {
@@ -2270,6 +2208,8 @@ export const BattleAssetManifestSchema: z.ZodType<
   z.ZodTypeDef,
   unknown
 > = z.union([
+  BattleAssetManifestV5Schema,
+  BattleAssetManifestV4Schema,
   BattleAssetManifestV3Schema,
   BattleAssetManifestV2Schema,
   LegacyBattleAssetManifestV1Schema,
@@ -2324,7 +2264,8 @@ export type BattleCausalLaterDecision = {
   estimatedCostUsd: number | null;
   elapsedMs: number;
   fallbackReason: string | null;
-  actionNormReceipt?: z.infer<typeof CharacterActionNormResolutionReceiptV2Schema>;
+  actionNormReceipt?: z.infer<typeof CharacterActionNormResolutionReceiptV2Schema> |
+    z.infer<typeof CharacterActionNormResolutionReceiptV3Schema>;
   relationshipReceipt?: z.infer<typeof CharacterRelationshipResolutionReceiptV2Schema>;
 };
 
@@ -2368,7 +2309,7 @@ export type BattlePhaseReceipt = {
   fromRevision: number;
   toRevision: number;
   committedAt: string;
-  narrationInput?: BattleFrozenNarrationInput | BattleDeferredNarrationInput;
+  narrationInput?: BattleFrozenNarrationInput | BattleDeferredNarrationInput | AwarenessFrozenNarration;
   narrationInputDigest?: string;
   narrationDeferred?: boolean;
 };
@@ -2428,6 +2369,7 @@ export interface BattleState {
   id: string;
   pipelineAuthorityVersion?: 1;
   status: BattleStatus;
+  incompleteReason?: string;
   turn: number;
   turnLimit: number;
   combatTick?: number;
@@ -2481,6 +2423,7 @@ export interface BattleState {
   causalExecution?: CausalTurnExecution;
   causalBucketCommit?: BattleBucketMechanicalCommit;
   causalEngineContinuation?: BattleTurnEngineContinuation;
+  consciousRepairReservations?: string[];
   causalLaterDecision?: BattleCausalLaterDecision;
   battleRevision?: number;
   phaseReceiptSequence?: number;
@@ -2505,6 +2448,7 @@ export const BattleStateSchema: z.ZodType<
   /** Present after narrator/speech/perception authority migration. */
   pipelineAuthorityVersion: z.literal(1).optional(),
   status: BattleStatusSchema,
+  incompleteReason: z.string().min(1).max(200).optional(),
   turn: z.number().int().nonnegative(),
   turnLimit: z.number().int().positive(),
   /** Engine beat count; public turn may stay still across several beats. */
@@ -2674,6 +2618,7 @@ export const BattleStateSchema: z.ZodType<
   /** Pure-engine state required to resume after the durable bucket commit. */
   causalEngineContinuation: BattleTurnEngineContinuationSchema.optional(),
   /** Privacy-safe receipt for the isolated decision made after a bucket commit. */
+  consciousRepairReservations: z.array(z.string().min(1)).optional(),
   causalLaterDecision: z.object({
     schemaVersion: z.literal(1),
     executionId: z.string().min(1),
@@ -2690,7 +2635,10 @@ export const BattleStateSchema: z.ZodType<
     estimatedCostUsd: z.number().nonnegative().nullable(),
     elapsedMs: z.number().int().nonnegative(),
     fallbackReason: z.string().min(1).nullable(),
-    actionNormReceipt: CharacterActionNormResolutionReceiptV2Schema.optional(),
+    actionNormReceipt: z.union([
+      CharacterActionNormResolutionReceiptV2Schema,
+      CharacterActionNormResolutionReceiptV3Schema,
+    ]).optional(),
     relationshipReceipt:
       CharacterRelationshipResolutionReceiptV2Schema.optional(),
   }).strict().optional(),
@@ -2710,7 +2658,7 @@ export const BattleStateSchema: z.ZodType<
     toRevision: z.number().int().positive(),
     committedAt: z.string().datetime(),
     /** Frozen internal request for the later narration worker; never public DTO data. */
-    narrationInput: z.union([z.object({
+    narrationInput: z.union([AwarenessFrozenNarrationSchema, z.object({
       schemaVersion: z.literal(1),
       scene: z.string().max(1200),
       perspective: NarrationPerspectiveSchema,
@@ -2855,84 +2803,20 @@ export const BattleStateSchema: z.ZodType<
     .optional(),
   createdAt: z.string(),
   updatedAt: z.string(),
-}).superRefine((state, ctx) => {
-  const effectIds = (state.pendingEffects ?? []).map((effect) => effect.effectId);
-  if (new Set(effectIds).size !== effectIds.length) {
-    ctx.addIssue({
-      code: z.ZodIssueCode.custom,
-      path: ["pendingEffects"],
-      message: "pending effect IDs must be unique within a battle",
-    });
-  }
-  if (state.adjudication) {
-    if (
-      state.status !== "finished" ||
-      state.finishReason !== "turn_limit"
-    ) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        path: ["adjudication"],
-        message: "adjudication is valid only for a finished turn-limit battle",
-      });
-    }
-    if (state.adjudication.turn !== state.turn) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        path: ["adjudication", "turn"],
-        message: "adjudication turn must match battle turn",
-      });
-    }
-    if (state.adjudication.winnerSide !== state.winnerSide) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        path: ["adjudication", "winnerSide"],
-        message: "adjudication winner must match canonical battle winner",
-      });
-    }
-  }
-  const revision = state.semanticState?.revision;
-  if (revision === undefined) return;
-  for (const [field, observation] of [
-    ["observationStateA", state.observationStateA],
-    ["observationStateB", state.observationStateB],
-    ["observationStatePublic", state.observationStatePublic],
-  ] as const) {
-    if (observation && observation.snapshot.revision !== revision) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        path: [field, "snapshot", "revision"],
-        message: "observation revision must match semantic state",
-      });
-    }
-  }
-  for (const [field, frame] of [
-    ["perceptionFrameA", state.perceptionFrameA],
-    ["perceptionFrameB", state.perceptionFrameB],
-  ] as const) {
-    if (frame && frame.revision !== revision) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        path: [field, "revision"],
-        message: "perception frame revision must match semantic state",
-      });
-    }
-  }
-  if (
-    state.latestSemanticTransition &&
-    state.latestSemanticTransition.toRevision !== revision
-  ) {
-    ctx.addIssue({
-      code: z.ZodIssueCode.custom,
-      path: ["latestSemanticTransition", "toRevision"],
-      message: "latest semantic transition must match semantic state",
-    });
-  }
+ }).superRefine((state, ctx) => {
+  validateBattleAgencyBindings(state, ctx);
+  validateIncompleteBattleResult(state, ctx);
+  validateFrozenBattleReceipts(state, ctx);
+  validateBattleUniqueReferences(state, ctx);
+  validateBattleAdjudication(state, ctx);
+  validateBattleObservationRevisions(state, ctx);
 });
 
 /** Public battle view — no parameter numbers. */
 export const BattlePublicSchema = z.object({
   id: z.string(),
   status: BattleStatusSchema,
+  incompleteReason: z.string().min(1).max(200).optional(),
   turn: z.number(),
   turnLimit: z.number(),
   /** Intra-turn beat index when the public-turn clock is bound. */
@@ -3075,6 +2959,7 @@ export type BattlePublic = z.infer<typeof BattlePublicSchema>;
 export const BattleListItemSchema = z.object({
   id: z.string(),
   status: BattleStatusSchema,
+  incompleteReason: z.string().min(1).max(200).optional(),
   turn: z.number(),
   turnLimit: z.number(),
   sideAName: z.string(),

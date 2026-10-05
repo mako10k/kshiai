@@ -1,0 +1,14 @@
+domain NormalBattleDeadlines:
+  description "Apply owner-authorized sufficient waiting times to new ordinary awareness battles."
+evidence OWNER_ACCEPTANCE:
+  "Owner requests adjusting waiting deadlines to sufficient time after normal 5/15-second limits were reported insufficient."
+evidence TIMING:
+  "The authorized long-timeout experiment observed Luna 3.8/7.3 seconds, conscious Grok 20.3/25.8 seconds and encounter7.0 seconds; all SDK responses completed under latent60/conscious90/other60/global600 seconds."
+premise IMMUTABLE:
+  "Existing battles keep their recorded immutable policy. Old certified and observed-v1 policies remain readable. Model identity, output caps, physical attempt/concurrency limits and retries are unchanged."
+premise UNKNOWN:
+  "This small latency sample does not guarantee all future calls fit these limits or prove full real-model combat acceptance."
+premise ALTERNATIVES:
+  "SDK-only timeout changes conflict with persisted execution and narration deadlines. Rewriting old revisions changes historical bindings. New observed usage-v2 with the already tested long timing coherently bound to new battle/provider requests preserves those contracts."
+decision ACCEPTANCE based_on OWNER_ACCEPTANCE, TIMING, IMMUTABLE, UNKNOWN, ALTERNATIVES:
+  "Add awareness-v5-usage-v2: latent60s/conscious90s/adjudication60s/narration60s/global600s/publication180s/terminal90s. Select it only for ordinary new creation and unbound provider configuration; explicitly propagate each battle's bound policy to latent/conscious SDK requests so old battles retain old timing. Keep explicit isolated trial policies unchanged. Verify persisted binding, actual SDK request timeouts, old policy readability and no implicit migration offline. No paid call or deployment."

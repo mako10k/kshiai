@@ -1,0 +1,10 @@
+{
+  "at": "2026-10-01T10:24:45+09:00",
+  "owner": "user",
+  "response": "はい。よいです。",
+  "scope": "Option1 normal authenticated preview; exact local workflow/validator/test implementation; no external execution",
+  "accepted_sha256": {
+    "docs/adr/0042-unreleased-v3-trial-scope.md": "d5ccb8012de8e46197ae0a1c7fd0a4055ea3b1e898dfe2e0dcf98dd6d1b24ae0",
+    "docs/unreleased-v3-trial-design-v1.md": "13f6d4863761a84a3f8b2380588fb8715da93d3d6be8b351b114a3ad335dbbc4"
+  }
+}

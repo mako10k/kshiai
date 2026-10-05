@@ -1,5 +1,8 @@
+import { mkdtempSync, rmSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 import assert from "node:assert/strict";
-import { describe, it } from "node:test";
+import { after, describe, it } from "node:test";
 import {
   defaultParameters,
   legacyBattlefieldPresetToDefinitionV2,
@@ -10,10 +13,15 @@ import type { GenerateBattlefieldDefinitionV2Input } from "./types.js";
 import type { GenerateCharacterDefinitionV2Input } from "./types.js";
 import { assertXaiResponseSchema } from "./provider-response-schema.js";
 import { ProviderJsonSyntaxError } from "./provider-json.js";
-import {
-  OpenAiCompatibleProvider,
-  type ChatOpts,
-} from "./openai-compatible.js";
+import type { OpenAiCompatibleProvider as OpenAiCompatibleProviderType, ChatOpts } from "./openai-compatible.js";
+
+const usageTestDirectory = mkdtempSync(join(tmpdir(), "kshiai-sdk-usage-"));
+process.env.DATABASE_URL = "";
+process.env.DATABASE_PATH = join(usageTestDirectory, "usage.db");
+process.env.AUTH_PROVIDER = "legacy";
+const { OpenAiCompatibleProvider } = await import("./openai-compatible.js");
+const { closeDatabase } = await import("../db.js");
+after(async () => { await closeDatabase(); rmSync(usageTestDirectory, { recursive: true, force: true }); });
 
 type ChatCall = {
   system: string;
@@ -178,7 +186,7 @@ function providerWithResponses(
   responses: unknown[],
   fallbackOnError = false,
 ): {
-  provider: OpenAiCompatibleProvider;
+  provider: OpenAiCompatibleProviderType;
   calls: ChatCall[];
 } {
   const calls: ChatCall[] = [];

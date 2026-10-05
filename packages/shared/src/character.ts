@@ -1,3 +1,4 @@
+/** R: Define shared character contracts for API, authoring, and gameplay consumers. */
 import { z } from "zod";
 import {
   DEFAULT_RATING,
@@ -519,8 +520,12 @@ export const CharacterPublicSchema = z.object({
 export type CharacterPublic = z.infer<typeof CharacterPublicSchema>;
 
 export const CharacterAuthoringReviewSchema = AssetAuthoringReviewBaseSchema.extend({
+  /** This owner may inspect and confirm the fixed candidate, but cannot edit or discard it. */
+  reviewConfirmOnly: z.boolean().optional(),
   characterId: z.string().min(1).max(80),
   candidate: CharacterPublicSchema.nullable(),
+  candidateDigest: z.string().nullable().optional(),
+  canEditCandidate: z.boolean().optional(),
   current: CharacterPublicSchema.nullable(),
   acceptanceError: z.string().min(1).max(160).nullable(),
   sourceRetryAvailable: z.boolean().optional(),

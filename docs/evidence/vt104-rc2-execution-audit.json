@@ -1,0 +1,175 @@
+{
+  "thought_id": "tmp-vt104-rc2-execution",
+  "id_source": "file",
+  "report": {
+    "engine_version": "0.1.0",
+    "document_id": "tmp-vt104-rc2-execution",
+    "generated_at": "2026-10-01T11:42:11.316Z",
+    "summary": {
+      "fatal_count": 0,
+      "error_count": 0,
+      "warning_count": 0,
+      "info_count": 1,
+      "hint_count": 6
+    },
+    "results": [
+      {
+        "issue_id": "ISSUE-001",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "OWNER",
+            "role": "evidence",
+            "step_id": "S-OWNER"
+          }
+        ],
+        "message": "evidence OWNER は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 4,
+          "column": 3,
+          "text": "Owner explicitly approved exact4ab1971 push, CI4 gates, new annotatedv0.23.0-rc.2 creation/push andoneprepare-only workflow with disclosedGCPbuildcost. No liveDB/service/auth transition.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-002",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "READBACK",
+            "role": "evidence",
+            "step_id": "S-READBACK"
+          }
+        ],
+        "message": "evidence READBACK は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 6,
+          "column": 3,
+          "text": "Remote branch4ab19719ef7fa61cdfb8571c4579c3c64cc96dfb verified; CI36856943670 in_progress withsameSHA. RC2 remoteabsent beforewrite; RC1 remains4f3. Localsource234tests and13PGchecks passed.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-003",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "GATES",
+            "role": "premise",
+            "step_id": "S-GATES"
+          }
+        ],
+        "message": "premise GATES は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 8,
+          "column": 3,
+          "text": "Require CIvalidate/security/backend-image/worker success onexactSHA beforetag; annotatedtag SHAreadback beforedispatch; prepareexacttag once; run/artifactsource anddigest independentreadback; do not retryambiguouswrites.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-004",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "UNKNOWN",
+            "role": "pending",
+            "step_id": "S-UNKNOWN"
+          }
+        ],
+        "message": "pending UNKNOWN は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 10,
+          "column": 3,
+          "text": "HostedCI outcome,newbuildresult,image digest unknown; meaningfulGoogleV3 proof stillrequireslaterexactruntimeauthority.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-005",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "OPTIONS",
+            "role": "premise",
+            "step_id": "S-OPTIONS"
+          }
+        ],
+        "message": "premise OPTIONS は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 12,
+          "column": 3,
+          "text": "NewRC preservesexistingRC1; prepareonly avoidssharedstop beforeartifactready. Failedgate retains source andresult,blocksdependentstep.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-006",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "EXECUTE",
+            "role": "decision",
+            "step_id": "S-EXECUTE"
+          }
+        ],
+        "message": "decision EXECUTE は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 14,
+          "column": 3,
+          "text": "Observe sameCI handle; after4checksfreezeRC2 at4ab1971, dispatchprepare once, verifynewrun/result. Keep currentauthentication andsharedruntime untouched; recordcanonicalmeasurement andremaininggoal.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-007",
+        "category": "semantic_hint",
+        "severity": "info",
+        "target_refs": [
+          {
+            "ref_id": "UNKNOWN",
+            "role": "pending",
+            "step_id": "S-UNKNOWN"
+          }
+        ],
+        "message": "pending が存在するため、判断の確定度は下げて表示するべきである。",
+        "metadata": {
+          "line": 9,
+          "column": 9,
+          "end_column": 16
+        }
+      }
+    ],
+    "query_results": []
+  }
+}

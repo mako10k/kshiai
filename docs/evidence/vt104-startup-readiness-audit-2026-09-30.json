@@ -1,0 +1,227 @@
+{
+  "thought_id": "tmp-vt104-startup-readiness",
+  "id_source": "file",
+  "report": {
+    "engine_version": "0.1.0",
+    "document_id": "tmp-vt104-startup-readiness",
+    "generated_at": "2026-09-30T10:51:54.728Z",
+    "summary": {
+      "fatal_count": 0,
+      "error_count": 0,
+      "warning_count": 0,
+      "info_count": 1,
+      "hint_count": 8
+    },
+    "results": [
+      {
+        "issue_id": "ISSUE-001",
+        "category": "contradiction_candidate",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "PRODUCING_CONDITION",
+            "role": "decision",
+            "step_id": "S-PRODUCING_CONDITION"
+          },
+          {
+            "ref_id": "CORRECT",
+            "role": "decision",
+            "step_id": "S-CORRECT"
+          }
+        ],
+        "message": "PRODUCING_CONDITION と CORRECT は同一根拠 SOURCE を共有しており、緊張関係にある可能性がある。",
+        "rationale": "複数の decision が同じ based_on 参照を共有しているため、観点と結論の整合性を再確認するべきである。",
+        "metadata": {
+          "shared_refs": [
+            "SOURCE"
+          ],
+          "line": 9,
+          "column": 10,
+          "end_column": 29
+        }
+      },
+      {
+        "issue_id": "ISSUE-002",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "FAILURE",
+            "role": "evidence",
+            "step_id": "S-FAILURE"
+          }
+        ],
+        "message": "evidence FAILURE は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 4,
+          "column": 3,
+          "text": "Full unit run observes ECONNREFUSED at first health fetch after child stdout API listening.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-003",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "SOURCE",
+            "role": "evidence",
+            "step_id": "S-SOURCE"
+          }
+        ],
+        "message": "evidence SOURCE は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 6,
+          "column": 3,
+          "text": "backend/src/index.ts console.log API listening executes before serve() invocation. Startup test uses that message as readiness then immediately fetches.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-004",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "ALTERNATIVE_EXIT",
+            "role": "premise",
+            "step_id": "S-ALTERNATIVE_EXIT"
+          }
+        ],
+        "message": "premise ALTERNATIVE_EXIT は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 8,
+          "column": 3,
+          "text": "Child might have exited or unrelated process resource pressure might contribute. Existing isolated success does not eliminate timing race. Child diagnostics on failure are incomplete.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-005",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "PRODUCING_CONDITION",
+            "role": "decision",
+            "step_id": "S-PRODUCING_CONDITION"
+          }
+        ],
+        "message": "decision PRODUCING_CONDITION は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 10,
+          "column": 3,
+          "text": "The readiness signal can precede socket binding, allowing a correct observer of the signal to connect too early. This source condition explains the observed race; exact scheduling of this occurrence is inferred.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-006",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "OTHER_FAILURES",
+            "role": "pending",
+            "step_id": "S-OTHER_FAILURES"
+          }
+        ],
+        "message": "pending OTHER_FAILURES は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 12,
+          "column": 3,
+          "text": "No production failure or auth regression is established. Unit selection overlapped Seal refresh, so rerun only after refresh completion.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-007",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "CORRECT",
+            "role": "decision",
+            "step_id": "S-CORRECT"
+          }
+        ],
+        "message": "decision CORRECT は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 14,
+          "column": 3,
+          "text": "Move readiness logging into serve listening callback, retaining startup behavior and existing regression. Repeat isolated startup then complete selected suite after authority refresh. Local correction is within implementation/test authority.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-008",
+        "category": "semantic_hint",
+        "severity": "info",
+        "target_refs": [
+          {
+            "ref_id": "OTHER_FAILURES",
+            "role": "pending",
+            "step_id": "S-OTHER_FAILURES"
+          }
+        ],
+        "message": "pending が存在するため、判断の確定度は下げて表示するべきである。",
+        "metadata": {
+          "line": 11,
+          "column": 9,
+          "end_column": 23
+        }
+      },
+      {
+        "issue_id": "ISSUE-009",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "PRODUCING_CONDITION",
+            "role": "decision",
+            "step_id": "S-PRODUCING_CONDITION"
+          },
+          {
+            "ref_id": "CORRECT",
+            "role": "decision",
+            "step_id": "S-CORRECT"
+          }
+        ],
+        "message": "PRODUCING_CONDITION と CORRECT は意味的に近接している可能性がある。",
+        "metadata": {
+          "line": 9,
+          "column": 10,
+          "end_column": 29,
+          "similarity": 0.75,
+          "semantic_distance": 0.25
+        }
+      }
+    ],
+    "query_results": []
+  }
+}

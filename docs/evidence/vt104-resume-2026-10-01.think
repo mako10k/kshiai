@@ -1,0 +1,14 @@
+domain RESUME:
+  description "Complete remaining canonical plan alignment and prepare concrete initial V3 trial design."
+evidence HANDOFF:
+  "HEAD03ef49c and origin branch match; clean existing cc304 worktree. Latest handoff lists incomplete milestone, gate and parent updates under Accepted requirements v3."
+evidence OWNER:
+  "User requests continuation using latest committed handoff. Requirements v3 R1-R5 prioritize Google-owner V3 game; retention, email, snapshot and promotion are deferred."
+premise LIMIT:
+  "Continue local plan correction and concrete design preparation. Proposed ADR0042 requires specific design acceptance before workflow implementation. No cloud or GitHub write, data deletion, paid call or deployment in this action."
+pending DETAIL:
+  "Minimal workflow/control integration must be inspected; hosted artifacts and actual owner play are unverified."
+decision ALIGN based_on HANDOFF, OWNER, LIMIT:
+  "Update child milestone/gate and parent scope and delegated rollup through standard preview and digest-guarded CLI; preserve history. Resume vt104 with observed timestamp, analyze both plans and inspect velocity."
+decision PREPARE based_on ALIGN, DETAIL, LIMIT:
+  "Read workflows and runtime controls; prepare exact local implementation file set, acceptance checks, effects, alternatives and unknowns for owner's design decision."

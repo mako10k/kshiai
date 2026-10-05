@@ -1,0 +1,7 @@
+{
+  "design": "@26f90bb1fa536db375e21d9aa44884e9aebb5cd3122246a4c70315353817d227",
+  "implementation": "@e5716f8196ad9f5a23acb0a57682fa50d4a22838a1b26099cfd8a02920d87827",
+  "unit": "@18b71edd60b34257a591edc37ae73156d19b0df7d5c8ef919926b8bb05bd6882",
+  "ui": "@bfc04f3564a0b8786280991ffc51d5e4f8809f711ba518be813ba8a261c34e4b",
+  "scope": "Fixed candidate registration; SQLite runtime plus browser request contract; PostgreSQL runtime unobserved"
+}

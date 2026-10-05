@@ -1,34 +1,63 @@
+// R: Build and validate conscious-agent requests from immutable battle bindings.
 import {
   AgencyFactsV1Schema, CharacterAgentStateSchema, CONSCIOUS_GOAL_POLICY_V3,
   decodeConsciousOutputV3, initialConsciousAgencyV1, initialPsycheReactionStateV1,
   projectPsycheReactionV1, type AgencyFactV1, type CharacterAgentState,
   type CharacterBattleCompilerInputsV2, type CharacterBattleCompilerInputsV3,
-  BattleAssetManifestV3Schema, snapshotDialoguePipelineSettings,
+  type CharacterBattleCompilerInputsV4,
+  BattleAssetManifestV3Schema, BattleAssetManifestV4Schema, BattleAssetManifestV5Schema, snapshotDialoguePipelineSettings,
   type BattleCharacterAssetBinding, type BattleState, type DialoguePipelineSettings,
 } from "@kshiai/shared";
 import type { CharacterExpressionCompactInputV3, CharacterAgentAdvanceResult, CharacterActionDecisionInput } from "./types.js";
 
 export function boundConsciousCompiler(binding: BattleCharacterAssetBinding | undefined):
-  CharacterBattleCompilerInputsV2 | CharacterBattleCompilerInputsV3 | undefined {
-  return binding?.compilerInputsV3 ?? binding?.compilerInputsV2;
+  CharacterBattleCompilerInputsV2 | CharacterBattleCompilerInputsV3 | CharacterBattleCompilerInputsV4 | undefined {
+  if (!binding) return undefined;
+  if ("compilerInputsV4" in binding) return binding.compilerInputsV4;
+  return binding.compilerInputsV3 ?? binding.compilerInputsV2;
+}
+
+export function isV4ConsciousCompiler(
+  compiler: CharacterBattleCompilerInputsV2 | CharacterBattleCompilerInputsV3 | CharacterBattleCompilerInputsV4 | undefined,
+): compiler is CharacterBattleCompilerInputsV4 {
+  return Boolean(compiler && "consciousGuidance" in compiler &&
+    "mechanicalConflictFallbacks" in compiler &&
+    compiler.actionNorms.contractVersion === 3);
 }
 
 export function privateBattleGoal(state: BattleState, side: "a" | "b"): string {
   const agent = side === "a" ? state.agentStateA : state.agentStateB;
-  if (state.assetManifest?.schemaVersion === 3) return agent?.consciousAgencyV1?.upperGoal?.statement ?? "";
+  const schemaVersion = state.assetManifest?.schemaVersion;
+  if (schemaVersion === 5) return "";
+  if (schemaVersion === 3 || schemaVersion === 4) {
+    return agent?.consciousAgencyV2?.upperGoal?.statement ?? agent?.consciousAgencyV1?.upperGoal?.statement ?? "";
+  }
   return (side === "a" ? state.openingPlanA : state.openingPlanB) ?? agent?.currentGoal ?? "";
 }
 
 export function legacyPublicOpeningPlan(state: BattleState, side: "a" | "b"): string | undefined {
-  if (state.assetManifest?.schemaVersion === 3) return undefined;
+  const schemaVersion = state.assetManifest?.schemaVersion;
+  if (schemaVersion === 3 || schemaVersion === 4 || schemaVersion === 5) return undefined;
   return (side === "a" ? state.agentStateA : state.agentStateB)?.currentGoal?.slice(0, 1200);
 }
 
 /** Compare typed frozen fields, without a serialization/parse round trip. */
-export function assertConsciousBinding(state: BattleState, settings: DialoguePipelineSettings): void {
-  if (settings.schemaVersion !== 3 && state.assetManifest?.schemaVersion !== 3) return;
-  const manifest = BattleAssetManifestV3Schema.safeParse(state.assetManifest);
-  if (settings.schemaVersion !== 3 || !manifest.success) throw new Error("BATTLE_CONTRACT_MISMATCH");
+function parseConsciousManifest(state: BattleState, schemaVersion: number | undefined) {
+  return schemaVersion === 5
+    ? BattleAssetManifestV5Schema.safeParse(state.assetManifest)
+    : schemaVersion === 4
+    ? BattleAssetManifestV4Schema.safeParse(state.assetManifest)
+    : BattleAssetManifestV3Schema.safeParse(state.assetManifest);
+}
+
+function assertCurrentDialoguePipelineBinding(
+  state: BattleState,
+  settings: DialoguePipelineSettings,
+  manifest: ReturnType<typeof parseConsciousManifest>,
+): void {
+  if (settings.schemaVersion !== 3 || !manifest.success) {
+    throw new Error("BATTLE_CONTRACT_MISMATCH");
+  }
   const expected = manifest.data.dialoguePipeline.snapshot;
   const actual = snapshotDialoguePipelineSettings(settings);
   const stored = state.dialoguePipelineSnapshot;
@@ -37,10 +66,30 @@ export function assertConsciousBinding(state: BattleState, settings: DialoguePip
   if (!stored || keys.some((key) => expected[key] !== actual[key] || expected[key] !== stored[key])) {
     throw new Error("BATTLE_CONTRACT_MISMATCH");
   }
-  if (!state.agentStateA?.consciousAgencyV1 || !state.agentStateB?.consciousAgencyV1 ||
-      !state.agentStateA.reactionStateV1 || !state.agentStateB.reactionStateV1) {
+}
+
+function assertConsciousAgencyStateBinding(state: BattleState, schemaVersion: number | undefined): void {
+  if (schemaVersion === 5) {
+    for (const agent of [state.agentStateA, state.agentStateB]) {
+      if (agent?.consciousAgencyV1 || agent?.consciousAgencyV2 || agent?.reactionStateV1) {
+        throw new Error("BATTLE_CONTRACT_MISMATCH");
+      }
+    }
+    return;
+  }
+  const dynamic = state.assetManifest?.schemaVersion === 4 && state.assetManifest.consciousOutputContract === "dynamic-v4";
+  if (!(dynamic ? state.agentStateA?.consciousAgencyV2 : state.agentStateA?.consciousAgencyV1) ||
+      !(dynamic ? state.agentStateB?.consciousAgencyV2 : state.agentStateB?.consciousAgencyV1) ||
+      !state.agentStateA?.reactionStateV1 || !state.agentStateB?.reactionStateV1) {
     throw new Error("BATTLE_CONTRACT_MISMATCH");
   }
+}
+
+export function assertConsciousBinding(state: BattleState, settings: DialoguePipelineSettings): void {
+  const schemaVersion = state.assetManifest?.schemaVersion;
+  if (settings.schemaVersion !== 3 && schemaVersion !== 3 && schemaVersion !== 4 && schemaVersion !== 5) return;
+  assertCurrentDialoguePipelineBinding(state, settings, parseConsciousManifest(state, schemaVersion));
+  assertConsciousAgencyStateBinding(state, schemaVersion);
 }
 
 /** Reconstruct the closed request at the external provider boundary. */
@@ -59,7 +108,7 @@ export function consciousRequest(input: CharacterExpressionCompactInputV3): Char
 
 export function consciousLaterRequest(input: CharacterActionDecisionInput) {
   const context = input.conscious;
-  if (!context) throw new Error("BATTLE_CONTRACT_MISMATCH");
+  if (!context || context.contractVersion !== 3 || context.agencyState.schemaVersion !== 1) throw new Error("BATTLE_CONTRACT_MISMATCH");
   return {
     contractVersion: 3, phase: "later", character: input.character,
     structuredSelf: input.structuredSelf, perception: input.perception, decision: input.decision,
@@ -103,7 +152,12 @@ export function consciousFacts(input: Pick<CharacterExpressionCompactInputV3,
   return AgencyFactsV1Schema.parse(facts);
 }
 
-export function consciousReaction(state: CharacterAgentState, compiler: CharacterBattleCompilerInputsV2 | CharacterBattleCompilerInputsV3) {
+export function consciousReaction(
+  state: CharacterAgentState,
+  compiler: CharacterBattleCompilerInputsV2 |
+    CharacterBattleCompilerInputsV3 |
+    CharacterBattleCompilerInputsV4,
+) {
   const projection = projectPsycheReactionV1(state.reactionStateV1 ?? initialPsycheReactionStateV1(), compiler.psycheTraits);
   return { action: projection.actionProjection, expression: projection.expressionProjection };
 }

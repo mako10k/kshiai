@@ -1,0 +1,119 @@
+[
+  {
+    "args": [
+      "show",
+      "implementation/vt104-unreleased-trial-local-20261001",
+      "--format",
+      "json"
+    ],
+    "output": "{\"schema\":\"sealgraph/show/v2\",\"seal\":{\"seal_id\":\"4d972d81e69d936553c7ec41c77341cf79b3ad8faa084d156176ad63e6e53d48\",\"material_id\":\"495d3dc99b92ec3336ab9c48c1fd0f23f844202ea7b465ca536c8b471111c1e7\",\"provenance_id\":\"38490cac7c62e923de7ce38686bbc7415b84ed0cdd232037b8089e46b15069f2\",\"content_blob_id\":\"806f4a12c567e92fc3a2f5102fdc07283b8be4cfd26dd07d36a428d8be1d5ddd\",\"content_bytes\":81844,\"attachments\":[],\"root\":false,\"draft\":false,\"cause_links\":[{\"target_seal\":\"734c6a8e242a6978655c17a21de42d6a43943760fbe91aa9f932b2218a85a8f9\",\"previous_revision_seal_of_target_seal\":[],\"messages\":[]}]},\"current_refs\":[\"implementation/vt104-unreleased-trial-local-20261001\"],\"revision_observation\":{\"target_seal\":\"4d972d81e69d936553c7ec41c77341cf79b3ad8faa084d156176ad63e6e53d48\",\"previous_states\":[\"PREVIOUS_UNOBSERVED\"],\"assertions\":[],\"structural_previous_seals\":[]}}\n"
+  },
+  {
+    "args": [
+      "show",
+      "verification/vt104-trial-evidence-20261001",
+      "--format",
+      "json"
+    ],
+    "output": "{\"schema\":\"sealgraph/show/v2\",\"seal\":{\"seal_id\":\"b7f6d11ade2c9bd130b5e38a07103e8c6312120712312368a0c974d84e1b8843\",\"material_id\":\"d5da1c1ceb45915fb84e1b61c27885dda6f6bb2e94d6892a6ea88b9ae4abb67f\",\"provenance_id\":\"f5dd29e64c95ef7e875d1b1173073b163b271a3fc1552c533dd95df2a8fe8f55\",\"content_blob_id\":\"d86b9feaf73697da81168048955b334ea438cbd2f301d8ab5eeb29fc8daab9ab\",\"content_bytes\":5705,\"attachments\":[],\"root\":false,\"draft\":false,\"cause_links\":[{\"target_seal\":\"358a8e1dafb0c50cf3f37e318e1aa48b254a6cd692e109988f6cd10b160ea43c\",\"previous_revision_seal_of_target_seal\":[],\"messages\":[]}]},\"current_refs\":[\"verification/vt104-trial-evidence-20261001\"],\"revision_observation\":{\"target_seal\":\"b7f6d11ade2c9bd130b5e38a07103e8c6312120712312368a0c974d84e1b8843\",\"previous_states\":[\"PREVIOUS_UNOBSERVED\"],\"assertions\":[],\"structural_previous_seals\":[]}}\n"
+  },
+  {
+    "args": [
+      "add",
+      "verification/vt104-trial-evidence-20261001"
+    ],
+    "output": "CANDIDATE verification/vt104-trial-evidence-20261001 content=d86b9feaf73697da81168048955b334ea438cbd2f301d8ab5eeb29fc8daab9ab cause_links=1 root=false draft=false source_mode=bound-source source_path=\"scripts/verify-v3-trial-evidence.test.mjs\" source_binding=BOUND next_source=ready\n"
+  },
+  {
+    "args": [
+      "link",
+      "verification/vt104-trial-evidence-20261001",
+      "--target",
+      "implementation/vt104-unreleased-trial-local-20261001",
+      "--previous",
+      "@358a8e1dafb0c50cf3f37e318e1aa48b254a6cd692e109988f6cd10b160ea43c",
+      "-m",
+      "Reviewed frozen pending migrations and bounded mutation waits; exact workflow guards re-run."
+    ],
+    "output": "CANDIDATE verification/vt104-trial-evidence-20261001 cause_links=2\n"
+  },
+  {
+    "args": [
+      "unlink",
+      "verification/vt104-trial-evidence-20261001",
+      "--target",
+      "@358a8e1dafb0c50cf3f37e318e1aa48b254a6cd692e109988f6cd10b160ea43c"
+    ],
+    "output": "CANDIDATE verification/vt104-trial-evidence-20261001 cause_links=1\n"
+  },
+  {
+    "args": [
+      "seal",
+      "verification/vt104-trial-evidence-20261001"
+    ],
+    "output": "SEALED verification/vt104-trial-evidence-20261001 e884d583a12fdf3ba6e5d9685d4df2585782c2b7b57644f492cc28ac2fde82f9 operation=fc58bd82e752119a4078a97fc2224e5e\n"
+  },
+  {
+    "args": [
+      "status",
+      "verification/vt104-trial-evidence-20261001",
+      "--format",
+      "json"
+    ],
+    "output": "{\"schema\":\"sealgraph/status/v3\",\"statuses\":[{\"ref\":\"verification/vt104-trial-evidence-20261001\",\"head_seal_id\":\"e884d583a12fdf3ba6e5d9685d4df2585782c2b7b57644f492cc28ac2fde82f9\",\"candidate_to_head\":\"NO_CANDIDATE\",\"draft\":false,\"stale\":{\"self\":false,\"direct_target_seal_ids\":[],\"transitive_paths\":[]},\"sealed_state_labels\":[\"SEALED_STATE_CLEAN\"],\"local_source\":{\"path\":\"scripts/verify-v3-trial-evidence.test.mjs\",\"baseline\":\"HEAD\",\"relation\":\"WORKFILE_MATCHES_HEAD\"}}]}\n"
+  },
+  {
+    "args": [
+      "show",
+      "verification/vt104-trial-workflow-local-20261001",
+      "--format",
+      "json"
+    ],
+    "output": "{\"schema\":\"sealgraph/show/v2\",\"seal\":{\"seal_id\":\"6c1f17fdd36ed5952be129280e6a118b7ef0b9c58d782e3be59114db509ab0b8\",\"material_id\":\"fa2778163d1e64c0c512de8c076e596178e7e8bf44bbfc3ae50d4d52cb2a1b61\",\"provenance_id\":\"f5dd29e64c95ef7e875d1b1173073b163b271a3fc1552c533dd95df2a8fe8f55\",\"content_blob_id\":\"01530b197c7fd8ee9703a8a6f37dd596eea72a45ec690a7141e0d4aa10340888\",\"content_bytes\":7557,\"attachments\":[],\"root\":false,\"draft\":false,\"cause_links\":[{\"target_seal\":\"358a8e1dafb0c50cf3f37e318e1aa48b254a6cd692e109988f6cd10b160ea43c\",\"previous_revision_seal_of_target_seal\":[],\"messages\":[]}]},\"current_refs\":[\"verification/vt104-trial-workflow-local-20261001\"],\"revision_observation\":{\"target_seal\":\"6c1f17fdd36ed5952be129280e6a118b7ef0b9c58d782e3be59114db509ab0b8\",\"previous_states\":[\"PREVIOUS_UNOBSERVED\"],\"assertions\":[],\"structural_previous_seals\":[]}}\n"
+  },
+  {
+    "args": [
+      "add",
+      "verification/vt104-trial-workflow-local-20261001"
+    ],
+    "output": "CANDIDATE verification/vt104-trial-workflow-local-20261001 content=4a9e485f3a5c258479c71d71449c69ce7f91addf361b4721766ba8241ea8231f cause_links=1 root=false draft=false source_mode=bound-source source_path=\"docs/evidence/vt104-workflow-local-validation-2026-10-01.py\" source_binding=BOUND next_source=ready\n"
+  },
+  {
+    "args": [
+      "link",
+      "verification/vt104-trial-workflow-local-20261001",
+      "--target",
+      "implementation/vt104-unreleased-trial-local-20261001",
+      "--previous",
+      "@358a8e1dafb0c50cf3f37e318e1aa48b254a6cd692e109988f6cd10b160ea43c",
+      "-m",
+      "Reviewed frozen pending migrations and bounded mutation waits; exact workflow guards re-run."
+    ],
+    "output": "CANDIDATE verification/vt104-trial-workflow-local-20261001 cause_links=2\n"
+  },
+  {
+    "args": [
+      "unlink",
+      "verification/vt104-trial-workflow-local-20261001",
+      "--target",
+      "@358a8e1dafb0c50cf3f37e318e1aa48b254a6cd692e109988f6cd10b160ea43c"
+    ],
+    "output": "CANDIDATE verification/vt104-trial-workflow-local-20261001 cause_links=1\n"
+  },
+  {
+    "args": [
+      "seal",
+      "verification/vt104-trial-workflow-local-20261001"
+    ],
+    "output": "SEALED verification/vt104-trial-workflow-local-20261001 514169822b454be0f0a0c2bf2a7a7e192548f4329410f7e8705410b7955daf46 operation=06a550bcd874aff5f7655fc2bc7782e8\n"
+  },
+  {
+    "args": [
+      "status",
+      "verification/vt104-trial-workflow-local-20261001",
+      "--format",
+      "json"
+    ],
+    "output": "{\"schema\":\"sealgraph/status/v3\",\"statuses\":[{\"ref\":\"verification/vt104-trial-workflow-local-20261001\",\"head_seal_id\":\"514169822b454be0f0a0c2bf2a7a7e192548f4329410f7e8705410b7955daf46\",\"candidate_to_head\":\"NO_CANDIDATE\",\"draft\":false,\"stale\":{\"self\":false,\"direct_target_seal_ids\":[],\"transitive_paths\":[]},\"sealed_state_labels\":[\"SEALED_STATE_CLEAN\"],\"local_source\":{\"path\":\"docs/evidence/vt104-workflow-local-validation-2026-10-01.py\",\"baseline\":\"HEAD\",\"relation\":\"WORKFILE_MATCHES_HEAD\"}}]}\n"
+  }
+]

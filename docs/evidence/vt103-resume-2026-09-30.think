@@ -1,0 +1,16 @@
+domain LOCAL_INTEGRATION:
+  description "Verify accepted Neva/Rio V3 local user path."
+evidence REQUEST:
+  "User explicitly requests vt103 local integration verification."
+evidence START:
+  "Existing cc304 worktree fba69f3 is clean and tracking-matched; no matching PR. PERT document check passes and next is vt103 after vt102/vt110."
+evidence CONTRACT:
+  "Accepted cutover R1-R5 and lifecycle design require formal authoring registration, selection, V3 completion, immutable bindings after edit/reload/replay, cutover readback and finished history."
+premise BOUNDARY:
+  "Use disposable local SQLite, real authoring/HTTP/storage/engine paths, explicit test provider. No external provider, Stage data, release or deployment. A local test owner is synthetic, not product content acceptance."
+premise ALTERNATIVES:
+  "Reusing generic V3 test alone omits exact Neva/Rio formal authoring and visible result. Stage execution exceeds local scope. Extend real local path and report provider/GUI limits explicitly."
+pending CHECK:
+  "Whether frontend visible result and Neva/Rio complete through the joined path is not yet observed."
+decision VERIFY based_on REQUEST, START, CONTRACT, BOUNDARY, ALTERNATIVES:
+  "Measure vt103 start, add bounded joined regression and local visible-path observation, repair only discovered accepted-contract defects, verify tests/typecheck and exact IDs, then record completion only for evidenced conditions."

@@ -1,0 +1,376 @@
+{
+  "thought_id": "tmp-kshiai-workflow-registration",
+  "id_source": "file",
+  "report": {
+    "engine_version": "0.1.0",
+    "document_id": "tmp-kshiai-workflow-registration",
+    "generated_at": "2026-10-01T02:29:38.563Z",
+    "summary": {
+      "fatal_count": 0,
+      "error_count": 0,
+      "warning_count": 0,
+      "info_count": 1,
+      "hint_count": 14
+    },
+    "results": [
+      {
+        "issue_id": "ISSUE-001",
+        "category": "contradiction_candidate",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "REGISTER",
+            "role": "decision",
+            "step_id": "S-REGISTER"
+          },
+          {
+            "ref_id": "OBSERVE",
+            "role": "decision",
+            "step_id": "S-OBSERVE"
+          }
+        ],
+        "message": "REGISTER と OBSERVE は同一根拠 OWNER, BOUNDS を共有しており、緊張関係にある可能性がある。",
+        "rationale": "複数の decision が同じ based_on 参照を共有しているため、観点と結論の整合性を再確認するべきである。",
+        "metadata": {
+          "shared_refs": [
+            "OWNER",
+            "BOUNDS"
+          ],
+          "line": 13,
+          "column": 10,
+          "end_column": 18
+        }
+      },
+      {
+        "issue_id": "ISSUE-002",
+        "category": "contradiction_candidate",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "REGISTER",
+            "role": "decision",
+            "step_id": "S-REGISTER"
+          },
+          {
+            "ref_id": "CANDIDATE",
+            "role": "decision",
+            "step_id": "S-CANDIDATE"
+          }
+        ],
+        "message": "REGISTER と CANDIDATE は同一根拠 BOUNDS を共有しており、緊張関係にある可能性がある。",
+        "rationale": "複数の decision が同じ based_on 参照を共有しているため、観点と結論の整合性を再確認するべきである。",
+        "metadata": {
+          "shared_refs": [
+            "BOUNDS"
+          ],
+          "line": 13,
+          "column": 10,
+          "end_column": 18
+        }
+      },
+      {
+        "issue_id": "ISSUE-003",
+        "category": "contradiction_candidate",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "OBSERVE",
+            "role": "decision",
+            "step_id": "S-OBSERVE"
+          },
+          {
+            "ref_id": "CANDIDATE",
+            "role": "decision",
+            "step_id": "S-CANDIDATE"
+          }
+        ],
+        "message": "OBSERVE と CANDIDATE は同一根拠 BOUNDS を共有しており、緊張関係にある可能性がある。",
+        "rationale": "複数の decision が同じ based_on 参照を共有しているため、観点と結論の整合性を再確認するべきである。",
+        "metadata": {
+          "shared_refs": [
+            "BOUNDS"
+          ],
+          "line": 15,
+          "column": 10,
+          "end_column": 17
+        }
+      },
+      {
+        "issue_id": "ISSUE-004",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "OWNER",
+            "role": "evidence",
+            "step_id": "S-OWNER"
+          }
+        ],
+        "message": "evidence OWNER は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 4,
+          "column": 3,
+          "text": "Owner explicitly approved the disclosed workflow registration candidate: one new branch, one PR and one merge containing only v3-trial.yml. Owner reports GCP reauthentication complete.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-005",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "BASE",
+            "role": "evidence",
+            "step_id": "S-BASE"
+          }
+        ],
+        "message": "evidence BASE は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 6,
+          "column": 3,
+          "text": "Main checkout clean at verified origin main e31c487. Existing cc304 source synchronized at0cab522. New branch preflight identifies unrelated unique branches; exact isolation reason declared.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-006",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "BOUNDS",
+            "role": "premise",
+            "step_id": "S-BOUNDS"
+          }
+        ],
+        "message": "premise BOUNDS は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 8,
+          "column": 3,
+          "text": "Copy workflow with SHA256911ccaa02daf6457ea735c712da3f2c40a9e0c7a3a8a3e18808946124fd0df98. One branch push, PR and merge. No full WIP merge or cloud mutation in registration. Preserve unrelated branches.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-007",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "CLOUD",
+            "role": "pending",
+            "step_id": "S-CLOUD"
+          }
+        ],
+        "message": "pending CLOUD は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 10,
+          "column": 3,
+          "text": "Reauthentication success and live cloud readiness require independent reads. Four required CI checks and release-tag identity for trial remain to be settled.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-008",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "ALTERNATIVES",
+            "role": "premise",
+            "step_id": "S-ALTERNATIVES"
+          }
+        ],
+        "message": "premise ALTERNATIVES は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 12,
+          "column": 3,
+          "text": "Workflow-only registration preserves accepted hosted execution path; merging whole WIP or replacing path with local deployment expands scope and is not chosen.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-009",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "REGISTER",
+            "role": "decision",
+            "step_id": "S-REGISTER"
+          }
+        ],
+        "message": "decision REGISTER は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 14,
+          "column": 3,
+          "text": "Create approved registration branch from fresh main, copy one approved file, verify identical hash and one-file diff, commit and push once, create PR, verify required CI and merge exact head, independently read main SHA/file and workflow registration.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-010",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "OBSERVE",
+            "role": "decision",
+            "step_id": "S-OBSERVE"
+          }
+        ],
+        "message": "decision OBSERVE は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 16,
+          "column": 3,
+          "text": "Read service/queue/job state and credential-free secret references after reauthentication; prepare exact next packet without fabricated observations.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-011",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "CI",
+            "role": "evidence",
+            "step_id": "S-CI"
+          }
+        ],
+        "message": "evidence CI は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 18,
+          "column": 3,
+          "text": "PR151 security fails on three undici advisories; other three checks succeed. Existing root override7.29.0 is affected; primary maintainer advisories name7.29.1 as patched.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-012",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "REVIEW",
+            "role": "premise",
+            "step_id": "S-REVIEW"
+          }
+        ],
+        "message": "premise REVIEW は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 20,
+          "column": 3,
+          "text": "Current registered candidate is exactly one workflow file. CI failure is INSIDE merge verification. Updating package manifests is outside the disclosed one-file scope and needs an exact extension decision before external push.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-013",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "CANDIDATE",
+            "role": "decision",
+            "step_id": "S-CANDIDATE"
+          }
+        ],
+        "message": "decision CANDIDATE は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 22,
+          "column": 3,
+          "text": "Prepare isolated package.json/package-lock.json update from7.29.0 to7.29.1, run security and worker build checks, export exact diff for owner review. Do not push added dependency files or bypass branch protections without that decision.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-014",
+        "category": "semantic_hint",
+        "severity": "info",
+        "target_refs": [
+          {
+            "ref_id": "CLOUD",
+            "role": "pending",
+            "step_id": "S-CLOUD"
+          }
+        ],
+        "message": "pending が存在するため、判断の確定度は下げて表示するべきである。",
+        "metadata": {
+          "line": 9,
+          "column": 9,
+          "end_column": 14
+        }
+      },
+      {
+        "issue_id": "ISSUE-015",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "REGISTER",
+            "role": "decision",
+            "step_id": "S-REGISTER"
+          },
+          {
+            "ref_id": "OBSERVE",
+            "role": "decision",
+            "step_id": "S-OBSERVE"
+          }
+        ],
+        "message": "REGISTER と OBSERVE は意味的に近接している可能性がある。",
+        "metadata": {
+          "line": 13,
+          "column": 10,
+          "end_column": 18,
+          "similarity": 0.5861,
+          "semantic_distance": 0.4139,
+          "embedding_provider": "ollama",
+          "embedding_model": "nomic-embed-text"
+        }
+      }
+    ],
+    "query_results": []
+  }
+}

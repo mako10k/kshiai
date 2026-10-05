@@ -1,3 +1,4 @@
+/** R: Verify focused character candidate preparation and gated owner acceptance. */
 import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
 import { after, before, describe, it } from "node:test";
@@ -17,6 +18,7 @@ const { CHARACTER_BATTLE_MECHANICS_CAPABILITY_SET_V3, CharacterDefinitionV3Schem
   CharacterAuthoringReviewSchema, CharacterGenerationEnvelopeV2Schema,
   defaultCharacterDisclosurePolicyV2, projectCharacterProfileSourceV2,
   SemanticAuthoringAcceptedV1Schema, CharacterDefinitionV2Schema } = await import("@kshiai/shared");
+const { activateHistoricalCharacterFixtureV2 } = await import("../testing/historical-character-fixtures.js");
 const { createCharacterSemanticAuthoringAdapterV3 } = await import(
   "./semantic-authoring/adapters/character-v3.js"
 );
@@ -29,8 +31,11 @@ const { buildRoutes } = await import("../routes.js");
 const { processNextCharacterAuthoringJob, drainCharacterAuthoringJobs } = await import("./character-authoring-jobs.js");
 const attempts = await import("../repositories/character-assets-v2.js");
 const runs = await import("../repositories/semantic-authoring.js");
-const generations = await import("../repositories/asset-generations.js");
+const generations = await import("../testing/historical-asset-generations.js");
+const generationReader = await import("../repositories/character-generation-reader.js");
 const { buildImportedCharacterEnvelopeV2 } = await import("./character-authoring-service.js");
+
+const { createV3StageTrialCandidate } = await import("../fixtures/neva-v3.js");
 
 const scaffold = createCharacterSemanticAuthoringAdapterV3().buildBaseline(
   { kind: "create", naturalText: "fixture" }, "create").candidate;
@@ -310,7 +315,7 @@ describe("focused authoring through the real owner command and worker", () => {
         ...fixture.sheet, id: characterId, ownerUserId: "focused-owner", createdAt: now, updatedAt: now,
       }), now]);
     const original = await generations.createAssetGeneration({ assetType: "character",
-      assetId: characterId, schemaVersion: 3, content: { definition: complete } });
+      assetId: characterId, schemaVersion: 3, content: { ...createV3StageTrialCandidate(), definition: complete } });
     await query(`INSERT INTO character_asset_states
       (character_id, compatibility_status, current_generation_id, active_attempt_id, reason_code, updated_at)
       VALUES ($1, 'ready', $2, NULL, NULL, $3)`, [characterId, original.generationId, now]);
@@ -382,7 +387,7 @@ describe("focused authoring through the real owner command and worker", () => {
           ...fixture.sheet, id: characterId, ownerUserId: "focused-owner", createdAt: now, updatedAt: now,
         }), now]);
       const original = await generations.createAssetGeneration({ assetType: "character",
-        assetId: characterId, schemaVersion: 3, content: { definition: complete } });
+        assetId: characterId, schemaVersion: 3, content: { ...createV3StageTrialCandidate(), definition: complete } });
       await query(`INSERT INTO character_asset_states
         (character_id, compatibility_status, current_generation_id, active_attempt_id, reason_code, updated_at)
         VALUES ($1, 'ready', $2, NULL, NULL, $3)`, [characterId, original.generationId, now]);
@@ -534,6 +539,39 @@ describe("focused authoring through the real owner command and worker", () => {
       && context.obligations.some((item) => item.obligationId === "source:speechPolicy")));
     assert.equal((await generations.getCurrentAssetGeneration("character", characterId))?.generationId,
       original.generationId);
+    const defaultReviewResponse = await app.request(`/api/character-drafts/${accepted.attemptId}`, {
+      headers: { Cookie: "kshiai_session=focused-session" },
+    });
+    const defaultReview = CharacterAuthoringReviewSchema.parse(await defaultReviewResponse.json());
+    assert.equal(defaultReview.canAccept, false);
+    assert.equal(
+      defaultReview.acceptanceError,
+      "FOCUSED_CHARACTER_MIGRATION_ACTIVATION_DISABLED",
+    );
+    const defaultConfirm = await app.request(`/api/characters/${accepted.attemptId}/confirm`, {
+      method: "POST", headers: { Cookie: "kshiai_session=focused-session" },
+    });
+    assert.equal(defaultConfirm.status, 409);
+    assert.match(
+      (await defaultConfirm.json() as { message: string }).message,
+      /FOCUSED_CHARACTER_MIGRATION_ACTIVATION_DISABLED/,
+    );
+    assert.equal((await generations.getCurrentAssetGeneration("character", characterId))?.generationId,
+      original.generationId, "normal runtime leaves the current pointer unchanged");
+    const trialApp = buildRoutes({
+      llm: provider,
+      enableCharacterMigrationAcceptanceTrial: true,
+    });
+    const defaultProfile = await app.request(`/api/characters/${characterId}`, {
+      headers: { Cookie: "kshiai_session=focused-session" },
+    });
+    assert.equal(defaultProfile.status, 200);
+    assert.equal((await defaultProfile.json()).character.upgradeAction, null);
+    const enabledProfile = await trialApp.request(`/api/characters/${characterId}`, {
+      headers: { Cookie: "kshiai_session=focused-session" },
+    });
+    assert.equal(enabledProfile.status, 200);
+    assert.equal((await enabledProfile.json()).character.upgradeAction.targetSchemaVersion, 3);
     const restrictedOriginalValue = { hiddenMeaning: "owner-only retained source" };
     const redactedCandidate = {
       ...terminalValue,
@@ -556,7 +594,7 @@ describe("focused authoring through the real owner command and worker", () => {
     await query(`UPDATE character_focused_authoring_payloads SET result_json = $2
       WHERE run_id IN (SELECT run_id FROM semantic_authoring_runs WHERE attempt_id = $1)`,
     [accepted.attemptId, JSON.stringify(redactedCandidate)]);
-    const reviewResponse = await app.request(`/api/character-drafts/${accepted.attemptId}`, {
+    const reviewResponse = await trialApp.request(`/api/character-drafts/${accepted.attemptId}`, {
       headers: { Cookie: "kshiai_session=focused-session" },
     });
     assert.equal(reviewResponse.status, 200);
@@ -565,18 +603,238 @@ describe("focused authoring through the real owner command and worker", () => {
     assert.equal(reviewText.includes(frozenLegacyStatement), false,
       "frozen V2 source values are not disclosed by migration review fields");
     const review = CharacterAuthoringReviewSchema.parse(JSON.parse(reviewText));
+    assert.equal(review.canAccept, false);
+    assert.equal(
+      review.acceptanceError,
+      "FOCUSED_CHARACTER_MIGRATION_CANDIDATE_DIGEST_MISMATCH",
+    );
     assert.deepEqual(review.semanticCandidateReview?.pendingPreservation, [{
       sourceClaimId: "restricted-source",
       disposition: "defer",
       rationale: "Keep the exact source for a later consumer.",
       exactSourceCopyVerified: false,
     }]);
-    const confirm = await app.request(`/api/characters/${accepted.attemptId}/confirm`, {
+    const confirm = await trialApp.request(`/api/characters/${accepted.attemptId}/confirm`, {
       method: "POST", headers: { Cookie: "kshiai_session=focused-session" },
     });
-    assert.equal(confirm.status, 409, "a focused V3 migration candidate cannot activate through the V2 command");
+    assert.equal(confirm.status, 409);
+    assert.match(
+      (await confirm.json() as { message: string }).message,
+      /FOCUSED_CHARACTER_MIGRATION_CANDIDATE_DIGEST_MISMATCH/,
+    );
     assert.equal((await generations.getCurrentAssetGeneration("character", characterId))?.generationId,
       original.generationId, "review and rejected activation leave the current pointer unchanged");
+    const generationsAfterRejection = await query<{ count: number }>(
+      `SELECT COUNT(*) AS count FROM asset_generations
+        WHERE asset_type = 'character' AND asset_id = $1`,
+      [characterId],
+    );
+    assert.equal(Number(generationsAfterRejection.rows[0]?.count), 1);
+  });
+
+  it("lets the owner accept the exact focused migration candidate for Stage-scoped V3 selection", async () => {
+    seen = []; preparedSizes = []; behavior = "complete";
+    const now = new Date().toISOString();
+    const generated = await new MockLlmProvider().generateCharacter({
+      prompt: "stage selection migration source",
+    });
+    const characterId = "focused-migration-stage-selection-character";
+    const sheet = {
+      ...generated.sheet,
+      id: characterId,
+      ownerUserId: "focused-owner",
+      createdAt: now,
+      updatedAt: now,
+    };
+    await query(`INSERT INTO characters (id, owner_user_id, sheet_json, created_at, updated_at)
+      VALUES ($1, $2, $3, $4, $4)`,
+    [characterId, "focused-owner", JSON.stringify(sheet), now]);
+    const sourceEnvelope = buildImportedCharacterEnvelopeV2({
+      sheet,
+      attemptId: "focused-stage-selection-import",
+    });
+    const sourceGeneration = await generations.createAssetGeneration({
+      assetType: "character",
+      assetId: characterId,
+      schemaVersion: 2,
+      content: sourceEnvelope,
+    });
+    await query(`INSERT INTO character_asset_states
+      (character_id, compatibility_status, current_generation_id, active_attempt_id, reason_code, updated_at)
+      VALUES ($1, 'ready', $2, NULL, NULL, $3)`,
+    [characterId, sourceGeneration.generationId, now]);
+    const provider = llm();
+    const app = buildRoutes({
+      llm: provider,
+      enableCharacterMigrationAcceptanceTrial: true,
+    });
+    const upgrade = await app.request(`/api/characters/${characterId}/upgrade`, {
+      method: "POST",
+      headers: {
+        Cookie: "kshiai_session=focused-session",
+        "Idempotency-Key": "focused-stage-selection-migration",
+      },
+    });
+    assert.equal(upgrade.status, 202);
+    const accepted = z.object({ attemptId: z.string() }).parse(await upgrade.json());
+    await drainCharacterAuthoringJobs({
+      llm: provider,
+      workerId: "focused-stage-selection-worker",
+    });
+
+    const reviewResponse = await app.request(
+      `/api/character-drafts/${accepted.attemptId}`,
+      { headers: { Cookie: "kshiai_session=focused-session" } },
+    );
+    assert.equal(reviewResponse.status, 200);
+    const review = CharacterAuthoringReviewSchema.parse(await reviewResponse.json());
+    assert.equal(review.canAccept, true);
+    assert.equal(review.semanticCandidateReview?.schemaVersion, 3);
+    assert.deepEqual(review.semanticCandidateReview?.compatibility, null);
+
+    const confirm = await app.request(
+      `/api/characters/${accepted.attemptId}/confirm`,
+      {
+        method: "POST",
+        headers: { Cookie: "kshiai_session=focused-session" },
+      },
+    );
+    assert.equal(confirm.status, 200, await confirm.clone().text());
+    const confirmed = z.object({
+      character: z.object({
+        id: z.string(),
+        selectable: z.boolean(),
+        compatibility: z.object({
+          status: z.string(),
+          schemaVersion: z.number().nullable(),
+        }),
+      }),
+    }).parse(await confirm.json());
+    assert.equal(confirmed.character.id, characterId);
+    assert.equal(confirmed.character.selectable, true);
+    assert.deepEqual(confirmed.character.compatibility, {
+      status: "ready",
+      schemaVersion: 3,
+    });
+    const completed = await attempts.getCharacterAuthoringAttempt(
+      accepted.attemptId,
+      "focused-owner",
+    );
+    assert.equal(completed?.status, "succeeded");
+    assert.ok(completed?.candidateDigest);
+    assert.ok(completed?.resultGenerationId);
+    const target = await generations.getCurrentAssetGeneration("character", characterId);
+    assert.equal(target?.generationId, completed?.resultGenerationId);
+    assert.equal(target?.schemaVersion, 3);
+
+    const stageSelected = await generationReader.loadCharacterGeneration({
+      generationId: target!.generationId,
+      currentSheet: sheet,
+      requiredV3Capabilities: CHARACTER_BATTLE_MECHANICS_CAPABILITY_SET_V3,
+    });
+    assert.equal(stageSelected?.schemaVersion, 3);
+    assert.equal(stageSelected?.compatibility.status, "ready");
+    assert.deepEqual(
+      stageSelected?.envelope.compilerCompatibility,
+      CHARACTER_BATTLE_MECHANICS_CAPABILITY_SET_V3.required,
+    );
+    assert.equal(
+      (await generations.getAssetGeneration(sourceGeneration.generationId))?.contentDigest,
+      sourceGeneration.contentDigest,
+      "the exact historical V2 generation remains byte-addressable",
+    );
+  });
+
+  it("rolls back V3 append when the frozen source pointer drifts before owner acceptance", async () => {
+    seen = []; preparedSizes = []; behavior = "complete";
+    const now = new Date().toISOString();
+    const generated = await new MockLlmProvider().generateCharacter({
+      prompt: "pointer drift migration source",
+    });
+    const characterId = "focused-migration-pointer-drift-character";
+    const sheet = {
+      ...generated.sheet,
+      id: characterId,
+      ownerUserId: "focused-owner",
+      createdAt: now,
+      updatedAt: now,
+    };
+    await query(`INSERT INTO characters (id, owner_user_id, sheet_json, created_at, updated_at)
+      VALUES ($1, $2, $3, $4, $4)`,
+    [characterId, "focused-owner", JSON.stringify(sheet), now]);
+    const sourceEnvelope = buildImportedCharacterEnvelopeV2({
+      sheet,
+      attemptId: "focused-pointer-drift-import",
+    });
+    const sourceGeneration = await generations.createAssetGeneration({
+      assetType: "character",
+      assetId: characterId,
+      schemaVersion: 2,
+      content: sourceEnvelope,
+    });
+    await query(`INSERT INTO character_asset_states
+      (character_id, compatibility_status, current_generation_id, active_attempt_id, reason_code, updated_at)
+      VALUES ($1, 'ready', $2, NULL, NULL, $3)`,
+    [characterId, sourceGeneration.generationId, now]);
+    const provider = llm();
+    const app = buildRoutes({
+      llm: provider,
+      enableCharacterMigrationAcceptanceTrial: true,
+    });
+    const upgrade = await app.request(`/api/characters/${characterId}/upgrade`, {
+      method: "POST",
+      headers: {
+        Cookie: "kshiai_session=focused-session",
+        "Idempotency-Key": "focused-pointer-drift-migration",
+      },
+    });
+    const accepted = z.object({ attemptId: z.string() }).parse(await upgrade.json());
+    await drainCharacterAuthoringJobs({
+      llm: provider,
+      workerId: "focused-pointer-drift-worker",
+    });
+    const concurrentEnvelope = CharacterGenerationEnvelopeV2Schema.parse({
+      ...sourceEnvelope,
+      provenance: {
+        ...sourceEnvelope.provenance,
+        attemptId: "focused-pointer-drift-concurrent",
+      },
+    });
+    const concurrent = await activateHistoricalCharacterFixtureV2({
+      sheet,
+      envelope: concurrentEnvelope,
+    });
+    const countBeforeConfirm = await query<{ count: number }>(
+      `SELECT COUNT(*) AS count FROM asset_generations
+        WHERE asset_type = 'character' AND asset_id = $1`,
+      [characterId],
+    );
+    const confirm = await app.request(
+      `/api/characters/${accepted.attemptId}/confirm`,
+      {
+        method: "POST",
+        headers: { Cookie: "kshiai_session=focused-session" },
+      },
+    );
+    assert.equal(confirm.status, 409);
+    assert.match(
+      (await confirm.json() as { message: string }).message,
+      /ASSET_CURRENT_GENERATION_DRIFT/,
+    );
+    assert.equal(
+      (await generations.getCurrentAssetGeneration("character", characterId))?.generationId,
+      concurrent.generationId,
+    );
+    const countAfterConfirm = await query<{ count: number }>(
+      `SELECT COUNT(*) AS count FROM asset_generations
+        WHERE asset_type = 'character' AND asset_id = $1`,
+      [characterId],
+    );
+    assert.equal(
+      Number(countAfterConfirm.rows[0]?.count),
+      Number(countBeforeConfirm.rows[0]?.count),
+      "the failed transaction must roll back the appended V3 generation",
+    );
   });
 
   it("carries an optional legacy meaning deferral through the real upgrade route", async () => {

@@ -1,0 +1,10 @@
+domain HISTORICAL_PREVIEW:
+  description "Propose one bounded re-build and same-origin preview update for exact historical character reads."
+evidence OWNER:
+  "Owner accepted V2 read-only retention and reported Miki current V2 UI OK but old battle view blocked. Previous approval was one image build and four preview writes on458af76. Latest user-provided goal explicitly permits necessary production, staging and development deployments. Apply the disclosed960a995 preview candidate within that expanded authority."
+evidence VERIFIED:
+  "CLI-audited historical read fix preserves snapshots independently of obsolete executable compiler fields; real saved snapshots match exactly.257 tests, typecheck/static and CI36989694540 on960a995 all pass. Fixed source export exists."
+premise BOUNDS:
+  "One executor, one e2-medium1200s Cloud Build to existing GCS and registry, one no-traffic Cloud Run revision, one Worker upload updating existing alias, one old preview tag retarget. Same callback origin, zero auth PATCH, no character/legacy battle writes, data disposal, migration, paid LLM, public promotion, release or merge. Startup system metadata writes and build/runtime costs disclosed. Fresh empty-work and baseline checks gate execution. Unknown write results are read back rather than retried."
+decision PROPOSE based_on OWNER, VERIFIED, BOUNDS:
+  "Execute the exact Japanese preview proposal file under the newly granted necessary deployment authority. Fixed960a995 source produces a digest that must match successful build/registry before deployment. Revisionkshiai-api-v2-history-960a995 uses existingv2-retire-458af76 alias and oldtrial tag after successful readback. Same Cloudflare preview alias and backend origin retain existing login callback. Old assets remain. Alternative retaining local fix leaves preview broken; modifying legacy compiler data or loosening battle execution validation is outside scope. Actual owner historical-profile UI verification remains the completion checkpoint."

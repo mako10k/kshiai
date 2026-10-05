@@ -1,0 +1,44 @@
+{
+  "date": "2026-09-30",
+  "base_commit": "4a898d058609b163d1783e0d6ec1a932de7f3317",
+  "task": "vt102",
+  "runtime": "Node v25.1.0; SQLite better-sqlite3; isolated temporary database; MockLlmProvider",
+  "typecheck": {
+    "command": "npm run typecheck",
+    "result": "passed",
+    "scope": "shared/backend/frontend/deployment"
+  },
+  "tests": {
+    "command": "npm test",
+    "result": "passed",
+    "active_files": 15,
+    "provisional_files": 2,
+    "disabled_files": 146,
+    "passed_cases": 128,
+    "failed_cases": 0
+  },
+  "new_regressions": {
+    "files": 3,
+    "cases": 11,
+    "result": "passed"
+  },
+  "coverage": [
+    "V3 creation and exact generation/digest/snapshot/compiler binding",
+    "pointer swap and mutable-sheet change",
+    "HTTP/SSE/action advance and same-key replay",
+    "SQLite state reload and result/aftermath",
+    "frozen narration worker request generation and public reads",
+    "norm conflict receipt with skipped provider",
+    "forced-offense and skill norm gate",
+    "prepared resource facts and resumed checkpoint turn/selection receipt",
+    "guidance applicability/exceptions/awareness"
+  ],
+  "independent_review": "Three concrete findings corrected; final bounded review found no remaining concrete issue",
+  "sealgraph_fsck": "ok",
+  "excluded": [
+    "PostgreSQL runtime",
+    "Neva/Rio registered-owner path integration vt103",
+    "vt110 shared eligibility/lifecycle/discard",
+    "Stage/production/provider calls/deployment/push"
+  ]
+}

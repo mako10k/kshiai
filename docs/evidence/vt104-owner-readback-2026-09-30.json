@@ -1,0 +1,32 @@
+{
+  "schema": "kshiai/vt104-owner-readback/v1",
+  "user_report": "mako10k@mk10.org Google-linked user, tentative owner",
+  "target": {
+    "hostname": "aws-0-ap-northeast-1.pooler.supabase.com",
+    "port": "5432",
+    "database": "postgres",
+    "secretRef": "projects/kshiai/secrets/kshiai-database-url/versions/1"
+  },
+  "guard": {
+    "database": "postgres",
+    "read_only": "on",
+    "isolation": "repeatable read",
+    "observed_at": "2026-09-30T09:19:55.750Z",
+    "server_version": "17.6"
+  },
+  "owner": [
+    {
+      "id": "usr_568b632d7ad86cfe3e356171",
+      "email": "mako10k@mk10.org"
+    }
+  ],
+  "identities": [
+    {
+      "provider": "google"
+    }
+  ],
+  "providerObservation": "direct-auth-identities-read",
+  "credential_persisted": false,
+  "scope": "SELECT-only exact email lookup; does not accept content or authorize authoring",
+  "minimization": "Repository evidence retains only owner app ID/email and Google provider. Auth subject stays in the protected execution input."
+}

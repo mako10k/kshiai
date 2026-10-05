@@ -1,0 +1,446 @@
+{
+  "thought_id": "docs-evidence-vt104-operational-packet-2026-10-01",
+  "id_source": "file",
+  "report": {
+    "engine_version": "0.1.0",
+    "document_id": "docs-evidence-vt104-operational-packet-2026-10-01",
+    "generated_at": "2026-10-01T11:09:45.395Z",
+    "summary": {
+      "fatal_count": 0,
+      "error_count": 0,
+      "warning_count": 0,
+      "info_count": 1,
+      "hint_count": 17
+    },
+    "results": [
+      {
+        "issue_id": "ISSUE-001",
+        "category": "contradiction_candidate",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "BUILD",
+            "role": "decision",
+            "step_id": "S-BUILD"
+          },
+          {
+            "ref_id": "REPORT",
+            "role": "decision",
+            "step_id": "S-REPORT"
+          }
+        ],
+        "message": "BUILD と REPORT は同一根拠 OWNER, BOUNDARY を共有しており、緊張関係にある可能性がある。",
+        "rationale": "複数の decision が同じ based_on 参照を共有しているため、観点と結論の整合性を再確認するべきである。",
+        "metadata": {
+          "shared_refs": [
+            "OWNER",
+            "BOUNDARY"
+          ],
+          "line": 13,
+          "column": 10,
+          "end_column": 15
+        }
+      },
+      {
+        "issue_id": "ISSUE-002",
+        "category": "contradiction_candidate",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "BUILD",
+            "role": "decision",
+            "step_id": "S-BUILD"
+          },
+          {
+            "ref_id": "DRAFT_ONLY",
+            "role": "decision",
+            "step_id": "S-DRAFT_ONLY"
+          }
+        ],
+        "message": "BUILD と DRAFT_ONLY は同一根拠 OWNER, BOUNDARY を共有しており、緊張関係にある可能性がある。",
+        "rationale": "複数の decision が同じ based_on 参照を共有しているため、観点と結論の整合性を再確認するべきである。",
+        "metadata": {
+          "shared_refs": [
+            "OWNER",
+            "BOUNDARY"
+          ],
+          "line": 13,
+          "column": 10,
+          "end_column": 15
+        }
+      },
+      {
+        "issue_id": "ISSUE-003",
+        "category": "contradiction_candidate",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "REPORT",
+            "role": "decision",
+            "step_id": "S-REPORT"
+          },
+          {
+            "ref_id": "DRAFT_ONLY",
+            "role": "decision",
+            "step_id": "S-DRAFT_ONLY"
+          }
+        ],
+        "message": "REPORT と DRAFT_ONLY は同一根拠 OWNER, BOUNDARY, DESIGN を共有しており、緊張関係にある可能性がある。",
+        "rationale": "複数の decision が同じ based_on 参照を共有しているため、観点と結論の整合性を再確認するべきである。",
+        "metadata": {
+          "shared_refs": [
+            "OWNER",
+            "BOUNDARY",
+            "DESIGN"
+          ],
+          "line": 21,
+          "column": 10,
+          "end_column": 16
+        }
+      },
+      {
+        "issue_id": "ISSUE-004",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "OWNER",
+            "role": "evidence",
+            "step_id": "S-OWNER"
+          }
+        ],
+        "message": "evidence OWNER は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 4,
+          "column": 3,
+          "text": "Owner authorized next task: establish deployment procedures and stop/recovery conditions. Shared workday corrected to working until22:00.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-005",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "SOURCE",
+            "role": "evidence",
+            "step_id": "S-SOURCE"
+          }
+        ],
+        "message": "evidence SOURCE は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 6,
+          "column": 3,
+          "text": "Clean existing worktree HEAD72f67ea; prepared immutable RC4f3aaa7 and image43d084a2 recorded. Prior candidate contains obsolete source identity and missing operational receipts.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-006",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "BOUNDARY",
+            "role": "premise",
+            "step_id": "S-BOUNDARY"
+          }
+        ],
+        "message": "premise BOUNDARY は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 8,
+          "column": 3,
+          "text": "Read cloud/database metadata without secret output; write only candidate documentation and actual task progress. No deployment, traffic/tag/queue mutations, schema application, disposal, auth update or paid provider use.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-007",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "LIVE",
+            "role": "pending",
+            "step_id": "S-LIVE"
+          }
+        ],
+        "message": "pending LIVE は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 10,
+          "column": 3,
+          "text": "Fresh cloud writers, tags, queue, exact unfinished DB set, pending migrations, numeric secret versions and callback availability need observation. Post-stop receipts cannot exist before authorized execution.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-008",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "OPTIONS",
+            "role": "premise",
+            "step_id": "S-OPTIONS"
+          }
+        ],
+        "message": "premise OPTIONS は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 12,
+          "column": 3,
+          "text": "Reuse exact prepared image and draft staged instructions; do not manufacture executable packet receipts. If accepted no-snapshot policy conflicts with discard helper, disclose earliest design contradiction and propose bounded correction for owner decision.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-009",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "BUILD",
+            "role": "decision",
+            "step_id": "S-BUILD"
+          }
+        ],
+        "message": "decision BUILD は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 14,
+          "column": 3,
+          "text": "Perform read-only inventory, compare accepted design to disposal implementation, document concrete staged candidate and unresolved owner decisions, validate documentation and update canonical task actuals without claiming deployment readiness.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-010",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "INVENTORY",
+            "role": "evidence",
+            "step_id": "S-INVENTORY"
+          }
+        ],
+        "message": "evidence INVENTORY は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 16,
+          "column": 3,
+          "text": "Fresh metadata:78tags/public100percent, queueRUNNING empty; DB186 battles active18 finished168, outbox22 completed entries14finished8active; zero other pending provider/authoring, five pending migrations, receipt table missing. Numeric secrets1. Google enabled but no preview callback; local Worker credential unavailable.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-011",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "CONFLICT",
+            "role": "evidence",
+            "step_id": "S-CONFLICT"
+          }
+        ],
+        "message": "evidence CONFLICT は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 18,
+          "column": 3,
+          "text": "Accepted designB excludes snapshot gate and calls regular cutover repository before schema stepC. Repository requires nonempty snapshot identity and receipt table0029. Workflow requires unfinished/outboxzero before migrations.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-012",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "DESIGN",
+            "role": "pending",
+            "step_id": "S-DESIGN"
+          }
+        ],
+        "message": "pending DESIGN は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 20,
+          "column": 3,
+          "text": "Owner must decide specific successor design/file set for explicit no-snapshot initial trial policy and receipt-table bootstrap. Existing accepted policy remains, but implementation and sequence extension are not yet accepted. No external execution packet can be finalized before this conflict is resolved.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-013",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "REPORT",
+            "role": "decision",
+            "step_id": "S-REPORT"
+          }
+        ],
+        "message": "decision REPORT は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 22,
+          "column": 3,
+          "text": "Save read-only inventory and concrete staged candidate, report narrow local repair recommendation and increased internal estimate. Preserve current immutableRC; code changes need a fresh source/CI/RC/prepare if they affect runtime. Do not mutate shared cloud or fabricate receipts.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-014",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "AUTH_CURRENT",
+            "role": "evidence",
+            "step_id": "S-AUTH_CURRENT"
+          }
+        ],
+        "message": "evidence AUTH_CURRENT は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 25,
+          "column": 3,
+          "text": "Existing OAuth uses Google/Supabase/PKCE and browser-origin callback. Current allowlist lacks actual futurepreview. Eight local identity/token/proxy boundary tests pass; no real Google/V3 proof. Same-origin Worker path does not establish CORS-change necessity.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-015",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "DESIGN_REVIEW",
+            "role": "evidence",
+            "step_id": "S-DESIGN_REVIEW"
+          }
+        ],
+        "message": "evidence DESIGN_REVIEW は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 27,
+          "column": 3,
+          "text": "Independent read-only review identifies required frozen finished-outbox projection in trial plan digest, exact existing0029 bootstrap DDL and separate immutable source identity for any new operator behavior.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-016",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "DRAFT_ONLY",
+            "role": "decision",
+            "step_id": "S-DRAFT_ONLY"
+          }
+        ],
+        "message": "decision DRAFT_ONLY は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 29,
+          "column": 3,
+          "text": "Complete Proposed successor detailed design and test cases, preserve current authentication and leave code/external mutation pending owner decision. Report actual auth change necessity only for exactcallback after preview exists.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-017",
+        "category": "semantic_hint",
+        "severity": "info",
+        "target_refs": [
+          {
+            "ref_id": "LIVE",
+            "role": "pending",
+            "step_id": "S-LIVE"
+          }
+        ],
+        "message": "pending が存在するため、判断の確定度は下げて表示するべきである。",
+        "metadata": {
+          "line": 9,
+          "column": 9,
+          "end_column": 13
+        }
+      },
+      {
+        "issue_id": "ISSUE-018",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "BUILD",
+            "role": "decision",
+            "step_id": "S-BUILD"
+          },
+          {
+            "ref_id": "REPORT",
+            "role": "decision",
+            "step_id": "S-REPORT"
+          }
+        ],
+        "message": "BUILD と REPORT は意味的に近接している可能性がある。",
+        "metadata": {
+          "line": 13,
+          "column": 10,
+          "end_column": 15,
+          "similarity": 0.75,
+          "semantic_distance": 0.25
+        }
+      }
+    ],
+    "query_results": []
+  }
+}

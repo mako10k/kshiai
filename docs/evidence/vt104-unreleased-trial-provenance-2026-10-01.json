@@ -1,0 +1,216 @@
+[
+  {
+    "args": [
+      "add",
+      "acceptance/vt104-trial-design-owner-20261001",
+      "--content-file",
+      "docs/evidence/vt104-design-owner-acceptance-2026-10-01.json",
+      "--bind-source",
+      "--root",
+      "--clear-cause-links"
+    ],
+    "output": "CANDIDATE acceptance/vt104-trial-design-owner-20261001 content=37a3c5d5fe63d024e5d1ab145aca97d6067789a435957ee07e2582b9cec9d9b5 cause_links=0 root=true draft=false source_mode=explicit-file source_path=\"docs/evidence/vt104-design-owner-acceptance-2026-10-01.json\" source_binding=BOUND next_source=ready\n"
+  },
+  {
+    "args": [
+      "seal",
+      "acceptance/vt104-trial-design-owner-20261001"
+    ],
+    "output": "SEALED acceptance/vt104-trial-design-owner-20261001 3ad0530c4b59be23949a8b81e9f3b6c9659e279eb6beafb6a32a54e4b5432b36 operation=37697d13d25e30c315db61418cfa31f7\n"
+  },
+  {
+    "args": [
+      "status",
+      "acceptance/vt104-trial-design-owner-20261001",
+      "--format",
+      "json"
+    ],
+    "output": "{\"schema\":\"sealgraph/status/v3\",\"statuses\":[{\"ref\":\"acceptance/vt104-trial-design-owner-20261001\",\"head_seal_id\":\"3ad0530c4b59be23949a8b81e9f3b6c9659e279eb6beafb6a32a54e4b5432b36\",\"candidate_to_head\":\"NO_CANDIDATE\",\"draft\":false,\"stale\":{\"self\":false,\"direct_target_seal_ids\":[],\"transitive_paths\":[]},\"sealed_state_labels\":[\"SEALED_STATE_CLEAN\"],\"local_source\":{\"path\":\"docs/evidence/vt104-design-owner-acceptance-2026-10-01.json\",\"baseline\":\"HEAD\",\"relation\":\"WORKFILE_MATCHES_HEAD\"}}]}\n"
+  },
+  {
+    "args": [
+      "add",
+      "adr/0042-unreleased-v3-trial-scope",
+      "--content-file",
+      "docs/adr/0042-unreleased-v3-trial-scope.think",
+      "--bind-source",
+      "--non-root",
+      "--target",
+      "acceptance/vt104-trial-design-owner-20261001",
+      "--no-previous"
+    ],
+    "output": "CANDIDATE adr/0042-unreleased-v3-trial-scope content=ecb564d42c90fed75244d3c9134ffddc1e15430b11f779f0f250abe08dbb2d42 cause_links=1 root=false draft=false source_mode=explicit-file source_path=\"docs/adr/0042-unreleased-v3-trial-scope.think\" source_binding=BOUND next_source=ready\n"
+  },
+  {
+    "args": [
+      "seal",
+      "adr/0042-unreleased-v3-trial-scope"
+    ],
+    "output": "SEALED adr/0042-unreleased-v3-trial-scope e1271ebdc207bbfa7e34ff09b847e91aa3989d79824ea28c3b808bf7f28e2c4a operation=e0619cd424ec628f2f291c4598b512f8\n"
+  },
+  {
+    "args": [
+      "status",
+      "adr/0042-unreleased-v3-trial-scope",
+      "--format",
+      "json"
+    ],
+    "output": "{\"schema\":\"sealgraph/status/v3\",\"statuses\":[{\"ref\":\"adr/0042-unreleased-v3-trial-scope\",\"head_seal_id\":\"e1271ebdc207bbfa7e34ff09b847e91aa3989d79824ea28c3b808bf7f28e2c4a\",\"candidate_to_head\":\"NO_CANDIDATE\",\"draft\":false,\"stale\":{\"self\":false,\"direct_target_seal_ids\":[],\"transitive_paths\":[]},\"sealed_state_labels\":[\"SEALED_STATE_CLEAN\"],\"local_source\":{\"path\":\"docs/adr/0042-unreleased-v3-trial-scope.think\",\"baseline\":\"HEAD\",\"relation\":\"WORKFILE_MATCHES_HEAD\"}}]}\n"
+  },
+  {
+    "args": [
+      "status",
+      "adr/0042-unreleased-v3-trial-scope",
+      "--format",
+      "json"
+    ],
+    "output": "{\"schema\":\"sealgraph/status/v3\",\"statuses\":[{\"ref\":\"adr/0042-unreleased-v3-trial-scope\",\"head_seal_id\":\"e1271ebdc207bbfa7e34ff09b847e91aa3989d79824ea28c3b808bf7f28e2c4a\",\"candidate_to_head\":\"NO_CANDIDATE\",\"draft\":false,\"stale\":{\"self\":false,\"direct_target_seal_ids\":[],\"transitive_paths\":[]},\"sealed_state_labels\":[\"SEALED_STATE_CLEAN\"],\"local_source\":{\"path\":\"docs/adr/0042-unreleased-v3-trial-scope.think\",\"baseline\":\"HEAD\",\"relation\":\"WORKFILE_MATCHES_HEAD\"}}]}\n"
+  },
+  {
+    "args": [
+      "add",
+      "design/unreleased-v3-trial-v1",
+      "--content-file",
+      "docs/unreleased-v3-trial-design-v1.md",
+      "--bind-source",
+      "--non-root",
+      "--target",
+      "adr/0042-unreleased-v3-trial-scope",
+      "--no-previous"
+    ],
+    "output": "CANDIDATE design/unreleased-v3-trial-v1 content=101906085105fc44fff36afea737b9c3577eabaf67f0b35503f389b4e730d55e cause_links=1 root=false draft=false source_mode=explicit-file source_path=\"docs/unreleased-v3-trial-design-v1.md\" source_binding=BOUND next_source=ready\n"
+  },
+  {
+    "args": [
+      "seal",
+      "design/unreleased-v3-trial-v1"
+    ],
+    "output": "SEALED design/unreleased-v3-trial-v1 734c6a8e242a6978655c17a21de42d6a43943760fbe91aa9f932b2218a85a8f9 operation=d38f0ab5430d11c6e9d31384eb83e2b8\n"
+  },
+  {
+    "args": [
+      "status",
+      "design/unreleased-v3-trial-v1",
+      "--format",
+      "json"
+    ],
+    "output": "{\"schema\":\"sealgraph/status/v3\",\"statuses\":[{\"ref\":\"design/unreleased-v3-trial-v1\",\"head_seal_id\":\"734c6a8e242a6978655c17a21de42d6a43943760fbe91aa9f932b2218a85a8f9\",\"candidate_to_head\":\"NO_CANDIDATE\",\"draft\":false,\"stale\":{\"self\":false,\"direct_target_seal_ids\":[],\"transitive_paths\":[]},\"sealed_state_labels\":[\"SEALED_STATE_CLEAN\"],\"local_source\":{\"path\":\"docs/unreleased-v3-trial-design-v1.md\",\"baseline\":\"HEAD\",\"relation\":\"WORKFILE_MATCHES_HEAD\"}}]}\n"
+  },
+  {
+    "args": [
+      "status",
+      "design/unreleased-v3-trial-v1",
+      "--format",
+      "json"
+    ],
+    "output": "{\"schema\":\"sealgraph/status/v3\",\"statuses\":[{\"ref\":\"design/unreleased-v3-trial-v1\",\"head_seal_id\":\"734c6a8e242a6978655c17a21de42d6a43943760fbe91aa9f932b2218a85a8f9\",\"candidate_to_head\":\"NO_CANDIDATE\",\"draft\":false,\"stale\":{\"self\":false,\"direct_target_seal_ids\":[],\"transitive_paths\":[]},\"sealed_state_labels\":[\"SEALED_STATE_CLEAN\"],\"local_source\":{\"path\":\"docs/unreleased-v3-trial-design-v1.md\",\"baseline\":\"HEAD\",\"relation\":\"WORKFILE_MATCHES_HEAD\"}}]}\n"
+  },
+  {
+    "args": [
+      "add",
+      "implementation/vt104-unreleased-trial-local-20261001",
+      "--content-file",
+      "docs/evidence/vt104-unreleased-trial-source-2026-10-01.json",
+      "--bind-source",
+      "--non-root",
+      "--target",
+      "design/unreleased-v3-trial-v1",
+      "--no-previous"
+    ],
+    "output": "CANDIDATE implementation/vt104-unreleased-trial-local-20261001 content=b9f1bdbe644e5dddf997360c07bc8a86429dcac0714f139d3d547dd5ffcabe08 cause_links=1 root=false draft=false source_mode=explicit-file source_path=\"docs/evidence/vt104-unreleased-trial-source-2026-10-01.json\" source_binding=BOUND next_source=ready\n"
+  },
+  {
+    "args": [
+      "seal",
+      "implementation/vt104-unreleased-trial-local-20261001"
+    ],
+    "output": "SEALED implementation/vt104-unreleased-trial-local-20261001 358a8e1dafb0c50cf3f37e318e1aa48b254a6cd692e109988f6cd10b160ea43c operation=f82d763682f5c166ded8c6852a8391bd\n"
+  },
+  {
+    "args": [
+      "status",
+      "implementation/vt104-unreleased-trial-local-20261001",
+      "--format",
+      "json"
+    ],
+    "output": "{\"schema\":\"sealgraph/status/v3\",\"statuses\":[{\"ref\":\"implementation/vt104-unreleased-trial-local-20261001\",\"head_seal_id\":\"358a8e1dafb0c50cf3f37e318e1aa48b254a6cd692e109988f6cd10b160ea43c\",\"candidate_to_head\":\"NO_CANDIDATE\",\"draft\":false,\"stale\":{\"self\":false,\"direct_target_seal_ids\":[],\"transitive_paths\":[]},\"sealed_state_labels\":[\"SEALED_STATE_CLEAN\"],\"local_source\":{\"path\":\"docs/evidence/vt104-unreleased-trial-source-2026-10-01.json\",\"baseline\":\"HEAD\",\"relation\":\"WORKFILE_MATCHES_HEAD\"}}]}\n"
+  },
+  {
+    "args": [
+      "status",
+      "implementation/vt104-unreleased-trial-local-20261001",
+      "--format",
+      "json"
+    ],
+    "output": "{\"schema\":\"sealgraph/status/v3\",\"statuses\":[{\"ref\":\"implementation/vt104-unreleased-trial-local-20261001\",\"head_seal_id\":\"358a8e1dafb0c50cf3f37e318e1aa48b254a6cd692e109988f6cd10b160ea43c\",\"candidate_to_head\":\"NO_CANDIDATE\",\"draft\":false,\"stale\":{\"self\":false,\"direct_target_seal_ids\":[],\"transitive_paths\":[]},\"sealed_state_labels\":[\"SEALED_STATE_CLEAN\"],\"local_source\":{\"path\":\"docs/evidence/vt104-unreleased-trial-source-2026-10-01.json\",\"baseline\":\"HEAD\",\"relation\":\"WORKFILE_MATCHES_HEAD\"}}]}\n"
+  },
+  {
+    "args": [
+      "add",
+      "verification/vt104-trial-evidence-20261001",
+      "--content-file",
+      "scripts/verify-v3-trial-evidence.test.mjs",
+      "--bind-source",
+      "--non-root",
+      "--target",
+      "implementation/vt104-unreleased-trial-local-20261001",
+      "--no-previous"
+    ],
+    "output": "CANDIDATE verification/vt104-trial-evidence-20261001 content=d86b9feaf73697da81168048955b334ea438cbd2f301d8ab5eeb29fc8daab9ab cause_links=1 root=false draft=false source_mode=explicit-file source_path=\"scripts/verify-v3-trial-evidence.test.mjs\" source_binding=BOUND next_source=ready\n"
+  },
+  {
+    "args": [
+      "seal",
+      "verification/vt104-trial-evidence-20261001"
+    ],
+    "output": "SEALED verification/vt104-trial-evidence-20261001 b7f6d11ade2c9bd130b5e38a07103e8c6312120712312368a0c974d84e1b8843 operation=9829f66bc218112f8cea8d79c5e280ab\n"
+  },
+  {
+    "args": [
+      "status",
+      "verification/vt104-trial-evidence-20261001",
+      "--format",
+      "json"
+    ],
+    "output": "{\"schema\":\"sealgraph/status/v3\",\"statuses\":[{\"ref\":\"verification/vt104-trial-evidence-20261001\",\"head_seal_id\":\"b7f6d11ade2c9bd130b5e38a07103e8c6312120712312368a0c974d84e1b8843\",\"candidate_to_head\":\"NO_CANDIDATE\",\"draft\":false,\"stale\":{\"self\":false,\"direct_target_seal_ids\":[],\"transitive_paths\":[]},\"sealed_state_labels\":[\"SEALED_STATE_CLEAN\"],\"local_source\":{\"path\":\"scripts/verify-v3-trial-evidence.test.mjs\",\"baseline\":\"HEAD\",\"relation\":\"WORKFILE_MATCHES_HEAD\"}}]}\n"
+  },
+  {
+    "args": [
+      "status",
+      "implementation/vt104-unreleased-trial-local-20261001",
+      "--format",
+      "json"
+    ],
+    "output": "{\"schema\":\"sealgraph/status/v3\",\"statuses\":[{\"ref\":\"implementation/vt104-unreleased-trial-local-20261001\",\"head_seal_id\":\"358a8e1dafb0c50cf3f37e318e1aa48b254a6cd692e109988f6cd10b160ea43c\",\"candidate_to_head\":\"NO_CANDIDATE\",\"draft\":false,\"stale\":{\"self\":false,\"direct_target_seal_ids\":[],\"transitive_paths\":[]},\"sealed_state_labels\":[\"SEALED_STATE_CLEAN\"],\"local_source\":{\"path\":\"docs/evidence/vt104-unreleased-trial-source-2026-10-01.json\",\"baseline\":\"HEAD\",\"relation\":\"WORKFILE_MATCHES_HEAD\"}}]}\n"
+  },
+  {
+    "args": [
+      "add",
+      "verification/vt104-trial-workflow-local-20261001",
+      "--content-file",
+      "docs/evidence/vt104-workflow-local-validation-2026-10-01.py",
+      "--bind-source",
+      "--non-root",
+      "--target",
+      "implementation/vt104-unreleased-trial-local-20261001",
+      "--no-previous"
+    ],
+    "output": "CANDIDATE verification/vt104-trial-workflow-local-20261001 content=01530b197c7fd8ee9703a8a6f37dd596eea72a45ec690a7141e0d4aa10340888 cause_links=1 root=false draft=false source_mode=explicit-file source_path=\"docs/evidence/vt104-workflow-local-validation-2026-10-01.py\" source_binding=BOUND next_source=ready\n"
+  },
+  {
+    "args": [
+      "seal",
+      "verification/vt104-trial-workflow-local-20261001"
+    ],
+    "output": "SEALED verification/vt104-trial-workflow-local-20261001 6c1f17fdd36ed5952be129280e6a118b7ef0b9c58d782e3be59114db509ab0b8 operation=33fd7b6bb33087688f0594e46720b617\n"
+  },
+  {
+    "args": [
+      "status",
+      "verification/vt104-trial-workflow-local-20261001",
+      "--format",
+      "json"
+    ],
+    "output": "{\"schema\":\"sealgraph/status/v3\",\"statuses\":[{\"ref\":\"verification/vt104-trial-workflow-local-20261001\",\"head_seal_id\":\"6c1f17fdd36ed5952be129280e6a118b7ef0b9c58d782e3be59114db509ab0b8\",\"candidate_to_head\":\"NO_CANDIDATE\",\"draft\":false,\"stale\":{\"self\":false,\"direct_target_seal_ids\":[],\"transitive_paths\":[]},\"sealed_state_labels\":[\"SEALED_STATE_CLEAN\"],\"local_source\":{\"path\":\"docs/evidence/vt104-workflow-local-validation-2026-10-01.py\",\"baseline\":\"HEAD\",\"relation\":\"WORKFILE_MATCHES_HEAD\"}}]}\n"
+  }
+]

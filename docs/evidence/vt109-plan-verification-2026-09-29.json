@@ -1,0 +1,1145 @@
+{
+  "schema": "kshiai/vt109-plan-verification/v1",
+  "observed_on": "2026-09-29",
+  "tool_version": "0.11.1",
+  "plans": {
+    "child": {
+      "source": "docs/character-v3-stage-trial.pert",
+      "source_digest": "sha256:e0f794fcedc8ad467a72ba760916c5ad71a96a28a72c01c7d151ccd5c192863e",
+      "document_check_ok": true,
+      "analysis_ok": true,
+      "next_ok": true,
+      "diagnostics": [
+        {
+          "code": "PTRES-303",
+          "severity": "warning",
+          "message": "resource schedule is conditional on blocked tasks being resolved at time 0",
+          "entity_id": "vt111",
+          "span": null,
+          "related": [],
+          "help_topic": null,
+          "guide_topic": "analysis.resources",
+          "expected_syntax": null,
+          "fixes": [],
+          "data": {}
+        }
+      ],
+      "task_actuals": [
+        {
+          "task_id": "vt101",
+          "status": "done",
+          "coverage": "complete"
+        },
+        {
+          "task_id": "vt102",
+          "status": "suspended",
+          "coverage": "open"
+        },
+        {
+          "task_id": "vt103",
+          "status": "planned",
+          "coverage": "unrecorded"
+        },
+        {
+          "task_id": "vt104",
+          "status": "planned",
+          "coverage": "unrecorded"
+        },
+        {
+          "task_id": "vt105",
+          "status": "planned",
+          "coverage": "unrecorded"
+        },
+        {
+          "task_id": "vt106",
+          "status": "planned",
+          "coverage": "unrecorded"
+        },
+        {
+          "task_id": "vt107",
+          "status": "planned",
+          "coverage": "unrecorded"
+        },
+        {
+          "task_id": "vt108",
+          "status": "planned",
+          "coverage": "unrecorded"
+        },
+        {
+          "task_id": "vt109",
+          "status": "done",
+          "coverage": "complete"
+        },
+        {
+          "task_id": "vt110",
+          "status": "planned",
+          "coverage": "unrecorded"
+        },
+        {
+          "task_id": "vt111",
+          "status": "blocked",
+          "coverage": "unrecorded"
+        }
+      ],
+      "velocity": {
+        "points": {
+          "numerator": "780",
+          "denominator": "1",
+          "unit": "point",
+          "display": "780"
+        },
+        "period": {
+          "numerator": "191",
+          "denominator": "1",
+          "unit": "hour",
+          "display": "191"
+        }
+      },
+      "velocity_forecast": {
+        "qualifier": "velocity_forecast",
+        "source_unit": "point",
+        "target_unit": "hour",
+        "precedence_makespan": {
+          "numerator": "9359",
+          "denominator": "3120",
+          "unit": "hour",
+          "display": "3"
+        },
+        "resource_makespan": {
+          "numerator": "16999",
+          "denominator": "5200",
+          "unit": "hour",
+          "display": "3.269"
+        }
+      },
+      "resource_makespan": {
+        "numerator": "267",
+        "denominator": "20",
+        "unit": "point",
+        "display": "13.35"
+      },
+      "conditional_on_blocks_resolved": true,
+      "blocked_task_ids": [
+        "vt111"
+      ],
+      "conditional_on_suspensions_resumed": true,
+      "suspended_task_ids": [
+        "vt102"
+      ],
+      "recommended_task_ids": []
+    },
+    "parent": {
+      "source": "docs/character-semantic-migration.pert",
+      "source_digest": "sha256:c7817cbf76f656a766eebc3e07c4f584ca5c6117be72d2f9fb9e9182bd40c52a",
+      "document_check_ok": true,
+      "analysis_ok": true,
+      "next_ok": true,
+      "diagnostics": [
+        {
+          "code": "PTDAG-208",
+          "severity": "warning",
+          "message": "Milestone cm201 is reached by closure; consider advance",
+          "entity_id": "cm201",
+          "span": {
+            "start": {
+              "offset": 2234,
+              "line": 43,
+              "column": 11
+            },
+            "end": {
+              "offset": 2239,
+              "line": 43,
+              "column": 16
+            }
+          },
+          "related": [],
+          "help_topic": null,
+          "guide_topic": "workflows",
+          "expected_syntax": null,
+          "fixes": [],
+          "data": {}
+        },
+        {
+          "code": "PTDAG-208",
+          "severity": "warning",
+          "message": "Milestone cm202 is reached by closure; consider advance",
+          "entity_id": "cm202",
+          "span": {
+            "start": {
+              "offset": 2296,
+              "line": 46,
+              "column": 11
+            },
+            "end": {
+              "offset": 2301,
+              "line": 46,
+              "column": 16
+            }
+          },
+          "related": [],
+          "help_topic": null,
+          "guide_topic": "workflows",
+          "expected_syntax": null,
+          "fixes": [],
+          "data": {}
+        },
+        {
+          "code": "PTDAG-208",
+          "severity": "warning",
+          "message": "Milestone cm203 is reached by closure; consider advance",
+          "entity_id": "cm203",
+          "span": {
+            "start": {
+              "offset": 2363,
+              "line": 49,
+              "column": 11
+            },
+            "end": {
+              "offset": 2368,
+              "line": 49,
+              "column": 16
+            }
+          },
+          "related": [],
+          "help_topic": null,
+          "guide_topic": "workflows",
+          "expected_syntax": null,
+          "fixes": [],
+          "data": {}
+        },
+        {
+          "code": "PTDAG-208",
+          "severity": "warning",
+          "message": "Milestone cm204 is reached by closure; consider advance",
+          "entity_id": "cm204",
+          "span": {
+            "start": {
+              "offset": 2452,
+              "line": 52,
+              "column": 11
+            },
+            "end": {
+              "offset": 2457,
+              "line": 52,
+              "column": 16
+            }
+          },
+          "related": [],
+          "help_topic": null,
+          "guide_topic": "workflows",
+          "expected_syntax": null,
+          "fixes": [],
+          "data": {}
+        },
+        {
+          "code": "PTDAG-208",
+          "severity": "warning",
+          "message": "Milestone cm205 is reached by closure; consider advance",
+          "entity_id": "cm205",
+          "span": {
+            "start": {
+              "offset": 2534,
+              "line": 55,
+              "column": 11
+            },
+            "end": {
+              "offset": 2539,
+              "line": 55,
+              "column": 16
+            }
+          },
+          "related": [],
+          "help_topic": null,
+          "guide_topic": "workflows",
+          "expected_syntax": null,
+          "fixes": [],
+          "data": {}
+        },
+        {
+          "code": "PTDAG-208",
+          "severity": "warning",
+          "message": "Milestone cm215 is reached by closure; consider advance",
+          "entity_id": "cm215",
+          "span": {
+            "start": {
+              "offset": 2628,
+              "line": 58,
+              "column": 11
+            },
+            "end": {
+              "offset": 2633,
+              "line": 58,
+              "column": 16
+            }
+          },
+          "related": [],
+          "help_topic": null,
+          "guide_topic": "workflows",
+          "expected_syntax": null,
+          "fixes": [],
+          "data": {}
+        },
+        {
+          "code": "PTDAG-208",
+          "severity": "warning",
+          "message": "Milestone cm309 is reached by closure; consider advance",
+          "entity_id": "cm309",
+          "span": {
+            "start": {
+              "offset": 3303,
+              "line": 85,
+              "column": 11
+            },
+            "end": {
+              "offset": 3308,
+              "line": 85,
+              "column": 16
+            }
+          },
+          "related": [],
+          "help_topic": null,
+          "guide_topic": "workflows",
+          "expected_syntax": null,
+          "fixes": [],
+          "data": {}
+        },
+        {
+          "code": "PTDAG-208",
+          "severity": "warning",
+          "message": "Milestone cm310 is reached by closure; consider advance",
+          "entity_id": "cm310",
+          "span": {
+            "start": {
+              "offset": 3391,
+              "line": 88,
+              "column": 11
+            },
+            "end": {
+              "offset": 3396,
+              "line": 88,
+              "column": 16
+            }
+          },
+          "related": [],
+          "help_topic": null,
+          "guide_topic": "workflows",
+          "expected_syntax": null,
+          "fixes": [],
+          "data": {}
+        },
+        {
+          "code": "PTDAG-208",
+          "severity": "warning",
+          "message": "Milestone cm311 is reached by closure; consider advance",
+          "entity_id": "cm311",
+          "span": {
+            "start": {
+              "offset": 3462,
+              "line": 91,
+              "column": 11
+            },
+            "end": {
+              "offset": 3467,
+              "line": 91,
+              "column": 16
+            }
+          },
+          "related": [],
+          "help_topic": null,
+          "guide_topic": "workflows",
+          "expected_syntax": null,
+          "fixes": [],
+          "data": {}
+        },
+        {
+          "code": "PTDAG-208",
+          "severity": "warning",
+          "message": "Milestone cm312 is reached by closure; consider advance",
+          "entity_id": "cm312",
+          "span": {
+            "start": {
+              "offset": 3554,
+              "line": 94,
+              "column": 11
+            },
+            "end": {
+              "offset": 3559,
+              "line": 94,
+              "column": 16
+            }
+          },
+          "related": [],
+          "help_topic": null,
+          "guide_topic": "workflows",
+          "expected_syntax": null,
+          "fixes": [],
+          "data": {}
+        },
+        {
+          "code": "PTDAG-208",
+          "severity": "warning",
+          "message": "Milestone cm313 is reached by closure; consider advance",
+          "entity_id": "cm313",
+          "span": {
+            "start": {
+              "offset": 3630,
+              "line": 97,
+              "column": 11
+            },
+            "end": {
+              "offset": 3635,
+              "line": 97,
+              "column": 16
+            }
+          },
+          "related": [],
+          "help_topic": null,
+          "guide_topic": "workflows",
+          "expected_syntax": null,
+          "fixes": [],
+          "data": {}
+        },
+        {
+          "code": "PTDAG-208",
+          "severity": "warning",
+          "message": "Milestone cm300 is reached by closure; consider advance",
+          "entity_id": "cm300",
+          "span": {
+            "start": {
+              "offset": 3889,
+              "line": 107,
+              "column": 11
+            },
+            "end": {
+              "offset": 3894,
+              "line": 107,
+              "column": 16
+            }
+          },
+          "related": [],
+          "help_topic": null,
+          "guide_topic": "workflows",
+          "expected_syntax": null,
+          "fixes": [],
+          "data": {}
+        },
+        {
+          "code": "PTDAG-208",
+          "severity": "warning",
+          "message": "Milestone cm301 is reached by closure; consider advance",
+          "entity_id": "cm301",
+          "span": {
+            "start": {
+              "offset": 3978,
+              "line": 110,
+              "column": 11
+            },
+            "end": {
+              "offset": 3983,
+              "line": 110,
+              "column": 16
+            }
+          },
+          "related": [],
+          "help_topic": null,
+          "guide_topic": "workflows",
+          "expected_syntax": null,
+          "fixes": [],
+          "data": {}
+        },
+        {
+          "code": "PTDAG-208",
+          "severity": "warning",
+          "message": "Milestone cm303 is reached by closure; consider advance",
+          "entity_id": "cm303",
+          "span": {
+            "start": {
+              "offset": 4056,
+              "line": 113,
+              "column": 11
+            },
+            "end": {
+              "offset": 4061,
+              "line": 113,
+              "column": 16
+            }
+          },
+          "related": [],
+          "help_topic": null,
+          "guide_topic": "workflows",
+          "expected_syntax": null,
+          "fixes": [],
+          "data": {}
+        },
+        {
+          "code": "PTDAG-208",
+          "severity": "warning",
+          "message": "Milestone cm318 is reached by closure; consider advance",
+          "entity_id": "cm318",
+          "span": {
+            "start": {
+              "offset": 38507,
+              "line": 777,
+              "column": 11
+            },
+            "end": {
+              "offset": 38512,
+              "line": 777,
+              "column": 16
+            }
+          },
+          "related": [],
+          "help_topic": null,
+          "guide_topic": "workflows",
+          "expected_syntax": null,
+          "fixes": [],
+          "data": {}
+        },
+        {
+          "code": "PTDAG-208",
+          "severity": "warning",
+          "message": "Milestone cm320 is reached by closure; consider advance",
+          "entity_id": "cm320",
+          "span": {
+            "start": {
+              "offset": 41395,
+              "line": 818,
+              "column": 11
+            },
+            "end": {
+              "offset": 41400,
+              "line": 818,
+              "column": 16
+            }
+          },
+          "related": [],
+          "help_topic": null,
+          "guide_topic": "workflows",
+          "expected_syntax": null,
+          "fixes": [],
+          "data": {}
+        },
+        {
+          "code": "PTDAG-208",
+          "severity": "warning",
+          "message": "Milestone cm201 is reached by closure; consider advance",
+          "entity_id": "cm201",
+          "span": {
+            "start": {
+              "offset": 2234,
+              "line": 43,
+              "column": 11
+            },
+            "end": {
+              "offset": 2239,
+              "line": 43,
+              "column": 16
+            }
+          },
+          "related": [],
+          "help_topic": null,
+          "guide_topic": "workflows",
+          "expected_syntax": null,
+          "fixes": [],
+          "data": {}
+        },
+        {
+          "code": "PTDAG-208",
+          "severity": "warning",
+          "message": "Milestone cm202 is reached by closure; consider advance",
+          "entity_id": "cm202",
+          "span": {
+            "start": {
+              "offset": 2296,
+              "line": 46,
+              "column": 11
+            },
+            "end": {
+              "offset": 2301,
+              "line": 46,
+              "column": 16
+            }
+          },
+          "related": [],
+          "help_topic": null,
+          "guide_topic": "workflows",
+          "expected_syntax": null,
+          "fixes": [],
+          "data": {}
+        },
+        {
+          "code": "PTDAG-208",
+          "severity": "warning",
+          "message": "Milestone cm203 is reached by closure; consider advance",
+          "entity_id": "cm203",
+          "span": {
+            "start": {
+              "offset": 2363,
+              "line": 49,
+              "column": 11
+            },
+            "end": {
+              "offset": 2368,
+              "line": 49,
+              "column": 16
+            }
+          },
+          "related": [],
+          "help_topic": null,
+          "guide_topic": "workflows",
+          "expected_syntax": null,
+          "fixes": [],
+          "data": {}
+        },
+        {
+          "code": "PTDAG-208",
+          "severity": "warning",
+          "message": "Milestone cm204 is reached by closure; consider advance",
+          "entity_id": "cm204",
+          "span": {
+            "start": {
+              "offset": 2452,
+              "line": 52,
+              "column": 11
+            },
+            "end": {
+              "offset": 2457,
+              "line": 52,
+              "column": 16
+            }
+          },
+          "related": [],
+          "help_topic": null,
+          "guide_topic": "workflows",
+          "expected_syntax": null,
+          "fixes": [],
+          "data": {}
+        },
+        {
+          "code": "PTDAG-208",
+          "severity": "warning",
+          "message": "Milestone cm205 is reached by closure; consider advance",
+          "entity_id": "cm205",
+          "span": {
+            "start": {
+              "offset": 2534,
+              "line": 55,
+              "column": 11
+            },
+            "end": {
+              "offset": 2539,
+              "line": 55,
+              "column": 16
+            }
+          },
+          "related": [],
+          "help_topic": null,
+          "guide_topic": "workflows",
+          "expected_syntax": null,
+          "fixes": [],
+          "data": {}
+        },
+        {
+          "code": "PTDAG-208",
+          "severity": "warning",
+          "message": "Milestone cm215 is reached by closure; consider advance",
+          "entity_id": "cm215",
+          "span": {
+            "start": {
+              "offset": 2628,
+              "line": 58,
+              "column": 11
+            },
+            "end": {
+              "offset": 2633,
+              "line": 58,
+              "column": 16
+            }
+          },
+          "related": [],
+          "help_topic": null,
+          "guide_topic": "workflows",
+          "expected_syntax": null,
+          "fixes": [],
+          "data": {}
+        },
+        {
+          "code": "PTDAG-208",
+          "severity": "warning",
+          "message": "Milestone cm309 is reached by closure; consider advance",
+          "entity_id": "cm309",
+          "span": {
+            "start": {
+              "offset": 3303,
+              "line": 85,
+              "column": 11
+            },
+            "end": {
+              "offset": 3308,
+              "line": 85,
+              "column": 16
+            }
+          },
+          "related": [],
+          "help_topic": null,
+          "guide_topic": "workflows",
+          "expected_syntax": null,
+          "fixes": [],
+          "data": {}
+        },
+        {
+          "code": "PTDAG-208",
+          "severity": "warning",
+          "message": "Milestone cm310 is reached by closure; consider advance",
+          "entity_id": "cm310",
+          "span": {
+            "start": {
+              "offset": 3391,
+              "line": 88,
+              "column": 11
+            },
+            "end": {
+              "offset": 3396,
+              "line": 88,
+              "column": 16
+            }
+          },
+          "related": [],
+          "help_topic": null,
+          "guide_topic": "workflows",
+          "expected_syntax": null,
+          "fixes": [],
+          "data": {}
+        },
+        {
+          "code": "PTDAG-208",
+          "severity": "warning",
+          "message": "Milestone cm311 is reached by closure; consider advance",
+          "entity_id": "cm311",
+          "span": {
+            "start": {
+              "offset": 3462,
+              "line": 91,
+              "column": 11
+            },
+            "end": {
+              "offset": 3467,
+              "line": 91,
+              "column": 16
+            }
+          },
+          "related": [],
+          "help_topic": null,
+          "guide_topic": "workflows",
+          "expected_syntax": null,
+          "fixes": [],
+          "data": {}
+        },
+        {
+          "code": "PTDAG-208",
+          "severity": "warning",
+          "message": "Milestone cm312 is reached by closure; consider advance",
+          "entity_id": "cm312",
+          "span": {
+            "start": {
+              "offset": 3554,
+              "line": 94,
+              "column": 11
+            },
+            "end": {
+              "offset": 3559,
+              "line": 94,
+              "column": 16
+            }
+          },
+          "related": [],
+          "help_topic": null,
+          "guide_topic": "workflows",
+          "expected_syntax": null,
+          "fixes": [],
+          "data": {}
+        },
+        {
+          "code": "PTDAG-208",
+          "severity": "warning",
+          "message": "Milestone cm313 is reached by closure; consider advance",
+          "entity_id": "cm313",
+          "span": {
+            "start": {
+              "offset": 3630,
+              "line": 97,
+              "column": 11
+            },
+            "end": {
+              "offset": 3635,
+              "line": 97,
+              "column": 16
+            }
+          },
+          "related": [],
+          "help_topic": null,
+          "guide_topic": "workflows",
+          "expected_syntax": null,
+          "fixes": [],
+          "data": {}
+        },
+        {
+          "code": "PTDAG-208",
+          "severity": "warning",
+          "message": "Milestone cm300 is reached by closure; consider advance",
+          "entity_id": "cm300",
+          "span": {
+            "start": {
+              "offset": 3889,
+              "line": 107,
+              "column": 11
+            },
+            "end": {
+              "offset": 3894,
+              "line": 107,
+              "column": 16
+            }
+          },
+          "related": [],
+          "help_topic": null,
+          "guide_topic": "workflows",
+          "expected_syntax": null,
+          "fixes": [],
+          "data": {}
+        },
+        {
+          "code": "PTDAG-208",
+          "severity": "warning",
+          "message": "Milestone cm301 is reached by closure; consider advance",
+          "entity_id": "cm301",
+          "span": {
+            "start": {
+              "offset": 3978,
+              "line": 110,
+              "column": 11
+            },
+            "end": {
+              "offset": 3983,
+              "line": 110,
+              "column": 16
+            }
+          },
+          "related": [],
+          "help_topic": null,
+          "guide_topic": "workflows",
+          "expected_syntax": null,
+          "fixes": [],
+          "data": {}
+        },
+        {
+          "code": "PTDAG-208",
+          "severity": "warning",
+          "message": "Milestone cm303 is reached by closure; consider advance",
+          "entity_id": "cm303",
+          "span": {
+            "start": {
+              "offset": 4056,
+              "line": 113,
+              "column": 11
+            },
+            "end": {
+              "offset": 4061,
+              "line": 113,
+              "column": 16
+            }
+          },
+          "related": [],
+          "help_topic": null,
+          "guide_topic": "workflows",
+          "expected_syntax": null,
+          "fixes": [],
+          "data": {}
+        },
+        {
+          "code": "PTDAG-208",
+          "severity": "warning",
+          "message": "Milestone cm318 is reached by closure; consider advance",
+          "entity_id": "cm318",
+          "span": {
+            "start": {
+              "offset": 38507,
+              "line": 777,
+              "column": 11
+            },
+            "end": {
+              "offset": 38512,
+              "line": 777,
+              "column": 16
+            }
+          },
+          "related": [],
+          "help_topic": null,
+          "guide_topic": "workflows",
+          "expected_syntax": null,
+          "fixes": [],
+          "data": {}
+        },
+        {
+          "code": "PTDAG-208",
+          "severity": "warning",
+          "message": "Milestone cm320 is reached by closure; consider advance",
+          "entity_id": "cm320",
+          "span": {
+            "start": {
+              "offset": 41395,
+              "line": 818,
+              "column": 11
+            },
+            "end": {
+              "offset": 41400,
+              "line": 818,
+              "column": 16
+            }
+          },
+          "related": [],
+          "help_topic": null,
+          "guide_topic": "workflows",
+          "expected_syntax": null,
+          "fixes": [],
+          "data": {}
+        }
+      ],
+      "task_actuals": [
+        {
+          "task_id": "ca101",
+          "status": "done",
+          "coverage": "unrecorded"
+        },
+        {
+          "task_id": "ca102",
+          "status": "done",
+          "coverage": "unrecorded"
+        },
+        {
+          "task_id": "ca105",
+          "status": "done",
+          "coverage": "unrecorded"
+        },
+        {
+          "task_id": "cb201",
+          "status": "done",
+          "coverage": "unrecorded"
+        },
+        {
+          "task_id": "cb202",
+          "status": "done",
+          "coverage": "unrecorded"
+        },
+        {
+          "task_id": "cb203",
+          "status": "done",
+          "coverage": "unrecorded"
+        },
+        {
+          "task_id": "cb204",
+          "status": "done",
+          "coverage": "unrecorded"
+        },
+        {
+          "task_id": "cb205",
+          "status": "done",
+          "coverage": "unrecorded"
+        },
+        {
+          "task_id": "cb206",
+          "status": "done",
+          "coverage": "unrecorded"
+        },
+        {
+          "task_id": "cb207",
+          "status": "done",
+          "coverage": "unrecorded"
+        },
+        {
+          "task_id": "cb209",
+          "status": "planned",
+          "coverage": "unrecorded"
+        },
+        {
+          "task_id": "cb210",
+          "status": "planned",
+          "coverage": "unrecorded"
+        },
+        {
+          "task_id": "cb211",
+          "status": "planned",
+          "coverage": "unrecorded"
+        },
+        {
+          "task_id": "cb212",
+          "status": "planned",
+          "coverage": "unrecorded"
+        },
+        {
+          "task_id": "cb213",
+          "status": "planned",
+          "coverage": "unrecorded"
+        },
+        {
+          "task_id": "cb214",
+          "status": "planned",
+          "coverage": "unrecorded"
+        },
+        {
+          "task_id": "cb215",
+          "status": "done",
+          "coverage": "unrecorded"
+        },
+        {
+          "task_id": "cb216",
+          "status": "done",
+          "coverage": "unrecorded"
+        },
+        {
+          "task_id": "cb217",
+          "status": "done",
+          "coverage": "unrecorded"
+        },
+        {
+          "task_id": "cb218",
+          "status": "done",
+          "coverage": "unrecorded"
+        },
+        {
+          "task_id": "cc301",
+          "status": "done",
+          "coverage": "complete"
+        },
+        {
+          "task_id": "cc303",
+          "status": "done",
+          "coverage": "complete"
+        },
+        {
+          "task_id": "cc304",
+          "status": "done",
+          "coverage": "complete"
+        },
+        {
+          "task_id": "cc305",
+          "status": "done",
+          "coverage": "complete"
+        },
+        {
+          "task_id": "cc306",
+          "status": "planned",
+          "coverage": "unrecorded"
+        },
+        {
+          "task_id": "cc307",
+          "status": "planned",
+          "coverage": "unrecorded"
+        },
+        {
+          "task_id": "cc308",
+          "status": "done",
+          "coverage": "complete"
+        },
+        {
+          "task_id": "cc309",
+          "status": "done",
+          "coverage": "finish_only"
+        },
+        {
+          "task_id": "cc310",
+          "status": "done",
+          "coverage": "unrecorded"
+        },
+        {
+          "task_id": "cc311",
+          "status": "done",
+          "coverage": "complete"
+        },
+        {
+          "task_id": "cc312",
+          "status": "done",
+          "coverage": "complete"
+        },
+        {
+          "task_id": "cc313",
+          "status": "planned",
+          "coverage": "unrecorded"
+        },
+        {
+          "task_id": "cc314",
+          "status": "planned",
+          "coverage": "unrecorded"
+        },
+        {
+          "task_id": "cc315",
+          "status": "done",
+          "coverage": "complete"
+        },
+        {
+          "task_id": "cc316",
+          "status": "planned",
+          "coverage": "unrecorded"
+        },
+        {
+          "task_id": "cc318",
+          "status": "done",
+          "coverage": "complete"
+        },
+        {
+          "task_id": "cc319",
+          "status": "planned",
+          "coverage": "unrecorded"
+        },
+        {
+          "task_id": "cs317",
+          "status": "done",
+          "coverage": "complete"
+        }
+      ],
+      "velocity": {
+        "points": {
+          "numerator": "780",
+          "denominator": "1",
+          "unit": "point",
+          "display": "780"
+        },
+        "period": {
+          "numerator": "191",
+          "denominator": "1",
+          "unit": "hour",
+          "display": "191"
+        }
+      },
+      "velocity_forecast": {
+        "qualifier": "velocity_forecast",
+        "source_unit": "point",
+        "target_unit": "hour",
+        "precedence_makespan": {
+          "numerator": "2483",
+          "denominator": "400",
+          "unit": "hour",
+          "display": "6.208"
+        },
+        "resource_makespan": {
+          "numerator": "2483",
+          "denominator": "400",
+          "unit": "hour",
+          "display": "6.208"
+        }
+      },
+      "resource_makespan": {
+        "numerator": "507",
+        "denominator": "20",
+        "unit": "point",
+        "display": "25.35"
+      },
+      "conditional_on_blocks_resolved": false,
+      "blocked_task_ids": [],
+      "conditional_on_suspensions_resumed": false,
+      "suspended_task_ids": [],
+      "recommended_task_ids": [
+        "cc319"
+      ]
+    }
+  }
+}

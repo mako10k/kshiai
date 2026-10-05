@@ -1,0 +1,30 @@
+domain VT102:
+  description "Resume accepted immutable V3 battle binding on the existing cc304 worktree."
+evidence USER:
+  "The owner requested resuming work from the latest commit handoff on 2026-09-30."
+evidence LOCAL:
+  |
+    The existing cc304 worktree is clean at 4a898d0 and matches its fetched remote.
+    Its handoff explicitly names vt102 resume. Accepted requirement R2, ADR0039
+    D1 and design v2 require frozen V3 generation identity and V4 compiler inputs.
+    Current battle creation still parses V2 envelopes. Archived 77ed6a0 provides
+    incomplete V4 work with type escapes; it is evidence, not a conforming delivery.
+premise SCOPE:
+  |
+    Resume vt102 locally, preserving main and all other work. No new branch,
+    provider call, Stage operation, push, deployment or upstream decision change.
+    Reuse canonical PERT and measure actual resume time. Verify authority hashes
+    and consumer boundaries before implementing; keep lifecycle deletion in vt110.
+premise FIT:
+  "The handoff continuation remains necessary and within the requested resumption."
+pending COVERAGE:
+  "Exact remaining consumer gaps and required implementation effort remain to be measured."
+premise COPY:
+  "Copy archived changes wholesale; rejected because current contracts differ and archived casts evade contract checking."
+premise ADAPT:
+  "Adapt the archived binding to accepted current contracts and verify each real consumer."
+decision RESUME based_on USER, LOCAL, SCOPE, FIT:
+  |
+    Verify accepted file identities, resume vt102 via guarded perttool mutation,
+    inventory frozen input consumers, then implement typed V4 binding and tests.
+    Report remaining whole-game gates separately and retain measured uncertainty.

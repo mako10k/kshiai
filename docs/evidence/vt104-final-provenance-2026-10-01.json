@@ -1,0 +1,115 @@
+[
+  {
+    "args": [
+      "show",
+      "implementation/vt104-unreleased-trial-local-20261001",
+      "--format",
+      "json"
+    ],
+    "output": "{\"schema\":\"sealgraph/show/v2\",\"seal\":{\"seal_id\":\"4d972d81e69d936553c7ec41c77341cf79b3ad8faa084d156176ad63e6e53d48\",\"material_id\":\"495d3dc99b92ec3336ab9c48c1fd0f23f844202ea7b465ca536c8b471111c1e7\",\"provenance_id\":\"38490cac7c62e923de7ce38686bbc7415b84ed0cdd232037b8089e46b15069f2\",\"content_blob_id\":\"806f4a12c567e92fc3a2f5102fdc07283b8be4cfd26dd07d36a428d8be1d5ddd\",\"content_bytes\":81844,\"attachments\":[],\"root\":false,\"draft\":false,\"cause_links\":[{\"target_seal\":\"734c6a8e242a6978655c17a21de42d6a43943760fbe91aa9f932b2218a85a8f9\",\"previous_revision_seal_of_target_seal\":[],\"messages\":[]}]},\"current_refs\":[\"implementation/vt104-unreleased-trial-local-20261001\"],\"revision_observation\":{\"target_seal\":\"4d972d81e69d936553c7ec41c77341cf79b3ad8faa084d156176ad63e6e53d48\",\"previous_states\":[\"PREVIOUS_ASSERTED\"],\"assertions\":[{\"observer_seal\":\"514169822b454be0f0a0c2bf2a7a7e192548f4329410f7e8705410b7955daf46\",\"observer_provenance\":\"bf2662ac253663c6fbbfb07e3a9dea053c9d6ab16743c1a7290b589fb52a9b0c\",\"target_seal\":\"4d972d81e69d936553c7ec41c77341cf79b3ad8faa084d156176ad63e6e53d48\",\"previous_revision_seal_of_target_seal\":[\"358a8e1dafb0c50cf3f37e318e1aa48b254a6cd692e109988f6cd10b160ea43c\"],\"messages\":[\"Reviewed frozen pending migrations and bounded mutation waits; exact workflow guards re-run.\"]},{\"observer_seal\":\"e884d583a12fdf3ba6e5d9685d4df2585782c2b7b57644f492cc28ac2fde82f9\",\"observer_provenance\":\"bf2662ac253663c6fbbfb07e3a9dea053c9d6ab16743c1a7290b589fb52a9b0c\",\"target_seal\":\"4d972d81e69d936553c7ec41c77341cf79b3ad8faa084d156176ad63e6e53d48\",\"previous_revision_seal_of_target_seal\":[\"358a8e1dafb0c50cf3f37e318e1aa48b254a6cd692e109988f6cd10b160ea43c\"],\"messages\":[\"Reviewed frozen pending migrations and bounded mutation waits; exact workflow guards re-run.\"]}],\"structural_previous_seals\":[\"358a8e1dafb0c50cf3f37e318e1aa48b254a6cd692e109988f6cd10b160ea43c\"]}}\n"
+  },
+  {
+    "args": [
+      "add",
+      "implementation/vt104-unreleased-trial-local-20261001"
+    ],
+    "output": "CANDIDATE implementation/vt104-unreleased-trial-local-20261001 content=b30fcba28b8ddd650a26fc10b36690a5769b32457c643dce2577ff0ed67f7522 cause_links=1 root=false draft=false source_mode=bound-source source_path=\"docs/evidence/vt104-unreleased-trial-source-2026-10-01.json\" source_binding=BOUND next_source=ready\n"
+  },
+  {
+    "args": [
+      "seal",
+      "implementation/vt104-unreleased-trial-local-20261001"
+    ],
+    "output": "SEALED implementation/vt104-unreleased-trial-local-20261001 2cb8e2de479afe7d69170780603bbe05b466b8e96bb3d913d0ec722dbbe74bfc operation=9add0eb6d5036e3940e2c0687e783f35\n"
+  },
+  {
+    "args": [
+      "add",
+      "verification/vt104-trial-evidence-20261001"
+    ],
+    "output": "CANDIDATE verification/vt104-trial-evidence-20261001 content=d86b9feaf73697da81168048955b334ea438cbd2f301d8ab5eeb29fc8daab9ab cause_links=1 root=false draft=false source_mode=bound-source source_path=\"scripts/verify-v3-trial-evidence.test.mjs\" source_binding=BOUND next_source=ready\n"
+  },
+  {
+    "args": [
+      "link",
+      "verification/vt104-trial-evidence-20261001",
+      "--target",
+      "implementation/vt104-unreleased-trial-local-20261001",
+      "--previous",
+      "@4d972d81e69d936553c7ec41c77341cf79b3ad8faa084d156176ad63e6e53d48",
+      "-m",
+      "Implementation metadata updated to reflect completed local work; runtime/workflow/tests unchanged, observed results retained."
+    ],
+    "output": "CANDIDATE verification/vt104-trial-evidence-20261001 cause_links=2\n"
+  },
+  {
+    "args": [
+      "unlink",
+      "verification/vt104-trial-evidence-20261001",
+      "--target",
+      "@4d972d81e69d936553c7ec41c77341cf79b3ad8faa084d156176ad63e6e53d48"
+    ],
+    "output": "CANDIDATE verification/vt104-trial-evidence-20261001 cause_links=1\n"
+  },
+  {
+    "args": [
+      "seal",
+      "verification/vt104-trial-evidence-20261001"
+    ],
+    "output": "SEALED verification/vt104-trial-evidence-20261001 b092c60801f005835ef14012eb7edd1b8ebce861bd54cc48dff23373f4540947 operation=964749aad8fb7e26d081c212dd639d1e\n"
+  },
+  {
+    "args": [
+      "status",
+      "verification/vt104-trial-evidence-20261001",
+      "--format",
+      "json"
+    ],
+    "output": "{\"schema\":\"sealgraph/status/v3\",\"statuses\":[{\"ref\":\"verification/vt104-trial-evidence-20261001\",\"head_seal_id\":\"b092c60801f005835ef14012eb7edd1b8ebce861bd54cc48dff23373f4540947\",\"candidate_to_head\":\"NO_CANDIDATE\",\"draft\":false,\"stale\":{\"self\":false,\"direct_target_seal_ids\":[],\"transitive_paths\":[]},\"sealed_state_labels\":[\"SEALED_STATE_CLEAN\"],\"local_source\":{\"path\":\"scripts/verify-v3-trial-evidence.test.mjs\",\"baseline\":\"HEAD\",\"relation\":\"WORKFILE_MATCHES_HEAD\"}}]}\n"
+  },
+  {
+    "args": [
+      "add",
+      "verification/vt104-trial-workflow-local-20261001"
+    ],
+    "output": "CANDIDATE verification/vt104-trial-workflow-local-20261001 content=4a9e485f3a5c258479c71d71449c69ce7f91addf361b4721766ba8241ea8231f cause_links=1 root=false draft=false source_mode=bound-source source_path=\"docs/evidence/vt104-workflow-local-validation-2026-10-01.py\" source_binding=BOUND next_source=ready\n"
+  },
+  {
+    "args": [
+      "link",
+      "verification/vt104-trial-workflow-local-20261001",
+      "--target",
+      "implementation/vt104-unreleased-trial-local-20261001",
+      "--previous",
+      "@4d972d81e69d936553c7ec41c77341cf79b3ad8faa084d156176ad63e6e53d48",
+      "-m",
+      "Implementation metadata updated to reflect completed local work; runtime/workflow/tests unchanged, observed results retained."
+    ],
+    "output": "CANDIDATE verification/vt104-trial-workflow-local-20261001 cause_links=2\n"
+  },
+  {
+    "args": [
+      "unlink",
+      "verification/vt104-trial-workflow-local-20261001",
+      "--target",
+      "@4d972d81e69d936553c7ec41c77341cf79b3ad8faa084d156176ad63e6e53d48"
+    ],
+    "output": "CANDIDATE verification/vt104-trial-workflow-local-20261001 cause_links=1\n"
+  },
+  {
+    "args": [
+      "seal",
+      "verification/vt104-trial-workflow-local-20261001"
+    ],
+    "output": "SEALED verification/vt104-trial-workflow-local-20261001 f94296d9c01e8e1d5e302237556d209e6e867d0420d2610b4da8f268cdc2be79 operation=db4a70a69cfa2e9ddf98a404f0083b16\n"
+  },
+  {
+    "args": [
+      "status",
+      "verification/vt104-trial-workflow-local-20261001",
+      "--format",
+      "json"
+    ],
+    "output": "{\"schema\":\"sealgraph/status/v3\",\"statuses\":[{\"ref\":\"verification/vt104-trial-workflow-local-20261001\",\"head_seal_id\":\"f94296d9c01e8e1d5e302237556d209e6e867d0420d2610b4da8f268cdc2be79\",\"candidate_to_head\":\"NO_CANDIDATE\",\"draft\":false,\"stale\":{\"self\":false,\"direct_target_seal_ids\":[],\"transitive_paths\":[]},\"sealed_state_labels\":[\"SEALED_STATE_CLEAN\"],\"local_source\":{\"path\":\"docs/evidence/vt104-workflow-local-validation-2026-10-01.py\",\"baseline\":\"HEAD\",\"relation\":\"WORKFILE_MATCHES_HEAD\"}}]}\n"
+  }
+]

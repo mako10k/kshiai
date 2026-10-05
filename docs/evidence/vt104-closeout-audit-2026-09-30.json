@@ -1,0 +1,137 @@
+{
+  "thought_id": "format",
+  "id_source": "file",
+  "report": {
+    "engine_version": "0.1.0",
+    "grammar_version": "1",
+    "package_version": "1.3.0",
+    "semantic_analysis": {
+      "status": "not_applicable",
+      "provider": null,
+      "model": null
+    },
+    "document_id": "format",
+    "generated_at": "2026-09-30T12:13:21.276Z",
+    "summary": {
+      "fatal_count": 0,
+      "error_count": 0,
+      "warning_count": 0,
+      "info_count": 1,
+      "hint_count": 4
+    },
+    "results": [
+      {
+        "issue_id": "ISSUE-001",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "OWNER",
+            "role": "evidence",
+            "step_id": "S-OWNER"
+          }
+        ],
+        "message": "evidence OWNER は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 4,
+          "column": 3,
+          "text": "Owner explicitly says going home, interrupt work, create handoff, WIP commit and push, then finish.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-002",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "BASELINE",
+            "role": "evidence",
+            "step_id": "S-BASELINE"
+          }
+        ],
+        "message": "evidence BASELINE は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 6,
+          "column": 3,
+          "text": "Current matching task worktree branch codex/cc304-focused-revise is dirty, HEADf58ac2f, fresh origin branch ahead1/behind0. GH_TOKEN secret-only dry-run passes and configured HTTPS helper uses gh auth git-credential. Candidate files271 have no detected forbidden secret paths or scanned key/token patterns. Child check/analyze/next succeed with warnings.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-003",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "PARTIAL",
+            "role": "pending",
+            "step_id": "S-PARTIAL"
+          }
+        ],
+        "message": "pending PARTIAL は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 8,
+          "column": 3,
+          "text": "Rescope child task/project updates applied, milestone/gate/parent updates not applied because milestone CLI rejected --actor in preview. Historical vt104 planned_value requires preserving1p; rejected estimate mutation made no task change. New ADR0042 remains Proposed; cloud/DB/workflow untouched.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-004",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "HANDOFF",
+            "role": "decision",
+            "step_id": "S-HANDOFF"
+          }
+        ],
+        "message": "decision HANDOFF は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 10,
+          "column": 3,
+          "text": "Document exact completed and remaining work, source/test bounds and next authorized checkpoint. Stage matching task WIP code/docs/SealGraph without secrets; inspect staged diff; commit honest WIP and push current branch through secdat. Independently compare remote tip to local HEAD, verify clean status. No merge/deploy/task completion or shared workday mutation.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-005",
+        "category": "semantic_hint",
+        "severity": "info",
+        "target_refs": [
+          {
+            "ref_id": "PARTIAL",
+            "role": "pending",
+            "step_id": "S-PARTIAL"
+          }
+        ],
+        "message": "pending が存在するため、判断の確定度は下げて表示するべきである。",
+        "metadata": {
+          "line": 7,
+          "column": 9,
+          "end_column": 16
+        }
+      }
+    ],
+    "query_results": [],
+    "source_sha256": "sha256:98255ad0fde939e54c3d1c3b4fea4ce540b1e9e1e6c7e10b367baaca89511801"
+  }
+}

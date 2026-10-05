@@ -1,3 +1,5 @@
+import { gateBattleActionByNorms, type BattleActionNormConstraint } from "./battle-action-norm-gate.js";
+// R: Resolve deterministic battle mechanics and durable temporal continuations.
 import type {
   BattleAction,
   BattleBucketMechanicalCommit,
@@ -19,6 +21,7 @@ import type {
 } from "./battle.js";
 import {
   CharacterActionIntentSchema,
+  projectCharacterActionIntent,
   BattleTurnEngineContinuationSchema,
   clampCoefficient,
   isCombatantDown,
@@ -416,6 +419,21 @@ export function buildBattleTurnRecord(input: {
       (target[evidence.target.side][evidence.parameterKey] ?? 0) + evidence.delta;
   }
   for (const [side, changes] of [["a", changeA], ["b", changeB]] as const) {
+    // Sparse endpoint diffs omit a zero net result even when distinct sources
+    // changed the parameter. Keep that aggregate key so all causes reconcile.
+    const before = side === "a" ? input.before.sideA : input.before.sideB;
+    const after = side === "a" ? input.after.sideA : input.after.sideB;
+    for (const source of [
+      ...actionParameterChanges.values(),
+      ...effectParameterChanges.values(),
+      systemParameterChanges,
+    ]) {
+      for (const key of Object.keys(source[side]) as ParamKey[]) {
+        if (!(key in changes)) {
+          changes[key] = (after.parameters[key] ?? 0) - (before.parameters[key] ?? 0);
+        }
+      }
+    }
     for (const [key, delta] of Object.entries(changes) as Array<[ParamKey, number]>) {
       const attributed = [
         ...actionParameterChanges.values(),
@@ -1019,6 +1037,8 @@ export function ensureBattleWorldState(state: BattleState): BattleState {
 export function ensureBattleCompatibilityState(state: BattleState): BattleState {
   const withWorld = ensureBattleWorldState(state);
   const withPerception = ensureBattlePerceptionState(withWorld);
+  // V5 subjective state belongs to the awareness runtime, not legacy agent migration.
+  if (withPerception.assetManifest?.schemaVersion === 5) return withPerception;
   if (
     withPerception.pipelineAuthorityVersion === 1 &&
     withPerception.encounterContext &&
@@ -1212,22 +1232,7 @@ function observerSafeFoeInput(
 }
 
 function intentFromBattleAction(action: BattleAction): CharacterActionIntent {
-  return {
-    kind: action.kind,
-    ...(action.skillId ? { skillId: action.skillId } : {}),
-    ...(action.useFinisher ? { useFinisher: true } : {}),
-    ...(action.description ? { description: action.description } : {}),
-    ...(action.desiredOutcome ? { desiredOutcome: action.desiredOutcome } : {}),
-    ...(action.subjectRefs ? { subjectRefs: action.subjectRefs } : {}),
-    ...(action.instrumentRef ? { instrumentRef: action.instrumentRef } : {}),
-    ...(action.opportunityId ? { opportunityId: action.opportunityId } : {}),
-    ...(action.reflectionAnalysis
-      ? { reflectionAnalysis: action.reflectionAnalysis }
-      : {}),
-    ...(action.reflectionGuideline
-      ? { reflectionGuideline: action.reflectionGuideline }
-      : {}),
-  };
+  return projectCharacterActionIntent(action);
 }
 
 const INSTRUMENT_MULTIPLIER: Record<WorldCausalBand, number> = {
@@ -1908,6 +1913,15 @@ export type ResolveTurnInput = {
   state: BattleState;
   /** Optional override; when omitted, stanceA drives side A. */
   playerAction?: BattleAction;
+  /** Internal V5 admission: omitted actors have no requested or executed action. */
+  absentIntentSides?: readonly ("a" | "b")[];
+  /** V5 selects exact character intent or nothing; legacy substitutions remain opt-in false. */
+  strictCharacterIntents?: boolean;
+  /** Frozen compiler norm results re-evaluated for the current decision boundary. */
+  sideANormConstraint?: BattleActionNormConstraint;
+  sideBNormConstraint?: BattleActionNormConstraint;
+  /** Pure compiler consumer evaluated against the actual prepared/resumed state. */
+  resolveNormConstraint?: (state: BattleState, side: "a" | "b") => BattleActionNormConstraint | undefined;
   sideASkills: Skill[];
   sideBSkills: Skill[];
   sideABasicAttack: BasicAttackProfile;
@@ -2336,6 +2350,13 @@ export function resolveTurn(input: ResolveTurnInput): {
   const resumed = input.engineContinuation
     ? BattleTurnEngineContinuationSchema.parse(input.engineContinuation)
     : null;
+  const strictCharacterIntents = input.strictCharacterIntents === true || resumed?.strictCharacterIntents === true;
+  const committedActorSides = new Set(resumed?.temporalResolution.buckets
+    .slice(0, resumed.nextBucketIndex).flatMap((bucket) => bucket.actorSides) ?? []);
+  const absentIntentSides = new Set<BattleTemporalSide>([
+    ...(input.absentIntentSides ?? []).filter((side) => !committedActorSides.has(side)),
+    ...(resumed?.absentIntentSides ?? []),
+  ]);
   const prepared = resumed ? null : prepareBattleTurnStart(input);
   const turnStartSideA = cloneCombatant(
     resumed?.turnStartSideA ?? input.state.sideA,
@@ -2358,12 +2379,6 @@ export function resolveTurn(input: ResolveTurnInput): {
     normalizeFinisher(input.state.finisherB, input.sideBSkills);
 
   const forceOffense = (input.state.supervisor?.passiveTurns ?? 0) >= 2;
-  if (!resumed && forceOffense) {
-    events.push({
-      type: "status",
-      summary: "膠着打破 — 両者は間合いを捨て、強制的に打ち合いへ踏み込む。",
-    });
-  }
 
   const drama = normalizeDramaState(input.state.dramaState);
   const avoidA = parseActionSignature(drama.lastActionSignatureA);
@@ -2371,8 +2386,11 @@ export function resolveTurn(input: ResolveTurnInput): {
   const varietyA = drama.repeatedActionA >= 2;
   const varietyB = drama.repeatedActionB >= 2;
 
-  const plannedActionA = input.state.plannedActionA;
-  const plannedActionB = input.state.plannedActionB;
+  const frozenIntentFor = (side: BattleTemporalSide) => resumed?.actions.find((action) => action.actorSide === side)?.resolution?.requested;
+  const plannedActionA = strictCharacterIntents && committedActorSides.has("a") ? frozenIntentFor("a") :
+    input.state.plannedActionA ?? (strictCharacterIntents ? frozenIntentFor("a") : undefined);
+  const plannedActionB = strictCharacterIntents && committedActorSides.has("b") ? frozenIntentFor("b") :
+    input.state.plannedActionB ?? (strictCharacterIntents ? frozenIntentFor("b") : undefined);
 
   const intentMatchesAvoid = (
     action: CharacterActionIntent | undefined,
@@ -2432,9 +2450,16 @@ export function resolveTurn(input: ResolveTurnInput): {
     selectedPolicyId: selected.selectedPolicyId,
     opponentInput,
   });
-  let requestedActionA: BattleAction;
-  let selectionA: ActionSelectionReceipt;
-  if (input.playerAction) {
+  let requestedActionA: BattleAction | null;
+  let selectionA: ActionSelectionReceipt | undefined;
+  if (absentIntentSides.has("a")) {
+    requestedActionA = null;
+  } else if (strictCharacterIntents) {
+    requestedActionA = plannedActionA ? { actorSide: "a", ...plannedActionA } : null;
+    if (requestedActionA) selectionA = { plannedActionDisposition: "accepted", sourceLayer: "planned_action",
+      reason: "planned_action_accepted", selectedPolicyId: null, opponentInput: unusedOpponentInput };
+    else absentIntentSides.add("a");
+  } else if (input.playerAction) {
     requestedActionA = input.playerAction;
     selectionA = {
       plannedActionDisposition: plannedActionA ? "superseded_by_player" : "absent",
@@ -2481,9 +2506,16 @@ export function resolveTurn(input: ResolveTurnInput): {
       foeInputA.receipt,
     );
   }
-  let requestedActionB: BattleAction;
-  let selectionB: ActionSelectionReceipt;
-  if (forceOffense) {
+  let requestedActionB: BattleAction | null;
+  let selectionB: ActionSelectionReceipt | undefined;
+  if (absentIntentSides.has("b")) {
+    requestedActionB = null;
+  } else if (strictCharacterIntents) {
+    requestedActionB = plannedActionB ? { actorSide: "b", ...plannedActionB } : null;
+    if (requestedActionB) selectionB = { plannedActionDisposition: "accepted", sourceLayer: "planned_action",
+      reason: "planned_action_accepted", selectedPolicyId: null, opponentInput: unusedOpponentInput };
+    else absentIntentSides.add("b");
+  } else if (forceOffense) {
     requestedActionB = { actorSide: "b", kind: "basic_attack" };
     selectionB = {
       plannedActionDisposition: plannedActionB
@@ -2521,6 +2553,28 @@ export function resolveTurn(input: ResolveTurnInput): {
       foeInputB.receipt,
     );
   }
+  const normState = { ...input.state, turn, sideA, sideB };
+  const normA = requestedActionA ? strictCharacterIntents && committedActorSides.has("a")
+    ? { action: requestedActionA, replaced: false } : gateBattleActionByNorms(requestedActionA,
+      input.resolveNormConstraint?.(normState, "a") ?? input.sideANormConstraint) : null;
+  const normB = requestedActionB ? strictCharacterIntents && committedActorSides.has("b")
+    ? { action: requestedActionB, replaced: false } : gateBattleActionByNorms(requestedActionB,
+      input.resolveNormConstraint?.(normState, "b") ?? input.sideBNormConstraint) : null;
+  requestedActionA = strictCharacterIntents && normA?.replaced ? null : normA?.action ?? null;
+  requestedActionB = strictCharacterIntents && normB?.replaced ? null : normB?.action ?? null;
+  if (!requestedActionA) absentIntentSides.add("a");
+  if (!requestedActionB) absentIntentSides.add("b");
+  if (normA?.replaced && selectionA) selectionA = { ...selectionA, sourceLayer: "character_norm_fallback", reason: "character_norm_rejected" };
+  if (normB?.replaced && selectionB) selectionB = { ...selectionB, sourceLayer: "character_norm_fallback", reason: "character_norm_rejected" };
+  if (!resumed) {
+    const forcedActors = [
+      ...(selectionA?.sourceLayer === "forced_offense" ? [sideA.displayName] : []),
+      ...(selectionB?.sourceLayer === "forced_offense" ? [sideB.displayName] : []),
+    ];
+    if (forcedActors.length) events.push({
+      type: "status", summary: `膠着打破 — ${forcedActors.join("、")} は攻勢へ踏み込む。`,
+    });
+  }
   const actionAId = `turn-${turn}-action-a`;
   const actionBId = `turn-${turn}-action-b`;
   const requestedActions = {
@@ -2528,8 +2582,8 @@ export function resolveTurn(input: ResolveTurnInput): {
     b: requestedActionB,
   } as const;
   const actionSelections = {
-    a: resumed?.actions[0]?.selection ?? selectionA,
-    b: resumed?.actions[1]?.selection ?? selectionB,
+    a: normA?.replaced ? selectionA : resumed?.actions.find((action) => action.actorSide === "a")?.selection ?? selectionA,
+    b: normB?.replaced ? selectionB : resumed?.actions.find((action) => action.actorSide === "b")?.selection ?? selectionB,
   } as const;
   const actionIds = { a: actionAId, b: actionBId } as const;
   let worldState = resumed?.worldState
@@ -2579,37 +2633,18 @@ export function resolveTurn(input: ResolveTurnInput): {
       throw new Error("temporal resolution override does not match prepared initiative");
     }
   }
+  const unresolvedAction = (side: BattleTemporalSide, requested: BattleAction | null,
+    selection: ActionSelectionReceipt | undefined): ResolvedBattleAction[] => requested ? [{
+      ...requested, id: actionIds[side], executed: false,
+      skippedReason: "incapacitated_before_action", selection,
+      resolution: { requested: intentFromBattleAction(requested), outcome: "failed", reason: "actor_unavailable" },
+    }] : [];
   const actions: ResolvedBattleAction[] = resumed
-    ? [...resumed.actions]
-    : [
-    {
-      ...requestedActionA,
-      id: actionAId,
-      executed: false,
-      skippedReason: "incapacitated_before_action",
-      selection: selectionA,
-      resolution: {
-        requested: intentFromBattleAction(requestedActionA),
-        outcome: "failed",
-        reason: "actor_unavailable",
-      },
-    },
-    {
-      ...requestedActionB,
-      id: actionBId,
-      executed: false,
-      skippedReason: "incapacitated_before_action",
-      selection: selectionB,
-      resolution: {
-        requested: intentFromBattleAction(requestedActionB),
-        outcome: "failed",
-        reason: "actor_unavailable",
-      },
-    },
-      ];
+    ? resumed.actions.filter((action) => !absentIntentSides.has(action.actorSide))
+    : [...unresolvedAction("a", requestedActionA, selectionA), ...unresolvedAction("b", requestedActionB, selectionB)];
   const bucketCommits: BattleBucketMechanicalCommit[] = [];
 
-  const sideIndex = (side: BattleTemporalSide) => side === "a" ? 0 : 1;
+  const actionFor = (side: BattleTemporalSide) => actions.find((action) => action.actorSide === side);
   const skillsFor = (side: BattleTemporalSide) =>
     side === "a" ? input.sideASkills : input.sideBSkills;
   const basicAttackFor = (side: BattleTemporalSide) =>
@@ -2635,30 +2670,48 @@ export function resolveTurn(input: ResolveTurnInput): {
     side: BattleTemporalSide,
     currentA: CombatantState,
     currentB: CombatantState,
-  ) => revalidateCharacterAction({
-    actorSide: side,
-    requested: intentFromBattleAction(requestedActions[side]),
-    actor: side === "a" ? currentA : currentB,
-    skills: skillsFor(side),
-    basicAttack: basicAttackFor(side),
-    finisher: finisherFor(side),
-    turn,
-    worldState,
-    spacingEnabled,
-  });
+  ) => {
+    const requested = requestedActions[side];
+    if (!requested) throw new Error("battle actor has no admitted intent");
+    return revalidateCharacterAction({
+      actorSide: side,
+      requested: intentFromBattleAction(requested),
+      actor: side === "a" ? currentA : currentB,
+      skills: skillsFor(side),
+      basicAttack: basicAttackFor(side),
+      finisher: finisherFor(side),
+      turn,
+      worldState,
+      spacingEnabled,
+    });
+  };
+  const removeUncommittedAction = (side: BattleTemporalSide) => {
+    if (committedActorSides.has(side)) return;
+    const index = actions.findIndex((action) => action.actorSide === side);
+    if (index >= 0) actions.splice(index, 1);
+    absentIntentSides.add(side);
+  };
   const setResolvedAction = (
     side: BattleTemporalSide,
     result: ReturnType<typeof revalidateCharacterAction>,
-  ) => {
+  ): boolean => {
+    if (strictCharacterIntents && result.resolution.outcome !== "accepted") {
+      removeUncommittedAction(side);
+      return false;
+    }
     const effective = result.action;
-    actions[sideIndex(side)] = {
-      ...(effective ?? requestedActions[side]),
+    const requested = requestedActions[side];
+    const index = actions.findIndex((action) => action.actorSide === side);
+    if (!requested || index < 0) throw new Error("battle actor has no admitted intent");
+    actions[index] = {
+      ...(effective ?? requested),
       id: actionIds[side],
       executed: effective !== null,
       skippedReason: effective ? null : "action_infeasible",
       selection: actionSelections[side],
       resolution: result.resolution,
     };
+    return true;
   };
   const executeAction = (inputAction: {
     side: BattleTemporalSide;
@@ -2843,6 +2896,10 @@ export function resolveTurn(input: ResolveTurnInput): {
   };
 
   const resolveTemporalBucket = (bucket: BattleTemporalBucket): void => {
+    if (strictCharacterIntents && (isCombatantDown(sideA) || isCombatantDown(sideB))) {
+      for (const side of bucket.actorSides) removeUncommittedAction(side);
+      return;
+    }
     if (bucket.simultaneous) {
       const bucketStartA = cloneCombatant(sideA);
       const bucketStartB = cloneCombatant(sideB);
@@ -2857,8 +2914,9 @@ export function resolveTurn(input: ResolveTurnInput): {
       const effectiveBySide: Partial<Record<BattleTemporalSide, BattleAction>> = {};
       if (!isCombatantDown(bucketStartA) && !isCombatantDown(bucketStartB)) {
         for (const side of bucket.actorSides) {
+          if (absentIntentSides.has(side)) continue;
           const result = revalidate(side, bucketStartA, bucketStartB);
-          setResolvedAction(side, result);
+          if (!setResolvedAction(side, result)) continue;
           if (result.action) effectiveBySide[side] = result.action;
         }
       }
@@ -2884,7 +2942,8 @@ export function resolveTurn(input: ResolveTurnInput): {
             : 1;
       }
       for (const side of bucket.actorSides) {
-        if (!effectiveBySide[side] && actions[sideIndex(side)].skippedReason !== "action_infeasible") {
+        if (absentIntentSides.has(side)) continue;
+        if (!effectiveBySide[side] && actionFor(side)?.skippedReason !== "action_infeasible") {
           continue;
         }
         const proposalA = cloneCombatant(bucketStartA);
@@ -2896,7 +2955,7 @@ export function resolveTurn(input: ResolveTurnInput): {
         const usedFinisher = executeAction({
           side,
           effectiveAction: effectiveBySide[side] ?? null,
-          requestedIntent: actions[sideIndex(side)]?.resolution?.requested,
+          requestedIntent: actionFor(side)?.resolution?.requested,
           currentA: proposalA,
           currentB: proposalB,
           targetEvents: proposalEvents,
@@ -2941,9 +3000,10 @@ export function resolveTurn(input: ResolveTurnInput): {
     }
 
     const side = bucket.actorSides[0]!;
+    if (absentIntentSides.has(side)) return;
     if (isCombatantDown(sideA) || isCombatantDown(sideB)) return;
     const result = revalidate(side, sideA, sideB);
-    setResolvedAction(side, result);
+    if (!setResolvedAction(side, result)) return;
     if (result.action?.kind === "defend") {
       const band = instrumentBand({
         worldState: input.state.worldState,
@@ -3012,7 +3072,7 @@ export function resolveTurn(input: ResolveTurnInput): {
       situation,
       finisherA: finisherA ?? null,
       finisherB: finisherB ?? null,
-      actions: bucket.actorSides.map((side) => actions[sideIndex(side)]!),
+      actions: bucket.actorSides.map((side) => actionFor(side)).filter((action): action is ResolvedBattleAction => action !== undefined),
       events: finalizedSoFar.slice(eventStart),
       mechanicalEvidence: committedMechanicalEvidence({
         turn,
@@ -3066,6 +3126,8 @@ export function resolveTurn(input: ResolveTurnInput): {
       finisherA: finisherA ?? null,
       finisherB: finisherB ?? null,
       actions,
+      absentIntentSides: [...absentIntentSides],
+      strictCharacterIntents,
       events: events.map((event, index) => ({
         ...event,
         id: event.id ?? `turn-${turn}-event-${index + 1}`,

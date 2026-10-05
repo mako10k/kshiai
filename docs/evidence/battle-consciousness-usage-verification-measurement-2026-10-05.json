@@ -1,0 +1,14 @@
+{
+  "task": "usage-verify",
+  "at": "2026-10-05T07:47:42+00:00",
+  "monotonicStart": 27002.96658509,
+  "rootWorkers": 1,
+  "scope": "Final verification only, no delegated writing or other active task; continuous automated execution session.",
+  "finishedAt": "2026-10-05T07:55:37+00:00",
+  "rootSessionSeconds": 473.844,
+  "activeTimeHours": 0.131623,
+  "rootWorkerEffortPh": 0.131623,
+  "method": "one root worker continuous verification session including automated check execution; separate delegated corrective implementation elapsed42.99s is excluded from this verification-only sample; active_time follows standard event-derived interval, effort uses independently measured monotonic session.",
+  "confidence": "low",
+  "activeTimeLifecycle": "19/144h"
+}

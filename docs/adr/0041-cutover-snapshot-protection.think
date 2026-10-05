@@ -1,0 +1,41 @@
+domain ADR0041:
+  description "Prepare owner-managed snapshot storage candidate before real capture."
+evidence OWNER_REQUEST:
+  "Owner explicitly requested creation of a storage destination candidate, not resource creation or capture."
+evidence GCP_READBACK:
+  "2026-09-30 project kshiai bucket list returns one bucket kshiai_cloudbuild in US, uniform bucket access false, public access prevention inherited. Active authenticated account mako10k@mk10.org. Current list is bounded to this project and account."
+evidence PLATFORM:
+  "Official Cloud Storage documentation supports Google-managed default encryption, uniform bucket IAM, enforced public access prevention, retention policy and lifecycle deletion. Retention/lifecycle/soft-delete interact, and project IAM privileges remain inherited."
+premise PROTECTION:
+  "Snapshot includes private application state and requires protected beneficiary owner, precise storage/access/encryption/retention/readback and measured restore bound before shared stopped cutover. Owner-only access cannot be claimed until inherited IAM and recovery executor are verified."
+premise OPTION_SHARED:
+  "Reuse existing US Cloud Build bucket."
+premise OPTION_DEDICATED:
+  "Propose dedicated asia-northeast1 Standard bucket with public prevention enforced, uniform bucket access, default Google-managed encryption/TLS, owner-admin and frozen executor minimal object-create/read roles,30-day unlocked retention and lifecycle deletion with7-day soft delete explicitly included."
+premise OPTION_OFFLINE:
+  "Owner local encrypted archive avoids new cloud storage but adds export/device/key/transfer dependencies and unmeasured restore duration."
+pending EXECUTOR:
+  "Exact service account, inherited privileged principals, globally available bucket name, archive coverage/dependencies and real transfer/restore/forward recovery timings need independent verification."
+decision SELECT based_on OWNER_REQUEST, GCP_READBACK, PLATFORM, PROTECTION, OPTION_SHARED, OPTION_DEDICATED, OPTION_OFFLINE, EXECUTOR:
+  "Recommend dedicated bucket candidate for review. Existing build bucket is poorly matched to separate private snapshot policy. Preserve30day minimum plus7day recoverable soft-delete as retention proposal, not exact deletion deadline. Prepare configuration and max-write/readback fields; resource creation/export remain separate execution packet authority."
+
+evidence INHERITED_IAM:
+  "Project IAM readback shows owner mako10k@mk10.org and default compute service account with project editor plus storage.objectViewer. A new bucket in this project inherits these privileges; bucket-only IAM does not make plaintext owner-only."
+evidence AGE_PRIMARY:
+  "Official age documentation supports recipient public-key encryption and private identity decryption. The local age executable is currently unavailable; no owner key or encryption run exists."
+premise OPTION_ENCRYPTED:
+  "Add owner-recipient client-side age encryption before dedicated bucket upload. Inherited privileged project principals can access ciphertext; plaintext requires owner-controlled private identity. Key loss blocks recovery, so a protected backup and owner-assisted actual restore rehearsal are prerequisites."
+decision REVISED_STORAGE based_on SELECT, INHERITED_IAM, AGE_PRIMARY, OPTION_ENCRYPTED, OWNER_REQUEST:
+  "Recommend dedicated bucket with client-side owner-recipient encryption,30day minimum retention and7day soft-delete proposal. Preserve exact inherited-reader disclosure. Collect owner public recipient and protected key recovery route before execution. Keep plaintext owner-only as a verification condition, not an already achieved state."
+
+evidence OWNER_SELECTION:
+  "Owner explicitly selected option1 owner public-key pre-encryption with disclosed common dedicated Tokyo GCS30day minimum and7day soft-delete. Selection is storage policy only, not resource creation or actual capture/production action. Public recipient/private identity storage remain pending."
+premise LOCAL_TOOL_CHECK:
+  "Prepare an isolated official Ubuntu age binary without system installation, verify package and repository metadata, and run synthetic key/encrypt/decrypt/wrong-key/tamper tests. Fixture keys are temporary test doubles, not owner keys. No private production state or remote upload."
+decision RECORD_AND_VERIFY based_on OWNER_SELECTION, LOCAL_TOOL_CHECK, PROTECTION:
+  "Record Accepted storage policy ADR and subordinate packet fields. Test the encryption tool locally with synthetic data and preserve exact version/hash evidence. Prepare owner-key procedure as needed, without creating an owner key at an unspecified protection destination."
+
+evidence OWNER_ACCEPTANCE:
+  "User selected option1 owner public-key pre-encryption. The disclosed common candidate is dedicated Tokyo GCS30day minimum retention and7day soft-delete. Selection is policy only; exact key/store/executor/real R remain packet inputs. User subsequently requested new-key creation preparation."
+decision ACCEPTANCE based_on OWNER_ACCEPTANCE, OWNER_SELECTION, REVISED_STORAGE:
+  "Accept ADR0041 storage protection/retention policy. Prepare local tool and key procedure. Separate resource/key/capture/restore/production execution authority follows exact packet approval; uncreated inputs remain pending."

@@ -1,0 +1,18 @@
+domain V2_RUNTIME_WRITERS:
+  description "Complete character V2 runtime creation/update retirement."
+evidence OWNER:
+  "Owner requires full retirement of character V2 creation and ordinary updates; keep display and explicit migration to V3."
+evidence SOURCE:
+  "saveSheet creates a V2 generation for a missing character, activateImportedCharacter activates V2, e2e-observer calls both; backfill changes old identity via saveSheet. HTTP gates alone do not close these executable routes."
+premise BOUNDARY:
+  "Local source/tests only are authorized. Preserve existing V2 database/history and V3 migration readers. Historical test fixture setup is not product creation. No deployment, paid calls or remote write."
+decision REMOVE based_on OWNER, SOURCE, BOUNDARY:
+  "Move legacy V2 fixture writes into an explicitly test-only fixture module used only by tests. Remove activateImportedCharacter from product repository API. saveSheet requires a preexisting current V3 generation and cannot create V2 or update a V2 target. Old e2e registration can only reuse qualified current V3 characters and fails before V2 creation. Identity backfill skips old versions before provider work. Add regression tests for missing-row and V2 operational-row rejection without writes and maintain historical fixture tests."
+evidence GENERIC_STORE:
+  "Generic writeAssetGeneration, appendAssetGeneration and activateAssetGeneration still accept character schema2; operator scripts can call them. Tests require constructing immutable V2 history outside the product write boundary."
+decision STORAGE_BOUNDARY based_on REMOVE, GENERIC_STORE:
+  "Reject character schema versions other than3 at generic runtime generation write/append/activation. Keep all historical readers. Move historical construction and pointer drift injection into test-only fixture helpers, and verify no runtime imports those helpers. Regression tests call the real product writers and prove no V2 database writes."
+evidence LOCAL_CURRENT:
+  "Runtime character writers now reject schema2 and disguised legacy envelopes; fixture writers are test-only. Current scoped tests are source-bound with explicit accepted Causes; legacy migration corpus basis remains provisional. Deployed worker health still reports kshiai-api-00147-pos."
+decision REMAINING_PLAN based_on OWNER, LOCAL_CURRENT:
+  "Record follow-on owner goal in the existing character-semantic-migration.pert: freeze the reviewed source and verification packet locally, then separately authorize and execute a bounded release and runtime readback. Do not mark the runtime goal complete or rewrite earlier project acceptance. Start measuring the local packet task now; earlier code work has no newly invented actuals."

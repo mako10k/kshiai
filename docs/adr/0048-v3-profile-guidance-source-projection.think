@@ -1,0 +1,16 @@
+domain ADR0048:
+  description "Accepted explicit public V3 guidance profile projection"
+evidence OWNER_ACCEPTANCE:
+  "Owner authorizes manual Grok CLI export conversion and V3 revision registration for every remaining character on 2026-10-03, under ADR0043's permitted manual route."
+evidence FAILURE:
+  "First migrated cat retains selectorless statements in consciousGuidance, but old V3 profile adaptation drops that collection; stateless CLI review rejects unchanged public profile for missing allowed support facts."
+premise BOUNDARY:
+  "V3 guidance is distinct from executable norms. Public facts require explicit disclosure authority; schema conformance does not justify fake selectors or unrelated field copies."
+decision ACCEPTANCE based_on OWNER_ACCEPTANCE, FAILURE, BOUNDARY:
+  "Execute the explicitly authorized manual all-character migration under ADR0043, including this concrete support-projection repair required to preserve meaning and existing public rights. ADR0048 is Accepted; no new import endpoint or relaxed V3 schema is authorized."
+decision PROJECTOR based_on ACCEPTANCE, FAILURE, BOUNDARY:
+  "Add a shared typed V3 profile source projector. Retain old facts and ordering; append only statement facts explicitly authorized by an unconditional public profile guidance-path rule. Never project guidance description or infer public rights. Candidate readiness uses this projector."
+decision MIGRATION based_on PROJECTOR, BOUNDARY:
+  "Copy existing unconditional public norm-statement permission only to the exact mapped guidance statement for that source norm. Legacy source without such permission gets none. Preserve authoritative definitions, prior revisions, bound battles and operational facts."
+decision VALIDATION based_on PROJECTOR, MIGRATION:
+  "Test unchanged old projection without new permissions, public-only statement source, denial of owner conditional and unrelated paths, and true candidate readiness. Deploy verified validator before affected candidate activation; preserve actual CLI assessments and failures."

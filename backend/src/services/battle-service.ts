@@ -1,18 +1,41 @@
+import { CurrentAwarenessPromptRevision } from "@kshiai/shared";
+// R: Coordinate battle creation and turn execution using bound assets and committed state.
+import { awarenessNarrationUrgent } from "./awareness-narration-urgency.js";
+import { prepareAwarenessCreationEncounter } from "./awareness-creation-encounter.js";
+import { adoptAwarenessCreationInTransaction } from "../repositories/battle-awareness-creation.js";
+import { getAwarenessRuntime, initializeAwarenessRuntime } from "../repositories/battle-awareness.js";
+import { AwarenessInitialize, AwarenessNormalPolicy, AwarenessPolicyV1Schema, type AwarenessPolicyV1, BattleAssetManifestV5Schema } from "@kshiai/shared";
+import { currentAwarenessAdvanceContext, withAwarenessAdvanceContext, saveCompletedBattleBoundary } from "./awareness-advance-context.js";
+import { prepareAwarenessBattleBoundary, stopAwarenessBattleRuntime, type AwarenessActionFrame } from "./awareness-battle-boundary.js";
+import { createAwarenessAdjudicationGuard } from "./awareness-adjudication-guard.js";
+import { withAwarenessDispatchContext } from "../llm/awareness-dispatch-context.js";
+import { currentBattleLeaseFence } from "./distributed-guard.js";
+import { commitAwarenessWorld } from "./awareness-world-commit.js";
+import { commitAwarenessExpressions } from "./awareness-expression-commit.js";
+import { freezeDeferredAwarenessNarration, type DeferredNarrationInput } from "./deferred-narration-source.js";
+import { bindConsciousGenerationControl } from "../llm/conscious-dynamic.js";
+import { buildDeterministicActionFallback } from "./character-action-fallback.js";
 import type { CharacterActionDecisionInput } from "../llm/types.js";
-import { assertConsciousBinding, boundConsciousCompiler, consciousFacts, consciousReaction, privateBattleGoal, legacyPublicOpeningPlan } from "../llm/conscious-agency.js";
+import { assertConsciousBinding, boundConsciousCompiler, consciousFacts, consciousReaction, isV4ConsciousCompiler, privateBattleGoal, legacyPublicOpeningPlan } from "../llm/conscious-agency.js";
 import {
+  acceptConsciousDecisionV4, initialConsciousAgencyV2, decodeConsciousOutputV4, type ConsciousOutputV4,
   acceptConsciousDecisionV3, initialConsciousAgencyV1, initialPsycheReactionStateV1,
-  CONSCIOUS_GOAL_POLICY_V3, BattleAssetManifestV3Schema, CharacterAgentStateSchema,
+  CONSCIOUS_GOAL_POLICY_V3, BattleAssetManifestV3Schema, BattleAssetManifestV4Schema,
+  CharacterAgentStateSchema,
+  compileCharacterBattleCompilerInputsV4,
+  projectCharacterConsciousGuidanceV1,
   decodeConsciousOutputV3,
   type ConsciousOutputV3, type BattleCharacterAssetBinding,
 } from "@kshiai/shared";
 import { randomInt } from "node:crypto";
 import { requestDigest } from "./distributed-guard.js";
+import { projectBattlePublic } from "./battle-public-projection.js";
 import {
   BattlePolicyOptionSchema,
   BattleAdjudicationSchema,
   JudgmentPresentationProjectionSchema,
   CharacterActionIntentSchema,
+  type CharacterActionIntent,
   accumulateBattleBalanceTrace,
   advanceSupervisorClock,
   applyBattleWorldTransition,
@@ -66,7 +89,6 @@ import {
   isPassiveTurn,
   isQuietTurn,
   normalizeSupervisor,
-  ratingForDisplay,
   resolveNextBattleTurnBucket,
   materializeBattleStateAtBucketBoundary,
   materializeBattleTurnStartState,
@@ -76,14 +98,13 @@ import {
   shouldInjectHappening,
   stanceLabel,
   summarizeSelectedPolicies,
-  selectPolicyIdsByPerspective,
-  projectPublicObjectStates,
-  toPublicInstance,
   toPublicPolicyOption,
+  selectPolicyIdsByPerspective,
   type BattlePolicyOption,
   type BattlePublic,
   type BattleStance,
   type BattleState,
+  type RatingDisplayContext,
   type BattleAdjudication,
   type JudgmentPresentationProjection,
   type BattleEncounterProposal,
@@ -122,7 +143,6 @@ import {
   type NarrationFocus,
   type NarrationPerspective,
   type NarratorRecognitionUpdate,
-  type RatingDisplayContext,
   buildInnerDigest,
   lockedFocusFromPerspective,
   needsFocusChoice,
@@ -176,14 +196,18 @@ import {
   compileCharacterActionNormProgramV2,
   compileCharacterRelationshipProgramV2,
   evaluateCharacterActionNormsV2,
+  evaluateCharacterActionNormsV3,
   projectCharacterRelationshipDescriptionV2,
   resolveCharacterRelationshipV2,
   BATTLEFIELD_INSTANCE_COMPILER_V2,
   compileBattlefieldInstanceV2,
   selectBattlefieldEvolutionAffordanceV2,
   type CharacterActionNormProgramV2,
+  type CharacterActionNormProgramV3,
   type CharacterActionNormResolutionReceiptV2,
+  type CharacterActionNormResolutionReceiptV3,
   type CharacterNormActionCandidateV2,
+  type CharacterNormActionCandidateV3,
   type CharacterNormFactV2,
   type CharacterRelationshipResolutionReceiptV2,
   type LlmProviderRouteReceipt,
@@ -227,17 +251,26 @@ import {
   type EvidenceValidationStatus,
 } from "../llm/perception-evidence.js";
 import * as battleRepo from "../repositories/battles.js";
+import { readBattleAccess } from "./battle-lifecycle-access.js";
+import {
+  resolveBattleParticipantEligibility,
+  type BattleParticipantEligibility,
+} from "./battle-participation-eligibility.js";
 import * as presentationRepo from "../repositories/battle-presentations.js";
 import * as bfRepo from "../repositories/battlefields.js";
 import * as charRepo from "../repositories/characters.js";
 import * as styleRepo from "../repositories/narration-styles.js";
 import * as dialoguePipelineRepo from "../repositories/dialogue-pipeline-settings.js";
-import { createAssetGeneration } from "../repositories/asset-generations.js";
+import {
+  createAssetGeneration,
+  getCurrentAssetGeneration,
+} from "../repositories/asset-generations.js";
 import {
   bindDialoguePipelineActivation,
   resolveConfiguredDialoguePipelineActivation,
 } from "./dialogue-pipeline-activation.js";
 import { getReadyCharacterGeneration } from "../repositories/character-assets-v2.js";
+import { readCharacterGeneration } from "../repositories/character-generation-reader.js";
 import { getUserAccessProfile } from "../account-access.js";
 import { withBattleLease } from "./distributed-guard.js";
 import {
@@ -253,6 +286,7 @@ import {
 const FAST_LLM_ENVELOPE_TIMEOUT_MS = 100_000;
 const SHORT_LLM_ENVELOPE_TIMEOUT_MS = 70_000;
 const CHARACTER_DEFINITION_RULE_POLICY_V2 = "character-definition-rules-v2";
+const CHARACTER_DEFINITION_RULE_POLICY_V3 = "character-definition-rules-v3";
 
 class ObserverPerceptionProjectionError extends Error {
   constructor(message: string) {
@@ -262,7 +296,7 @@ class ObserverPerceptionProjectionError extends Error {
 }
 
 type CharacterDecisionRuleMetadata = {
-  actionNorm: CharacterActionNormResolutionReceiptV2 | null;
+  actionNorm: CharacterActionNormResolutionReceiptV2 | CharacterActionNormResolutionReceiptV3 | null;
   relationship: CharacterRelationshipResolutionReceiptV2 | null;
   consciousActionPrinciples: string[] | null;
 };
@@ -276,50 +310,6 @@ const characterDecisionRuleMetadata = new WeakMap<
   CharacterDecisionRuleMetadata
 >();
 
-type RatingSettlement = NonNullable<BattleState["ratingSettlement"]>;
-type PublicRatingSettlement = NonNullable<BattlePublic["ratingSettlement"]>;
-
-function toPublicRatingEntry(
-  entry: RatingSettlement["sideA"],
-  population: RatingDisplayContext["public"] | undefined,
-): NonNullable<PublicRatingSettlement["sideA"]> {
-  return {
-    before: ratingForDisplay(entry.before, population),
-    after: ratingForDisplay(entry.after, population),
-    delta: entry.delta,
-    provisionalAfter: entry.provisionalAfter,
-  };
-}
-
-function toPublicRatingSettlement(
-  settlement: BattleState["ratingSettlement"],
-  display: RatingDisplayContext | undefined,
-): BattlePublic["ratingSettlement"] {
-  if (!settlement?.applied) return null;
-  const overall = settlement.overall ?? {
-    sideA: settlement.sideA,
-    sideB: settlement.sideB,
-  };
-  const publicSettlement = settlement.public ?? null;
-  return {
-    applied: settlement.applied,
-    ranked: settlement.ranked,
-    sameOwner: settlement.sameOwner,
-    overall: {
-      sideA: toPublicRatingEntry(overall.sideA, display?.overall),
-      sideB: toPublicRatingEntry(overall.sideB, display?.overall),
-    },
-    public: publicSettlement
-      ? {
-          sideA: toPublicRatingEntry(publicSettlement.sideA, display?.public),
-          sideB: toPublicRatingEntry(publicSettlement.sideB, display?.public),
-        }
-      : null,
-    sideA: toPublicRatingEntry(overall.sideA, display?.overall),
-    sideB: toPublicRatingEntry(overall.sideB, display?.overall),
-  };
-}
-
 export function toBattlePublic(
   state: BattleState,
   mySheet: CharacterSheet,
@@ -327,105 +317,7 @@ export function toBattlePublic(
   oppSheet?: CharacterSheet | null,
   ratingDisplay?: RatingDisplayContext,
 ): BattlePublic {
-  const selected = new Set(state.selectedPolicyIdsA ?? []);
-  const selectedPolicies = (state.policiesA ?? []).filter((p) => {
-    return selected.has(p.id);
-  });
-
-  const imgFor = (
-    combatant: BattleState["sideA"],
-    sheet: CharacterSheet | null | undefined,
-  ) => {
-    return combatant.imageUrl ??
-    (sheet && sheet.id === combatant.characterId
-      ? (sheet.appearance?.imageUrl ?? null)
-      : null);
-  };
-
-  const sideASheet =
-    mySheet.id === state.sideA.characterId ? mySheet : oppSheet;
-  const sideBSheet =
-    mySheet.id === state.sideB.characterId ? mySheet : oppSheet;
-
-  return {
-    id: state.id,
-    status: state.status,
-    turn: state.turn,
-    turnLimit: state.turnLimit,
-    ...(usesPublicTurnClock(state) &&
-    (state.sceneBeat?.receiptIds.length ?? 0) > 0
-      ? {
-          combatBeat: state.sceneBeat?.receiptIds.length,
-          combatBeatsPerTurn: sceneBeatK(state),
-        }
-      : {}),
-    sideA: {
-      characterId: state.sideA.characterId,
-      displayName: state.sideA.displayName,
-      canFight: state.sideA.canFight,
-      imageUrl: imgFor(state.sideA, sideASheet),
-    },
-    sideB: {
-      characterId: state.sideB.characterId,
-      displayName: state.sideB.displayName,
-      canFight: state.sideB.canFight,
-      imageUrl: imgFor(state.sideB, sideBSheet),
-    },
-    policies: selectedPolicies.map(toPublicPolicyOption),
-    policySummary: summarizeSelectedPolicies(
-      state.policiesA,
-      state.selectedPolicyIdsA,
-    ),
-    opponentPolicySummary: summarizeSelectedPolicies(
-      state.policiesB,
-      state.selectedPolicyIdsB,
-    ),
-    stanceA: state.stanceA,
-    stanceALabel: state.stanceA ? stanceLabel(state.stanceA) : undefined,
-    stanceB: state.stanceB,
-    stanceBLabel: state.stanceB ? stanceLabel(state.stanceB) : undefined,
-    scene: state.situation.scene,
-    situationNotes: state.situation.notes,
-    battlefield: state.battlefield
-      ? toPublicInstance(state.battlefield)
-      : null,
-    semanticState: state.observationStatePublic ?? null,
-    objectStates: projectPublicObjectStates({
-      worldState: state.worldState,
-      participantLabels: {
-        a: state.sideA.displayName,
-        b: state.sideB.displayName,
-      },
-    }),
-    pendingEffects: (state.pendingEffects ?? []).flatMap((effect) =>
-      effect.visibility === "public_when_scheduled"
-        ? [{
-            effectId: effect.effectId,
-            targetSide: effect.targetSide,
-            parameterKey: effect.payload.parameterKey,
-            direction: effect.payload.delta < 0 ? "loss" as const : "gain" as const,
-            trigger: effect.trigger.kind === "due_turn"
-              ? { kind: "due_turn" as const, dueTurn: effect.trigger.dueTurn }
-              : { kind: "target_hp_at_most_percent" as const },
-            expiresTurn: effect.expiresTurn,
-          }]
-        : []
-    ),
-    log: state.log,
-    receipts: publicPhaseReceipts(state.phaseReceipts),
-    availableActions: [],
-    winnerSide: state.winnerSide,
-    finishReason: state.finishReason,
-    aftermathPending: Boolean(state.aftermathPending),
-    prologuePending: Boolean(state.prologuePending),
-    narrationStyleName: state.narrationStyle?.displayName,
-    priorMatchSummary: state.priorMatchSummary ?? null,
-    resultSummary: resultSummary ?? null,
-    ratingSettlement: toPublicRatingSettlement(
-      state.ratingSettlement,
-      ratingDisplay,
-    ),
-  };
+  return projectBattlePublic(state, mySheet, resultSummary, oppSheet, ratingDisplay);
 }
 
 export async function toBattlePublicForViewer(
@@ -534,6 +426,20 @@ function charPublicCtx(sheet: CharacterSheet) {
   };
 }
 
+async function fieldPresetForPolicyGeneration(input: {
+  userId: string;
+  battlefieldPresetId?: string;
+}): Promise<BattlefieldPreset | null> {
+  if (!input.battlefieldPresetId) {
+    return (await bfRepo.pickRandomSystemPreset())?.preset ?? null;
+  }
+  const source = await bfRepo.getReadyPresetForUser(
+    input.battlefieldPresetId,
+    input.userId,
+  );
+  return source?.preset ?? null;
+}
+
 export async function generateMatchPolicies(input: {
   userId: string;
   myCharacterId: string;
@@ -563,22 +469,7 @@ export async function generateMatchPolicies(input: {
     throw new Error("OPPONENT_NOT_FOUND");
   }
 
-  let fieldPreset: BattlefieldPreset | null = null;
-  if (input.battlefieldMode === "preset" && input.battlefieldPresetId) {
-    const source = await bfRepo.getReadyPresetForUser(
-      input.battlefieldPresetId,
-      input.userId,
-    );
-    fieldPreset = source?.preset ?? null;
-  } else if (input.battlefieldPresetId) {
-    const source = await bfRepo.getReadyPresetForUser(
-      input.battlefieldPresetId,
-      input.userId,
-    );
-    fieldPreset = source?.preset ?? null;
-  } else {
-    fieldPreset = (await bfRepo.pickRandomSystemPreset())?.preset ?? null;
-  }
+  const fieldPreset = await fieldPresetForPolicyGeneration(input);
   if (input.battlefieldPresetId && !fieldPreset) {
     const accessible = await bfRepo.getPresetForUser(
       input.battlefieldPresetId,
@@ -639,10 +530,12 @@ function normalizePolicies(
   return out;
 }
 
-export async function startBattle(input: {
+type StartBattleInput = {
   userId: string;
   /** Stable resource identity supplied by the idempotent create operation. */
   battleId?: string;
+  /** Trial admission requires this immutable pair before provider or persistence work. */
+  expectedCharacterGenerationIds?: readonly [string, string];
   myCharacterId: string;
   opponentCharacterId: string;
   battlefieldPresetId?: string;
@@ -652,29 +545,63 @@ export async function startBattle(input: {
   selectedPolicyIds?: string[];
   narrationStyleId?: string;
   llm: LlmProvider;
-}): Promise<BattlePublic> {
-  if (input.battleId) {
-    const [existing, existingMeta] = await Promise.all([
-      battleRepo.getBattle(input.battleId),
-      battleRepo.getBattleMeta(input.battleId),
-    ]);
-    if (existing || existingMeta) {
-      if (
-        !existing || !existingMeta ||
-        existingMeta.side_a_user_id !== input.userId ||
-        existingMeta.side_a_character_id !== input.myCharacterId ||
-        existingMeta.side_b_character_id !== input.opponentCharacterId
-      ) {
-        throw new Error("BATTLE_CREATE_IDENTITY_CONFLICT");
-      }
-      const existingMine = existing.assetManifest?.characters.a.snapshot ??
-        await charRepo.getSheetIncludingDeleted(existingMeta.side_a_character_id);
-      const existingOpp = existing.assetManifest?.characters.b.snapshot ??
-        await charRepo.getSheetIncludingDeleted(existingMeta.side_b_character_id);
-      if (!existingMine || !existingOpp) throw new Error("CHARACTER_MISSING");
-      return toBattlePublicForViewer(existing, existingMine, null, existingOpp);
-    }
+  /** Internal isolated measurement only; public routes do not expose this field. */
+  awarenessPolicy?: AwarenessPolicyV1;
+};
+
+async function replayExistingBattle(
+  input: StartBattleInput,
+): Promise<BattlePublic | null> {
+  if (!input.battleId) return null;
+  if (await battleRepo.isBattleDiscarded(input.battleId)) {
+    throw new Error("BATTLE_NOT_FOUND");
   }
+  const [existing, existingMeta] = await Promise.all([
+    battleRepo.getBattle(input.battleId),
+    battleRepo.getBattleMeta(input.battleId),
+  ]);
+  if (!existing && !existingMeta) return null;
+  if (
+    !existing || !existingMeta ||
+    existingMeta.side_a_user_id !== input.userId ||
+    existingMeta.side_a_character_id !== input.myCharacterId ||
+    existingMeta.side_b_character_id !== input.opponentCharacterId
+  ) {
+    throw new Error("BATTLE_CREATE_IDENTITY_CONFLICT");
+  }
+  if (input.expectedCharacterGenerationIds &&
+      ((existing.assetManifest?.schemaVersion !== 4 && existing.assetManifest?.schemaVersion !== 5) ||
+       existing.assetManifest.characters.a.generationId !== input.expectedCharacterGenerationIds[0] ||
+       existing.assetManifest.characters.b.generationId !== input.expectedCharacterGenerationIds[1])) {
+    throw new Error("CUTOVER_TRIAL_GENERATION_MISMATCH");
+  }
+  const existingMine = existing.assetManifest?.characters.a.snapshot ??
+    await charRepo.getSheetIncludingDeleted(existingMeta.side_a_character_id);
+  const existingOpp = existing.assetManifest?.characters.b.snapshot ??
+    await charRepo.getSheetIncludingDeleted(existingMeta.side_b_character_id);
+  if (!existingMine || !existingOpp) throw new Error("CHARACTER_MISSING");
+  return toBattlePublicForViewer(existing, existingMine, null, existingOpp);
+}
+
+type ResolvedBattleParticipants = {
+  mine: ReadyBattleParticipant["sheet"];
+  opp: ReadyBattleParticipant["sheet"];
+  mineGeneration: ReadyBattleParticipant["generation"];
+  opponentGeneration: ResolvedBattleParticipants["mineGeneration"];
+  v3Participants: {
+    mine: ReadyBattleParticipant;
+    opponent: ReadyBattleParticipant;
+  };
+};
+
+type ReadyBattleParticipant = Extract<
+  BattleParticipantEligibility,
+  { status: "ready" }
+>["participant"];
+
+async function resolveBattleParticipants(
+  input: StartBattleInput,
+): Promise<ResolvedBattleParticipants> {
   const currentMine = await charRepo.getSheet(input.myCharacterId);
   const currentOpp = await charRepo.getSheet(input.opponentCharacterId);
   if (!currentMine || currentMine.ownerUserId !== input.userId) {
@@ -685,50 +612,40 @@ export async function startBattle(input: {
     throw new Error("OPPONENT_NOT_FOUND");
   }
   if (currentMine.id === currentOpp.id) throw new Error("SAME_CHARACTER");
-  const [mineGeneration, opponentGeneration] = await Promise.all([
-    getReadyCharacterGeneration(currentMine.id),
-    getReadyCharacterGeneration(currentOpp.id),
+  const [mineEligibility, opponentEligibility] = await Promise.all([
+    resolveBattleParticipantEligibility(currentMine),
+    resolveBattleParticipantEligibility(currentOpp),
   ]);
-  if (!mineGeneration) throw new Error("MY_CHARACTER_UPGRADE_REQUIRED");
-  if (!opponentGeneration) throw new Error("OPPONENT_CHARACTER_UPGRADE_REQUIRED");
-  const mineEnvelope = CharacterGenerationEnvelopeV2Schema.parse(
-    mineGeneration.content,
-  );
-  const opponentEnvelope = CharacterGenerationEnvelopeV2Schema.parse(
-    opponentGeneration.content,
-  );
-  const mine = characterDefinitionV2ToLegacySheet({
-    characterId: currentMine.id,
-    ownerUserId: currentMine.ownerUserId,
-    definition: mineEnvelope.definition,
-    publicPresentation: mineEnvelope.publicPresentation,
-    createdAt: currentMine.createdAt,
-    updatedAt: mineGeneration.createdAt,
-    operational: {
-      visibility: currentMine.visibility,
-      record: currentMine.record,
-      recordOverall: currentMine.recordOverall,
-      improvementMemo: currentMine.improvementMemo,
-      opponentMemories: currentMine.opponentMemories,
-      deletedAt: currentMine.deletedAt,
-    },
-  });
-  const opp = characterDefinitionV2ToLegacySheet({
-    characterId: currentOpp.id,
-    ownerUserId: currentOpp.ownerUserId,
-    definition: opponentEnvelope.definition,
-    publicPresentation: opponentEnvelope.publicPresentation,
-    createdAt: currentOpp.createdAt,
-    updatedAt: opponentGeneration.createdAt,
-    operational: {
-      visibility: currentOpp.visibility,
-      record: currentOpp.record,
-      recordOverall: currentOpp.recordOverall,
-      improvementMemo: currentOpp.improvementMemo,
-      opponentMemories: currentOpp.opponentMemories,
-      deletedAt: currentOpp.deletedAt,
-    },
-  });
+  if (mineEligibility.status !== "ready") throw new Error("MY_CHARACTER_V3_CAPABILITY_BLOCKED");
+  if (opponentEligibility.status !== "ready") throw new Error("OPPONENT_CHARACTER_V3_CAPABILITY_BLOCKED");
+  const v3Participants = { mine: mineEligibility.participant, opponent: opponentEligibility.participant };
+  const mineGeneration = v3Participants.mine.generation;
+  const opponentGeneration = v3Participants.opponent.generation;
+  if (input.expectedCharacterGenerationIds &&
+      (mineGeneration.generationId !== input.expectedCharacterGenerationIds[0] ||
+       opponentGeneration.generationId !== input.expectedCharacterGenerationIds[1])) {
+    throw new Error("CUTOVER_TRIAL_GENERATION_MISMATCH");
+  }
+  return {
+    mine: v3Participants.mine.sheet,
+    opp: v3Participants.opponent.sheet,
+    mineGeneration,
+    opponentGeneration,
+    v3Participants,
+  };
+}
+
+export async function startBattle(input: StartBattleInput): Promise<BattlePublic> {
+  const awarenessPolicy = AwarenessPolicyV1Schema.parse(input.awarenessPolicy ?? AwarenessNormalPolicy);
+  const replay = await replayExistingBattle(input);
+  if (replay) return replay;
+  const {
+    mine,
+    opp,
+    mineGeneration,
+    opponentGeneration,
+    v3Participants,
+  } = await resolveBattleParticipants(input);
 
   const resolvedBattlefield = await resolveBattlefieldInstance({
     battlefieldPresetId: input.battlefieldPresetId,
@@ -759,15 +676,9 @@ export async function startBattle(input: {
   );
   const { activation: dialogueActivation, snapshot: dialoguePipelineSnapshot } =
     await resolveConfiguredDialoguePipelineActivation();
-  let encounterProposal: BattleEncounterProposal | null = null;
+  const id = input.battleId ?? newId("btl");
   const encounterRouteReceipts: LlmProviderRouteReceipt[] = [];
-  let encounterFailure: NonNullable<
-    BattleEncounterSourceReceipt["failureReason"]
-  > | null = null;
-  try {
-    const rawEncounterProposal = await withLlmProviderRouteReceiptCapture(
-      encounterRouteReceipts,
-      () => withTimeout(input.llm.prepareBattleEncounter({
+  const encounterRequest: Parameters<LlmProvider["prepareBattleEncounter"]>[0] = {
         sideA: {
           displayName: mine.displayName,
           nicknames: mine.identity?.nicknames ?? [],
@@ -792,51 +703,26 @@ export async function startBattle(input: {
           narrativeSetup: battlefield.narrativeSetup,
         },
         priorMatchSummary,
-      }), FAST_LLM_ENVELOPE_TIMEOUT_MS, "prepareBattleEncounter"),
-    );
-    const parsedEncounterProposal = BattleEncounterProposalSchema.safeParse(
-      rawEncounterProposal,
-    );
-    if (parsedEncounterProposal.success) {
-      encounterProposal = parsedEncounterProposal.data;
-    } else {
-      encounterFailure = "schema_invalid";
-    }
-  } catch (error) {
-    if (isProviderOperationAccountingError(error)) throw error;
-    encounterFailure = encounterFailureReason(error);
-    console.warn(
-      "[battle] encounter proposal unavailable; using deterministic context",
-      error instanceof Error ? error.message : error,
-    );
-  }
+      };
+  const preparedEncounter = await withLlmProviderRouteReceiptCapture(encounterRouteReceipts, () =>
+    prepareAwarenessCreationEncounter({ battleId: id,
+      identity: { userId: input.userId, characterGenerationIds: [mineGeneration.generationId, opponentGeneration.generationId] },
+      encounter: encounterRequest, llm: input.llm, policy: awarenessPolicy }));
+  const encounterProposal = preparedEncounter.proposal;
   const encounterContext = buildBattleEncounterContext({
     sideA: mine,
     sideB: opp,
     priorMatchSummary,
     proposal: encounterProposal,
-    sourceReceipt: encounterProposal
-      ? {
-          source: "provider",
-          failureReason: null,
-          providerRoutes: encounterRouteReceipts,
-        }
-      : {
-          source: "deterministic_fallback",
-          failureReason: encounterFailure ?? "other",
-          providerRoutes: encounterRouteReceipts,
-        },
+    sourceReceipt: { source: "provider", failureReason: null, providerRoutes: encounterRouteReceipts },
   });
 
-  const id = input.battleId ?? newId("btl");
   let state = createBattleState({
     id,
     sideA: mine,
     sideB: opp,
-    turnLimit: config.battleTurnLimit,
-    pacingPolicy: config.battlePacingPolicy === "candidate-12-v2"
-      ? LOCAL_TWELVE_TURN_PACING_CANDIDATE
-      : undefined,
+    turnLimit: 12,
+    pacingPolicy: LOCAL_TWELVE_TURN_PACING_CANDIDATE,
     battlefield,
     stanceA: input.stance,
     policiesA,
@@ -881,190 +767,149 @@ export async function startBattle(input: {
     }),
   ]);
 
-  const mineRelationship = resolveCharacterRelationshipV2({
-    program: compileCharacterRelationshipProgramV2(mineEnvelope.definition),
-    counterpartCharacterAssetId: opp.id,
-    relationshipRoles: ["stranger"],
-  });
-  const opponentRelationship = resolveCharacterRelationshipV2({
-    program: compileCharacterRelationshipProgramV2(
-      opponentEnvelope.definition,
-    ),
-    counterpartCharacterAssetId: mine.id,
-    relationshipRoles: ["stranger"],
-  });
-  const mineDeepPsyche = projectCharacterDeepPsycheV2(
-    mineEnvelope.definition,
-  );
-  const opponentDeepPsyche = projectCharacterDeepPsycheV2(
-    opponentEnvelope.definition,
-  );
-  const mineConsciousSelf = projectCharacterConsciousSelfV2(
-    mineEnvelope.definition,
-  );
-  const opponentConsciousSelf = projectCharacterConsciousSelfV2(
-    opponentEnvelope.definition,
-  );
-
-  state = {
-    ...state,
-    assetManifest: {
-      schemaVersion: 2,
-      boundAt: assetBoundAt,
-      characters: {
-        a: {
-          assetId: mine.id,
-          generationId: mineGeneration.generationId,
-          contentDigest: mineGeneration.contentDigest,
-          snapshot: mineSnapshot,
-          basicAttackSource: {
-            kind: "character_generation_v2",
-            generationId: mineGeneration.generationId,
-            definitionPath: "capabilities.basicAction",
-          },
-          compilerInputsV2: {
-            psycheTraits: compileCharacterPsycheTraitsV1(mineEnvelope.definition),
-            deepPsyche: {
-              ...mineDeepPsyche,
-              relationship: projectCharacterRelationshipDescriptionV2({
-                resolution: mineRelationship,
-                consumer: "deep-psyche",
-              }),
-            },
-            consciousSelf: {
-              ...mineConsciousSelf,
-              relationship: projectCharacterRelationshipDescriptionV2({
-                resolution: mineRelationship,
-                consumer: "conscious-self",
-              }),
-            },
-            narratorViews: projectCharacterNarratorViewsV2(
-              mineEnvelope.definition,
-              mineEnvelope.disclosurePolicy,
-            ),
-            actionNorms: compileCharacterActionNormProgramV2(
-              mineEnvelope.definition,
-            ),
-            relationship: mineRelationship,
-          },
-        },
-        b: {
-          assetId: opp.id,
-          generationId: opponentGeneration.generationId,
-          contentDigest: opponentGeneration.contentDigest,
-          snapshot: opponentSnapshot,
-          basicAttackSource: {
-            kind: "character_generation_v2",
-            generationId: opponentGeneration.generationId,
-            definitionPath: "capabilities.basicAction",
-          },
-          compilerInputsV2: {
-            psycheTraits: compileCharacterPsycheTraitsV1(opponentEnvelope.definition),
-            deepPsyche: {
-              ...opponentDeepPsyche,
-              relationship: projectCharacterRelationshipDescriptionV2({
-                resolution: opponentRelationship,
-                consumer: "deep-psyche",
-              }),
-            },
-            consciousSelf: {
-              ...opponentConsciousSelf,
-              relationship: projectCharacterRelationshipDescriptionV2({
-                resolution: opponentRelationship,
-                consumer: "conscious-self",
-              }),
-            },
-            narratorViews: projectCharacterNarratorViewsV2(
-              opponentEnvelope.definition,
-              opponentEnvelope.disclosurePolicy,
-            ),
-            actionNorms: compileCharacterActionNormProgramV2(
-              opponentEnvelope.definition,
-            ),
-            relationship: opponentRelationship,
-          },
-        },
-      },
-      narrationStyle: {
-        assetId: narrationSnap.id,
-        generationId: resolvedNarrationStyle.generation.generationId,
-        contentDigest: resolvedNarrationStyle.generation.contentDigest,
-        snapshot: narrationSnap,
-      },
-      battlefield: {
-        assetId: resolvedBattlefield.source.preset.id,
-        presetGenerationId: resolvedBattlefield.source.generation.generationId,
-        presetContentDigest: resolvedBattlefield.source.generation.contentDigest,
-        generationId: battlefieldInstanceGeneration.generationId,
-        contentDigest: battlefieldInstanceGeneration.contentDigest,
-        snapshot: battlefield,
-      },
-      dialoguePipeline: bindDialoguePipelineActivation(
-        dialogueGeneration,
-        dialoguePipelineSnapshot,
-        dialogueActivation,
-      ),
-      rules: {
-        battleEngine: "battle-engine-v1",
-        temporalRules: "initiative-window-v2",
-        psycheReaction: PSYCHE_REACTION_POLICY_V1,
-        characterDefinitionRules: CHARACTER_DEFINITION_RULE_POLICY_V2,
-        battlefieldDefinitionRules: BATTLEFIELD_INSTANCE_COMPILER_V2,
-        narrationStyleRules: NARRATION_PROMPT_COMPILER_V2,
-        ...(config.characterFocusShadowMode === "shadow"
-          ? { characterFocus: CHARACTER_FOCUS_POLICY_V1 }
-          : {}),
-      },
-    },
-    dialoguePipelineSnapshot,
-    agentStateA: {
-      ...CharacterAgentStateSchema.parse(state.agentStateA ?? {}),
-      privateMemory: mine.opponentMemories?.[opp.id]
-        ? `この相手への過去方針: ${mine.opponentMemories[opp.id]!.preBattlePlan}\n過去の反省: ${mine.opponentMemories[opp.id]!.postBattleReflection}`
-        : state.agentStateA?.privateMemory ?? "",
-    },
-    agentStateB: {
-      ...CharacterAgentStateSchema.parse(state.agentStateB ?? {}),
-      privateMemory: opp.opponentMemories?.[mine.id]
-        ? `この相手への過去方針: ${opp.opponentMemories[mine.id]!.preBattlePlan}\n過去の反省: ${opp.opponentMemories[mine.id]!.postBattleReflection}`
-        : state.agentStateB?.privateMemory ?? "",
-    },
-    prologuePending: true,
-    log: [],
-    updatedAt: new Date().toISOString(),
-  };
-
-  if (dialoguePipelineSnapshot.schemaVersion === 3) {
-    if (!state.assetManifest) throw new Error("BATTLE_CONTRACT_MISMATCH");
-    const upgrade = (binding: BattleCharacterAssetBinding) => {
-      const compiler = binding.compilerInputsV2;
-      if (!compiler) throw new Error("BATTLE_CONTRACT_MISMATCH");
-      const { deepPsyche: _legacyPsyche, ...compilerInputsV3 } = compiler;
-      const { compilerInputsV2: _legacyCompiler, ...existing } = binding;
-      return { ...existing, compilerInputsV3 };
-    };
-    state.assetManifest = BattleAssetManifestV3Schema.parse({
-      ...state.assetManifest, schemaVersion: 3,
-      characters: {
-        a: upgrade(state.assetManifest.characters.a),
-        b: upgrade(state.assetManifest.characters.b),
-      },
-    });
-    for (const key of ["agentStateA", "agentStateB"] as const) {
-      state[key] = {
-        ...CharacterAgentStateSchema.parse(state[key] ?? {}),
-        currentGoal: "", beliefs: [], consciousAgencyV1: initialConsciousAgencyV1(),
-        reactionStateV1: initialPsycheReactionStateV1(),
-      };
+  {
+    if (dialoguePipelineSnapshot.schemaVersion !== 3) {
+      throw new Error("BATTLE_DIALOGUE_PIPELINE_V3_REQUIRED");
     }
+    const mineCompiler = compileCharacterBattleCompilerInputsV4({
+      definition: v3Participants.mine.envelope.definition,
+      counterpartCharacterAssetId: opp.id,
+      relationshipRoles: ["stranger"],
+      disclosurePolicy: v3Participants.mine.envelope.disclosurePolicy,
+    });
+    const opponentCompiler = compileCharacterBattleCompilerInputsV4({
+      definition: v3Participants.opponent.envelope.definition,
+      counterpartCharacterAssetId: mine.id,
+      relationshipRoles: ["stranger"],
+      disclosurePolicy: v3Participants.opponent.envelope.disclosurePolicy,
+    });
+    state = {
+      ...state,
+      assetManifest: BattleAssetManifestV5Schema.parse({
+        schemaVersion: 5,
+        consciousOutputContract: "awareness-v5",
+        awarenessPolicy,
+        promptRevision: CurrentAwarenessPromptRevision, outputRevision: "awareness-output-v1",
+        boundAt: assetBoundAt,
+        characters: {
+          a: {
+            assetId: mine.id,
+            generationId: mineGeneration.generationId,
+            contentDigest: mineGeneration.contentDigest,
+            snapshot: mineSnapshot,
+            basicAttackSource: {
+              kind: "character_generation_v3",
+              generationId: mineGeneration.generationId,
+              definitionPath: "capabilities.basicAction",
+            },
+            compilerInputsV4: mineCompiler,
+          },
+          b: {
+            assetId: opp.id,
+            generationId: opponentGeneration.generationId,
+            contentDigest: opponentGeneration.contentDigest,
+            snapshot: opponentSnapshot,
+            basicAttackSource: {
+              kind: "character_generation_v3",
+              generationId: opponentGeneration.generationId,
+              definitionPath: "capabilities.basicAction",
+            },
+            compilerInputsV4: opponentCompiler,
+          },
+        },
+        narrationStyle: {
+          assetId: narrationSnap.id,
+          generationId: resolvedNarrationStyle.generation.generationId,
+          contentDigest: resolvedNarrationStyle.generation.contentDigest,
+          snapshot: narrationSnap,
+        },
+        battlefield: {
+          assetId: resolvedBattlefield.source.preset.id,
+          presetGenerationId: resolvedBattlefield.source.generation.generationId,
+          presetContentDigest: resolvedBattlefield.source.generation.contentDigest,
+          generationId: battlefieldInstanceGeneration.generationId,
+          contentDigest: battlefieldInstanceGeneration.contentDigest,
+          snapshot: battlefield,
+        },
+        dialoguePipeline: bindDialoguePipelineActivation(
+          dialogueGeneration,
+          dialoguePipelineSnapshot,
+          dialogueActivation,
+        ),
+        rules: {
+          battleEngine: "battle-engine-v1",
+          temporalRules: "initiative-window-v2",
+          psycheReaction: "awareness-v5",
+          characterDefinitionRules: CHARACTER_DEFINITION_RULE_POLICY_V3,
+          battlefieldDefinitionRules: BATTLEFIELD_INSTANCE_COMPILER_V2,
+          narrationStyleRules: NARRATION_PROMPT_COMPILER_V2,
+          ...(config.characterFocusShadowMode === "shadow"
+            ? { characterFocus: CHARACTER_FOCUS_POLICY_V1 }
+            : {}),
+        },
+      }),
+      dialoguePipelineSnapshot,
+      agentStateA: {
+        ...CharacterAgentStateSchema.parse(state.agentStateA ?? {}),
+        currentGoal: "",
+        beliefs: [],
+        consciousAgencyV2: undefined,
+        reactionStateV1: undefined,
+        privateMemory: mine.opponentMemories?.[opp.id]
+          ? `この相手への過去方針: ${mine.opponentMemories[opp.id]!.preBattlePlan}\n過去の反省: ${mine.opponentMemories[opp.id]!.postBattleReflection}`
+          : state.agentStateA?.privateMemory ?? "",
+      },
+      agentStateB: {
+        ...CharacterAgentStateSchema.parse(state.agentStateB ?? {}),
+        currentGoal: "",
+        beliefs: [],
+        consciousAgencyV2: undefined,
+        reactionStateV1: undefined,
+        privateMemory: opp.opponentMemories?.[mine.id]
+          ? `この相手への過去方針: ${opp.opponentMemories[mine.id]!.preBattlePlan}\n過去の反省: ${opp.opponentMemories[mine.id]!.postBattleReflection}`
+          : state.agentStateB?.privateMemory ?? "",
+      },
+      prologuePending: true,
+      log: [],
+      updatedAt: new Date().toISOString(),
+    };
+    const inserted = await battleRepo.insertNewBattle(state, {
+      sideAUserId: input.userId,
+      sideACharacterId: mine.id,
+      sideBCharacterId: opp.id,
+    }, async (connection) => {
+      await adoptAwarenessCreationInTransaction(connection, { battleId: id,
+        requestDigest: preparedEncounter.creation.requestDigest,
+        runtime: AwarenessInitialize({ policy: awarenessPolicy, startedAt: preparedEncounter.creation.startedAt,
+          promptRevision: CurrentAwarenessPromptRevision, outputRevision: "awareness-output-v1" }), now: Date.now() });
+    });
+    if (inserted === "conflict") {
+      const existing = await battleRepo.getBattle(state.id);
+      const meta = await battleRepo.getBattleMeta(state.id);
+      if (!existing || !meta) throw new Error("BATTLE_NOT_FOUND");
+      if (meta.side_a_user_id !== input.userId || meta.side_a_character_id !== mine.id ||
+          meta.side_b_character_id !== opp.id) throw new Error("BATTLE_CREATE_IDENTITY_CONFLICT");
+      const frozenMine = existing.assetManifest?.characters.a.snapshot;
+      const frozenOpp = existing.assetManifest?.characters.b.snapshot;
+      if (!frozenMine || !frozenOpp) throw new Error("BATTLE_CONTRACT_MISMATCH");
+      return toBattlePublicForViewer(existing, frozenMine, null, frozenOpp);
+    }
+    return toBattlePublicForViewer(state, mine, null, opp);
   }
-  await battleRepo.saveBattle(state, {
-    sideAUserId: input.userId,
-    sideACharacterId: mine.id,
-    sideBCharacterId: opp.id,
-  });
+}
 
-  return toBattlePublicForViewer(state, mine, null, opp);
+const repairCheckpointWrites = new WeakMap<BattleState, Promise<void>>();
+async function reserveConsciousRepair(state: BattleState, key: string): Promise<boolean> {
+  let reserved = false;
+  const pending = (repairCheckpointWrites.get(state) ?? Promise.resolve()).then(async () => {
+    if (state.consciousRepairReservations?.includes(key)) return;
+    const result = await battleRepo.reserveConsciousRepair({ battleId: state.id, key, expectedRevision: state.battleRevision ?? 0 });
+    state.consciousRepairReservations = result.keys;
+    reserved = result.reserved;
+  });
+  repairCheckpointWrites.set(state, pending);
+  await pending;
+  return reserved;
 }
 
 async function withTimeout<T>(
@@ -1458,6 +1303,29 @@ function characterNormActionCandidate(input: {
   };
 }
 
+/** V3 owns its candidate grammar; V2's `reposition` selector is not a V3 kind. */
+function characterNormActionCandidateV3(input: {
+  action: ReturnType<typeof buildObserverSafeAvailableActions>[number];
+  program: CharacterActionNormProgramV3;
+}): CharacterNormActionCandidateV3 {
+  const actionKind = characterNormActionKind(input.action);
+  const catalogEntry = input.action.kind === "skill"
+    ? input.program.actionCatalog.find((entry) =>
+        entry.actionKind === "skill" && entry.actionRef === input.action.skillId
+      )
+    : input.action.kind === "basic_attack"
+      ? input.program.actionCatalog.find((entry) =>
+          entry.actionKind === "basic_action"
+        )
+      : null;
+  return {
+    actionKey: characterNormActionKey(input.action),
+    actionRef: catalogEntry?.actionRef ?? null,
+    actionKind: actionKind === "reposition" ? null : actionKind,
+    tacticTags: catalogEntry?.tacticTags ?? [],
+  };
+}
+
 function characterNormFacts(input: {
   state: BattleState;
   side: "a" | "b";
@@ -1619,22 +1487,34 @@ function buildCharacterDecisionContext(input: {
     perception,
   });
   const compilerInputs = boundConsciousCompiler(input.state.assetManifest?.characters?.[input.side]);
-  const normResolution = compilerInputs?.actionNorms
-    ? evaluateCharacterActionNormsV2({
-        program: compilerInputs.actionNorms,
-        facts: characterNormFacts({
-          state: input.state,
-          side: input.side,
-          phase: input.phase ?? "turn",
-        }),
+  const normFacts = characterNormFacts({
+    state: input.state,
+    side: input.side,
+    phase: input.phase ?? "turn",
+  });
+  const v4Compiler = isV4ConsciousCompiler(compilerInputs) ? compilerInputs : null;
+  const v3NormResolution = v4Compiler
+    ? evaluateCharacterActionNormsV3({
+        program: v4Compiler.actionNorms,
+        mechanicalConflictFallbacks: v4Compiler.mechanicalConflictFallbacks,
+        facts: normFacts,
         legalActions: rawAvailableActions.map((action) =>
-          characterNormActionCandidate({
-            action,
-            program: compilerInputs.actionNorms!,
-          })
+          characterNormActionCandidateV3({ action, program: v4Compiler.actionNorms })
         ),
       })
     : null;
+  const v2Compiler = compilerInputs && !isV4ConsciousCompiler(compilerInputs)
+    ? compilerInputs : null;
+  const v2NormResolution = v2Compiler?.actionNorms
+      ? evaluateCharacterActionNormsV2({
+          program: v2Compiler.actionNorms,
+          facts: normFacts,
+          legalActions: rawAvailableActions.map((action) =>
+            characterNormActionCandidate({ action, program: v2Compiler.actionNorms! })
+          ),
+      })
+      : null;
+  const normResolution = v3NormResolution ?? v2NormResolution;
   const availableByKey = new Map(
     rawAvailableActions.map((action) => [characterNormActionKey(action), action]),
   );
@@ -1679,8 +1559,9 @@ function buildCharacterDecisionContext(input: {
   characterDecisionRuleMetadata.set(decision, {
     actionNorm: normResolution?.receipt ?? null,
     relationship: compilerInputs?.relationship?.receipt ?? null,
-    consciousActionPrinciples:
-      normResolution?.consciousActionPrinciples ?? null,
+    consciousActionPrinciples: v4Compiler
+      ? projectCharacterConsciousGuidanceV1(v4Compiler.consciousGuidance, normFacts)
+      : v2NormResolution?.consciousActionPrinciples ?? null,
   });
   return decision;
 }
@@ -1692,7 +1573,9 @@ export function buildLaterBucketActionInput(input: {
   counterpartSheet?: CharacterSheet;
   side: "a" | "b";
 }): Parameters<LlmProvider["decideCharacterAction"]>[0] | null {
-  if (input.state.assetManifest?.schemaVersion === 3 && !input.state.dialoguePipelineSnapshot?.enabled) return null;
+  if ((input.state.assetManifest?.schemaVersion === 3 ||
+      input.state.assetManifest?.schemaVersion === 4) &&
+      !input.state.dialoguePipelineSnapshot?.enabled) return null;
   const perception = input.side === "a"
     ? input.state.perceptionFrameA
     : input.state.perceptionFrameB;
@@ -1729,39 +1612,38 @@ export function buildLaterBucketActionInput(input: {
     perception: structuredClone(perception),
     decision,
   };
-  if (input.state.assetManifest?.schemaVersion !== 3) return deepFreezeConsumerInput(base);
+  if (input.state.assetManifest?.schemaVersion !== 3 &&
+      input.state.assetManifest?.schemaVersion !== 4) {
+    return deepFreezeConsumerInput(base);
+  }
   const agency = (input.side === "a" ? input.state.agentStateA : input.state.agentStateB);
-  if (!compilerInputs || !base.structuredSelf || !agency?.consciousAgencyV1) throw new Error("BATTLE_CONTRACT_MISMATCH");
+  const dynamic = input.state.assetManifest?.schemaVersion === 4 && input.state.assetManifest.consciousOutputContract === "dynamic-v4";
+  const agencyState = dynamic ? agency?.consciousAgencyV2 : agency?.consciousAgencyV1;
+  if (!compilerInputs || !base.structuredSelf || !agencyState || !agency) throw new Error("BATTLE_CONTRACT_MISMATCH");
   const packet = buildTurnObservationPacket({ frame: perception });
   const facts = consciousFacts({ ...base, structuredSelf: base.structuredSelf, turnObservation: packet, goalPolicy: CONSCIOUS_GOAL_POLICY_V3 })
     .filter((fact) => fact.kind !== "observation");
   facts.push({ ref: `perception-${input.state.turn}`, kind: "observation", sourcePath: "/perception" });
-  return deepFreezeConsumerInput({ ...base, conscious: {
-    contractVersion: 3, phase: "later", agencyState: structuredClone(agency.consciousAgencyV1),
+  const context = {
+    phase: "later" as const,
     reaction: consciousReaction(agency, compilerInputs), goalPolicy: CONSCIOUS_GOAL_POLICY_V3, facts,
     utteranceHistory: projectUtteranceHistory((agency.conversationHistory ?? []).filter((entry) => entry.turn === input.state.turn && entry.speaker === "self"), 24),
-  } });
+  };
+  if (dynamic && agencyState.schemaVersion === 2) return deepFreezeConsumerInput({ ...base,
+    conscious: { ...context, contractVersion: 4, agencyState: structuredClone(agencyState) } });
+  if (!dynamic && agencyState.schemaVersion === 1) return deepFreezeConsumerInput({ ...base,
+    conscious: { ...context, contractVersion: 3, agencyState: structuredClone(agencyState) } });
+  throw new Error("BATTLE_CONTRACT_MISMATCH");
 }
 
-function deterministicLaterBucketFallback(
-  decision: Parameters<LlmProvider["decideCharacterAction"]>[0]["decision"],
-) {
-  const selected = (
-    decision.actionFeedback?.spacing.relation &&
-    decision.actionFeedback.spacing.relation !== "in_band"
-      ? decision.availableActions.find((action) => action.kind === "reposition")
-      : undefined
-  ) ?? decision.availableActions.find((action) =>
-    action.kind === "basic_attack"
-  ) ?? decision.availableActions.find((action) =>
-    action.kind !== "wait" && action.kind !== "reflect"
-  ) ?? decision.availableActions[0];
-  if (!selected) return null;
-  return CharacterActionIntentSchema.parse(
-    selected.kind === "skill"
-      ? { kind: "skill", skillId: selected.skillId }
-      : { kind: selected.kind },
-  );
+function buildEngineNormConstraint(input: Parameters<typeof buildCharacterDecisionContext>[0]) {
+  if (input.state.assetManifest?.schemaVersion !== 4 && input.state.assetManifest?.schemaVersion !== 5) return undefined;
+  const decision = buildCharacterDecisionContext(input);
+  if (!decision) throw new Error("BATTLE_CONTRACT_MISMATCH");
+  return {
+    allowedActionKeys: decision.availableActions.map(characterNormActionKey),
+    fallback: buildDeterministicActionFallback(decision) ?? ({ kind: "wait" } satisfies CharacterActionIntent),
+  };
 }
 
 function latestResolvedAction(
@@ -1965,7 +1847,6 @@ export function buildCharacterAgentConsumerInput(input: {
         side: input.side,
         phase,
       });
-  if (decision && decision.availableActions.length === 0) return null;
   const compilerInputs = boundConsciousCompiler(input.state.assetManifest?.characters?.[input.side]);
   const ruleMetadata = decision
     ? characterDecisionRuleMetadata.get(decision)
@@ -2125,12 +2006,15 @@ export function applyReflectMemoryWrites(
         // durable postBattleReflection after the match, while reflect notes
         // are match-scoped scratch only.
         battleVolatileMemory: memoryBits.join("\n").slice(0, 1200),
-        currentGoal: state.assetManifest?.schemaVersion === 3 ? agent.currentGoal : guideline.slice(0, 240) || agent.currentGoal,
+        currentGoal: state.assetManifest?.schemaVersion === 3 ||
+          state.assetManifest?.schemaVersion === 4
+          ? agent.currentGoal : guideline.slice(0, 240) || agent.currentGoal,
         observations: [
           ...agent.observations.slice(-6),
           ...(analysis && !observationAlready ? [analysis.slice(0, 240)] : []),
         ].slice(-8),
-        interior: state.assetManifest?.schemaVersion === 3 ? agent.interior : {
+        interior: state.assetManifest?.schemaVersion === 3 ||
+          state.assetManifest?.schemaVersion === 4 ? agent.interior : {
           primaryEmotion: agent.interior?.primaryEmotion ?? agent.emotion ?? "平静",
           concealedEmotion: agent.interior?.concealedEmotion ?? null,
           coreNeed: agent.interior?.coreNeed ?? "",
@@ -2393,7 +2277,7 @@ export async function advanceCharacterAgents(input: {
   const toPsycheInput = (
     consumerInput: typeof inputA,
   ): CharacterDeepPsycheInput | null => {
-    if (!consumerInput || consciousV3) return null;
+    if (!consumerInput || consciousV3 || consumerInput.decision?.availableActions.length === 0) return null;
     // Accepted V1 contract: normal-turn private reaction is deterministic and
     // must not escalate to a provider when features are absent or uncertain.
     if (deterministicPsyche && consumerInput.phase === "turn") return null;
@@ -2404,9 +2288,11 @@ export async function advanceCharacterAgents(input: {
       if (!packet) return null;
       const sheet = consumerInput === inputA ? input.mine : input.opp;
       const counterpartSheet = consumerInput === inputA ? input.opp : input.mine;
-      const compilerInputs = input.after.assetManifest?.characters?.[
+      const binding = input.after.assetManifest?.characters?.[
         consumerInput === inputA ? "a" : "b"
-      ].compilerInputsV2;
+      ];
+      const compilerInputs = binding && "compilerInputsV2" in binding
+        ? binding.compilerInputsV2 : undefined;
       // [要修正:PSYCHE-RESPONSIBILITY] 以下の記憶・currentGoal入力はV1/V2互換専用。
       // decision/structuredSelfがないことを欠陥と推定し、戦術知識をここへ追加しない。
       // [本来の責務:PSYCHE-RESPONSIBILITY] ADR-0028のV3はこの分岐より前でno-call。
@@ -2484,9 +2370,11 @@ export async function advanceCharacterAgents(input: {
       psyche,
       ...shared
     } = consumerInput;
-    const compilerInputs = input.after.assetManifest?.characters?.[
+    const binding = input.after.assetManifest?.characters?.[
       consumerInput === inputA ? "a" : "b"
-    ].compilerInputsV2;
+    ];
+    const compilerInputs = binding && "compilerInputsV2" in binding
+      ? binding.compilerInputsV2 : undefined;
     return {
       ...shared,
       ...(compilerInputs
@@ -2652,7 +2540,7 @@ export async function advanceCharacterAgents(input: {
     psyche: CharacterAgentState,
     expressionBrief: CharacterExpressionBrief,
   ): CharacterExpressionInput | null => {
-    if (!consumerInput) return null;
+    if (!consumerInput || consumerInput.decision?.availableActions.length === 0) return null;
     if (compactContext) {
       const packet = consumerInput === inputA
         ? dialogueProjection?.a
@@ -2662,14 +2550,15 @@ export async function advanceCharacterAgents(input: {
         const compiler = boundConsciousCompiler(input.after.assetManifest?.characters[
           consumerInput === inputA ? "a" : "b"
         ]);
-        if (!compiler || !consumerInput.structuredSelf || !psyche.consciousAgencyV1) {
+        const dynamic = input.after.assetManifest?.schemaVersion === 4 && input.after.assetManifest.consciousOutputContract === "dynamic-v4";
+        if (!compiler || !consumerInput.structuredSelf || !(dynamic ? psyche.consciousAgencyV2 : psyche.consciousAgencyV1)) {
           throw new Error("BATTLE_CONTRACT_MISMATCH");
         }
         const base = {
           contextMode: "compact" as const, contractVersion: 3 as const,
           phase: consumerInput.phase, character: consumerInput.character,
           structuredSelf: consumerInput.structuredSelf,
-          agencyState: structuredClone(psyche.consciousAgencyV1),
+          agencyState: structuredClone(psyche.consciousAgencyV1 ?? initialConsciousAgencyV1()),
           reaction: consciousReaction(psyche, compiler),
           goalPolicy: CONSCIOUS_GOAL_POLICY_V3,
           turnObservation: packet,
@@ -2679,7 +2568,8 @@ export async function advanceCharacterAgents(input: {
           ...(consumerInput.counterpart ? { counterpart: consumerInput.counterpart } : {}),
           ...(consumerInput.decision ? { decision: consumerInput.decision } : {}),
         };
-        return { ...base, facts: consciousFacts(base) };
+        const prepared = { ...base, facts: consciousFacts(base) };
+        return dynamic && psyche.consciousAgencyV2 ? { ...prepared, contractVersion: 4 as const, agencyState: structuredClone(psyche.consciousAgencyV2) } : prepared;
       }
       if (compactContractV2) {
         const focus = consumerInput === inputA
@@ -2773,6 +2663,12 @@ export async function advanceCharacterAgents(input: {
   };
   const agentInputA = toSpeechActionInput(inputA, psycheA, psycheAResult.expressionBrief);
   const agentInputB = toSpeechActionInput(inputB, psycheB, psycheBResult.expressionBrief);
+  for (const [agentInput, side] of [[agentInputA, "a"], [agentInputB, "b"]] as const) {
+    if (agentInput?.contextMode === "compact" && agentInput.contractVersion === 4) bindConsciousGenerationControl(agentInput, {
+      reserveRepair: () => reserveConsciousRepair(input.after, `${input.after.id}:${input.phase ?? "turn"}:${input.after.turn}:${side}`),
+      validateAction: (action) => validateCharacterActionProposal({ proposedAction: action, decision: agentInput.decision }).reason,
+    });
+  }
   let agents;
   try {
     agents = await withTimeout(Promise.allSettled([
@@ -2823,7 +2719,7 @@ export async function advanceCharacterAgents(input: {
     preferredSelfReference: input.after.encounterContext?.social.a.selfReference,
     decision: agentInputA?.decision,
     observableManifestations: agentInputA?.observableManifestations,
-    consciousInput: agentInputA?.contextMode === "compact" && agentInputA.contractVersion === 3 ? agentInputA : undefined,
+    consciousInput: agentInputA?.contextMode === "compact" && (agentInputA.contractVersion === 3 || agentInputA.contractVersion === 4) ? agentInputA : undefined,
   });
   const acceptedB = acceptCharacterAgentResult({
     result: agentB,
@@ -2840,7 +2736,7 @@ export async function advanceCharacterAgents(input: {
     preferredSelfReference: input.after.encounterContext?.social.b.selfReference,
     decision: agentInputB?.decision,
     observableManifestations: agentInputB?.observableManifestations,
-    consciousInput: agentInputB?.contextMode === "compact" && agentInputB.contractVersion === 3 ? agentInputB : undefined,
+    consciousInput: agentInputB?.contextMode === "compact" && (agentInputB.contractVersion === 3 || agentInputB.contractVersion === 4) ? agentInputB : undefined,
   });
   const traceSide = (
     consumerInput: typeof agentInputA,
@@ -2868,6 +2764,8 @@ export async function advanceCharacterAgents(input: {
               reasonCode: "consistency_invalid",
               detail: "fulfilled_without_output",
             }
+          : providerOutput.contractVersion === 4 && providerOutput.consciousOutput.errors.length > 0
+            ? { disposition: "application_rejected" as const, reasonCode: providerOutput.consciousOutput.errors[0]!.code, detail: "partial_output_rejected" }
           : accepted.actionProposalValidation?.status === "rejected"
             ? {
                 disposition: "application_rejected" as const,
@@ -3395,7 +3293,7 @@ export function validateCharacterActionProposal(input: {
  * the preceding deep-psyche stage, so this later stage cannot overwrite it.
  */
 export function acceptCharacterAgentResult(input: {
-  consciousInput?: import("../llm/types.js").CharacterExpressionCompactInputV3;
+  consciousInput?: import("../llm/types.js").CharacterExpressionCompactInputV3 | import("../llm/types.js").CharacterExpressionCompactInputV4;
   result: CharacterAgentAdvanceResult | null;
   previous: CharacterAgentState;
   side: "a" | "b";
@@ -3412,8 +3310,8 @@ export function acceptCharacterAgentResult(input: {
         input.profile.identity.selfNames.includes(input.preferredSelfReference))
     ? input.preferredSelfReference
     : canonicalSelfReference(input.profile);
-  if (!input.result || (input.consciousInput && input.result.contractVersion !== 3) ||
-      (input.result.contractVersion === 3 && !input.consciousInput)) {
+  if (!input.result || (input.consciousInput && input.result.contractVersion !== input.consciousInput.contractVersion) ||
+      ((input.result.contractVersion === 3 || input.result.contractVersion === 4) && !input.consciousInput)) {
     return {
       state: {
         ...input.previous,
@@ -3425,17 +3323,23 @@ export function acceptCharacterAgentResult(input: {
       realizedManifestation: null,
     };
   }
-  const compactV2 = input.result.contractVersion === 2 || input.result.contractVersion === 3;
+  const compactV2 = input.result.contractVersion === 2 || input.result.contractVersion === 3 || input.result.contractVersion === 4;
   const text = coerceCharacterSpeech(compactV2
     ? input.result.nextUtterance
     : input.result.speech);
   let actionProposalValidation = validateCharacterActionProposal({
     proposedAction: input.result.proposedAction,
-    proposalSchemaInvalid: input.result.contractVersion === 2 || input.result.contractVersion === 3
+    proposalSchemaInvalid: input.result.contractVersion === 2 || input.result.contractVersion === 3 || input.result.contractVersion === 4
       ? input.result.proposedActionStatus === "invalid"
       : false,
     decision: input.decision,
   });
+  const dynamicAcceptance = input.result.contractVersion === 4 && input.consciousInput?.contractVersion === 4
+    ? acceptConsciousDecisionV4({
+        previous: input.previous.consciousAgencyV2 ?? initialConsciousAgencyV2(), output: input.result.consciousOutput,
+        facts: input.consciousInput.facts, turn: input.consciousInput.turnObservation.turn,
+        validateAction: (action) => validateCharacterActionProposal({ proposedAction: action, decision: input.decision }).acceptedAction,
+      }) : null;
   const agencyAcceptance = input.result.contractVersion === 3 && input.consciousInput
     ? acceptConsciousDecisionV3({
         previous: input.previous.consciousAgencyV1 ?? initialConsciousAgencyV1(),
@@ -3448,7 +3352,17 @@ export function acceptCharacterAgentResult(input: {
   if (input.result.contractVersion === 3 && !agencyAcceptance?.acceptedDecision) {
     actionProposalValidation = { ...actionProposalValidation, status: "rejected", reason: "schema_invalid", acceptedAction: null };
   }
-  const nextAction = input.result.contractVersion === 3
+  if (dynamicAcceptance && !dynamicAcceptance.failure && input.result.contractVersion === 4 && input.result.proposedAction === null && input.result.proposedActionStatus === "omitted") {
+    actionProposalValidation = { ...actionProposalValidation, status: "omitted", reason: null, acceptedAction: null };
+  }
+  if (dynamicAcceptance?.failure) {
+    actionProposalValidation = { ...actionProposalValidation, status: "rejected",
+      reason: ["goal_invalid", "goal_replacement"].includes(dynamicAcceptance.failure) ? "goal_invalid"
+        : dynamicAcceptance.failure === "intent_invalid" ? "intent_invalid" : dynamicAcceptance.failure === "action_required" ? "action_required" : actionProposalValidation.reason ?? "schema_invalid", acceptedAction: null };
+  }
+  const nextAction = input.result.contractVersion === 4
+    ? dynamicAcceptance?.acceptedDecision ? dynamicAcceptance.state.latestDecision?.action ?? undefined : undefined
+    : input.result.contractVersion === 3
     ? agencyAcceptance?.acceptedDecision ? agencyAcceptance.state.latestDecision?.action ?? undefined : undefined
     : actionProposalValidation.acceptedAction ?? undefined;
   const realizedManifestation = input.observableManifestations?.find(
@@ -3460,6 +3374,7 @@ export function acceptCharacterAgentResult(input: {
           ...input.previous,
           selfReference,
           ...(agencyAcceptance ? { consciousAgencyV1: agencyAcceptance.state } : {}),
+          ...(dynamicAcceptance ? { consciousAgencyV2: dynamicAcceptance.state } : {}),
         }
       : {
           ...input.previous,
@@ -3468,7 +3383,7 @@ export function acceptCharacterAgentResult(input: {
         },
     nextAction,
     actionProposalValidation,
-    speech: input.result.contractVersion === 3 && input.result.nextUtterance === null ? null : {
+    speech: (input.result.contractVersion === 3 || input.result.contractVersion === 4) && input.result.nextUtterance === null ? null : {
       side: input.side,
       speaker: input.speaker,
       text,
@@ -4376,6 +4291,7 @@ export async function reconcileSemanticState(input: {
       }),
     };
   } catch (error) {
+    if (input.resolvedState.assetManifest?.schemaVersion === 5) throw error;
     if (isProviderOperationAccountingError(error)) throw error;
     if (error instanceof ObserverPerceptionProjectionError) throw error;
     console.warn(
@@ -4862,6 +4778,7 @@ export async function buildEnvironmentProcessProposal(input: {
         : {}),
     };
   } catch (e) {
+    if (input.state.assetManifest?.schemaVersion === 5) throw e;
     console.warn("[supervisor] generated field change skipped", e);
     return null;
   }
@@ -4887,7 +4804,63 @@ function bindEngineLiveCheckpoint(input: {
   };
 }
 
-async function advanceTurnWithLease(input: {
+async function advanceTurnWithLease(input: Parameters<typeof advanceTurnCoreWithLease>[0]): Promise<BattlePublic> {
+  const baseline = await battleRepo.getBattle(input.battleId);
+  if (baseline?.assetManifest?.schemaVersion !== 5) return advanceTurnCoreWithLease(input);
+  const meta = await battleRepo.getBattleMeta(input.battleId);
+  if (!meta || meta.side_a_user_id !== input.userId) throw new Error("FORBIDDEN");
+  if (baseline.status !== "active" || (baseline.advanceOperation?.status === "completed" &&
+      baseline.advanceOperation.operationId === input.operationId)) return advanceTurnCoreWithLease(input);
+  const fence = currentBattleLeaseFence();
+  if (!fence || fence.battleId !== input.battleId) throw new Error("AWARENESS_LIVE_LEASE_REQUIRED");
+  const tick = baseline.prologuePending ? 0 : (baseline.combatTick ?? 0) + 1;
+  const frame = (side: "a" | "b"): AwarenessActionFrame => {
+    const manifest = baseline.assetManifest;
+    if (manifest?.schemaVersion !== 5) throw new Error("AWARENESS_MANIFEST_REQUIRED");
+    const decision = buildCharacterDecisionContext({ state: baseline,
+      sheet: manifest.characters[side].snapshot,
+      counterpartSheet: manifest.characters[side === "a" ? "b" : "a"].snapshot,
+      side, decisionTurn: nextPublicCombatTurn(baseline), phase: baseline.prologuePending ? "prologue" : "turn" });
+    if (!decision) throw new Error("AWARENESS_DECISION_FRAME_REQUIRED");
+    return { availableActions: decision.availableActions,
+      facts: (decision.affordances ?? []).map((affordance) => ({ ref: affordance.ref,
+        content: `${affordance.perceivedAs}。${affordance.relation}。${affordance.possiblePreparations.map((item) => item.description).join("。")}${affordance.possibleUses.map((item) => item.description).join("。")}` })),
+      accepts: (action) => validateCharacterActionProposal({ proposedAction: action, decision }).acceptedAction !== null };
+  };
+  await initializeAwarenessRuntime({ battleId: baseline.id, fence, now: new Date().toISOString(),
+    runtime: AwarenessInitialize({ policy: baseline.assetManifest.awarenessPolicy, startedAt: Date.parse(baseline.assetManifest.boundAt),
+      promptRevision: baseline.assetManifest.promptRevision, outputRevision: baseline.assetManifest.outputRevision }) });
+  const priorRuntime = await getAwarenessRuntime(baseline.id);
+  const waitMs = priorRuntime?.runtime.lastCommittedAt === null || priorRuntime === null ? 0
+    : Math.max(0, priorRuntime.runtime.lastCommittedAt + priorRuntime.runtime.policy.minTickIntervalMs - Date.now());
+  if (waitMs > 0) await new Promise<void>((resolve) => setTimeout(resolve, waitMs));
+  try {
+    const prepared = await prepareAwarenessBattleBoundary({ state: baseline, llm: input.llm, fence, tick,
+      phase: baseline.prologuePending ? "prologue" : "turn", frames: { a: frame("a"), b: frame("b") } });
+    if (!prepared.canCommitWorld) throw new Error(prepared.snapshot.runtime.incompleteReason ?? "AWARENESS_REQUIRED_BOUNDARY_FAILED");
+    const roles = input.llm.awareness;
+    if (!roles?.adjudicationProvider) throw new Error("AWARENESS_ADJUDICATION_ROUTE_REQUIRED");
+    const guard = await createAwarenessAdjudicationGuard({ battleId: baseline.id, fence,
+      provider: roles.adjudication.identity.provider, model: roles.adjudication.identity.engineModel,
+      contracts: input.llm.awarenessBillingContracts ?? [] });
+    const adjudicationProvider = roles.adjudicationProvider;
+    return await withAwarenessAdvanceContext({ prepared, fence, tick, assertUsable: guard.assertUsable }, () =>
+      withAwarenessDispatchContext(guard, () => advanceTurnCoreWithLease({ ...input, llm: adjudicationProvider })));
+  } catch (error) {
+    // Required judgment failures preserve the last durable canonical facts, including retry identity.
+    const saved = await battleRepo.getBattle(input.battleId);
+    if (!saved || saved.status !== "active") throw error;
+    const reason = error instanceof Error ? error.message : "AWARENESS_REQUIRED_BOUNDARY_FAILED";
+    await stopAwarenessBattleRuntime({ battleId: input.battleId, fence, reason });
+    const stopped: BattleState = { ...saved, status: "incomplete", incompleteReason: reason.slice(0, 200),
+      prologuePending: false, aftermathPending: false, updatedAt: new Date().toISOString() };
+    await commitAwarenessWorld({ state: stopped, meta: { sideAUserId: meta.side_a_user_id,
+      sideACharacterId: meta.side_a_character_id, sideBCharacterId: meta.side_b_character_id }, fence, tick, committedAt: Date.now() });
+    return toBattlePublicForViewer(stopped, baseline.assetManifest.characters.a.snapshot, null, baseline.assetManifest.characters.b.snapshot);
+  }
+}
+
+async function advanceTurnCoreWithLease(input: {
   userId: string;
   battleId: string;
   operationId: string;
@@ -5063,15 +5036,27 @@ async function advanceTurnWithLease(input: {
       initiativeOrder: prepared.temporalResolution.initiativeOrder,
     });
     state = { ...state, causalExecution };
-    await battleRepo.saveBattle(state, {
+    if (state.assetManifest?.schemaVersion !== 5) await battleRepo.saveBattle(state, {
       sideAUserId: meta.side_a_user_id,
       sideACharacterId: meta.side_a_character_id,
       sideBCharacterId: meta.side_b_character_id,
     });
   }
 
+  const awareness = currentAwarenessAdvanceContext();
+  if (state.assetManifest?.schemaVersion === 5) {
+    if (!awareness) throw new Error("AWARENESS_ADVANCE_CONTEXT_REQUIRED");
+    state = { ...state, plannedActionA: awareness.prepared.selected.a.body?.action,
+      plannedActionB: awareness.prepared.selected.b.body?.action };
+  }
   const engineInput = {
+    ...(awareness ? { strictCharacterIntents: true,
+      absentIntentSides: (["a", "b"] as const).filter((side) => awareness.prepared.selected[side].body === null) } : {}),
     state,
+    resolveNormConstraint: (preparedState: BattleState, side: "a" | "b") => buildEngineNormConstraint({
+      state: preparedState, sheet: side === "a" ? mine : opp,
+      counterpartSheet: side === "a" ? opp : mine, side, decisionTurn: preparedState.turn,
+    }),
     sideASkills: safeSkills(mine.skills),
     sideBSkills: safeSkills(opp.skills),
     sideABasicAttack: mine.basicAttack,
@@ -5116,7 +5101,7 @@ async function advanceTurnWithLease(input: {
         causalLaterDecision: state.causalLaterDecision,
       });
       if (engineResolved.engineContinuation) {
-        await battleRepo.saveBattle(state, {
+        if (state.assetManifest?.schemaVersion !== 5) await battleRepo.saveBattle(state, {
           sideAUserId: meta.side_a_user_id,
           sideACharacterId: meta.side_a_character_id,
           sideBCharacterId: meta.side_b_character_id,
@@ -5141,7 +5126,7 @@ async function advanceTurnWithLease(input: {
       causalLaterDecision: state.causalLaterDecision,
     });
     if (engineResolved.engineContinuation) {
-      await battleRepo.saveBattle(state, {
+      if (state.assetManifest?.schemaVersion !== 5) await battleRepo.saveBattle(state, {
         sideAUserId: meta.side_a_user_id,
         sideACharacterId: meta.side_a_character_id,
         sideBCharacterId: meta.side_b_character_id,
@@ -5155,7 +5140,7 @@ async function advanceTurnWithLease(input: {
     const laterSide = nextBucket.actorSides.length === 1
       ? nextBucket.actorSides[0]
       : undefined;
-    if (laterSide) {
+    if (laterSide && state.assetManifest?.schemaVersion !== 5) {
       let boundaryState = materializeBattleStateAtBucketBoundary({
         state,
         continuation,
@@ -5228,10 +5213,19 @@ async function advanceTurnWithLease(input: {
             intent: priorDecision.acceptedAction,
           });
         } else {
+          const laterDecisionKey = `${causalExecution.executionId}:later:${causalExecution.bucketIndex}:${laterSide}`;
+          if (laterInput.conscious?.contractVersion === 4) bindConsciousGenerationControl(laterInput, {
+            reserveRepair: async () => {
+              const reserved = await reserveConsciousRepair(boundaryState, laterDecisionKey);
+              state = { ...state, consciousRepairReservations: boundaryState.consciousRepairReservations };
+              return reserved;
+            },
+            validateAction: (action) => validateCharacterActionProposal({ proposedAction: action, decision: laterInput.decision }).reason,
+          });
           const startedAt = Date.now();
           let proposedAction: unknown | null = null;
           let providerFailure: string | null = null;
-          let consciousOutput: ConsciousOutputV3 | undefined;
+          let consciousOutput: ConsciousOutputV3 | ConsciousOutputV4 | undefined;
           try {
             const result = await input.llm.decideCharacterAction(laterInput);
             proposedAction = result.proposedAction;
@@ -5240,10 +5234,20 @@ async function advanceTurnWithLease(input: {
             if (isProviderOperationAccountingError(error)) throw error;
             providerFailure = error instanceof Error ? error.message : "provider_error";
           }
-          if (laterInput.conscious) {
+          if (laterInput.conscious?.contractVersion === 4 && laterInput.conscious.agencyState.schemaVersion === 2) {
+            const output = consciousOutput && "contractVersion" in consciousOutput ? consciousOutput : decodeConsciousOutputV4(null, "later");
+            const accepted = acceptConsciousDecisionV4({ previous: laterInput.conscious.agencyState, output,
+              facts: laterInput.conscious.facts, turn: boundaryState.turn,
+              validateAction: (action) => validateCharacterActionProposal({ proposedAction: action, decision: laterInput.decision }).acceptedAction });
+            proposedAction = accepted.acceptedDecision ? accepted.state.latestDecision?.action ?? null : null;
+            if (accepted.failure) providerFailure = accepted.failure;
+            const key = laterSide === "a" ? "agentStateA" : "agentStateB";
+            const agent = boundaryState[key];
+            if (agent) boundaryState = { ...boundaryState, [key]: { ...agent, consciousAgencyV2: accepted.state } };
+          } else if (laterInput.conscious?.contractVersion === 3 && laterInput.conscious.agencyState.schemaVersion === 1) {
             const accepted = acceptConsciousDecisionV3({
               previous: laterInput.conscious.agencyState,
-              output: consciousOutput ?? decodeConsciousOutputV3(null, "later"),
+              output: consciousOutput && !("contractVersion" in consciousOutput) ? consciousOutput : decodeConsciousOutputV3(null, "later"),
               facts: laterInput.conscious.facts, turn: boundaryState.turn,
               validateAction: (action) => validateCharacterActionProposal({ proposedAction: action, decision: laterInput.decision }).acceptedAction,
             });
@@ -5258,7 +5262,7 @@ async function advanceTurnWithLease(input: {
           });
           const fallback = validation.acceptedAction
             ? null
-            : deterministicLaterBucketFallback(laterInput.decision);
+            : buildDeterministicActionFallback(laterInput.decision);
           const acceptedAction = validation.acceptedAction ?? fallback;
           const laterRuleMetadata = characterDecisionRuleMetadata.get(
             laterInput.decision,
@@ -5283,7 +5287,7 @@ async function advanceTurnWithLease(input: {
               validation,
               provider: input.llm.name,
               model: input.llm.models?.fast ?? null,
-              callCount: 1,
+              callCount: consciousOutput && "contractVersion" in consciousOutput ? consciousOutput.generationTrace.calls || 1 : 1,
               tokenCount: null,
               estimatedCostUsd: null,
               elapsedMs: Math.max(0, Date.now() - startedAt),
@@ -5298,7 +5302,7 @@ async function advanceTurnWithLease(input: {
                 : {}),
             },
           };
-          await battleRepo.saveBattle(state, {
+          if (state.assetManifest?.schemaVersion !== 5) await battleRepo.saveBattle(state, {
             sideAUserId: meta.side_a_user_id,
             sideACharacterId: meta.side_a_character_id,
             sideBCharacterId: meta.side_b_character_id,
@@ -5326,7 +5330,7 @@ async function advanceTurnWithLease(input: {
       causalLaterDecision: state.causalLaterDecision,
     });
     if (engineResolved.engineContinuation) {
-      await battleRepo.saveBattle(state, {
+      if (state.assetManifest?.schemaVersion !== 5) await battleRepo.saveBattle(state, {
         sideAUserId: meta.side_a_user_id,
         sideACharacterId: meta.side_a_character_id,
         sideBCharacterId: meta.side_b_character_id,
@@ -5339,6 +5343,9 @@ async function advanceTurnWithLease(input: {
     mine,
     opp,
   });
+  if (state.assetManifest?.schemaVersion === 5 && freeActionPreparation.adjudicationFailure) {
+    throw new Error("AWARENESS_REQUIRED_FREE_ACTION_JUDGMENT_FAILED");
+  }
   const committedFreeActions = commitFreeActionAdjudications({
     beforeState: state,
     resolvedState: engineResolved.state,
@@ -5411,6 +5418,9 @@ async function advanceTurnWithLease(input: {
     dramaPhase,
     skipProvider: !closeSceneBeat,
   });
+  if (state.assetManifest?.schemaVersion === 5 && semanticTurn.status === "rejected") {
+    throw new Error("AWARENESS_REQUIRED_SEMANTIC_JUDGMENT_FAILED");
+  }
   next = semanticTurn.state;
   events = [...events, ...semanticTurn.environmentEvents];
   const acceptedEnvironmentProposal =
@@ -5442,7 +5452,12 @@ async function advanceTurnWithLease(input: {
   // private appraisal can read them, then re-apply after agents so a psyche
   // rewrite cannot drop the in-match 【省察】/【指針】 scratch entries.
   next = applyReflectMemoryWrites(next, resolved.actions);
-  const agentTurn = closeSceneBeat
+  const agentTurn = awareness
+    ? commitAwarenessExpressions({ before: turnRecordBefore, after: next, tick: awareness.tick,
+        voices: { a: awareness.prepared.selected.a.voice, b: awareness.prepared.selected.b.voice },
+        events, actions: resolved.actions, sensoryEvidence: semanticTurn.sensoryEvidence,
+        quantizedMechanicalEvidence: semanticTurn.quantizedMechanicalEvidence, mechanicalEvidence: semanticTurn.mechanicalEvidence })
+    : closeSceneBeat
     ? await advanceCharacterAgents({
         llm: input.llm,
         before: turnRecordBefore,
@@ -5474,6 +5489,7 @@ async function advanceTurnWithLease(input: {
         characterSpeeches: [],
       };
   next = applyReflectMemoryWrites(agentTurn.state, resolved.actions);
+  if (awareness) next = refreshNarratorContinuity(next);
   const rec = (next.turnRecords ?? [])[(next.turnRecords ?? []).length - 1];
   cognitionA = rec?.cognitionA;
   cognitionB = rec?.cognitionB;
@@ -5658,7 +5674,8 @@ async function advanceTurnWithLease(input: {
       }
     : null;
   const combatNarrationInput: DeferredNarrationInput | null = narrationCallInput
-    ? { kind: "combat", request: narrationCallInput }
+    ? { kind: "combat", request: narrationCallInput,
+        ...(awareness ? { urgent: awarenessNarrationUrgent(turnRecordBefore, next) } : {}) }
     : null;
   const narrationTurnBrief = narrationView
     ? buildNarrationTurnBrief(narrationView)
@@ -5797,6 +5814,17 @@ async function advanceTurnWithLease(input: {
   // KO this turn: combat narrative is done, but official finish waits for aftermath advance.
   // Do not settle rating yet.
   if (next.aftermathPending) {
+    if (awareness) {
+      awareness.assertUsable();
+      if (!combatNarrationInput) throw new Error("AWARENESS_COMBAT_NARRATION_SOURCE_REQUIRED");
+      const terminalExecution = causalExecution.status === "awaiting_finalize"
+        ? finishCausalTurnExecution({ execution: causalExecution }) : causalExecution;
+      return runAftermathTurn({ state: { ...next, causalExecution: terminalExecution,
+        causalBucketCommit: undefined, causalEngineContinuation: undefined },
+        meta, mine, opp, llm: input.llm, dialoguePipeline, emit,
+        operationId: input.operationId, providerRouteReceipts: input.providerRouteReceipts,
+        precedingCombatNarration: combatNarrationInput, sceneBeatBefore: stateBeforeSceneBeat });
+    }
     next = applyCombatSceneBeat({
       before: stateBeforeSceneBeat,
       after: completeAdvancePhases({
@@ -5806,12 +5834,12 @@ async function advanceTurnWithLease(input: {
         narrationInputs: combatNarrationInput
           ? { combat: combatNarrationInput }
           : undefined,
-        deferCombatNarration: !closeSceneBeat,
+        deferCombatNarration: awareness ? false : !closeSceneBeat,
       }),
       closed: closeSceneBeat,
     });
     next = appendProviderRouteReceipts(next, input.providerRouteReceipts);
-    await battleRepo.saveBattleWithNarrationOutbox(next, {
+    next = await saveCompletedBattleBoundary(next, {
       sideAUserId: meta.side_a_user_id,
       sideACharacterId: meta.side_a_character_id,
       sideBCharacterId: meta.side_b_character_id,
@@ -5846,6 +5874,8 @@ async function advanceTurnWithLease(input: {
           error instanceof Error ? error.message : error,
         );
       }
+      awareness?.assertUsable();
+      if (awareness && !refereeResult) throw new Error("AWARENESS_REQUIRED_REFEREE_RESULT_MISSING");
       const adjudication = buildBattleAdjudication({
         turn: next.turn,
         engineWinnerSide: next.winnerSide,
@@ -5924,8 +5954,9 @@ async function advanceTurnWithLease(input: {
 
     // Elo + W-L (same-owner matches unranked for Elo)
     const { settleBattleRating } = await import("./rating-service.js");
-    next = await settleBattleRating(next);
-    try {
+    awareness?.assertUsable();
+    if (!awareness) next = await settleBattleRating(next);
+    if (!currentAwarenessAdvanceContext()) try {
       await recordBattleFinished({
         state: next,
         sameOwner: next.ratingSettlement?.sameOwner,
@@ -5976,13 +6007,13 @@ async function advanceTurnWithLease(input: {
         ...(combatNarrationInput ? { combat: combatNarrationInput } : {}),
         ...(judgmentNarrationInput ? { judgment: judgmentNarrationInput } : {}),
       },
-      deferCombatNarration: !closeSceneBeat,
+      deferCombatNarration: awareness ? false : !closeSceneBeat,
     }),
     closed: closeSceneBeat,
   });
   next = appendProviderRouteReceipts(next, input.providerRouteReceipts);
 
-  await battleRepo.saveBattleWithNarrationOutbox(next, {
+  next = await saveCompletedBattleBoundary(next, {
     sideAUserId: meta.side_a_user_id,
     sideACharacterId: meta.side_a_character_id,
     sideBCharacterId: meta.side_b_character_id,
@@ -6034,17 +6065,6 @@ function buildFrozenNarrationInput(
   };
 }
 
-type DeferredNarrationRequest =
-  | Omit<Parameters<LlmProvider["narrateTurn"]>[0], "onProgress">
-  | Omit<Parameters<LlmProvider["narratePrologue"]>[0], "onProgress">
-  | Omit<Parameters<LlmProvider["narrateAftermath"]>[0], "onProgress">
-  | Parameters<LlmProvider["narrateJudgment"]>[0];
-
-type DeferredNarrationInput = {
-  kind: "prologue" | "combat" | "judgment" | "aftermath";
-  request: DeferredNarrationRequest;
-};
-
 export function completeAdvancePhases(input: {
   state: BattleState;
   operationId: string;
@@ -6073,16 +6093,26 @@ export function completeAdvancePhases(input: {
     const receiptFromRevision = fromRevision + index;
     const override = input.narrationInputs?.[phase];
     const defer = Boolean(input.deferCombatNarration && phase === "combat");
+    const awarenessOverride = input.state.assetManifest?.schemaVersion === 5 && override
+      ? freezeDeferredAwarenessNarration(override, {
+          battleId: input.state.id, turnReceiptId: `${input.state.id}:phase:${sequence}`,
+          initialNarratorContinuity: input.state.narratorContinuity,
+          promptRevision: input.state.assetManifest.promptRevision,
+        })
+      : null;
+    if (input.state.assetManifest?.schemaVersion === 5 && !defer && !awarenessOverride) {
+      throw new Error("AWARENESS_FROZEN_NARRATION_SOURCE_REQUIRED");
+    }
     const frozen = defer
       ? null
       : override === undefined
         ? buildFrozenNarrationInput(input.state, phase)
         : {
-            snapshot: override,
+            snapshot: awarenessOverride ?? override,
             digest: requestDigest({
               phase,
               combatTurn: input.state.turn,
-              snapshot: override,
+              snapshot: awarenessOverride ?? override,
             }),
           };
     return {
@@ -6178,7 +6208,11 @@ async function runPrologueTurn(input: {
     },
   ];
   emit({ type: "phase", phase: "agents" });
-  const prologueAgents = await advanceCharacterAgents({
+  const awareness = currentAwarenessAdvanceContext();
+  const prologueAgents = awareness
+    ? commitAwarenessExpressions({ before: state, after: state, tick: awareness.tick,
+        voices: { a: awareness.prepared.selected.a.voice, b: awareness.prepared.selected.b.voice }, events: openEvents, actions: [] })
+    : await advanceCharacterAgents({
     llm: input.llm,
     before: state,
     after: state,
@@ -6189,7 +6223,7 @@ async function runPrologueTurn(input: {
     dialoguePipeline: input.dialoguePipeline,
     phase: "prologue",
   });
-  state = prologueAgents.state;
+  state = awareness ? refreshNarratorContinuity(prologueAgents.state) : prologueAgents.state;
   const rec = (state.turnRecords ?? [])[(state.turnRecords ?? []).length - 1];
   const { focus, digests } = await resolveNarrationFocusAndDigests({
     llm: input.llm,
@@ -6359,7 +6393,7 @@ async function runPrologueTurn(input: {
   });
   next = appendProviderRouteReceipts(next, input.providerRouteReceipts);
 
-  await battleRepo.saveBattleWithNarrationOutbox(next, {
+  next = await saveCompletedBattleBoundary(next, {
     sideAUserId: input.meta.side_a_user_id,
     sideACharacterId: input.meta.side_a_character_id,
     sideBCharacterId: input.meta.side_b_character_id,
@@ -6382,12 +6416,17 @@ async function runAftermathTurn(input: {
   emit?: (event: BattleAdvanceStreamEvent) => void;
   operationId: string;
   providerRouteReceipts: LlmProviderRouteReceipt[];
+  precedingCombatNarration?: DeferredNarrationInput;
+  sceneBeatBefore?: BattleState;
 }): Promise<BattlePublic> {
   const emit = input.emit ?? (() => undefined);
   let state = input.state;
   const terminalRecord = (state.turnRecords ?? []).at(-1);
   emit({ type: "phase", phase: "agents" });
-  const aftermathAgents = await advanceCharacterAgents({
+  const awareness = currentAwarenessAdvanceContext();
+  const aftermathAgents = awareness
+    ? { state, characterSpeeches: [] }
+    : await advanceCharacterAgents({
     llm: input.llm,
     before: state,
     after: state,
@@ -6399,7 +6438,7 @@ async function runAftermathTurn(input: {
     phase: "aftermath",
     replaceLastRecord: Boolean(terminalRecord),
   });
-  state = aftermathAgents.state;
+  state = awareness ? refreshNarratorContinuity(aftermathAgents.state) : aftermathAgents.state;
   const fallen: string[] = [];
   if (!state.sideA.canFight || (state.sideA.parameters.hp ?? 0) <= 0) {
     fallen.push(state.sideA.displayName);
@@ -6559,8 +6598,9 @@ async function runAftermathTurn(input: {
   };
 
   const { settleBattleRating } = await import("./rating-service.js");
-  next = await settleBattleRating(next);
-  try {
+  currentAwarenessAdvanceContext()?.assertUsable();
+  if (!currentAwarenessAdvanceContext()) next = await settleBattleRating(next);
+  if (!awareness) try {
     await recordBattleFinished({
       state: next,
       sameOwner: next.ratingSettlement?.sameOwner,
@@ -6580,7 +6620,7 @@ async function runAftermathTurn(input: {
     // Persist only aftermath-authored privateMemory. Mid-fight reflect notes
     // live in battleVolatileMemory and must not become character opponent memory
     // unless the aftermath psyche synthesized them into privateMemory.
-    await Promise.all([
+    if (!awareness) await Promise.all([
       charRepo.saveOpponentBattleMemory({
         characterId: input.meta.side_a_character_id,
         opponentId: input.meta.side_b_character_id,
@@ -6606,14 +6646,16 @@ async function runAftermathTurn(input: {
   next = completeAdvancePhases({
     state: next,
     operationId: input.operationId,
-    phases: ["aftermath"],
+    phases: input.precedingCombatNarration ? ["combat", "aftermath"] : ["aftermath"],
     narrationInputs: {
+      ...(input.precedingCombatNarration ? { combat: input.precedingCombatNarration } : {}),
       aftermath: { kind: "aftermath", request: aftermathNarrationRequest },
     },
   });
+  if (input.sceneBeatBefore) next = applyCombatSceneBeat({ before: input.sceneBeatBefore, after: next, closed: true });
   next = appendProviderRouteReceipts(next, input.providerRouteReceipts);
 
-  await battleRepo.saveBattleWithNarrationOutbox(next, {
+  next = await saveCompletedBattleBoundary(next, {
     sideAUserId: input.meta.side_a_user_id,
     sideACharacterId: input.meta.side_a_character_id,
     sideBCharacterId: input.meta.side_b_character_id,
@@ -6632,9 +6674,9 @@ export async function advanceTurn(input: {
   /** Optional progressive updates (SSE). */
   onProgress?: (event: BattleAdvanceStreamEvent) => void;
 }): Promise<BattlePublic> {
-  const meta = await battleRepo.getBattleMeta(input.battleId);
-  if (!meta) throw new Error("BATTLE_NOT_FOUND");
-  if (meta.side_a_user_id !== input.userId) throw new Error("FORBIDDEN");
+  const access = await readBattleAccess(input.battleId, input.userId);
+  if (access.kind === "not_found") throw new Error("BATTLE_NOT_FOUND");
+  if (access.kind === "forbidden") throw new Error("FORBIDDEN");
   const providerRouteReceipts: LlmProviderRouteReceipt[] = [];
   return withLlmProviderRouteReceiptCapture(
     providerRouteReceipts,
@@ -6655,6 +6697,9 @@ export async function performAction(input: {
 }
 
 export async function pickRandomOpponent(userId: string, myCharacterId: string) {
+  const mine = await charRepo.getSheet(myCharacterId);
+  if (!mine || mine.ownerUserId !== userId ||
+      (await resolveBattleParticipantEligibility(mine)).status !== "ready") return null;
   const page = await charRepo.listPublicOpponents(userId, undefined, {
     limit: 50,
     offset: 0,
@@ -6669,8 +6714,11 @@ export async function pickAutoMatchedOpponent(
   userId: string,
   myCharacterId: string,
 ) {
-  const mine = await charRepo.getSheet(myCharacterId);
-  if (!mine || mine.ownerUserId !== userId) return null;
+  const currentMine = await charRepo.getSheet(myCharacterId);
+  if (!currentMine || currentMine.ownerUserId !== userId) return null;
+  const eligibility = await resolveBattleParticipantEligibility(currentMine);
+  if (eligibility.status !== "ready") return null;
+  const mine = eligibility.participant.sheet;
   const candidates = (await charRepo.listPlayableOpponentSheets(userId))
     .filter((sheet) => sheet.id !== myCharacterId);
   if (candidates.length === 0) return null;

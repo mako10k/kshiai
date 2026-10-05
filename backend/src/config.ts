@@ -1,3 +1,4 @@
+// R: Validate deployment configuration for the API runtime.
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -232,7 +233,29 @@ export function isMockProviderAllowed(input: {
     (input.primaryProvider === "mock" || input.allowMockFallback);
 }
 
+export type CutoverDeployment = { cutoverId: string; artifactId: string };
+
+export function parseCutoverDeployment(input: {
+  cutoverId?: string;
+  artifactId?: string;
+}): CutoverDeployment | null {
+  const cutoverId = input.cutoverId?.trim() ?? "";
+  const artifactId = input.artifactId?.trim() ?? "";
+  if (!cutoverId && !artifactId) return null;
+  if (!cutoverId || !artifactId) {
+    throw new Error("CUTOVER_ID and CUTOVER_ARTIFACT_ID must be configured together");
+  }
+  if (cutoverId.length > 200 || artifactId.length > 500) {
+    throw new Error("Cutover deployment identity exceeds its maximum length");
+  }
+  return { cutoverId, artifactId };
+}
+
 export const config = {
+  cutover: parseCutoverDeployment({
+    cutoverId: process.env.CUTOVER_ID,
+    artifactId: process.env.CUTOVER_ARTIFACT_ID,
+  }),
   battlePresentationReadModel:
     (process.env.BATTLE_PRESENTATION_READ_MODEL ?? "composite") !== "legacy",
   host: process.env.HOST ?? "127.0.0.1",

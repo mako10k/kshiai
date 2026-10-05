@@ -1,0 +1,145 @@
+{
+  "observedAt": "2026-10-03T06:22:47.862Z",
+  "sourceSha": "702f9acc7d9624725eca0df4dc628ecc190fe1bd",
+  "ci": {
+    "conclusion": "success",
+    "headSha": "702f9acc7d9624725eca0df4dc628ecc190fe1bd",
+    "jobs": [
+      {
+        "conclusion": "success",
+        "name": "worker",
+        "status": "completed"
+      },
+      {
+        "conclusion": "success",
+        "name": "validate",
+        "status": "completed"
+      },
+      {
+        "conclusion": "success",
+        "name": "security",
+        "status": "completed"
+      },
+      {
+        "conclusion": "success",
+        "name": "backend-image",
+        "status": "completed"
+      }
+    ],
+    "status": "completed",
+    "url": "https://github.com/mako10k/kshiai/actions/runs/37102539710"
+  },
+  "cloudBuild": {
+    "id": "1627fcb5-91df-44e2-8337-e58c4e891aa9",
+    "status": "SUCCESS",
+    "region": "asia-northeast1",
+    "image": "asia-northeast1-docker.pkg.dev/kshiai/kshiai/backend@sha256:4d6d96cbeadac624d11605547bfa6c30c61b1982324b1feda47ba91c2f32951c",
+    "source": "Exact git archive of sourceSha; ignored env, local DB and dependencies excluded"
+  },
+  "cloudRun": {
+    "service": "kshiai-api",
+    "revision": "kshiai-api-dynamic-702f9ac",
+    "traffic": [
+      {
+        "revisionName": "kshiai-api-contract-98f4c4f",
+        "tag": "contract-98f4c4f",
+        "url": "https://contract-98f4c4f---kshiai-api-crpgn6evfa-an.a.run.app"
+      },
+      {
+        "percent": 100,
+        "revisionName": "kshiai-api-dynamic-702f9ac",
+        "tag": "dynamic-702f9ac",
+        "url": "https://dynamic-702f9ac---kshiai-api-crpgn6evfa-an.a.run.app"
+      },
+      {
+        "revisionName": "kshiai-api-v2-retired-fce86a5",
+        "tag": "v2-retire-458af76",
+        "url": "https://v2-retire-458af76---kshiai-api-crpgn6evfa-an.a.run.app"
+      },
+      {
+        "revisionName": "kshiai-api-v2-retired-fce86a5",
+        "tag": "v3-trial-36954429062-1",
+        "url": "https://v3-trial-36954429062-1---kshiai-api-crpgn6evfa-an.a.run.app"
+      }
+    ],
+    "runtimeConfigurationPreserved": true
+  },
+  "worker": {
+    "version": "846622a8-af95-4d33-909f-5e238e9a36dd",
+    "deployment": "396161c9-7e9b-4648-9a68-9ee875ac1365",
+    "trafficPercent": 100,
+    "backendOrigin": "https://dynamic-702f9ac---kshiai-api-crpgn6evfa-an.a.run.app",
+    "bindingsAndRuntimePreserved": true
+  },
+  "public": {
+    "url": "https://kshiai.mk10.org",
+    "health": {
+      "ok": true,
+      "llm": "fallback:xai>openai>venice",
+      "auth": "supabase",
+      "models": {
+        "engine": "grok-4.5",
+        "fast": "grok-4.3"
+      },
+      "service": "kshiai",
+      "database": "postgres",
+      "revision": "kshiai-api-dynamic-702f9ac"
+    },
+    "runtime": "cloudflare-worker",
+    "assets": [
+      {
+        "path": "assets/index-BC9ukgF7.js",
+        "sha256": "50d7fab9be8ecd3ee30d057f95529c6c1901e211214c5da56ba0da19174135a8"
+      },
+      {
+        "path": "assets/index-Dor-Pfq6.css",
+        "sha256": "37af3065253b64bd75f7f5bd75176d457196b94ec32ce7cb68fea52a21b80d6b"
+      },
+      {
+        "path": "battlefields/arena.jpg",
+        "sha256": "126d34d6cbf2ae11357d57595de51145908f54e4b01b9e5c5316c9f110f66458"
+      },
+      {
+        "path": "battlefields/forest.jpg",
+        "sha256": "ccedf989d9189384f60d62a2a99d1eadd70c413b41bbba8dff18c604cd854e85"
+      },
+      {
+        "path": "battlefields/school.jpg",
+        "sha256": "a89789cdfd1bb301480b16a7bfc115cc648f200081af1ac2780c7ea93b0b1071"
+      },
+      {
+        "path": "battlefields/sea.jpg",
+        "sha256": "b10e5401c46dd8093bd5960aa047eb4c4b612922bc3821bc22982d2f8e0b8974"
+      },
+      {
+        "path": "battlefields/urban.jpg",
+        "sha256": "fbafa650423e4b714c4075052ec2809e42a3fda5f683c5959fce6d58d66ada9c"
+      },
+      {
+        "path": "favicon.svg",
+        "sha256": "7cffb8c29e627bd727fa78637add441cea2c8147e526ca23432e123d5519c589"
+      },
+      {
+        "path": "index.html",
+        "sha256": "7dca13dd5eb27ae3eb41862ddb380311c1f93e6e5f059a1802a5f7e105809693"
+      }
+    ],
+    "smoke": "pass; public page and health, direct origin guarded with 404"
+  },
+  "runtimeErrorLogs": {
+    "revision": "kshiai-api-dynamic-702f9ac",
+    "severity": ">=ERROR",
+    "freshness": "15m",
+    "limit": 20,
+    "observedCount": 0
+  },
+  "rollback": {
+    "revision": "kshiai-api-contract-98f4c4f",
+    "workerVersion": "46c49e30-a740-40b9-ac4e-c46ab15d8ede"
+  },
+  "limitations": [
+    "No paid LLM call or authenticated production battle advance performed; match quality and provider output require separate observation.",
+    "Dynamic contract applies to newly created battles; recorded contracts on existing battles remain in effect.",
+    "No database schema/data migration, main merge, or formal release tag."
+  ]
+}

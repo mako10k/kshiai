@@ -1,3 +1,4 @@
+// R: Maintain the signed-in user and authentication capabilities for the UI.
 import {
   createContext,
   useCallback,
@@ -14,6 +15,7 @@ import { requireSupabase, supabase, supabaseConfigured } from "./supabase";
 type AuthState = {
   user: UserPublic | null;
   loading: boolean;
+  cutoverReviewOnly: boolean;
   confirmationSent: boolean;
   supabaseConfigured: boolean;
   refresh: () => Promise<void>;
@@ -36,11 +38,13 @@ function callbackUrl(next?: string): string {
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<UserPublic | null>(null);
   const [loading, setLoading] = useState(true);
+  const [cutoverReviewOnly, setCutoverReviewOnly] = useState(false);
   const [confirmationSent, setConfirmationSent] = useState(false);
 
   const refresh = useCallback(async () => {
     try {
-      const { user: current } = await api.me();
+      const { user: current, reviewConfirmOnly } = await api.me();
+      setCutoverReviewOnly(reviewConfirmOnly === true);
       setUser(current);
     } catch {
       setUser(null);
@@ -133,6 +137,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     () => ({
       user,
       loading,
+      cutoverReviewOnly,
       confirmationSent,
       supabaseConfigured,
       refresh,
@@ -146,6 +151,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     [
       user,
       loading,
+      cutoverReviewOnly,
       confirmationSent,
       refresh,
       login,

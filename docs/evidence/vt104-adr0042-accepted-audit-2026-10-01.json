@@ -1,0 +1,293 @@
+{
+  "thought_id": "docs-adr-0042-unreleased-v3-trial-scope",
+  "id_source": "file",
+  "report": {
+    "engine_version": "0.1.0",
+    "document_id": "docs-adr-0042-unreleased-v3-trial-scope",
+    "generated_at": "2026-10-01T01:24:47.515Z",
+    "summary": {
+      "fatal_count": 0,
+      "error_count": 0,
+      "warning_count": 0,
+      "info_count": 1,
+      "hint_count": 11
+    },
+    "results": [
+      {
+        "issue_id": "ISSUE-001",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "VT104_RESCOPE",
+            "role": "domain"
+          }
+        ],
+        "message": "domain VT104_RESCOPE の description は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 2,
+          "column": 3,
+          "text": "Align unreleased shared-environment first V3 trial plan with latest explicit owner policy.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-002",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "OWNER_ACCEPTANCE",
+            "role": "evidence",
+            "step_id": "S-OWNER_ACCEPTANCE"
+          }
+        ],
+        "message": "evidence OWNER_ACCEPTANCE は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 4,
+          "column": 3,
+          "text": "Owner explicitly clarifies compatibility and existing-data retention are deferred as a basic policy; migration was an example; production is unreleased; owner requests plan correction. Earlier email deferral and Google use are explicit.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-003",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "BASELINE",
+            "role": "evidence",
+            "step_id": "S-BASELINE"
+          }
+        ],
+        "message": "evidence BASELINE は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 6,
+          "column": 3,
+          "text": "Current child plan vt104 is suspended and retains eight-smoke, backup/recovery and history obligations from requirements v2/ADR0039/0040. Local source/tests exist, real Stage play remains unverified.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-004",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "VELOCITY",
+            "role": "evidence",
+            "step_id": "S-VELOCITY"
+          }
+        ],
+        "message": "evidence VELOCITY は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 8,
+          "column": 3,
+          "text": "perttool observes vt103 declared elapsed throughput2p/1.36h =25p/17h, one sample. Person effort unavailable; operational work has different scope.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-005",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "SCOPE",
+            "role": "premise",
+            "step_id": "S-SCOPE"
+          }
+        ],
+        "message": "premise SCOPE は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 10,
+          "column": 3,
+          "text": "Current authority covers requirement-policy recording, design/plan correction and docs only. No application/workflow change, remote write, snapshot, deployment or data deletion. Preserve historical Accepted rationale and work events. Latest owner policy governs initial-trial planning; do not infer blanket database reset or deletion of identities.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-006",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "IMPLEMENTATION",
+            "role": "pending",
+            "step_id": "S-IMPLEMENTATION"
+          }
+        ],
+        "message": "pending IMPLEMENTATION は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 12,
+          "column": 3,
+          "text": "Existing workflow and control still enforce previous gates. Concrete implementation route and exact external execution are subsequent vt104/vt105 preparation; plan change alone supplies no conformance evidence or deployment permission.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-007",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "POLICY_RECORD",
+            "role": "decision",
+            "step_id": "S-POLICY_RECORD"
+          }
+        ],
+        "message": "decision POLICY_RECORD は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 14,
+          "column": 3,
+          "text": "Record owner-confirmed basic policy as current requirements v3; legacy compatibility/history retention, backup/key/restore proof and email are deferred first-trial work. Keep new V3 correctness, Google ownership, required runtime schema, credential protection and actual deployed-path verification.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-008",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "PLAN",
+            "role": "decision",
+            "step_id": "S-PLAN"
+          }
+        ],
+        "message": "decision PLAN は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 16,
+          "column": 3,
+          "text": "Revise canonical child and parent descriptions, estimates and first-trial criteria. Keep vt104->vt105->vt106/vt108->vt107 dependency because deploy, authoring and old unfinished cleanup remain actual trial inputs. Retain historical done evidence without claiming full new outcome. Prefer reuse of verified code; no general production SLA or promotion prerequisite for unreleased trial. Proposed ADR0042 documents concrete integration still awaiting exact design.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-009",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "SPECIFIC_OWNER_ACCEPTANCE",
+            "role": "evidence",
+            "step_id": "S-SPECIFIC_OWNER_ACCEPTANCE"
+          }
+        ],
+        "message": "evidence SPECIFIC_OWNER_ACCEPTANCE は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 18,
+          "column": 3,
+          "text": "2026-10-01 user replied yes to option1 concrete design v1, ordinary authenticated preview access and local workflow/validator/test file set; exact presented hashes recorded in docs/evidence/vt104-design-owner-acceptance-2026-10-01.json.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-010",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "ACCEPTANCE",
+            "role": "decision",
+            "step_id": "S-ACCEPTANCE"
+          }
+        ],
+        "message": "decision ACCEPTANCE は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 20,
+          "column": 3,
+          "text": "Accept concrete design v1 option1 and its local implementation/testing file set. Keep external deployment, disposal, paid calls and remote writes behind exact execution scope.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-011",
+        "category": "semantic_hint",
+        "severity": "info",
+        "target_refs": [
+          {
+            "ref_id": "IMPLEMENTATION",
+            "role": "pending",
+            "step_id": "S-IMPLEMENTATION"
+          }
+        ],
+        "message": "pending が存在するため、判断の確定度は下げて表示するべきである。",
+        "metadata": {
+          "line": 11,
+          "column": 9,
+          "end_column": 23
+        }
+      },
+      {
+        "issue_id": "ISSUE-012",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "POLICY_RECORD",
+            "role": "decision",
+            "step_id": "S-POLICY_RECORD"
+          },
+          {
+            "ref_id": "PLAN",
+            "role": "decision",
+            "step_id": "S-PLAN"
+          }
+        ],
+        "message": "POLICY_RECORD と PLAN は意味的に近接している可能性がある。",
+        "metadata": {
+          "line": 13,
+          "column": 10,
+          "end_column": 23,
+          "similarity": 0.6507,
+          "semantic_distance": 0.3493,
+          "embedding_provider": "ollama",
+          "embedding_model": "nomic-embed-text"
+        }
+      }
+    ],
+    "query_results": []
+  }
+}

@@ -15,6 +15,7 @@ process.env.DATABASE_URL = "";
 process.env.AUTH_PROVIDER = "legacy";
 process.env.DATABASE_PATH = join(tempDir, "test.db");
 process.env.ADMIN_EMAILS = "mako10k@mk10.org";
+const { saveHistoricalCharacterFixture } = await import("../testing/historical-character-fixtures.js");
 const repo = await import("./characters.js");
 const { pickAutoMatchedOpponent } = await import("../services/battle-service.js");
 const { getDb } = await import("../db.js");
@@ -59,8 +60,8 @@ describe("owner-scoped character generation references", () => {
     );
     insertUser.run("user-a", "alice", "2026-08-02T00:00:00.000Z");
     insertUser.run("user-b", "bob", "2026-08-02T00:00:00.000Z");
-    await repo.saveSheet(sheet("char-a", "user-a", "楓"));
-    await repo.saveSheet(sheet("char-b", "user-b", "比堂"));
+    await saveHistoricalCharacterFixture(sheet("char-a", "user-a", "楓"));
+    await saveHistoricalCharacterFixture(sheet("char-b", "user-b", "比堂"));
 
     assert.deepEqual(
       (await repo.searchOwnedCharacterReferences("user-a", "")).map((item) => item.id),
@@ -120,7 +121,7 @@ describe("owner-scoped character generation references", () => {
     far.record = { ...defaultRecord(), rating: 2100 };
     far.parameters.atk = 18;
     far.parameters.def = 5;
-    await repo.saveSheet(far);
+    await saveHistoricalCharacterFixture(far);
 
     const matched = await pickAutoMatchedOpponent("user-a", "char-a");
     assert.equal(matched?.id, "char-b");
@@ -187,8 +188,8 @@ describe("owner-scoped character generation references", () => {
       "general",
       "2026-08-07T00:00:00.000Z",
     );
-    await repo.saveSheet(sheet("char-e2e-a", "user-e2e-a", "観測者"));
-    await repo.saveSheet(sheet("char-e2e-b", "user-e2e-b", "対照役"));
+    await saveHistoricalCharacterFixture(sheet("char-e2e-a", "user-e2e-a", "観測者"));
+    await saveHistoricalCharacterFixture(sheet("char-e2e-b", "user-e2e-b", "対照役"));
 
     const generalIds = (await repo.listPlayableOpponentSheets("user-a"))
       .map((item) => item.id);

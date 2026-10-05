@@ -1,0 +1,29 @@
+domain PromptInspection:
+  description "Owner-requested read-only inspection of current awareness prompts and generated request paths."
+evidence OWNER:
+  "Owner asks why incompatible output instructions coexist and requests prompt inspection."
+evidence WIP:
+  "Matching dirty worktree codex/cc304-focused-revise HEAD3a32c2d retains current implementation. One real normal-policy measurement failed at tick1 with missing narrator receipts and one conscious invalid JSON response."
+premise SCOPE:
+  "Review current awareness prompts from input projection through rendering, role contracts, phase legacy reuse and actual SDK send. Include subconscious, conscious, creation, semantic adjudication, referee, happening and frozen narration all phases. Accepted natural prose inputs, role boundaries, canonical ownership and immutable bindings govern. Do not mutate production code, old receipts, accepted ADRs or make paid calls."
+premise REVIEW:
+  "Current subject is implementation conformance of constructed prompts to existing schemas and user behavior. Contradictory instructions and missing source/identity contract are inside scope; numerical tuning and redesign/model changes are recommendations for successor implementation."
+premise UNKNOWN:
+  "Raw rejected response and finish_reason absent prevent proving why conscious failed or why narrator chose old shape. Passing hand-authored mock responses do not prove generated prompt coherence."
+decision INSPECT based_on OWNER, WIP, SCOPE, REVIEW, UNKNOWN:
+  "Perform bounded read-only source inspection and offline reconstruction from frozen sources. Use one read-only narration reviewer; root reviews other roles and integration. Record exact contradictions, source lines, test limitations and minimal correction proposals without changing implementation or retrying models. Audit any causal conclusion before reporting it."
+
+evidence PHASE_REUSE:
+  "All four legacy phase builders contain single-object output grammars. freezeAwarenessNarration copies each complete system text; frozen wrapper adds top-level receipts instruction. The alternate combat batch builder performs the same composition."
+evidence EXTRA_FIELDS:
+  "Legacy combat grammar requests focus, absent from strict batch receipt schema. Legacy speech rules permit punctuation changes, while batch wrapper and validation require exact sourceSide and text. Offline reconstruction from the stored prologue source confirms both grammars and both speech instructions coexist; synthetic single-object and extra-focus outputs are rejected."
+evidence TESTS:
+  "Frozen tests use placeholder system material and hand-authored already-valid wrapped responses. Direct relevant tests27: pass26 fail1. provider-json fixture labels generateCharacterDefinitionV2, absent from current operation taxonomy, and fails before HTTP. Root ordinary test log211pass explicitly disables awareness suites as unsealed."
+evidence OTHER_ROLES:
+  "Latent and conscious top-level names and source/resource rules agree with strict role schemas; action examples are schema validated. Input rendering uses prose sections and distinct latent state versus conscious felt projection. Creation, semantic and referee inspected prompts agree with decoded output shape; combined semantic explicitly adds sensoryEvidence. Current SDK usage callback stores usage/model/request ID but does not retain finish_reason/content-shape metadata."
+premise GENERATION_UNKNOWN:
+  "Conflicting grammars are an observed producer-side defect. The retained narrator shape is consistent with old grammar, but the actual model preference mechanism remains unknown. CompletionTokens0 and invalid JSON do not establish the exact conscious reply or reason. One synthetic offline shape test is not model-output replay."
+premise ECONOMICS:
+  "Actual Luna input3653..4023tokens exceeds the1800 target; observed admission marks input count unknown instead of enforcing an unverified token ceiling. Current prose renderer expands complete input field trees. Input optimization must retain observer and immutable boundaries and is successor work."
+decision CAUSE_AND_NEXT based_on PHASE_REUSE, EXTRA_FIELDS, TESTS, OTHER_ROLES, GENERATION_UNKNOWN, ECONOMICS, REVIEW:
+  "Report root producing condition as retaining legacy output contract inside new narration batch prompts; keep model selection cause unknown. Separate test fixture and selection gaps as detection issues. Recommend extracting phase-specific content rules from wire output serialization, rendering one complete schema-valid output contract per request, and testing the final composed prompts for all phases including envelope, forbidden focus and exact speech preservation. Preserve existing saved materials and old direct consumers. Repair stale test fixture and add bounded content-shape/finish metadata offline without raw content logs. No code changes or paid retry in this inspection."

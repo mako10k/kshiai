@@ -1,0 +1,102 @@
+thought_id: docs-evidence-v2-runtime-writer-removal-2026-10-02
+id_source: file
+status: draft
+draft: thoughts/docs-evidence-v2-runtime-writer-removal-2026-10-02/draft.think
+latest_audit: thoughts/docs-evidence-v2-runtime-writer-removal-2026-10-02/audits/2026-10-02T06-17-12.472Z.json
+next: reuse this thought_id with thought show/history/reflect/delete or dsl audit --id
+document: docs-evidence-v2-runtime-writer-removal-2026-10-02
+engine: 0.1.0
+summary: fatal=0 error=0 warning=0 info=0 hint=10
+
+issues:
+- [hint] contradiction_candidate: REMOVE と REMAINING_PLAN は同一根拠 OWNER を共有しており、緊張関係にある可能性がある。 (REMOVE, REMAINING_PLAN)
+  rationale: 複数の decision が同じ based_on 参照を共有しているため、観点と結論の整合性を再確認するべきである。
+- [hint] semantic_hint: evidence OWNER は 1 行の quoted text が長いため、block text に変えると読みやすい。 (OWNER)
+  rationale: 長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。
+  suggestion: 長い 1 行本文を block text へ分割し、意味の切れ目で改行する。
+  syntax_help: llmthink dsl help syntax detail
+  syntax_guidance:
+    長い本文は block text を使い、意味の切れ目で改行する。
+    例:
+    problem P1:
+      |
+        1 行目の説明
+        2 行目の説明
+- [hint] semantic_hint: evidence SOURCE は 1 行の quoted text が長いため、block text に変えると読みやすい。 (SOURCE)
+  rationale: 長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。
+  suggestion: 長い 1 行本文を block text へ分割し、意味の切れ目で改行する。
+  syntax_help: llmthink dsl help syntax detail
+  syntax_guidance:
+    長い本文は block text を使い、意味の切れ目で改行する。
+    例:
+    problem P1:
+      |
+        1 行目の説明
+        2 行目の説明
+- [hint] semantic_hint: premise BOUNDARY は 1 行の quoted text が長いため、block text に変えると読みやすい。 (BOUNDARY)
+  rationale: 長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。
+  suggestion: 長い 1 行本文を block text へ分割し、意味の切れ目で改行する。
+  syntax_help: llmthink dsl help syntax detail
+  syntax_guidance:
+    長い本文は block text を使い、意味の切れ目で改行する。
+    例:
+    problem P1:
+      |
+        1 行目の説明
+        2 行目の説明
+- [hint] semantic_hint: decision REMOVE は 1 行の quoted text が長いため、block text に変えると読みやすい。 (REMOVE)
+  rationale: 長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。
+  suggestion: 長い 1 行本文を block text へ分割し、意味の切れ目で改行する。
+  syntax_help: llmthink dsl help syntax detail
+  syntax_guidance:
+    長い本文は block text を使い、意味の切れ目で改行する。
+    例:
+    problem P1:
+      |
+        1 行目の説明
+        2 行目の説明
+- [hint] semantic_hint: evidence GENERIC_STORE は 1 行の quoted text が長いため、block text に変えると読みやすい。 (GENERIC_STORE)
+  rationale: 長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。
+  suggestion: 長い 1 行本文を block text へ分割し、意味の切れ目で改行する。
+  syntax_help: llmthink dsl help syntax detail
+  syntax_guidance:
+    長い本文は block text を使い、意味の切れ目で改行する。
+    例:
+    problem P1:
+      |
+        1 行目の説明
+        2 行目の説明
+- [hint] semantic_hint: decision STORAGE_BOUNDARY は 1 行の quoted text が長いため、block text に変えると読みやすい。 (STORAGE_BOUNDARY)
+  rationale: 長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。
+  suggestion: 長い 1 行本文を block text へ分割し、意味の切れ目で改行する。
+  syntax_help: llmthink dsl help syntax detail
+  syntax_guidance:
+    長い本文は block text を使い、意味の切れ目で改行する。
+    例:
+    problem P1:
+      |
+        1 行目の説明
+        2 行目の説明
+- [hint] semantic_hint: evidence LOCAL_CURRENT は 1 行の quoted text が長いため、block text に変えると読みやすい。 (LOCAL_CURRENT)
+  rationale: 長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。
+  suggestion: 長い 1 行本文を block text へ分割し、意味の切れ目で改行する。
+  syntax_help: llmthink dsl help syntax detail
+  syntax_guidance:
+    長い本文は block text を使い、意味の切れ目で改行する。
+    例:
+    problem P1:
+      |
+        1 行目の説明
+        2 行目の説明
+- [hint] semantic_hint: decision REMAINING_PLAN は 1 行の quoted text が長いため、block text に変えると読みやすい。 (REMAINING_PLAN)
+  rationale: 長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。
+  suggestion: 長い 1 行本文を block text へ分割し、意味の切れ目で改行する。
+  syntax_help: llmthink dsl help syntax detail
+  syntax_guidance:
+    長い本文は block text を使い、意味の切れ目で改行する。
+    例:
+    problem P1:
+      |
+        1 行目の説明
+        2 行目の説明
+- [hint] semantic_hint: REMOVE と STORAGE_BOUNDARY は意味的に近接している可能性がある。 (REMOVE, STORAGE_BOUNDARY)

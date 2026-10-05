@@ -1,0 +1,26 @@
+{
+  "observedAt": "2026-10-02T10:45:59.090693+00:00",
+  "scope": "Retire callable V2 provider candidate generation and portrait/toggle/restore repository operations before provider or DB lookup; remove unused private V2 writer helpers",
+  "tests": {
+    "selectedNodeTests": 260,
+    "failures": 0,
+    "typecheck": "pass",
+    "static": "pass",
+    "browser": "Frontend unchanged from09e9efa; prior current availability regression1pass"
+  },
+  "exceptionsPreserved": [
+    "Immutable/current V2 reading",
+    "Historical deterministic source import representation",
+    "Explicit V3 migration and V3 activation",
+    "Battle accounting without definition/generation change"
+  ],
+  "runtimeApplied": false,
+  "remaining": "Independent delta review, exactsourceCI/build, preview/public deployment and completion audit",
+  "independentDeltaReview": "Four retired operations reject before work; historical readers and explicitV3 activation preserved; no remaining product writer bypass found",
+  "testAuthorityReadback": {
+    "oldAuthoringServiceTests": "disabled/unsealed",
+    "oldAssetV2Tests": "disabled/unsealed",
+    "currentBoundaryTests": "active/current"
+  },
+  "verificationLimit": "260 selected current-authority tests; no claim that archived unsealed V2-success glob tests pass. Final import-only cleanup covered by exact-source CI."
+}

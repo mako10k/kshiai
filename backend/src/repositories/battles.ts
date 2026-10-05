@@ -1,3 +1,4 @@
+// R: Persist and read battle state with creation and fenced revision updates.
 import type { BattleListItem, BattleState } from "@kshiai/shared";
 import {
   BattleStateSchema,
@@ -27,6 +28,74 @@ export async function saveBattle(
   await writeBattle({ query }, state, meta);
 }
 
+/** Atomic seam for a canonical commit paired with a private runtime transition. */
+export function saveBattleInTransaction(
+  connection: DatabaseConnection,
+  state: BattleState,
+  meta: Parameters<typeof saveBattle>[1],
+): Promise<void> {
+  return writeBattle(connection, state, meta);
+}
+
+/** Reserve domain repair without checkpointing an unfinished phase as canonical state. */
+export async function reserveConsciousRepair(input: { battleId: string; key: string; expectedRevision: number }): Promise<{ reserved: boolean; keys: string[] }> {
+  return withTransaction(async (connection) => {
+    const result = await connection.query<{ state_json: unknown; side_a_user_id: string; side_a_character_id: string; side_b_character_id: string }>(
+      `SELECT state_json, side_a_user_id, side_a_character_id, side_b_character_id FROM battles WHERE id = $1${config.databaseUrl ? " FOR UPDATE" : ""}`,
+      [input.battleId],
+    );
+    const row = result.rows[0];
+    if (!row) throw new Error("BATTLE_NOT_FOUND");
+    const state = BattleStateSchema.parse(typeof row.state_json === "string" ? JSON.parse(row.state_json) : row.state_json);
+    if ((state.battleRevision ?? 0) !== input.expectedRevision) throw new Error("BATTLE_REVISION_CONFLICT");
+    const keys = state.consciousRepairReservations ?? [];
+    if (keys.includes(input.key)) return { reserved: false, keys };
+    const nextKeys = [...keys, input.key];
+    await writeBattle(connection, { ...state, consciousRepairReservations: nextKeys }, {
+      sideAUserId: row.side_a_user_id, sideACharacterId: row.side_a_character_id, sideBCharacterId: row.side_b_character_id,
+      expectedRevision: input.expectedRevision,
+    });
+    return { reserved: true, keys: nextKeys };
+  });
+}
+
+/** UPDATE-only alias retained for existing advancement callers. */
+export const updateExistingBattle = saveBattle;
+
+export async function isBattleDiscarded(id: string): Promise<boolean> {
+  const result = await query("SELECT 1 FROM battle_discard_receipts WHERE battle_id = $1", [id]);
+  return result.rowCount !== 0;
+}
+
+export async function insertNewBattle(
+  state: BattleState,
+  meta: { sideAUserId: string; sideACharacterId: string; sideBCharacterId: string },
+  initialize?: (connection: DatabaseConnection) => Promise<void>,
+): Promise<"created" | "conflict"> {
+  const validated = BattleStateSchema.parse(state);
+  if (validated.sideA.characterId !== meta.sideACharacterId ||
+      validated.sideB.characterId !== meta.sideBCharacterId) throw new Error("BATTLE_CONTRACT_MISMATCH");
+  const context = currentProviderOperationContext();
+  if (context && context.battleId !== state.id) throw new Error("PROVIDER_OPERATION_BATTLE_SCOPE_MISMATCH");
+  return withTransaction(async (connection) => {
+    const discarded = await connection.query(
+      "SELECT 1 FROM battle_discard_receipts WHERE battle_id = $1", [state.id],
+    );
+    if (discarded.rowCount !== 0) throw new Error("BATTLE_NOT_FOUND");
+    const inserted = await connection.query(
+      `INSERT INTO battles (id, state_json, side_a_user_id, side_a_character_id,
+          side_b_character_id, created_at, updated_at, revision, observation_run_id)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+       ON CONFLICT (id) DO NOTHING RETURNING id`,
+      [state.id, JSON.stringify(validated), meta.sideAUserId, meta.sideACharacterId,
+        meta.sideBCharacterId, state.createdAt, state.updatedAt,
+        state.battleRevision ?? 0, context?.runId ?? null],
+    );
+    if (inserted.rowCount === 1 && initialize) await initialize(connection);
+    return inserted.rowCount === 1 ? "created" : "conflict";
+  });
+}
+
 async function writeBattle(
   connection: DatabaseConnection,
   state: BattleState,
@@ -54,42 +123,28 @@ async function writeBattle(
   }
   const observationRunId = providerContext?.runId ?? null;
   const result = await connection.query<{ id: string }>(
-    `INSERT INTO battles
-      (id, state_json, side_a_user_id, side_a_character_id, side_b_character_id,
-       created_at, updated_at, revision, observation_run_id)
-     VALUES ($1, $2, $3, $4, $5, $6, $7, $9, $13)
-     ON CONFLICT (id) DO UPDATE
-       SET state_json = EXCLUDED.state_json,
-           updated_at = EXCLUDED.updated_at,
-           revision = EXCLUDED.revision
-       WHERE battles.revision = $8
-         AND (battles.observation_run_id = EXCLUDED.observation_run_id OR
-              (battles.observation_run_id IS NULL AND EXCLUDED.observation_run_id IS NULL))
-         AND (CAST($10 AS TEXT) IS NULL OR EXISTS (
-           SELECT 1 FROM battle_leases lease
-            WHERE lease.battle_id = $1
-              AND lease.owner_id = $10
-              AND lease.fencing_token = $11
-              AND lease.expires_at > $12
-         ))
-     RETURNING id`,
-    [
-      state.id,
-      json,
-      meta.sideAUserId,
-      meta.sideACharacterId,
-      meta.sideBCharacterId,
-      state.createdAt,
-      state.updatedAt,
-      expectedRevision,
-      nextRevision,
-      fence?.ownerId ?? null,
-      fence?.fencingToken ?? null,
-      new Date().toISOString(),
-      observationRunId,
-    ],
+    `UPDATE battles
+        SET state_json = $2, updated_at = $7, revision = $9
+      WHERE id = $1 AND revision = $8 AND created_at = $6
+        AND side_a_user_id = $3 AND side_a_character_id = $4
+        AND side_b_character_id = $5
+        AND (observation_run_id = $13 OR
+             (observation_run_id IS NULL AND CAST($13 AS TEXT) IS NULL))
+        AND (CAST($10 AS TEXT) IS NULL OR EXISTS (
+          SELECT 1 FROM battle_leases lease
+           WHERE lease.battle_id = $1 AND lease.owner_id = $10
+             AND lease.fencing_token = $11 AND lease.expires_at > $12
+        ))
+      RETURNING id`,
+    [state.id, json, meta.sideAUserId, meta.sideACharacterId,
+      meta.sideBCharacterId, state.createdAt, state.updatedAt,
+      expectedRevision, nextRevision, fence?.ownerId ?? null,
+      fence?.fencingToken ?? null, new Date().toISOString(), observationRunId],
   );
-  if (result.rowCount !== 1) throw new Error("BATTLE_REVISION_CONFLICT");
+  if (result.rowCount !== 1) {
+    const exists = await connection.query("SELECT 1 FROM battles WHERE id = $1", [state.id]);
+    throw new Error(exists.rowCount === 0 ? "BATTLE_NOT_FOUND" : "BATTLE_REVISION_CONFLICT");
+  }
 }
 
 export async function saveBattleWithNarrationOutbox(
@@ -101,27 +156,34 @@ export async function saveBattleWithNarrationOutbox(
     expectedRevision?: number;
   },
 ): Promise<void> {
-  await withTransaction(async (connection) => {
-    await writeBattle(connection, state, meta);
-    const receiptIds = new Set(state.advanceOperation?.receiptIds ?? []);
-    for (const receipt of state.phaseReceipts ?? []) {
-      if (!receiptIds.has(receipt.id)) continue;
-      if (receipt.narrationDeferred) continue;
-      if (!receipt.narrationInput || !receipt.narrationInputDigest) {
-        throw new Error("NARRATION_INPUT_MISSING");
-      }
-      await enqueueNarrationInTransaction(connection, {
-        battleId: state.id,
-        receiptId: receipt.id,
-        sequence: receipt.sequence,
-        phase: receipt.phase,
-        combatTurn: receipt.combatTurn,
-        frozenInput: receipt.narrationInput,
-        inputDigest: receipt.narrationInputDigest,
-        now: receipt.committedAt,
-      });
+  await withTransaction((connection) => saveBattleWithNarrationOutboxInTransaction(connection, state, meta));
+}
+
+/** Persist canonical facts and immutable narration sources in the caller's transaction. */
+export async function saveBattleWithNarrationOutboxInTransaction(
+  connection: DatabaseConnection,
+  state: BattleState,
+  meta: Parameters<typeof saveBattle>[1],
+): Promise<void> {
+  await writeBattle(connection, state, meta);
+  const receiptIds = new Set(state.advanceOperation?.receiptIds ?? []);
+  for (const receipt of state.phaseReceipts ?? []) {
+    if (!receiptIds.has(receipt.id)) continue;
+    if (receipt.narrationDeferred) continue;
+    if (!receipt.narrationInput || !receipt.narrationInputDigest) {
+      throw new Error("NARRATION_INPUT_MISSING");
     }
-  });
+    await enqueueNarrationInTransaction(connection, {
+      battleId: state.id,
+      receiptId: receipt.id,
+      sequence: receipt.sequence,
+      phase: receipt.phase,
+      combatTurn: receipt.combatTurn,
+      frozenInput: receipt.narrationInput,
+      inputDigest: receipt.narrationInputDigest,
+      now: receipt.committedAt,
+    });
+  }
 }
 
 function parseBattleState(rawJson: unknown, idHint = "?"): BattleState {
@@ -135,6 +197,9 @@ function parseBattleStateDetailed(
   const raw = typeof rawJson === "string" ? JSON.parse(rawJson) : rawJson;
   const parsed = BattleStateSchema.safeParse(raw);
   if (parsed.success) return { state: ensureSemanticState(parsed.data), repaired: false };
+  if (typeof raw === "object" && raw !== null && "assetManifest" in raw &&
+      typeof raw.assetManifest === "object" && raw.assetManifest !== null &&
+      "schemaVersion" in raw.assetManifest && raw.assetManifest.schemaVersion === 5) throw parsed.error;
   console.warn(
     "[battles] schema soft-repair",
     idHint,
@@ -148,6 +213,7 @@ function parseBattleStateDetailed(
 }
 
 function ensureSemanticState(state: BattleState): BattleState {
+  if (state.assetManifest?.schemaVersion === 5) return state;
   const semanticState = state.semanticState ?? createBattleSemanticState({
     scene: state.situation.scene,
     notes: state.situation.notes,
@@ -317,7 +383,7 @@ function degradedListItem(rawJson: unknown): BattleListItem | null {
   const situation = value.situation && typeof value.situation === "object"
     ? value.situation as Record<string, unknown>
     : {};
-  const status = value.status === "finished" ? "finished" : "active";
+  const status = value.status === "finished" ? "finished" : value.status === "incomplete" ? "incomplete" : "active";
   const winnerSide = value.winnerSide === "a" || value.winnerSide === "b" ||
       value.winnerSide === "draw"
     ? value.winnerSide

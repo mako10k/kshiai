@@ -1,0 +1,31 @@
+domain CC319:
+  description "Persist the exact owner acceptance and prepare remote continuation."
+evidence OWNER:
+  |
+    In this conversation on 2026-09-29 the owner answered the disclosed exact
+    candidate package question: この候補一式を採用して進める（推奨）.
+    The next user instruction is to create handoff materials, commit WIP if dirty,
+    and push. No new implementation is needed for that closeout instruction.
+evidence CANDIDATE:
+  |
+    Current requirement v2, ADR0039 think/md and design v2 bytes match the four
+    SHA256 identities in cc305-plan-verification-2026-09-29.json. Independent
+    review was completed before this exact owner question. ADR0039 only replaces
+    old unfinished-battle preservation clauses for its R3 cutover target set.
+premise BOUNDARY:
+  |
+    Preserve accepted decision content and record lifecycle metadata plus the
+    exact submitted identities and owner answer. Keep ADR0010's other authoring
+    and finished-history obligations active. Preserve the archived old ADR0032
+    source branch, and identify its limited replacement in the new acceptance.
+    Owner review duration was not measured; do not invent a start or velocity.
+    Child vt111 is only the measured local readback of this accepted handoff.
+decision RECORD based_on OWNER, CANDIDATE, BOUNDARY:
+  |
+    Record requirement/ADR/design acceptance, update their metadata and ADR index,
+    and read back all identities. Record cc319 done with acceptance as evidence;
+    complete the bounded vt111 readback and leave vt102 suspended for continuation.
+    Preserve vt109's observed velocity sample without adding owner review or
+    handoff bookkeeping as throughput. Recheck both PERT plans, write the handoff,
+    commit approved WIP on existing cc304, push that branch and independently
+    compare the server SHA with local HEAD. No new branches or remote data writes.

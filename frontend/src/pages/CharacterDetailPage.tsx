@@ -1,5 +1,6 @@
+/** R: Display current or battle-bound character profiles and permitted owner actions. */
 import { useCallback, useEffect, useState, type FormEvent } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import type {
   BattleListItem,
   CharacterImprovementPublic,
@@ -80,8 +81,11 @@ function quotaHint(q: ImageGenQuota | null): string {
 export function CharacterDetailPage() {
   const { id } = useParams();
   const nav = useNavigate();
+  const [searchParams] = useSearchParams();
+  const battleId = searchParams.get("battleId") ?? undefined;
   const [character, setCharacter] = useState<CharacterPublic | null>(null);
   const [isOwner, setIsOwner] = useState(false);
+  const canEdit = isOwner && character?.compatibility?.schemaVersion === 3 && !battleId;
   const [history, setHistory] = useState<BattleListItem[]>([]);
   const [historyTotal, setHistoryTotal] = useState(0);
   const [historyLoading, setHistoryLoading] = useState(true);
@@ -105,14 +109,14 @@ export function CharacterDetailPage() {
     failure,
   } = useCharacterAuthoringSync({
     id,
-    isOwner,
+    isOwner: isOwner && !battleId,
     busy,
     onCharacter: setCharacter,
   });
 
   useEffect(() => {
-    if (pendingDraft) nav(`/reviews/${pendingDraft.id}`);
-  }, [pendingDraft, nav]);
+    if (isOwner && !battleId && pendingDraft) nav(`/reviews/${pendingDraft.id}`);
+  }, [isOwner, battleId, pendingDraft, nav]);
 
   const reloadQuota = useCallback(async (charId: string) => {
     try {
@@ -149,14 +153,18 @@ export function CharacterDetailPage() {
 
   useEffect(() => {
     if (!id) return;
+    let cancelled = false;
+    setCharacter(null);
+    setIsOwner(false);
     setError(null);
     void api
-      .getCharacter(id)
+      .getCharacter(id, battleId)
       .then(({ character: c, isOwner: owner }) => {
+        if (cancelled) return;
         setCharacter(c);
-        setIsOwner(owner);
+        setIsOwner(owner && !battleId);
         setAuthoringProgress(c.authoringProgress ?? null);
-        if (owner) {
+        if (owner && !battleId && c.compatibility?.schemaVersion === 3) {
           void reloadQuota(id);
           void reloadImprovement(id);
         } else {
@@ -165,6 +173,7 @@ export function CharacterDetailPage() {
         void reloadHistory(id);
       })
       .catch((e) => {
+        if (cancelled) return;
         setCharacter(null);
         setError(
           e instanceof ApiError && e.status === 404
@@ -172,11 +181,12 @@ export function CharacterDetailPage() {
             : String(e instanceof Error ? e.message : e),
         );
       });
-  }, [id, reloadQuota, reloadHistory, reloadImprovement]);
+    return () => { cancelled = true; };
+  }, [id, battleId, reloadQuota, reloadHistory, reloadImprovement]);
 
   // Refresh countdown label while waiting for next slot
   useEffect(() => {
-    if (!quota || quota.allowed || !quota.nextAllowedAt || !id) return;
+    if (!canEdit || !quota || quota.allowed || !quota.nextAllowedAt || !id) return;
     const tick = () => {
       const t = Date.parse(quota.nextAllowedAt!);
       if (Number.isFinite(t) && Date.now() >= t) {
@@ -185,11 +195,11 @@ export function CharacterDetailPage() {
     };
     const idTimer = window.setInterval(tick, 30_000);
     return () => window.clearInterval(idTimer);
-  }, [quota, id, reloadQuota]);
+  }, [canEdit, quota, id, reloadQuota]);
 
   async function onChat(e: FormEvent) {
     e.preventDefault();
-    if (!id || !isOwner) return;
+    if (!id || !canEdit) return;
     const text = chat.trim();
     if (!text) {
       setError("調整内容を入力してください");
@@ -214,7 +224,7 @@ export function CharacterDetailPage() {
   }
 
   async function onUpgrade() {
-    if (!id || !isOwner) return;
+    if (!id || !isOwner || battleId) return;
     setBusy(true);
     setError(null);
     setPendingDraft(null);
@@ -233,7 +243,7 @@ export function CharacterDetailPage() {
   }
 
   async function onRestoreRevision() {
-    if (!id || !isOwner) return;
+    if (!id || !canEdit) return;
     if (
       !confirm(
         "直前の確定世代の内容を、新しい世代として復元します。よろしいですか？",
@@ -254,14 +264,8 @@ export function CharacterDetailPage() {
     }
   }
 
-  async function onCopy() {
-    if (!id) return;
-    const res = await api.copyCharacter(id);
-    nav(`/characters/${res.character.id}`);
-  }
-
   async function onVisibilityChange(visibility: CharacterVisibility) {
-    if (!id || !isOwner) return;
+    if (!id || !canEdit) return;
     setBusy(true);
     setError(null);
     try {
@@ -283,14 +287,14 @@ export function CharacterDetailPage() {
 
 
   async function onDelete() {
-    if (!id || !isOwner) return;
+    if (!id || !canEdit) return;
     if (!confirm("削除しますか？")) return;
     await api.deleteCharacter(id);
     nav("/characters");
   }
 
   async function onImage() {
-    if (!id || !isOwner) return;
+    if (!id || !canEdit) return;
     if (quota && !quota.allowed) {
       setError(quotaHint(quota));
       return;
@@ -316,7 +320,7 @@ export function CharacterDetailPage() {
   }
 
   async function onToggleImage() {
-    if (!id || !isOwner) return;
+    if (!id || !canEdit) return;
     setImageBusy(true);
     setError(null);
     try {
@@ -333,7 +337,7 @@ export function CharacterDetailPage() {
   }
 
   async function onAnalyzeImprovement() {
-    if (!id || !isOwner) return;
+    if (!id || !canEdit) return;
     setImprovementBusy(true);
     setError(null);
     try {
@@ -351,7 +355,7 @@ export function CharacterDetailPage() {
   }
 
   async function onGenerateImprovementPrompt() {
-    if (!id || !isOwner) return;
+    if (!id || !canEdit) return;
     setImprovementBusy(true);
     setError(null);
     try {
@@ -404,14 +408,7 @@ export function CharacterDetailPage() {
   ].filter((row): row is string[] => row != null);
 
   const imageBlocked = Boolean(quota && !quota.allowed);
-  const imageLabel = imageBusy
-    ? "生成中…"
-    : imageBlocked
-      ? "顔生成は上限です"
-      : character.appearance.imageUrl
-        ? "顔を再生成"
-        : "顔を AI 生成";
-  const selectable = character.selectable !== false &&
+  const selectable = !battleId && character.selectable !== false &&
     character.compatibility?.status !== "unsupported" &&
     character.compatibility?.status !== "upgrading" &&
     character.compatibility?.status !== "upgrade_failed";
@@ -420,6 +417,7 @@ export function CharacterDetailPage() {
     <>
       <div className="row" style={{ justifyContent: "space-between" }}>
         <h1>{character.displayName}</h1>
+        {battleId && <span className="muted">当時のキャラクター（閲覧のみ）</span>}
         <div className="row" style={{ gap: "0.45rem" }}>
           {selectable && isOwner ? (
             <Link
@@ -436,17 +434,18 @@ export function CharacterDetailPage() {
               このキャラと対戦
             </Link>
           ) : null}
+          {battleId && <Link to={`/characters/${character.id}`}>最新版を見る</Link>}
           <Link to="/characters">← 一覧</Link>
         </div>
       </div>
 
-      {!selectable && (
+      {!selectable && !battleId && (
         <div className="panel">
           <h2>最新版への更新が必要です</h2>
           <p className="muted">
             このキャラクターは管理・閲覧できますが、最新版への更新を確定するまで対戦の選択肢には表示されません。
           </p>
-          {isOwner && character.upgradeAction ? (
+          {isOwner && !battleId && character.upgradeAction ? (
             <button
               className="btn primary"
               type="button"
@@ -456,6 +455,9 @@ export function CharacterDetailPage() {
               {busy ? "更新案を作成中…" : character.upgradeAction.label}
             </button>
           ) : null}
+          {isOwner && character.compatibility?.schemaVersion === 2 && !character.upgradeAction && (
+            <p className="muted">現在、自動でキャラクター定義 v3へ移行する機能は利用できません。この旧版は閲覧できます。</p>
+          )}
         </div>
       )}
       <AuthoringProgressNotice
@@ -476,7 +478,7 @@ export function CharacterDetailPage() {
           ) : (
             <div className="portrait-placeholder">No Image</div>
           )}
-          {isOwner && character.canToggleImage && character.appearance.previousImageUrl ? (
+          {canEdit && character.canToggleImage && character.appearance.previousImageUrl ? (
             <div className="portrait-toggle-panel">
               <p className="muted portrait-toggle-label">顔画像の切替（プレビュー）</p>
               <div className="portrait-toggle-row">
@@ -535,7 +537,7 @@ export function CharacterDetailPage() {
               <span> (@{character.owner.username})</span>
             </p>
           ) : null}
-          {isOwner ? (
+          {canEdit ? (
             <label className="field" style={{ marginBottom: "0.75rem" }}>
               <span className="field-label">公開範囲</span>
               <select
@@ -662,21 +664,13 @@ export function CharacterDetailPage() {
                 相手にする
               </Link>
             ) : null}
-            {isOwner && (
-              <button
-                className="btn"
-                type="button"
-                disabled={imageBusy || busy || imageBlocked}
-                onClick={() => void onImage()}
-                title={quotaHint(quota)}
-              >
-                {imageLabel}
+            {canEdit && (
+              <button className="btn" type="button" disabled={imageBusy || busy || imageBlocked}
+                onClick={() => void onImage()} title={quotaHint(quota)}>
+                {imageBusy ? "顔画像を生成中…" : character.appearance.imageUrl ? "顔画像を再生成" : "顔画像を生成"}
               </button>
             )}
-            <button className="btn" type="button" onClick={() => void onCopy()}>
-              コピー
-            </button>
-            {isOwner && (
+            {canEdit && (
               <button
                 className="btn danger"
                 type="button"
@@ -686,7 +680,7 @@ export function CharacterDetailPage() {
               </button>
             )}
           </div>
-          {isOwner && quota && (
+          {canEdit && quota && (
             <p className={`image-quota-hint${imageBlocked ? " is-blocked" : ""}`}>
               {quotaHint(quota)}
               {imageBlocked && quota.nextAllowedAt ? (
@@ -702,7 +696,7 @@ export function CharacterDetailPage() {
         </div>
       </div>
 
-      {isOwner && (
+      {canEdit && (
         <div className="panel improvement-panel">
           <h2>改善提案（戦績コーチ）</h2>
           <p className="muted help-text">
@@ -810,7 +804,7 @@ export function CharacterDetailPage() {
         </div>
       )}
 
-      {isOwner && (
+      {canEdit && (
         <div className="panel" id="character-chat-panel">
           <h2>会話で微調整</h2>
           <p className="muted">

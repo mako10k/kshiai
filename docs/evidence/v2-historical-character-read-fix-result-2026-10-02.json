@@ -1,0 +1,124 @@
+{
+  "observedAt": "2026-10-02T09:24:52.942432+00:00",
+  "ownerReport": {
+    "currentV2Character": "みき",
+    "displayAndNoOrdinaryEdit": "OK",
+    "historicalBattleOpen": "blocked"
+  },
+  "legacyBattle": [
+    {
+      "battleId": "btl_42085ad499be0cb5480a2d0fc4207a15",
+      "createdAt": "2026-09-06T10:55:11.946Z",
+      "turn": 12,
+      "valid": false,
+      "issues": [
+        {
+          "path": [
+            "assetManifest",
+            "characters",
+            "a",
+            "compilerInputsV2",
+            "actionNorms",
+            "norms",
+            0,
+            "response"
+          ],
+          "code": "custom",
+          "message": "compiled action norm requires at least one structured action selector"
+        },
+        {
+          "path": [
+            "assetManifest",
+            "characters",
+            "a",
+            "compilerInputsV2",
+            "actionNorms",
+            "norms",
+            1,
+            "response"
+          ],
+          "code": "custom",
+          "message": "compiled action norm requires at least one structured action selector"
+        },
+        {
+          "path": [
+            "assetManifest",
+            "characters",
+            "a",
+            "compilerInputsV2",
+            "actionNorms",
+            "norms",
+            2,
+            "response"
+          ],
+          "code": "custom",
+          "message": "compiled action norm requires at least one structured action selector"
+        },
+        {
+          "path": [
+            "assetManifest",
+            "characters",
+            "b",
+            "compilerInputsV2",
+            "actionNorms",
+            "norms",
+            0,
+            "response"
+          ],
+          "code": "custom",
+          "message": "compiled action norm requires at least one structured action selector"
+        },
+        {
+          "path": [
+            "assetManifest",
+            "characters",
+            "b",
+            "compilerInputsV2",
+            "actionNorms",
+            "norms",
+            1,
+            "response"
+          ],
+          "code": "custom",
+          "message": "compiled action norm requires at least one structured action selector"
+        }
+      ],
+      "manifestPresent": true,
+      "characterBindings": {
+        "a": {
+          "assetId": "chr_58bf0c8169eec9dec6546f18",
+          "generationId": "character:chr_58bf0c8169eec9dec6546f18:g2:8391d0659ca7f380",
+          "snapshotPresent": true
+        },
+        "b": {
+          "assetId": "chr_4becae9c41374529709e8115",
+          "generationId": "character:chr_4becae9c41374529709e8115:g2:0c0af7a6639a4981",
+          "snapshotPresent": true
+        }
+      }
+    }
+  ],
+  "snapshotProof": [
+    {
+      "side": "a",
+      "characterId": "chr_58bf0c8169eec9dec6546f18",
+      "generationId": "character:chr_58bf0c8169eec9dec6546f18:g2:8391d0659ca7f380",
+      "snapshotMatches": true
+    },
+    {
+      "side": "b",
+      "characterId": "chr_4becae9c41374529709e8115",
+      "generationId": "character:chr_4becae9c41374529709e8115:g2:0c0af7a6639a4981",
+      "snapshotMatches": true
+    }
+  ],
+  "localVerification": {
+    "targetedTests": 16,
+    "typecheck": "passed",
+    "static": "passed",
+    "fullSelectedTestSuites": "passed; counts in command log"
+  },
+  "runtimeApplied": false,
+  "remaining": "Exact new SHA CI, separately approved image/deployment, owner historical profile readback",
+  "scope": "Immutable historical character display only; battle playback restrictions and stored data preserved"
+}

@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "observedAt": "2026-10-02T06:59:57.845670+00:00",
+  "authority": "Owner explicit image creation approval; origin push and CI always permitted",
+  "commitSha": "458af76a306b222133a383d5bbdc6eecb197b7a9",
+  "ciRunId": 36975080520,
+  "ci4": "success",
+  "buildId": "82cbd5b2-3433-458d-86f2-02587d7f7f06",
+  "buildStatus": "SUCCESS",
+  "buildStart": "2026-10-02T06:54:14.541138060Z",
+  "buildFinish": "2026-10-02T06:56:56.254670Z",
+  "machineType": "E2_MEDIUM",
+  "timeout": "1200s",
+  "imageRef": "asia-northeast1-docker.pkg.dev/kshiai/kshiai/backend@sha256:e439d1ef3e2845ea203d171ede921e5a6da5be8c61f47f3ef3a13b285dbbc397",
+  "registryDigestReadbackMatched": true,
+  "gitArchiveSha256": "001385454509d0245055ba8cabd633099f3688e1cf5d1d54b1e8c0c2e444f2a1",
+  "submittedArchiveSha256": "6534ddd009bdf62ee7f7d1025ddc4e55b4597d639f158bc8fa3148881fb41403",
+  "buildSourceProvenanceMatched": true,
+  "submittedFilesMatchedFrozenSource": 5661,
+  "source": {
+    "bucket": "kshiai_cloudbuild",
+    "generation": "1790924000916156",
+    "object": "source/1790923991.402224-8bf492567d3548199c9c124a9e5f4ae4.tgz"
+  },
+  "submissionCount": 1,
+  "deployed": false
+}

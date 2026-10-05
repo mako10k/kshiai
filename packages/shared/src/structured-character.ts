@@ -1,3 +1,4 @@
+// R: Validate and project versioned structured character definitions.
 import { z } from "zod";
 import {
   ActionFeasibilityConstraintsSchema,
@@ -20,7 +21,7 @@ import {
   CharacterNarratorProjectionSetV2Schema,
   PsycheTraitProfileV1Schema,
   type CharacterNarratorStaticProjectionV2,
-} from "./battle.js";
+} from "./battle-character-compiler.js";
 import {
   AssetClaimValidationReceiptV1Schema,
   AssetDisclosurePolicyV1Schema,
@@ -124,7 +125,7 @@ export type CharacterRelationshipTargetV2 = z.infer<
   typeof CharacterRelationshipTargetV2Schema
 >;
 
-export const CharacterActionNormV2Schema = z.object({
+const CharacterActionNormV2ObjectSchema = z.object({
   id: StableIdSchema,
   when: z.object({
     match: z.enum(["all", "any"]),
@@ -152,17 +153,22 @@ export const CharacterActionNormV2Schema = z.object({
     description: z.string().min(1).max(320),
   }).strict()).max(4),
   description: CharacterDescriptionV2Schema.nullable(),
-}).strict().superRefine((norm, context) => {
-  const restrictive = norm.response.disposition === "allow_only" ||
-    norm.response.disposition === "forbid";
-  if (restrictive !== (norm.force === "constraint")) {
-    context.addIssue({
-      code: z.ZodIssueCode.custom,
-      message: "allow_only/forbid require constraint; prefer/avoid do not",
-      path: ["force"],
-    });
-  }
-});
+}).strict();
+
+export const CharacterActionNormV2Schema = z.discriminatedUnion("force", [
+  CharacterActionNormV2ObjectSchema.extend({
+    force: z.enum(["preference", "commitment"]),
+    response: CharacterActionNormV2ObjectSchema.shape.response.extend({
+      disposition: z.enum(["prefer", "avoid"]),
+    }),
+  }),
+  CharacterActionNormV2ObjectSchema.extend({
+    force: z.literal("constraint"),
+    response: CharacterActionNormV2ObjectSchema.shape.response.extend({
+      disposition: z.enum(["allow_only", "forbid"]),
+    }),
+  }),
+]);
 export type CharacterActionNormV2 = z.infer<typeof CharacterActionNormV2Schema>;
 
 export const CharacterActionDefinitionV2Schema = z.object({

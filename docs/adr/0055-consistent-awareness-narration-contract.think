@@ -1,0 +1,18 @@
+domain PromptRepairRelease:
+  description "Owner-authorized implementation, verification, public deployment and new-battle completion."
+evidence OWNER:
+  "Owner requests implementation and test correction, deployment and battle completion test, and explicitly selects existing public kshiai.mk10.org CloudRun API plus Cloudflare Worker."
+evidence DEFECT:
+  "Read-only inspection confirms legacy single-object grammars copied into new receipts envelope prompts in all phases; focus and speech-surface instructions also conflict. Provider-json test uses unclassified operation. One prior real sample completed HTTP but failed at tick1."
+premise CONTRACT:
+  "Accepted existing output schema, exact speech/source preservation, immutable old bindings, normal timing usage-v2, no automatic retries/fallback and actual token accounting remain. New prompt-v3 fixes narration construction; v1/v2 rendering and saved frozen sources remain readable. Latent/conscious v3 content equals repaired v2."
+premise DESIGN:
+  "Give narration output/speech contract a dedicated module; phase builders accept narrow typed contract injection with legacy defaults. New frozen materials select content-only strict speech rules and final wrapper emits one complete phase-specific batch contract with schema-valid examples. Persist optional response-shape metadata in existing snapshot JSON, no raw text or secret values. New calls record selected finish_reason, content length and empty predicate to distinguish invalid output causes."
+premise DEPLOY:
+  "Prepare a scoped reproducible commit and official required CI/release route; use fixed artifacts, forward migrations, no-traffic smoke, public promotion and readback. Preserve unrelated WIP and held old V3 cutover trial contract. Root is sole external executor. Freeze actual target/version and rollback values before writes. Worktime extension is pending; no overtime without explicit authorization."
+premise UNKNOWN:
+  "Current remote release/cloud state and exact CI acceptance fit remain to be read. Model responses may expose later issues even after prompt coherence correction. Prices unvalidated, physical ceilings remain cost bounds."
+premise ALTERNATIVES:
+  "Appending another output instruction retains contradictions. Relaxing schema or transforming invalid outputs weakens accepted boundaries. Rewriting old prompt-v2 would change immutable bindings. Versioned phase content/contract separation and source-path tests preserves old consumers while fixing new requests."
+decision IMPLEMENT based_on OWNER, DEFECT, CONTRACT, DESIGN, DEPLOY, UNKNOWN, ALTERNATIVES:
+  "Record accepted bug-repair ADR and design, implement new prompt-v3 and typed narration contract separation, correct regression fixture and metadata, run focused and ordinary checks with scope declared. Then verify one isolated new normal battle and official release/public E2E. Advance toward full objective without claiming completion until actual public new battle, narration and token readback succeed. Do not conflate old held trial scope with ordinary new release acceptance."

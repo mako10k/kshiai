@@ -607,3 +607,19 @@ describe("observer-safe action feasibility", () => {
     assert.equal(enabled.resolution.reason, "out_of_range");
   });
 });
+
+
+it("rejects an unspecified skill through the existing feasibility reason", () => {
+  const { state, sideA } = setup();
+  const result = revalidateCharacterAction({
+    actorSide: "a", requested: { kind: "skill" }, actor: state.sideA,
+    skills: sideA.skills, basicAttack: sideA.basicAttack, turn: 1,
+  });
+  assert.equal(result.resolution.reason, "skill_unavailable");
+});
+
+type AvailableAction = import("./action-feasibility.js").ObserverSafeAvailableAction;
+const missingCapabilitySkillId: { kind: "skill"; name: string; target: { kind: "self"; perceivedAs: string } } extends AvailableAction ? true : false = false;
+it("requires the original skill identifier in skill capability metadata", () => {
+  assert.equal(missingCapabilitySkillId, false);
+});

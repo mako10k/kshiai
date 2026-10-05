@@ -1,0 +1,461 @@
+{
+  "thought_id": "docs-evidence-vt104-snapshot-storage-candidate-2026-09-30",
+  "id_source": "file",
+  "report": {
+    "engine_version": "0.1.0",
+    "document_id": "docs-evidence-vt104-snapshot-storage-candidate-2026-09-30",
+    "generated_at": "2026-09-30T11:10:01.856Z",
+    "summary": {
+      "fatal_count": 0,
+      "error_count": 0,
+      "warning_count": 0,
+      "info_count": 1,
+      "hint_count": 18
+    },
+    "results": [
+      {
+        "issue_id": "ISSUE-001",
+        "category": "contradiction_candidate",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "SELECT",
+            "role": "decision",
+            "step_id": "S-SELECT"
+          },
+          {
+            "ref_id": "REVISED_STORAGE",
+            "role": "decision",
+            "step_id": "S-REVISED_STORAGE"
+          }
+        ],
+        "message": "SELECT と REVISED_STORAGE は同一根拠 OWNER_REQUEST を共有しており、緊張関係にある可能性がある。",
+        "rationale": "複数の decision が同じ based_on 参照を共有しているため、観点と結論の整合性を再確認するべきである。",
+        "metadata": {
+          "shared_refs": [
+            "OWNER_REQUEST"
+          ],
+          "line": 19,
+          "column": 10,
+          "end_column": 16
+        }
+      },
+      {
+        "issue_id": "ISSUE-002",
+        "category": "contradiction_candidate",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "SELECT",
+            "role": "decision",
+            "step_id": "S-SELECT"
+          },
+          {
+            "ref_id": "RECORD_AND_VERIFY",
+            "role": "decision",
+            "step_id": "S-RECORD_AND_VERIFY"
+          }
+        ],
+        "message": "SELECT と RECORD_AND_VERIFY は同一根拠 PROTECTION を共有しており、緊張関係にある可能性がある。",
+        "rationale": "複数の decision が同じ based_on 参照を共有しているため、観点と結論の整合性を再確認するべきである。",
+        "metadata": {
+          "shared_refs": [
+            "PROTECTION"
+          ],
+          "line": 19,
+          "column": 10,
+          "end_column": 16
+        }
+      },
+      {
+        "issue_id": "ISSUE-003",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "OWNER_REQUEST",
+            "role": "evidence",
+            "step_id": "S-OWNER_REQUEST"
+          }
+        ],
+        "message": "evidence OWNER_REQUEST は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 4,
+          "column": 3,
+          "text": "Owner explicitly requested creation of a storage destination candidate, not resource creation or capture.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-004",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "GCP_READBACK",
+            "role": "evidence",
+            "step_id": "S-GCP_READBACK"
+          }
+        ],
+        "message": "evidence GCP_READBACK は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 6,
+          "column": 3,
+          "text": "2026-09-30 project kshiai bucket list returns one bucket kshiai_cloudbuild in US, uniform bucket access false, public access prevention inherited. Active authenticated account mako10k@mk10.org. Current list is bounded to this project and account.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-005",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "PLATFORM",
+            "role": "evidence",
+            "step_id": "S-PLATFORM"
+          }
+        ],
+        "message": "evidence PLATFORM は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 8,
+          "column": 3,
+          "text": "Official Cloud Storage documentation supports Google-managed default encryption, uniform bucket IAM, enforced public access prevention, retention policy and lifecycle deletion. Retention/lifecycle/soft-delete interact, and project IAM privileges remain inherited.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-006",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "PROTECTION",
+            "role": "premise",
+            "step_id": "S-PROTECTION"
+          }
+        ],
+        "message": "premise PROTECTION は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 10,
+          "column": 3,
+          "text": "Snapshot includes private application state and requires protected beneficiary owner, precise storage/access/encryption/retention/readback and measured restore bound before shared stopped cutover. Owner-only access cannot be claimed until inherited IAM and recovery executor are verified.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-007",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "OPTION_DEDICATED",
+            "role": "premise",
+            "step_id": "S-OPTION_DEDICATED"
+          }
+        ],
+        "message": "premise OPTION_DEDICATED は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 14,
+          "column": 3,
+          "text": "Propose dedicated asia-northeast1 Standard bucket with public prevention enforced, uniform bucket access, default Google-managed encryption/TLS, owner-admin and frozen executor minimal object-create/read roles,30-day unlocked retention and lifecycle deletion with7-day soft delete explicitly included.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-008",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "OPTION_OFFLINE",
+            "role": "premise",
+            "step_id": "S-OPTION_OFFLINE"
+          }
+        ],
+        "message": "premise OPTION_OFFLINE は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 16,
+          "column": 3,
+          "text": "Owner local encrypted archive avoids new cloud storage but adds export/device/key/transfer dependencies and unmeasured restore duration.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-009",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "EXECUTOR",
+            "role": "pending",
+            "step_id": "S-EXECUTOR"
+          }
+        ],
+        "message": "pending EXECUTOR は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 18,
+          "column": 3,
+          "text": "Exact service account, inherited privileged principals, globally available bucket name, archive coverage/dependencies and real transfer/restore/forward recovery timings need independent verification.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-010",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "SELECT",
+            "role": "decision",
+            "step_id": "S-SELECT"
+          }
+        ],
+        "message": "decision SELECT は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 20,
+          "column": 3,
+          "text": "Recommend dedicated bucket candidate for review. Existing build bucket is poorly matched to separate private snapshot policy. Preserve30day minimum plus7day recoverable soft-delete as retention proposal, not exact deletion deadline. Prepare configuration and max-write/readback fields; resource creation/export remain separate execution packet authority.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-011",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "INHERITED_IAM",
+            "role": "evidence",
+            "step_id": "S-INHERITED_IAM"
+          }
+        ],
+        "message": "evidence INHERITED_IAM は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 23,
+          "column": 3,
+          "text": "Project IAM readback shows owner mako10k@mk10.org and default compute service account with project editor plus storage.objectViewer. A new bucket in this project inherits these privileges; bucket-only IAM does not make plaintext owner-only.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-012",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "AGE_PRIMARY",
+            "role": "evidence",
+            "step_id": "S-AGE_PRIMARY"
+          }
+        ],
+        "message": "evidence AGE_PRIMARY は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 25,
+          "column": 3,
+          "text": "Official age documentation supports recipient public-key encryption and private identity decryption. The local age executable is currently unavailable; no owner key or encryption run exists.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-013",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "OPTION_ENCRYPTED",
+            "role": "premise",
+            "step_id": "S-OPTION_ENCRYPTED"
+          }
+        ],
+        "message": "premise OPTION_ENCRYPTED は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 27,
+          "column": 3,
+          "text": "Add owner-recipient client-side age encryption before dedicated bucket upload. Inherited privileged project principals can access ciphertext; plaintext requires owner-controlled private identity. Key loss blocks recovery, so a protected backup and owner-assisted actual restore rehearsal are prerequisites.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-014",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "REVISED_STORAGE",
+            "role": "decision",
+            "step_id": "S-REVISED_STORAGE"
+          }
+        ],
+        "message": "decision REVISED_STORAGE は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 29,
+          "column": 3,
+          "text": "Recommend dedicated bucket with client-side owner-recipient encryption,30day minimum retention and7day soft-delete proposal. Preserve exact inherited-reader disclosure. Collect owner public recipient and protected key recovery route before execution. Keep plaintext owner-only as a verification condition, not an already achieved state.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-015",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "OWNER_SELECTION",
+            "role": "evidence",
+            "step_id": "S-OWNER_SELECTION"
+          }
+        ],
+        "message": "evidence OWNER_SELECTION は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 32,
+          "column": 3,
+          "text": "Owner explicitly selected option1 owner public-key pre-encryption with disclosed common dedicated Tokyo GCS30day minimum and7day soft-delete. Selection is storage policy only, not resource creation or actual capture/production action. Public recipient/private identity storage remain pending.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-016",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "LOCAL_TOOL_CHECK",
+            "role": "premise",
+            "step_id": "S-LOCAL_TOOL_CHECK"
+          }
+        ],
+        "message": "premise LOCAL_TOOL_CHECK は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 34,
+          "column": 3,
+          "text": "Prepare an isolated official Ubuntu age binary without system installation, verify package and repository metadata, and run synthetic key/encrypt/decrypt/wrong-key/tamper tests. Fixture keys are temporary test doubles, not owner keys. No private production state or remote upload.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-017",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "RECORD_AND_VERIFY",
+            "role": "decision",
+            "step_id": "S-RECORD_AND_VERIFY"
+          }
+        ],
+        "message": "decision RECORD_AND_VERIFY は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 36,
+          "column": 3,
+          "text": "Record Accepted storage policy ADR and subordinate packet fields. Test the encryption tool locally with synthetic data and preserve exact version/hash evidence. Prepare owner-key procedure as needed, without creating an owner key at an unspecified protection destination.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-018",
+        "category": "semantic_hint",
+        "severity": "info",
+        "target_refs": [
+          {
+            "ref_id": "EXECUTOR",
+            "role": "pending",
+            "step_id": "S-EXECUTOR"
+          }
+        ],
+        "message": "pending が存在するため、判断の確定度は下げて表示するべきである。",
+        "metadata": {
+          "line": 17,
+          "column": 9,
+          "end_column": 17
+        }
+      },
+      {
+        "issue_id": "ISSUE-019",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "SELECT",
+            "role": "decision",
+            "step_id": "S-SELECT"
+          },
+          {
+            "ref_id": "REVISED_STORAGE",
+            "role": "decision",
+            "step_id": "S-REVISED_STORAGE"
+          }
+        ],
+        "message": "SELECT と REVISED_STORAGE は意味的に近接している可能性がある。",
+        "metadata": {
+          "line": 19,
+          "column": 10,
+          "end_column": 16,
+          "similarity": 0.75,
+          "semantic_distance": 0.25
+        }
+      }
+    ],
+    "query_results": []
+  }
+}

@@ -1,3 +1,4 @@
+/** R: Present owned battle history and links to its immutable character profiles. */
 import { useCallback, useEffect, useState, type FormEvent } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import type { BattleListItem } from "@kshiai/shared";
@@ -187,7 +188,7 @@ export function HistoryPage() {
                     <div className="history-vs-row">
                       {b.sideACharacterId ? (
                         <Link
-                          to={`/characters/${b.sideACharacterId}`}
+                          to={`/characters/${b.sideACharacterId}?battleId=${encodeURIComponent(b.id)}`}
                           className="history-mini-face"
                           aria-label={`${b.sideAName} の詳細`}
                         >
@@ -206,21 +207,26 @@ export function HistoryPage() {
                           )}
                         </span>
                       )}
-                      <button
-                        type="button"
-                        className="history-vs-btn"
-                        onClick={() => openBattle(b)}
-                        disabled={b.integrityStatus === "degraded"}
-                      >
-                        <strong className="history-vs">
-                          {b.sideAName}
-                          <span className="muted"> vs </span>
-                          {b.sideBName}
-                        </strong>
-                      </button>
+                      <strong className="history-vs" style={{ flex: 1, minWidth: 0 }}>
+                        {b.sideACharacterId ? (
+                          <Link
+                            to={`/characters/${b.sideACharacterId}?battleId=${encodeURIComponent(b.id)}`}
+                            style={{ textDecoration: "underline", textUnderlineOffset: "0.2em" }}
+                            aria-label={`${b.sideAName} の当時の詳細`}
+                          >{b.sideAName}</Link>
+                        ) : b.sideAName}
+                        <span className="muted"> vs </span>
+                        {b.sideBCharacterId ? (
+                          <Link
+                            to={`/characters/${b.sideBCharacterId}?battleId=${encodeURIComponent(b.id)}`}
+                            style={{ textDecoration: "underline", textUnderlineOffset: "0.2em" }}
+                            aria-label={`${b.sideBName} の当時の詳細`}
+                          >{b.sideBName}</Link>
+                        ) : b.sideBName}
+                      </strong>
                       {b.sideBCharacterId ? (
                         <Link
-                          to={`/characters/${b.sideBCharacterId}`}
+                          to={`/characters/${b.sideBCharacterId}?battleId=${encodeURIComponent(b.id)}`}
                           className="history-mini-face"
                           aria-label={`${b.sideBName} の詳細`}
                         >

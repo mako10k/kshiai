@@ -1,0 +1,26 @@
+domain ADR0045:
+  description "ADR-0045 revision 1: preserve producer-owned action values during structural type repair. Status Accepted. Supersedes ADR-0044."
+
+problem P1:
+  "ADR-0044's implementation sketch synthesized a free-action fallback from observable preparation metadata and a reflect fallback from stock text. Valid structure alone does not establish a character's chosen attempt or reflection."
+
+evidence PRIOR:
+  "ADR-0044 records the earlier structural repair and fallback sketch. Its rationale is retained; this record replaces the sketch before deployment."
+
+evidence OWNER_ACCEPTANCE:
+  "During this same implementation the owner rejected stopgap changes that merely satisfy types and expressed concern that passed values had become string literals. This constrains the already-authorized discriminated-union repair to preservation of producer-owned values, not invented fallback judgment."
+
+premise OPTIONS:
+  "Continue synthetic judgment, insert dummy values or casts, or keep the structural union while separating executable mechanical fallbacks from capabilities requiring a complete judgment. Only the last option preserves value ownership."
+
+premise BOUNDS:
+  "Keep valid wire objects, immutable battle assets, the existing caller null/wait behavior and skill feasibility checks. No deployment, paid provider call, DB migration or new missing-judgment game rule is authorized."
+
+decision D1 based_on P1, PRIOR, OPTIONS, OWNER_ACCEPTANCE:
+  "Retain kind-discriminated schemas and typed internal construction. Preserve complete free-action and reflection payloads through engine and receipt reprojection. Do not derive either judgment from capability prose, stock reflection text or arbitrary observable preparations."
+
+decision D2 based_on D1, BOUNDS:
+  "Construct deterministic fallbacks only for mechanical actions with sufficient candidate data. Return null otherwise, retaining existing caller handling. List free-action and reflect capabilities without fake intents. Verify that valid allowed proposals are retained, not replaced with wait."
+
+decision ACCEPTANCE based_on D1, D2, OWNER_ACCEPTANCE:
+  "Apply the owner's explicit no-stopgap, no-literal-substitution constraint to the authorized repair; supersede ADR-0044's synthetic fallback sketch. Preserve all earlier rationale as history and report evidence and deployment boundaries precisely."

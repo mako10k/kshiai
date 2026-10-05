@@ -1,0 +1,40 @@
+domain ADR0047:
+  description "Proposed dynamic agency output and mechanical server responsibilities"
+problem BURDEN:
+  "Redundant fields and mixed-phase instructions cause invalid decisions and unnecessary cognitive/transcription work."
+evidence OWNER_DIRECTION:
+  "Owner asks to reconsider necessity, minimize LLM prompt/responsibility load, assign mechanical preparation/completion/continuation to server, prohibit naive semantic pattern matching, allow omission/null compatibility, and provide concrete low-effort repair information."
+evidence OBSERVATION:
+  "Required-fields RCA finds eleven normal-turn outputs missing the same three keys; ten become valid waits when only the goal gate is isolated. Structural acceptance alone does not demonstrate tactical improvement."
+evidence CURRENT_AUTHORITY:
+  "Accepted ADR-0028 fixes goals, requires initialGoal:null on subsequent turns, requires intent rationale, and forbids immediate application repair. ADR-0045 forbids manufacturing producer-owned action content."
+premise LIMIT:
+  "This task requests a correction proposal. New contract, repair budget and migration are proposals; implementation has not started."
+decision RESPONSIBILITIES based_on BURDEN, OWNER_DIRECTION, CURRENT_AUTHORITY:
+  "Keep goal/intent/action/speech semantics with LLM. Server selects current contract, carries accepted goal/state, prepares current legal candidates, resolves exact keys, validates and persists. Never infer semantics from text or fabricate producer values."
+decision MINIMAL_OUTPUT based_on RESPONSIBILITIES, OBSERVATION:
+  "Request initialGoal only while uninitialized; separate turn/later/aftermath instructions. Remove mandatory per-turn rationale. Preserve concise intent and model-selected grounding refs when a new decision is proposed. Remove manifestation field when no candidates exist. Use typed candidate references to avoid copying fixed action metadata; free action and reflect still require genuine content."
+decision NULL_COMPATIBILITY based_on RESPONSIBILITIES, MINIMAL_OUTPUT:
+  "Normalize permitted optional omissions and null to no new proposal, with source diagnostics. Preserve prior state as history, not a newly chosen action or silence intention. Missing initial goal, required later action, or intent for a proposed action cannot be manufactured. Non-null invalid values are not null."
+decision LOW_LOAD_REPAIR based_on OWNER_DIRECTION, NULL_COMPATIBILITY, CURRENT_AUTHORITY:
+  "Propose at most one application repair per logical decision, independent of transport retries. Send previous recoverable response, precise paths/codes/expected types and allowed keys; request only unresolved fields. Rechoosing actions repairs the intent/action pair; independently accepted expressions are preserved. Parse failure requires regeneration, not regex extraction. Keep frozen context, accounting and CAS fencing."
+decision MIGRATION_AND_PROOF based_on MINIMAL_OUTPUT, NULL_COMPATIBILITY, LOW_LOAD_REPAIR, LIMIT:
+  "Propose a new pinned generation for new battles; retain existing historical contracts and records, no silent migration. Before implementation resolve Proposed ADR and align canonical PERT. Verify exact typed reconstruction, semantic non-generation, omission/null behavior, retry budget, partial acceptance, CAS and legacy continuity; compare real load and action diversity separately."
+decision STATUS based_on OWNER_DIRECTION, LIMIT, MIGRATION_AND_PROOF:
+  "Direction is owner-requested, but ADR0047 was Proposed during design with contract version, retry limit and migration details reviewable. Do not claim implementation, production quality acceptance, or deployment."
+
+evidence OWNER_DYNAMIC_DIRECTION:
+  "Owner asks to design schemas containing only currently missing, invalid or update-required information; current task authorizes design work. Detailed source is docs/conscious-dynamic-output-design-2026-10-03.md."
+decision GENERATION_PLAN based_on OWNER_DYNAMIC_DIRECTION, RESPONSIBILITIES, MINIMAL_OUTPUT:
+  "Use closed typed component plans, selected from state absence, phase duties and exact validation results. Generate prompt, provider schema, normalization, validation and application from the same plan. Empty plan skips provider call. No arbitrary path writes or semantic pattern matching."
+decision DEPENDENCY_CLOSURE based_on GENERATION_PLAN, LOW_LOAD_REPAIR:
+  "Rechoosing goal or action includes dependent decisions; preserved exact values can allow structural payload-only repair. Speech-only errors request speech only. Merge only allowed unresolved components; omitted optional values mean no new proposal, not deletion. Invalid non-null values and missing semantic necessities cannot be fabricated."
+decision RESTART_AND_PROVIDER_BOUNDARIES based_on GENERATION_PLAN, DEPENDENCY_CLOSURE, LOW_LOAD_REPAIR:
+  "Compile only current targets for supported provider grammar; detect unsupported capability before dispatch rather than silently degrading. Reserve repair budget in existing continuation before calls; transport retries, provider changes or restart cannot reset it. Keep frozen context, exact candidate maps, accounting, phase staging and CAS fences."
+decision DESIGN_COMPLETION based_on OWNER_DYNAMIC_DIRECTION, RESTART_AND_PROVIDER_BOUNDARIES, MIGRATION_AND_PROOF:
+  "Detailed design defines components, requiredness, dependency table, typed merge, continuation and DY1..DY6 dependencies and acceptance. ADR remained Proposed during design, does not reinterpret historical accepted ADR0028, and introduces no runtime changes or paid execution."
+
+evidence OWNER_ACCEPTANCE:
+  "Owner explicitly directs implementation on 2026-10-03 after dynamic contract design. New battles only; historical migration and deployment are outside this task."
+decision ACCEPTANCE based_on OWNER_ACCEPTANCE, GENERATION_PLAN, DEPENDENCY_CLOSURE, RESTART_AND_PROVIDER_BOUNDARIES, MIGRATION_AND_PROOF:
+  "Implement and verify the concrete new-battle contract, bounded repair and mechanical server responsibilities. Preserve old contracts and historical state; record actual validation, not live quality claims."

@@ -984,7 +984,7 @@ describe("character-authored public speech", () => {
     const originalAdvance = provider.advanceCharacterAgent.bind(provider);
     provider.advanceCharacterAgent = async (input) => {
       const original = await originalAdvance(input);
-      if (original.contractVersion === 2 || original.contractVersion === 3) {
+      if (original.contractVersion === 2 || original.contractVersion === 3 || original.contractVersion === 4) {
         throw new Error("unexpected Compact input");
       }
       return {

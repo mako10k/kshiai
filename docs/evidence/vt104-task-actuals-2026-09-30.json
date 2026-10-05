@@ -1,0 +1,13 @@
+{
+  "start": "2026-09-30T13:44:30+09:00",
+  "suspend": "2026-09-30T14:59:43+09:00",
+  "observed_interval_seconds": 4513,
+  "person_effort": null,
+  "basis": "task interval includes tool waits and bounded delegation; no independent person effort observation; unfinished task excluded from completed velocity",
+  "next_checkpoint": "2026-09-30 candidate review and bounded control/recovery preparation selection",
+  "owner_decisions": [
+    "prepare shared-production stopped cutover",
+    "prepare upper30-minute proposal"
+  ],
+  "execution_authority": false
+}

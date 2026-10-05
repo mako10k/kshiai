@@ -1,0 +1,211 @@
+{
+  "thought_id": "docs-evidence-v2-public-write-retirement-execution-2026-10-02",
+  "id_source": "file",
+  "report": {
+    "engine_version": "0.1.0",
+    "document_id": "docs-evidence-v2-public-write-retirement-execution-2026-10-02",
+    "generated_at": "2026-10-02T10:58:23.967Z",
+    "summary": {
+      "fatal_count": 0,
+      "error_count": 0,
+      "warning_count": 0,
+      "info_count": 0,
+      "hint_count": 8
+    },
+    "results": [
+      {
+        "issue_id": "ISSUE-001",
+        "category": "contradiction_candidate",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "FIT",
+            "role": "decision",
+            "step_id": "S-FIT"
+          },
+          {
+            "ref_id": "GATE",
+            "role": "decision",
+            "step_id": "S-GATE"
+          }
+        ],
+        "message": "FIT と GATE は同一根拠 CURRENT, CONTROL を共有しており、緊張関係にある可能性がある。",
+        "rationale": "複数の decision が同じ based_on 参照を共有しているため、観点と結論の整合性を再確認するべきである。",
+        "metadata": {
+          "shared_refs": [
+            "CURRENT",
+            "CONTROL"
+          ],
+          "line": 9,
+          "column": 10,
+          "end_column": 13
+        }
+      },
+      {
+        "issue_id": "ISSUE-002",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "PUBLIC_V2_WRITE_RETIREMENT",
+            "role": "domain"
+          }
+        ],
+        "message": "domain PUBLIC_V2_WRITE_RETIREMENT の description は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 2,
+          "column": 3,
+          "text": "Close remaining public runtime V2 write paths with the verified final V3-only source.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-003",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "OWNER",
+            "role": "evidence",
+            "step_id": "S-OWNER"
+          }
+        ],
+        "message": "evidence OWNER は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 4,
+          "column": 3,
+          "text": "Currentownergoal requirescompleteV2 ordinarycreation/update retirement andpermitsnecessary production/staging/development deployment, preservingdisplay/explicitV3migration. Thisfollow-on authority extends the priorfirsttrial preview-only boundary for necessarywriteclosure. No merge/release/deletion authority.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-004",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "CURRENT",
+            "role": "evidence",
+            "step_id": "S-CURRENT"
+          }
+        ],
+        "message": "evidence CURRENT は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 6,
+          "column": 3,
+          "text": "Finalsourcefce86a53434f5561baa70fb567cd2196cb92ba17 originreadbackverified,CI36997454018 fourjobs success,260currentauthority tests/typecheck/static pass. Independentwriterdelta review closes dormantprovider/portrait/restore paths withno remaining productwrite bypass; deterministic historicalsourceimports and readpaths retained. Builded11e64c SUCCESS andregistryimage53a0388834ea44c8755ee3c089cc19da53e58c1732a6d94f89a2dd067a454f6c verified; uploaded5729sourcefiles matched. ExistingWorker84fcfed4 nineassets byteequal finalfrontend. PublicWorker5942f1cb stilloriginmissingstage34201323064tag androot200/API404; publicRun100old00141-vis. Newpreviewdeployment underway; readback/review/freshbaselines gatepublicwrite.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-005",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "CONTROL",
+            "role": "premise",
+            "step_id": "S-CONTROL"
+          }
+        ],
+        "message": "premise CONTROL は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 8,
+          "column": 3,
+          "text": "AdjacentcandidateJSON freezes solemainexecutor and maximum2publicwrites: Runtraffic100revisionkshiai-api-v2-retired-fce86a5 followedby Worker84fcfed4@100 existingverifiedversion. Preservetwo previewtags/envsecretpinsresourcesauthroutes. No provideractivation/paidLLM/DBrepair/migration/build/upload/release/merge inthispublicpacket. Newpreview staysavailable ifpublicrouting fails; retainpreviousartifacts. NoautomaticrollbacktoV2-capablecode; investigateambiguousstatebefore retry andcorrectusingverifiedV3-onlycandidate.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-006",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "FIT",
+            "role": "decision",
+            "step_id": "S-FIT"
+          }
+        ],
+        "message": "decision FIT は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 10,
+          "column": 3,
+          "text": "Preview-only isinsufficientbecauseolddefault V2writers andoldpublicUI remain. Necessarypublicroutecutover isexplicitlypermitted bygoalitem3 andpreservesrequiredreads whileclosingoldnormalwrites. Alternative disablingallAPI losesacceptedV3reads/battles; deletingoldartifacts unnecessary andunauthorized. Old09e9candidate supersededbeforepublicwrite. ExistingWorkerreused becauseassets/server-script/bindings verified, avoidingunnecessaryupload.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-007",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "GATE",
+            "role": "decision",
+            "step_id": "S-GATE"
+          }
+        ],
+        "message": "decision GATE は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 12,
+          "column": 3,
+          "text": "Require newpreviewReady/health/config/digest andoldtagreadback, independenttransitiondelta review, freshunchanged publicCloudRun/Workerdeployment baseline, readonlyDB nopendingjobs/liveleases andCloudTasksempty, authconfig unchanged. Auditno fatal/error, thenexecute eachpublicwriteonce andreadbacktraffic/tags pluscanonical9assets/runtimeheader/newAPIrevision/auth config. Do notclaimgeneralV3authoringfunctionality or fullhistoricalbattle replay; acceptedcompletionquestion isordinaryV2retirementwithreads. Remaininginternal15-30agentminutes lowconfidence, externalwait separate.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-008",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "FIT",
+            "role": "decision",
+            "step_id": "S-FIT"
+          },
+          {
+            "ref_id": "GATE",
+            "role": "decision",
+            "step_id": "S-GATE"
+          }
+        ],
+        "message": "FIT と GATE は意味的に近接している可能性がある。",
+        "metadata": {
+          "line": 9,
+          "column": 10,
+          "end_column": 13,
+          "similarity": 0.669,
+          "semantic_distance": 0.331,
+          "embedding_provider": "ollama",
+          "embedding_model": "nomic-embed-text"
+        }
+      }
+    ],
+    "query_results": []
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "observedAt": "2026-10-01T20:12:44+09:00",
+  "owner": "user",
+  "response": "snapshotを不要とした受入済み方針に対し、処分関数がsnapshot識別子を要求しています。処分に必要な記録テーブルが未作成で、現在の「処分→migration」の順序では進めません。これか。。。。承認します。",
+  "scope": "Local implementation and tests of disclosed initial-trial disposal/preparation correction; existing snapshot path/authentication retained. Exact external deletion/deployment/auth update/provider actions excluded.",
+  "accepted_sha256": {
+    "docs/unreleased-v3-trial-disposal-design-v2-proposed.md": "9239ee78e6529e037f1564e4e0a9785fa9320be2a2f4e673bd8b10a027356346"
+  }
+}

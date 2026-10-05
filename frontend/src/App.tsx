@@ -1,3 +1,4 @@
+// R: Compose authenticated game routes and the available navigation shell.
 import { Link, Navigate, Route, Routes } from "react-router-dom";
 import { useAuth } from "./auth";
 import { BottomNav } from "./components/BottomNav";
@@ -25,14 +26,12 @@ import { InternalObservationsPage } from "./pages/InternalObservationsPage";
 import { AdminDialoguePipelinePage } from "./pages/AdminDialoguePipelinePage";
 
 function Shell({ children }: { children: React.ReactNode }) {
-  const { user } = useAuth();
+  const { user, cutoverReviewOnly } = useAuth();
   return (
     <div className={`app${user ? " app-with-bottom-nav" : ""}`}>
       <header className="topbar">
-        <Link to="/" className="brand">
-          AI闘技場
-        </Link>
-        {user && (
+        {cutoverReviewOnly ? <span className="brand">AI闘技場</span> : <Link to="/" className="brand">AI闘技場</Link>}
+        {user && !cutoverReviewOnly && (
           <div className="topbar-right">
             <Link
               to={`/users/${user.id}`}
@@ -46,7 +45,7 @@ function Shell({ children }: { children: React.ReactNode }) {
         )}
       </header>
       <main className="main">{children}</main>
-      <BottomNav />
+      {!cutoverReviewOnly && <BottomNav />}
     </div>
   );
 }

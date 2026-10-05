@@ -1,0 +1,51 @@
+{
+  "observedAt": "2026-10-01T11:37:42.999002+00:00",
+  "scope": "owner-approved local trial-disposal repair only",
+  "sourceManifest": "docs/evidence/vt104-trial-disposal-source-2026-10-01.json",
+  "sourceManifestSha256": "213ca8fd9eb5650e809501108a1bd38faaaeb5063c3e4192f4b995293a0739df",
+  "node": "22.22.3",
+  "npmTest": {
+    "passed": 234,
+    "failed": 0,
+    "activeFiles": 41,
+    "provisionalFilesNotExecuted": 2,
+    "disabledFilesNotExecuted": 141,
+    "newRepairTestsRegistered": true
+  },
+  "lint": {
+    "typecheck": "passed",
+    "jscpd": "passed",
+    "lizard": "passed",
+    "baselineChanged": false
+  },
+  "build": "passed; existing frontend chunk-size warning",
+  "postgresql17Rehearsal": "docs/evidence/vt104-disposal-pg17-result-2026-10-01.json",
+  "postgresqlChecksPassed": 13,
+  "sealgraphFsck": "ok",
+  "authenticationSettingsChanged": false,
+  "sharedCloudDatabaseWrites": 0,
+  "runtimeImageChanged": false,
+  "remaining": "new source CI/RC preparation and exact authorized runtime transition, then actual Google V3 user-path proof",
+  "measurement": {
+    "task": "vt104",
+    "start": "2026-10-01T20:12:44+09:00",
+    "checkpoint": "2026-10-01T20:37:00+09:00",
+    "activeElapsedMinutes": 24.2667,
+    "completedTask": false,
+    "effortVelocityAvailable": false
+  },
+  "logs": {
+    "npm_test": {
+      "sha256": "7fed1290512c995d0d0a9773585b2cf36f850b807854e6ac6ded46b9a90d729f",
+      "temporaryLocalPath": "/tmp/vt104-disposal-npm-test.log"
+    },
+    "lint": {
+      "sha256": "e808271f87b94ef0786e15c3f86942bf89d950b46e769109b36d492305e39134",
+      "temporaryLocalPath": "/tmp/vt104-disposal-lint.log"
+    },
+    "build": {
+      "sha256": "163a278d77b084ccb053b9e579153fccd28a00152fde6ba080d71b67be350a7a",
+      "temporaryLocalPath": "/tmp/vt104-disposal-build.log"
+    }
+  }
+}

@@ -1,0 +1,60 @@
+domain VT104_PACKET:
+  description "Prepare exact cutover execution candidate without external writes."
+evidence REQUEST:
+  "Owner requested the recommended next task: recovery, release and content packet preparation. Earlier decisions authorize shared production stopped-cutover upper30min proposal; ADR0040r1 local implementation only."
+evidence SOURCE:
+  "Local core control 535path manifest independently matches; 192 selected cases, PG17 three cases and UI four cases passed. Worktree remains dirty at f58ac2f, main e31c487."
+evidence SMOKE_GAP:
+  "Accepted detail Stage acceptance clause explicitly requires existing postgres/auth/R2 smoke admission permits. Direct file inventory shows no cutover imports in these scripts or workflow; auth script creates another user and V2 fixtures, postgres script creates V2 fixtures, R2 script reads arbitrary first object."
+evidence OWNER_REPORT:
+  "Owner tentatively identifies Google-linked mako10k@mk10.org. Exact user and Google provider are not yet independently confirmed. Snapshot storage controls remain unspecified."
+premise AUTHORITY:
+  "Prepare reviewable local documents and read-only exact owner/cloud/hosted status. No snapshot export, cloud stop, production DB writes, authoring, deployment, promotion or GitHub writes."
+premise SCOPE:
+  "Freeze packet fields and classify exact known identities versus unresolved values. Inventory smoke paths and obligations; do not relabel existing legacy smoke success as V3 acceptance."
+pending STORAGE:
+  "Owner-managed storage, encryption/access, retention, restore target and measured real recovery bound R remain unresolved."
+pending ADAPTER:
+  "Exact two-candidate owner exception and general auth smoke user provisioning need compatible bounded trial bindings. The currently implemented HTTP strict V4 path may not admit email smoke provisioning. No upstream exception can be invented by packet."
+premise OPTION_READY:
+  "Dispatch existing Stage workflow immediately."
+premise OPTION_PREPARE:
+  "Prepare non-executable packet and precise adapter integration inventory; correct overbroad completion descriptions, keep core tests as bounded evidence, request only missing owner inputs."
+decision SELECT based_on REQUEST, SOURCE, SMOKE_GAP, OWNER_REPORT, AUTHORITY, SCOPE:
+  "Select PREPARE. READY violates observed current fit. Release cannot be frozen to uncommitted source or missing CI/artifacts. Report adapter completeness as an additional local prerequisite, without silently expanding Accepted owner/authoring exceptions."
+
+evidence OWNER_READBACK:
+  "2026-09-30 exact-email SELECT in REPEATABLE READ READ ONLY returns one public user usr_568b632d7ad86cfe3e356171 and auth.identities provider google. This confirms identity, not content acceptance or write authority."
+evidence AUTH_SPLIT:
+  "Code read: userFromSupabaseAccessToken verifies ES256 issuer audience then ensureSupabaseUser may provision. Cutover existingUserFromRequest verifies ES256 issuer audience role/sub and SELECTs existing mapping without provision."
+premise EMAIL_CANDIDATE:
+  "A pure verification and bounded external email auth receipt is a detail candidate, not proof that release email acceptance is fulfilled. API mapping and ownership evidence stay separate; if owner-only trial and full email acceptance cannot both hold, return exact conflict upstream rather than allow another API owner silently."
+decision DETAIL_NEXT based_on REQUEST, SMOKE_GAP, AUTH_SPLIT, EMAIL_CANDIDATE, AUTHORITY:
+  "Prepare exact adapter detailed candidate within existing fixed-owner contracts. Keep fields unresolved and execution disabled until verification and owner boundary decisions are resolved."
+evidence EXECUTE_REQUEST:
+  "Owner explicitly requests vt104 execution and extends shared workday to22:00 JST. This continues local preparation/implementation authority; existing separate production and release authority boundaries persist."
+evidence PERMIT_GAP:
+  "Repository trial reservation unconditionally requires battleId/narration for background operations, so Accepted Stage auth/PG/R2 smoke exception cannot use the current background permit."
+premise LOCAL_DETAIL:
+  "Implement a narrowly named Stage-smoke background operation using existing exact owner/request binding and reservation ceilings. Only named smoke operations with no battleId qualify; arbitrary background/task remains fenced. One main executor writes each shared source. Scripts require exact run/resources and ledger target; isolated tests use synthetic credentials/DB and no live Supabase/R2."
+decision IMPLEMENT_SMOKE based_on EXECUTE_REQUEST, SMOKE_GAP, PERMIT_GAP, LOCAL_DETAIL, AUTHORITY:
+  "Repair accepted smoke permit integration locally, share pure existing token verification without changing provisioning semantics, and preserve strict owner-only API trial. Email proof remains bounded auth-only until application acceptance is resolved. Record that distinction rather than mark eight receipts complete."
+
+evidence LOCAL_SMOKE_RESULTS:
+  "Existing-account email CLI on loopback Supabase double plus actual signed JWKS passed without user creation. PG17 full supervisor/runtime/cleanup passed and no schema remains. Actual Hono closed owner confirm then trial V3 create and one SSE advance passed with immutable generation and stored revision readback. These are local conformance evidence, not live Stage or real recovery."
+evidence WORKFLOW_FIT:
+  "Current Stage workflow requires RUNNING queue and legacy V2 smoke, lacks identity propagation and shared exclusive lock. Accepted detail explicitly defers workflow file set to exact operation packet integration. Artifact, recovery, generation and bounded request fields remain unresolved."
+decision CURRENT_PACKET based_on EXECUTE_REQUEST, LOCAL_DETAIL, LOCAL_SMOKE_RESULTS, WORKFLOW_FIT, AUTHORITY:
+  "Complete local source-bound tests and preserve a reviewable workflow integration candidate. Keep live Stage receipts pending. Continue exact workflow preparation under local authority after packet targets are fixed; request owner-managed storage and existing email test account inputs as missing target data. Production/release writes follow concrete separately approved payload."
+
+evidence STORAGE_SELECTED:
+  "Owner selected owner public-key pre-encryption, dedicated Tokyo GCS30day retention plus7day soft-delete, and requested new-key creation preparation. ADR0041 records storage policy, not resource/key/capture execution. Signed Ubuntu age package verified; synthetic roundtrip,wrong-key and tamper rejection passed, fixture keys removed."
+pending OWNER_KEY_TARGET:
+  "Owner recipient not created; private identity primary protection target and independent backup store need selection. Existing email test account, real recovery R, workflow packet artifact/generation/request limits remain unresolved."
+decision NEXT_BINDING based_on STORAGE_SELECTED, OWNER_KEY_TARGET, CURRENT_PACKET:
+  "Preserve local evidence and canonical progress. Continue key target/backup and existing-email binding plus exact workflow preparation under local authority. Ask only missing targets or concrete external execution approval; keep vt104 incomplete until its release review contract is met."
+
+evidence OWNER_KEY_REGISTERED:
+  "Owner explicitly requested secdat registration. New owner age key is persisted in exact kshiai domain snapshot-recovery v2 store, private access unlocked/bulk excluded; public recipient fixed; fresh identity derivation and synthetic roundtrip passed. secdat fsck v2 ok. No plaintext identity file/output; four authorized local storage mutations, zero production/GitHub writes."
+decision KEY_PACKET based_on OWNER_KEY_REGISTERED, NEXT_BINDING:
+  "Replace provisional WSL keyfile target with the observed secdat object/recipient. Keep independent recovery backup and real R pending. Continue original vt104 exact workflow/source/CI/artifact review with existing-email input pending."

@@ -1,0 +1,243 @@
+{
+  "observedAt": "2026-10-02T09:47:46.238943+00:00",
+  "authority": "User-provided goal item3 permits necessary production/staging/development deployments; execute disclosed same-origin preview candidate only.",
+  "sourceSha": "960a9958a25f7770755fea9119627e18a461f851",
+  "ci": {
+    "runId": 36989694540,
+    "fourJobs": "success"
+  },
+  "build": {
+    "id": "44708e22-d3b9-42b1-aa2d-45ce87eae9f0",
+    "status": "SUCCESS",
+    "startTime": "2026-10-02T09:40:58.305470341Z",
+    "finishTime": "2026-10-02T09:43:50.722018Z",
+    "machineType": "E2_MEDIUM",
+    "timeout": "1200s",
+    "digest": "sha256:e196ad577a64f28a6ae607895c55a85307d77bc8ff8fc0f0d180dcb882b24d67"
+  },
+  "source": {
+    "filesMatched": 5687,
+    "sha256": "2251c0647c4db22e84819efff431d65ffa55b261e6be6341abce05f1266da466",
+    "source": {
+      "bucket": "kshiai_cloudbuild",
+      "generation": "1790934001873756",
+      "object": "source/1790933988.671504-eb1b5d56ba7142d2b0044af6b86da743.tgz"
+    }
+  },
+  "preflight": {
+    "observedAt": "2026-10-02T09:44:38.326Z",
+    "projectRef": "cvrbhpkfqkpqdegxfrlq",
+    "schema": "public",
+    "transactionReadOnly": "on",
+    "counts": {
+      "battle_narration_outbox": {
+        "total": 345,
+        "byStatus": [
+          {
+            "status": "completed",
+            "count": 345
+          }
+        ]
+      },
+      "battle_narration_entries": {
+        "total": 345,
+        "byStatus": [
+          {
+            "status": "completed",
+            "count": 332
+          },
+          {
+            "status": "failed",
+            "count": 13
+          }
+        ]
+      },
+      "asset_authoring_outbox": {
+        "total": 7,
+        "byStatus": [
+          {
+            "status": "completed",
+            "count": 7
+          }
+        ]
+      },
+      "character_authoring_jobs": {
+        "total": 15,
+        "byStatus": [
+          {
+            "status": "completed",
+            "count": 12
+          },
+          {
+            "status": "cancelled",
+            "count": 3
+          }
+        ]
+      },
+      "battlefield_authoring_jobs": {
+        "total": 3,
+        "byStatus": [
+          {
+            "status": "completed",
+            "count": 2
+          },
+          {
+            "status": "cancelled",
+            "count": 1
+          }
+        ]
+      },
+      "narration_style_authoring_jobs": {
+        "total": 3,
+        "byStatus": [
+          {
+            "status": "completed",
+            "count": 2
+          },
+          {
+            "status": "cancelled",
+            "count": 1
+          }
+        ]
+      },
+      "battle_narration_attempts": {
+        "total": 387,
+        "byStatus": [
+          {
+            "status": "failed",
+            "count": 13
+          },
+          {
+            "status": "completed",
+            "count": 360
+          },
+          {
+            "status": "abandoned",
+            "count": 14
+          }
+        ]
+      },
+      "battle_leases": {
+        "total": 0,
+        "byStatus": null
+      },
+      "battle_narration_leases": {
+        "total": 1,
+        "byStatus": null
+      },
+      "provider_operation_runs": {
+        "total": 13,
+        "byStatus": [
+          {
+            "status": "failed",
+            "count": 4
+          },
+          {
+            "status": "completed",
+            "count": 9
+          }
+        ]
+      },
+      "provider_operation_attempts": {
+        "total": 638,
+        "byStatus": [
+          {
+            "status": "succeeded",
+            "count": 636
+          },
+          {
+            "status": "failed",
+            "count": 2
+          }
+        ]
+      },
+      "cutover_control_active": {
+        "total": 0,
+        "byStatus": null
+      }
+    },
+    "narrationLiveLeases": {
+      "live_count": 0,
+      "latest_expiry": null,
+      "server_now": "2026-10-02T09:44:40.683Z"
+    },
+    "currentCharacterVersions": [
+      {
+        "schema_version": 2,
+        "count": 11
+      },
+      {
+        "schema_version": 3,
+        "count": 5
+      }
+    ]
+  },
+  "worker": {
+    "version": "6953c5e8-d691-4a9c-8577-f8d54645619f",
+    "health": {
+      "ok": true,
+      "llm": "fallback:xai>openai>venice",
+      "auth": "supabase",
+      "models": {
+        "engine": "grok-4.5",
+        "fast": "grok-4.3"
+      },
+      "service": "kshiai",
+      "database": "postgres",
+      "revision": "kshiai-api-v2-history-960a995"
+    },
+    "assetsMatched": 9,
+    "backendOriginMatch": true,
+    "originSecretPreserved": true
+  },
+  "routing": {
+    "traffic": [
+      {
+        "percent": 100,
+        "revisionName": "kshiai-api-00141-vis"
+      },
+      {
+        "revisionName": "kshiai-api-v2-history-960a995",
+        "tag": "v2-retire-458af76",
+        "url": "https://v2-retire-458af76---kshiai-api-crpgn6evfa-an.a.run.app"
+      },
+      {
+        "revisionName": "kshiai-api-v2-history-960a995",
+        "tag": "v3-trial-36954429062-1",
+        "url": "https://v3-trial-36954429062-1---kshiai-api-crpgn6evfa-an.a.run.app"
+      }
+    ],
+    "publicTrafficPreserved": true,
+    "oldPreviewHealth": {
+      "ok": true,
+      "llm": "fallback:xai>openai>venice",
+      "auth": "supabase",
+      "models": {
+        "engine": "grok-4.5",
+        "fast": "grok-4.3"
+      },
+      "service": "kshiai",
+      "database": "postgres",
+      "revision": "kshiai-api-v2-history-960a995"
+    }
+  },
+  "writes": {
+    "cloudBuild": 1,
+    "cloudRunDeploy": 1,
+    "workerVersionUpload": 1,
+    "oldPreviewTagRetarget": 1,
+    "supabaseAuthPatch": 0,
+    "characterOrLegacyBattleRepair": 0
+  },
+  "allAuthFieldsUnchanged": true,
+  "ownerReport": {
+    "currentV2MikiDisplayAndNoOrdinaryEditor": "OK on first preview",
+    "historicalProfileAfterFix": "awaiting owner verification"
+  },
+  "runtimeHistoricalReadComplete": false,
+  "remainingInternalEffortHours": [
+    0.25,
+    0.5
+  ],
+  "estimateConfidence": "low"
+}

@@ -1,9 +1,17 @@
+// R: Adapt domain LLM operations to accounted OpenAI-compatible chat requests.
+import { CURRENT_DIRECT_NARRATION_CONTRACT, type NarrationPromptContract } from "./narration-prompt-contract.js";
+import { observeLlmPhysicalAttempt } from "../repositories/llm-usage-observation.js";
+import { AwarenessDefaultPolicy } from "@kshiai/shared";
+import { decodeAwarenessRefereeResult, decodeAwarenessSemanticResult, AwarenessHappeningResultSchema } from "./awareness-adjudication-result.js";
+import { renderPromptSections } from "./prompt-prose.js";
+import { currentAwarenessDispatchContext } from "./awareness-dispatch-context.js";
+import { runConsciousGeneration, dynamicAgentResult, dynamicLaterInput } from "./conscious-dynamic.js";
+import { modelRequestOptions } from "./model-request-options.js";
 import OpenAI from "openai";
 import { zodResponseFormat } from "openai/helpers/zod";
 import type {
   ChatCompletionMessageParam,
   ChatCompletionTool,
-  ChatCompletionCreateParamsNonStreaming,
 } from "openai/resources/chat/completions";
 import { z } from "zod";
 import { consciousResult, consciousRequest, consciousLaterRequest, CONSCIOUS_V3_PROMPT } from "./conscious-agency.js";
@@ -57,7 +65,6 @@ import {
   buildNarrationTurnBrief,
   extractStreamingNarrator,
   focusInstruction,
-  isStageReaction,
   parseNarrationFocus,
   type BattlefieldInstance,
   type BattlefieldPreset,
@@ -465,10 +472,6 @@ function boundGeneratedJson(value: unknown, depth = 0): unknown | null {
   return String(value).slice(0, 120);
 }
 
-function normalizedSpeechFacts(value: string): string {
-  return value.normalize("NFKC").replace(/[\s「」『』（）()、。！？!?…・]/g, "");
-}
-
 /** Canonical speaker names stay server-side; narration receives only view-safe rendering data. */
 function narratorVisibleCharacterSpeeches(
   sources: readonly CharacterSpeechSource[],
@@ -496,6 +499,7 @@ export type NarrateTurnPromptMaterial = {
  */
 export function buildNarrateTurnPromptMaterial(
   input: Parameters<LlmProvider["narrateTurn"]>[0],
+  contract: NarrationPromptContract = CURRENT_DIRECT_NARRATION_CONTRACT,
 ): NarrateTurnPromptMaterial {
   const styleBlock = input.styleInstruction?.trim()
     ? `Narration style「${input.styleName ?? "custom"}」: ${input.styleInstruction.trim()}`
@@ -556,10 +560,10 @@ Prefer opening on an actor's move rather than pure ambient scenery when recentNa
 Do not repeat or closely paraphrase recentNarration or either character's recentSpeeches.
 When drama.environmentBeatDue is true, incorporate the corresponding accepted change from turnResult and currentState. Do not treat staticBackground as a new event.
 If turnResult marks a finishing blow (とどめ / 決め手 / 戦闘不能), center the turn on that decisive action.
-characterSpeeches were already authored by isolated character agents from their own cognition and perception. Return every supplied line exactly once with the same sourceSide. For each supplied line, freely write a natural speaker display label from the current view, its displayContext, and narratorContinuity; displayLabel is only a fallback. Preserve the viewpoint's uncertainty or misidentification. Do not reconstruct a canonical identity omitted from these presentation inputs. This label is rendering only. You may change punctuation or typographic surface only when the words, factual content, intent, and stage-reaction/dialogue distinction remain unchanged. Choose afterNarratorLine (-1 before the first line, otherwise a zero-based narrator-line index) to place each speech naturally among the narrator lines.
+characterSpeeches were already authored by isolated character agents from their own cognition and perception. Return every supplied line exactly once with the same sourceSide. For each supplied line, freely write a natural speaker display label from the current view, its displayContext, and narratorContinuity; displayLabel is only a fallback. Preserve the viewpoint's uncertainty or misidentification. Do not reconstruct a canonical identity omitted from these presentation inputs. This label is rendering only. ${contract.speechSurface("combat")} Choose afterNarratorLine (-1 before the first line, otherwise a zero-based narrator-line index) to place each speech naturally among the narrator lines.
 You MAY add a speech or visible/audible reaction for a third-party or scene entity when currentState and observationBoundary support that entity's presence and agency. For such a scene-authored line, set sourceSide to null. Do not use this permission to add another line for side A or B, or to invent an unsupported person, object agency, action, outcome, or private fact.
 Do not add a speech or reaction for an inaccessible counterpart; characterSpeeches is already filtered to the permitted speakers: ${JSON.stringify(requiredSpeakers)}.
-JSON: { "turn": number, "focus": "${focus}", "narrator": string[], "speeches": [ { "sourceSide": "a"|"b"|null, "speaker": string, "text": string, "afterNarratorLine": number } ], "recognitionUpdates": [ { "subjectRef": string, "recognizedAs": string, "identityKnowledge": "unknown"|"suspected"|"identified", "continuity": "same_entity"|"possibly_same_entity"|"unlinked" } ] }
+${contract.output("combat", focus)}
 Do not mention numeric HP/MP/ATK values.
 Do not mention turn numbers, ターン counts, or 第Nターン.`;
   const user = JSON.stringify({
@@ -575,6 +579,141 @@ Do not mention turn numbers, ターン counts, or 第Nターン.`;
     ),
   });
   return { system, user, focus, requiredSpeakers, turnBrief };
+}
+
+export function buildNarrateProloguePromptMaterial(
+  input: Parameters<LlmProvider["narratePrologue"]>[0],
+  contract: NarrationPromptContract = CURRENT_DIRECT_NARRATION_CONTRACT,
+): { system: string; userData: unknown } {
+  const styleBlock = input.styleInstruction?.trim()
+    ? `Narration style「${input.styleName ?? "custom"}」: ${input.styleInstruction.trim()}`
+    : "Narration style: 落ち着いた標準の物語調。";
+  const focus = input.focus ?? "external";
+  const rivalryRule = input.priorMatchSummary?.trim()
+    ? `因縁 MUST weave in this prior matchup summary (paraphrase, do not invent a conflicting past): ${input.priorMatchSummary.trim()}`
+    : "因縁: no prior match on record — invent a light plausible fate/rivalry from character blurbs only.";
+  const system = `You write the PROLOGUE of a fictional confrontation (Japanese), before any actions resolve. It may be physical, ranged, technological, psychic, social, comedic, cute, or abstract. Match the supplied genre; never add weapons, injury, hostility, or grim tension unless the inputs establish them.
+${styleBlock}
+${focusInstruction(focus)}
+${NARRATION_IDENTIFIER_RULES}
+${NARRATION_PROFILE_RULES}
+structuredCharacterContexts is perspective-compiled. Use staticProjection only as bounded rendering context, never as a new event; narrativeCues are committed observable cues. Never infer omitted inner fields, raw dynamics, hidden triggers, or causes.
+${NARRATION_CONTINUITY_RULES}
+${NARRATOR_RECOGNITION_RULES}
+Include: atmosphere of the field, each participant's opening presence, and rivalry or fate (因縁).
+Every narratorContinuity.reader.disclosedTerms entry is an already-approved battle setup declaration. Include each entry exactly once, including a battleLabel-to-formal-name disclosure when they differ.
+${rivalryRule}
+No combat resolution yet. No numeric stats.
+characterSpeeches were authored by the character agents before narration. Return each supplied line exactly once with its sourceSide and freely render its speaker label from displayContext and narratorContinuity; displayLabel is only a fallback. Preserve viewpoint uncertainty and do not reconstruct omitted canonical identity. ${contract.speechSurface("prologue")} Choose afterNarratorLine to place each line among the narration. You may additionally create a sourceSide-null speech or reaction only for a third-party or scene entity whose presence and agency are supported by the supplied scene/field; never add another line for side A or B.
+4–8 narrator lines.
+${contract.output("prologue", focus)}`;
+  const userData = {
+    scene: input.scene,
+    sideA: {
+      name: input.sideAName,
+      blurb: input.sideABlurb,
+      traits: input.sideATraits,
+    },
+    sideB: {
+      name: input.sideBName,
+      blurb: input.sideBBlurb,
+      traits: input.sideBTraits,
+    },
+    policyHint: input.policySummary,
+    priorMatch: input.priorMatchSummary ?? null,
+    focus,
+    profileAnchors: input.profileAnchors,
+    sceneStateFacts: input.sceneStateFacts ?? [],
+    innerDigests: input.innerDigests ?? [],
+    structuredCharacterContexts: input.structuredCharacterContexts ?? {},
+    narratorContinuity: input.narratorContinuity ?? null,
+    recognitionSubjects: input.recognitionSubjects ?? [],
+    characterSpeeches: narratorVisibleCharacterSpeeches(
+      input.characterSpeeches ?? [],
+    ),
+    field: input.battlefield
+      ? {
+          name: input.battlefield.displayName,
+          terrain: input.battlefield.terrain,
+          setup: input.battlefield.narrativeSetup,
+          obstacles: input.battlefield.obstacles?.slice(0, 4),
+          conditions: input.battlefield.conditions?.slice(0, 3),
+        }
+      : null,
+  };
+  return { system, userData };
+}
+
+export function buildNarrateAftermathPromptMaterial(
+  input: Parameters<LlmProvider["narrateAftermath"]>[0],
+  contract: NarrationPromptContract = CURRENT_DIRECT_NARRATION_CONTRACT,
+): { system: string; userData: unknown } {
+  const styleBlock = input.styleInstruction?.trim()
+    ? `Narration style「${input.styleName ?? "custom"}」: ${input.styleInstruction.trim()}`
+    : "Narration style: 落ち着いた標準の物語調。";
+  const focus = input.focus ?? "external";
+  const system = `You frame the AFTERMATH of a fictional confrontation (Japanese), not a new turn. Match the supplied genre, including nonviolent, social, comedic, cute, technological, or psychic contests. Describe atmosphere only; never assume wounds, weapons, death, or grimness.
+${styleBlock}
+${focusInstruction(focus)}
+${NARRATION_IDENTIFIER_RULES}
+${NARRATION_PROFILE_RULES}
+${NARRATION_CONTINUITY_RULES}
+${NARRATOR_RECOGNITION_RULES}
+The server owns the already-decided outcome and will insert one immutable canonical result line between before and after. Do not state, restate, reinterpret, contradict, reverse, or add winner, loser, draw, incapacitation, recovery, or result claims. Use battlefield flavor and keep the framing short.
+Return each supplied characterSpeech exactly once with its sourceSide. Freely render its speaker label from displayContext and narratorContinuity; displayLabel is only a fallback. Preserve viewpoint uncertainty and do not reconstruct omitted canonical identity. ${contract.speechSurface("aftermath")} Choose afterNarratorLine for placement. A sourceSide-null third-party or scene-entity reaction is allowed only when its presence and agency remain supported by the supplied aftermath scene; never add dialogue for side A or B.
+Do NOT invent a new fight, healing, or numeric stats.
+${contract.output("aftermath", focus)}`;
+  const userData = {
+    turn: input.turn,
+    scene: input.scene,
+    fighters: [input.sideAName, input.sideBName],
+    winnerSide: input.winnerSide,
+    winnerName: input.winnerName,
+    fallen: input.fallenNames,
+    focus,
+    profileAnchors: input.profileAnchors,
+    sceneStateFacts: input.sceneStateFacts ?? [],
+    innerDigests: input.innerDigests ?? [],
+    structuredCharacterContexts: input.structuredCharacterContexts ?? {},
+    narratorContinuity: input.narratorContinuity ?? null,
+    recognitionSubjects: input.recognitionSubjects ?? [],
+    characterSpeeches: narratorVisibleCharacterSpeeches(
+      input.characterSpeeches ?? [],
+    ),
+    field: input.battlefield
+      ? {
+          name: input.battlefield.displayName,
+          terrain: input.battlefield.terrain,
+          conditions: input.battlefield.conditions?.slice(0, 3),
+        }
+      : null,
+    recent: input.recentNarration?.slice(-6),
+  };
+  return { system, userData };
+}
+
+export function buildNarrateJudgmentPromptMaterial(
+  input: Parameters<LlmProvider["narrateJudgment"]>[0],
+  contract: NarrationPromptContract = CURRENT_DIRECT_NARRATION_CONTRACT,
+): { system: string; userData: unknown } {
+  const styleBlock = input.styleInstruction?.trim()
+    ? `Narration style「${input.styleName ?? "custom"}」: ${input.styleInstruction.trim()}`
+    : "Narration style: 落ち着いた標準の物語調。";
+  const system = `Frame an already-decided turn-limit judgment for the user in Japanese.
+${styleBlock}
+The server has exclusive authority over the immutable verdict line. presentationProjection is a deterministic audience-safe projection, not the adjudicator's audit record. You may naturally express at most one supplied basisLines meaning in the framing. Never expose JSON keys, scoring criteria, resource bands, engine terms, or an internal evaluation process. Recent public narration is context for tone and continuity only. Do not reconsider, contradict, paraphrase, or restate the winner, loser, draw, action, or outcome. Do not invent another basis, action, result, motive, or character speech. Return only optional framing that can surround the immutable server-rendered verdict line.
+${contract.output("judgment", "external")}`;
+  const userData = {
+    turn: input.turn,
+    scene: input.scene,
+    participants: {
+      a: input.sideAName,
+      b: input.sideBName,
+    },
+    presentationProjection: input.presentationProjection,
+    recentPublicNarration: input.recentPublicNarration.slice(-8),
+  };
+  return { system, userData };
 }
 
 function normalizeNarratorRecognitionUpdates(
@@ -662,15 +801,19 @@ export type ChatOpts = {
   tier?: LlmTier;
   timeoutMs?: number;
   temperature?: number;
+  /** Total generation ceiling, including provider reasoning tokens. */
+  maxCompletionTokens?: number;
+  /** Disable transport retries for a separately reserved awareness attempt. */
+  retry?: "none";
   label?: string;
   responseFormat?: PerceptionPromptResponseFormat;
   /** Invoked with the cumulative assistant text while tokens stream in. */
   onText?: (fullText: string) => void;
 };
 
-/** xAI supports `none`; OpenAI SDK v5's provider-neutral union does not list it. */
-const XAI_REASONING_EFFORT_NONE =
-  "none" as ChatCompletionCreateParamsNonStreaming["reasoning_effort"];
+export type JsonRequestOpts = Omit<ChatOpts, "responseFormat"> & {
+  responseFormat?: PerceptionPromptResponseFormat | { type: "json_object" };
+};
 
 /**
  * OpenAI-compatible chat provider (xAI, Venice, etc.).
@@ -719,12 +862,14 @@ export class OpenAiCompatibleProvider implements LlmProvider {
     return tier === "fast" ? this.modelFast : this.modelEngine;
   }
 
-  private reasoningOptions(model: string):
-    { reasoning_effort: ChatCompletionCreateParamsNonStreaming["reasoning_effort"] } |
-    Record<string, never> {
-    return this.name === "xai" && model === "grok-4.3"
-      ? { reasoning_effort: XAI_REASONING_EFFORT_NONE }
-      : {};
+  private requestOptions(model: string, temperature: number, maxCompletionTokens?: number) {
+    return modelRequestOptions({
+      provider: this.name,
+      model,
+      supportsTemperature: this.supportsTemperature,
+      temperature,
+      maxCompletionTokens,
+    });
   }
 
   private retryProviderCall<T>(
@@ -750,6 +895,14 @@ export class OpenAiCompatibleProvider implements LlmProvider {
     return fallback();
   }
 
+  /** Narrow accounted transport port; routing stays with the role factory. */
+  requestJson(system: string, user: string, opts: JsonRequestOpts): Promise<unknown> {
+    const { responseFormat, ...options } = opts;
+    return this.chatJson(system, user, { ...options, retry: "none",
+      ...(responseFormat?.type === "json_schema" ? { responseFormat } : {}),
+    });
+  }
+
   protected async chatJson(
     system: string,
     user: string,
@@ -758,15 +911,34 @@ export class OpenAiCompatibleProvider implements LlmProvider {
     if (!this.client) {
       throw new Error("LLM client not configured");
     }
+    const dispatchContext = currentAwarenessDispatchContext();
+    if (dispatchContext) {
+      if (opts?.onText) throw new Error("AWARENESS_ADJUDICATION_STREAM_NOT_SUPPORTED");
+      if (this.name !== "xai" || dispatchContext.provider !== this.name || dispatchContext.model !== this.modelEngine ||
+          !this.modelEngine.startsWith("grok-")) throw new Error("AWARENESS_ADJUDICATION_ROUTE_MISMATCH");
+      const policy = AwarenessDefaultPolicy.roles.adjudication;
+      if (dispatchContext.limits.inputTokens !== policy.inputTokens || dispatchContext.limits.outputTokens !== policy.outputTokens ||
+          !Number.isFinite(dispatchContext.limits.deadlineMs) || dispatchContext.limits.deadlineMs <= 0) throw new Error("AWARENESS_ADJUDICATION_LIMITS_MISMATCH");
+      // Legacy domain helpers serialize already-projected data. Convert it mechanically for this role only.
+      try {
+        const data: unknown = JSON.parse(user);
+        user = renderPromptSections([{ title: "裁定に使える確定資料", value: data }]);
+      } catch (error) {
+        if (!(error instanceof SyntaxError)) throw error;
+      }
+      const remainingMs = dispatchContext.deadlineAt === undefined ? dispatchContext.limits.deadlineMs : dispatchContext.deadlineAt - Date.now();
+      if (!Number.isFinite(remainingMs) || remainingMs <= 0) throw new Error("AWARENESS_ADJUDICATION_DEADLINE");
+      opts = { ...opts, tier: "engine", timeoutMs: Math.min(dispatchContext.limits.deadlineMs, remainingMs), maxCompletionTokens: policy.outputTokens, retry: "none" };
+    }
+    if (this.name === "xai" && opts?.responseFormat?.type === "json_schema") {
+      assertXaiResponseSchema(opts.responseFormat.json_schema.schema);
+    }
     if (opts?.onText) {
       return this.chatJsonStream(system, user, opts);
     }
-    if (this.name === "xai" && opts?.responseFormat) {
-      assertXaiResponseSchema(opts.responseFormat.json_schema.schema);
-    }
     const tier: LlmTier = opts?.tier ?? "engine";
     const model = this.modelFor(tier);
-    const timeoutMs = Math.round(
+    const timeoutMs = dispatchContext ? opts?.timeoutMs ?? dispatchContext.limits.deadlineMs : Math.round(
       (opts?.timeoutMs ??
         (tier === "fast" ? FAST_TIMEOUT_MS : ENGINE_TIMEOUT_MS)) *
         this.timeoutMultiplier,
@@ -789,31 +961,36 @@ export class OpenAiCompatibleProvider implements LlmProvider {
             provider: this.name,
             model,
             action: async () => {
-              const resp = await this.client!.chat.completions.create(
-                {
+              const send = async () => {
+                const resp = await observeLlmPhysicalAttempt({ callId: logicalCallId, attemptOrdinal, provider: this.name, requestedModel: model, role: label }, () => this.client!.chat.completions.create({
                   model,
-                  ...this.reasoningOptions(model),
-                  messages: [
-                    { role: "system", content: system },
-                    { role: "user", content: user },
-                  ],
-                  ...(this.supportsTemperature ? { temperature } : {}),
+                  ...this.requestOptions(model, temperature, opts?.maxCompletionTokens),
+                  messages: [{ role: "system", content: system }, { role: "user", content: user }],
                   response_format: opts?.responseFormat ?? { type: "json_object" },
-                },
-                { signal: controller.signal, timeout: timeoutMs },
-              );
-              const text = resp.choices[0]?.message?.content ?? "{}";
-              return {
-                text,
-                tokenCount: resp.usage?.total_tokens ?? null,
+                }, { signal: controller.signal, timeout: timeoutMs }), (response) => {
+                  const content = response.choices[0]?.message?.content;
+                  return { usage: response.usage, responseModel: response.model, requestId: response._request_id,
+                    responseDiagnostics: { finishReason: response.choices[0]?.finish_reason ?? null,
+                      contentLength: typeof content === "string" ? content.length : null,
+                      contentEmpty: typeof content === "string" ? content.length === 0 : null } };
+                });
+                return {
+                  result: { text: resp.choices[0]?.message?.content ?? "{}", tokenCount: resp.usage?.total_tokens ?? null },
+                  usage: resp.usage ? { inputTokens: resp.usage.prompt_tokens, outputTokens: resp.usage.completion_tokens, totalTokens: resp.usage.total_tokens } : null,
+                };
               };
+              if (!dispatchContext) return (await send()).result;
+              return dispatchContext.run({ provider: this.name, model, system, user, options: {
+                tier, timeoutMs, temperature, maxCompletionTokens: AwarenessDefaultPolicy.roles.adjudication.outputTokens,
+                label, responseFormat: opts?.responseFormat ?? { type: "json_object" }, retry: "none",
+              } }, send);
             },
             usage: (result) => ({ tokenCount: result.tokenCount }),
           });
         } finally {
           clearTimeout(timer);
         }
-      });
+      }, opts?.retry === "none" ? () => false : undefined);
       // HTTP usage is settled even when content validation fails. Decoding is
       // not a transport retry: domain operations own their bounded repair.
       const parsed = parseProviderJson(data.text);
@@ -934,6 +1111,14 @@ Rules:
       if (!parsed.success) {
         throw new Error("Free-action adjudicator returned an invalid batch");
       }
+      if (currentAwarenessDispatchContext()) {
+        const expected = input.intents.map((intent) => intent.actorSide).sort();
+        const actual = parsed.data.proposals.map((proposal) => proposal.actorSide).sort();
+        if (new Set(actual).size !== actual.length || expected.length !== actual.length ||
+            expected.some((side, index) => side !== actual[index])) {
+          throw new Error("AWARENESS_FREE_ACTION_PROPOSAL_COVERAGE");
+        }
+      }
       return parsed.data;
     } catch (error) {
       return this.fallbackOrThrow(
@@ -978,30 +1163,39 @@ Rules:
             provider: this.name,
             model,
             action: async () => {
-              const stream = await this.client!.chat.completions.create(
-                {
-                  model,
-                  ...this.reasoningOptions(model),
-                  messages: [
-                    { role: "system", content: system },
-                    { role: "user", content: user },
-                  ],
-                  ...(this.supportsTemperature ? { temperature } : {}),
-                  response_format: { type: "json_object" },
-                  stream: true,
-                },
-                { signal: controller.signal, timeout: timeoutMs },
-              );
-              let full = "";
-              for await (const chunk of stream) {
-                const delta = chunk.choices[0]?.delta?.content ?? "";
-                if (!delta) continue;
-                receivedText = true;
-                full += delta;
-                opts.onText?.(full);
-              }
-              if (!full.trim()) throw new Error("empty stream completion");
-              return JSON.parse(full) as unknown;
+              let usage: unknown = null;
+              let responseModel: string | null = null;
+              let requestId: string | null = null;
+              const observed = await observeLlmPhysicalAttempt({ callId: logicalCallId, attemptOrdinal, provider: this.name, requestedModel: model, role: label }, async () => {
+                const { data: stream, response: streamResponse } = await this.client!.chat.completions.create(
+                  {
+                    model,
+                    ...this.requestOptions(model, temperature, opts?.maxCompletionTokens),
+                    messages: [
+                      { role: "system", content: system },
+                      { role: "user", content: user },
+                    ],
+                    response_format: opts.responseFormat ?? { type: "json_object" },
+                    stream: true,
+                    stream_options: { include_usage: true },
+                  },
+                  { signal: controller.signal, timeout: timeoutMs },
+                ).withResponse();
+                let full = "";
+                requestId = streamResponse.headers.get("x-request-id");
+                for await (const chunk of stream) {
+                  if (chunk.usage) usage = chunk.usage;
+                  responseModel = chunk.model;
+                  const delta = chunk.choices[0]?.delta?.content ?? "";
+                  if (!delta) continue;
+                  receivedText = true;
+                  full += delta;
+                  opts.onText?.(full);
+                }
+                return { full, usage, responseModel, requestId };
+              }, (response) => response, () => ({ usage, responseModel, requestId }));
+              if (!observed.full.trim()) throw new Error("empty stream completion");
+              return parseProviderJson(observed.full);
             },
           });
         } finally {
@@ -1035,12 +1229,13 @@ Rules:
     };
   }
 
-  private async chatJsonWithCharacterTools(
+  protected async chatJsonWithCharacterTools(
     system: string,
     user: string,
     referenceTools: CharacterReferenceTools | undefined,
     opts?: ChatOpts,
   ): Promise<unknown> {
+    if (currentAwarenessDispatchContext() && referenceTools) throw new Error("AWARENESS_ADJUDICATION_TOOLS_NOT_SUPPORTED");
     if (!referenceTools) return this.chatJson(system, user, opts);
     if (!this.client) throw new Error("LLM client not configured");
 
@@ -1108,17 +1303,14 @@ Rules:
           operation: label,
           provider: this.name,
           model,
-          action: () => this.client!.chat.completions.create({
+          action: () => observeLlmPhysicalAttempt({ callId: logicalCallId, attemptOrdinal, provider: this.name, requestedModel: model, role: label }, () => this.client!.chat.completions.create({
             model,
-            ...this.reasoningOptions(model),
+            ...this.requestOptions(model, opts?.temperature ?? 0.45, opts?.maxCompletionTokens),
             messages,
             tools,
             tool_choice: "auto",
-            ...(this.supportsTemperature
-              ? { temperature: opts?.temperature ?? 0.45 }
-              : {}),
             response_format: { type: "json_object" },
-          }, { timeout: timeoutMs }),
+          }, { timeout: timeoutMs }), (response) => ({ usage: response.usage, responseModel: response.model, requestId: response._request_id })),
           usage: (result) => ({ tokenCount: result.usage?.total_tokens ?? null }),
         }),
       );
@@ -1153,12 +1345,13 @@ Rules:
     throw new Error("Character reference tool round limit exceeded");
   }
 
-  private async chatJsonWithBattleHistoryTools(
+  protected async chatJsonWithBattleHistoryTools(
     system: string,
     user: string,
     battleTools: BattleHistoryTools,
     opts?: ChatOpts,
   ): Promise<unknown> {
+    if (currentAwarenessDispatchContext() && battleTools) throw new Error("AWARENESS_ADJUDICATION_TOOLS_NOT_SUPPORTED");
     if (!this.client) throw new Error("LLM client not configured");
 
     const tools: ChatCompletionTool[] = [
@@ -1225,20 +1418,17 @@ Rules:
           operation: label,
           provider: this.name,
           model,
-          action: () => this.client!.chat.completions.create(
+          action: () => observeLlmPhysicalAttempt({ callId: logicalCallId, attemptOrdinal, provider: this.name, requestedModel: model, role: label }, () => this.client!.chat.completions.create(
             {
               model,
-              ...this.reasoningOptions(model),
+              ...this.requestOptions(model, opts?.temperature ?? 0.4, opts?.maxCompletionTokens),
               messages,
               tools,
               tool_choice: "auto",
-              ...(this.supportsTemperature
-                ? { temperature: opts?.temperature ?? 0.4 }
-                : {}),
               response_format: { type: "json_object" },
             },
             { timeout: timeoutMs },
-          ),
+          ), (response) => ({ usage: response.usage, responseModel: response.model, requestId: response._request_id })),
           usage: (result) => ({ tokenCount: result.usage?.total_tokens ?? null }),
         }),
       );
@@ -2561,10 +2751,10 @@ Do not invent a sudden environmental event or dramatic field change here. A sepa
     try {
       const reviewedTopology = reviewedPerceptionTopology(
         this.name,
-        this.models.fast,
+        currentAwarenessDispatchContext() ? this.models.engine : this.models.fast,
       );
       const combined = reviewedTopology?.topology === "combined";
-      const data = (await this.chatJson(
+      const raw: unknown = await this.chatJson(
         combined
           ? COMBINED_PERCEPTION_SYSTEM_PROMPT
           : WORLD_RECONCILIATION_SYSTEM_PROMPT,
@@ -2580,7 +2770,9 @@ Do not invent a sudden environmental event or dramatic field change here. A sepa
               ? WORLD_PERCEPTION_RESPONSE_FORMAT
               : undefined,
         },
-      )) as Record<string, unknown>;
+      );
+      if (currentAwarenessDispatchContext()) return decodeAwarenessSemanticResult(raw, input, combined);
+      const data = z.record(z.unknown()).parse(raw);
       const rawPatch = data.patch && typeof data.patch === "object"
         ? data.patch as Record<string, unknown>
         : {};
@@ -2666,7 +2858,7 @@ Do not invent a sudden environmental event or dramatic field change here. A sepa
   }> {
     if (!this.client) return this.fallback.proposeHappening(input);
     try {
-      const data = (await this.chatJson(
+      const raw: unknown = await this.chatJson(
         ENVIRONMENT_PROPOSAL_SYSTEM_PROMPT,
         JSON.stringify({
           scene: input.scene,
@@ -2693,12 +2885,9 @@ Do not invent a sudden environmental event or dramatic field change here. A sepa
           label: "proposeHappening",
           timeoutMs: FAST_SHORT_TIMEOUT_MS,
         },
-      )) as {
-        title?: string;
-        summary?: string;
-        notes?: string;
-        tags?: string[];
-      };
+      );
+      if (currentAwarenessDispatchContext()) return AwarenessHappeningResultSchema.parse(raw);
+      const data = z.record(z.unknown()).parse(raw);
 
       const title = String(data.title ?? "").trim() || "異変";
       const summary =
@@ -2932,6 +3121,9 @@ Return JSON only with privateMemory, currentGoal, emotion, beliefs, observations
     if (input.contextMode === "compact") {
       const counterpartLabel = input.counterpart?.displayName ?? "相手";
       try {
+        if (input.contractVersion === 4) {
+          return dynamicAgentResult(await runConsciousGeneration(input, input, this.chatJson.bind(this)));
+        }
         if (input.contractVersion === 3) {
           const prompt = input.phase === "aftermath"
             ? CONSCIOUS_V3_PROMPT : `${CONSCIOUS_V3_PROMPT}\n${CHARACTER_ACTION_PROPOSAL_OUTPUT_RULES}`;
@@ -3156,6 +3348,10 @@ The narrator may later choose this line's display position and punctuation, but 
   ): Promise<Awaited<ReturnType<LlmProvider["decideCharacterAction"]>>> {
     if (!this.client) return this.fallback.decideCharacterAction(input);
     try {
+      if (input.conscious?.contractVersion === 4) {
+        const consciousOutput = await runConsciousGeneration(dynamicLaterInput(input), input, this.chatJson.bind(this));
+        return { proposedAction: consciousOutput.nextAction.valid ? consciousOutput.nextAction.value : null, consciousOutput };
+      }
       if (input.conscious?.contractVersion === 3) {
         const raw = await this.chatJson(`${CONSCIOUS_V3_PROMPT}\n${CHARACTER_ACTION_PROPOSAL_OUTPUT_RULES}`, JSON.stringify(consciousLaterRequest(input)), {
           tier: "fast", label: "decideCharacterAction", timeoutMs: FAST_TIMEOUT_MS, temperature: 0.35,
@@ -3297,10 +3493,6 @@ JSON only: { "focus": "self"|"foe"|"external"|"both" }`,
       const candidate = (raw ?? []).find((row) =>
         row.sourceSide === source.side
       );
-      const proposed = coerceCharacterSpeech(candidate?.text);
-      const factsPreserved = normalizedSpeechFacts(proposed) ===
-          normalizedSpeechFacts(source.text) &&
-        isStageReaction(proposed) === isStageReaction(source.text);
       const fallbackPlacement = narratorLineCount <= 0
         ? -1
         : index === 0
@@ -3314,7 +3506,9 @@ JSON only: { "focus": "self"|"foe"|"external"|"both" }`,
           candidate?.speaker,
           source.displayLabel ?? source.speaker,
         ),
-        text: factsPreserved ? proposed : source.text,
+        // Direct legacy APIs render their committed source even when the model omits or
+        // rewrites it; placement and display labels remain presentation-only.
+        text: source.text,
         sourceSide: source.side,
         afterNarratorLine: Math.max(
           -1,
@@ -3352,63 +3546,10 @@ JSON only: { "focus": "self"|"foe"|"external"|"both" }`,
   ): Promise<NarrationResult> {
     if (!this.client) return this.fallback.narratePrologue(input);
     try {
-      const styleBlock = input.styleInstruction?.trim()
-        ? `Narration style「${input.styleName ?? "custom"}」: ${input.styleInstruction.trim()}`
-        : "Narration style: 落ち着いた標準の物語調。";
-      const focus = input.focus ?? "external";
-      const rivalryRule = input.priorMatchSummary?.trim()
-        ? `因縁 MUST weave in this prior matchup summary (paraphrase, do not invent a conflicting past): ${input.priorMatchSummary.trim()}`
-        : "因縁: no prior match on record — invent a light plausible fate/rivalry from character blurbs only.";
+      const prompt = buildNarrateProloguePromptMaterial(input);
       const data = (await this.chatJson(
-        `You write the PROLOGUE of a fictional confrontation (Japanese), before any actions resolve. It may be physical, ranged, technological, psychic, social, comedic, cute, or abstract. Match the supplied genre; never add weapons, injury, hostility, or grim tension unless the inputs establish them.
-${styleBlock}
-${focusInstruction(focus)}
-${NARRATION_IDENTIFIER_RULES}
-${NARRATION_PROFILE_RULES}
-structuredCharacterContexts is perspective-compiled. Use staticProjection only as bounded rendering context, never as a new event; narrativeCues are committed observable cues. Never infer omitted inner fields, raw dynamics, hidden triggers, or causes.
-${NARRATION_CONTINUITY_RULES}
-${NARRATOR_RECOGNITION_RULES}
-Include: atmosphere of the field, each participant's opening presence, and rivalry or fate (因縁).
-Every narratorContinuity.reader.disclosedTerms entry is an already-approved battle setup declaration. Include each entry exactly once, including a battleLabel-to-formal-name disclosure when they differ.
-${rivalryRule}
-No combat resolution yet. No numeric stats.
-characterSpeeches were authored by the character agents before narration. Return each supplied line exactly once with its sourceSide and freely render its speaker label from displayContext and narratorContinuity; displayLabel is only a fallback. Preserve viewpoint uncertainty and do not reconstruct omitted canonical identity. You may change punctuation or typographic surface only when words, facts, intent, and the dialogue/stage-reaction distinction remain unchanged. Choose afterNarratorLine to place each line among the narration. You may additionally create a sourceSide-null speech or reaction only for a third-party or scene entity whose presence and agency are supported by the supplied scene/field; never add another line for side A or B.
-4–8 narrator lines.
-JSON: { "turn": 0, "narrator": string[], "speeches": [ { "sourceSide": "a"|"b"|null, "speaker": string, "text": string, "afterNarratorLine": number } ], "recognitionUpdates": [ { "subjectRef": string, "recognizedAs": string, "identityKnowledge": "unknown"|"suspected"|"identified", "continuity": "same_entity"|"possibly_same_entity"|"unlinked" } ] }`,
-        JSON.stringify({
-          scene: input.scene,
-          sideA: {
-            name: input.sideAName,
-            blurb: input.sideABlurb,
-            traits: input.sideATraits,
-          },
-          sideB: {
-            name: input.sideBName,
-            blurb: input.sideBBlurb,
-            traits: input.sideBTraits,
-          },
-          policyHint: input.policySummary,
-          priorMatch: input.priorMatchSummary ?? null,
-          focus,
-          profileAnchors: input.profileAnchors,
-          sceneStateFacts: input.sceneStateFacts ?? [],
-          innerDigests: input.innerDigests ?? [],
-          structuredCharacterContexts: input.structuredCharacterContexts ?? {},
-          narratorContinuity: input.narratorContinuity ?? null,
-          recognitionSubjects: input.recognitionSubjects ?? [],
-          characterSpeeches: narratorVisibleCharacterSpeeches(
-            input.characterSpeeches ?? [],
-          ),
-          field: input.battlefield
-            ? {
-                name: input.battlefield.displayName,
-                terrain: input.battlefield.terrain,
-                setup: input.battlefield.narrativeSetup,
-                obstacles: input.battlefield.obstacles?.slice(0, 4),
-                conditions: input.battlefield.conditions?.slice(0, 3),
-              }
-            : null,
-        }),
+        prompt.system,
+        JSON.stringify(prompt.userData),
         {
           tier: "fast",
           label: "narratePrologue",
@@ -3456,48 +3597,10 @@ JSON: { "turn": 0, "narrator": string[], "speeches": [ { "sourceSide": "a"|"b"|n
   ): Promise<AftermathNarrationResult> {
     if (!this.client) return this.fallback.narrateAftermath(input);
     try {
-      const styleBlock = input.styleInstruction?.trim()
-        ? `Narration style「${input.styleName ?? "custom"}」: ${input.styleInstruction.trim()}`
-        : "Narration style: 落ち着いた標準の物語調。";
-      const focus = input.focus ?? "external";
+      const prompt = buildNarrateAftermathPromptMaterial(input);
       const data = (await this.chatJson(
-        `You frame the AFTERMATH of a fictional confrontation (Japanese), not a new turn. Match the supplied genre, including nonviolent, social, comedic, cute, technological, or psychic contests. Describe atmosphere only; never assume wounds, weapons, death, or grimness.
-${styleBlock}
-${focusInstruction(focus)}
-${NARRATION_IDENTIFIER_RULES}
-${NARRATION_PROFILE_RULES}
-${NARRATION_CONTINUITY_RULES}
-${NARRATOR_RECOGNITION_RULES}
-The server owns the already-decided outcome and will insert one immutable canonical result line between before and after. Do not state, restate, reinterpret, contradict, reverse, or add winner, loser, draw, incapacitation, recovery, or result claims. Use battlefield flavor and keep the framing short.
-Return each supplied characterSpeech exactly once with its sourceSide. Freely render its speaker label from displayContext and narratorContinuity; displayLabel is only a fallback. Preserve viewpoint uncertainty and do not reconstruct omitted canonical identity. You may change punctuation or typographic surface only when words, facts, intent, and dialogue/stage-reaction distinction remain unchanged. Choose afterNarratorLine for placement. A sourceSide-null third-party or scene-entity reaction is allowed only when its presence and agency remain supported by the supplied aftermath scene; never add dialogue for side A or B.
-Do NOT invent a new fight, healing, or numeric stats.
-JSON: { "before": string[], "after": string[], "speeches": [ { "sourceSide": "a"|"b"|null, "speaker": string, "text": string, "afterNarratorLine": number } ], "recognitionUpdates": [ { "subjectRef": string, "recognizedAs": string, "identityKnowledge": "unknown"|"suspected"|"identified", "continuity": "same_entity"|"possibly_same_entity"|"unlinked" } ] }`,
-        JSON.stringify({
-          turn: input.turn,
-          scene: input.scene,
-          fighters: [input.sideAName, input.sideBName],
-          winnerSide: input.winnerSide,
-          winnerName: input.winnerName,
-          fallen: input.fallenNames,
-          focus,
-          profileAnchors: input.profileAnchors,
-          sceneStateFacts: input.sceneStateFacts ?? [],
-          innerDigests: input.innerDigests ?? [],
-          structuredCharacterContexts: input.structuredCharacterContexts ?? {},
-          narratorContinuity: input.narratorContinuity ?? null,
-          recognitionSubjects: input.recognitionSubjects ?? [],
-          characterSpeeches: narratorVisibleCharacterSpeeches(
-            input.characterSpeeches ?? [],
-          ),
-          field: input.battlefield
-            ? {
-                name: input.battlefield.displayName,
-                terrain: input.battlefield.terrain,
-                conditions: input.battlefield.conditions?.slice(0, 3),
-              }
-            : null,
-          recent: input.recentNarration?.slice(-6),
-        }),
+        prompt.system,
+        JSON.stringify(prompt.userData),
         {
           tier: "fast",
           label: "narrateAftermath",
@@ -3722,24 +3825,10 @@ Rules:
   ): Promise<JudgmentNarrationResult> {
     if (!this.client) return this.fallback.narrateJudgment(input);
     try {
-      const styleBlock = input.styleInstruction?.trim()
-        ? `Narration style「${input.styleName ?? "custom"}」: ${input.styleInstruction.trim()}`
-        : "Narration style: 落ち着いた標準の物語調。";
+      const prompt = buildNarrateJudgmentPromptMaterial(input);
       const data = (await this.chatJson(
-        `Frame an already-decided turn-limit judgment for the user in Japanese.
-${styleBlock}
-The server has exclusive authority over the immutable verdict line. presentationProjection is a deterministic audience-safe projection, not the adjudicator's audit record. You may naturally express at most one supplied basisLines meaning in the framing. Never expose JSON keys, scoring criteria, resource bands, engine terms, or an internal evaluation process. Recent public narration is context for tone and continuity only. Do not reconsider, contradict, paraphrase, or restate the winner, loser, draw, action, or outcome. Do not invent another basis, action, result, motive, or character speech. Return only optional framing that can surround the immutable server-rendered verdict line.
-JSON: { "before": string[], "after": string[] }. Each array has at most 2 short lines.`,
-        JSON.stringify({
-          turn: input.turn,
-          scene: input.scene,
-          participants: {
-            a: input.sideAName,
-            b: input.sideBName,
-          },
-          presentationProjection: input.presentationProjection,
-          recentPublicNarration: input.recentPublicNarration.slice(-8),
-        }),
+        prompt.system,
+        JSON.stringify(prompt.userData),
         {
           tier: "fast",
           label: "narrateJudgment",
@@ -3771,7 +3860,7 @@ JSON: { "before": string[], "after": string[] }. Each array has at most 2 short 
   }): Promise<RefereeResult> {
     if (!this.client) return this.fallback.referee(input);
     try {
-      const data = (await this.chatJson(
+      const raw: unknown = await this.chatJson(
         `As a turn-limit adjudicator for a broad fictional confrontation, return raw JSON { "winnerSide": "a"|"b"|"draw", "reason": string, "reasonFacts": [{ "factor": "committed_actions"|"mechanical_effects"|"remaining_capacity"|"world_impact"|"overall_effectiveness", "favoredSide": "a"|"b"|"draw", "statement": string }] } in Japanese. Match the established genre and judge effectiveness without assuming physical violence.
 turnFacts and finalState contain bounded committed engine structure. No narrator prose, event summary, or public rendered speech is present. Use only those canonical facts and prefer engineWinnerSide unless the facts clearly require another result. reason and reasonFacts are concise fact-based rationales, not public narration.`,
         JSON.stringify(input),
@@ -3781,7 +3870,9 @@ turnFacts and finalState contain bounded committed engine structure. No narrator
           temperature: 0.3,
           timeoutMs: FAST_TIMEOUT_MS,
         },
-      )) as { winnerSide?: unknown; reason?: unknown; reasonFacts?: unknown };
+      );
+      if (currentAwarenessDispatchContext()) return decodeAwarenessRefereeResult(raw);
+      const data = z.record(z.unknown()).parse(raw);
       const winnerSide = data.winnerSide === "a" ||
           data.winnerSide === "b" || data.winnerSide === "draw"
         ? data.winnerSide

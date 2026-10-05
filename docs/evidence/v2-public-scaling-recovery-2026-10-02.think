@@ -1,0 +1,16 @@
+domain V2_PUBLIC_RECOVERY:
+  description "Restore the V3-only public API after traffic cutover."
+evidence OWNER:
+  "Goal1 retires ordinary V2 creation/update with historical reads retained. Goal3 expressly permits necessary production deployment. This recovery changes only existing service scaling; no rollback, migration, deletion, provider activation or release."
+evidence LIVE:
+  "Fresh GCP describe and public GET on 2026-10-02 show kshiai-api asia-northeast1 project kshiai manualInstanceCount0 scalingMode manual, 100percent and both tags on kshiai-api-v2-retired-fce86a5. Public API503 Service disabled. The same new image previously responded200 while only tagged. Current template resources, env and secret pins unchanged. Application error query empty, but this alone cannot prove application correctness."
+evidence PLATFORM:
+  "Official https://docs.cloud.google.com/run/docs/configuring/services/manual-scaling says manual0 disables allocated-traffic revisions; tag-only revisions without minimum can serve one instance on demand. auto restores default autoscaling without creating a revision."
+premise MECHANISM:
+  "Producing condition is retained service-level manualzero with allocated public traffic. Trigger was allocating100percent to the verified revision. Detection escape was checking tag-only health and revision template without service-level scaling/allocated-traffic fit. App crash or bad origin-secret cannot explain the matching platform Service disabled condition as well; later health verification remains necessary."
+premise BOUNDS:
+  "Main sole executor, maximum1 additional external write: gcloud run services update kshiai-api --project=kshiai --region=asia-northeast1 --scaling=auto --quiet. Existing max20 and default minimum0 retained; demand-driven execution costs resume. No always-on manual1. Gate current all routes on fce86 and template identity; readback scaling automatic, exact revision/template/traffic preserved; public and preview health200 and frontend asset identity. No blind retry if ambiguous."
+decision RECOVERY based_on OWNER, LIVE, PLATFORM, MECHANISM, BOUNDS:
+  "Use autoscaling on the verified V3-only revision. Leaving disabled loses required reads; manual1 creates idle billing; old V2 rollback violates retirement; duplicate image/revision unnecessary. Internal remaining estimate15-30minutes lowconfidence, external CI waits separate. Completion remains unproven until runtime, writer closure, read preservation, origin and CI receipts audited."
+decision PREVENTION based_on LIVE, PLATFORM, MECHANISM, BOUNDS:
+  "Add service-level scaling and effective instance allocation as explicit pre-cutover gates beside revision-template checks; separately verify source correction by mode readback and detection improvement by executing allocation-aware check before completion. Preserve original incident and failed health as evidence."

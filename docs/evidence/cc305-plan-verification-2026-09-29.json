@@ -1,0 +1,130 @@
+{
+  "observed_at": "2026-09-29T20:34:15+09:00",
+  "scope": "PERT reconciliation and cc305 design preparation; proposed architecture, no runtime or Stage changes",
+  "tool": "perttool 0.11.1 /home/katsumata-m/perttool/dist/cli.js",
+  "plans": {
+    "parent": {
+      "path": "docs/character-semantic-migration.pert",
+      "source_digest": "sha256:da1c34f32329833c95bec4f9d693ba41522c7f35acc50e50208ef4f75f44278a",
+      "check_ok": true,
+      "check_diagnostic_codes": [
+        "PTDAG-208",
+        "PTMAC-102"
+      ],
+      "precedence": {
+        "numerator": "1651",
+        "denominator": "60",
+        "unit": "point",
+        "display": "27.517"
+      },
+      "resource": {
+        "numerator": "1651",
+        "denominator": "60",
+        "unit": "point",
+        "display": "27.517"
+      },
+      "conditional_velocity_forecast": {
+        "qualifier": "velocity_forecast",
+        "source_unit": "point",
+        "target_unit": "day",
+        "precedence_makespan": {
+          "numerator": "1651",
+          "denominator": "180",
+          "unit": "day",
+          "display": "9.172"
+        },
+        "resource_makespan": {
+          "numerator": "1651",
+          "denominator": "180",
+          "unit": "day",
+          "display": "9.172"
+        }
+      },
+      "next": [
+        "cc319"
+      ]
+    },
+    "child": {
+      "path": "docs/character-v3-stage-trial.pert",
+      "source_digest": "sha256:113796a07696d1a38747a9a149b33a92192fcca063f14e98226b4788aacb7317",
+      "check_ok": true,
+      "check_diagnostic_codes": [],
+      "precedence": {
+        "numerator": "49",
+        "denominator": "4",
+        "unit": "point",
+        "display": "12.25"
+      },
+      "resource": {
+        "numerator": "931",
+        "denominator": "60",
+        "unit": "point",
+        "display": "15.517"
+      },
+      "conditional_velocity_forecast": {
+        "qualifier": "velocity_forecast",
+        "source_unit": "point",
+        "target_unit": "day",
+        "precedence_makespan": {
+          "numerator": "49",
+          "denominator": "12",
+          "unit": "day",
+          "display": "4.083"
+        },
+        "resource_makespan": {
+          "numerator": "931",
+          "denominator": "180",
+          "unit": "day",
+          "display": "5.172"
+        }
+      },
+      "next": [
+        "vt109"
+      ]
+    }
+  },
+  "candidate_sha256": {
+    "docs/adr/0039-v3-battle-lifecycle-and-cutover.think": "edf61ccdfc2deaf8ad188eb22679e7a0f3d62d0961ba8b840ab32d6241646e6c",
+    "docs/adr/0039-v3-battle-lifecycle-and-cutover.md": "70758b64a1c3f01c54415de4f5ff0a1d3867cfbf1ed71e2e06b616ca75f73fa5",
+    "docs/battle-lifecycle-boundary-design-v2.md": "f4fb81c3548f1a25f8ffa7dde17785d352848683cb30e8c86500a244d6ddfe8a",
+    "docs/character-v3-battle-cutover-requirements-v2.md": "63d78ae5adef9ddec55e3db802b44429f5f82611e6591104f7fa8cc5a4c5a2b4"
+  },
+  "validation": {
+    "adr_check": "21 current pairs passed; 4 pinned historical pairs excluded; revised ADR0039 checked again",
+    "typecheck": "passed",
+    "npm_test": {
+      "active_files": 11,
+      "provisional_files": 2,
+      "disabled_files": 147,
+      "active_tests_passed": 92,
+      "authority_checker_tests_passed": 9
+    },
+    "review": "one independent PASS_WITH_FINDINGS; two P2 inside findings corrected by primary agent, no claim of a second independent full review"
+  },
+  "velocity_observation": {
+    "command": "perttool project observe-velocity docs/character-semantic-migration.pert --task cc305 --evidence declared --format json",
+    "observed_commit": "1a43a8eb259b3f6dea14aeb24c256a4b31ef5824",
+    "history_status": "incomplete",
+    "cause_codes": [
+      "unsupported_source_version"
+    ],
+    "candidates": [
+      {
+        "measure": "elapsed_hour_throughput",
+        "state": "unavailable",
+        "adoptable_velocity_token": null
+      },
+      {
+        "measure": "active_date_throughput",
+        "state": "unavailable",
+        "adoptable_velocity_token": null
+      },
+      {
+        "measure": "effort_productivity",
+        "state": "unavailable",
+        "adoptable_velocity_token": null
+      }
+    ],
+    "next_measurement": "Record vt109 start/finish in child grammar 5, then observe completed-work velocity with perttool; keep parent recorded event timestamps intact."
+  }
+}

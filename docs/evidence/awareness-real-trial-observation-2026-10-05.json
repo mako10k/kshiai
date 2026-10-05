@@ -1,0 +1,155 @@
+{
+  "trialId": "awareness-real-trial-2026-10-05",
+  "candidateSha256": "a1e4a95291289f9a6cf5d2fb77120bd362c75b58d223845c1b8f3212e5b1ac7c",
+  "ownerApprovedPaidRuns": 1,
+  "actualRuns": 1,
+  "repeatRuns": 0,
+  "scratchDirectory": "/tmp/kshiai-awareness-paid-trial-39Fhzu",
+  "result": "creation_timeout_no_battle",
+  "completedCombatTicks": 0,
+  "attempts": [
+    {
+      "id": "provider_call_917c2781299f12fe16ff8e33:1",
+      "callId": "provider_call_917c2781299f12fe16ff8e33",
+      "attemptOrdinal": 1,
+      "provider": "xai",
+      "requestedModel": "grok-4.5",
+      "responseModel": null,
+      "requestId": null,
+      "battleId": "awareness-real-trial-2026-10-05",
+      "role": "creation",
+      "side": null,
+      "tick": null,
+      "receiptIds": [],
+      "startedAt": 1791192919279,
+      "finishedAt": 1791192929307,
+      "elapsedMs": 10027.714332,
+      "status": "timeout",
+      "errorClass": "timeout",
+      "promptTokens": null,
+      "completionTokens": null,
+      "totalTokens": null,
+      "cachedTokens": null,
+      "reasoningTokens": null,
+      "rawUsage": null
+    }
+  ],
+  "usage": {
+    "label": "estimated usage cost",
+    "priceRevision": "unpriced",
+    "knownSubtotalUsd": 0,
+    "complete": false,
+    "attemptCount": 1,
+    "unknownAttemptCount": 1,
+    "missingUsageCount": 1,
+    "missingPriceCount": 1,
+    "calculationImpossibleCount": 0,
+    "tokens": {
+      "promptTokens": {
+        "knownSubtotal": 0,
+        "unknownCount": 1
+      },
+      "completionTokens": {
+        "knownSubtotal": 0,
+        "unknownCount": 1
+      },
+      "totalTokens": {
+        "knownSubtotal": 0,
+        "unknownCount": 1
+      },
+      "cachedTokens": {
+        "knownSubtotal": 0,
+        "unknownCount": 1
+      },
+      "reasoningTokens": {
+        "knownSubtotal": 0,
+        "unknownCount": 1
+      }
+    },
+    "groups": [
+      {
+        "provider": "xai",
+        "model": "grok-4.5",
+        "role": "creation",
+        "attemptCount": 1,
+        "tokens": {
+          "promptTokens": {
+            "knownSubtotal": 0,
+            "unknownCount": 1
+          },
+          "completionTokens": {
+            "knownSubtotal": 0,
+            "unknownCount": 1
+          },
+          "totalTokens": {
+            "knownSubtotal": 0,
+            "unknownCount": 1
+          },
+          "cachedTokens": {
+            "knownSubtotal": 0,
+            "unknownCount": 1
+          },
+          "reasoningTokens": {
+            "knownSubtotal": 0,
+            "unknownCount": 1
+          }
+        },
+        "knownSubtotalUsd": 0,
+        "unknownCostCount": 1
+      }
+    ],
+    "attempts": [
+      {
+        "id": "provider_call_917c2781299f12fe16ff8e33:1",
+        "provider": "xai",
+        "model": "grok-4.5",
+        "role": "creation",
+        "knownCostUsd": null,
+        "complete": false,
+        "missingUsage": true,
+        "missingPrice": true,
+        "calculationImpossible": false
+      }
+    ]
+  },
+  "battleCreated": false,
+  "narrationEventCount": 0,
+  "connectivityObservation": {
+    "request": "GET https://api.x.ai/v1 (unauthenticated, no generation)",
+    "httpStatus": 404,
+    "totalSeconds": 0.173165,
+    "tlsSeconds": 0.055963,
+    "meaning": "API root reachable at observation time; does not prove authentication, model availability or timeout cause"
+  },
+  "unknowns": [
+    "provider consumed tokens",
+    "actual monetary charge",
+    "whether timed-out generation completed provider-side",
+    "cause of missing generation response within 10-second client deadline",
+    "Luna availability and three-tick behavior"
+  ],
+  "creationReadback": {
+    "status": "failed",
+    "startedAt": 1791192919274,
+    "deadlineAt": 1791193099274,
+    "dispatchedAt": 1791192919278,
+    "reservation": {
+      "id": "encounter:attempt_02fbc17b8e80666b998b8464",
+      "role": "adjudication",
+      "maximumUsd": null,
+      "status": "unknown",
+      "actualUsd": null,
+      "physicalOutstanding": true
+    },
+    "failure": "Request timed out."
+  },
+  "independentReadback": {
+    "battleRows": 0,
+    "narrationEntries": 0,
+    "providerAttemptRows": 1,
+    "agreement": true
+  },
+  "limits": [
+    "Harness summary unresolvedAttemptCount excludes pre-battle creation reservations; independent creation readback retains one conservative physicalOutstanding unknown reservation."
+  ]
+}

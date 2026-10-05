@@ -510,6 +510,109 @@ describe("ordered narration worker", () => {
     );
   });
 
+  it("filters trial dispatch and stale recovery before touching unrelated outbox rows", async () => {
+    const allowedBattleId = "worker-trial-allowed";
+    const unrelatedBattleId = "worker-trial-unrelated";
+    for (const battleId of [allowedBattleId, unrelatedBattleId]) {
+      await createBattle(battleId);
+      await enqueueNarration({
+        battleId,
+        receiptId: `${battleId}:phase:1`,
+        sequence: 1,
+        phase: "combat",
+        combatTurn: 1,
+        frozenInput: { scene: battleId },
+        inputDigest: "b".repeat(64),
+        now: "2026-08-12T00:00:00.000Z",
+      });
+    }
+    assert.equal(await nextNarrationBattleId([allowedBattleId]), allowedBattleId);
+    assert.equal(await nextNarrationBattleId([]), null);
+    await query(
+      `UPDATE battle_narration_outbox SET status = 'dispatched', dispatched_at = $1
+        WHERE battle_id IN ($2, $3)`,
+      ["2026-08-12T00:00:01.000Z", allowedBattleId, unrelatedBattleId],
+    );
+
+    assert.equal(
+      await recoverStaleNarrationOutbox(
+        new Date("2026-08-12T00:10:00.000Z"),
+        5 * 60 * 1000,
+        [allowedBattleId],
+      ),
+      1,
+    );
+    const deliveries: string[] = [];
+    assert.deepEqual(
+      await dispatchNarrationOutbox(
+        async (delivery) => {
+          deliveries.push(delivery.battleId);
+        },
+        20,
+        [allowedBattleId],
+      ),
+      { delivered: 1, failed: 0 },
+    );
+    assert.deepEqual(deliveries, [allowedBattleId]);
+    const rows = await query<{
+      battle_id: string;
+      status: string;
+      delivery_generation: number;
+      delivery_attempts: number;
+    }>(
+      `SELECT battle_id, status, delivery_generation, delivery_attempts
+         FROM battle_narration_outbox
+        WHERE battle_id IN ($1, $2)
+        ORDER BY battle_id`,
+      [allowedBattleId, unrelatedBattleId],
+    );
+    const byBattle = new Map(rows.rows.map((row) => [row.battle_id, row]));
+    assert.deepEqual(byBattle.get(allowedBattleId), {
+      battle_id: allowedBattleId,
+      status: "dispatched",
+      delivery_generation: 1,
+      delivery_attempts: 1,
+    });
+    assert.deepEqual(byBattle.get(unrelatedBattleId), {
+      battle_id: unrelatedBattleId,
+      status: "dispatched",
+      delivery_generation: 0,
+      delivery_attempts: 0,
+    });
+    assert.equal(
+      await recoverStaleNarrationOutbox(
+        new Date("2026-08-12T00:20:00.000Z"),
+        5 * 60 * 1000,
+        [],
+      ),
+      0,
+    );
+    assert.deepEqual(
+      await dispatchNarrationOutbox(async () => {
+        throw new Error("empty filter must not enumerate");
+      }, 20, []),
+      { delivered: 0, failed: 0 },
+    );
+    const untouched = await query<{
+      status: string;
+      delivery_generation: number;
+      delivery_attempts: number;
+    }>(
+      `SELECT status, delivery_generation, delivery_attempts
+         FROM battle_narration_outbox WHERE battle_id = $1`,
+      [unrelatedBattleId],
+    );
+    assert.deepEqual(untouched.rows[0], {
+      status: "dispatched",
+      delivery_generation: 0,
+      delivery_attempts: 0,
+    });
+    await query(
+      "DELETE FROM battle_narration_outbox WHERE battle_id IN ($1, $2)",
+      [allowedBattleId, unrelatedBattleId],
+    );
+  });
+
   it("does not recover generating work while its fenced lease is active", async () => {
     const battleId = "worker-outbox-active-lease";
     await createBattle(battleId);

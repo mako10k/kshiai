@@ -1,5 +1,8 @@
+// R: Verify ordinary public battle progression and retain bounded release acceptance evidence.
+import { inspectAwarenessPublicObservation } from "./awareness-public-observation.js";
 import { randomUUID } from "node:crypto";
 import {
+  AwarenessNormalPolicy,
   BattleAssetManifestSchema,
   BattlePublicSchema,
   type BattleListItem,
@@ -179,7 +182,7 @@ export function authorizeObservationProviderBudget(input: {
   runId: string;
   approvedRunId: string | undefined;
   ceiling: number;
-  projected: ObservationProviderOperationBudget;
+  projected: Pick<ObservationProviderOperationBudget, "total">;
 }): void {
   if (input.approvedRunId !== input.runId) {
     throw new Error("E2E_OBSERVATION_APPROVED_RUN_ID must exactly match E2E_RUN_ID");
@@ -491,6 +494,7 @@ async function inspectInternalBattleObservation(input: {
   narrationProviderOperations: number;
   dialogueProjection: "legacy" | "compact";
   dialogueActivationSource: "default" | "persisted_setting" | "deployment_override";
+  awareness: Awaited<ReturnType<typeof inspectAwarenessPublicObservation>>;
 }> {
   const response = await apiJson<{
     role?: string;
@@ -562,13 +566,12 @@ async function inspectInternalBattleObservation(input: {
       }];
     }),
   });
+  const awareness = await inspectAwarenessPublicObservation(input.battleId, manifest);
   return {
+    awareness,
     turnRecordCount,
     canonicalTransitionCount,
-    narrationProviderOperations: narrationQueue.reduce(
-      (sum, entry) => sum + (entry.attemptTotals?.httpAttempts ?? 0),
-      0,
-    ),
+    narrationProviderOperations: awareness.narrationPhysicalAttempts,
     dialogueProjection: manifest.dialoguePipeline.snapshot.contextProjectionMode,
     dialogueActivationSource,
   };
@@ -705,7 +708,11 @@ async function main(): Promise<void> {
     Math.max(1, Number(process.env.E2E_MAX_ADVANCES ?? 24)),
   );
   if (!Number.isInteger(maxAdvances)) throw new Error("E2E_MAX_ADVANCES must be an integer");
-  const projectedProviderOperations = projectObservationProviderOperations(maxAdvances);
+  const projectedProviderOperations = {
+    policyRevision: AwarenessNormalPolicy.revision,
+    maximumPhysicalAttempts: AwarenessNormalPolicy.maxPhysicalAttempts,
+    total: AwarenessNormalPolicy.maxPhysicalAttempts,
+  };
   const providerOperationCeiling = Number(process.env.E2E_PROVIDER_OPERATION_CEILING ?? "");
   authorizeObservationProviderBudget({
     runId,
@@ -809,6 +816,9 @@ async function main(): Promise<void> {
       accessToken: observer.accessToken,
       battleId: persistedBattle.id,
     });
+    if (narration.entries.some((entry) => entry.status !== "completed")) {
+      throw new Error("Awareness public completion requires successful narration for every receipt");
+    }
     await assertBattleHistoryVisibility({
       apiBaseUrl,
       accessToken: observer.accessToken,

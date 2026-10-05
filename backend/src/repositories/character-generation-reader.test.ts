@@ -5,13 +5,14 @@ import {
   defaultBasicAttack,
   defaultParameters,
   type CharacterSheet,
+  type CharacterCompilerCapabilitySetV1,
 } from "@kshiai/shared";
-import { assetContentDigest, type AssetGeneration } from "./asset-generations.js";
+import { assetContentDigest, type AssetGeneration } from "../testing/historical-asset-generations.js";
 import { buildImportedCharacterEnvelopeV2 } from "../services/character-authoring-service.js";
 import { readCharacterGeneration } from "./character-generation-reader.js";
 
 const createdAt = "2026-09-14T00:00:00.000Z";
-const requiredV3Capabilities = {
+const requiredV3Capabilities: CharacterCompilerCapabilitySetV1 = {
   contractVersion: 1 as const,
   required: [{ consumer: "battle-mechanics" as const, version: 3 }],
 };

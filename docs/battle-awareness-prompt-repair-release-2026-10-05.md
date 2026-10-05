@@ -1,0 +1,17 @@
+# プロンプト修正・公開反映・完走確認
+
+支配決定: [ADR0056](adr/0056-latest-prompt-contract-until-completion.md)。所有者の更新したゴールは、出力契約を最新版へ統一、テスト作成時の実装プロンプト再点検、公開反映、新規試合完走、ADR0053の固定開始条件の変更である。既存試合の継続も最新版の指示で実行する。正常完走の証拠が得られるまではプロンプト固定を開始しない。
+
+要件: strict出力、発声原文、知識境界、不変アセット束縛と実token記録を維持する。基本設計: phaseの描写規則とwire契約を分離し、実行する出力契約を最新版へ統一する。保存された旧版は履歴として保持する。応答本文を保存しないスカラー診断を加える。公式release経路から承認済み公開先へ配備する。
+
+詳細設計: phase builderのtyped contractは内容規則と出力書式を分離する。新規freezeはcontent-only。既存資料の送信時には登録済み旧書式の完全一致箇所と旧句読点変更許可のみを除去し、observer/profile/style/user本文とsource identityを保つ。batch wrapperがphase別の完全なreceipts例を一度組み立てる。直接実況は既存公開DTOを維持して現行の厳密な出力指示を使う。潜在・顕在も旧版指定時に最新の出力説明を用いる。実際に組み立てた送信内容からdispatch証明を作る。sharedのschema/manual typeは一つのprompt revision型に合わせる。
+
+応答診断は既存snapshot JSONへoptional nullableで追加し、SDK response→usage observation→repositoryの順に渡す。終了理由、本文長、空本文の真偽のみを記録する。raw本文や推論内容は保存しない。新しいSQL columnは不要。HTTP完了の会計処理と論理出力の受理を分離する。
+
+テスト作成時に実phase builder、freeze、最終dispatchを再読し、その生成資料を検証対象にする。全phaseの組立て、schema合法例、不許可focus・改変発声、旧版・版なし資料の継続、スタイル・知識境界保持、旧snapshot読み取り、空本文/終了理由、実SDK経路の新manifest束縛を確認する。通常選択テストと新関連直接テストの範囲は別に示す。
+
+公開先は所有者承認のkshiai.mk10.org、CloudRun kshiai-api、Worker kshiai-web。必要なscoped commit、CI、preview、public昇格、migration readback、新規試合完走/SSE/実況/token資料までを完了条件とする。旧stage-v3候補の保留契約は変更しない。配備payload、rollback値、現行cloud状態は実行前に具体資料へ凍結する。料金未知を実費0と扱わない。主agentはintegration/外部executor、補助writerはLLM実況経路、別writerはJSON fixtureを担当する。
+
+PERT: awareness-prompt-repairを進行中として登録済み。正常完走証拠なしのため親awareness-verifyは未完了。2026-10-05 20:58 JSTに旧試合も含む統一修正の計測を開始。最初の関連回帰19件が成功した段階では実況経路修正と公開release/完走が残る。残内部工数は暫定60〜120分（agent見積り、確信度低、修正20〜40分＋release整合/配備20〜40分＋完走調査20〜40分）。CI/Cloudの外部待ちは別に観測する。observe-velocityはmissing_baseline/no_complete_sequenceで利用可能な速度なし。次の計測点は実況関連回帰と型検査の完了時。共有21:30以降の作業は時間延長の回答に従う。
+
+公開観測詳細はADR0057に従う。現行taxonomyはawareness role名を分類する。旧169既定値の意味を変えず、当該stage/observe実行は既存の入力200を指定する。manifest/runtime通常policy、終端状態、未解決physical試行0、usage台帳件数一致、SDK報告tokens（欠測は別カウント）、実況全receipt成功を追加確認する。batchはreceipt数と物理HTTP数を分ける。直接実況の既存presentation fallbackではモデル表層の書換えを公開せず確定source.textを保持し、frozen strict経路は不一致を拒否する。

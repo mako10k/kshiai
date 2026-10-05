@@ -1,0 +1,12 @@
+domain HISTORICAL_CHARACTER_READ:
+  description "Resolve legacy battle-bound character display without enabling invalid battle execution."
+evidence OWNER:
+  "Accepted ADR0043 retains historical V2 character display bound to immutable battle snapshots. User reports Miki V2 current display and no ordinary editor are OK, but old battle cannot be opened."
+evidence OBSERVED:
+  "Screenshot of Kanade versus Ren shows record requires review and a disabled battle open control. HistoryPage links character portraits to mutable current IDs without battleId. Historical profile endpoint reads full executable BattleState before resolving snapshots. Read-only DB battle btl_42085ad499be0cb5480a2d0fc4207a15 contains immutable manifest bindings and both CombatReadyCharacterSheet snapshots validate independently. Full BattleState validation fails in five compilerInputsV2 action response selectors. No DB write occurred."
+decision CAUSE based_on OBSERVED:
+  "Execution-schema validation blocks the historical profile read even though its frozen character data validates; missing battleId in history links also selects the wrong revision. Disabled open controls block battle detail as observed. This investigation does not establish whether full historical battle playback is recoverable."
+premise LIMIT:
+  "Implement only accepted historical character read behavior. Preserve owner/battle/current-character access checks, validate manifest identities and snapshot schemas, fail closed for missing or corrupt snapshots, and never use mutable current data as a replacement. No compiler reexecution, fabricated selector, DB repair, battle resumption or remote deployment is authorized by this local fix."
+decision FIX based_on OWNER, OBSERVED, CAUSE, LIMIT:
+  "Add a read-only repository reader for the exact requested battle and character binding, independently validating minimal manifest and snapshot contracts rather than executable battle state. Add battleId to both history portrait links. Regression tests cover invalid unrelated compiler input, no-manifest, mismatched IDs and invalid snapshot; retain write restrictions. Alternative relaxing BattleState schema or transforming saved compiler inputs risks altering execution semantics and is outside accepted scope. Verify local tests/typecheck/static and exact historical fixture. Image creation/deployment for a new SHA needs a concrete follow-on candidate. Remaining local fix and verification0.5-1agent h provisional low confidence; cloud/user waits separate."

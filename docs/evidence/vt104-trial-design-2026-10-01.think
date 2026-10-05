@@ -1,0 +1,16 @@
+domain TRIAL_DESIGN:
+  description "Concrete first-trial design under Accepted requirements v3."
+evidence SOURCE:
+  "At03ef49c stage-release requires email/V2 e2e; control open requires eight receipts and productionReceipt. Trial requires exact request digests. Null deployment control routes to normal runtime; startup then dispatches pending work."
+evidence AUTHORITY:
+  "Requirements v3 R1-R5 require Google owner V3 play and defer preservation/email/public promotion. ADR0042 remains Proposed and requires concrete design acceptance before implementation."
+premise SCOPE:
+  "Only documents and canonical plan change now. Keep authentication/ownership/V3 binding/accounting. No actual deployment, remote write, deletion or paid call."
+pending CLOUD:
+  "Current cloud settings, backlog, Google redirect, exact source artifact and provider budget await execution-packet discovery. No fabricated receipt."
+premise OWNER_MODE:
+  "New owner-only dynamic trial authorization could isolate other users but needs multi-layer schema/runtime/provider/task implementation, estimated2-5 agent h low confidence."
+premise LEGACY:
+  "Complete old eight-receipt/snapshot gates; inconsistent with current first-trial deferral."
+decision CANDIDATE based_on SOURCE, AUTHORITY, SCOPE, CLOUD, OWNER_MODE, LEGACY:
+  "Propose dedicated normal-runtime no-traffic/Worker-preview workflow plus evidence validator/test. Stop old writers and readback exact unfinished disposal before startup; inspect pending authoring/narration. Preserve usual auth; other authenticated users knowing preview retain normal rights. Disclose this access scope for owner choice. Do not implement until concrete design accepted."

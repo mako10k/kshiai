@@ -1,0 +1,29 @@
+domain PACKET:
+  description "Complete the reviewable operational candidate for the prepared V3 first trial."
+evidence OWNER:
+  "Owner authorized next task: establish deployment procedures and stop/recovery conditions. Shared workday corrected to working until22:00."
+evidence SOURCE:
+  "Clean existing worktree HEAD72f67ea; prepared immutable RC4f3aaa7 and image43d084a2 recorded. Prior candidate contains obsolete source identity and missing operational receipts."
+premise BOUNDARY:
+  "Read cloud/database metadata without secret output; write only candidate documentation and actual task progress. No deployment, traffic/tag/queue mutations, schema application, disposal, auth update or paid provider use."
+pending LIVE:
+  "Fresh cloud writers, tags, queue, exact unfinished DB set, pending migrations, numeric secret versions and callback availability need observation. Post-stop receipts cannot exist before authorized execution."
+premise OPTIONS:
+  "Reuse exact prepared image and draft staged instructions; do not manufacture executable packet receipts. If accepted no-snapshot policy conflicts with discard helper, disclose earliest design contradiction and propose bounded correction for owner decision."
+decision BUILD based_on OWNER, SOURCE, BOUNDARY, LIVE, OPTIONS:
+  "Perform read-only inventory, compare accepted design to disposal implementation, document concrete staged candidate and unresolved owner decisions, validate documentation and update canonical task actuals without claiming deployment readiness."
+evidence INVENTORY:
+  "Fresh metadata:78tags/public100percent, queueRUNNING empty; DB186 battles active18 finished168, outbox22 completed entries14finished8active; zero other pending provider/authoring, five pending migrations, receipt table missing. Numeric secrets1. Google enabled but no preview callback; local Worker credential unavailable."
+evidence CONFLICT:
+  "Accepted designB excludes snapshot gate and calls regular cutover repository before schema stepC. Repository requires nonempty snapshot identity and receipt table0029. Workflow requires unfinished/outboxzero before migrations."
+pending DESIGN:
+  "Owner must decide specific successor design/file set for explicit no-snapshot initial trial policy and receipt-table bootstrap. Existing accepted policy remains, but implementation and sequence extension are not yet accepted. No external execution packet can be finalized before this conflict is resolved."
+decision REPORT based_on OWNER, BOUNDARY, INVENTORY, CONFLICT, DESIGN:
+  "Save read-only inventory and concrete staged candidate, report narrow local repair recommendation and increased internal estimate. Preserve current immutableRC; code changes need a fresh source/CI/RC/prepare if they affect runtime. Do not mutate shared cloud or fabricate receipts."
+
+evidence AUTH_CURRENT:
+  "Existing OAuth uses Google/Supabase/PKCE and browser-origin callback. Current allowlist lacks actual futurepreview. Eight local identity/token/proxy boundary tests pass; no real Google/V3 proof. Same-origin Worker path does not establish CORS-change necessity."
+evidence DESIGN_REVIEW:
+  "Independent read-only review identifies required frozen finished-outbox projection in trial plan digest, exact existing0029 bootstrap DDL and separate immutable source identity for any new operator behavior."
+decision DRAFT_ONLY based_on OWNER, BOUNDARY, DESIGN, AUTH_CURRENT, DESIGN_REVIEW:
+  "Complete Proposed successor detailed design and test cases, preserve current authentication and leave code/external mutation pending owner decision. Report actual auth change necessity only for exactcallback after preview exists."

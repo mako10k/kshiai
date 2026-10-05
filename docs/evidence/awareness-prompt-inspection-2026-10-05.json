@@ -1,0 +1,164 @@
+{
+  "scope": "Owner-requested read-only inspection of current awareness prompts; no source implementation changes or paid retry",
+  "head": "3a32c2deb575600f81caa0b206f2e6a2ccd319d2",
+  "dirtyWip": true,
+  "recordedAt": "2026-10-05T11:42:03.004696+00:00",
+  "findings": [
+    {
+      "id": "PI-01",
+      "class": "INSIDE",
+      "priority": "P1",
+      "fact": "全4phaseと別combat batch経路で、旧単一オブジェクト指示と新receipts envelope指示を同じsystemへ合成",
+      "sources": [
+        "backend/src/llm/awareness-narration-phase.ts:21",
+        "backend/src/llm/awareness-narration-phase.ts:37",
+        "backend/src/llm/awareness-narration-phase.ts:47",
+        "backend/src/llm/awareness-frozen-narration.ts:46",
+        "backend/src/llm/awareness-narration.ts:66",
+        "backend/src/llm/openai-compatible.ts:571",
+        "backend/src/llm/openai-compatible.ts:611",
+        "backend/src/llm/openai-compatible.ts:666",
+        "backend/src/llm/openai-compatible.ts:705"
+      ],
+      "cause": "既存の描写規則と出力serialization契約が一体のsystemを、そのまま新契約内へ再利用した構成",
+      "modelMechanism": "旧形式と観測された返答形状は一致するが、モデルがどの指示を優先したかは未確定"
+    },
+    {
+      "id": "PI-02",
+      "class": "INSIDE",
+      "priority": "P1",
+      "fact": "旧combat出力指示にfocusがあるが、新receipt strict schemaでは不許可",
+      "sources": [
+        "backend/src/llm/openai-compatible.ts:571",
+        "backend/src/llm/awareness-frozen-narration.ts:25",
+        "packages/shared/src/awareness-narration-contract.ts:5"
+      ],
+      "risk": "receiptsを付けるだけでは、focusが残った返答を次に拒否する"
+    },
+    {
+      "id": "PI-03",
+      "class": "INSIDE",
+      "priority": "P1",
+      "fact": "旧規則は句読点・表記の変更を許可し、新規則・検証はsourceSideとtextの完全一致を要求",
+      "sources": [
+        "backend/src/llm/openai-compatible.ts:566",
+        "backend/src/llm/openai-compatible.ts:609",
+        "backend/src/llm/openai-compatible.ts:663",
+        "backend/src/llm/awareness-frozen-narration.ts:49",
+        "backend/src/llm/awareness-frozen-narration.ts:78"
+      ],
+      "risk": "文章として同じ発言でも表記変更により検証拒否"
+    },
+    {
+      "id": "PI-04",
+      "class": "INSIDE",
+      "priority": "P2",
+      "fact": "frozenテストのsystemは簡略placeholderで、model返答は正しいreceipts形式の手作りfixture",
+      "sources": [
+        "backend/src/llm/awareness-frozen-narration.test.ts:11",
+        "backend/src/llm/awareness-frozen-narration.test.ts:13",
+        "backend/src/llm/awareness-frozen-narration.test.ts:27"
+      ],
+      "classification": "検出漏れ条件。PI-01の生成原因とは別"
+    },
+    {
+      "id": "PI-05",
+      "class": "INSIDE",
+      "priority": "P2",
+      "fact": "通常テスト211件の実行ログはawarenessテストをunsealedとして除外している",
+      "sources": [
+        "scripts/test-authority-inventory.json",
+        "/tmp/kshiai-normal-deadlines-full-tests.txt:14"
+      ],
+      "classification": "通常テスト成功は新パイプラインのprompt整合性の根拠にならない。直接関連テストの成功もprompt意味整合性を保証しない"
+    },
+    {
+      "id": "PI-06",
+      "class": "INSIDE",
+      "priority": "P2",
+      "fact": "provider-json直接テストは現行taxonomyにないgenerateCharacterDefinitionV2を会計contextへ渡し、HTTP前にPROVIDER_OPERATION_UNCLASSIFIEDで失敗",
+      "sources": [
+        "backend/src/llm/provider-json.test.ts:25",
+        "backend/src/llm/provider-json.test.ts:40",
+        "backend/src/llm/provider-operation-taxonomy.ts:4",
+        "backend/src/llm/provider-accounting.ts:215"
+      ],
+      "classification": "テストfixtureの現行契約不整合。顕在意識の今回の生成原因ではない"
+    },
+    {
+      "id": "PI-07",
+      "class": "INSIDE",
+      "priority": "P2",
+      "fact": "generic JSON transportはjson_objectを指定し、選択されたreplyのfinish_reasonや本文の長さ・空判定を観測資料に保持していない",
+      "sources": [
+        "backend/src/llm/awareness-provider-contract.ts:16",
+        "backend/src/llm/openai-compatible.ts:970",
+        "backend/src/repositories/llm-usage-observation.ts:8"
+      ],
+      "classification": "JSON.parse失敗の詳細原因は不明。単価不明とHTTP完了は別に記録できている。新しい永続観測項目の追加は後続設計"
+    },
+    {
+      "id": "PI-08",
+      "class": "OUTSIDE",
+      "priority": "P2",
+      "fact": "Luna入力実測3653〜4023tokenは1800targetを超え、prose rendererは全構造項目を逐語展開",
+      "sources": [
+        "docs/evidence/awareness-normal-real-completion-2026-10-05.json",
+        "backend/src/llm/prompt-prose.ts:45",
+        "backend/src/llm/awareness-request.ts:56",
+        "backend/src/llm/awareness-dispatch-admission.ts:74"
+      ],
+      "classification": "今回のschema不一致の原因とは未確定。入力縮約は情報境界を維持する後続設計として提案"
+    }
+  ],
+  "boundaryDisputes": [],
+  "roleInspection": {
+    "subconscious": "role/top-level/source/resource guidance consistent with schema, current-only state and reflex/emotion separation present; no comparable envelope contradiction found",
+    "conscious": "role/top-level/source/resource guidance consistent with schema, frozen perception/felt projection only; invalid JSON producing reason unresolved",
+    "creation": "single encounter JSON shape matches schema; adjudication dispatch mechanically converts projected JSON user data to prose",
+    "semantic": "world patch/situation/environment decision shape consistent; combined topology explicitly adds sensoryEvidence rather than replacing output envelope",
+    "freeAction": "proposal batch fields consistent with FreeActionAdjudicationBatchSchema; canonical roots separated from observer belief",
+    "referee": "winnerSide/reason/reasonFacts shape consistent with decoder; canonical engine facts are requested",
+    "happening": "proposal title/summary/notes/tags shape consistent with decoder; no canonical success authority",
+    "narration": "PI-01..03; all four phases and alternative combat batch affected"
+  },
+  "offlineReconstruction": {
+    "networkDisabled": true,
+    "storedSourcePhase": "prologue",
+    "policy": "awareness-v5-usage-v2",
+    "singleObjectAndBatchInstructionsBothPresent": true,
+    "punctuationPermissionAndExactPreservationBothPresent": true,
+    "validBatchAccepted": true,
+    "singleObjectRejected": true,
+    "extraFocusRejected": true,
+    "responseFormat": {
+      "type": "json_object"
+    },
+    "rawRejectedReplyReplayed": false
+  },
+  "directTests": {
+    "files": 6,
+    "total": 27,
+    "passed": 26,
+    "failed": 1,
+    "failure": "provider-json fixture: PROVIDER_OPERATION_UNCLASSIFIED before HTTP",
+    "log": "/tmp/kshiai-prompt-inspection-direct-tests.txt",
+    "sha256": "4013af311dc3700c19a1c53c45a3b3ebbd86451c245bf8deacdcbbfea46126cb"
+  },
+  "audit": {
+    "fatal_count": 0,
+    "error_count": 0,
+    "warning_count": 0,
+    "info_count": 0,
+    "hint_count": 16
+  },
+  "independentNarrationReview": "read-only bounded agent review; root cross-checked source and stored prologue reconstruction",
+  "limitations": [
+    "not an exact replay of rejected raw output",
+    "no real-model calls in this inspection",
+    "no historical frozen material changes",
+    "no proposed changes accepted by this report",
+    "test-source authority repair is separate from a claim that prompts are coherent"
+  ],
+  "recommendedSuccessor": "Separate phase content rules from output format; one schema-valid narration output contract with per-phase examples; assembled prompt checks for envelopes, focus exclusion and exact speech; fix test fixture using current operation classification; preserve old consumers and immutable saved materials. Numeric input tuning and new diagnostic persistence require detailed design."
+}

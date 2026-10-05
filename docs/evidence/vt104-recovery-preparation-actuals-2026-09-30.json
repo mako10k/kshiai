@@ -1,0 +1,9 @@
+{
+  "start": "2026-09-30T15:12:47+09:00",
+  "suspend": "2026-09-30T15:40:25+09:00",
+  "observed_interval_seconds": 1658,
+  "person_effort": null,
+  "basis": "observed task interval including tools and one delegated read-only inventory/review; independent person effort unmeasured",
+  "next_checkpoint": "owner ADR0040/detail direction decision; local implementation measurement on resume",
+  "completed_velocity_inclusion": false
+}

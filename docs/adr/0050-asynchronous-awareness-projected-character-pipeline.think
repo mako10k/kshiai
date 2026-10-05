@@ -1,0 +1,80 @@
+domain ADR0050:
+  description "Accepted asynchronous character pipeline with prose inputs and awareness-dependent context."
+evidence OWNER_DESIGN_REQUEST:
+  "On 2026-10-05 the owner asked for a design rebuilding the battle pipeline from the preceding discussion. This authorizes authoring, not acceptance or implementation."
+evidence OWNER_STATES:
+  "The owner names canonical world, A/B subconscious, conscious, perception and action-consciousness states, and narrator cognition; world affects perception and actions affect world."
+evidence OWNER_TIMING:
+  "Subconscious uses a fast lightweight LLM. Conscious thought can start from A and arrive after several continuing turns. Reflex is included in the subconscious call, separated from emotion by prompt; some overlap is permitted."
+evidence OWNER_CONTEXT:
+  "Inputs should be readable prose; outputs remain JSON. Subconscious is vague and permits conflicting feelings, takes current state without history and keeps limited reaction tendencies. Explicit thought belongs to conscious context and varies by character."
+evidence OWNER_INTERACTION:
+  "Awareness degree modulates character-context injection. Perception and conscious influence can change subconscious state. Action desires have strength and stronger incompatible desires prevail."
+evidence OWNER_ECONOMY:
+  "The owner subsequently asks for LLM economy as a design requirement. This authorizes revising the proposed composition, not runtime deployment or paid evaluation."
+evidence OWNER_PROCEED:
+  "Owner said OK to the economic direction and then asked to proceed with specifying activation, latency, budget and insufficiency handling. This is authoring authority, not exact acceptance of newly proposed numbers or ADR revision. "
+evidence BASELINE:
+  "Observed source HEAD3a32c2d: ADR0022 canonical-world rules and ADR0027/0047 are Accepted; ADR0028 remains historical for pinned V3 while dynamic-v4 supersedes relevant response contracts. ADR0038 is Proposed."
+premise C01:
+  "Preserve canonical facts versus perception, desires versus actual results, immutable bindings, privacy, value-preserving producer contracts and once-only receipt application."
+premise C02:
+  "Subconscious ordinary-turn LLM calls, direct reactive action desires and conscious-to-subconscious influence intentionally change ADR0027 responsibility/no-call rules."
+premise C03:
+  "Delayed thought needs state-specific revisions and live job generations; original snapshot results must not overwrite current world or perception and must not be misrepresented as fresh observations."
+premise C04:
+  "Awareness is distinct from impulse strength, truth and publicity. Revealing a low-awareness motive directly in conscious input defeats the requested distinction."
+premise C05:
+  "One subconscious output can update vague state and tendencies, emit reflex and affective desires, project felt awareness and request attention without an additional role call."
+premise C06:
+  "Natural-language formatting can be mechanical, but semantic feelings and projections remain model-produced; their effectiveness and latency are unmeasured."
+premise A01:
+  "Keep synchronous conscious judgment with rule-based psychology: retains current contract but does not implement the owner's requested timing and latent interaction."
+premise A02:
+  "One complete context for every role: fewer boundaries, but reveals hidden causes and mixes subjective interpretation with facts."
+premise A03:
+  "Dedicated LLM calls for reflex, emotion, projection and history rewriting: extra calls and latency contrary to the owner's preference."
+premise A04:
+  "Bounded fast subconscious call plus slower conscious job, role-specific prose projection, mechanical arbitration and separate canonical resolution is the candidate."
+decision D01 based_on OWNER_DESIGN_REQUEST, OWNER_STATES, OWNER_TIMING, OWNER_CONTEXT, OWNER_INTERACTION, OWNER_ECONOMY, C01, C02, C03, C04, C05, C06, A01, A02, A03, A04:
+  "Adopt A04 as basic design v2 in docs/battle-consciousness-basic-design-2026-10-05.md. Keep states and machine-readable output structured; model-facing input is prose. Apply only to the owner-accepted awareness-v5 scope; retain older pinned battle generations."
+decision D02 based_on OWNER_TIMING, C03, C05, A04:
+  "Adopt one live conscious job per character, fixed input snapshot, actual provider-completion-dependent arrival at a defined next update boundary, and action-desire rather than world-state merge. Cancellation invalidates old generations; record all physical costs."
+decision D03 based_on OWNER_CONTEXT, OWNER_INTERACTION, C04, C05, C06:
+  "Adopt short current subconscious state and bounded stimulus-response tendencies without injected event history. Return felt-awareness projection in the same call and pass conscious influence through a once-consumed mailbox. Do not mechanically infer motives or force logical consistency of feelings."
+decision D04 based_on OWNER_STATES, OWNER_INTERACTION, C01, C03:
+  "Adopt strength arbitration only for incompatible desires followed by latest canonical feasibility and resolution. Narrator receives policy-permitted committed results and cannot create world facts or fabricate character speech."
+decision D05 based_on OWNER_TIMING, OWNER_CONTEXT, C03, C04, C05:
+  "Adopt starting conscious thought concurrently from A perception and the last accepted felt-awareness projection, stamped with its source time; do not wait for the current subconscious call. New perceptions reach the next job or an explicit interrupted generation, not the running request."
+decision D06 based_on OWNER_INTERACTION, C04, C05:
+  "Adopt current awareness metadata owned by subconscious state and its model writer; conscious self-awareness changes are influences submitted for the next subconscious update. Orchestration does not semantically set awareness. The owner-accepted implementation candidate fixes this writer allocation."
+premise C07:
+  "No-call admission must preserve required reactions and conscious reconsideration; scheduling does not generate new feelings, interpret motives or replace model capability with rules."
+premise C08:
+  "Cost includes all physical attempts, cancelled reasoning and conditional cache discounts. A short input or low logical-call count alone does not establish whole-battle savings."
+decision D07 based_on OWNER_ECONOMY, OWNER_TIMING, OWNER_CONTEXT, C01, C05, C06, C07, C08:
+  "Adopt event-admitted bounded subconscious frames, conditional conscious reconsideration rather than immediate restart when idle, restrained interruption, and committed-scene narration aggregation. No extra classifier, summarizer, critic, emotion rewrite or arbitration LLM is added. Exact policies follow the accepted implementation candidate v1 and operating-policy v1."
+decision D08 based_on OWNER_ECONOMY, C01, C03, C06, C07, C08:
+  "Adopt role-specific minimal quality-sufficient model tiers, compact current-state prose and outputs, semantic-free preparation reuse and conditional provider prefix caching. Reserve physical-attempt token and cost ceilings before dispatch, including repair and fallback; retain cancelled or unknown costs. Insufficient budget blocks new calls and requires a defined bounded pause/failure policy, not fabricated reactions. Compare quality, latency and total cost together; no actual price or savings is claimed."
+decision D09 based_on OWNER_PROCEED, OWNER_TIMING, C01, C03, C07, C08:
+  "Adopt operating-policy v1: retain twelve public turns and three beats each, map tick to one beat with minimum one-second pacing, event-driven latent updates and periodic three-tick reassessment, conditional conscious jobs and bounded interruption. Deadlines and admission are durable; required latent failure cannot commit a one-sided action result. Timing is accepted as trial policy, not measured model performance."
+decision D10 based_on OWNER_PROCEED, OWNER_ECONOMY, C01, C03, C07, C08:
+  "Adopt trial ceilings of 36 ticks, 180 seconds, 200 physical attempts and USD0.50 with role reservations and forced provider caps. Required-role budget/deadline failures close as incomplete without a fabricated winner; narrator incompleteness preserves already committed results. Inherit ADR0006 canonical-first independent narration and existing public battleId/turnReceiptId identity; propose batching up to three receipts in one physical narration generation with per-receipt terminal outputs and explicit ADR0016 eligibility/source-coverage changes. Paid dispatch and existing-battle migration are outside implementation authority."
+evidence OWNER_MODEL_SELECTION:
+  "Owner explicitly selects GPT6Luna none for subconscious and Grok for conscious, adjudication and narration, and authorizes compatibility preparation. This exact role-model direction is owner-decided; other pipeline policies remain unresolved."
+decision D11 based_on OWNER_MODEL_SELECTION, C01, C05, C08:
+  "Record the owner's role-model selection and prepare native SDK/request-option compatibility under existing transport contracts. Retain current configured Grok generations; do not silently select a newer Grok. Full role routing and latent execution follow the subsequently accepted implementation candidate v1. No paid comparison or deployment is authorized."
+evidence OWNER_ACCEPTANCE:
+  "On2026-10-05 owner requests implementation emphasizing type coherence SRP and loose coupling, then explicitly answers candidate v1 all adopted and continue implementation in the async question. The exact candidate is docs/battle-consciousness-implementation-decisions-2026-10-05.md sections1-8 with linked operating-policy v1."
+decision D12 based_on OWNER_ACCEPTANCE, OWNER_MODEL_SELECTION, C01, C05, C08:
+  "Accept ADR0050 revision5 and candidate v1: awareness and strength0..1; subconscious owns awareness and same-call felt projection; one body action plus independent voice; conflict strongest then previously accepted then immutable ID; desire validity1..3ticks with no automatic decay; reflex voice permitted; new-battle-only awareness-v5 and older generation continuation retained. Adopt operating-policy v1 including trial limits, bounded failure and narration batches. Conscious and adjudication use configured Grok engine; narration configured fast; latent Luna none. Implement typed shared contracts, pure state transitions, narrow ports, durable jobs/mailbox/attempt reservation and once-only commits. No paid trial, deployment or old battle mutation."
+pending EFFICACY:
+  "No real-model comparisons, latency calibration, quality acceptance, runtime change or deployment were performed for this proposal."
+
+decision ACCEPTANCE based_on OWNER_ACCEPTANCE, D12:
+  "Owner accepts ADR0050 revision5 with exact implementation candidate v1 and operating policy v1 for new awareness-v5 battles. Older generations retain pinned behavior. Paid trials and deployment remain separately authorized."
+
+evidence OWNER_SUPERSESSION:
+  "Owner defers pricing proof and directs actual token/cost observation plus explicit version labels. ADR0051 inherits the pipeline and records the replacement accounting contract."
+decision SUPERSESSION based_on OWNER_SUPERSESSION, ACCEPTANCE:
+  "Mark this historical record Superseded by ADR0051 while preserving all original rationale."

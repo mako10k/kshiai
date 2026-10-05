@@ -60,7 +60,7 @@ function resolveFreeTurn(
   mine: CharacterSheet,
   opp: CharacterSheet,
   description: string,
-  subjectRefs: string[],
+  subjectRefs: [string, ...string[]],
 ) {
   const before = structuredClone(state);
   state.plannedActionA = {

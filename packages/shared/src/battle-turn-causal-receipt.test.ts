@@ -222,9 +222,11 @@ describe("battle turn causal receipt", () => {
     const { input } = fixture();
     const dangling = buildBattleTurnCausalReceipt({
       ...input,
-      events: input.events.map((event, index) =>
-        index === 0 ? { ...event, sourceActionId: "missing-action" } : event
-      ),
+      events: input.events.map((event, index) => {
+        if (index !== 0) return event;
+        const { sourceEffectId: _effectSource, ...actionEvent } = event;
+        return { ...actionEvent, sourceActionId: "missing-action" };
+      }),
     });
     assert.equal(dangling.ok, false);
     if (dangling.ok) assert.fail("dangling receipt unexpectedly succeeded");

@@ -1,3 +1,5 @@
+// R: Assemble configured application LLM capabilities and explicit role routes.
+import { createAwarenessProviderRoles } from "./awareness-provider-factory.js";
 import { config } from "../config.js";
 import { MockLlmProvider } from "./mock.js";
 import { OpenAiCompatibleProvider } from "./openai-compatible.js";
@@ -9,7 +11,11 @@ import { createSemanticAuthoringHttpProviderV1,
 
 export type { LlmProvider } from "./types.js";
 
-export function createLlmProvider(options: { semanticAuthoring?: SemanticAuthoringProviderConfigV1 } = {}): LlmProvider {
+export function createLlmProvider(options: {
+  semanticAuthoring?: SemanticAuthoringProviderConfigV1;
+  awarenessPolicy?: import("@kshiai/shared").AwarenessPolicyV1;
+  awarenessBillingContracts?: readonly import("./awareness-dispatch-admission.js").AwarenessVerifiedBillingContract[];
+} = {}): LlmProvider {
   const providers = config.llmProviderOrder.flatMap((name): LlmProvider[] => {
     switch (name) {
       case "xai":
@@ -50,6 +56,16 @@ export function createLlmProvider(options: { semanticAuthoring?: SemanticAuthori
     throw new Error(
       "No usable LLM provider is configured. Set provider credentials, or explicitly select mock outside production.",
     );
+  }
+  const awareness = createAwarenessProviderRoles({
+    policy: options.awarenessPolicy,
+    openai: { apiKey: config.openai.apiKey, baseUrl: config.openai.baseUrl },
+    xai: { apiKey: config.xai.apiKey, baseUrl: config.xai.baseUrl,
+      modelEngine: config.xai.modelEngine, modelFast: config.xai.modelFast },
+  });
+  if (awareness) {
+    Object.defineProperty(providers[0], "awareness", { value: awareness });
+    Object.defineProperty(providers[0], "awarenessBillingContracts", { value: Object.freeze([...(options.awarenessBillingContracts ?? [])]) });
   }
   const semanticAuthoring = options.semanticAuthoring ?? semanticAuthoringProviderConfigFromEnvironmentV1();
   if (semanticAuthoring) {

@@ -1,0 +1,853 @@
+{
+  "observationId": "normal-real-completion-20261005",
+  "observedAt": "2026-10-05T11:30:07.882398+00:00",
+  "ownerInstruction": "では、お願いします。 (real-model response time and completion after normal waiting adjustment)",
+  "scope": {
+    "isolatedDirectory": "/tmp/kshiai-awareness-paid-trial-8G5j8O",
+    "policyRevision": "awareness-v5-usage-v2",
+    "maxCombatTicks": 36,
+    "maxDurationMs": 600000,
+    "maxPhysicalAttempts": 200,
+    "automaticRetries": false,
+    "paidRunCount": 1,
+    "historicalCandidateDigest": "a1e4a95291289f9a6cf5d2fb77120bd362c75b58d223845c1b8f3212e5b1ac7c",
+    "candidateUse": "reuse synthetic assets; temporary derivative advances at most normal policy maxTicks instead of historical 3tick stop; old candidate and source unchanged",
+    "harnessSha256": {
+      "run.mts": "c74583b0e3daa8356bee7a20ccc69b9d10039d05c856b50bea3b9724e5b29143",
+      "execution.mts": "9664052caf579bf60828adceef8c105d4175f8a256620767da513640b39ad8cd"
+    }
+  },
+  "outcome": {
+    "completionVerified": false,
+    "completedCombatTicks": 1,
+    "harnessErrorClass": "NarrationFailed",
+    "persistedBattleStatus": "active",
+    "persistedRuntimeStatus": "active",
+    "unresolvedAttemptIds": [],
+    "unresolvedReservationIds": [],
+    "pendingNarrationReceiptIds": [
+      "awareness-real-trial-2026-10-05:phase:2"
+    ],
+    "unmergedConsciousJobs": [
+      {
+        "side": "b",
+        "status": "ready",
+        "physicalStatus": "finished"
+      }
+    ],
+    "missingUsageAttemptIds": [],
+    "narrationFailure": "[\n  {\n    \"code\": \"invalid_type\",\n    \"expected\": \"array\",\n    \"received\": \"undefined\",\n    \"path\": [\n      \"receipts\"\n    ],\n    \"message\": \"Required\"\n  },\n  {\n    \"code\": \"unrecognized_keys\",\n    \"keys\": [\n      \"turn\",\n      \"narrator\",\n      \"speeches\",\n      \"recognitionUpdates\"\n    ],\n    \"path\": [],\n    \"message\": \"Unrecognized key(s) in object: 'turn', 'narrator', 'speeches', 'recognitionUpdates'\"\n  }\n]",
+    "logObservation": "One conscious call: Provider returned invalid JSON; usage completionTokens=0. No raw model content retained. No producing cause conclusion."
+  },
+  "attempts": [
+    {
+      "id": "provider_call_d07865577b89ab11eb2036a5:1",
+      "callId": "provider_call_d07865577b89ab11eb2036a5",
+      "attemptOrdinal": 1,
+      "provider": "xai",
+      "requestedModel": "grok-4.5",
+      "responseModel": "grok-4.5",
+      "requestId": "fee3d9a4-a829-9f6c-8980-95fc695cb025",
+      "battleId": "awareness-real-trial-2026-10-05",
+      "role": "creation",
+      "side": null,
+      "tick": null,
+      "receiptIds": [],
+      "startedAt": 1791199681230,
+      "finishedAt": 1791199692917,
+      "elapsedMs": 12797.305812,
+      "status": "completed",
+      "errorClass": null,
+      "promptTokens": 1107,
+      "completionTokens": 131,
+      "totalTokens": 2047,
+      "cachedTokens": 384,
+      "reasoningTokens": 809,
+      "rawUsage": {
+        "prompt_tokens": 1107,
+        "completion_tokens": 131,
+        "total_tokens": 2047,
+        "prompt_tokens_details": {
+          "text_tokens": 1107,
+          "audio_tokens": 0,
+          "image_tokens": 0,
+          "cached_tokens": 384
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 809,
+          "audio_tokens": 0,
+          "accepted_prediction_tokens": 0,
+          "rejected_prediction_tokens": 0
+        },
+        "num_sources_used": 0,
+        "cost_in_usd_ticks": 72012000
+      }
+    },
+    {
+      "id": "provider_call_81a82d59958ecf05af8811f6:1",
+      "callId": "provider_call_81a82d59958ecf05af8811f6",
+      "attemptOrdinal": 1,
+      "provider": "xai",
+      "requestedModel": "grok-4.5",
+      "responseModel": "grok-4.5",
+      "requestId": "b47a1a76-9098-9f61-b904-cc29bf6c0102",
+      "battleId": "awareness-real-trial-2026-10-05",
+      "role": "conscious",
+      "side": "a",
+      "tick": 0,
+      "receiptIds": [],
+      "startedAt": 1791199693008,
+      "finishedAt": 1791199696982,
+      "elapsedMs": 3973.644427000001,
+      "status": "completed",
+      "errorClass": null,
+      "promptTokens": 3364,
+      "completionTokens": 0,
+      "totalTokens": 3545,
+      "cachedTokens": 384,
+      "reasoningTokens": 181,
+      "rawUsage": {
+        "prompt_tokens": 3364,
+        "completion_tokens": 0,
+        "total_tokens": 3545,
+        "prompt_tokens_details": {
+          "text_tokens": 3364,
+          "audio_tokens": 0,
+          "image_tokens": 0,
+          "cached_tokens": 384
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 181,
+          "audio_tokens": 0,
+          "accepted_prediction_tokens": 0,
+          "rejected_prediction_tokens": 0
+        },
+        "num_sources_used": 0,
+        "cost_in_usd_ticks": 71612000
+      }
+    },
+    {
+      "id": "provider_call_3008ab932beae6ea036b4b1e:1",
+      "callId": "provider_call_3008ab932beae6ea036b4b1e",
+      "attemptOrdinal": 1,
+      "provider": "xai",
+      "requestedModel": "grok-4.5",
+      "responseModel": "grok-4.5",
+      "requestId": "ec43be2f-e4b2-9bfc-9cf8-74a74b9393ed",
+      "battleId": "awareness-real-trial-2026-10-05",
+      "role": "conscious",
+      "side": "b",
+      "tick": 0,
+      "receiptIds": [],
+      "startedAt": 1791199693019,
+      "finishedAt": 1791199716982,
+      "elapsedMs": 23962.376345000004,
+      "status": "completed",
+      "errorClass": null,
+      "promptTokens": 3377,
+      "completionTokens": 161,
+      "totalTokens": 4739,
+      "cachedTokens": 384,
+      "reasoningTokens": 1201,
+      "rawUsage": {
+        "prompt_tokens": 3377,
+        "completion_tokens": 161,
+        "total_tokens": 4739,
+        "prompt_tokens_details": {
+          "text_tokens": 3377,
+          "audio_tokens": 0,
+          "image_tokens": 0,
+          "cached_tokens": 384
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 1201,
+          "audio_tokens": 0,
+          "accepted_prediction_tokens": 0,
+          "rejected_prediction_tokens": 0
+        },
+        "num_sources_used": 0,
+        "cost_in_usd_ticks": 142732000
+      }
+    },
+    {
+      "id": "provider_call_e57536e516203c37e35746e3:1",
+      "callId": "provider_call_e57536e516203c37e35746e3",
+      "attemptOrdinal": 1,
+      "provider": "openai",
+      "requestedModel": "gpt-6-luna",
+      "responseModel": "gpt-6-luna",
+      "requestId": "req_b2e141a143be4ca1a6fd54cddfb8c2a0",
+      "battleId": "awareness-real-trial-2026-10-05",
+      "role": "subconscious",
+      "side": "a",
+      "tick": 0,
+      "receiptIds": [],
+      "startedAt": 1791199693032,
+      "finishedAt": 1791199698852,
+      "elapsedMs": 5820.071908,
+      "status": "completed",
+      "errorClass": null,
+      "promptTokens": 3653,
+      "completionTokens": 539,
+      "totalTokens": 4192,
+      "cachedTokens": 1054,
+      "reasoningTokens": 0,
+      "rawUsage": {
+        "prompt_tokens": 3653,
+        "completion_tokens": 539,
+        "total_tokens": 4192,
+        "prompt_tokens_details": {
+          "cached_tokens": 1054,
+          "cache_write_tokens": 2596,
+          "audio_tokens": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "audio_tokens": 0,
+          "accepted_prediction_tokens": 0,
+          "rejected_prediction_tokens": 0
+        }
+      }
+    },
+    {
+      "id": "provider_call_34b463ea9729fea5be2296fc:1",
+      "callId": "provider_call_34b463ea9729fea5be2296fc",
+      "attemptOrdinal": 1,
+      "provider": "openai",
+      "requestedModel": "gpt-6-luna",
+      "responseModel": "gpt-6-luna",
+      "requestId": "req_c66d9079cf764a60804c7d262037249b",
+      "battleId": "awareness-real-trial-2026-10-05",
+      "role": "subconscious",
+      "side": "b",
+      "tick": 0,
+      "receiptIds": [],
+      "startedAt": 1791199693042,
+      "finishedAt": 1791199696400,
+      "elapsedMs": 3357.744278,
+      "status": "completed",
+      "errorClass": null,
+      "promptTokens": 3669,
+      "completionTokens": 213,
+      "totalTokens": 3882,
+      "cachedTokens": 0,
+      "reasoningTokens": 0,
+      "rawUsage": {
+        "prompt_tokens": 3669,
+        "completion_tokens": 213,
+        "total_tokens": 3882,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "cache_write_tokens": 3666,
+          "audio_tokens": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "audio_tokens": 0,
+          "accepted_prediction_tokens": 0,
+          "rejected_prediction_tokens": 0
+        }
+      }
+    },
+    {
+      "id": "provider_call_ccccd562472dd0c5de98778b:1",
+      "callId": "provider_call_ccccd562472dd0c5de98778b",
+      "attemptOrdinal": 1,
+      "provider": "xai",
+      "requestedModel": "grok-4.3",
+      "responseModel": "grok-4.3",
+      "requestId": "2c8a8c88-775c-93d8-a807-7e6a85422e1f",
+      "battleId": "awareness-real-trial-2026-10-05",
+      "role": "narration",
+      "side": null,
+      "tick": null,
+      "receiptIds": [
+        "awareness-real-trial-2026-10-05:phase:1"
+      ],
+      "startedAt": 1791199699068,
+      "finishedAt": 1791199701583,
+      "elapsedMs": 2514.8348320000005,
+      "status": "completed",
+      "errorClass": null,
+      "promptTokens": 3573,
+      "completionTokens": 119,
+      "totalTokens": 3692,
+      "cachedTokens": 128,
+      "reasoningTokens": 0,
+      "rawUsage": {
+        "prompt_tokens": 3573,
+        "completion_tokens": 119,
+        "total_tokens": 3692,
+        "prompt_tokens_details": {
+          "text_tokens": 3573,
+          "audio_tokens": 0,
+          "image_tokens": 0,
+          "cached_tokens": 128
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "audio_tokens": 0,
+          "accepted_prediction_tokens": 0,
+          "rejected_prediction_tokens": 0
+        },
+        "num_sources_used": 0,
+        "cost_in_usd_ticks": 46293500
+      }
+    },
+    {
+      "id": "provider_call_da603154841f4eeca41eb986:1",
+      "callId": "provider_call_da603154841f4eeca41eb986",
+      "attemptOrdinal": 1,
+      "provider": "openai",
+      "requestedModel": "gpt-6-luna",
+      "responseModel": "gpt-6-luna",
+      "requestId": "req_68452c7ecec3450faffdd678a41ff880",
+      "battleId": "awareness-real-trial-2026-10-05",
+      "role": "subconscious",
+      "side": "a",
+      "tick": 1,
+      "receiptIds": [],
+      "startedAt": 1791199699982,
+      "finishedAt": 1791199704516,
+      "elapsedMs": 4533.5261089999985,
+      "status": "completed",
+      "errorClass": null,
+      "promptTokens": 4023,
+      "completionTokens": 541,
+      "totalTokens": 4564,
+      "cachedTokens": 1054,
+      "reasoningTokens": 0,
+      "rawUsage": {
+        "prompt_tokens": 4023,
+        "completion_tokens": 541,
+        "total_tokens": 4564,
+        "prompt_tokens_details": {
+          "cached_tokens": 1054,
+          "cache_write_tokens": 2966,
+          "audio_tokens": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "audio_tokens": 0,
+          "accepted_prediction_tokens": 0,
+          "rejected_prediction_tokens": 0
+        }
+      }
+    },
+    {
+      "id": "provider_call_532a8e9de9bb39fe252fefb8:1",
+      "callId": "provider_call_532a8e9de9bb39fe252fefb8",
+      "attemptOrdinal": 1,
+      "provider": "openai",
+      "requestedModel": "gpt-6-luna",
+      "responseModel": "gpt-6-luna",
+      "requestId": "req_251c7805da544993ad9bed91a8bc7c21",
+      "battleId": "awareness-real-trial-2026-10-05",
+      "role": "subconscious",
+      "side": "b",
+      "tick": 1,
+      "receiptIds": [],
+      "startedAt": 1791199699988,
+      "finishedAt": 1791199703023,
+      "elapsedMs": 3035.0827499999978,
+      "status": "completed",
+      "errorClass": null,
+      "promptTokens": 3785,
+      "completionTokens": 252,
+      "totalTokens": 4037,
+      "cachedTokens": 1054,
+      "reasoningTokens": 0,
+      "rawUsage": {
+        "prompt_tokens": 3785,
+        "completion_tokens": 252,
+        "total_tokens": 4037,
+        "prompt_tokens_details": {
+          "cached_tokens": 1054,
+          "cache_write_tokens": 2728,
+          "audio_tokens": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "audio_tokens": 0,
+          "accepted_prediction_tokens": 0,
+          "rejected_prediction_tokens": 0
+        }
+      }
+    }
+  ],
+  "usage": {
+    "label": "estimated usage cost",
+    "priceRevision": "unpriced",
+    "knownSubtotalUsd": 0,
+    "complete": false,
+    "attemptCount": 8,
+    "unknownAttemptCount": 8,
+    "missingUsageCount": 0,
+    "missingPriceCount": 8,
+    "calculationImpossibleCount": 3,
+    "tokens": {
+      "promptTokens": {
+        "knownSubtotal": 26551,
+        "unknownCount": 0
+      },
+      "completionTokens": {
+        "knownSubtotal": 1956,
+        "unknownCount": 0
+      },
+      "totalTokens": {
+        "knownSubtotal": 30698,
+        "unknownCount": 0
+      },
+      "cachedTokens": {
+        "knownSubtotal": 4442,
+        "unknownCount": 0
+      },
+      "reasoningTokens": {
+        "knownSubtotal": 2191,
+        "unknownCount": 0
+      }
+    },
+    "groups": [
+      {
+        "provider": "xai",
+        "model": "grok-4.5",
+        "role": "creation",
+        "attemptCount": 1,
+        "tokens": {
+          "promptTokens": {
+            "knownSubtotal": 1107,
+            "unknownCount": 0
+          },
+          "completionTokens": {
+            "knownSubtotal": 131,
+            "unknownCount": 0
+          },
+          "totalTokens": {
+            "knownSubtotal": 2047,
+            "unknownCount": 0
+          },
+          "cachedTokens": {
+            "knownSubtotal": 384,
+            "unknownCount": 0
+          },
+          "reasoningTokens": {
+            "knownSubtotal": 809,
+            "unknownCount": 0
+          }
+        },
+        "knownSubtotalUsd": 0,
+        "unknownCostCount": 1
+      },
+      {
+        "provider": "xai",
+        "model": "grok-4.5",
+        "role": "conscious",
+        "attemptCount": 2,
+        "tokens": {
+          "promptTokens": {
+            "knownSubtotal": 6741,
+            "unknownCount": 0
+          },
+          "completionTokens": {
+            "knownSubtotal": 161,
+            "unknownCount": 0
+          },
+          "totalTokens": {
+            "knownSubtotal": 8284,
+            "unknownCount": 0
+          },
+          "cachedTokens": {
+            "knownSubtotal": 768,
+            "unknownCount": 0
+          },
+          "reasoningTokens": {
+            "knownSubtotal": 1382,
+            "unknownCount": 0
+          }
+        },
+        "knownSubtotalUsd": 0,
+        "unknownCostCount": 2
+      },
+      {
+        "provider": "openai",
+        "model": "gpt-6-luna",
+        "role": "subconscious",
+        "attemptCount": 4,
+        "tokens": {
+          "promptTokens": {
+            "knownSubtotal": 15130,
+            "unknownCount": 0
+          },
+          "completionTokens": {
+            "knownSubtotal": 1545,
+            "unknownCount": 0
+          },
+          "totalTokens": {
+            "knownSubtotal": 16675,
+            "unknownCount": 0
+          },
+          "cachedTokens": {
+            "knownSubtotal": 3162,
+            "unknownCount": 0
+          },
+          "reasoningTokens": {
+            "knownSubtotal": 0,
+            "unknownCount": 0
+          }
+        },
+        "knownSubtotalUsd": 0,
+        "unknownCostCount": 4
+      },
+      {
+        "provider": "xai",
+        "model": "grok-4.3",
+        "role": "narration",
+        "attemptCount": 1,
+        "tokens": {
+          "promptTokens": {
+            "knownSubtotal": 3573,
+            "unknownCount": 0
+          },
+          "completionTokens": {
+            "knownSubtotal": 119,
+            "unknownCount": 0
+          },
+          "totalTokens": {
+            "knownSubtotal": 3692,
+            "unknownCount": 0
+          },
+          "cachedTokens": {
+            "knownSubtotal": 128,
+            "unknownCount": 0
+          },
+          "reasoningTokens": {
+            "knownSubtotal": 0,
+            "unknownCount": 0
+          }
+        },
+        "knownSubtotalUsd": 0,
+        "unknownCostCount": 1
+      }
+    ],
+    "attempts": [
+      {
+        "id": "provider_call_d07865577b89ab11eb2036a5:1",
+        "provider": "xai",
+        "model": "grok-4.5",
+        "role": "creation",
+        "knownCostUsd": null,
+        "complete": false,
+        "missingUsage": false,
+        "missingPrice": true,
+        "calculationImpossible": true
+      },
+      {
+        "id": "provider_call_81a82d59958ecf05af8811f6:1",
+        "provider": "xai",
+        "model": "grok-4.5",
+        "role": "conscious",
+        "knownCostUsd": null,
+        "complete": false,
+        "missingUsage": false,
+        "missingPrice": true,
+        "calculationImpossible": true
+      },
+      {
+        "id": "provider_call_3008ab932beae6ea036b4b1e:1",
+        "provider": "xai",
+        "model": "grok-4.5",
+        "role": "conscious",
+        "knownCostUsd": null,
+        "complete": false,
+        "missingUsage": false,
+        "missingPrice": true,
+        "calculationImpossible": true
+      },
+      {
+        "id": "provider_call_e57536e516203c37e35746e3:1",
+        "provider": "openai",
+        "model": "gpt-6-luna",
+        "role": "subconscious",
+        "knownCostUsd": null,
+        "complete": false,
+        "missingUsage": false,
+        "missingPrice": true,
+        "calculationImpossible": false
+      },
+      {
+        "id": "provider_call_34b463ea9729fea5be2296fc:1",
+        "provider": "openai",
+        "model": "gpt-6-luna",
+        "role": "subconscious",
+        "knownCostUsd": null,
+        "complete": false,
+        "missingUsage": false,
+        "missingPrice": true,
+        "calculationImpossible": false
+      },
+      {
+        "id": "provider_call_ccccd562472dd0c5de98778b:1",
+        "provider": "xai",
+        "model": "grok-4.3",
+        "role": "narration",
+        "knownCostUsd": null,
+        "complete": false,
+        "missingUsage": false,
+        "missingPrice": true,
+        "calculationImpossible": false
+      },
+      {
+        "id": "provider_call_da603154841f4eeca41eb986:1",
+        "provider": "openai",
+        "model": "gpt-6-luna",
+        "role": "subconscious",
+        "knownCostUsd": null,
+        "complete": false,
+        "missingUsage": false,
+        "missingPrice": true,
+        "calculationImpossible": false
+      },
+      {
+        "id": "provider_call_532a8e9de9bb39fe252fefb8:1",
+        "provider": "openai",
+        "model": "gpt-6-luna",
+        "role": "subconscious",
+        "knownCostUsd": null,
+        "complete": false,
+        "missingUsage": false,
+        "missingPrice": true,
+        "calculationImpossible": false
+      }
+    ]
+  },
+  "inputSizes": [
+    {
+      "ordinal": 1,
+      "startedAt": 1791199681251,
+      "scope": {
+        "battleId": "awareness-real-trial-2026-10-05",
+        "role": "creation"
+      },
+      "model": "grok-4.5",
+      "messages": [
+        {
+          "role": "system",
+          "characters": 1018,
+          "utf8Bytes": 1018
+        },
+        {
+          "role": "user",
+          "characters": 733,
+          "utf8Bytes": 1377
+        }
+      ],
+      "totalCharacters": 1751,
+      "totalUtf8Bytes": 2395,
+      "maxCompletionTokens": 1500,
+      "reasoningEffort": null
+    },
+    {
+      "ordinal": 2,
+      "startedAt": 1791199693013,
+      "scope": {
+        "battleId": "awareness-real-trial-2026-10-05",
+        "role": "conscious",
+        "side": "a",
+        "tick": 0
+      },
+      "model": "grok-4.5",
+      "messages": [
+        {
+          "role": "system",
+          "characters": 1699,
+          "utf8Bytes": 3195
+        },
+        {
+          "role": "user",
+          "characters": 5155,
+          "utf8Bytes": 8117
+        }
+      ],
+      "totalCharacters": 6854,
+      "totalUtf8Bytes": 11312,
+      "maxCompletionTokens": 1500,
+      "reasoningEffort": null
+    },
+    {
+      "ordinal": 3,
+      "startedAt": 1791199693025,
+      "scope": {
+        "battleId": "awareness-real-trial-2026-10-05",
+        "role": "conscious",
+        "side": "b",
+        "tick": 0
+      },
+      "model": "grok-4.5",
+      "messages": [
+        {
+          "role": "system",
+          "characters": 1699,
+          "utf8Bytes": 3195
+        },
+        {
+          "role": "user",
+          "characters": 5163,
+          "utf8Bytes": 8141
+        }
+      ],
+      "totalCharacters": 6862,
+      "totalUtf8Bytes": 11336,
+      "maxCompletionTokens": 1500,
+      "reasoningEffort": null
+    },
+    {
+      "ordinal": 4,
+      "startedAt": 1791199693040,
+      "scope": {
+        "battleId": "awareness-real-trial-2026-10-05",
+        "role": "subconscious",
+        "side": "a",
+        "tick": 0
+      },
+      "model": "gpt-6-luna",
+      "messages": [
+        {
+          "role": "system",
+          "characters": 2024,
+          "utf8Bytes": 3860
+        },
+        {
+          "role": "user",
+          "characters": 5330,
+          "utf8Bytes": 8412
+        }
+      ],
+      "totalCharacters": 7354,
+      "totalUtf8Bytes": 12272,
+      "maxCompletionTokens": 600,
+      "reasoningEffort": "none"
+    },
+    {
+      "ordinal": 5,
+      "startedAt": 1791199693043,
+      "scope": {
+        "battleId": "awareness-real-trial-2026-10-05",
+        "role": "subconscious",
+        "side": "b",
+        "tick": 0
+      },
+      "model": "gpt-6-luna",
+      "messages": [
+        {
+          "role": "system",
+          "characters": 2024,
+          "utf8Bytes": 3860
+        },
+        {
+          "role": "user",
+          "characters": 5338,
+          "utf8Bytes": 8436
+        }
+      ],
+      "totalCharacters": 7362,
+      "totalUtf8Bytes": 12296,
+      "maxCompletionTokens": 600,
+      "reasoningEffort": "none"
+    },
+    {
+      "ordinal": 6,
+      "startedAt": 1791199699069,
+      "scope": {
+        "battleId": "awareness-real-trial-2026-10-05",
+        "role": "narration",
+        "receiptIds": [
+          "awareness-real-trial-2026-10-05:phase:1"
+        ]
+      },
+      "model": "grok-4.3",
+      "messages": [
+        {
+          "role": "system",
+          "characters": 7398,
+          "utf8Bytes": 7864
+        },
+        {
+          "role": "user",
+          "characters": 4366,
+          "utf8Bytes": 6378
+        }
+      ],
+      "totalCharacters": 11764,
+      "totalUtf8Bytes": 14242,
+      "maxCompletionTokens": 1200,
+      "reasoningEffort": "none"
+    },
+    {
+      "ordinal": 7,
+      "startedAt": 1791199699987,
+      "scope": {
+        "battleId": "awareness-real-trial-2026-10-05",
+        "role": "subconscious",
+        "side": "a",
+        "tick": 1
+      },
+      "model": "gpt-6-luna",
+      "messages": [
+        {
+          "role": "system",
+          "characters": 2024,
+          "utf8Bytes": 3860
+        },
+        {
+          "role": "user",
+          "characters": 6105,
+          "utf8Bytes": 9527
+        }
+      ],
+      "totalCharacters": 8129,
+      "totalUtf8Bytes": 13387,
+      "maxCompletionTokens": 600,
+      "reasoningEffort": "none"
+    },
+    {
+      "ordinal": 8,
+      "startedAt": 1791199699989,
+      "scope": {
+        "battleId": "awareness-real-trial-2026-10-05",
+        "role": "subconscious",
+        "side": "b",
+        "tick": 1
+      },
+      "model": "gpt-6-luna",
+      "messages": [
+        {
+          "role": "system",
+          "characters": 2024,
+          "utf8Bytes": 3860
+        },
+        {
+          "role": "user",
+          "characters": 5571,
+          "utf8Bytes": 8787
+        }
+      ],
+      "totalCharacters": 7595,
+      "totalUtf8Bytes": 12647,
+      "maxCompletionTokens": 600,
+      "reasoningEffort": "none"
+    }
+  ],
+  "artifactSha256": {
+    "readback.json": "6d22dce6a607b39593a003381c11e9bbad24a85249d6d50247e6a9c531c18a8a",
+    "snapshots.json": "3b466bc3c1ef6953bf46f89aefa14d10ab0118c15c861e5d78e7477073df4ba0",
+    "measurement-policy.json": "d35c267c5aed21c88af3d369835615061de68f6e5460eae584e6490508aca429",
+    "input-sizes.jsonl": "94242beeeb846d2877a0e435bb7f058e6dfd643e905f5fc51978db160c8a0c0d"
+  },
+  "limitations": [
+    "single isolated sample",
+    "SDK completed means HTTP completion, not schema or domain acceptance",
+    "all costs unknown because model prices are unvalidated; zero known subtotal is not zero actual cost",
+    "saved battle remains active; measurement harness stopped on failure, no fabricated terminal transition",
+    "no automatic or manual rerun and no public deployment"
+  ]
+}
