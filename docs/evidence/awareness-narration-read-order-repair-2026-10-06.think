@@ -1,0 +1,12 @@
+evidence OWNER:
+  "Ownerauthorized pipeline public Stage Promote Observe normalcompletion/allnarration/tokenledger. Accepted immutable frozenreceipt validation and atomically committed world+outbox must remain, no newbehavior nor retries."
+evidence OBSERVED:
+  "rc12 Stage37416162174 normalterminaltick33 reasonnull,109SDKcompleted reported764550.17narrationentriescomplete then4awareness_frozen_input_invalid+14propagated, noPromote. CurrentverifiedCA BEGINREADONLY SHOWreadcommitted validatesALL35entries schema/identity/receipt/phase/digest/time. Exact historicalread snapshot absent."
+evidence SOURCE:
+  "db.withTransaction PGBEGIN defaultsreadcommitted; claim readsBattle thenruntime thenentries. Worldwriter runtime→writeBattle→enqueueNarration allsametxn; receiptsappendretention100, normal≤38. Independentdiscovery proves possible commitbetweenreadBattle/readEntries exposesnewentrynotoldBattle. SQLiteBEGINIMMEDIATEserializes and cannotreproPGschedule. PostgreSQLofficialdocs confirms statementsseparatesnapshots."
+premise CAUSE_BOUNDARY:
+  "Confirmed source defect is mixed-read snapshot can falselyrejectvalid immutableentry. Historicalrc12specific interleaving remainsunknown, consistent withsource andnow-validdata. Missingdetailedcatchlog is detectiongap, notproducingcause."
+premise OPTIONS:
+  "Read capturedentryset before laterBattle+runtime guarantees earlierentry provenance from atomicwriter withoutnewlocks withinexistingreceiptretention. SingleSQLjoinstrongerrefactor; runtime-firstlock addscontention; battle-firstlock mayinvertwriterlockorder. Repeatableread addsserializationfailure/retry semantics. Removingreceiptcheck relaxesauthority."
+decision REPAIR based_on OWNER, OBSERVED, SOURCE, CAUSE_BOUNDARY, OPTIONS:
+  "Fresh originmain scopedbranch preserveWIP. CaptureentriesFIRST thenreadBattle thenruntime, keepstrictvalidations/allfailsemantics/queueadmission unchanged. Adddeterministic concurrentcommit regression against actualreadhelper andnativePG CI whenavailable; no newlock/isolation/automaticretry/SDKcall. Independentreview andexact CI thenfreshStage once. No unchangedrc12 paidrepeat ormanualstate repair, noPromote untilnormalallnarrationproof."

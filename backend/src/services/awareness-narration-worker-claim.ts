@@ -1,5 +1,5 @@
 // R: Claim an ordered immutable narration batch within one lease-fenced transaction.
-import { BattleStateSchema, type AwarenessPolicyV1, type AwarenessPipelineState, type BattleState } from "@kshiai/shared";
+import { type AwarenessPolicyV1, type AwarenessPipelineState, type BattleState } from "@kshiai/shared";
 import { withTransaction, type DatabaseConnection } from "../db.js";
 import { getAwarenessRuntimeInTransaction, settleAwarenessAttemptInTransaction } from "../repositories/battle-awareness.js";
 import { captureAwarenessNarratorContext } from "../repositories/battle-awareness-narrator.js";
@@ -10,6 +10,7 @@ import { AwarenessNarrationQueueNext, type AwarenessNarrationQueueState } from "
 import { requireFence, failEntries, requeueInputOutbox } from "./awareness-narration-worker-lifecycle.js";
 import { materialFromEntry } from "./awareness-narration-worker-material.js";
 import type { Entry, Selected, Claimed, AwarenessNarrationWorkerResult, AwarenessNarrationWorkerInput, AwarenessNarrationWorkerLeasePort } from "./awareness-narration-worker-contract.js";
+import { readAwarenessNarrationClaimSnapshot } from "./awareness-narration-claim-snapshot.js";
 function committedAt(entry: Entry, currentBattle: BattleState): number {
   const receipt = currentBattle.phaseReceipts?.find((receipt) => receipt.id === entry.receipt_id);
   if (!receipt || receipt.phase !== entry.phase || receipt.narrationInputDigest !== entry.input_digest || requestDigest(receipt.narrationInput) !== requestDigest(materialFromEntry(entry))) throw new Error("AWARENESS_COMMITTED_NARRATION_RECEIPT_MISSING");
@@ -80,16 +81,9 @@ async function recordClaim(connection: DatabaseConnection, input: AwarenessNarra
 export async function claimNarrationBatch(input: AwarenessNarrationWorkerInput, ports: AwarenessNarrationWorkerLeasePort, fence: number, initialNow: number, initialAt: string): Promise<Claimed | AwarenessNarrationWorkerResult> {
   return withTransaction(async (connection): Promise<Claimed | AwarenessNarrationWorkerResult> => {
     if (!await requireFence(connection, input, fence, initialAt)) throw new Error("NARRATION_STALE_FENCE");
-    const freshBattleResult = await connection.query<{ state_json: unknown }>("SELECT state_json FROM battles WHERE id=$1", [input.battleId]);
-    const freshRow = freshBattleResult.rows[0];
-    if (!freshRow) { await ports.release(connection, input, fence); return "acknowledged"; }
-    const currentBattle = BattleStateSchema.parse(typeof freshRow.state_json === "string" ? JSON.parse(freshRow.state_json) : freshRow.state_json);
-    const currentRuntime = await getAwarenessRuntimeInTransaction(connection, input.battleId);
-    if (!currentRuntime) throw new Error("AWARENESS_RUNTIME_NOT_FOUND");
-    const result = await connection.query<Entry>(`SELECT battle_id,receipt_id,sequence,phase,combat_turn,input_json,input_digest,
-      status,active_attempt_id,attempt_count,created_at FROM battle_narration_entries
-      WHERE battle_id = $1 AND status IN ('queued','generating') ORDER BY sequence ASC`, [input.battleId]);
-    const entries = result.rows;
+    const snapshot = await readAwarenessNarrationClaimSnapshot(connection, input.battleId);
+    if (!snapshot) { await ports.release(connection, input, fence); return "acknowledged"; }
+    const { entries, battle: currentBattle, runtime: currentRuntime } = snapshot;
     if (!entries.length) { await ports.release(connection, input, fence); return "idle"; }
     const failed = await connection.query("SELECT 1 FROM battle_narration_entries WHERE battle_id = $1 AND status = 'failed' LIMIT 1", [input.battleId]);
     if (failed.rowCount || entries.length > currentRuntime.runtime.policy.narration.queueBeats) {

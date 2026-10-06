@@ -847,3 +847,42 @@ work_event awareness-public-deploy-conscious-id-ci-wait-20261006:
   kind suspend
   occurred_at 2026-10-06T13:47:02+09:00
   reason "Scoped conscious ID guidance repair tested and independently reviewed; exact PR CI external wait"
+
+work_event awareness-public-deploy-conscious-id-pr-integration-resume-20261006:
+  model 1
+  task awareness-public-deploy
+  kind resume
+  occurred_at 2026-10-06T13:51:58+09:00
+
+work_event awareness-public-deploy-conscious-id-main-ci-wait-20261006:
+  model 1
+  task awareness-public-deploy
+  kind suspend
+  occurred_at 2026-10-06T13:52:12+09:00
+  reason "PR166 merged exact main; required main CI external wait"
+
+work_event awareness-public-deploy-rc12-preparation-resume-20261006:
+  model 1
+  task awareness-public-deploy
+  kind resume
+  occurred_at 2026-10-06T13:56:50+09:00
+
+work_event awareness-public-deploy-rc12-stage-wait-20261006:
+  model 1
+  task awareness-public-deploy
+  kind suspend
+  occurred_at 2026-10-06T13:57:38+09:00
+  reason "Exact rc12 Stage37416162174 external wait; independent gcloud reauth pending before Promote"
+
+work_event awareness-public-deploy-read-order-repair-resume-20261006:
+  model 1
+  task awareness-public-deploy
+  kind resume
+  occurred_at 2026-10-06T14:12:38+09:00
+
+work_event awareness-public-deploy-read-order-ci-wait-20261006:
+  model 1
+  task awareness-public-deploy
+  kind suspend
+  occurred_at 2026-10-06T14:20:30+09:00
+  reason "Read-order repair full build lint201governed307awareness passed independentreview0; exact PR CI wait"
