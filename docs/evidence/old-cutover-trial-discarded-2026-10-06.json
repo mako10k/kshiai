@@ -1,0 +1,11 @@
+{
+  "disposition": "discarded",
+  "owner": "user",
+  "ownerInstruction": "保留ではなく破棄にできますか？",
+  "verificationPerformed": false,
+  "originalTask": "task awareness-verify AWARENESS_CONNECTED -> OLD_CUTOVER_TRIAL_VERIFIED:\n  title \"Verify held old V3 cutover trial contract after owner resumes it\"\n  description \"Split original mixed verification scope under 2026-10-06 owner goal update. Preserve original task ID and start/suspend history. Old V3 trial contract remains held; not a prerequisite of normal public deployment.\"\n  duration 3p\n  status suspended\n  requires:\n    DEV 1\n  source \"docs/adr/0050-asynchronous-awareness-projected-character-pipeline.md\"\n",
+  "originalWorkEvents": [
+    "work_event WE-f9950ecb38b63fa638b7981f733c97ebe4af40e208bb8e31939f5d6f22221166:\n  model 1\n  task awareness-verify\n  kind start\n  occurred_at 2026-10-05T07:18:20+00:00\n  planned_value 3p\n\n",
+    "work_event WE-ec5ddb74e81291a88a73fe57ac1b27249fbcaab0a8f63f41da5228da8b5fc46e:\n  model 1\n  task awareness-verify\n  kind suspend\n  occurred_at 2026-10-05T07:34:49+00:00\n  reason \"Owner holds old cutover trial contract change; proceed with accepted ADR0051 usage measurement separately\"\n\n"
+  ]
+}

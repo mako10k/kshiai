@@ -1,0 +1,10 @@
+evidence OWNER:
+  "User explicitly requests old held cutover trial be discarded rather than held. Exact scope is canonical awareness-verify obligation explained in prior answer. No source/runtime/workflow deletion or other character trial plan change authorized."
+evidence TOOL:
+  "perttool has no cancelled task state; task.remove leaves original work events dangling and fails PTACT102. Standard task fields, batch topology mutation, resume and finish available. Existing task suspended with start/suspend preserved. Public deployment and one allnarration match completed."
+premise HISTORY:
+  "Do not delete original start/suspend events or claim old test succeeded. Archive exact prechange task/topology in owner decision evidence. Record explicit disposition discarded, verification notperformed, original 3p estimate retained as history; done closure has computed remaining effort zero; technical done means closed by owner cancellation, not delivery of original trial. New terminal milestone OLD_CUTOVER_TRIAL_DISCARDED replaces misleading VERIFIED endpoint."
+premise LIMIT:
+  "No code/provider/deployment/battle changes. Preserve unrelated dirty AGENTS and character-v3-stage-trial plan. Prior historical records remain historical; append latest owner withdrawal to governing reconciliation record. No native cancellation support claim or velocity inference from administrative closure."
+decision APPLY based_on OWNER, TOOL, HISTORY, LIMIT:
+  "Use digestguard official batch to change old task metadata and discard milestone/gate, then official resume/finish recording administrative owner-disposition closure with cancelled tag. Keep old work events bytewise. Check document/scheduleboth/next and zero remaining tasks, commit only scoped plan/decision/evidence to existing docsPR and verifyremoteSHA."

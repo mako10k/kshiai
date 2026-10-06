@@ -27,3 +27,11 @@ CLIでbatch候補をpreviewし、構文・DAGエラー0を確認済み。独立r
 所有者は2026-10-06に候補一式を承認した。CLI batchでscope分割をdigest照合・actor codex・accepted_by_owner userの下で適用し、公式migrate-unitで等価Point移行した。両操作のreadbackは成功、document/DAGエラー0、nextはawareness-current-verify。旧保留taskとイベントを保持している。Pointへ公式変換後はSSE修正の速度観測が利用可能になり、active399秒・planned0.5pから600p/133h（約4.51p/h）が得られた。単一の小規模な検査修正サンプルなので低確信度であり、配備・公開モデル待機の予測へそのまま適用しない。移行換算1p/hも実測速度とは表示しない。次の計測はcurrent-verifyとpublic-deployの境界。
 
 追加readback: 移行をcommitした後のobserve-velocityは、公式単位変換の既存event payload差と保留task再編をhistory conflictとして拒否した。上記の移行直後観測は現履歴の正常性や適用済み速度を示さない。計画のdocument/schedule/nextは成功を維持する。制限と保護履歴を保持する修復候補は current-verify の証拠資料に記録した。
+
+## 所有者による旧試行の破棄（2026-10-06）
+
+所有者の「保留ではなく破棄にできますか？」という指示により、旧切替試行の再開・検証義務を取り下げた。従来の保留方針はこの決定で終了する。対象は正式PERTのawareness-verifyとその終点のみ。既存試合、旧APIの読み取り、別のcharacter-v3-stage-trial計画、実装・workflow・公開環境は変更しない。
+
+perttoolにcancelled状態はないため、taskにdiscarded/verification-not-performedタグと破棄理由を付け、旧試行を検証したと解釈できるOLD_CUTOVER_TRIAL_VERIFIEDをOLD_CUTOVER_TRIAL_DISCARDEDへ置換した。taskの技術上のdoneは「所有者による破棄決定の記録を終えた」という行政的終結であり、旧試験の成功ではない。元のtask ID、3p見積、開始・保留イベントを変更せず保存。計算上の残作業は0で、この破棄による終結を旧試行の作業速度サンプルとして使用しない。原状証跡はdocs/evidence/old-cutover-trial-discarded-2026-10-06.json。
+
+公開配備・公開完走は実検証済み。全計画終点は、実証済み公開完走と今回の破棄決定の両方で解消する。document check、schedule both、dag nextはok・エラー0・実行候補なし。
