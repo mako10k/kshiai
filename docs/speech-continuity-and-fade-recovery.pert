@@ -886,3 +886,42 @@ work_event awareness-public-deploy-read-order-ci-wait-20261006:
   kind suspend
   occurred_at 2026-10-06T14:20:30+09:00
   reason "Read-order repair full build lint201governed307awareness passed independentreview0; exact PR CI wait"
+
+work_event awareness-public-deploy-read-order-pr-integration-resume-20261006:
+  model 1
+  task awareness-public-deploy
+  kind resume
+  occurred_at 2026-10-06T14:25:09+09:00
+
+work_event awareness-public-deploy-read-order-main-ci-wait-20261006:
+  model 1
+  task awareness-public-deploy
+  kind suspend
+  occurred_at 2026-10-06T14:25:23+09:00
+  reason "PR167 merged exactmain4f0ad2d; requiredmainCI external wait"
+
+work_event awareness-public-deploy-rc13-preparation-resume-20261006:
+  model 1
+  task awareness-public-deploy
+  kind resume
+  occurred_at 2026-10-06T14:29:58+09:00
+
+work_event awareness-public-deploy-rc13-stage-wait-20261006:
+  model 1
+  task awareness-public-deploy
+  kind suspend
+  occurred_at 2026-10-06T14:30:14+09:00
+  reason "Exact rc13 Stage37418838781 external execution wait"
+
+work_event awareness-public-deploy-event-allocation-repair-resume-20261006:
+  model 1
+  task awareness-public-deploy
+  kind resume
+  occurred_at 2026-10-06T14:42:40+09:00
+
+work_event awareness-public-deploy-event-allocation-ci-wait-20261006:
+  model 1
+  task awareness-public-deploy
+  kind suspend
+  occurred_at 2026-10-06T14:48:26+09:00
+  reason "Event allocation fullbuildlint201governed309awareness pass independentreview0; nativePG exactPRCI wait"

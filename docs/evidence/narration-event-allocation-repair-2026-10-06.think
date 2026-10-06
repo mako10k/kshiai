@@ -1,0 +1,12 @@
+evidence OWNER:
+  "Ownerauthorized normalpubliccomplete/allnarration/ledger repair. AcceptedADR0006 durableopaque cursor/eventIDdedupe/battle-localorder andADR0037 inherits. Independentreview confirms samecontract sharedappend serialization preservingV4 no newADR/ownerdecision."
+evidence OBSERVED:
+  "rc13 Stage37418838781 failedtick19 runtime duplicate battle_narration_events_pkey.70SDKcompleted physicalOutstanding0 total505016.18narrationentriescompleted1runtimeinactive. NoPromote. Historicalpreciseinterleaving unknown."
+evidence SOURCE:
+  "OnlyproductionINSERT uses appendPublicEvent MAX+1 thenINSERT withno sharedserialization; engineenqueue andworkerpublish use differentleases. TwoREADCOMMITTEDtransactions can choose sameN+1. CurrentMAXignoresretainedpruned_through_sequence so fullprune can resetIDs contrarydurablecursor. Existinghighwatermark alreadyunionretention. SQLiteBEGINIMMEDIATE serializes, cannotprovePGcollision."
+premise LOCK_BOUNDARY:
+  "Independentnormalpathcheck worldruntime/battle→newentry→event, worker earlierentries/recognition→event; no observed appendpathsubsequent NEW runtime/canonicalbattlelock; outstandingfailure re-acquires runtime alreadylockedbyfailEntries inthesametxn. Keepadvisorylock immediately beforeMAX/INSERT andtransactionownedcaller. NonlockingretentionMAXread avoidspruneinversion. Hashcollision mayserializeunrelatedbattle butnevermixrows/IDs. Arbitraryfuturelockcyclesnotprovenabsent."
+premise OPTIONS:
+  "PerbattlePGadvisory_xact_lock twohash namespace/battle keys requiresnoextension/migration/SDKretry. SQLiteexistingBEGINIMMEDIATE noPGSQL. MAXunionpersistedretention protects existingcursor semantics. Countercolumn/migrationexpandsartifacts; ONCONFLICTignore losespublicevents; retryafterPGuniquefailure addsnewtransactionretry andwrongworldfailure."
+decision REPAIR based_on OWNER, OBSERVED, SOURCE, LOCK_BOUNDARY, OPTIONS:
+  "Freshmain scopedbranch preserveWIP. Extracttyped sameconnection eventappendstorage, PGadvisoryxactlock immediately beforeMAXunionretention/INSERT, unchangedIDformat/payload/schema. Allshared appendwritersuseit, V4externalcontract unchanged. AddSQLiteexactIDs/fullprune/rollback andactual2clientlocalPG controlcollision, serializationwait, differentbattleprogress,rollback tests; optinloopbackdisposabledatabase only,CI mustrunPG. Independentreview/fullchecks thennewStageonce,noimplicitunchangedrc13 paidrepeat/manualrecovery/Promote."
