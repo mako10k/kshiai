@@ -7,7 +7,7 @@ import { newId } from "../id.js";
 import type { AwarenessFrozenNarration } from "../llm/awareness-frozen-narration.js";
 import { requestDigest } from "./distributed-guard.js";
 import { AwarenessNarrationQueueNext, type AwarenessNarrationQueueState } from "./awareness-narration-queue.js";
-import { requireFence, failEntries } from "./awareness-narration-worker-lifecycle.js";
+import { requireFence, failEntries, requeueInputOutbox } from "./awareness-narration-worker-lifecycle.js";
 import { materialFromEntry } from "./awareness-narration-worker-material.js";
 import type { Entry, Selected, Claimed, AwarenessNarrationWorkerResult, AwarenessNarrationWorkerInput, AwarenessNarrationWorkerLeasePort } from "./awareness-narration-worker-contract.js";
 function committedAt(entry: Entry, currentBattle: BattleState): number {
@@ -35,6 +35,7 @@ async function handleOutstandingBatch(connection: DatabaseConnection, input: Awa
     }
     await ports.release(connection, input, fence); return "failed";
   }
+  await requeueInputOutbox(connection, input);
   await ports.release(connection, input, fence); return "deferred";
 }
 
@@ -112,7 +113,10 @@ export async function claimNarrationBatch(input: AwarenessNarrationWorkerInput, 
     if (outstandingResult) return outstandingResult;
     const { prefix, limit, queue } = prepareNarrationQueue(input.battleId, captured, currentRuntime.runtime, fence);
     const decision = AwarenessNarrationQueueNext(queue, initialNow, limit, currentRuntime.runtime.policy);
-    if (decision.disposition !== "flush") { await ports.release(connection, input, fence); return "deferred"; }
+    if (decision.disposition !== "flush") {
+      await requeueInputOutbox(connection, input);
+      await ports.release(connection, input, fence); return "deferred";
+    }
     return recordClaim(connection, input, ports, { fence, prefix, deadlineAt: decision.deadlineAt, initialAt, policy: currentRuntime.runtime.policy });
   });
 }

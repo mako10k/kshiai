@@ -94,6 +94,117 @@ it("missing verified proof sends zero calls and never fabricates a presentation 
   assert.equal((await query("SELECT 1 FROM battle_presentations WHERE battle_id=$1", [id])).rowCount, 0);
   assert.equal((await query<{ state_json: string }>("SELECT state_json FROM battles WHERE id=$1", [id])).rows[0]!.state_json, original);
 });
+it("requeues budget-lease-busy narration with a fresh delivery generation and no provider call", async () => {
+  const id = "awareness-budget-lease-busy-generation";
+  await fixture(id);
+  const blocker = await acquireBattleLeaseFence(id, "advance-owner", new Date(clock.now()));
+  assert.ok(blocker);
+  const counter = { calls: 0 };
+  const generator = Object.assign(async () => { throw new Error("legacy generator must not run"); },
+    { awareness: { provider: provider(counter), admission, clock } });
+  try {
+    assert.equal(await processNextNarration({ battleId: id, ownerId: "narration-worker", now: new Date(clock.now()), generator }), "deferred");
+  } finally {
+    await releaseBattleLease(id, "advance-owner");
+  }
+  assert.equal(counter.calls, 0);
+  const rows = await query<{ status: string; delivery_generation: number }>(
+    "SELECT status, delivery_generation FROM battle_narration_outbox WHERE battle_id=$1 ORDER BY receipt_id",
+    [id],
+  );
+  assert.equal(rows.rows.length, 3);
+  assert.equal(rows.rows.every((row) => row.status === "pending" && Number(row.delivery_generation) === 1), true);
+});
+it("requeues a dispatched input outbox when budget-busy claim selects another receipt", async () => {
+  const id = "awareness-budget-lease-busy-unselected-input";
+  await fixture(id, 3, true, ["reader", "a", "b"]);
+  const input = (await query<{ outbox_id: string; delivery_generation: number }>(
+    "SELECT outbox_id, delivery_generation FROM battle_narration_outbox WHERE battle_id=$1 AND receipt_id=$2",
+    [id, `${id}:phase:2`],
+  )).rows[0]!;
+  await query("UPDATE battle_narration_outbox SET status='dispatched',dispatched_at=$2 WHERE outbox_id=$1", [input.outbox_id, new Date(base).toISOString()]);
+  const blocker = await acquireBattleLeaseFence(id, "advance-owner", new Date(clock.now()));
+  assert.ok(blocker);
+  const counter = { calls: 0 };
+  const generator = Object.assign(async () => { throw new Error("legacy generator must not run"); },
+    { awareness: { provider: provider(counter), admission, clock } });
+  try {
+    assert.equal(await processNextNarration({ battleId: id, ownerId: "narration-worker", receiptId: `${id}:phase:2`, outboxId: input.outbox_id,
+      deliveryGeneration: Number(input.delivery_generation), now: new Date(clock.now()), generator }), "deferred");
+  } finally {
+    await releaseBattleLease(id, "advance-owner");
+  }
+  assert.equal(counter.calls, 0);
+  const rows = await query<{ receipt_id: string; status: string; delivery_generation: number }>(
+    "SELECT receipt_id, status, delivery_generation FROM battle_narration_outbox WHERE battle_id=$1 ORDER BY receipt_id", [id]);
+  assert.deepEqual(rows.rows.map((row) => [row.status, Number(row.delivery_generation)]), [["pending", 1], ["pending", 1], ["pending", 0]]);
+});
+it("requeues a preclaim flush wait and accepts only the fresh delivery generation", async () => {
+  const id = "awareness-preclaim-flush-generation";
+  await fixture(id, 1);
+  const input = (await query<{ outbox_id: string; delivery_generation: number }>(
+    "SELECT outbox_id, delivery_generation FROM battle_narration_outbox WHERE battle_id=$1", [id])).rows[0]!;
+  await query("UPDATE battle_narration_outbox SET status='dispatched',dispatched_at=$2 WHERE outbox_id=$1", [input.outbox_id, new Date(base).toISOString()]);
+  let calls = 0;
+  const generator = Object.assign(async () => { throw new Error("legacy generator must not run"); },
+    { awareness: { provider: { ...provider({ calls: 0 }), narrateFrozenBatch: async (materials) => {
+      calls++;
+      return materials.map((material) => ({ phase: "combat" as const, battleId: material.battleId, turnReceiptId: material.turnReceiptId,
+        narration: { turn: material.turn, narrator: ["待機が解けた。"], speeches: [] } }));
+    } }, admission, clock } });
+  assert.equal(await processNextNarration({ battleId: id, ownerId: "worker", receiptId: `${id}:phase:1`, outboxId: input.outbox_id,
+    deliveryGeneration: Number(input.delivery_generation), now: new Date(base + 1000), generator }), "deferred");
+  const bumped = (await query<{ status: string; delivery_generation: number }>("SELECT status,delivery_generation FROM battle_narration_outbox WHERE outbox_id=$1", [input.outbox_id])).rows[0]!;
+  assert.deepEqual([bumped.status, Number(bumped.delivery_generation)], ["pending", 1]);
+  assert.equal(await processNextNarration({ battleId: id, ownerId: "worker", receiptId: `${id}:phase:1`, outboxId: input.outbox_id,
+    deliveryGeneration: 0, now: new Date(base + 7000), generator }), "acknowledged");
+  assert.equal(calls, 0);
+  assert.equal(await processNextNarration({ battleId: id, ownerId: "worker", receiptId: `${id}:phase:1`, outboxId: input.outbox_id,
+    deliveryGeneration: 1, now: new Date(base + 7000), generator }), "completed");
+  assert.equal(calls, 1);
+});
+it("requeues an outstanding batch input without a second provider call", async () => {
+  const id = "awareness-outstanding-generation";
+  await fixture(id, 1);
+  const attemptId = `${id}:attempt`;
+  const input = (await query<{ outbox_id: string; delivery_generation: number }>(
+    "SELECT outbox_id, delivery_generation FROM battle_narration_outbox WHERE battle_id=$1", [id])).rows[0]!;
+  await query("UPDATE battle_narration_outbox SET status='dispatched',dispatched_at=$2 WHERE outbox_id=$1", [input.outbox_id, new Date(base).toISOString()]);
+  await query("INSERT INTO battle_narration_attempts (attempt_id,battle_id,receipt_id,fencing_token,status,provider,route,started_at) VALUES ($1,$2,$3,1,'generating','xai','fast',$4)",
+    [attemptId, id, `${id}:phase:1`, new Date(base).toISOString()]);
+  await query("INSERT INTO battle_awareness_narration_batches (attempt_id,battle_id,fencing_token,receipt_ids_json,deadline_at,status,created_at,updated_at) VALUES ($1,$2,1,$3,$4,'claimed',$5,$5)",
+    [attemptId, id, JSON.stringify([`${id}:phase:1`]), new Date(base + 30000).toISOString(), new Date(base).toISOString()]);
+  await query("UPDATE battle_narration_entries SET status='generating',active_attempt_id=$2 WHERE battle_id=$1", [id, attemptId]);
+  let calls = 0;
+  const generator = Object.assign(async () => { throw new Error("legacy generator must not run"); },
+    { awareness: { provider: { ...provider({ calls: 0 }), narrateFrozenBatch: async () => { calls++; return []; } }, admission, clock } });
+  assert.equal(await processNextNarration({ battleId: id, ownerId: "worker", receiptId: `${id}:phase:1`, outboxId: input.outbox_id,
+    deliveryGeneration: Number(input.delivery_generation), now: new Date(base + 7000), generator }), "deferred");
+  const bumped = (await query<{ status: string; delivery_generation: number }>("SELECT status,delivery_generation FROM battle_narration_outbox WHERE outbox_id=$1", [input.outbox_id])).rows[0]!;
+  assert.deepEqual([bumped.status, Number(bumped.delivery_generation)], ["pending", 1]);
+  assert.equal(calls, 0);
+});
+it("requeues an unselected input after successful publication without touching its successor", async () => {
+  const id = "awareness-success-unselected-generation";
+  await fixture(id, 3, true, ["reader", "a", "b"]);
+  const input = (await query<{ outbox_id: string; delivery_generation: number }>(
+    "SELECT outbox_id, delivery_generation FROM battle_narration_outbox WHERE battle_id=$1 AND receipt_id=$2",
+    [id, `${id}:phase:2`])).rows[0]!;
+  await query("UPDATE battle_narration_outbox SET status='dispatched',dispatched_at=$2 WHERE outbox_id=$1", [input.outbox_id, new Date(base).toISOString()]);
+  let calls = 0;
+  const generator = Object.assign(async () => { throw new Error("legacy generator must not run"); },
+    { awareness: { provider: { ...provider({ calls: 0 }), narrateFrozenBatch: async (materials) => {
+      calls++;
+      return materials.map((material) => ({ phase: "combat" as const, battleId: material.battleId, turnReceiptId: material.turnReceiptId,
+        narration: { turn: material.turn, narrator: ["公開された。"], speeches: [] } }));
+    } }, admission, clock } });
+  assert.equal(await processNextNarration({ battleId: id, ownerId: "worker", receiptId: `${id}:phase:2`, outboxId: input.outbox_id,
+    deliveryGeneration: Number(input.delivery_generation), now: new Date(base + 7000), generator }), "completed");
+  const rows = await query<{ receipt_id: string; status: string; delivery_generation: number }>(
+    "SELECT receipt_id,status,delivery_generation FROM battle_narration_outbox WHERE battle_id=$1 ORDER BY receipt_id", [id]);
+  assert.deepEqual(rows.rows.map((row) => [row.status, Number(row.delivery_generation)]), [["completed", 0], ["pending", 1], ["pending", 0]]);
+  assert.equal(calls, 1);
+});
 it("publishes three frozen receipts atomically with one call and one retained fee reservation", async () => {
   const id = "awareness-batch-three"; const original = await fixture(id); const counter = { calls: 0 };
   const generator = Object.assign(async () => { throw new Error("legacy generator must not run"); },

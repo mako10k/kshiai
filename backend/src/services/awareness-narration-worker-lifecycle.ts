@@ -34,6 +34,13 @@ export async function requireFence(connection: DatabaseConnection, input: Awaren
   return (await connection.query(`SELECT 1 FROM battle_narration_leases WHERE battle_id = $1
     AND owner_id = $2 AND fencing_token = $3 AND expires_at > $4`, [input.battleId, input.ownerId, fence, now])).rowCount === 1;
 }
+export async function requeueInputOutbox(connection: DatabaseConnection, input: AwarenessNarrationWorkerInput): Promise<void> {
+  if (!input.outboxId || input.deliveryGeneration === undefined) return;
+  await connection.query(`UPDATE battle_narration_outbox
+    SET status='pending',dispatched_at=NULL,delivery_generation=delivery_generation+1
+    WHERE outbox_id=$1 AND battle_id=$2 AND status='dispatched' AND delivery_generation=$3`,
+    [input.outboxId, input.battleId, input.deliveryGeneration]);
+}
 export async function closeReservation(battleId: string, attemptId: string, finishedAt: number, physicalFinished: boolean, sent: boolean): Promise<void> {
   await withTransaction(async (connection) => {
     const snapshot = await getAwarenessRuntimeInTransaction(connection, battleId, { lock: true });

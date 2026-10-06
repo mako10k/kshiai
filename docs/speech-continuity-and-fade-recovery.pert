@@ -195,7 +195,7 @@ task awareness-prompt-repair AWARENESS_CONNECTED -> AWARENESS_VERIFIED:
 task awareness-public-deploy AWARENESS_VERIFIED -> AWARENESS_PUBLIC_DEPLOYED:
   title "Integrate scoped source and execute official staging and public promotion"
   duration 0.5p
-  status active
+  status suspended
   requires:
     DEV 1
   source "docs/battle-awareness-prompt-repair-release-2026-10-05.md"
@@ -736,3 +736,36 @@ work_event awareness-public-deploy-rc9-advance-bound-repair-resume-20261006:
   task awareness-public-deploy
   kind resume
   occurred_at 2026-10-06T11:54:08+09:00
+
+work_event awareness-public-deploy-advance-bound-ci-wait-20261006:
+  model 1
+  task awareness-public-deploy
+  kind suspend
+  occurred_at 2026-10-06T12:01:12+09:00
+  reason "PR163 mandatory CI wait"
+
+work_event awareness-public-deploy-bound-pr-integration-resume-20261006:
+  model 1
+  task awareness-public-deploy
+  kind resume
+  occurred_at 2026-10-06T12:05:41+09:00
+
+work_event awareness-public-deploy-bound-main-ci-wait-20261006:
+  model 1
+  task awareness-public-deploy
+  kind suspend
+  occurred_at 2026-10-06T12:06:03+09:00
+  reason "PR163 merged; exact main CI wait"
+
+work_event awareness-public-deploy-narration-generation-repair-resume-20261006:
+  model 1
+  task awareness-public-deploy
+  kind resume
+  occurred_at 2026-10-06T12:11:43+09:00
+
+work_event awareness-public-deploy-narration-generation-ci-wait-20261006:
+  model 1
+  task awareness-public-deploy
+  kind suspend
+  occurred_at 2026-10-06T12:22:43+09:00
+  reason "Wait for required CI on deferred narration delivery generation repair"
