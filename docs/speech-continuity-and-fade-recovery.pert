@@ -203,7 +203,7 @@ task awareness-public-deploy AWARENESS_VERIFIED -> AWARENESS_PUBLIC_DEPLOYED:
 task awareness-public-completion AWARENESS_PUBLIC_DEPLOYED -> AWARENESS_PUBLIC_COMPLETED:
   title "Verify a fresh public battle finishes with narration and actual token accounting"
   duration 0.5p
-  status suspended
+  status done
   requires:
     DEV 1
   source "docs/adr/0056-latest-prompt-contract-until-completion.md"
@@ -1133,3 +1133,15 @@ work_event awareness-public-completion-rc17-observe-wait-20261006:
   kind suspend
   occurred_at 2026-10-06T17:53:04+09:00
   reason "Public Promote and independent traffic/health passed; await protected Observe approval/execution"
+
+work_event awareness-public-completion-rc17-final-verification-resume-20261006:
+  model 1
+  task awareness-public-completion
+  kind resume
+  occurred_at 2026-10-06T18:24:58+09:00
+
+work_event awareness-public-completion-rc17-proof-finish-20261006:
+  model 1
+  task awareness-public-completion
+  kind finish
+  occurred_at 2026-10-06T18:24:59+09:00

@@ -63,3 +63,17 @@ annotated rc17 object8608930c520ed04cd0b5ce10bdb19bc885ff4f1eとpeeled main SHA�
 GitHub owner review後、[Promote37438626377](https://github.com/mako10k/kshiai/actions/runs/37438626377)は全検査成功。gcloudでAPI00183-wey traffic100%、公開/api/health oktrue・同revisionを独立照合。Workerは凍結版4a34e357-c390-4ec1-9429-5b0452ce2fbcを公式workflowで有効化。
 
 [公開Observe37439057058](https://github.com/mako10k/kshiai/actions/runs/37439057058)をrc17・expected00183-wey・38/200・compact/persisted_settingで1回開始し、別のGitHub production owner review待ち。公開配備成功と公開完走は区別する。PERT公開完走は外部待ちとしてsuspend。perttool Issue42はOPENを再照合。
+
+## 公開完走の最終確認
+
+[Observe37439057058](https://github.com/mako10k/kshiai/actions/runs/37439057058)はowner review後に全検査成功。retained receiptはrc17・API00183-wey・compact/persisted_setting・execution kshiai-persistent-e2e-65fk9に一致。DBはBEGIN READ ONLY/transaction_read_only=on/ROLLBACKで独立照合。公開試合btl_b4a33905c52b6465f3f6f72ce7f2cf6dはfinished/turn9、runtime revision336/tick23/terminal/incompleteReasonなし、physical96/outstanding0。全25実況と全25batch/attemptがcompleted、失敗0。SDK96件すべてcompleted、SDK total674523。
+
+|役割|provider/model|SDK件数|入力token|出力token|SDK報告total|
+|---|---|---:|---:|---:|---:|
+|adjudication|xai/grok-4.5|9|72998|234|77166|
+|conscious|xai/grok-4.5|13|60947|4386|84298|
+|creation|xai/grok-4.5|1|1455|151|2971|
+|narration|xai/grok-4.3|25|212267|6637|218904|
+|subconscious|openai/gpt-6-luna|48|278425|12759|291184|
+
+SDK totalはprovider報告値を保持し、入力+出力へ読み替えない。価格表未確定の金額は未知。今回の公開配備・新規1試合の正常終了・全実況成功・実利用記録という公開ゴールを満たした。旧切替試行の保留と共通全体finishは維持するため、計画全体の完了は主張しない。

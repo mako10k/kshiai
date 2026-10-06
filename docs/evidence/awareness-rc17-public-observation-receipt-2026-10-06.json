@@ -1,0 +1,12 @@
+{
+  "schemaVersion": 1,
+  "observationRunId": "github-37439057058-1",
+  "releaseTag": "v0.23.0-rc.17",
+  "revision": "kshiai-api-00183-wey",
+  "dialogueProjection": "compact",
+  "dialogueActivationSource": "persisted_setting",
+  "execution": "kshiai-persistent-e2e-65fk9",
+  "verification": "cloud_run_job_exit_success",
+  "durableObservation": "postgres.balance_events:persistent_e2e_observation",
+  "durableBattle": "postgres.battles"
+}
