@@ -769,3 +769,42 @@ work_event awareness-public-deploy-narration-generation-ci-wait-20261006:
   kind suspend
   occurred_at 2026-10-06T12:22:43+09:00
   reason "Wait for required CI on deferred narration delivery generation repair"
+
+work_event awareness-public-deploy-narration-generation-pr-integration-resume-20261006:
+  model 1
+  task awareness-public-deploy
+  kind resume
+  occurred_at 2026-10-06T12:27:32+09:00
+
+work_event awareness-public-deploy-narration-generation-main-ci-wait-20261006:
+  model 1
+  task awareness-public-deploy
+  kind suspend
+  occurred_at 2026-10-06T12:27:56+09:00
+  reason "Wait for required exact main CI after PR164 integration"
+
+work_event awareness-public-deploy-rc10-preparation-resume-20261006:
+  model 1
+  task awareness-public-deploy
+  kind resume
+  occurred_at 2026-10-06T12:59:24+09:00
+
+work_event awareness-public-deploy-rc10-stage-wait-20261006:
+  model 1
+  task awareness-public-deploy
+  kind suspend
+  occurred_at 2026-10-06T12:59:44+09:00
+  reason "Wait for immutable rc10 Stage evidence"
+
+work_event awareness-public-deploy-narration-structured-repair-resume-20261006:
+  model 1
+  task awareness-public-deploy
+  kind resume
+  occurred_at 2026-10-06T13:14:10+09:00
+
+work_event awareness-public-deploy-narration-structured-ci-wait-20261006:
+  model 1
+  task awareness-public-deploy
+  kind suspend
+  occurred_at 2026-10-06T13:22:35+09:00
+  reason "Wait for strict narration response schema required CI"
