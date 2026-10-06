@@ -195,7 +195,7 @@ task awareness-prompt-repair AWARENESS_CONNECTED -> AWARENESS_VERIFIED:
 task awareness-public-deploy AWARENESS_VERIFIED -> AWARENESS_PUBLIC_DEPLOYED:
   title "Integrate scoped source and execute official staging and public promotion"
   duration 0.5p
-  status suspended
+  status active
   requires:
     DEV 1
   source "docs/battle-awareness-prompt-repair-release-2026-10-05.md"
@@ -925,3 +925,48 @@ work_event awareness-public-deploy-event-allocation-ci-wait-20261006:
   kind suspend
   occurred_at 2026-10-06T14:48:26+09:00
   reason "Event allocation fullbuildlint201governed309awareness pass independentreview0; nativePG exactPRCI wait"
+
+work_event awareness-public-deploy-event-allocation-pr-integration-resume-20261006:
+  model 1
+  task awareness-public-deploy
+  kind resume
+  occurred_at 2026-10-06T14:52:33+09:00
+
+work_event awareness-public-deploy-event-allocation-main-ci-wait-20261006:
+  model 1
+  task awareness-public-deploy
+  kind suspend
+  occurred_at 2026-10-06T14:52:52+09:00
+  reason "PR168 merged nativePGproofsuccess; requiredexactmainCI external wait"
+
+work_event awareness-public-deploy-rc14-preparation-resume-20261006:
+  model 1
+  task awareness-public-deploy
+  kind resume
+  occurred_at 2026-10-06T14:56:10+09:00
+
+work_event awareness-public-deploy-rc14-stage-wait-20261006:
+  model 1
+  task awareness-public-deploy
+  kind suspend
+  occurred_at 2026-10-06T14:56:27+09:00
+  reason "Exact rc14 Stage37421048966 external execution wait"
+
+work_event awareness-public-deploy-rc14-convergence-repair-resume-20261006:
+  model 1
+  task awareness-public-deploy
+  kind resume
+  occurred_at 2026-10-06T15:11:56+09:00
+
+work_event awareness-public-deploy-convergence-local-check-wait-20261006:
+  model 1
+  task awareness-public-deploy
+  kind suspend
+  occurred_at 2026-10-06T15:15:50+09:00
+  reason "Repair code/evidence/review complete; waiting final local compiler and static checks; no cloud or model operation active"
+
+work_event awareness-public-deploy-convergence-pr-preparation-resume-20261006:
+  model 1
+  task awareness-public-deploy
+  kind resume
+  occurred_at 2026-10-06T15:17:44+09:00
