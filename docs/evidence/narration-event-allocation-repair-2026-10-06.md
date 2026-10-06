@@ -60,3 +60,11 @@ SQLiteでID形式・順序・全prune後の継続・rollbackを確認する。�
 独立最終レビューINSIDE指摘0。実PG並行検証のCI実行・Stage・公開完走は未達成。
 
 全体build/lint（全workspace・deployment型検査・静的検査）成功。通常governedテスト201件成功、awareness312件中309成功・ローカルPostgres未設定3件skip・失敗0。CIの実PG同時採番テスト成功が次のgate。
+
+## CI・rc.14 実測の追記
+
+[PR168](https://github.com/mako10k/kshiai/pull/168)をmain8d87ed88605af082cf6d0d41399f594d92151547へ統合。[PR CI37420384619](https://github.com/mako10k/kshiai/actions/runs/37420384619)・[main CI37420729943](https://github.com/mako10k/kshiai/actions/runs/37420729943)とも必須4job成功。既存Postgres16 service上のevent allocation並行テストが実際に実行され、ok27、skipなし。これにより前節のPG未実行gateは解消した。
+
+[rc.14 Stage37421048966](https://github.com/mako10k/kshiai/actions/runs/37421048966)、immutable候補kshiai-api-00179-junの試合btl_e4cf6c24b67f68e3d38c6966a02e8234は36tick、terminal、incompleteReasonなし。実況38entryすべてcompleted・38distinct presentation、38outbox completed、lease0。SDK143件すべてcompleted、physicalOutstanding0、報告total1,023,920。今回の採番重複エラーは発生していない。
+
+Stage全体は旧observerのattemptCount=1判定で失敗し、証跡保存・Promoteは実行していない。SDK未送信のbudget_lease_busy deferralが履歴claim countを増やすため、この検査をAccepted ADR0006/0057に適合させる修復を継続する。試合成功だけでStage合格・公開完走とは扱わない。公開trafficは従来版のまま。

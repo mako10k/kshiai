@@ -1,4 +1,5 @@
 // R: Verify ordinary public battle progression and retain bounded release acceptance evidence.
+import { assertNarrationConvergence, narrationConvergenceEvidence } from "./awareness-narration-convergence.js";
 import { inspectAwarenessPublicObservation } from "./awareness-public-observation.js";
 import { randomUUID } from "node:crypto";
 import {
@@ -479,6 +480,7 @@ async function inspectInternalBattleObservation(input: {
   dialogueProjection: "legacy" | "compact";
   dialogueActivationSource: "default" | "persisted_setting" | "deployment_override";
   awareness: Awaited<ReturnType<typeof inspectAwarenessPublicObservation>>;
+  manifestSchemaVersion: number;
 }> {
   const response = await apiJson<{
     role?: string;
@@ -530,13 +532,7 @@ async function inspectInternalBattleObservation(input: {
     throw new Error("Battle dialogue activation source is missing");
   }
   const narrationQueue = response.narrationQueue ?? [];
-  if (narrationQueue.length === 0 || narrationQueue.some((entry) =>
-    !["completed", "failed", "cancelled"].includes(entry.status ?? "") ||
-    entry.attemptCount !== 1 || entry.blockedBySequence !== null ||
-    entry.lease !== null || entry.outbox?.status !== "completed"
-  )) {
-    throw new Error("Narration receipts did not converge to one terminal attempt each");
-  }
+  assertNarrationConvergence(manifest.schemaVersion, narrationQueue);
   const sequences = narrationQueue.map((entry) => Number(entry.sequence));
   assertPublicNarrationOrder(sequences);
   reconcileSparseNarrationProjection({
@@ -553,6 +549,7 @@ async function inspectInternalBattleObservation(input: {
   const awareness = await inspectAwarenessPublicObservation(input.battleId, manifest);
   return {
     awareness,
+    manifestSchemaVersion: manifest.schemaVersion,
     turnRecordCount,
     canonicalTransitionCount,
     narrationProviderOperations: awareness.narrationPhysicalAttempts,
@@ -865,12 +862,9 @@ async function main(): Promise<void> {
           scope: "durable physical provider HTTP attempts by layer",
         },
       },
-      narrationConvergence: {
-        terminalReceiptCount: narration.entries.length,
-        orderedProjection: "passed",
-        oneAttemptPerReceipt: "passed",
-        liveGenerations: 0,
-      },
+      narrationConvergence: narrationConvergenceEvidence(
+        internalObservability.manifestSchemaVersion, narration.entries.length,
+      ),
       historyVisibility: "passed",
       battle: {
         id: persistedBattle.id,
