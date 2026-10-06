@@ -49,3 +49,11 @@ PERT document check・dag analyze両schedule・dag nextはok。observe-velocity�
 関連22件成功。通常governed201件成功。awareness317件中314成功・失敗0、local PostgreSQL未設定3件skip。独立reviewは当初artifact生成で公開DTOにないassetManifest参照を検出し、内部でparse済みmanifestSchemaVersionの返却へ修正した。公開DTO拡張やV4 fallbackは導入しない。旧sourceで開始済みbuild/lintの型エラーは合格と扱わず、修正後の最終build/lintを再実行する。
 
 修正後の最終build/lint成功、全workspaceとdeployment型検査・静的検査を通過。独立最終review残存INSIDE0。既存frontend chunk-size warningは残存するが今回observer repairの型/検査不合格はない。次gateはexact PR/mainCI（nativePG含む）と新候補Stage。
+
+## CI・rc.15実測の追記
+
+[PR169](https://github.com/mako10k/kshiai/pull/169)はmain f9d046279c9c9fae718c0cbebb8451131b0ddf68へ統合。[PR CI37422965866](https://github.com/mako10k/kshiai/actions/runs/37422965866)・[main CI37423408541](https://github.com/mako10k/kshiai/actions/runs/37423408541)必須4job成功、nativePostgres16の採番並行テストok27・skipなし。
+
+[rc.15 Stage37423808342](https://github.com/mako10k/kshiai/actions/runs/37423808342)は修正済み実試合検査を通過した。候補kshiai-api-00180-sav、試合btl_e39f06c642eadbb291f8d793509064caはruntime revision465・tick34 terminal・incompleteReasonなし、129SDKすべてcompleted、physicalOutstanding0、total937,918、不明0。36実況receiptすべてcompleted、28completed batch、107budget-lease-busy deferralはhttp0。この測定により収束検査修復の実動gateは解消した。
+
+Stage全体は後続R2job kshiai-r2-smoke-kn6rrのconfig importでDATABASE_URL requiredに掛かり不合格。artifact保存とPromoteは未実行。通常R2検査の不要なapp/DB依存を修復する。正常試合の成功とStage全体・公開完走は区別する。
