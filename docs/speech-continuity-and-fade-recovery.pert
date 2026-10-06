@@ -195,7 +195,7 @@ task awareness-prompt-repair AWARENESS_CONNECTED -> AWARENESS_VERIFIED:
 task awareness-public-deploy AWARENESS_VERIFIED -> AWARENESS_PUBLIC_DEPLOYED:
   title "Integrate scoped source and execute official staging and public promotion"
   duration 0.5p
-  status planned
+  status active
   requires:
     DEV 1
   source "docs/battle-awareness-prompt-repair-release-2026-10-05.md"
@@ -220,7 +220,7 @@ task awareness-current-verify AWARENESS_CONNECTED -> AWARENESS_VERIFIED:
   title "Verify current pipeline and protected continuation evidence for normal release"
   description "Compare AcceptedADR0051/0054/0056/0057 with actual current prompt/usage/narration/access/continuation regressions and all required CI. Public normal completion remains a later task. Exclude held cutover trial only, preserve historical reads and continuation obligations."
   duration 0.25p
-  status active
+  status done
   requires:
     DEV 1
   source "docs/evidence/awareness-normal-release-plan-reconciliation-2026-10-06.md"
@@ -540,3 +540,30 @@ work_event WE-c8a61c530e01420e1688ac55c4cdc5fd492d152b70e14ef923228f8b2abf41c8:
   task awareness-current-verify
   kind resume
   occurred_at 2026-10-06T09:51:57+09:00
+
+work_event WE-bc6903c4fd70f254baa6f24d0302ef52fa033cd7694e5d9c7fb4dca3107c6616:
+  model 1
+  task awareness-current-verify
+  kind suspend
+  occurred_at 2026-10-06T09:53:14+09:00
+  reason "Waiting for exact HEAD0a01627 required CI after isolated continuation fixture repair passed"
+
+work_event WE-f043ad387983c174739bb55983c110157b3e011dd53ac14405bb08c3f90462d1:
+  model 1
+  task awareness-current-verify
+  kind resume
+  occurred_at 2026-10-06T09:57:37+09:00
+
+work_event WE-5a6bff8147977a24193070cb23603eecc7885f7930e10004459b2408053c20f8:
+  model 1
+  task awareness-current-verify
+  kind finish
+  occurred_at 2026-10-06T09:57:39+09:00
+  effort 0.61ph
+
+work_event WE-eba12277eb4ef414da23cafad2e007a91686e825aa5baab8669c40169828c358:
+  model 1
+  task awareness-public-deploy
+  kind start
+  occurred_at 2026-10-06T09:57:43+09:00
+  planned_value 0.5p

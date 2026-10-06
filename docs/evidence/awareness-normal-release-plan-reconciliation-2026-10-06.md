@@ -35,3 +35,5 @@ Point移行後のcommitを含むproject observe-velocityはok:false、event_payl
 2026-10-06 09:47 JST追加検証: Node22 test:awareness 全279件PASS（追加統合テストを含む）、全workspace typecheck PASS。sealed全201件は先行app同一sourceのCIとローカル成功証拠を保持する。最終配備headは全必須CIで再確認する。
 
 追加CI37395861689は新規継続テストだけprologue/v1でidleを返し失敗した（他278件PASS）。調査でstatic provider importがテストenv設定前にDB/configをロードし、fixtureがinsertNewBattleだけでenqueueを行わずSQL UPDATEに依存していたことを確認した。ローカル残存fixtureが成功を支えていたため、先行279PASSを独立fixtureの証拠とは扱わない。providerをenv設定後のdynamic importへ変更し、configのDB隔離をassert、created/runtime初期化の成功をassert、明示enqueueNarrationに置き換え、SQL resetを除去した。修正後の空DB検証と毒入りambient DB設定の検証を実行し、CIで再確認する。RCA DSL auditはfatal/error/warning0。
+
+修正HEAD0a016278のCI [37396317094](https://github.com/mako10k/kshiai/actions/runs/37396317094) は4必須jobすべてsuccess。全279awareness検査・sealed201・build/typecheck・runtime import/scan・Worker検査を含む。current-verifyを完了し、document check/both schedules/nextすべてok:true、next推薦はawareness-public-deploy。旧保留は維持。実績のeffort0.61phはDEV1の作業区間合計を小数2桁へ丸めたsession計測で、2つのCI待機区間を除く。速度観測の履歴制限はIssue42へ記録済み、実測速度を適用済みとはしない。
