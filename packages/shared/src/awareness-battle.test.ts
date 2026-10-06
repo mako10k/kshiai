@@ -47,7 +47,8 @@ function v5Fixture() {
   const v5 = BattleAssetManifestV5Schema.parse({ ...manifest, schemaVersion: 5, consciousOutputContract: "awareness-v5", awarenessPolicy: AwarenessDefaultPolicy, promptRevision: "awareness-prompt-v1", outputRevision: "awareness-output-v1", rules: { ...manifest.rules, psycheReaction: "awareness-v5" } });
   assert.equal(BattleAssetManifestV5Schema.parse({ ...v5, promptRevision: "awareness-prompt-v2" }).promptRevision, "awareness-prompt-v2");
   assert.equal(BattleAssetManifestV5Schema.parse({ ...v5, promptRevision: "awareness-prompt-v3" }).promptRevision, "awareness-prompt-v3");
-  assert.equal(BattleAssetManifestV5Schema.safeParse({ ...v5, promptRevision: "awareness-prompt-v4" }).success, false);
+  assert.equal(BattleAssetManifestV5Schema.parse({ ...v5, promptRevision: "awareness-prompt-v4" }).promptRevision, "awareness-prompt-v4");
+  assert.equal(BattleAssetManifestV5Schema.safeParse({ ...v5, promptRevision: "unsupported-prompt" }).success, false);
   return { ...state, assetManifest: v5, agentStateA: undefined, agentStateB: undefined };
 }
 describe("awareness-v5 battle version boundary", () => {

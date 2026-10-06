@@ -1,0 +1,12 @@
+evidence OWNER:
+  "Owner authorized existing public kshiai.mk10.org deployment and complete battle through official staging, promotion and observation; root is designated sole executor. Held old trial remains suspended."
+evidence SOURCE:
+  "PR160 merged to6ffe473e391981d5ba0bca5c8f4122c4e896a1b9. PR CI37399762176 and exact main CI37400140385 all four required jobs succeeded. Runtime initialization separate bindings and native PostgreSQL regression verified; source-map-js1.2.2 dependency audit clear."
+evidence TARGET:
+  "API kshiai-api projectkshiai regionasia-northeast1 publictraffic100percent remainskshiai-api-speech-9ce565d. Worker kshiai-web. rc7 tag absent locally and remotely. Source package version0.23.0 and datedchangelog match."
+premise LIMIT:
+  "Create annotatedv0.23.0-rc.7 at exact6ffe473 and push one newtag, dispatch Stage once fromsametag: narration_guarded, projectionoverride none, expectedcompact,24advances,200operations, charactercreatesmokefalse,currentpacing. TaggedAPI0percent,onefunctionalbattle, providerbudget/deadlineunchanged. No retag/implicitrerun."
+premise VERIFY:
+  "Read back remote tag object/commit and exactrun. Failure retains evidence and doesnotpromote. Promotion requires successful exactStageartifact/frozenrevision/WorkerID and independentreadback; subsequentfreshpubliccompletebattle verifiesnarration/actualusage/outstandingzero. Earlierfailedrc6 retained."
+decision STAGE based_on OWNER, SOURCE, TARGET, LIMIT, VERIFY:
+  "Execute bounded rc7 tag and official Stage through repository secdat route after zero-error CLIaudit; maintain canonicalPERT lifecycle and report gates separately from public completion."

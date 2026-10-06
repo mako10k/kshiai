@@ -8,6 +8,7 @@ import {
 import type { AwarenessRequestOptions } from "./awareness-provider-contract.js";
 import { renderAwarenessOutputContract } from "./awareness-output-contract.js";
 import { renderPromptSections } from "./prompt-prose.js";
+import { renderLatentOutputBudget } from "./awareness-latent-output-guidance.js";
 
 const DESIRE_RULES = "意欲の共通項目はid、source、strength（0〜1）、startTick、validUntilTick。寿命は1〜3tick、終了tickは含まない。身体意欲はresource=bodyとaction（提示された行為の構造を保つ）。発声意欲はresource=voiceとspeech。意欲は世界の実行結果ではない。新しい能力・事実・訓練を創作しない。";
 const LATENT_PROMPT = [
@@ -50,7 +51,7 @@ export function prepareAwarenessRequest(request: AwarenessRequestInput, policy: 
       { title: "知覚で使える参照と選択可能な行為", value: { facts: frame.facts, availableActions: frame.availableActions } },
     ]);
     const limits = bound.roles.subconscious;
-    return { system: system("subconscious", LATENT_PROMPT), user, options: {
+    return { system: `${system("subconscious", LATENT_PROMPT)}\n\n${renderLatentOutputBudget({ tick: frame.tick, side: frame.side, outputTokens: limits.outputTokens })}`, user, options: {
       tier: "fast", timeoutMs: limits.deadlineMs, maxCompletionTokens: limits.outputTokens,
       label: "awareness-v5:subconscious", responseFormat: { type: "json_object" },
     } };

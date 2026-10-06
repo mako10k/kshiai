@@ -73,7 +73,7 @@ describe("constructed narration content and receipt contracts", () => {
     for (const phase of phases) {
       const material = freezeAwarenessNarration(phase, { battleId: "battle", turnReceiptId: phase.phase });
       const prepared = prepareAwarenessFrozenNarrationRequest([material]);
-      assert.equal(material.promptRevision, "awareness-prompt-v3");
+      assert.equal(material.promptRevision, "awareness-prompt-v4");
       assert.doesNotMatch(material.system, /JSON:|You may change punctuation/);
       assert.match(prepared.system, /phase, battleId, turnReceiptId, turn/);
       assert.equal((prepared.system.match(/Return JSON only/g) ?? []).length, 1);

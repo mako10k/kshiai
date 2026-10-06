@@ -94,7 +94,7 @@ describe("explicit observed dispatch admission", () => {
     const latent = { provider: "openai", engineModel: "gpt-6-luna", fastModel: "gpt-6-luna" };
     const conscious = { provider: "xai", engineModel: "grok-engine", fastModel: "grok-fast" };
     const hashes: string[] = [];
-    for (const promptRevision of ["awareness-prompt-v1", "awareness-prompt-v2", "awareness-prompt-v3"]) {
+    for (const promptRevision of ["awareness-prompt-v1", "awareness-prompt-v2", "awareness-prompt-v3", "awareness-prompt-v4"]) {
       const admission = createAwarenessExecutionAdmission({ latent, conscious, contracts: [], policy: AwarenessObservedPolicy, promptRevision });
       const proof = await admission.verify({ role: "subconscious", input });
       assert.ok(proof);

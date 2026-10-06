@@ -1,7 +1,7 @@
 // R: Generate and validate one ordered, receipt-scoped narration batch without changing world facts.
 import { AwarenessNarratorDispatchContextSchema, type AwarenessNarratorDispatchContext } from "./awareness-narrator-context.js";
 import {
-  AwarenessDefaultPolicy, AwarenessPolicyV1Schema, type AwarenessPolicyV1,
+  AwarenessDefaultPolicy, AwarenessPolicyV1Schema, CurrentAwarenessPromptRevision, type AwarenessPolicyV1,
 } from "@kshiai/shared";
 import type { PreparedAwarenessRequest } from "./awareness-request.js";
 import { prepareAwarenessFrozenNarrationRequest, validateAwarenessFrozenNarrationResults, AwarenessFrozenNarrationSchema, type AwarenessFrozenNarration, type AwarenessFrozenNarrationResult } from "./awareness-frozen-narration.js";
@@ -29,7 +29,7 @@ export interface AwarenessNarrationProvider {
 /** Exact pure material shared by billing admission and the actual batch transport. */
 export function prepareAwarenessNarrationRequest(
   receipts: readonly AwarenessNarrationReceiptInput[], timeoutMs?: number, policy: AwarenessPolicyV1 = AwarenessDefaultPolicy,
-  promptRevision: NonNullable<AwarenessFrozenNarration["promptRevision"]> = "awareness-prompt-v3",
+  promptRevision: NonNullable<AwarenessFrozenNarration["promptRevision"]> = CurrentAwarenessPromptRevision,
 ): PreparedAwarenessRequest {
   const bound = AwarenessPolicyV1Schema.parse(policy);
   const limits = bound.roles.narration;

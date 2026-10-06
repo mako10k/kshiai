@@ -49,11 +49,11 @@ it("persists usage-v2 for default creation and overrides a legacy provider's sho
     battlefieldMode: "preset", battlefieldPresetId: seeded.battlefieldId, llm });
   const created = await getBattle(battleId); assert.ok(created?.assetManifest?.schemaVersion === 5);
   assert.deepEqual(created.assetManifest.awarenessPolicy, AwarenessNormalPolicy);
-  assert.equal(created.assetManifest.promptRevision, "awareness-prompt-v3");
+  assert.equal(created.assetManifest.promptRevision, "awareness-prompt-v4");
   await advanceTurn({ userId: seeded.userId, battleId, operationId: "normal-policy-prologue", llm });
   const stored = await getAwarenessRuntime(battleId); assert.ok(stored);
   assert.deepEqual(stored.runtime.policy, AwarenessNormalPolicy);
-  assert.equal(stored.runtime.promptRevision, "awareness-prompt-v3");
+  assert.equal(stored.runtime.promptRevision, "awareness-prompt-v4");
   assert.equal(stored.runtime.deadlineAt - stored.runtime.startedAt, 600000);
   assert.equal(stored.runtime.status, "active");
   assert.equal(seen.filter((item) => item.role === "subconscious").length, 2);

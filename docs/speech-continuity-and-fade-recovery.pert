@@ -619,3 +619,42 @@ work_event awareness-public-deploy-security-repair-20261006:
   task awareness-public-deploy
   kind resume
   occurred_at 2026-10-06T10:31:44+09:00
+
+work_event awareness-public-deploy-patched-ci-wait-20261006:
+  model 1
+  task awareness-public-deploy
+  kind suspend
+  occurred_at 2026-10-06T10:33:29+09:00
+  reason "Waiting for PR160 corrected dependency exact CI"
+
+work_event awareness-public-deploy-pg-ci-accepted-20261006:
+  model 1
+  task awareness-public-deploy
+  kind resume
+  occurred_at 2026-10-06T10:37:40+09:00
+
+work_event awareness-public-deploy-pg-main-ci-wait-20261006:
+  model 1
+  task awareness-public-deploy
+  kind suspend
+  occurred_at 2026-10-06T10:38:13+09:00
+  reason "PR160 merged to6ffe473; waiting exact main required CI before rc7 tag"
+
+work_event awareness-public-deploy-rc7-preparation-20261006:
+  model 1
+  task awareness-public-deploy
+  kind resume
+  occurred_at 2026-10-06T10:43:09+09:00
+
+work_event awareness-public-deploy-rc7-stage-wait-20261006:
+  model 1
+  task awareness-public-deploy
+  kind suspend
+  occurred_at 2026-10-06T10:43:52+09:00
+  reason "Official rc7 Stage37400614046 started; waiting exact revision complete-battle proof before public promotion"
+
+work_event awareness-public-deploy-rc7-output-investigation-20261006:
+  model 1
+  task awareness-public-deploy
+  kind resume
+  occurred_at 2026-10-06T10:52:24+09:00
