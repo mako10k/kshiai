@@ -4,8 +4,13 @@ import { mkdtempSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { it } from "node:test";
-import { AwarenessDefaultPolicy, AwarenessFrozenNarrationSchema, AwarenessInitialize, BattleStateSchema, NarrativeBlockSchema } from "@kshiai/shared";
-import { TransportAwarenessNarrationProvider } from "../llm/awareness-narration.js";
+import {
+  AwarenessDefaultPolicy,
+  AwarenessFrozenNarrationSchema,
+  AwarenessInitialize,
+  BattleStateSchema,
+  NarrativeBlockSchema,
+} from "@kshiai/shared";
 import type { AwarenessRequestOptions } from "../llm/awareness-provider-contract.js";
 import { LEGACY_NARRATION_CONTRACT } from "../llm/narration-prompt-contract.js";
 import { narrationReceiptExample } from "../llm/narration-receipt-contract.js";
@@ -14,16 +19,22 @@ import { validAwarenessBattleFixture } from "./awareness-test-fixture.js";
 
 process.env.DATABASE_URL = "";
 process.env.AUTH_PROVIDER = "legacy";
-process.env.DATABASE_PATH = join(mkdtempSync(join(tmpdir(), "awareness-continuation-")), "test.db");
+const databasePath = join(mkdtempSync(join(tmpdir(), "awareness-continuation-")), "test.db");
+process.env.DATABASE_PATH = databasePath;
+
+const { config } = await import("../config.js");
+assert.equal(config.databasePath, databasePath);
+assert.equal(config.databaseUrl, null);
 
 const { query } = await import("../db.js");
+const { TransportAwarenessNarrationProvider } = await import("../llm/awareness-narration.js");
 const { insertNewBattle } = await import("../repositories/battles.js");
 const { initializeAwarenessRuntime } = await import("../repositories/battle-awareness.js");
 const { acquireBattleLeaseFence, releaseBattleLease, requestDigest } = await import("./distributed-guard.js");
-const { processNextNarration } = await import("./narration-worker.js");
+const { enqueueNarration, processNextNarration } = await import("./narration-worker.js");
 
 const base = Date.parse("2026-10-05T06:00:00Z");
-const clock = { now: () => base + 1000, withDeadline: async <T>(promise: Promise<T>) => promise };
+const clock = { now: () => base + 7000, withDeadline: async <T>(promise: Promise<T>) => promise };
 const admission: VerifiedNarrationDispatchAdmission = {
   pricingRevision: "verified-continuation-test",
   billingContract: {
@@ -47,7 +58,7 @@ it("continues every phase and retained prompt revision through current transport
       kind: "awareness-v5", phase, battleId, turnReceiptId: `${battleId}:phase:1`, turn,
       system: [LEGACY_NARRATION_CONTRACT.output(phase, "external"), LEGACY_NARRATION_CONTRACT.speechSurface(phase),
         `Frozen style ${phase} ${revisionIndex}; preserve observer boundary.`].join("\n"),
-      user, urgent: true, sourceSpeeches: [], recognitionRefs: [],
+      user, urgent: phase !== "combat", sourceSpeeches: [], recognitionRefs: [],
       judgmentVerdict: phase === "judgment" ? "draw" : null,
       ...(promptRevision === undefined ? {} : { promptRevision }),
     });
@@ -57,25 +68,25 @@ it("continues every phase and retained prompt revision through current transport
       combatTurn: phase === "combat" ? 1 : null, fromRevision: 0, toRevision: 1,
       committedAt: new Date(base).toISOString(), narrationInput: material, narrationInputDigest: originalDigest, narrationDeferred: true,
     }] });
-    await insertNewBattle(complete, { sideAUserId: "owner", sideACharacterId: "a", sideBCharacterId: "b" });
-    const persistedState = (await query<{ state_json: string }>("SELECT state_json FROM battles WHERE id=$1", [battleId])).rows[0]!;
-    const persistedBattle = BattleStateSchema.parse(JSON.parse(persistedState.state_json));
-    const persistedReceipt = persistedBattle.phaseReceipts?.[0];
-    assert.ok(persistedReceipt);
+    assert.equal(await insertNewBattle(complete, { sideAUserId: "owner", sideACharacterId: "a", sideBCharacterId: "b" }), "created");
     const digest = originalDigest;
     const serialized = JSON.stringify(material);
     const fence = await acquireBattleLeaseFence(battleId, "fixture", new Date(base));
     assert.ok(fence);
-    await initializeAwarenessRuntime({ battleId, fence, now: new Date(base).toISOString(), runtime: AwarenessInitialize({
+    assert.equal(await initializeAwarenessRuntime({ battleId, fence, now: new Date(base).toISOString(), runtime: AwarenessInitialize({
       startedAt: base, promptRevision: "awareness-prompt-v1", outputRevision: "awareness-output-v1", policy: AwarenessDefaultPolicy,
-    }) });
+    }) }), true);
     await releaseBattleLease(battleId, "fixture");
-    // Seed the retained legacy snapshot after the repository creates current narration rows.
-    const updatedBattle = BattleStateSchema.parse({ ...persistedBattle, phaseReceipts: [{ ...persistedReceipt, narrationInput: material, narrationInputDigest: digest }] });
-    await query("UPDATE battles SET state_json=$2 WHERE id=$1", [battleId, JSON.stringify(updatedBattle)]);
-    await query("UPDATE battle_narration_entries SET input_json=$2,input_digest=$3,status='queued',active_attempt_id=NULL WHERE battle_id=$1", [battleId, JSON.stringify(material), digest]);
-    await query("DELETE FROM battle_presentations WHERE battle_id=$1", [battleId]);
-    await query("UPDATE battle_narration_outbox SET status='pending',dispatched_at=NULL WHERE battle_id=$1", [battleId]);
+    await enqueueNarration({
+      battleId,
+      receiptId: material.turnReceiptId,
+      sequence: 1,
+      phase,
+      combatTurn: phase === "combat" ? 1 : null,
+      frozenInput: material,
+      inputDigest: digest,
+      now: new Date(base).toISOString(),
+    });
 
     const calls: { system: string; user: string; options: AwarenessRequestOptions }[] = [];
     const provider = new TransportAwarenessNarrationProvider({

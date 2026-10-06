@@ -527,3 +527,16 @@ work_event WE-6c45501c47154d068bd16b6bf63319c07c6df52adb247a22442784db2d0d7978:
   kind start
   occurred_at 2026-10-06T09:12:53+09:00
   planned_value 0.25p
+
+work_event WE-e48fc64fe9670e0dedd46b13b8c1304dc5f45fb6247522b7c203ea37f88f2284:
+  model 1
+  task awareness-current-verify
+  kind suspend
+  occurred_at 2026-10-06T09:48:07+09:00
+  reason "Waiting for exact HEAD22ba52a required CI after all local current contract checks passed"
+
+work_event WE-c8a61c530e01420e1688ac55c4cdc5fd492d152b70e14ef923228f8b2abf41c8:
+  model 1
+  task awareness-current-verify
+  kind resume
+  occurred_at 2026-10-06T09:51:57+09:00

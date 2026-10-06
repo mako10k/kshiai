@@ -1,0 +1,10 @@
+evidence FAILURE:
+  "CI37395861689 newcontinuationtest prologue/v1 workerreturnsidle, other278tests pass; local279tests passed."
+evidence SOURCE:
+  "StaticTransportAwarenessNarrationProvider importsphase/openai-compatible/usageobservation/db beforetest env assignment. insertNewBattle onlyinsertsbattle; testupdates nonexistentnarrationentries/outbox butdoesnot enqueue. LocalreuseddefaultDB maycontainpastfixtureentries; CIcleanDBdoesnot."
+premise FIX:
+  "Dynamicprovider import onlyafter isolatedDATABASE_PATH/DATABASE_URL assignments. Explicitvalidatedbattleinsert, fencedruntimeinit, enqueueNarration for retainedmaterial. RemovefixtureSQLupdate/reset dependence. Assertcreated/runtimeinit/rows toprevent silentstale fixture use. Preserve12conditions/currentcontract/frozeninput/publication checks."
+premise UNKNOWN:
+  "Need confirm independent fresh databases repeatably pass, with poisonedambientdatabase route and mockdefaults. Do not inferproductdefect orremove meaningfulcontract assertions."
+decision REPAIR_TEST based_on FAILURE, SOURCE, FIX, UNKNOWN:
+  "Root rewrites only newtest fixture setup withinaccepted currentverify scope. Audit0errors beforewrite; run targeted clean isolatedtest andtypecheck, thenpushnewsource for exactrequiredCI. No rerununchangedfailedCI, no productcode/scope change."

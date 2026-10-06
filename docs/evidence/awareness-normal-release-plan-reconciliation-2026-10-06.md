@@ -33,3 +33,5 @@ Point移行後のcommitを含むproject observe-velocityはok:false、event_payl
 追加継続テストは processNextNarration → TransportAwarenessNarrationProvider → transport double → publicationを実行し、旧指示除去・現行receipts契約・style/observer/user・保存入力/digest・phase receipt・公開本文を確認する。新規ファイルのみの検証追加で、製品実装変更はない。
 
 2026-10-06 09:47 JST追加検証: Node22 test:awareness 全279件PASS（追加統合テストを含む）、全workspace typecheck PASS。sealed全201件は先行app同一sourceのCIとローカル成功証拠を保持する。最終配備headは全必須CIで再確認する。
+
+追加CI37395861689は新規継続テストだけprologue/v1でidleを返し失敗した（他278件PASS）。調査でstatic provider importがテストenv設定前にDB/configをロードし、fixtureがinsertNewBattleだけでenqueueを行わずSQL UPDATEに依存していたことを確認した。ローカル残存fixtureが成功を支えていたため、先行279PASSを独立fixtureの証拠とは扱わない。providerをenv設定後のdynamic importへ変更し、configのDB隔離をassert、created/runtime初期化の成功をassert、明示enqueueNarrationに置き換え、SQL resetを除去した。修正後の空DB検証と毒入りambient DB設定の検証を実行し、CIで再確認する。RCA DSL auditはfatal/error/warning0。
