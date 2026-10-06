@@ -45,3 +45,15 @@ SDK報告totalを入力+出力へ読み替えず、そのまま合計する。�
 ## ローカル検査・独立レビュー
 
 Node22.22.3でbuild、lint（全workspace型検査・jscpd・lizard）、npm test合格。公式選択はactive36/provisional2/disabled207、実行201件成功。追加test:awarenessは324件中320成功・4nativePGを明示skip、失敗0。関連focused45件成功。独立レビューは現行責務・能力・予算・lock順序のINSIDE指摘0。nativePG実行成功はCIの残ゲートであり、ローカルskipを並行実証とは扱わない。
+
+## 統合・実PostgreSQLの検査
+
+[PR171](https://github.com/mako10k/kshiai/pull/171)はexact head 1f3ecd69adb4667c706f9f988f1e62f760881d81の必須4job成功（run37436038821）を確認してsquash統合。main aa1f5d75221bef546c7cd566fa4ba858ccb6e133のCI37436568532も必須4job成功。両方でPostgreSQL narrator raceがok28、SKIPなし。mainのawareness324件すべて成功・skip0。
+
+annotated rc17 object8608930c520ed04cd0b5ce10bdb19bc885ff4f1eとpeeled main SHAをremote照合。Stage37437242681を固定38/200・guarded/compact/none/current・character_create=falseで1回開始。まだStage結果および公開完走を確認していない。基準の公開API00181-wuwはtraffic100%。
+
+## rc17ステージング結果・公開切替の境界
+
+[Stage37437242681](https://github.com/mako10k/kshiai/actions/runs/37437242681)は全検査成功、retained artifactを取得。API00183-wey ReadyTrue、immutable image sha256:b65d083e0b1bcb76343c496d9f708def51edea5c9f56b70dde4065a3020d73d4、Worker4a34e357-c390-4ec1-9429-5b0452ce2fbc。認証・SSE・Tasks OIDC・R2・試合・accountingが成功。read-onlyの独立照合で試合btl_8d192f4dbb179ba9f82d91b1f6091e59はtick13正常terminal/incompleteReasonなし、60SDK全completed・outstanding0・SDK total412124、全15実況completed。
+
+[Promote37438626377](https://github.com/mako10k/kshiai/actions/runs/37438626377)を固定rc17/API/Worker/Stageで1回開始。GitHub productionはmako10kのレビュー待ちを確認。公開はまだrc16 API00181-wuw traffic100%。切替成功の独立readbackと新規公開Observeの全実況成功が残る。PERTは公開完走タスクを承認・クラウド待ちとしてsuspendし、構造・schedule both・nextすべてok/エラー0。旧trial保留は維持。

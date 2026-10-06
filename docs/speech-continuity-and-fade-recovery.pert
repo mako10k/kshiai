@@ -1107,3 +1107,16 @@ work_event awareness-public-completion-reservation-ci-wait-20261006:
   kind suspend
   occurred_at 2026-10-06T17:25:30+09:00
   reason "Reservation repair local checks and independent review passed; await required native PostgreSQL CI evidence"
+
+work_event awareness-public-completion-rc17-stage-readback-resume-20261006:
+  model 1
+  task awareness-public-completion
+  kind resume
+  occurred_at 2026-10-06T17:48:43+09:00
+
+work_event awareness-public-completion-rc17-promote-wait-20261006:
+  model 1
+  task awareness-public-completion
+  kind suspend
+  occurred_at 2026-10-06T17:49:14+09:00
+  reason "Exact rc17 Stage all gates passed; await protected production owner approval and official Promote execution"
