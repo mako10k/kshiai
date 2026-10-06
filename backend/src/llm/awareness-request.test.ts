@@ -61,6 +61,33 @@ describe("awareness request preparation", () => {
     }
     assert.throws(() => prepareAwarenessRequest({ role: "subconscious", input }, undefined, "awareness-prompt-v99"), /REVISION_UNSUPPORTED/);
   });
+  it("guides fresh conscious desire identities for both owners and frozen source ticks in every prompt revision", () => {
+    const prefixes = new Set<string>();
+    for (const side of ["a", "b"] as const) {
+      for (const sourceTick of [10, 11]) {
+        const input = AwarenessConsciousInputSchema.parse({ ...context, side, sourceTick,
+          perception: { ...perception(), observer: { side, self: "self" } },
+          feltProjection: "身構えたい", consciousState: { goal: "待つ", thought: "前の考え", updatedTick: sourceTick - 1 } });
+        const expected = prepareAwarenessRequest({ role: "conscious", input });
+        const prefix = `conscious.${side}.t${sourceTick}`;
+        prefixes.add(prefix);
+        assert.ok(expected.system.includes(`${prefix}.1、${prefix}.2`));
+        assert.ok(expected.system.includes(`役割conscious、本人side=${side}、凍結されたsourceTick=${sourceTick}`));
+        assert.ok(expected.system.includes(`startTickはこの入力のsourceTick=${sourceTick}`));
+        assert.match(expected.system, /bodyとvoiceを合わせて連番を進め/);
+        assert.match(expected.system, /固定の例示ID、受理済み思考や以前の返答に出た意欲IDを再利用しない/);
+        assert.match(expected.system, /返答時点の現在tickへ進めない/);
+        for (const revision of ["awareness-prompt-v1", "awareness-prompt-v2", "awareness-prompt-v3", "awareness-prompt-v4"]) {
+          assert.deepEqual(prepareAwarenessRequest({ role: "conscious", input }, undefined, revision), expected);
+        }
+        assert.deepEqual(prepareAwarenessRequest({ role: "conscious", input }), expected);
+        assert.equal(expected.options.maxCompletionTokens, 1500);
+        assert.deepEqual(expected.options.responseFormat, { type: "json_object" });
+      }
+    }
+    assert.equal(prefixes.size, 4);
+    assert.equal(prepareAwarenessRequest({ role: "subconscious", input: latentInput() }).system.includes("今回の新規意欲ID"), false);
+  });
   it("rejects observer mismatch before producing a request", () => {
     const input = latentInput();
     input.side = "b";

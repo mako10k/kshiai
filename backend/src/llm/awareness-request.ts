@@ -1,5 +1,5 @@
-import { CurrentAwarenessPromptRevision } from "@kshiai/shared";
 // R: Prepare the exact typed awareness prompt and generation options before dispatch admission.
+import { CurrentAwarenessPromptRevision } from "@kshiai/shared";
 import {
   AwarenessConsciousInputSchema, AwarenessLatentInputSchema, AwarenessDefaultPolicy, AwarenessPolicyV1Schema,
   type AwarenessConsciousInput, type AwarenessLatentInput, type AwarenessPolicyV1,
@@ -64,7 +64,13 @@ export function prepareAwarenessRequest(request: AwarenessRequestInput, policy: 
     { title: "知覚で使える参照と選択可能な行為", value: { facts: frame.facts, availableActions: frame.availableActions } },
   ]);
   const limits = bound.roles.conscious;
-  return { system: system("conscious", CONSCIOUS_PROMPT), user, options: {
+  const desireIdentityGuidance = [
+    `今回の新規意欲ID：役割conscious、本人side=${frame.side}、凍結されたsourceTick=${frame.sourceTick}、返答内の連番を含む新しいidを使う。`,
+    `例えばconscious.${frame.side}.t${frame.sourceTick}.1、conscious.${frame.side}.t${frame.sourceTick}.2。bodyとvoiceを合わせて連番を進め、同じ返答内でもidを重複させない。`,
+    "desire.voice.replyやdesire.body.waitのような固定の例示ID、受理済み思考や以前の返答に出た意欲IDを再利用しない。",
+    `startTickはこの入力のsourceTick=${frame.sourceTick}。返答時点の現在tickへ進めない。validUntilTickはstartTickから1〜3tick後。`,
+  ].join("\n");
+  return { system: `${system("conscious", CONSCIOUS_PROMPT)}\n\n${desireIdentityGuidance}`, user, options: {
     tier: "engine", timeoutMs: limits.deadlineMs, maxCompletionTokens: limits.outputTokens,
     label: "awareness-v5:conscious", responseFormat: { type: "json_object" },
   } };
