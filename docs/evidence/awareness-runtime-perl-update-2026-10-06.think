@@ -1,0 +1,12 @@
+evidence CI:
+  "PR158run37392123256job112039406796 build andcompiledmoduleimport succeeded. Trivy blockedruntimeimage:7fixedHIGH/CRITICAL findings inperl-base5.36.0-7+deb12u3 withfixedversion5.36.0-7+deb12u4. Prior main image scan passed; no claim of changed DB versus changedbase without independentdiff."
+evidence DEBIAN:
+  "Official Debian securitytrackerCVE2026-13221 listsbookworm-security5.36.0-7+deb12u4 fixed. Official security Packages.xz confirmsperl-base5.36.0-7+deb12u4 isavailable. Dockerfile runtimeaptupdate currentlyupgradesonlylibpcre2-8-0, leavingperl-baseinstalledversion frombaseimage."
+premise INFERENCE:
+  "Runtime retainsknown vulnerablebasepackage despite securityupdateavailability because selectedaptupgradesexcludeperl-base. Scanfailure isnot sourceTS/SSEfailure. Exact reason previouslyundetected isunknownbase/databasechanges, notproven."
+premise ALTERNATIVES:
+  "DisablingTrivy orignoringfixedfindings weakensrequiredgate. Rerunningunchangedimage doesnotcorrectobservedpackage. Upgradingonlyperl-base alongexistingPCREupgrade narrowsruntimechange andpreservesDebian12/Node22/topology."
+premise BOUNDARY:
+  "Ownerauthorizes deployandnormalcompletion. Patchruntimeonly, no livecontainer/cloudwrites; oneexecutorroot. Addfixedversionfloorcheck thenexistingactualimageimport andTrivyCI mustpass. LocalDockerdaemon unavailable, reportthatlimitation."
+decision PATCH based_on CI, DEBIAN, INFERENCE, ALTERNATIVES, BOUNDARY:
+  "Addperl-basetoexistingruntimeapt--only-upgrade andverifydpkgversionatleast5.36.0-7+deb12u4. RecordexactCIdefect/evidence, retainsecuritygate, rebuildsamePR andverifyactualruntimeimage/import/scan. Normaldeploymentremainsgatedonallrequiredchecks."
