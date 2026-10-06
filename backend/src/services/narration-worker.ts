@@ -10,6 +10,7 @@ import {
 } from "@kshiai/shared";
 import { ZodError } from "zod";
 import { query, withTransaction, type DatabaseConnection } from "../db.js";
+import { appendNarrationEvent, type AppendNarrationEventInput } from "./narration-event-storage.js";
 import { newId } from "../id.js";
 import type { LlmProvider } from "../llm/types.js";
 import {
@@ -72,15 +73,7 @@ type JudgmentNarrationSource = {
   styleName?: unknown;
 };
 
-type NarrationPublicEventPayload = {
-  turnReceiptId: string;
-  narrationSequence: number;
-  phase: EntryRow["phase"];
-  combatTurn: number | null;
-  status: EntryRow["status"];
-  narrative?: NarrativeBlock;
-  fallbackReason?: string;
-};
+type NarrationPublicEventPayload = AppendNarrationEventInput["payload"];
 
 export type NarrationGenerationResult = {
   narrative: NarrativeBlock;
@@ -205,19 +198,6 @@ function json(value: unknown): string {
   return JSON.stringify(value);
 }
 
-async function nextEventSequence(
-  connection: DatabaseConnection,
-  battleId: string,
-): Promise<number> {
-  const result = await connection.query<{ next_sequence: number }>(
-    `SELECT COALESCE(MAX(event_sequence), 0) + 1 AS next_sequence
-       FROM battle_narration_events
-      WHERE battle_id = $1`,
-    [battleId],
-  );
-  return Number(result.rows[0]?.next_sequence ?? 1);
-}
-
 async function appendPublicEvent(input: {
   connection: DatabaseConnection;
   battleId: string;
@@ -227,23 +207,7 @@ async function appendPublicEvent(input: {
   payload: NarrationPublicEventPayload;
   now: string;
 }): Promise<void> {
-  const sequence = await nextEventSequence(input.connection, input.battleId);
-  await input.connection.query(
-    `INSERT INTO battle_narration_events
-      (battle_id, event_sequence, event_id, receipt_id, narration_sequence,
-       kind, public_payload_json, created_at)
-     VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
-    [
-      input.battleId,
-      sequence,
-      `${input.battleId}:event:${sequence}`,
-      input.receiptId,
-      input.narrationSequence,
-      input.kind,
-      json(input.payload),
-      input.now,
-    ],
-  );
+  await appendNarrationEvent(input);
 }
 
 type EnqueueNarrationInput = {
