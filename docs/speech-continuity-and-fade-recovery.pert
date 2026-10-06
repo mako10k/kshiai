@@ -1120,3 +1120,16 @@ work_event awareness-public-completion-rc17-promote-wait-20261006:
   kind suspend
   occurred_at 2026-10-06T17:49:14+09:00
   reason "Exact rc17 Stage all gates passed; await protected production owner approval and official Promote execution"
+
+work_event awareness-public-completion-rc17-public-readback-resume-20261006:
+  model 1
+  task awareness-public-completion
+  kind resume
+  occurred_at 2026-10-06T17:52:34+09:00
+
+work_event awareness-public-completion-rc17-observe-wait-20261006:
+  model 1
+  task awareness-public-completion
+  kind suspend
+  occurred_at 2026-10-06T17:53:04+09:00
+  reason "Public Promote and independent traffic/health passed; await protected Observe approval/execution"

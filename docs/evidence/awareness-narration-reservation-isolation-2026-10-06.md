@@ -57,3 +57,9 @@ annotated rc17 object8608930c520ed04cd0b5ce10bdb19bc885ff4f1eとpeeled main SHA�
 [Stage37437242681](https://github.com/mako10k/kshiai/actions/runs/37437242681)は全検査成功、retained artifactを取得。API00183-wey ReadyTrue、immutable image sha256:b65d083e0b1bcb76343c496d9f708def51edea5c9f56b70dde4065a3020d73d4、Worker4a34e357-c390-4ec1-9429-5b0452ce2fbc。認証・SSE・Tasks OIDC・R2・試合・accountingが成功。read-onlyの独立照合で試合btl_8d192f4dbb179ba9f82d91b1f6091e59はtick13正常terminal/incompleteReasonなし、60SDK全completed・outstanding0・SDK total412124、全15実況completed。
 
 [Promote37438626377](https://github.com/mako10k/kshiai/actions/runs/37438626377)を固定rc17/API/Worker/Stageで1回開始。GitHub productionはmako10kのレビュー待ちを確認。公開はまだrc16 API00181-wuw traffic100%。切替成功の独立readbackと新規公開Observeの全実況成功が残る。PERTは公開完走タスクを承認・クラウド待ちとしてsuspendし、構造・schedule both・nextすべてok/エラー0。旧trial保留は維持。
+
+## rc17公開切替
+
+GitHub owner review後、[Promote37438626377](https://github.com/mako10k/kshiai/actions/runs/37438626377)は全検査成功。gcloudでAPI00183-wey traffic100%、公開/api/health oktrue・同revisionを独立照合。Workerは凍結版4a34e357-c390-4ec1-9429-5b0452ce2fbcを公式workflowで有効化。
+
+[公開Observe37439057058](https://github.com/mako10k/kshiai/actions/runs/37439057058)をrc17・expected00183-wey・38/200・compact/persisted_settingで1回開始し、別のGitHub production owner review待ち。公開配備成功と公開完走は区別する。PERT公開完走は外部待ちとしてsuspend。perttool Issue42はOPENを再照合。
