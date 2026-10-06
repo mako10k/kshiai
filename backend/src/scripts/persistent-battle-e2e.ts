@@ -6,7 +6,6 @@ import {
   BattleAssetManifestSchema,
   BattlePublicSchema,
   type BattleListItem,
-  type BattleAdvanceStreamEvent,
   type BattleNarrationSnapshot,
   type BattlePublic,
 } from "@kshiai/shared";
@@ -35,6 +34,9 @@ import {
   finalizeProviderOperationRun,
   readProviderOperationRun,
 } from "../llm/provider-accounting.js";
+import { advanceBattleWithBusyRetry, parseBattleAdvanceStream } from "./persistent-battle-e2e-advance.js";
+
+export { parseBattleAdvanceStream } from "./persistent-battle-e2e-advance.js";
 
 export {
   PROVIDER_OPERATION_LAYERS as OBSERVATION_PROVIDER_OPERATION_LAYERS,
@@ -387,23 +389,6 @@ async function ensurePersistentAccount(input: {
   };
 }
 
-export function parseBattleAdvanceStream(body: string): BattlePublic {
-  const events: BattleAdvanceStreamEvent[] = [];
-  for (const line of body.split(/\r?\n/)) {
-    if (!line.startsWith("data:")) continue;
-    const raw = line.slice("data:".length).trim();
-    if (!raw) continue;
-    events.push(JSON.parse(raw) as BattleAdvanceStreamEvent);
-  }
-  const failure = [...events].reverse().find((event) => event.type === "error");
-  if (failure?.type === "error") {
-    throw new Error(`Battle advance stream error: ${failure.message}`);
-  }
-  const done = [...events].reverse().find((event) => event.type === "done");
-  if (done?.type !== "done") throw new Error("Battle advance stream returned no done event");
-  return BattlePublicSchema.parse(done.battle);
-}
-
 async function advanceBattle(input: {
   apiBaseUrl: string;
   accessToken: string;
@@ -412,22 +397,20 @@ async function advanceBattle(input: {
   sequence: number;
 }): Promise<{ battle: BattlePublic; elapsedMs: number }> {
   const started = Date.now();
-  const response = await apiRequest({
-    apiBaseUrl: input.apiBaseUrl,
-    accessToken: input.accessToken,
-    path: `/api/battles/${input.battleId}/advance/stream`,
-    method: "POST",
-    idempotencyKey: `e2e-${input.runId}-advance-${input.sequence}`,
-    timeoutMs: 10 * 60_000,
+  const idempotencyKey = `e2e-${input.runId}-advance-${input.sequence}`;
+  const battle = await advanceBattleWithBusyRetry({
+    idempotencyKey,
+    request: ({ timeoutMs, idempotencyKey: requestKey }) => apiRequest({
+      apiBaseUrl: input.apiBaseUrl,
+      accessToken: input.accessToken,
+      path: `/api/battles/${input.battleId}/advance/stream`,
+      method: "POST",
+      idempotencyKey: requestKey,
+      timeoutMs,
+    }),
   });
-  if (!response.ok) {
-    throw new Error(`Battle advance failed: ${response.status}: ${await readError(response)}`);
-  }
-  if (!response.headers.get("content-type")?.startsWith("text/event-stream")) {
-    throw new Error("Battle advance returned another content type");
-  }
   return {
-    battle: parseBattleAdvanceStream(await response.text()),
+    battle,
     elapsedMs: Date.now() - started,
   };
 }
