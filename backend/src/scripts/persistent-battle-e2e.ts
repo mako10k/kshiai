@@ -35,6 +35,7 @@ import {
   readProviderOperationRun,
 } from "../llm/provider-accounting.js";
 import { advanceBattleWithBusyRetry, parseBattleAdvanceStream } from "./persistent-battle-e2e-advance.js";
+import { parseNormalObservationAdvances } from "./awareness-observation-advances.js";
 
 export { parseBattleAdvanceStream } from "./persistent-battle-e2e-advance.js";
 
@@ -686,11 +687,7 @@ async function main(): Promise<void> {
     throw new Error(`Backend health request failed: ${healthResponse.status}`);
   }
   assertObservedBackendIdentity(await healthResponse.json(), targetRevision);
-  const maxAdvances = Math.min(
-    30,
-    Math.max(1, Number(process.env.E2E_MAX_ADVANCES ?? 24)),
-  );
-  if (!Number.isInteger(maxAdvances)) throw new Error("E2E_MAX_ADVANCES must be an integer");
+  const maxAdvances = parseNormalObservationAdvances(process.env.E2E_MAX_ADVANCES);
   const projectedProviderOperations = {
     policyRevision: AwarenessNormalPolicy.revision,
     maximumPhysicalAttempts: AwarenessNormalPolicy.maxPhysicalAttempts,

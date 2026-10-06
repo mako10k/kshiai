@@ -1,3 +1,4 @@
+// R: Verify staging, promotion and observation workflows preserve their delivery contracts.
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
@@ -81,6 +82,8 @@ describe("persistent E2E workflow contract", () => {
     assert.match(observe, /E2E_RUN_ID=\$OBSERVATION_RUN_ID/);
     assert.match(observe, /E2E_EXPECTED_DIALOGUE_PROJECTION=\$EXPECTED_DIALOGUE_PROJECTION/);
     assert.match(observe, /E2E_EXPECTED_DIALOGUE_ACTIVATION_SOURCE=\$EXPECTED_DIALOGUE_ACTIVATION_SOURCE/);
+    assert.match(observe, /max_advances:[\s\S]*?default: "38"/);
+    assert.match(observe, /test "\$MAX_ADVANCES" -le 38/);
     assert.match(observe, /provider_operation_ceiling:[\s\S]*?default: "169"/);
     assert.match(observe, /cloud_run_job_exit_success/);
     assert.match(observe, /postgres\.balance_events:persistent_e2e_observation/);
@@ -92,7 +95,8 @@ describe("persistent E2E workflow contract", () => {
   it("requires exact Compact battle evidence before production promotion", () => {
     const stage = workflow("stage-release.yml");
     const promote = workflow("promote-release.yml");
-    assert.match(stage, /e2e_max_advances:[\s\S]*?default: "24"/);
+    assert.match(stage, /e2e_max_advances:[\s\S]*?default: "38"/);
+    assert.match(stage, /test "\$E2E_MAX_ADVANCES" -le 38/);
     assert.match(stage, /e2e_provider_operation_ceiling:[\s\S]*?default: "169"/);
     assert.match(stage, /alias="stage-\$\{GITHUB_RUN_ID\}-\$\{GITHUB_RUN_ATTEMPT\}"/);
     assert.match(stage, /Exercise the exact staged revision with a dialogue-bound battle/);

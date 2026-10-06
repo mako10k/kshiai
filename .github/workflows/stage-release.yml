@@ -35,7 +35,7 @@ on:
       e2e_max_advances:
         description: Maximum advances for the staged functional battle
         required: true
-        default: "24"
+        default: "38"
         type: string
       e2e_provider_operation_ceiling:
         description: Maximum provider operations for the staged functional battle
@@ -114,7 +114,7 @@ jobs:
           [[ "$E2E_MAX_ADVANCES" =~ ^[0-9]+$ ]]
           [[ "$CHARACTER_CREATE_SMOKE" =~ ^(false|true)$ ]]
           test "$E2E_MAX_ADVANCES" -ge 1
-          test "$E2E_MAX_ADVANCES" -le 30
+          test "$E2E_MAX_ADVANCES" -le 38
           [[ "$E2E_PROVIDER_OPERATION_CEILING" =~ ^[0-9]+$ ]]
           test "$E2E_PROVIDER_OPERATION_CEILING" -ge 1
           [[ "$PACING_POLICY" =~ ^(current|candidate-12-v2)$ ]]

@@ -1,3 +1,4 @@
+// R: Verify the ordinary battle observation client and its retained acceptance evidence.
 import assert from "node:assert/strict";
 import { after, describe, it } from "node:test";
 import { mkdtempSync, rmSync } from "node:fs";
@@ -30,6 +31,7 @@ const {
   verifyProviderOperationLedger,
 } = persistentE2eModule;
 const { advanceBattleWithBusyRetry } = await import("./persistent-battle-e2e-advance.js");
+const { NORMAL_OBSERVATION_ADVANCE_LIMIT, parseNormalObservationAdvances } = await import("./awareness-observation-advances.js");
 const { closeDatabase, query } = await import("../db.js");
 
 after(async () => {
@@ -242,6 +244,16 @@ describe("persistent battle E2E runner", () => {
       () => validateProductionApiUrl("https://other.example.test"),
       /not allowed/,
     );
+  });
+
+  it("derives the normal observation bound from the 36-tick policy", () => {
+    assert.equal(NORMAL_OBSERVATION_ADVANCE_LIMIT, 38);
+    assert.equal(parseNormalObservationAdvances(undefined), 38);
+    assert.equal(parseNormalObservationAdvances("1"), 1);
+    assert.equal(parseNormalObservationAdvances("38"), 38);
+    assert.throws(() => parseNormalObservationAdvances("39"), /1 through 38/);
+    assert.throws(() => parseNormalObservationAdvances("0"), /1 through 38/);
+    assert.throws(() => parseNormalObservationAdvances("not-a-number"), /1 through 38/);
   });
 
   it("takes the authoritative done battle from an SSE response", () => {
