@@ -195,7 +195,7 @@ task awareness-prompt-repair AWARENESS_CONNECTED -> AWARENESS_VERIFIED:
 task awareness-public-deploy AWARENESS_VERIFIED -> AWARENESS_PUBLIC_DEPLOYED:
   title "Integrate scoped source and execute official staging and public promotion"
   duration 0.5p
-  status active
+  status done
   requires:
     DEV 1
   source "docs/battle-awareness-prompt-repair-release-2026-10-05.md"
@@ -203,7 +203,7 @@ task awareness-public-deploy AWARENESS_VERIFIED -> AWARENESS_PUBLIC_DEPLOYED:
 task awareness-public-completion AWARENESS_PUBLIC_DEPLOYED -> AWARENESS_PUBLIC_COMPLETED:
   title "Verify a fresh public battle finishes with narration and actual token accounting"
   duration 0.5p
-  status planned
+  status suspended
   requires:
     DEV 1
   source "docs/adr/0056-latest-prompt-contract-until-completion.md"
@@ -1022,3 +1022,88 @@ work_event awareness-public-deploy-r2-pr-preparation-resume-20261006:
   task awareness-public-deploy
   kind resume
   occurred_at 2026-10-06T15:46:20+09:00
+
+work_event awareness-public-deploy-r2-pr-ci-wait-20261006:
+  model 1
+  task awareness-public-deploy
+  kind suspend
+  occurred_at 2026-10-06T15:48:18+09:00
+  reason "PR170 frozen repair head pushed; waiting exact required CI/nativePG and startup regression proofs"
+
+work_event awareness-public-deploy-r2-pr-integration-resume-20261006:
+  model 1
+  task awareness-public-deploy
+  kind resume
+  occurred_at 2026-10-06T16:05:15+09:00
+
+work_event awareness-public-deploy-r2-main-ci-wait-20261006:
+  model 1
+  task awareness-public-deploy
+  kind suspend
+  occurred_at 2026-10-06T16:05:16+09:00
+  reason "PR170 merged876a6d6 exactCI4/nativePG/startupregressions pass; mainCIwait"
+
+work_event awareness-public-deploy-rc16-preparation-resume-20261006:
+  model 1
+  task awareness-public-deploy
+  kind resume
+  occurred_at 2026-10-06T16:09:28+09:00
+
+work_event awareness-public-deploy-rc16-stage-wait-20261006:
+  model 1
+  task awareness-public-deploy
+  kind suspend
+  occurred_at 2026-10-06T16:09:42+09:00
+  reason "OfficialStage37427930873 rc16 dispatched once, waitcloud/modeltest; no public promotion"
+
+work_event awareness-public-deploy-rc16-promote-preparation-resume-20261006:
+  model 1
+  task awareness-public-deploy
+  kind resume
+  occurred_at 2026-10-06T16:23:11+09:00
+
+work_event awareness-public-deploy-rc16-promote-wait-20261006:
+  model 1
+  task awareness-public-deploy
+  kind suspend
+  occurred_at 2026-10-06T16:23:39+09:00
+  reason "OfficialPromote37429345297 frozen successfulStageAPIWorker dispatchedonce; waiting controlledtransition/readback"
+
+work_event awareness-public-deploy-public-readback-resume-20261006:
+  model 1
+  task awareness-public-deploy
+  kind resume
+  occurred_at 2026-10-06T16:49:37+09:00
+
+work_event awareness-public-deploy-public-readback-finish-20261006:
+  model 1
+  task awareness-public-deploy
+  kind finish
+  occurred_at 2026-10-06T16:49:39+09:00
+
+work_event awareness-public-completion-rc16-start-20261006:
+  model 1
+  task awareness-public-completion
+  kind start
+  occurred_at 2026-10-06T16:50:10+09:00
+  planned_value 0.5p
+
+work_event awareness-public-completion-rc16-observe-wait-20261006:
+  model 1
+  task awareness-public-completion
+  kind suspend
+  occurred_at 2026-10-06T16:50:30+09:00
+  reason "OfficialObserve37432156311 dispatchedonce; cloud/modelwait beforepublicbattleproof"
+
+work_event awareness-public-completion-reservation-repair-resume-20261006:
+  model 1
+  task awareness-public-completion
+  kind resume
+  occurred_at 2026-10-06T17:15:38+09:00
+
+work_event awareness-public-completion-reservation-ci-wait-20261006:
+  model 1
+  task awareness-public-completion
+  kind suspend
+  occurred_at 2026-10-06T17:25:30+09:00
+  reason "Reservation repair local checks and independent review passed; await required native PostgreSQL CI evidence"
