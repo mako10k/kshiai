@@ -606,3 +606,16 @@ work_event WE-eb0a57e4a2db12e8433ed57fffbb87e76f0a60d56525123171e881c8bfe769a5:
   task awareness-public-deploy
   kind resume
   occurred_at 2026-10-06T10:14:01+09:00
+
+work_event awareness-public-deploy-pg-ci-wait-20261006:
+  model 1
+  task awareness-public-deploy
+  kind suspend
+  occurred_at 2026-10-06T10:29:42+09:00
+  reason "Waiting for PR160 exact source CI including native PostgreSQL initialization regression"
+
+work_event awareness-public-deploy-security-repair-20261006:
+  model 1
+  task awareness-public-deploy
+  kind resume
+  occurred_at 2026-10-06T10:31:44+09:00

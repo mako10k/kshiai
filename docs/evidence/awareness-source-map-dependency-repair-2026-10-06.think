@@ -1,0 +1,10 @@
+evidence OWNER:
+  "Owner authorized integrating checked source for official public deployment and completed battle; dependency security CI is a required release gate. Existing unrelated PR159 will not be merged or modified."
+evidence FAILURE:
+  "PR160 CI37399418192 security failed advisory1241209 for source-map-js1.2.1, high denial of service. Local npm audit reproduces exact advisory GHSA-68fv-2mgg-jv7q with affected versions below1.2.2."
+evidence PATCH:
+  "Existing Dependabot PR159 modifies only three package-lock fields for source-map-js1.2.1 to1.2.2 with registry URL and integrity; all four checks passed. No dependency range or package manifest changes."
+premise SCOPE:
+  "Apply inspected exact three-field lockfile update to current PR160 as necessary release gate correction; no audit exception, no publicbehavior or unrelated PR state change. npmci and audit verify actual installed artifact then build/fullchecks verify integration."
+decision UPDATE based_on OWNER, FAILURE, PATCH, SCOPE:
+  "Root applies the bounded source-map-js lockfile patch, installs from lockfile and verifies audit plus build; commit scoped evidence and current PERT actuals, push exact PR160 source once, await all required CI before integration."
