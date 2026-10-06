@@ -808,3 +808,42 @@ work_event awareness-public-deploy-narration-structured-ci-wait-20261006:
   kind suspend
   occurred_at 2026-10-06T13:22:35+09:00
   reason "Wait for strict narration response schema required CI"
+
+work_event awareness-public-deploy-structured-pr-integration-resume-20261006:
+  model 1
+  task awareness-public-deploy
+  kind resume
+  occurred_at 2026-10-06T13:26:59+09:00
+
+work_event awareness-public-deploy-structured-main-ci-wait-20261006:
+  model 1
+  task awareness-public-deploy
+  kind suspend
+  occurred_at 2026-10-06T13:27:20+09:00
+  reason "Wait for required exact main CI after strict narration integration"
+
+work_event awareness-public-deploy-rc11-preparation-resume-20261006:
+  model 1
+  task awareness-public-deploy
+  kind resume
+  occurred_at 2026-10-06T13:32:10+09:00
+
+work_event awareness-public-deploy-rc11-stage-wait-20261006:
+  model 1
+  task awareness-public-deploy
+  kind suspend
+  occurred_at 2026-10-06T13:32:36+09:00
+  reason "Exact rc11 Stage 37414189824 external execution wait"
+
+work_event awareness-public-deploy-conscious-id-repair-resume-20261006:
+  model 1
+  task awareness-public-deploy
+  kind resume
+  occurred_at 2026-10-06T13:43:24+09:00
+
+work_event awareness-public-deploy-conscious-id-ci-wait-20261006:
+  model 1
+  task awareness-public-deploy
+  kind suspend
+  occurred_at 2026-10-06T13:47:02+09:00
+  reason "Scoped conscious ID guidance repair tested and independently reviewed; exact PR CI external wait"
