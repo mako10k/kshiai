@@ -27,3 +27,19 @@ production/DBなしでR2 required-fieldまで到達、partial cutoverでproducti
 開始点はmerged PR169のfresh main f9d0462と同一treeを確認したcc304 worktree。branch preflightで未関係WIPを保持する理由を記録し、codex/r2-smoke-dependencyへ切替。既存WIPは今回変更・commit対象に含めない。
 
 全体build/lint成功、governed201成功、awareness320中317成功・localPG未設定3skip・失敗0。CIのnativePostgreSQLとproduction runner回帰実行を次gateとする。
+
+## CI・rc.16 Stage実測の追記
+
+[PR170](https://github.com/mako10k/kshiai/pull/170)はmain876a6d61ef4d457535efa36cc9d14f63f29c0c63へ統合。[PR CI37425693971](https://github.com/mako10k/kshiai/actions/runs/37425693971)・[main CI37427478910](https://github.com/mako10k/kshiai/actions/runs/37427478910)は必須4job成功、nativePostgreSQL採番並行検査ok27・skipなし、production R2 startup回帰ok106/107/108実行成功。
+
+[Stage37427930873](https://github.com/mako10k/kshiai/actions/runs/37427930873)は全step成功。R2認証情報・bucket一覧・公開媒体の検査も通過し、固定Stage証跡をartifactへ保存した。候補API kshiai-api-00181-wuw、Worker bfc7338f-041f-4787-97a5-bc03cd6b76f5、annotated tag v0.23.0-rc.16（tag object8b242d5d81f350c4ec3b2c0afa22a9c75d1bd550）、main876a6d6へ固定。独立gcloud readbackでReadyTrue・公開0%と従来speech-9ce565d100%を照合。image sha256:63d6b72c68ade15158d625cbc28fdeb0aa4b28c142b89b51d7cadf649c02d837。
+
+実試合btl_4c6d90596fb209f6d37a073402645f2cはruntime revision444、tick33 terminal、incompleteReasonなし。122SDK全件completed、physicalOutstanding0、total891,311。35実況receiptは全件completed、24completed batch、131deferralはhttp0。これによりR2 runner起動修復とStage全体gateは解消した。
+
+[Promote37429345297](https://github.com/mako10k/kshiai/actions/runs/37429345297)をsameTag/exact revision/Worker/StageRunで1回dispatch。GitHub production required reviewer mako10k、wait timer0による承認待ち。保護レビューは迂回せず、承認後にworkflow実行・独立公開readback・新規公開Observeへ進む。公開切替と公開完走はこの記録時点で未完了。
+
+## 公開配備の追記
+
+ownerのGitHub必須review承認後、[Promote37429345297](https://github.com/mako10k/kshiai/actions/runs/37429345297)は成功。Stageのsame revision kshiai-api-00181-wuw、same Worker bfc7338f-041f-4787-97a5-bc03cd6b76f5を公開。production health/auth検査合格、rollback不要。独立gcloudで00181-wuw100%traffic、公開https://kshiai.mk10.org/api/healthでok=true/revision一致を確認。PERT awareness-public-deployは正規finish、document check・両schedule分析・dag next正常。
+
+dag nextはawareness-public-completionをready/start推奨。正規start後、[Observe37432156311](https://github.com/mako10k/kshiai/actions/runs/37432156311)をsameTag/exact revision/38advance/200ceiling/compact/persisted_settingで1回dispatch。GitHub production reviewer mako10kの別承認待ちになり、待機時間を実作業から除くためtask suspend。公開配備済みの価値と、未達成の公開完走証明を区別する。

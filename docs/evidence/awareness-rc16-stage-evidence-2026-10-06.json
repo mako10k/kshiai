@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 1,
+  "stageRunId": "37427930873",
+  "stageRunAttempt": "1",
+  "releaseTag": "v0.23.0-rc.16",
+  "commitSha": "876a6d61ef4d457535efa36cc9d14f63f29c0c63",
+  "revision": "kshiai-api-00181-wuw",
+  "workerVersion": "bfc7338f-041f-4787-97a5-bc03cd6b76f5",
+  "dialogueProjection": "compact",
+  "dialogueActivationSource": "persisted_setting",
+  "observationExecution": "kshiai-persistent-e2e-zsdsw",
+  "characterCreateSmoke": false,
+  "characterCreateProviderAttemptCeiling": 30,
+  "characterGenerationReadProbe": "v2_v3_and_migration_resume",
+  "verification": "exact_revision_health_and_battle_receipt"
+}

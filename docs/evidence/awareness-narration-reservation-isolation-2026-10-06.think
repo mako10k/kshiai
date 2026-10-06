@@ -1,0 +1,14 @@
+evidence OWNER:
+  "Owner authorizes implementation repairs and public deployment plus one normalcomplete/allsuccessfulnarration/actualSDKtokens, SRP/types/loosecoupling. Accepted ADR0006 separatefenced canonical and narration workers, narrationdelayindependent canonicaladvance. ADR0054 preserves queue12,deadline,physical200/concurrent6 and noSDKretry."
+evidence OBSERVED:
+  "PublicObserve37432156311 battlef7ee5a0106e0950357e7f76f22038998 terminal32 reasonnull102SDKcompleted outstanding0 but8narrationreceiptscompleted andremainingfailed queue_capacity/propagated. Guardedreadonly metadata212abandonedbudget_lease_busy http0 from08:07:25 to08:10:11Z;4narrationSDK2.7-7.0s. Receipts9-11 claimed99times between08:08:29..08:10:11 before13pendingcapacityfailure. No longnarrationSDKneeded toproduce recordedwait."
+evidence SOURCE:
+  "advanceTurn withBattleLease wraps wholeLLMcallback; narratorreserve acquires samebattlelease onlytoreservebudget. BusydefersbeforeSDK. claimfailswhenqueued/generating>12. Existingaccounting/conscious completions mutate latest lockedruntime independently; execution update/reserve re-read/retryrevisionconflicts and reducers preservecurrentbudget."
+premise CAUSE:
+  "Observed prephysical leasebusy wait plus sourceexclusive enginelease dependency explain lackof narrationdispatch opportunities and queueoverflow. Exact historical microinterleavings notrecorded; no claimallotherload/slowproviderscannotoverflow. Defectproducingcoupling is shortnarratorreservation dependingon longworldexecutionlease."
+evidence REVIEW:
+  "Independentauthorityreview confirms narrow narration-only atomicbudgetreservation fits separatefencing and existingcontrolcontracts withoutownerpolicychange. Do notgeneralize unfencedreserve or removefencing. World/observerbackpressure orqueue/deadlineexpansion wouldneedupstreamdecision."
+premise DESIGN:
+  "New narration-specificrepository capability authorizedby current live narrationleaseowner/fence/expiry and generatingbatchattempt/receipt linkage. Lock latestruntime FORUPDATE first; applysharedexact reservationwindow/budget/duplicate validators and atomicreservation+batch generating/proof update. Preserveworldfencing_token/world/canonical, rejectstale/expired/duplicate/capacity/inactive, rollbackall. Noengineleaseacquire orHTTPretry. VerifyworldCASfreshreload preservesconcurrentreservation andbudget."
+decision REPAIR based_on OWNER, OBSERVED, SOURCE, CAUSE, REVIEW, DESIGN:
+  "Implementsmall typedSRP modules withsharedpurebudgetrules insteadofduplicatevalidators. SQLitebehavior plusnativePGconcurrentreservation/leasefence/CASpreservation/rollback tests, independentreview/buildlint/fullchecks. ExactPR/mainCI thennewimmutableStage/Promote/Observe sameacceptedgates. No retriesof failedbattle, policyrelax, queuegrowth, fabricatednarration, DBcredentialchanges ormanualrollback. Currentpubliccompletionnotachieved."

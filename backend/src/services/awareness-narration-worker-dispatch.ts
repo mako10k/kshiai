@@ -1,13 +1,11 @@
 // R: Admit and observe one physical narration dispatch while preserving late-completion accounting.
 import { type NarrativeBlock } from "@kshiai/shared";
-import { query } from "../db.js";
 import { withLlmUsageScope } from "../llm/llm-usage-context.js";
 import { LlmPhysicalCompletionError, withLlmPhysicalCompletion } from "../llm/llm-physical-completion.js";
 import { prepareAwarenessFrozenNarrationRequest, type AwarenessFrozenNarration, type AwarenessFrozenNarrationResult } from "../llm/awareness-frozen-narration.js";
 import { prepareObservedAwarenessDispatch, verifyAwarenessDispatchQuote } from "../llm/awareness-dispatch-admission.js";
 import { captureProviderHttpAttempts, withBattleProviderOperationContext } from "../llm/provider-accounting.js";
-import { getAwarenessRuntime, reserveAwarenessAttempt } from "../repositories/battle-awareness.js";
-import { acquireBattleLeaseFence, releaseBattleLease } from "./distributed-guard.js";
+import { reserveNarrationAttempt } from "../repositories/battle-awareness-narration-reservation.js";
 import type { AwarenessExecutionClock } from "./awareness-execution.js";
 import { closeReservation } from "./awareness-narration-worker-lifecycle.js";
 import { narrative } from "./awareness-narration-worker-material.js";
@@ -31,17 +29,12 @@ async function admitNarrationDispatch(input: AwarenessNarrationWorkerInput, sele
 }
 async function reserveNarrationDispatch(input: AwarenessNarrationWorkerInput, selected: Claimed, clock: AwarenessExecutionClock, admitted: Pick<Awaited<ReturnType<typeof admitNarrationDispatch>>, "proof" | "admission">, markReserved: () => void): Promise<void> {
   const { admission, proof } = admitted;
-  const reservationOwner = `${input.ownerId}:${selected.attemptId}`;
-  const battleFence = await acquireBattleLeaseFence(input.battleId, reservationOwner, new Date(clock.now()));
-  if (!battleFence) throw new Error("awareness_budget_lease_busy");
-  try {
-    const latest = await getAwarenessRuntime(input.battleId);
-    if (!latest) throw new Error("AWARENESS_RUNTIME_NOT_FOUND");
-    await reserveAwarenessAttempt({ battleId: input.battleId, expectedRevision: latest.revision, fence: battleFence, now: new Date(clock.now()).toISOString() }, { id: selected.attemptId, role: "narration", maximumUsd: proof.maximumChargeUsd });
-    markReserved();
-    await query(`UPDATE battle_awareness_narration_batches SET reservation_id=$2,request_digest=$3,pricing_revision=$4,maximum_usd=$5,status='generating',updated_at=$6
-      WHERE attempt_id=$1 AND fencing_token=$7`, [selected.attemptId,selected.attemptId,proof.requestDigest,selected.observed ? "unpriced" : admission?.pricingRevision ?? "unpriced",proof.maximumChargeUsd,new Date(clock.now()).toISOString(),selected.fence]);
-  } finally { await releaseBattleLease(input.battleId,reservationOwner); }
+  await reserveNarrationAttempt({ battleId: input.battleId, ownerId: input.ownerId,
+    fencingToken: selected.fence, attemptId: selected.attemptId,
+    receiptIds: selected.entries.map(item => item.entry.receipt_id), now: new Date(clock.now()).toISOString(),
+    requestDigest: proof.requestDigest, pricingRevision: selected.observed ? "unpriced" : admission?.pricingRevision ?? "unpriced",
+    maximumUsd: proof.maximumChargeUsd });
+  markReserved();
 }
 function observeLateNarrationCompletion(request: Promise<unknown>, input: AwarenessNarrationWorkerInput, selected: Claimed, clock: AwarenessExecutionClock): void {
   void request.then(async () => {
