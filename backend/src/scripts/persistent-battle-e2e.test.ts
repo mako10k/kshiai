@@ -29,6 +29,7 @@ const {
   validateProductionApiUrl,
   verifyProviderOperationLedger,
 } = persistentE2eModule;
+const { advanceBattleWithBusyRetry } = await import("./persistent-battle-e2e-advance.js");
 const { closeDatabase, query } = await import("../db.js");
 
 after(async () => {
@@ -301,5 +302,123 @@ describe("persistent battle E2E runner", () => {
       ),
       /BATTLE_BUSY/,
     );
+  });
+
+  it("retries only explicit SSE BATTLE_BUSY with the same idempotency key", async () => {
+    let calls = 0;
+    const keys: string[] = [];
+    const battle = await advanceBattleWithBusyRetry({
+      idempotencyKey: "same-key",
+      request: async ({ idempotencyKey }) => {
+        calls += 1;
+        keys.push(idempotencyKey);
+        return new Response(calls === 1
+          ? "data: {\"type\":\"error\",\"message\":\"BATTLE_BUSY\"}\n\n"
+          : "data: {\"type\":\"done\",\"battle\":{\"id\":\"btl-e2e\",\"status\":\"finished\",\"turn\":1,\"turnLimit\":20,\"sideA\":{\"characterId\":\"a\",\"displayName\":\"A\",\"canFight\":true},\"sideB\":{\"characterId\":\"b\",\"displayName\":\"B\",\"canFight\":false},\"policies\":[],\"policySummary\":\"\",\"opponentPolicySummary\":\"\",\"scene\":\"路地\",\"situationNotes\":\"\",\"log\":[],\"availableActions\":[],\"winnerSide\":\"a\",\"finishReason\":\"incapacitated\"}}\n\n", { headers: { "content-type": "text/event-stream" } });
+      },
+      now: (() => { let current = 0; return () => current; })(),
+      wait: async () => undefined,
+    });
+    assert.equal(calls, 2);
+    assert.deepEqual(keys, ["same-key", "same-key"]);
+    assert.equal(battle.id, "btl-e2e");
+  });
+
+  it("fails immediately for non-busy and ambiguous SSE outcomes", async () => {
+    let calls = 0;
+    await assert.rejects(() => advanceBattleWithBusyRetry({
+      idempotencyKey: "nonbusy",
+      request: async () => { calls += 1; return new Response("data: {\"type\":\"error\",\"message\":\"PROVIDER_FAILED\"}\n\n", { headers: { "content-type": "text/event-stream" } }); },
+      wait: async () => { throw new Error("must not wait"); },
+    }), /PROVIDER_FAILED/);
+    assert.equal(calls, 1);
+    await assert.rejects(() => advanceBattleWithBusyRetry({
+      idempotencyKey: "ambiguous",
+      request: async () => new Response("data: {\"type\":\"error\",\"message\":\"BATTLE_BUSY\"}\ndata: {\"type\":\"error\",\"message\":\"PROVIDER_FAILED\"}\n", { headers: { "content-type": "text/event-stream" } }),
+      wait: async () => { throw new Error("must not wait"); },
+    }), /Ambiguous/);
+    const doneEvent = `data: ${JSON.stringify({
+      type: "done",
+      battle: {
+        id: "btl-duplicate",
+        status: "finished",
+        turn: 1,
+        turnLimit: 20,
+        sideA: { characterId: "a", displayName: "A", canFight: true },
+        sideB: { characterId: "b", displayName: "B", canFight: false },
+        policies: [], policySummary: "", opponentPolicySummary: "", scene: "路地",
+        situationNotes: "", log: [], availableActions: [], winnerSide: "a", finishReason: "incapacitated",
+      },
+    })}`;
+    await assert.rejects(() => advanceBattleWithBusyRetry({
+      idempotencyKey: "duplicate-done",
+      request: async () => new Response(`${doneEvent}\n${doneEvent}\n`, { headers: { "content-type": "text/event-stream" } }),
+      wait: async () => { throw new Error("must not wait"); },
+    }), /Ambiguous/);
+    for (const body of [
+      `${doneEvent}\ndata: {"type":"error","message":"BATTLE_BUSY"}\n`,
+      'data: {"type":"error","message":5}\n',
+      'data: {broken\n',
+    ]) {
+      let attempts = 0;
+      await assert.rejects(() => advanceBattleWithBusyRetry({
+        idempotencyKey: "invalid-outcome",
+        request: async () => {
+          attempts += 1;
+          return new Response(body, { headers: { "content-type": "text/event-stream" } });
+        },
+        wait: async () => { throw new Error("must not wait"); },
+      }), /Ambiguous|Malformed/);
+      assert.equal(attempts, 1);
+    }
+  });
+
+  it("never retries a busy error after an execution progress event", async () => {
+    let calls = 0;
+    await assert.rejects(() => advanceBattleWithBusyRetry({
+      idempotencyKey: "progress-before-busy",
+      request: async () => {
+        calls += 1;
+        return new Response(
+          'data: {"type":"phase","phase":"resolving"}\ndata: {"type":"error","message":"BATTLE_BUSY"}\n',
+          { headers: { "content-type": "text/event-stream" } },
+        );
+      },
+      wait: async () => { throw new Error("must not wait"); },
+    }), /Ambiguous/);
+    assert.equal(calls, 1);
+  });
+
+  it("counts requests and waits against the absolute busy deadline", async () => {
+    let current = 0;
+    let calls = 0;
+    await assert.rejects(() => advanceBattleWithBusyRetry({
+      idempotencyKey: "deadline",
+      deadlineMs: 100,
+      now: () => current,
+      request: async ({ timeoutMs }) => { calls += 1; assert.equal(timeoutMs, 100); current += 60; return new Response("data: {\"type\":\"error\",\"message\":\"BATTLE_BUSY\"}\n\n", { headers: { "content-type": "text/event-stream" } }); },
+      wait: async (delayMs) => { current += delayMs; },
+    }), /deadline exceeded/);
+    assert.equal(calls, 1);
+    assert.equal(current, 100);
+  });
+
+  it("bounds persistent contention without advancing the request identity", async () => {
+    let calls = 0;
+    const delays: number[] = [];
+    await assert.rejects(() => advanceBattleWithBusyRetry({
+      idempotencyKey: "still-busy",
+      now: () => 0,
+      request: async ({ idempotencyKey }) => {
+        calls += 1;
+        assert.equal(idempotencyKey, "still-busy");
+        return new Response('data: {"type":"error","message":"BATTLE_BUSY"}\n', {
+          headers: { "content-type": "text/event-stream" },
+        });
+      },
+      wait: async (delay) => { delays.push(delay); },
+    }), /retry limit exceeded/);
+    assert.equal(calls, 9);
+    assert.deepEqual(delays, [250, 500, 1000, 2000, 2000, 2000, 2000, 2000]);
   });
 });

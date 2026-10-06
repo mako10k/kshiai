@@ -1,0 +1,12 @@
+evidence OWNER:
+  "Owner authorized official staging, deployment and public normal completion, retaining policy, usage, current pipeline and held old trial. Repair E2E concurrency handling within existing endpoint contracts, no provider retry or policy change."
+evidence OBSERVED:
+  "rc8 Stage37402978782 real battlebtl_acdb6ce74b33e047164811322847d3f2 advanced successfully then its next SSE returned BATTLE_BUSY at02:20:22. E2E exits1 on that explicit error and finalizes observation run, after which narration reports RUN_INACTIVE. Runtime remainsactive tick7 no incompleteReason. 16latent SDKresponses all stop,33 physical rows completed."
+evidence CODE:
+  "withBattleLease acquires before callback and throws BATTLE_BUSY before any battle advance work. Narration reservation briefly acquires same battle lease. SSE abandons idempotency when operationnotcompleted before sending error; nextrequest withsamekey can retry rejected admission. Existing E2E rejects every SSEerror rather than distinguish preexecution busy."
+premise CAUSE:
+  "Proven producing condition of observation failure: harness treats explicit preexecution lease contention as fatal; it then closes observation scope while asynchronous narration continues. Exact owner holding lease at failure time is not retained and remainsunknown. Narration reservation is plausible concurrentholder, not provenhistoricalidentity."
+premise ALTERNATIVES:
+  "Changing server lease sharing, retrying provider failures, increasingbudget, weakeningnormalcompletion or silently ignoring BATTLE_BUSY would change contracts. Waiting narration everytick changesexperimentpacing. Prefer bounded observation-only same-idempotency request retries exclusively for exact preexecution BATTLE_BUSY, keeping sequence fixed and same absolute600second requestdeadline; all other errors fail immediately."
+decision REPAIR based_on OWNER, OBSERVED, CODE, CAUSE, ALTERNATIVES:
+  "Separate typed SSE decoding and bounded busy-admission wait into single-responsibility module; no type escapes. Test busythenvaliddone with sameoperationkey, nonbusyerror immediatefailure, malformed/ambiguousdone+error failure, deadlineexhaustion, unchangedphysicalproviderbudget. Keep server/API/models/policy/normalacceptance and oldtrial unchanged. Audit, implement on fresh verifiedmain branch preserving dirtyWIP, independently review, CI, then new immutableStagecandidate; rc8 notpromoted."
