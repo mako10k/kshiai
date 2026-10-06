@@ -1,0 +1,13 @@
+{
+  "runId": 37317011221,
+  "url": "https://github.com/mako10k/kshiai/actions/runs/37317011221",
+  "sourceCommit": "69e0eaf4f9777e01b48fa7926ab45e0d7ea3658b",
+  "releaseTag": "v0.23.0-rc.5",
+  "status": "completed",
+  "conclusion": "failure",
+  "failedStep": "Verify email auth mapping and SSE through staging",
+  "authExecution": "kshiai-auth-smoke-jwhv4",
+  "observedError": "Authenticated SSE smoke failed: 404: {\"error\":\"not_found\"}",
+  "promotion": "not_started",
+  "paidBattleStep": "skipped"
+}

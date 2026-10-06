@@ -1,4 +1,4 @@
-# R: Package the compiled API with the complete production workspace dependency layout.
+# R: Package the compiled API with production dependencies and patched operating-system libraries.
 FROM node:22-bookworm-slim AS dependencies
 
 WORKDIR /app
@@ -38,7 +38,8 @@ ENV NODE_ENV=production \
 
 WORKDIR /app
 RUN apt-get update \
-  && apt-get install -y --no-install-recommends --only-upgrade libpcre2-8-0 \
+  && apt-get install -y --no-install-recommends --only-upgrade libpcre2-8-0 perl-base \
+  && dpkg --compare-versions "$(dpkg-query -W -f='${Version}' perl-base)" ge 5.36.0-7+deb12u4 \
   && rm -rf /var/lib/apt/lists/*
 COPY --from=dependencies --chown=node:node /app/node_modules node_modules
 COPY --from=dependencies --chown=node:node /app/backend/node_modules backend/node_modules
