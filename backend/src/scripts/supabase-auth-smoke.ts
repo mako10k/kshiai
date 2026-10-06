@@ -30,6 +30,7 @@ import {
   loadCharacterSemanticMigrationWork,
 } from "../repositories/character-semantic-migration.js";
 import { buildImportedCharacterEnvelopeV2 } from "../services/character-authoring-service.js";
+import { smokeAuthenticatedSse } from "./authenticated-sse-smoke.js";
 import { smokeAuthenticatedReadSurface } from "./authenticated-read-surface-smoke.js";
 
 function required(name: string): string {
@@ -321,40 +322,6 @@ export async function smokeVersionedCharacterReads(input: {
   return { migrationAttemptId, v3GenerationId: v3.generationId };
 }
 
-async function smokeAuthenticatedSse(input: {
-  apiBaseUrl: string;
-  accessToken: string;
-  originSecret?: string;
-  marker: string;
-}): Promise<void> {
-  if (process.env.AUTH_SMOKE_SSE !== "1") return;
-  const streamResponse = await fetch(
-    `${input.apiBaseUrl}/api/battles/btl_auth_smoke_missing/advance/stream`,
-    {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${input.accessToken}`,
-        "Idempotency-Key": `auth-smoke-${input.marker}`,
-        ...(input.originSecret ? { "x-kshiai-origin": input.originSecret } : {}),
-      },
-      signal: AbortSignal.timeout(15_000),
-    },
-  );
-  if (!streamResponse.ok) {
-    const detail = (await streamResponse.text()).slice(0, 200);
-    throw new Error(`Authenticated SSE smoke failed: ${streamResponse.status}: ${detail}`);
-  }
-  if (!streamResponse.headers.get("content-type")?.startsWith("text/event-stream")) {
-    throw new Error("Authenticated SSE smoke returned another content type");
-  }
-  const streamBody = await streamResponse.text();
-  if (!streamBody.includes(": stream-open") ||
-    !streamBody.includes('"type":"error"') ||
-    !streamBody.includes("BATTLE_NOT_FOUND")) {
-    throw new Error("Authenticated SSE smoke returned an incomplete event stream");
-  }
-}
-
 function apiHeaders(input: {
   accessToken: string;
   originSecret?: string;
@@ -607,12 +574,15 @@ async function runAuthenticatedApiSmoke(input: {
     originSecret,
     fixtureCharacterId: input.resources.fixtureCharacterId,
   });
-  await smokeAuthenticatedSse({
-    apiBaseUrl: input.apiBaseUrl,
-    accessToken: input.accessToken,
-    originSecret,
-    marker: input.marker,
-  });
+  if (process.env.AUTH_SMOKE_SSE === "1") {
+    await smokeAuthenticatedSse({
+      apiBaseUrl: input.apiBaseUrl,
+      accessToken: input.accessToken,
+      originSecret,
+      ownerUserId: input.ownerUserId,
+      fixture: fixture.sheet,
+    });
+  }
 }
 
 async function main(): Promise<void> {

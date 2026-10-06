@@ -1,0 +1,18 @@
+evidence OWNER:
+  "Owner resumes the previously authorized latestprompt/publicdeployment/normalcompletion goal on2026-10-06. Internal repair and canonical tracking are within that scope."
+evidence CLOUD:
+  "rc5Stage37317011221 completedfailure atauthSSE. Jobkshiai-auth-smoke-jwhv4 logsAuthenticated SSE smoke failed404not_found. Prior retained generation fixture checks completed before this call."
+evidence SOURCE:
+  "supabase-auth-smoke sends missingbattle expecting200stream-open/errorBATTLE_NOT_FOUND. routes.ts2880 checks authenticated battle existence/access before openingSSE and returns404not_found for missingbattle. Finished existingbattle entersSSE thenadvanceTurn rejectsBATTLE_FINISHED before modeldispatch."
+premise CAUSE:
+  "The smoke fixture and assertion rely on an obsolete missingbattle streaming contract; current protectedroute precheck deterministically makes that expectation false. Do not remove accesschecks or accept404as successful SSE proof."
+premise OPTIONS:
+  "SkippingSSE losesrealtransport coverage. Routing missingbattle intoSSE weakensacceptedaccessboundary. A rununique owned terminalfixture validated bysharedBattleStateSchema can proveactualSSEopening/error through Worker withoutproviderwork, and cleanupspecificfixture/idempotency/lease entries afterwards."
+premise UNKNOWN:
+  "Terminalfixture routing and cleanup must be tested againstactualroutes before integration. SuccessfulSSEtransport doesnot prove normal realmodelcompletion or productiondelivery."
+decision REPAIR based_on CLOUD, SOURCE, CAUSE, OPTIONS, UNKNOWN:
+  "Implement separate single-responsibility authenticatedSSE smoke module usingisolated temporary terminalstate fromsharedconstructor andvalidatedrepositoryinsert. Preserve missingbattle404 and forbidden403 tests. Run actualHono routes withprovidercalltripwire, checkauthheaders forwarded, stream-open,errorBATTLE_FINISHED, fixture andguard cleanup. Keepnormalproductroute unchanged andpaidStagebattle mandatory. Rootonlyreleaseexecutor, newscopedPR/newrc6 afterrequiredCI."
+premise ACTUALS:
+  "Track this bounded smoke repair as awareness-auth-sse-repair from already completed AWARENESS_CONNECTED to existing AWARENESS_VERIFIED. Preserve suspended awareness-verify and both public tasks without rewriting milestones. Estimate0.5hour agent provisional; observed repair session begins2026-10-06T08:57:46+09:00. Commit planned task/start separately beforefinish to provide measurable baseline."
+decision RECORD based_on OWNER, ACTUALS:
+  "Use canonical PERTCLI preview/digestcheckedwrite for taskadd/start and measuredfinish only after offline testscomplete. Recheck document/dependency/resource schedules/next andobservevelocity. Do not claimheld milestone orpublicgoalcompleted."

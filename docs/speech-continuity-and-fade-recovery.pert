@@ -209,7 +209,7 @@ task awareness-public-completion AWARENESS_PUBLIC_DEPLOYED -> AWARENESS_PUBLIC_C
 task awareness-auth-sse-repair AWARENESS_CONNECTED -> AWARENESS_VERIFIED:
   title "Repair authenticated staging SSE fixture without provider work"
   duration 0.5h
-  status active
+  status done
   requires:
     DEV 1
   source "docs/evidence/awareness-auth-sse-rca-2026-10-06.md"
@@ -490,3 +490,10 @@ work_event WE-0ae3a7598c75b19f55c8dadca4e7cbbe3e9e6cdd8db2c44e77d9cb50a63b822e:
   kind start
   occurred_at 2026-10-06T08:57:46+09:00
   planned_value 0.5h
+
+work_event WE-ff7b2f6011944533ade641b3096f757e14733038ab6c09fc5ade4be7ce8c8d45:
+  model 1
+  task awareness-auth-sse-repair
+  kind finish
+  occurred_at 2026-10-06T09:04:25+09:00
+  effort 0.11ph
