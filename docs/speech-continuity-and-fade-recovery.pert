@@ -220,6 +220,7 @@ task awareness-current-verify AWARENESS_CONNECTED -> AWARENESS_VERIFIED:
   title "Verify current pipeline and protected continuation evidence for normal release"
   description "Compare AcceptedADR0051/0054/0056/0057 with actual current prompt/usage/narration/access/continuation regressions and all required CI. Public normal completion remains a later task. Exclude held cutover trial only, preserve historical reads and continuation obligations."
   duration 0.25p
+  status active
   requires:
     DEV 1
   source "docs/evidence/awareness-normal-release-plan-reconciliation-2026-10-06.md"
@@ -519,3 +520,10 @@ gate PUBLIC_DELIVERY_RESOLVED AWARENESS_PUBLIC_COMPLETED -> ALL_PLAN_WORK_RESOLV
 
 gate LEGACY_HOLD_RESOLVED OLD_CUTOVER_TRIAL_VERIFIED -> ALL_PLAN_WORK_RESOLVED:
   reason "Separate held obligation retained; never claimed complete by normal public deployment"
+
+work_event WE-6c45501c47154d068bd16b6bf63319c07c6df52adb247a22442784db2d0d7978:
+  model 1
+  task awareness-current-verify
+  kind start
+  occurred_at 2026-10-06T09:12:53+09:00
+  planned_value 0.25p
