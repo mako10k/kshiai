@@ -206,6 +206,14 @@ task awareness-public-completion AWARENESS_PUBLIC_DEPLOYED -> AWARENESS_PUBLIC_C
     DEV 1
   source "docs/adr/0056-latest-prompt-contract-until-completion.md"
 
+task awareness-auth-sse-repair AWARENESS_CONNECTED -> AWARENESS_VERIFIED:
+  title "Repair authenticated staging SSE fixture without provider work"
+  duration 0.5h
+  status active
+  requires:
+    DEV 1
+  source "docs/evidence/awareness-auth-sse-rca-2026-10-06.md"
+
 work_event WE-c0fdfbf654c97a31afb2cbde650c58056030ee2372d236ffee6835c10100d74f:
   model 1
   task policy-draft
@@ -475,3 +483,10 @@ work_event latest-contract-repair-finish-20261005:
   kind finish
   occurred_at 2026-10-05T21:28:00+09:00
   effort 0.5ph
+
+work_event WE-0ae3a7598c75b19f55c8dadca4e7cbbe3e9e6cdd8db2c44e77d9cb50a63b822e:
+  model 1
+  task awareness-auth-sse-repair
+  kind start
+  occurred_at 2026-10-06T08:57:46+09:00
+  planned_value 0.5h
