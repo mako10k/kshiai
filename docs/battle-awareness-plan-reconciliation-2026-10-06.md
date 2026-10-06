@@ -25,3 +25,5 @@ CLIでbatch候補をpreviewし、構文・DAGエラー0を確認済み。独立r
 ## 承認と適用
 
 所有者は2026-10-06に候補一式を承認した。CLI batchでscope分割をdigest照合・actor codex・accepted_by_owner userの下で適用し、公式migrate-unitで等価Point移行した。両操作のreadbackは成功、document/DAGエラー0、nextはawareness-current-verify。旧保留taskとイベントを保持している。Pointへ公式変換後はSSE修正の速度観測が利用可能になり、active399秒・planned0.5pから600p/133h（約4.51p/h）が得られた。単一の小規模な検査修正サンプルなので低確信度であり、配備・公開モデル待機の予測へそのまま適用しない。移行換算1p/hも実測速度とは表示しない。次の計測はcurrent-verifyとpublic-deployの境界。
+
+追加readback: 移行をcommitした後のobserve-velocityは、公式単位変換の既存event payload差と保留task再編をhistory conflictとして拒否した。上記の移行直後観測は現履歴の正常性や適用済み速度を示さない。計画のdocument/schedule/nextは成功を維持する。制限と保護履歴を保持する修復候補は current-verify の証拠資料に記録した。

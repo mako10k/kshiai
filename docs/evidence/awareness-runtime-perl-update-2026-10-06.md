@@ -7,3 +7,5 @@ PR158初回CI [37392123256](https://github.com/mako10k/kshiai/actions/runs/37392
 Dockerfile runtimeのapt upgrade対象は従来libpcre2だけで、perl-baseはベースイメージの導入版を保持していた。対象にperl-baseを加え、dpkgで修正版本以上を確認する。Node22/Debian12・workspace配置・非rootユーザー・起動コマンドは維持する。Trivy基準・severity・ignore policyは変更しない。以前のscanで未検出だった正確な差（baseとscanner DBのどちらが変わったか）は未確定。
 
 新しい実イメージbuild/import/scanのCI成功を完了証拠とする。ローカルDocker daemonは利用できず、ローカルで実イメージ起動済みとはしない。CLI llmthink auditはfatal/error/warning0。
+
+実イメージ検証のreadback: HEAD70619a85のCI37392808297 backend-image job112041633197はbuild/import/scanすべてsuccess（2026-10-06T00:14:25Z完了）。修正を含む実runtime imageで検査を通過した。
