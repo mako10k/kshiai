@@ -1,8 +1,9 @@
 // R: Validate immutable narration material and receipt-scoped results at the awareness worker boundary.
+import { z } from "zod";
 import { currentNarrationContentRules } from "./narration-prompt-contract.js";
 import { narrationReceiptContract } from "./narration-receipt-contract.js";
-import { z } from "zod";
-import { AwarenessDefaultPolicy, AwarenessPolicyV1Schema, type AwarenessPolicyV1, AwarenessNarrationReceiptOutputSchema, AwarenessFrozenNarrationSchema, type AwarenessFrozenNarration } from "@kshiai/shared";
+import { awarenessFrozenNarrationBatchSchema, awarenessFrozenNarrationResponseFormat } from "./awareness-narration-response-schema.js";
+import { AwarenessDefaultPolicy, AwarenessPolicyV1Schema, type AwarenessPolicyV1, AwarenessFrozenNarrationSchema, type AwarenessFrozenNarration } from "@kshiai/shared";
 import type { NarrationResult, AftermathNarrationResult, JudgmentNarrationResult } from "./types.js";
 import type { PreparedAwarenessRequest } from "./awareness-request.js";
 import { AwarenessNarratorDispatchContextSchema, type AwarenessNarratorDispatchContext } from "./awareness-narrator-context.js";
@@ -14,22 +15,6 @@ export type AwarenessFrozenNarrationResult =
   | { phase: "combat" | "prologue"; battleId: string; turnReceiptId: string; narration: NarrationResult }
   | { phase: "aftermath"; battleId: string; turnReceiptId: string; narration: AftermathNarrationResult }
   | { phase: "judgment"; battleId: string; turnReceiptId: string; narration: JudgmentNarrationResult };
-
-const identity = {
-  battleId: z.string().min(1), turnReceiptId: z.string().min(1), turn: z.number().int().nonnegative(),
-};
-const speechShape = {
-  speeches: z.array(AwarenessNarrationReceiptOutputSchema.shape.speeches.element.extend({ afterNarratorLine: z.number().int().min(-1).max(9) }).strict()),
-  recognitionUpdates: AwarenessNarrationReceiptOutputSchema.shape.recognitionUpdates,
-};
-const framing = { before: z.array(z.string().min(1)).max(3), after: z.array(z.string().min(1)).max(3) };
-const ReceiptSchema = z.discriminatedUnion("phase", [
-  z.object({ ...identity, phase: z.literal("combat"), narrator: AwarenessNarrationReceiptOutputSchema.shape.narrator, ...speechShape }).strict(),
-  z.object({ ...identity, phase: z.literal("prologue"), narrator: z.array(z.string().min(1)).min(4).max(8), ...speechShape }).strict(),
-  z.object({ ...identity, phase: z.literal("aftermath"), ...framing, ...speechShape }).strict(),
-  z.object({ ...identity, phase: z.literal("judgment"), before: framing.before.max(2), after: framing.after.max(2) }).strict(),
-]);
-const BatchSchema = z.object({ receipts: z.array(ReceiptSchema).min(1).max(3) }).strict();
 
 function frames(materials: readonly AwarenessFrozenNarration[]): AwarenessFrozenNarration[] {
   const captured = materials.map((material) => AwarenessFrozenNarrationSchema.parse(material));
@@ -60,13 +45,14 @@ export function prepareAwarenessFrozenNarrationRequest(materials: readonly Aware
     } }]),
     material.user,
   ].join("\n\n")).join("\n\n");
-  return { system, user, options: { tier: "fast", timeoutMs: deadline, maxCompletionTokens: limits.outputTokens, label: "awareness-v5:narration-frozen", responseFormat: { type: "json_object" } } };
+  return { system, user, options: { tier: "fast", timeoutMs: deadline, maxCompletionTokens: limits.outputTokens, label: "awareness-v5:narration-frozen", responseFormat: awarenessFrozenNarrationResponseFormat(captured[0]!.phase, captured.length) } };
 }
 
 export function validateAwarenessFrozenNarrationResults(materials: readonly AwarenessFrozenNarration[], raw: unknown): AwarenessFrozenNarrationResult[] {
   const captured = frames(materials);
-  const output = BatchSchema.parse(raw);
-  if (output.receipts.length !== captured.length) throw new Error("AWARENESS_NARRATION_RECEIPT_COVERAGE_MISMATCH");
+  const coverage = z.object({ receipts: z.array(z.unknown()) }).passthrough().parse(raw);
+  if (coverage.receipts.length !== captured.length) throw new Error("AWARENESS_NARRATION_RECEIPT_COVERAGE_MISMATCH");
+  const output = awarenessFrozenNarrationBatchSchema(captured[0]!.phase, captured.length).parse(raw);
   return output.receipts.map((result, index) => {
     const material = captured[index]!;
     if (result.battleId !== material.battleId || result.turnReceiptId !== material.turnReceiptId || result.turn !== material.turn || result.phase !== material.phase) throw new Error("AWARENESS_NARRATION_RECEIPT_IDENTITY_MISMATCH");

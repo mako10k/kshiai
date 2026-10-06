@@ -5,6 +5,10 @@ import { join } from "node:path";
 import assert from "node:assert/strict";
 import { after, describe, it } from "node:test";
 import { z } from "zod";
+import { AwarenessFrozenNarrationSchema } from "@kshiai/shared";
+import { prepareAwarenessFrozenNarrationRequest } from "./awareness-frozen-narration.js";
+import { verifyAwarenessDispatchQuote } from "./awareness-dispatch-admission.js";
+import { requestDigest } from "../services/distributed-guard.js";
 import { AwarenessDefaultPolicy } from "@kshiai/shared";
 import type { ChatOpts } from "./openai-compatible.js";
 import { withAwarenessDispatchContext, currentAwarenessDispatchContext, type AwarenessDispatchContext } from "./awareness-dispatch-context.js";
@@ -96,6 +100,46 @@ describe("awareness adjudication dispatch context", () => {
       const denied: AwarenessDispatchContext = { ...guard(), async run() { throw new Error("verified maximum charge unavailable"); } };
       await assert.rejects(withAwarenessDispatchContext(denied, () => provider().request()), /verified maximum charge unavailable/);
       assert.equal(sends, 0);
+    } finally { globalThis.fetch = previousFetch; }
+  });
+});
+
+describe("frozen narration SDK strict response format", () => {
+  it("quotes and sends the same strict schema unmodified in one physical attempt", async () => {
+    const source = AwarenessFrozenNarrationSchema.parse({ kind: "awareness-v5", phase: "combat", battleId: "battle", turnReceiptId: "receipt", turn: 1,
+      system: "確定資料から実況する", user: "白い姿が構えた", urgent: false, sourceSpeeches: [], recognitionRefs: [], judgmentVerdict: null });
+    const prepared = prepareAwarenessFrozenNarrationRequest([source, { ...source, turnReceiptId: "receipt2" }]);
+    const request = { provider: "xai", model: "grok-4.3", ...prepared };
+    let admissions = 0;
+    async function admittedSend(exactRequest: AwarenessPricedRequest) {
+      admissions++;
+      const proof = await verifyAwarenessDispatchQuote(exactRequest, { provider: "xai", model: "grok-4.3", async quote(exact) {
+        assert.deepEqual(exact, exactRequest);
+        return { provider: exact.provider, model: exact.model, requestDigest: requestDigest(exact), fullMessageTokens: 100,
+          outputTokenLimit: 1200, maximumChargeUsd: 0.001, verifiedFullPrompt: true, includesAllGeneratedTokens: true };
+      } }, AwarenessDefaultPolicy.roles.narration);
+      assert.equal(proof?.requestDigest, requestDigest(exactRequest));
+      if (!proof) throw new Error("test admission rejected");
+      await provider().requestJson(exactRequest.system, exactRequest.user, exactRequest.options);
+      return proof;
+    }
+    const previousFetch = globalThis.fetch;
+    const wire: Array<z.infer<typeof WireSchema>> = [];
+    globalThis.fetch = async (_url, init) => {
+      wire.push(WireSchema.parse(JSON.parse(String(init?.body))));
+      return new Response(JSON.stringify({ id: "test-narration", object: "chat.completion", created: 1, model: "grok-4.3",
+        choices: [{ index: 0, message: { role: "assistant", content: '{"receipts":[]}' }, finish_reason: "stop" }],
+        usage: { prompt_tokens: 100, completion_tokens: 10, total_tokens: 110 } }), { headers: { "content-type": "application/json" } });
+    };
+    try {
+      const proof = await admittedSend(request);
+      assert.equal(admissions, 1);
+      assert.equal(wire.length, 1);
+      assert.deepEqual(wire[0]?.response_format, prepared.options.responseFormat);
+      assert.equal(wire[0]?.messages[0]?.content, prepared.system);
+      assert.equal(wire[0]?.messages[1]?.content, prepared.user);
+      assert.equal(wire[0]?.model, "grok-4.3");
+      assert.notEqual(requestDigest({ ...request, options: { ...prepared.options, responseFormat: { type: "json_object" } } }), proof?.requestDigest);
     } finally { globalThis.fetch = previousFetch; }
   });
 });

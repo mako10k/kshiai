@@ -51,4 +51,16 @@ PI-01〜03の現行コード箇所: [旧combat](../backend/src/llm/openai-compat
 
 [構造化点検資料](evidence/awareness-prompt-inspection-2026-10-05.json) / [監査DSL](evidence/awareness-prompt-inspection-2026-10-05.think)。
 
+## 2026-10-06：実況の構造化出力を適用する限定設計
+
+rc.10の実試合は通常終了したが、Grokのcombatバッチで `receipts[1].narrator` が2件未満となり、実況公開条件を満たさなかった。件数指示と2件の例は実builderに既にある。全文生成内容を保持していないため、その生成理由は未知。件数違反が直接の不正条件であり、バッチ全体を拒否する検証は確定データを守る検出経路である。
+
+前記のstrict schemaの後続課題をこの修正で扱う。Accepted ADR0055/0056の同じ `awareness-output-v1`、phase別DTO、自然文入力、原文発声・receipt順序・identityの検証を保持し、V5実況の既存1回のSDK呼出しへstrict `json_schema`を送る。`json_object`をAccepted契約として固定する条項はないことを独立レビューで確認した。潜在・顕在・裁定、旧単一phase consumerの送信形式は変更しない。
+
+責務は、実況receiptのZod形状を唯一の実行時構造契約とし、provider用の生成制約をそこから導出する。現在phaseとbatch件数1〜3を限定し、combat2〜4/prologue4〜8の非空文、framing件数、発声・認知項目をそのまま表す。循環参照とtupleのitems配列を使わず、既存xAI adapterへtyped optionで渡す。JSON Schemaが意味的なsource coverageや順序まで保証すると扱わず、既存のサーバ検証を継続する。
+
+[xAI公式の構造化出力仕様](https://docs.x.ai/developers/model-capabilities/text/structured-outputs)で、非循環参照・anyOfと今回の小さい配列/文字列の制約の対応を確認した。全4phaseの生成schema、既存SDK実送信payload、予約digest、1回のみの物理呼出し・失敗会計をオフラインテストで照合する。モデルの実受理と正常完走は新しいimmutable Stageで確認する。schema緩和、行の捏造、追加repair/transport retry、期限・出力token上限・model変更を含まない。
+
+実装・互換性テスト・新Stageの検証結果は [rc.10後の修正証拠](evidence/awareness-narration-structured-output-repair-2026-10-06.md)に追記する。今回の送信制約は同じ出力契約の実装であり、保存済みdomain assetやprompt本文は書き換えない。
+
 点検task完了: 2026-10-05T11:36:52+00:00〜2026-10-05T11:43:33+00:00。rootの開始から完了まで0.111人時相当の経過区間をPERTへ記録した。補助エージェントの独立工数を計測した値ではなく合算していない。点検の残内部作業0時間。observe-velocityは新taskの履歴baseline不足で採用可能値なし。次の修正taskを開始する場合は編集実働とモデル待機を分けて計測する。

@@ -1,5 +1,8 @@
 // R: Verify immutable narration material, phase contracts, and exact dispatch coverage.
 import { AwarenessLongMeasurementPolicy } from "@kshiai/shared";
+import { z } from "zod";
+import { awarenessFrozenNarrationBatchSchema } from "./awareness-narration-response-schema.js";
+import { assertXaiResponseSchema } from "./provider-response-schema.js";
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import { AwarenessFrozenNarrationSchema, prepareAwarenessFrozenNarrationRequest, validateAwarenessFrozenNarrationResults, type AwarenessFrozenNarration } from "./awareness-frozen-narration.js";
@@ -70,5 +73,44 @@ describe("awareness frozen narration", () => {
     assert.equal(frozen.turn, 0);
     assert.equal(frozen.user.includes("CANONICAL_SECRET"), false);
     assert.deepEqual(frozen.sourceSpeeches, [{ side: "a", text: "待て。" }]);
+  });
+});
+
+describe("frozen narration strict provider grammar", () => {
+  it("derives all phase limits and exact batch counts from the runtime receipt shape", () => {
+    const object = z.record(z.unknown());
+    for (const phase of ["combat", "prologue", "aftermath", "judgment"] as const) {
+      const count = phase === "combat" ? 3 : 1;
+      const sources = Array.from({ length: count }, (_, index) => ({ ...material(phase), turnReceiptId: `r${index}` }));
+      const format = prepareAwarenessFrozenNarrationRequest(sources).options.responseFormat;
+      assert.equal(format.type, "json_schema");
+      if (format.type !== "json_schema") throw new Error("missing strict schema");
+      assert.equal(format.json_schema.strict, true);
+      assertXaiResponseSchema(format.json_schema.schema);
+      const root = object.parse(format.json_schema.schema);
+      const receipts = object.parse(object.parse(root.properties).receipts);
+      assert.equal(receipts.minItems, count); assert.equal(receipts.maxItems, count);
+      assert.equal(Array.isArray(receipts.items), false);
+      const fields = object.parse(object.parse(receipts.items).properties);
+      if (phase === "combat" || phase === "prologue") {
+        const narrator = object.parse(fields.narrator);
+        assert.equal(narrator.minItems, phase === "combat" ? 2 : 4);
+        assert.equal(narrator.maxItems, phase === "combat" ? 4 : 8);
+      } else {
+        assert.equal(object.parse(fields.before).maxItems, phase === "judgment" ? 2 : 3);
+        assert.equal(object.parse(fields.after).maxItems, phase === "judgment" ? 2 : 3);
+      }
+      const schema = awarenessFrozenNarrationBatchSchema(phase, count);
+      const valid = { receipts: sources.map((source) => object.parse(raw(source).receipts[0])) };
+      assert.equal(schema.safeParse(valid).success, true);
+      assert.equal(schema.safeParse({ receipts: [] }).success, false);
+      assert.equal(schema.safeParse({ ...valid, unexpected: true }).success, false);
+      if (phase === "combat" || phase === "prologue") {
+        assert.equal(schema.safeParse({ receipts: valid.receipts.map((receipt) => ({ ...receipt, narrator: ["一行だけ。"] })) }).success, false);
+        assert.equal(schema.safeParse({ receipts: valid.receipts.map((receipt) => ({ ...receipt, narrator: Array.from({ length: phase === "combat" ? 5 : 9 }, () => "長すぎる。") })) }).success, false);
+      } else {
+        assert.equal(schema.safeParse({ receipts: valid.receipts.map((receipt) => ({ ...receipt, before: Array.from({ length: phase === "judgment" ? 3 : 4 }, () => "多すぎる。") })) }).success, false);
+      }
+    }
   });
 });
