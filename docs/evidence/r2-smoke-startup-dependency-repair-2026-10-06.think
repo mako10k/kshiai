@@ -1,0 +1,22 @@
+evidence OWNER:
+  "Owner authorizes official Stage Promote Observe existingpublic environment, sameacceptedfunctionalcontracts, economicalmodelcalls, SRP and loosecoupling. ExistingR2Stage reads credentials/listing/publicHEAD only with maxretries0; heldcutovertrial retainspermitcontrols."
+evidence OBSERVED:
+  "rc15 Stage37423808342 passed normalbattle/SDK/narration and auth/SSE/accounting/delivery. Failed finalR2 jobkshiai-r2-smoke-kn6rr atconfigimport DATABASE_URLrequired NODE_ENVproduction. Readonlyruntime34terminalreasonnull129completedSDK outstanding0 total937918 all36narrationcompleted. NoStageartifact orpublicpromotion."
+evidence SOURCE:
+  "r2-smoke.ts imports globalconfig,db,stage-smoke-manifest/stage-r2-smoke atmoduleload. Bothstageimports reachcutover DB/control. Ordinarybranch onlyS3list andpublicHEAD. Stagejob suppliesR2env/secrets,notDATABASE_URL. config validatesDB/auth/media/queueglobally beforemain."
+premise INFERENCE:
+  "Globalappconfiguration andcutover DB eagerimports make standaloneordinaryR2readinessdepend on unrelatedapplicationDB/auth. Exactobservedstartupfailure occursbeforeordinaryR2IO. This is defect-producing dependency; R2credential/objecthealth remainunknown untilrunnerexecutes."
+premise OPTIONS:
+  "InjectfullappDB/auth/queuecredentials expandsprivilege andSRPcoupling. NODE_ENVtest bypass weakensproductionchecks. Remove ordinaryR2check weakensreleasegate. Narrowdynamicimports onlyexplicitcutovermode preserveallcutovervalidatorsandpermitroute,ordinaryR2runneronlyR2dependency."
+decision REPAIR based_on OWNER, OBSERVED, SOURCE, INFERENCE, OPTIONS:
+  "SamecontractstandaloneR2runnerrepair; selectcutovermode ifeitherCUTOVER_ID orCUTOVER_ARTIFACT_ID present,thenexistingconfigvalidatespair/allcontrols andlazyimports stage/db. OrdinarybranchimportsonlyS3/env,requiredR2failuresnoDB. Preserveexactlist/publicHEADandmaxAttempts1; destroyclientfinally. SubprocessproductionwithoutDBmustreachR2requiredfielderror; cutovermodecontinuesfailclosedthroughoriginalconfig/permits. Independentreview andfocused/fullrequiredchecks thenexactPR/mainCI/newimmutableStage. No unchangedpaidrerun, DBsecretinjection, credentialrotation, manualgatebypass orpublicpromotion."
+evidence REVIEW:
+  "Independentauthorityreview confirms ordinaryworkflowR2onlycredentials/list/optionalpublicHEAD noDBobligation, samecontractrepairnonewADR/ownerdecision. Cutoverconfig238-251 pairlimits/exactobjectmanifest/headone/permit preserved. EitherID specifiedenterscutoverinit incompletepairfailsclosed."
+decision APPLY based_on OWNER, OBSERVED, SOURCE, INFERENCE, OPTIONS, REPAIR, REVIEW:
+  "Implementnarrowlazyimports andproductionstartupregressions, sameR2IOmaxAttempts1. WaitactualR2readbackbeforeclaimcredential/objecthealth; preserveallreleasegates."
+evidence LOCAL:
+  "Exactthreefiles r2-smoke.ts/startupmjs/package exactCItestentry. Subprocess3pass backendtypecheckpass diffcheckpass independentfinalreviewINSIDE0. NoexternalR2requests/testfakeactualclaim. Fullchecks pending, ordinaryR2health remainsunknown."
+evidence VERIFIED:
+  "Finalfullbuildlintpass governed201pass awareness320/317pass3localPGskip failed0. IndependentreviewINSIDE0 andstartupsubprocess3pass; explicitCItestentry ensuresproductionDBabsent/partialpair regressions execute."
+decision INTEGRATE based_on OWNER, REVIEW, APPLY, LOCAL, VERIFIED:
+  "Commitonlythree source/test/packagefiles, canonicalPERT, existingconvergenceevidenceappend andnewR2md/think. AuthorizedPR/mainexactrequiredCI/nativePG integration thennewimmutableStage and allretainedgates beforepromotion. PreserveunrelatedWIP andheldtrial."

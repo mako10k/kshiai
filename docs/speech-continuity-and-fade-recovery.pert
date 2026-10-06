@@ -970,3 +970,55 @@ work_event awareness-public-deploy-convergence-pr-preparation-resume-20261006:
   task awareness-public-deploy
   kind resume
   occurred_at 2026-10-06T15:17:44+09:00
+
+work_event awareness-public-deploy-convergence-pr-ci-wait-20261006:
+  model 1
+  task awareness-public-deploy
+  kind suspend
+  occurred_at 2026-10-06T15:18:06+09:00
+  reason "PR169 exact head2437b27 pushed; waiting four required CI jobs and native PostgreSQL proofs; no public promotion"
+
+work_event awareness-public-deploy-convergence-pr-integration-resume-20261006:
+  model 1
+  task awareness-public-deploy
+  kind resume
+  occurred_at 2026-10-06T15:23:11+09:00
+
+work_event awareness-public-deploy-convergence-main-ci-wait-20261006:
+  model 1
+  task awareness-public-deploy
+  kind suspend
+  occurred_at 2026-10-06T15:23:12+09:00
+  reason "PR169 merged f9d0462 and readback; waiting exact mainCI37423408541"
+
+work_event awareness-public-deploy-rc15-preparation-resume-20261006:
+  model 1
+  task awareness-public-deploy
+  kind resume
+  occurred_at 2026-10-06T15:27:13+09:00
+
+work_event awareness-public-deploy-rc15-stage-wait-20261006:
+  model 1
+  task awareness-public-deploy
+  kind suspend
+  occurred_at 2026-10-06T15:27:23+09:00
+  reason "Official rc15 Stage37423808342 dispatched once; waiting cloud and real model test, no public promotion"
+
+work_event awareness-public-deploy-r2-runner-repair-resume-20261006:
+  model 1
+  task awareness-public-deploy
+  kind resume
+  occurred_at 2026-10-06T15:42:16+09:00
+
+work_event awareness-public-deploy-r2-local-check-wait-20261006:
+  model 1
+  task awareness-public-deploy
+  kind suspend
+  occurred_at 2026-10-06T15:44:13+09:00
+  reason "R2 runner code/docs/review complete; waiting full local build lint and awareness checks"
+
+work_event awareness-public-deploy-r2-pr-preparation-resume-20261006:
+  model 1
+  task awareness-public-deploy
+  kind resume
+  occurred_at 2026-10-06T15:46:20+09:00
