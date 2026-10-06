@@ -4,7 +4,7 @@ import type { AwarenessFrozenNarrationResult } from "../llm/awareness-frozen-nar
 import { withTransaction, type DatabaseConnection } from "../db.js";
 import { getAwarenessRuntimeInTransaction } from "../repositories/battle-awareness.js";
 import { commitAwarenessNarratorRecognition } from "../repositories/battle-awareness-narrator.js";
-import { requireFence, failEntries } from "./awareness-narration-worker-lifecycle.js";
+import { requireFence, failEntries, requeueInputOutbox } from "./awareness-narration-worker-lifecycle.js";
 import type { NarrationDispatchOutcome } from "./awareness-narration-worker-dispatch.js";
 import type { Claimed, AwarenessNarrationWorkerResult, AwarenessNarrationWorkerInput, AwarenessNarrationWorkerLeasePort } from "./awareness-narration-worker-contract.js";
 async function deferClaimedBatch(connection: DatabaseConnection, input: AwarenessNarrationWorkerInput, ports: AwarenessNarrationWorkerLeasePort, selected: Claimed, finishedAt: string): Promise<void> {
@@ -12,8 +12,9 @@ async function deferClaimedBatch(connection: DatabaseConnection, input: Awarenes
   await connection.query("UPDATE battle_awareness_narration_batches SET status='deferred',updated_at=$2 WHERE attempt_id=$1",[selected.attemptId,finishedAt]);
   for (const item of selected.entries) {
     await connection.query("UPDATE battle_narration_entries SET status='queued',active_attempt_id=NULL,updated_at=$3 WHERE battle_id=$1 AND receipt_id=$2 AND active_attempt_id=$4",[input.battleId,item.entry.receipt_id,finishedAt,selected.attemptId]);
-    await connection.query("UPDATE battle_narration_outbox SET status='pending',dispatched_at=NULL WHERE battle_id=$1 AND receipt_id=$2",[input.battleId,item.entry.receipt_id]);
+    await connection.query("UPDATE battle_narration_outbox SET status='pending',dispatched_at=NULL,delivery_generation=delivery_generation+1 WHERE battle_id=$1 AND receipt_id=$2",[input.battleId,item.entry.receipt_id]);
   }
+  if (input.outboxId && !selected.entries.some((item)=>item.entry.receipt_id===input.receiptId)) await requeueInputOutbox(connection, input);
   await ports.release(connection,input,selected.fence);
 }
 function narrationPublicationCurrent(selected: Claimed, outcome: NarrationDispatchOutcome, latestRuntime: AwarenessPipelineState): boolean {
@@ -69,7 +70,7 @@ export async function publishNarrationBatch(input: AwarenessNarrationWorkerInput
     }
     await publishClaimedEntries(connection, input, ports, selected, { produced, results, finishedAt });
     await connection.query("UPDATE battle_awareness_narration_batches SET status='completed',updated_at=$2 WHERE attempt_id=$1",[selected.attemptId,finishedAt]);
-    if(input.outboxId && !selected.entries.some((item)=>item.entry.receipt_id===input.receiptId)) await connection.query("UPDATE battle_narration_outbox SET status='pending',dispatched_at=NULL WHERE outbox_id=$1 AND status='dispatched'",[input.outboxId]);
+    if(input.outboxId && !selected.entries.some((item)=>item.entry.receipt_id===input.receiptId)) await requeueInputOutbox(connection, input);
     await ports.release(connection,input,fence); return "completed";
   });
 }
