@@ -697,3 +697,42 @@ work_event awareness-public-deploy-rc8-busy-repair-resume-20261006:
   task awareness-public-deploy
   kind resume
   occurred_at 2026-10-06T11:22:45+09:00
+
+work_event awareness-public-deploy-busy-ci-wait-20261006:
+  model 1
+  task awareness-public-deploy
+  kind suspend
+  occurred_at 2026-10-06T11:31:46+09:00
+  reason "PR162 mandatory CI wait"
+
+work_event awareness-public-deploy-busy-pr-integration-resume-20261006:
+  model 1
+  task awareness-public-deploy
+  kind resume
+  occurred_at 2026-10-06T11:35:33+09:00
+
+work_event awareness-public-deploy-busy-main-ci-wait-20261006:
+  model 1
+  task awareness-public-deploy
+  kind suspend
+  occurred_at 2026-10-06T11:35:48+09:00
+  reason "PR162 merged; mandatory exact-main CI wait"
+
+work_event awareness-public-deploy-rc9-preparation-resume-20261006:
+  model 1
+  task awareness-public-deploy
+  kind resume
+  occurred_at 2026-10-06T11:40:22+09:00
+
+work_event awareness-public-deploy-rc9-stage-wait-20261006:
+  model 1
+  task awareness-public-deploy
+  kind suspend
+  occurred_at 2026-10-06T11:41:02+09:00
+  reason "rc9 official Stage and actual battle wait"
+
+work_event awareness-public-deploy-rc9-advance-bound-repair-resume-20261006:
+  model 1
+  task awareness-public-deploy
+  kind resume
+  occurred_at 2026-10-06T11:54:08+09:00

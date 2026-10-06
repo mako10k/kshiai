@@ -1,0 +1,12 @@
+evidence OWNER:
+  "Owner authorized ordinary normal public battle completion through Stage/Promote/Observe, unchanged200physical/providerceiling and retainedheldoldtrial. AcceptedADR0017 rules4/5/8 require12publicturns, up to3beats each, HTTPadvanceonebeat. ADR0054 keeps36ticks/200attempts; ADR0057 requires normalboundterminalrule and distinguishes36ticks from24publicadvances without making24 an acceptance threshold."
+evidence OBSERVED:
+  "rc9 Stage37405299375 failed only at observation with Battle did not finish within24advances at02:50:54.822622Z. Runtimeactive tick23 incompleteReasonnull, publicturn8. All73SDKrowscompleted;48latentcallsstop. Currentdriver/workflow default24 and ceiling30 cannot cover fullaccepted36beatmatch."
+evidence CODE:
+  "Battle-service tick0prologue thencombatTick+1; engine normal turn_limit applies at lastbeat of publicturn12. Tick-limit protects requests beyond36 by incompletefailure; it is notnormaltermination. Oneprologue+36combat+oneaftermath fits38HTTPadvances. Provider budget usesnormalpolicy200independently of thisHTTPrequestcap."
+premise CAUSE:
+  "Observation stops before normal full-duration match can reach its accepted end because historical HTTPrequestbound24 is shorter than prologue+36beats. Unchanged-input reruns mayfinish early byKO but do notcorrect this producing mismatch. Unit-test escape alone is notrootcause. No normalcompletion guarantee follows from allowing38, because other model/budget/deadline/terminal checks remain."
+premise ALTERNATIVES:
+  "Raising onlyto30 remainsinsufficient. Loweringpublicturnlimit or enlargingnormal36/200policy changesownerbehavior. Forcingterminal or acceptingincomplete weakensnormalacceptance. Correctonlynormalobserver default/strictupperbound38, derivebackendlimitfromnormalmaxTicks+2, synchronizeStage/Observeinputs and regressiontestcontract; retainallnormalfailure/narration/usage/priceunknown/oldtrialgates."
+decision REPAIR based_on OWNER, OBSERVED, CODE, CAUSE, ALTERNATIVES:
+  "Independentauthorityreview confirms existing Accepted turn/beat and completioncontracts governthis implementationcorrection; no newwin/terminalrule. CreatefreshverifiedmainbranchpreservingWIP, single-responsibility observationlimitmodule, updateonlyactiveStage/Observe requestlimits and currenttests, leave historicalproviderprojection30function/169default andheldstage-v3 unchanged. CI then newimmutableStagecandidate with38advances/200operations. RecordexactfailureandactualSDKusage, measureinternalworkseparatelyfromwait."

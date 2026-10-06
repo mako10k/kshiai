@@ -1,0 +1,12 @@
+evidence OWNER:
+  "Owner authorized existingpublic kshiai.mk10.org deployment andcompletebattle throughofficial Stage/Promote/Observe; root soleexecutor. AcceptedADR0056 authorizeslatestpromptcorrection beforecompletion. Heldoldtrial unchanged."
+evidence SOURCE:
+  "PR162 merged tofd9753d3a382ce3b85bfd57990a6619025b0cf45. PR CI37404530291 andexactmainCI37404881924 allfourrequiredjobs succeeded. Observationdriver waits only single preexecution BATTLE_BUSY up to8retries samekey and original600seconddeadline. No provider retry or normalpolicy change. rc8 latent16calls allstop, harnessleaseconflict failure retained; normalcompletionnotyetprovenlive."
+evidence TARGET:
+  "APIkshiai-api projectkshiai regionasia-northeast1 publictraffic100percent remainskshiai-api-speech-9ce565d; Worker kshiai-web. rc9tagabsentlastremotecheck. Sourceversion0.23.0, datedchangelog unchanged. Frozenpacket /tmp/kshiai-rc9-delivery-packet.json."
+premise LIMIT:
+  "Createannotatedv0.23.0-rc.9 atfd9753d andpushonenewtag, dispatchStageoncefromsametag: narration_guarded, projectionoverride none, expectedcompact,24advances,200operations,charactercreatesmokefalse,currentpacing. TaggedAPI0percent,onefunctionalbattle; no retag/implicitrerun."
+premise VERIFY:
+  "Readbackremotetagobject/exactcommit/run. Failureretainsevidence andblocks promotion. PromoteonlysuccessfulStageexactartifact/frozenrevision/WorkerID, thenfreshpubliccompletebattle withnarration/SDKusage/outstandingzero. Recordcanonical lifecycle and separateinternal effort fromexternalwait."
+decision STAGE based_on OWNER, SOURCE, TARGET, LIMIT, VERIFY:
+  "Execute boundedrc9 tag and officialStage throughrepo secdat afterzero-error CLIaudit; preserve earlierfailedtags/publicbaseline and exactcurrentcompletion gates."
