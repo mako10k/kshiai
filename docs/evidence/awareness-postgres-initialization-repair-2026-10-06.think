@@ -1,0 +1,14 @@
+evidence OWNER:
+  "Owner authorized implementing typed SRP loose-coupled awareness pipeline, public delivery and real battle completion; existingAccepted contracts require supported SQLite/PostgreSQL storage and fenced writes. Heldoldcutover is excluded. Root remains externalreleaseexecutor."
+evidence STAGE:
+  "rc6 Stage37397433691 passedboot/auth/SSE/OIDC/provideraccounting. Grokcreationcompleted26010ms andbattle btl_82bc6bdedf39a77e9033f188c15ba50f created; firstadvance118ms failedinconsistenttypesparameter3. Publicpromotionnotperformed."
+evidence PG:
+  "LiveverifiedCA PostgreSQL transaction_read_only=on EXPLAIN withoutANALYZE originalinitialize reproduces42P08 bigintversusinteger. RuntimefenceINTEGER/updatedatTEXT, leasefenceBIGINT/expiresTIMESTAMPTZ. Separateleasebindings6and7planssuccessfully; existingUPDATEplanssuccessfully. SingleCAST exposesdateconflict; doubleCASTwithoutseparation producesdateoperatorerror. Allprobequeriesnonexecuting."
+premise CAUSE:
+  "InitializationINSERTSELECT reuses sameunknownPGparameters for distinct columncontexts; PostgreSQL rejects incompatibleinferredtypes before write/provideradvance. Thisisproducingcondition. SQLiteonlycoverage didnot modelnativePGinference; thatisdetectiongap, notproducingcause."
+premise FIX:
+  "Separateleaseparameterbindingswithsamevalidatednumber/ISOstring, preservefieldtypes/schema/guard/outcomes. New pureinitializationquerybuilder ownsportabletypedSQLbindings; repositorystillvalidatesruntime/fence beforeexecute. No migration, typeescape, model/deadline/retry/rulechange."
+premise VERIFY:
+  "Native PostgreSQL regression inisolatedCI loopback service usesactualbuilder andtypedlegacy/newDDL toprovevalid/currentlease insert and stale/wrongowner/expired rejection, immutableconflict. FourrequiredCIjobnames remainunchanged. LocalSQLite/domaintests and liveREADONLYEXPLAIN exactbuilder provebounds. DedicatedCItest neverusesproductionDATABASE_URL andguardshost."
+decision IMPLEMENT based_on OWNER, STAGE, PG, CAUSE, FIX, VERIFY:
+  "RootimplementsboundedDAL/builder fix,evidence/canonicalactuals; exclusiveagentwritesnativePGtest andCIservice only. Audit0errors thenedit. ScopednewPR, exactrequiredCI/main checks, newrc7immutabletag andoneStageafter sourcecorrection. Freezepacket anew beforeexternal writes; no reusingrc6tag orunchangedjob retry; publicpromote onlysuccessartifact thenfreshpubliccompletion."

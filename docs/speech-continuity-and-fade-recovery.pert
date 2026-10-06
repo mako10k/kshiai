@@ -567,3 +567,42 @@ work_event WE-eba12277eb4ef414da23cafad2e007a91686e825aa5baab8669c40169828c358:
   kind start
   occurred_at 2026-10-06T09:57:43+09:00
   planned_value 0.5p
+
+work_event WE-a7d6b2d27c5f0219d8c9d2b5dd92b4c7cf74f2c04b35c26f3f72ff637e63bb89:
+  model 1
+  task awareness-public-deploy
+  kind suspend
+  occurred_at 2026-10-06T09:58:17+09:00
+  reason "Waiting for exact final PR headcf5fd43 integration CI before merge and immutable release tag"
+
+work_event WE-f2cab857c5f8e8f57b6d2983836f10cc5ac33253f63e3c59c3ea53df6cb5c51d:
+  model 1
+  task awareness-public-deploy
+  kind resume
+  occurred_at 2026-10-06T10:01:45+09:00
+
+work_event WE-b5ccb3c188eec9b46a56b7796f8d199e03029b094a78e381ff6bd7f9fb91b1d1:
+  model 1
+  task awareness-public-deploy
+  kind suspend
+  occurred_at 2026-10-06T10:02:11+09:00
+  reason "Waiting for main SHA7b68493 required CI before immutable rc6 Stage"
+
+work_event WE-b83082ac7602f7f593ca886905b41002042401704a5be8b3a16bf9e618d790bc:
+  model 1
+  task awareness-public-deploy
+  kind resume
+  occurred_at 2026-10-06T10:06:00+09:00
+
+work_event WE-a5adfa544230be1e3dea0f39c109224e5e44c0039b5066498a89a2dd3ae34eb1:
+  model 1
+  task awareness-public-deploy
+  kind suspend
+  occurred_at 2026-10-06T10:06:32+09:00
+  reason "Waiting for official rc6 Stage37397433691 image/deployment/auth/paid normal battle artifact proof"
+
+work_event WE-eb0a57e4a2db12e8433ed57fffbb87e76f0a60d56525123171e881c8bfe769a5:
+  model 1
+  task awareness-public-deploy
+  kind resume
+  occurred_at 2026-10-06T10:14:01+09:00

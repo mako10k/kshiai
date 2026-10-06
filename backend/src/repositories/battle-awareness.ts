@@ -3,6 +3,7 @@ import { AwarenessPipelineStateSchema, type AwarenessPipelineState, type Awarene
 import { config } from "../config.js";
 import { query, withTransaction, type DatabaseConnection } from "../db.js";
 import type { BattleLeaseFence } from "../services/distributed-guard.js";
+import { awarenessRuntimeInitializationQuery } from "./battle-awareness-initialization-query.js";
 
 export type AwarenessRuntimeSnapshot = {
   battleId: string;
@@ -72,14 +73,14 @@ export async function initializeAwarenessRuntime(input: {
 }): Promise<boolean> {
   validateWrite({ ...input, expectedRevision: 0 });
   const runtime = AwarenessPipelineStateSchema.parse(input.runtime);
-  const result = await query(
-    `INSERT INTO battle_awareness_runtime (battle_id, revision, fencing_token, runtime_json, updated_at)
-     SELECT $1, 0, $3, $4, $5 WHERE EXISTS (
-       SELECT 1 FROM battle_leases WHERE battle_id = $1 AND owner_id = $2
-         AND fencing_token = $3 AND expires_at > $5
-     ) ON CONFLICT (battle_id) DO NOTHING RETURNING battle_id`,
-    [input.battleId, input.fence.ownerId, input.fence.fencingToken, JSON.stringify(runtime), input.now],
-  );
+  const statement = awarenessRuntimeInitializationQuery({
+    battleId: input.battleId,
+    ownerId: input.fence.ownerId,
+    fencingToken: input.fence.fencingToken,
+    runtimeJson: JSON.stringify(runtime),
+    now: input.now,
+  });
+  const result = await query(statement.text, statement.values);
   return result.rowCount === 1;
 }
 

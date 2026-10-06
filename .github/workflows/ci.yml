@@ -21,6 +21,22 @@ jobs:
     name: validate
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    env:
+      AWARENESS_POSTGRES_TEST_URL: postgres://postgres:postgres@127.0.0.1:5432/kshiai_awareness_test
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: kshiai_awareness_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d kshiai_awareness_test"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 12
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
