@@ -1,0 +1,12 @@
+evidence OWNER:
+  "Owner authorized latest prompt execution for existing and new battles until normal completion, economical latent judgment, unchanged public pipeline, actual usage and public complete battle. ADR0056 accepted."
+evidence OBSERVED:
+  "rc7 Stage37400614046 initialization and first advance succeeded. Battlebtl_bb7481f135d18c45541a25a3e3d856e7 reachedtick1 thenruntimeincomplete Provider returned invalid JSON. Exactrole log confirms Luna subconscious failure. SDK response completed600outputtokens with finishReasonlength, contentLength1524, elapsed6070ms. Otherlatent responses333/382/551tokens endedstop."
+evidence CONTRACT:
+  "Normal latent output cap600 is immutable policy; state schema requires updatedTick/sensations/emotions/tendencies/feltProjection and explicitdesires. Currentprompt asks short judgment but lacks whole-output size/compression guidance. Rejectedtext is deliberately only memory, notpersisted orlogged; exactmalformedcontent is unavailable."
+premise CAUSE:
+  "The observed producing condition is provider generation ending at output cap followed by JSON syntax failure. Exact rejectedtext and why generated detail exceededbudget remainunknown. Missing budget-aware prompt guidance is a plausible contribution, not independently proven rootcause. Thisisnot timeout and doesnotwarrant unboundedretry."
+premise ALTERNATIVES:
+  "Raising600cap changesacceptedpolicy/economics and needs upstreamownerdecision. Silentrepair/defaultstate/retry would changeacceptedfailurecontract. Prefer boundedprompt clarification and a schema-valid compact example while retainingallfields, state meanings, reflex/affective separation, relevance and learnedtendencies; no enforcedlistcaps or silent state dropping."
+decision PREPARE based_on OWNER, OBSERVED, CONTRACT, CAUSE, ALTERNATIVES:
+  "Audit and independently review concise latent-output guidance under existingADR0056; preserve models/policy/deadlines/retries/schema, bump explicitpromptrevision, test actualrequest andschema-validatedcompactexample, then newimmutablecandidate throughnormalCI/staging. Publicpromotionblockeduntilnormalcompletionproof."

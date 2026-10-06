@@ -114,7 +114,7 @@ describe("actual awareness battle creation and advancement", () => {
     assert.equal(bound.turnLimit, 12);
     assert.equal(bound.sceneBeat?.k, 3);
     assert.deepEqual(bound.assetManifest.awarenessPolicy, AwarenessNormalPolicy);
-    assert.equal(bound.assetManifest.promptRevision, "awareness-prompt-v3");
+    assert.equal(bound.assetManifest.promptRevision, "awareness-prompt-v4");
     assert.equal(bound.assetManifest.characters.a.generationId, a.generationId);
     assert.equal(bound.assetManifest.characters.b.generationId, b.generationId);
     assert.equal(bound.assetManifest.characters.a.contentDigest, a.contentDigest);

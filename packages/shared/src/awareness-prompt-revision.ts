@@ -5,8 +5,9 @@ export const AwarenessPromptRevisionSchema = z.enum([
   "awareness-prompt-v1",
   "awareness-prompt-v2",
   "awareness-prompt-v3",
+  "awareness-prompt-v4",
 ]);
 export type AwarenessPromptRevision = z.infer<typeof AwarenessPromptRevisionSchema>;
 
 /** Effective execution identity until normal completion evidence authorizes freezing. */
-export const CurrentAwarenessPromptRevision = "awareness-prompt-v3" satisfies AwarenessPromptRevision;
+export const CurrentAwarenessPromptRevision = "awareness-prompt-v4" satisfies AwarenessPromptRevision;

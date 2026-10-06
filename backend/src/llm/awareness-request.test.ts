@@ -50,7 +50,7 @@ describe("awareness request preparation", () => {
     const conscious = AwarenessConsciousInputSchema.parse({ ...context, side: "a", sourceTick: 1, perception: perception(),
       feltProjection: "なんだか落ち着かない", consciousState: { goal: null, thought: "", updatedTick: null } });
     const currentThought = prepareAwarenessRequest({ role: "conscious", input: conscious });
-    for (const revision of ["awareness-prompt-v1", "awareness-prompt-v2", "awareness-prompt-v3"]) {
+    for (const revision of ["awareness-prompt-v1", "awareness-prompt-v2", "awareness-prompt-v3", "awareness-prompt-v4"]) {
       const historical = prepareAwarenessRequest({ role: "subconscious", input }, undefined, revision);
       assert.deepEqual(historical, current);
       assert.equal(historical.system.split(renderAwarenessOutputContract("subconscious")).length, 2);
