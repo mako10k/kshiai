@@ -1,0 +1,114 @@
+TAP version 13
+# Subtest: character revision scope evaluation
+    # Subtest: classifies the existing focused appearance revision as one cluster
+    ok 1 - classifies the existing focused appearance revision as one cluster
+      ---
+      duration_ms: 7.67869
+      type: 'test'
+      ...
+    # Subtest: preserves both parts of a controlled cross-cluster revision
+    ok 2 - preserves both parts of a controlled cross-cluster revision
+      ---
+      duration_ms: 1.578649
+      type: 'test'
+      ...
+    # Subtest: keeps materially different interpretations ambiguous
+    ok 3 - keeps materially different interpretations ambiguous
+      ---
+      duration_ms: 2.477448
+      type: 'test'
+      ...
+    # Subtest: rejects strict-schema violations and duplicate clusters
+    ok 4 - rejects strict-schema violations and duplicate clusters
+      ---
+      duration_ms: 1.358473
+      type: 'test'
+      ...
+    # Subtest: reports a scope that exceeds the trusted corpus label
+    ok 5 - reports a scope that exceeds the trusted corpus label
+      ---
+      duration_ms: 0.710411
+      type: 'test'
+      ...
+    # Subtest: rejects a single-cluster result that drops part of the trusted request
+    ok 6 - rejects a single-cluster result that drops part of the trusted request
+      ---
+      duration_ms: 0.492174
+      type: 'test'
+      ...
+    # Subtest: rejects evidence that is not quoted from the request
+    ok 7 - rejects evidence that is not quoted from the request
+      ---
+      duration_ms: 0.504003
+      type: 'test'
+      ...
+    # Subtest: grounds a lexical quote across Japanese decorative quotation marks
+    ok 8 - grounds a lexical quote across Japanese decorative quotation marks
+      ---
+      duration_ms: 0.560112
+      type: 'test'
+      ...
+    # Subtest: rejects certainty when the trusted corpus requires an owner choice
+    ok 9 - rejects certainty when the trusted corpus requires an owner choice
+      ---
+      duration_ms: 0.769902
+      type: 'test'
+      ...
+    # Subtest: rejects ambiguity when the trusted request has one safe scope
+    ok 10 - rejects ambiguity when the trusted request has one safe scope
+      ---
+      duration_ms: 0.857488
+      type: 'test'
+      ...
+    1..10
+ok 1 - character revision scope evaluation
+  ---
+  duration_ms: 19.727354
+  type: 'suite'
+  ...
+# Subtest: local character revision scope replay adapter
+    # Subtest: freezes a local strict-output request without credentials
+    ok 1 - freezes a local strict-output request without credentials
+      ---
+      duration_ms: 9.811579
+      type: 'test'
+      ...
+    # Subtest: changes only the selected system contract for the Japanese replay
+    ok 2 - changes only the selected system contract for the Japanese replay
+      ---
+      duration_ms: 3.80133
+      type: 'test'
+      ...
+    # Subtest: changes only the selected system contract for the disjoint few-shot replay
+    ok 3 - changes only the selected system contract for the disjoint few-shot replay
+      ---
+      duration_ms: 1.801739
+      type: 'test'
+      ...
+    # Subtest: performs exactly one request and decodes the strict result
+    ok 4 - performs exactly one request and decodes the strict result
+      ---
+      duration_ms: 43.572702
+      type: 'test'
+      ...
+    # Subtest: retains raw content and validation issues for an invalid structured result
+    ok 5 - retains raw content and validation issues for an invalid structured result
+      ---
+      duration_ms: 2.951044
+      type: 'test'
+      ...
+    1..5
+ok 2 - local character revision scope replay adapter
+  ---
+  duration_ms: 64.348214
+  type: 'suite'
+  ...
+1..2
+# tests 15
+# suites 2
+# pass 15
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 572.25547

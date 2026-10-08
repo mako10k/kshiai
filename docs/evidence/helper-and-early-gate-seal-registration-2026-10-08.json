@@ -1,0 +1,266 @@
+{
+  "entries": [
+    {
+      "ref": "all-tests-20261008/design-battle-presentation-and-stalemate-helpers",
+      "path": "docs/battle-helper-test-contract-review-2026-10-08.md",
+      "sha256": "6efbd79c29b2efd9a4ecfdf152d2795b353225a77d7861263a62f5be572b9746",
+      "sealId": "30f1664bcd24b801a9dbeaad1e249ba34530e553909ece60ef2a05a89dbd04fd",
+      "causeLinks": [
+        {
+          "target_seal": "203e66fc4e30772adab026012c67f1b1ac4ca86ad2ada11b501c639a27a19eac",
+          "previous_revision_seal_of_target_seal": [],
+          "messages": [
+            "Accepted F-BTL15/17/18/27/28/54 and F-UI05 existing helper scopes only. Four wholefiles retained; no candidate pacing/cooldown adoption or mandatory V5 fabricated speech."
+          ]
+        }
+      ],
+      "new": true,
+      "test": false
+    },
+    {
+      "ref": "all-tests-20261008/implementation-narration-composer-helper",
+      "path": "packages/shared/src/narration-composer.ts",
+      "sha256": "4aeef8061c04e35df573ed7304fc82cf3f78a724c3e704dee6eff22e805877c0",
+      "sealId": "b787d7131bdb2500f7e909fe2d5f3f658cc58d9963a36e2ebaa5ca64e24b8046",
+      "causeLinks": [
+        {
+          "target_seal": "30f1664bcd24b801a9dbeaad1e249ba34530e553909ece60ef2a05a89dbd04fd",
+          "previous_revision_seal_of_target_seal": [],
+          "messages": [
+            "Existing last-resort prose helper; action names, no raw engine summary/outcome dump or fabricated stock speech. Not complete V5 fallback wiring or arbitrary-view factual accuracy."
+          ]
+        }
+      ],
+      "new": true,
+      "test": false
+    },
+    {
+      "ref": "all-tests-20261008/implementation-narrative-helper",
+      "path": "packages/shared/src/narrative.ts",
+      "sha256": "7b88255c817402174376ef593212865c65a0dce73b690ccd0b8257d248ae0dde",
+      "sealId": "f33456cd7f41ae94985c4c9e6ef730b156bd2636b87b788353af1096b6065aba",
+      "causeLinks": [
+        {
+          "target_seal": "30f1664bcd24b801a9dbeaad1e249ba34530e553909ece60ef2a05a89dbd04fd",
+          "previous_revision_seal_of_target_seal": [],
+          "messages": [
+            "Existing display label, quiet reaction normalization and speech interleaving helper. Not canonical utterance authority or mandatory fabricated V5 speech; physical validation and ADR0056 boundaries remain."
+          ]
+        }
+      ],
+      "new": true,
+      "test": false
+    },
+    {
+      "ref": "all-tests-20261008/implementation-drama-helper",
+      "path": "packages/shared/src/drama.ts",
+      "sha256": "af9bb95300c749757255fdb01fe1ed1eb29a8dd07f3dc5e1afa0adf881fa01ec",
+      "sealId": "7aeb9024f5c50a2b417b0acb02ce7e92c27e3bba4cd6843f52ed985eff02db2d",
+      "causeLinks": [
+        {
+          "target_seal": "30f1664bcd24b801a9dbeaad1e249ba34530e553909ece60ef2a05a89dbd04fd",
+          "previous_revision_seal_of_target_seal": [],
+          "messages": [
+            "Existing action-signature parsing and private narrator progression hint for repeated/stuck versus ordinary patterns. Not mechanical policy, all state transitions, or live monotony quality."
+          ]
+        }
+      ],
+      "new": true,
+      "test": false
+    },
+    {
+      "ref": "all-tests-20261008/implementation-supervisor-helper",
+      "path": "packages/shared/src/supervisor.ts",
+      "sha256": "5fa44dd7e2982c0f489f311ce0fc1366c5bd30779258755517797377f11b80bc",
+      "sealId": "aca8bbd31833b827de022a45e9805bffcf8efe46c056464c18e7bf9bb96d04e9",
+      "causeLinks": [
+        {
+          "target_seal": "30f1664bcd24b801a9dbeaad1e249ba34530e553909ece60ef2a05a89dbd04fd",
+          "previous_revision_seal_of_target_seal": [],
+          "messages": [
+            "Existing two-quiet-turn happening gate, heavy-exchange/passive distinction and unlabelled event prose. Not complete quiet ratio boundaries, provider generation, symmetric effects or durable integration."
+          ]
+        }
+      ],
+      "new": true,
+      "test": false
+    },
+    {
+      "ref": "verification/narration-composer-helper-bounded-20261008",
+      "path": "packages/shared/src/narration-composer.test.ts",
+      "sha256": "8bee8d81b2c47a2d8fc7af79214ce4c6fe798635c065a31d134fcfbe0a308ea1",
+      "sealId": "f97587fa8a72adddf2aa299a4a089196420ca802255dfa78b9339bb7cf286560",
+      "causeLinks": [
+        {
+          "target_seal": "b787d7131bdb2500f7e909fe2d5f3f658cc58d9963a36e2ebaa5ca64e24b8046",
+          "previous_revision_seal_of_target_seal": [],
+          "messages": [
+            "Whole original cases/assertions unchanged. Existing last-resort prose helper; action names, no raw engine summary/outcome dump or fabricated stock speech. Not complete V5 fallback wiring or arbitrary-view factual accuracy."
+          ]
+        }
+      ],
+      "new": true,
+      "test": true
+    },
+    {
+      "ref": "verification/narrative-helper-bounded-20261008",
+      "path": "packages/shared/src/narrative.test.ts",
+      "sha256": "050922eeeabe4d5015c961683103452c3742111994bb0fbce1c4bbcf4dc85e9e",
+      "sealId": "2899bc4c911cfbfe741cc06083de92e8254e9765a9be96939330bda69492416b",
+      "causeLinks": [
+        {
+          "target_seal": "f33456cd7f41ae94985c4c9e6ef730b156bd2636b87b788353af1096b6065aba",
+          "previous_revision_seal_of_target_seal": [],
+          "messages": [
+            "Whole original cases/assertions unchanged. Existing display label, quiet reaction normalization and speech interleaving helper. Not canonical utterance authority or mandatory fabricated V5 speech; physical validation and ADR0056 boundaries remain."
+          ]
+        }
+      ],
+      "new": true,
+      "test": true
+    },
+    {
+      "ref": "verification/drama-helper-bounded-20261008",
+      "path": "packages/shared/src/drama.test.ts",
+      "sha256": "0612308966ab982f8f5937a5fb90161d997cab03250d9d4b62a4fb2e84942fdb",
+      "sealId": "ab1c401b20aa60c604fcaeb25318c06b5be2ba426944d4d629a6fadd8a60d242",
+      "causeLinks": [
+        {
+          "target_seal": "7aeb9024f5c50a2b417b0acb02ce7e92c27e3bba4cd6843f52ed985eff02db2d",
+          "previous_revision_seal_of_target_seal": [],
+          "messages": [
+            "Whole original cases/assertions unchanged. Existing action-signature parsing and private narrator progression hint for repeated/stuck versus ordinary patterns. Not mechanical policy, all state transitions, or live monotony quality."
+          ]
+        }
+      ],
+      "new": true,
+      "test": true
+    },
+    {
+      "ref": "verification/supervisor-helper-bounded-20261008",
+      "path": "packages/shared/src/supervisor.test.ts",
+      "sha256": "b473765c2b3863ac5656e2a7eea96323a126f911f68b4d93af6468e90219aacb",
+      "sealId": "19aefab08aafb331a4191980f3707c37ae4b312d3f76e6252e2b6be83089588d",
+      "causeLinks": [
+        {
+          "target_seal": "aca8bbd31833b827de022a45e9805bffcf8efe46c056464c18e7bf9bb96d04e9",
+          "previous_revision_seal_of_target_seal": [],
+          "messages": [
+            "Whole original cases/assertions unchanged. Existing two-quiet-turn happening gate, heavy-exchange/passive distinction and unlabelled event prose. Not complete quiet ratio boundaries, provider generation, symmetric effects or durable integration."
+          ]
+        }
+      ],
+      "new": true,
+      "test": true
+    },
+    {
+      "ref": "all-tests-20261008/design-early-unmapped-test-stop",
+      "path": "docs/test-authority-early-unsealed-design-2026-10-08.md",
+      "sha256": "9583438a20f6147689f4708d67441ea915a990726eb3fefafb4bc37cea2aacdb",
+      "sealId": "bf145a027ae0756c28f82bb6d6d7d11045516cb07c1816d9bb8da19df1a8ed0d",
+      "causeLinks": [
+        {
+          "target_seal": "ac14858b7b48b7a0857eba65a94a7659b11752383804a6aea41efc934518186a",
+          "previous_revision_seal_of_target_seal": [],
+          "messages": [
+            "Accepted0058 detection-time failure-certain stop before authority subprocesses; no-unmapped/list retain full source/Cause/stale/draft classification. No new success exception or fabricated eligibility counts."
+          ]
+        },
+        {
+          "target_seal": "cea40cbb3b12ac7d91040f1c9615cb9d8ed232fb47cd941d38d04bfdd544bc30",
+          "previous_revision_seal_of_target_seal": [],
+          "messages": [
+            "Accepted0058 detection-time failure-certain stop before authority subprocesses; no-unmapped/list retain full source/Cause/stale/draft classification. No new success exception or fabricated eligibility counts."
+          ]
+        }
+      ],
+      "new": true,
+      "test": false
+    },
+    {
+      "ref": "all-tests-20261007/implementation-test-gate",
+      "path": "scripts/test-authority.mjs",
+      "sha256": "969b5c17ca8467378cbc90c95f8baf0784f013ba73791bb204c57752a7f70e8e",
+      "sealId": "d738471db0c9a67d5e1a747253710f5b0280316b2171282fa459b3956fd973ce",
+      "previousHead": "a60ab5ee48719a22b11a15393c734fc9379ee6cb1b3b1b27c9aff089663fa019",
+      "causeLinks": [
+        {
+          "target_seal": "ac14858b7b48b7a0857eba65a94a7659b11752383804a6aea41efc934518186a",
+          "previous_revision_seal_of_target_seal": [],
+          "messages": [
+            "Reviewed Accepted ADR-0058 pre-execution stop; retain other authority classifications."
+          ]
+        },
+        {
+          "target_seal": "bf145a027ae0756c28f82bb6d6d7d11045516cb07c1816d9bb8da19df1a8ed0d",
+          "previous_revision_seal_of_target_seal": [],
+          "messages": [
+            "Reviewed execution-order improvement only; real private-root unit/e2e preflight and retained original15cases plus4integration cases. Full authority path unchanged for list or no-unmapped."
+          ]
+        }
+      ],
+      "new": false
+    },
+    {
+      "ref": "verification/test-authority-execution-gate-20261007",
+      "path": "scripts/test-authority-empty.test.mjs",
+      "sha256": "1c61ac3d490672ccca276be9d7c77b172a9181c602669f507ac48126c516c5af",
+      "sealId": "74753b27ec2ac54c40ac38ab6a7275dc4e0f7e4f6ed84593b2d7bcca077d55dc",
+      "previousHead": "17c619b637fbf40f79c36ad18566da75dce4356fe18b9ef7f4bee7786ad7fc77",
+      "causeLinks": [
+        {
+          "target_seal": "ac14858b7b48b7a0857eba65a94a7659b11752383804a6aea41efc934518186a",
+          "previous_revision_seal_of_target_seal": [],
+          "messages": [
+            "Reviewed Accepted ADR-0058 pre-execution stop; retain other authority classifications."
+          ]
+        },
+        {
+          "target_seal": "d738471db0c9a67d5e1a747253710f5b0280316b2171282fa459b3956fd973ce",
+          "previous_revision_seal_of_target_seal": [
+            "a60ab5ee48719a22b11a15393c734fc9379ee6cb1b3b1b27c9aff089663fa019"
+          ],
+          "messages": [
+            "Exact implementation exercised by the reviewed structural and projection assertions.",
+            "Original6gate cases/assertions retained plus4real copied-driver cases prove unit/e2e early stop and list/all-mapped inspection requirement; no test launch on unsealed."
+          ]
+        }
+      ],
+      "new": false
+    },
+    {
+      "ref": "verification/test-authority-selector-synthetic-20260918",
+      "path": "scripts/test-authority.test.mjs",
+      "sha256": "1dd5102a8c3b342925798ff2b0a7fdf9a37a4ac85774e3ee683c94f81fb0a52a",
+      "sealId": "56bffd6fcd014547963c5bd3833ae85d7cc5542c9437d4912819b0f015454b49",
+      "previousHead": "50cbccd5271131a4831fb0fe0abf42fa0a737498e6174381e5f25e9e3e9acb05",
+      "causeLinks": [
+        {
+          "target_seal": "cea40cbb3b12ac7d91040f1c9615cb9d8ed232fb47cd941d38d04bfdd544bc30",
+          "previous_revision_seal_of_target_seal": [],
+          "messages": [
+            "Synthetic selector fixtures exercise ADR0036 draft_basis classification and aggregation exclusion; inherited ADR0034 invalidity fixtures are bounded to the tested branches."
+          ]
+        },
+        {
+          "target_seal": "d738471db0c9a67d5e1a747253710f5b0280316b2171282fa459b3956fd973ce",
+          "previous_revision_seal_of_target_seal": [
+            "16980ad8b7b49c3d991fccc5991011ea22c876fffed2cf4b0829584d98fa6b99"
+          ],
+          "messages": [
+            "Reverified against current actual selector. Original9classification cases retained; synthetic fixture scope does not assert SealGraph publication closure.",
+            "Synthetic fixtures exercise selector classification and draft_basis behavior only; no actual inventory mapping or SealGraph publication-closure assertion."
+          ]
+        }
+      ],
+      "new": false
+    }
+  ],
+  "rootSealIds": {
+    "requirements": "203e66fc4e30772adab026012c67f1b1ac4ca86ad2ada11b501c639a27a19eac",
+    "gate": "ac14858b7b48b7a0857eba65a94a7659b11752383804a6aea41efc934518186a",
+    "draft": "cea40cbb3b12ac7d91040f1c9615cb9d8ed232fb47cd941d38d04bfdd544bc30"
+  },
+  "elapsedSeconds": 139.988,
+  "state": "complete"
+}

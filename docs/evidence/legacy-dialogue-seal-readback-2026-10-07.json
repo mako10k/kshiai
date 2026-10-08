@@ -1,0 +1,15 @@
+{
+  "newRefs": 15,
+  "previousHeadsUnchanged": true,
+  "previousHeadCount": 904,
+  "totalRefs": 919,
+  "sourceBytesMatch": true,
+  "stale": 0,
+  "fsck": "ok",
+  "limitations": [
+    "Original19 cases/assertions retained; no code/test changes",
+    "Pure retained legacy helper/synthetic frame tests, not awareness-v5 model/privacy/physical/persistence/full-pipeline acceptance",
+    "Snapshot representation and result-packet exclusion not downstream selector or alternateconversation delivery",
+    "V3 caller missing-input hold distinct from oldhelper null regression; legacy cost bearer semantics not asserted"
+  ]
+}

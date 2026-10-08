@@ -1,0 +1,29 @@
+TAP version 13
+# Subtest: OpenAI-compatible image provider
+    # Subtest: sends the configured model and aspect ratio
+    ok 1 - sends the configured model and aspect ratio
+      ---
+      duration_ms: 32.089208
+      type: 'test'
+      ...
+    # Subtest: falls through to the next image provider
+    ok 2 - falls through to the next image provider
+      ---
+      duration_ms: 0.403188
+      type: 'test'
+      ...
+    1..2
+ok 1 - OpenAI-compatible image provider
+  ---
+  duration_ms: 33.474104
+  type: 'suite'
+  ...
+1..1
+# tests 2
+# suites 1
+# pass 2
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 196.194801

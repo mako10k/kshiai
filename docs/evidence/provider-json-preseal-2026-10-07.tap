@@ -1,0 +1,26 @@
+TAP version 13
+# [llm] xai ready engine=test fast=test
+# [llm] xai/narrateTurn model=test fail 61ms: Provider returned invalid JSON
+# [llm] xai ready engine=test fast=test
+# [llm] xai/narrateTurn model=test fail 6ms: Provider returned invalid JSON
+# Subtest: settles actual HTTP usage before malformed JSON rejection without transport retry
+ok 1 - settles actual HTTP usage before malformed JSON rejection without transport retry
+  ---
+  duration_ms: 135.212422
+  type: 'test'
+  ...
+# Subtest: settles zero-token HTTP usage before empty JSON content rejection without retry
+ok 2 - settles zero-token HTTP usage before empty JSON content rejection without retry
+  ---
+  duration_ms: 8.297154
+  type: 'test'
+  ...
+1..2
+# tests 2
+# suites 0
+# pass 2
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 1026.626014

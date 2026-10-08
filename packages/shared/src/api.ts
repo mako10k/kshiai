@@ -89,6 +89,11 @@ export const CharacterChatRequestSchema = z.object({
   message: z.string().min(1).max(4000),
 });
 export type CharacterChatRequest = z.infer<typeof CharacterChatRequestSchema>;
+/** R: Bind an immutable draft correction to the candidate the owner reviewed. */
+export const CharacterDraftCorrectionRequestSchema = CharacterChatRequestSchema.extend({
+  candidateDigest: z.string().regex(/^[a-f0-9]{64}$/),
+}).strict();
+export type CharacterDraftCorrectionRequest = z.infer<typeof CharacterDraftCorrectionRequestSchema>;
 
 export const GeneratePoliciesRequestSchema = z.object({
   myCharacterId: z.string(),

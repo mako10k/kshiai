@@ -1,0 +1,14 @@
+{
+  "verdict": "PASS",
+  "files": {
+    "backend/src/scripts/dialogue-quality.ts": "a493c3c850b35edd0456d62a510a57842fc554640a2933ea7f249fb3634fb951",
+    "backend/src/scripts/dialogue-quality.test.ts": "0b25b468ed443b0ca4f1dfac639b5c5c3a98d55e72f7dc6d01be491c1441c18a",
+    "backend/src/scripts/migrate-legacy-account.ts": "7d6de2faa35f84ec7caaa40258b3de6b1c868ce662207fa1cd7414dfa0b97e63",
+    "backend/src/scripts/migrate-legacy-account.test.ts": "a8ed9bbc264676345fdea46ee135ff18d155dfeb00265829a5afe88548ffd340",
+    "backend/src/scripts/supabase-auth-smoke.ts": "93aaed4f15fed5efe4a88250a06500986854b9b970e8de8def50393b0a75a08c",
+    "backend/src/scripts/supabase-auth-smoke.test.ts": "fd6ee6d6987d13df9fa9c7fac26505fb7ad4d3e904447a5981a08478dd0fa1ee"
+  },
+  "reviewer": "/root/battle_helper_contract_review",
+  "cases": 6,
+  "scope": "pure metrics/transforms and privateSQLite retainedread/stagedrecords; no qualitythreshold/live migration/auth acceptance"
+}

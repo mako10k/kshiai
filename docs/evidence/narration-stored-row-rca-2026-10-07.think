@@ -1,0 +1,33 @@
+domain NarrationStoredStyleBoundary:
+  description "Offline stored narration style validation repair"
+problem P1:
+  |
+    Preserve valid narration confirmation and replay while rejecting corrupt stored styles.
+evidence E1:
+  |
+    narration-style-assets-v2.ts activation completed replay and current style reads
+    use JSON.parse and as NarrationStyle without schema validation.
+evidence E2:
+  |
+    The offline regression writes instruction null to the isolated stored style.
+    Before repair the completed replay does not reject and the assertion fails.
+    Existing valid candidate and activation tests pass. No live database was used.
+evidence E3:
+  |
+    NarrationStyleSchema is the shared boundary schema. Repository type escapes
+    on repaired authoritative snapshot paths are forbidden by project guidance.
+evidence E4:
+  |
+    A transport or model failure cannot explain returning this stored corrupt value:
+    the completed branch reads SQLite without a model call. Historical introduction
+    and prior review escape are unknown. Existing valid fixtures do not exercise corruption.
+decision D1 based_on P1, E1, E2, E3, E4:
+  |
+    The demonstrated local producing condition is unchecked stored unknown data
+    asserted as NarrationStyle. Corrupt storage is the trigger; valid-only fixtures
+    and the assertion bypass explain the bounded detection gap, not historical causes.
+decision D2 based_on D1, E3:
+  |
+    Validate both stored style reads with NarrationStyleSchema and reject invalid
+    JSON or schema values before appending a generation. Preserve valid replay.
+    Verify both rejection branches, unchanged generation pointer and restored valid replay.

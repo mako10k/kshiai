@@ -1,0 +1,619 @@
+{
+  "completed": false,
+  "reachableDivergedBindings": [
+    {
+      "ref": "all-tests-20261007/implementation-awareness-creation-public-service",
+      "path": "backend/src/services/battle-service.ts",
+      "headSealId": "0021883e808ae8bf7d59ead2180519d677c39d02b46ee485c358bb7fd19c27da"
+    },
+    {
+      "ref": "all-tests-20261007/implementation-canonical-narration-battle-service",
+      "path": "backend/src/services/battle-service.ts",
+      "headSealId": "7872163ad23ff4c6f179f120b45857d18c80cea88160afe880b8d733729d77aa"
+    },
+    {
+      "ref": "all-tests-20261007/implementation-character-attempt-reads",
+      "path": "backend/src/repositories/character-assets-v2.ts",
+      "headSealId": "71a3806f51ddb38886b2de44719b17f973c4d263a4257613274dfa1862a50ef4"
+    },
+    {
+      "ref": "all-tests-20261007/implementation-character-profile-readiness",
+      "path": "backend/src/services/character-authoring-candidate.ts",
+      "headSealId": "5fc4d62c89a90fdc6dfcae35711289ff9c139503a3e1cd31382d78d429d5cb6f"
+    },
+    {
+      "ref": "all-tests-20261007/implementation-character-repository-activation",
+      "path": "backend/src/repositories/character-assets-v2.ts",
+      "headSealId": "6fc9de4333a04acce3cde69962c8e70cff20999112df9ef4959ad23d19164b2f"
+    },
+    {
+      "ref": "all-tests-20261007/implementation-current-focused-pending-read",
+      "path": "backend/src/services/character-focused-authoring.ts",
+      "headSealId": "18a1252ed2bfa2773aa446b80e9779cab123dd9f7ea1088ead63714d92e3aa1c"
+    },
+    {
+      "ref": "all-tests-20261007/implementation-current-narration-builder-contracts",
+      "path": "backend/src/llm/openai-compatible.ts",
+      "headSealId": "871b4b46e531e367409a529704c6b64bb1d041a22d3643fb0f6da4705473c1dc"
+    },
+    {
+      "ref": "all-tests-20261007/implementation-current-six-draft-read-routes",
+      "path": "backend/src/routes.ts",
+      "headSealId": "0374262c05d28dee5d6b67d599280434b2fe91e7c416c66cda9c7ef975114e9c"
+    },
+    {
+      "ref": "all-tests-20261007/implementation-direct-narration-projection-input",
+      "path": "backend/src/llm/openai-compatible.ts",
+      "headSealId": "bc4e17992fc99bebd82c0723ae94bbd5e55c07fbbb7ec0aeae83e0796a6267b5"
+    },
+    {
+      "ref": "all-tests-20261007/implementation-narration-phase-builders",
+      "path": "backend/src/llm/openai-compatible.ts",
+      "headSealId": "ab889a4617f6f343aecbb1b47e503db56c41c7b4f19ca0cc32b4d60d1c0b3b93"
+    },
+    {
+      "ref": "all-tests-20261007/implementation-provider-accounting-sdk-retries",
+      "path": "backend/src/llm/openai-compatible.ts",
+      "headSealId": "5b34d18fd701cf1ff6e739950e129ca0cf43a883d71a88795245a73ad34c1b5b"
+    },
+    {
+      "ref": "all-tests-20261007/implementation-provider-control-sqlite-schema",
+      "path": "backend/src/db.ts",
+      "headSealId": "95bdd9c1de74a466708f8647c1af88b40820ac06ed834fe450b7a011e24e70c3"
+    },
+    {
+      "ref": "all-tests-20261007/implementation-retained-agency-v3-public-private-boundary",
+      "path": "backend/src/services/battle-public-projection.ts",
+      "headSealId": "8aad18fc84ec5efbc42d7d79b08364bf649d027990f8366fe970d399ace734d2"
+    },
+    {
+      "ref": "all-tests-20261007/implementation-retained-agency-v3-service-flow",
+      "path": "backend/src/services/battle-service.ts",
+      "headSealId": "99daa2bed6e0d01bde12df6dffd1ce3478049c4602e6231b668ea98d165e8a10"
+    },
+    {
+      "ref": "all-tests-20261007/implementation-retained-compact-expression-decoder",
+      "path": "backend/src/llm/openai-compatible.ts",
+      "headSealId": "be6c5fd8e04b304d51b2023d34486a7e4028e69512cd6c6a9d54ae3fef337a3c"
+    },
+    {
+      "ref": "all-tests-20261007/implementation-sdk-awareness-adjudication-result",
+      "path": "backend/src/llm/openai-compatible.ts",
+      "headSealId": "aa08f46a5ae70bccacc4b43e1621aaf341a26c873111dd15b6ee091836cdf3a2"
+    },
+    {
+      "ref": "all-tests-20261007/implementation-sdk-awareness-dispatch",
+      "path": "backend/src/llm/openai-compatible.ts",
+      "headSealId": "11ad190b10415f87aaf38a9598ec3ac3e05031fd2c03800aac12da69ae178d91"
+    },
+    {
+      "ref": "all-tests-20261007/implementation-sdk-json-accounting-boundary",
+      "path": "backend/src/llm/openai-compatible.ts",
+      "headSealId": "3f3dd4c5984778043e1a692b58d89c536c9af360c6a2b4881b76deb10c9e19a2"
+    },
+    {
+      "ref": "all-tests-20261007/implementation-sdk-model-options",
+      "path": "backend/src/llm/openai-compatible.ts",
+      "headSealId": "7fafa0e59a17475925224cbda6d3d97f05930a271c05d81a2026404546024fb7"
+    },
+    {
+      "ref": "all-tests-20261007/implementation-sdk-response-schema-ordinary-gate",
+      "path": "backend/src/llm/openai-compatible.ts",
+      "headSealId": "5c06dcccd164d1e51610184f474296ee948c8fef2a4469c62453df2b33e244d2"
+    },
+    {
+      "ref": "all-tests-20261007/implementation-sdk-retained-agency-v3-dispatch",
+      "path": "backend/src/llm/openai-compatible.ts",
+      "headSealId": "5452852d0f1bf38ed89dca0b72e4eebb2db5b47bda137a1983f2e45e0bd14cc9"
+    },
+    {
+      "ref": "all-tests-20261007/implementation-sdk-retained-dynamic-v4-dispatch",
+      "path": "backend/src/llm/openai-compatible.ts",
+      "headSealId": "ca44acedaa6634d8a56c49e3aad978d32cbe6e76704b5daa602c851614d05690"
+    },
+    {
+      "ref": "all-tests-20261007/implementation-sdk-usage-paths",
+      "path": "backend/src/llm/openai-compatible.ts",
+      "headSealId": "b976cf61e0af34ee39d63f4bf5e274f29e08db10220b5c564fd6314e3f9db9f9"
+    },
+    {
+      "ref": "all-tests-20261007/implementation-stable-area-authoring-http",
+      "path": "backend/src/routes.ts",
+      "headSealId": "b2e522e260e6fa48f6205c9facb8370981a6a95745318f207ef1d8ff4a61efb4"
+    },
+    {
+      "ref": "all-tests-20261007/implementation-stable-area-ready-binding",
+      "path": "backend/src/services/battle-service.ts",
+      "headSealId": "e82f2436ea3107d7e9ea91589511117998ec8cf02078c043d1a172eb94e5f4b3"
+    },
+    {
+      "ref": "all-tests-20261007/implementation-stable-initial-world-layout",
+      "path": "packages/shared/src/battle-world.ts",
+      "headSealId": "2c5b1cfe3cf17fa58ff39fb45e30eaccb0b91506a39e2c1349671d35bcb95270"
+    },
+    {
+      "ref": "all-tests-20261007/implementation-typed-battlefield-creation",
+      "path": "packages/shared/src/battlefield-creation.ts",
+      "headSealId": "20c050a7fb0b19ccae7df3d80e3740fb5f235b4f5dd500cf706fbd8093392b91"
+    },
+    {
+      "ref": "all-tests-20261007/implementation-world-profile-fixture-projection",
+      "path": "packages/shared/src/battle-world.ts",
+      "headSealId": "e54f08ad6e2c12e8bc0d606d127673f1f5d1c9338b0f2e499742538ad42ab527"
+    },
+    {
+      "ref": "all-tests-20261008/authority-retained-adr-checker-policy",
+      "path": "docs/adr/README.md",
+      "headSealId": "742c262b58a40d74f35596bd60f4bf787a4e58370a2480e7f67fa0b1e7eda52b"
+    },
+    {
+      "ref": "all-tests-20261008/implementation-agent-typed-seam",
+      "path": "backend/src/llm/openai-compatible.ts",
+      "headSealId": "7c3693e3b4211157a5b340153f8317d853971ef27e080aa4f84332a20c3fd8a5"
+    },
+    {
+      "ref": "all-tests-20261008/implementation-boundary-battle",
+      "path": "backend/src/services/battle-service.ts",
+      "headSealId": "2eae8cc721eb57bccdb6600c1bcdf5c9c9cf72d1d2dc4feb7fb0f0d1b715b3bb"
+    },
+    {
+      "ref": "all-tests-20261008/implementation-boundary-character-assets",
+      "path": "backend/src/repositories/character-assets-v2.ts",
+      "headSealId": "8d6bf70266a8a48bc0227bb6c69995a951948a704c1fee95f6e1fdd08d188075"
+    },
+    {
+      "ref": "all-tests-20261008/implementation-boundary-db",
+      "path": "backend/src/db.ts",
+      "headSealId": "29388522fd326751bb29a58fc9145bbf64bc1f96d80e2f54420065b80363d535"
+    },
+    {
+      "ref": "all-tests-20261008/implementation-boundary-routes",
+      "path": "backend/src/routes.ts",
+      "headSealId": "fcf165143e528ea548c1e9c8313a465199e185c9f066ef7a60e1996a9e09856f"
+    },
+    {
+      "ref": "all-tests-20261008/implementation-current-e2e-review-page",
+      "path": "frontend/src/pages/CharacterReviewPage.tsx",
+      "headSealId": "57d4a1a92c4d5344b598e42444c000c7014c6c46e1476c038dd8f55b79855b0e"
+    },
+    {
+      "ref": "all-tests-20261008/implementation-historical-agency-inventory",
+      "path": "backend/src/services/battle-service.ts",
+      "headSealId": "9d37bcc598eff9e88cdfb50cd42a812bbfedb4db318d6473ed39f0f8c42b3c68"
+    },
+    {
+      "ref": "all-tests-20261008/implementation-openai-compatible-character-definition-recovery-bounded",
+      "path": "backend/src/llm/openai-compatible.ts",
+      "headSealId": "42b6ff80a71caa184ae9ccec1a087e025eb5e831d7e900d23bb08860ef918df4"
+    },
+    {
+      "ref": "all-tests-20261008/implementation-perception-typed-seam",
+      "path": "backend/src/llm/openai-compatible.ts",
+      "headSealId": "fd9582a733bd7a3698b053fb0db428f7d6ea59ce3f545ecc1429ce9ee0127c1d"
+    },
+    {
+      "ref": "all-tests-20261008/implementation-portrait-v3-activation",
+      "path": "backend/src/repositories/character-assets-v2.ts",
+      "headSealId": "991a0bed1f9217e6978039cb39b7b217e3122a147cd91f22786df658d1917be7"
+    },
+    {
+      "ref": "all-tests-20261008/implementation-portrait-v3-route",
+      "path": "backend/src/routes.ts",
+      "headSealId": "4a45c9459e2d46f7f2f91a881dc4ece3f4b6c6ce7843b9ad299930dde99b10d7"
+    },
+    {
+      "ref": "all-tests-20261008/implementation-psyche-repair-bounded",
+      "path": "backend/src/llm/openai-compatible.ts",
+      "headSealId": "3c919c7c047bddd5eeabad3f7c74e5416c147c4df4817b89c945178a90567a20"
+    },
+    {
+      "ref": "all-tests-20261008/implementation-routing-typed-seam",
+      "path": "backend/src/llm/openai-compatible.ts",
+      "headSealId": "02b6d59807b18e91e8cd3dc336900072e54507b2a4390bb5a4da0e2808cb536f"
+    },
+    {
+      "ref": "all-tests-20261008/implementation-semantic-recovery-contracts",
+      "path": "packages/shared/src/semantic-authoring.ts",
+      "headSealId": "90df3c2c74cfedc2d5f0de6187786bb4d9470d7b5e49d789721378ad11df8240"
+    },
+    {
+      "ref": "all-tests-20261008/implementation-semantic-recovery-execution-policy",
+      "path": "backend/src/services/semantic-authoring/execution-policy.ts",
+      "headSealId": "11195c24131e1d66289d5b5aebd457862a7ac82f700f1d814c78794024a3b049"
+    },
+    {
+      "ref": "awareness-guidance-20261007/battle-frame",
+      "path": "backend/src/services/battle-service.ts",
+      "headSealId": "c778f88206f59e2310caf7c95631468f6442f6d4437f122beb6319c4c8597ae1"
+    },
+    {
+      "ref": "implementation/cc304-focused-revise-route-current-20260925",
+      "path": "backend/src/routes.ts",
+      "headSealId": "714fcabc08db2375c192b3e46b9a8c842897f7eeb63401d9bb0295e3f195cecf"
+    },
+    {
+      "ref": "implementation/cc311-focused-create-route-current-20260925",
+      "path": "backend/src/routes.ts",
+      "headSealId": "bdc9b6e9c40e6ffa3653b4d56c699a1a9f1d3a7cd1be6bbac8261b76f04184c4"
+    },
+    {
+      "ref": "verification/agent-typed-seam-bounded-20261008",
+      "path": "backend/src/llm/openai-compatible-agent.test.ts",
+      "headSealId": "88b651b11bee401e5b0e8dd019e86e29ba2a319da1c226196d1f5de1f84823ff"
+    },
+    {
+      "ref": "verification/character-focused-authoring-current-20260925",
+      "path": "backend/src/services/character-focused-authoring.test.ts",
+      "headSealId": "88f63f286cf7af3394c063a2e7520bae04779467e66c4538b2f81d092bcc7539"
+    },
+    {
+      "ref": "verification/character-profile-v3-projection-20261007",
+      "path": "backend/src/services/character-v3-profile-adapter.test.ts",
+      "headSealId": "a0108db652a1550f90861a28c7d07826ba4875ba34580e5ee2ecfdee1966cd0d"
+    },
+    {
+      "ref": "verification/semantic-authoring-durable-repository-20260918",
+      "path": "backend/src/repositories/semantic-authoring.test.ts",
+      "headSealId": "2a2d54b3ccf45a78ee0d9111b6333e70de4c3a77d6b09897083d82e0284a61fe"
+    },
+    {
+      "ref": "verification/semantic-recovery-provider-bounded-20261008",
+      "path": "backend/src/llm/semantic-authoring-provider.test.ts",
+      "headSealId": "f19a4794b62dd0a61f80da7097be1fe096cdcf3aa2a16bb7ab8a0da1c1035fc6"
+    }
+  ],
+  "affectedMappedTests": [
+    {
+      "path": "e2e/v3-local-integration.spec.ts",
+      "ref": "verification/local-integration-current-20261008"
+    },
+    {
+      "path": "backend/src/services/v3-battle-creation.test.ts",
+      "ref": "verification/v3-battle-creation-recovery-bounded-20261008"
+    },
+    {
+      "path": "backend/src/llm/openai-compatible-character-definition.test.ts",
+      "ref": "verification/openai-compatible-character-definition-recovery-bounded-20261008"
+    },
+    {
+      "path": "backend/src/llm/provider-json.test.ts",
+      "ref": "verification/provider-json-accounting-20261007"
+    },
+    {
+      "path": "backend/src/llm/semantic-authoring-provider.test.ts",
+      "ref": "verification/semantic-recovery-provider-bounded-20261008"
+    },
+    {
+      "path": "backend/src/repositories/semantic-authoring.test.ts",
+      "ref": "verification/semantic-authoring-durable-repository-20260918"
+    },
+    {
+      "path": "backend/src/services/character-focused-authoring.test.ts",
+      "ref": "verification/character-focused-authoring-current-20260925"
+    },
+    {
+      "path": "backend/src/services/semantic-authoring/adapters/character-v3.test.ts",
+      "ref": "verification/semantic-recovery-character-adapter-bounded-20261008"
+    },
+    {
+      "path": "backend/src/services/semantic-authoring/conformance.test.ts",
+      "ref": "verification/semantic-recovery-conformance-bounded-20261008"
+    },
+    {
+      "path": "e2e/character-focused-review.spec.ts",
+      "ref": "verification/character-focused-review-current-20261008"
+    },
+    {
+      "path": "backend/src/routes-cutover-http.test.ts",
+      "ref": "verification/routes-cutover-http-recovery-bounded-20261008"
+    },
+    {
+      "path": "backend/src/llm/provider-accounting.test.ts",
+      "ref": "verification/provider-accounting-current-20261007"
+    },
+    {
+      "path": "backend/src/services/character-v2-update-boundary.test.ts",
+      "ref": "verification/character-v2-update-boundary-recovery-bounded-20261008"
+    },
+    {
+      "path": "backend/src/services/awareness-execution.test.ts",
+      "ref": "awareness-guidance-20261007/verification-execution"
+    },
+    {
+      "path": "backend/src/routes-authoring-read-purity.test.ts",
+      "ref": "verification/authoring-read-purity-current-20261007"
+    },
+    {
+      "path": "backend/src/routes-structured-battlefield-acceptance.test.ts",
+      "ref": "verification/stable-area-battlefield-http-acceptance-20261007"
+    },
+    {
+      "path": "backend/src/repositories/character-assets-v2.test.ts",
+      "ref": "verification/character-assets-repository-20261007"
+    },
+    {
+      "path": "backend/src/services/character-v3-profile-adapter.test.ts",
+      "ref": "verification/character-profile-v3-projection-20261007"
+    },
+    {
+      "path": "backend/src/repositories/llm-usage.test.ts",
+      "ref": "verification/usage-ledger-sdk-20261007"
+    },
+    {
+      "path": "backend/src/llm/openai-compatible-model-options.test.ts",
+      "ref": "verification/sdk-model-options-20261007"
+    },
+    {
+      "path": "backend/src/llm/awareness-narration.test.ts",
+      "ref": "verification/awareness-narration-batch-20261007"
+    },
+    {
+      "path": "backend/src/llm/awareness-frozen-narration.test.ts",
+      "ref": "verification/awareness-frozen-narration-20261007"
+    },
+    {
+      "path": "backend/src/llm/awareness-provider-factory.test.ts",
+      "ref": "verification/awareness-provider-factory-20261007"
+    },
+    {
+      "path": "backend/src/llm/awareness-dispatch-context.test.ts",
+      "ref": "verification/awareness-dispatch-context-20261007"
+    },
+    {
+      "path": "backend/src/llm/awareness-adjudication-result.test.ts",
+      "ref": "verification/awareness-adjudication-result-20261007"
+    },
+    {
+      "path": "backend/src/llm/narration-prompt-contract.test.ts",
+      "ref": "verification/narration-prompt-contract-20261007"
+    },
+    {
+      "path": "backend/src/llm/provider-response-schema.test.ts",
+      "ref": "verification/provider-response-schema-20261007"
+    },
+    {
+      "path": "backend/src/llm/openai-compatible-narration.test.ts",
+      "ref": "verification/direct-narration-projection-input-20261007"
+    },
+    {
+      "path": "backend/src/llm/narrator-presentation-focus-evaluation.test.ts",
+      "ref": "verification/presentation-protocol-20261007"
+    },
+    {
+      "path": "packages/shared/src/profile-grounding.test.ts",
+      "ref": "verification/profile-grounding-20261007"
+    },
+    {
+      "path": "backend/src/routes-structured-narration-acceptance.test.ts",
+      "ref": "verification/stable-area-narration-http-acceptance-20261007"
+    },
+    {
+      "path": "packages/shared/src/utterance-perception.test.ts",
+      "ref": "verification/utterance-perception-20261007"
+    },
+    {
+      "path": "packages/shared/src/awareness-battle.test.ts",
+      "ref": "verification/stable-area-awareness-battle-contract-20261007"
+    },
+    {
+      "path": "backend/src/scripts/semantic-migration-probe-fixture.test.ts",
+      "ref": "verification/semantic-migration-probe-fixture-recovery-bounded-20261008"
+    },
+    {
+      "path": "backend/src/scripts/semantic-migration-probe-run.test.ts",
+      "ref": "verification/semantic-migration-probe-run-recovery-bounded-20261008"
+    },
+    {
+      "path": "packages/shared/src/battle-turn-causal-receipt.test.ts",
+      "ref": "verification/turn-causal-receipt-current-20261007"
+    },
+    {
+      "path": "packages/shared/src/perception-projection.test.ts",
+      "ref": "verification/perception-projection-current-20261007"
+    },
+    {
+      "path": "backend/src/account-access.test.ts",
+      "ref": "verification/account-realm-access-current-20261007"
+    },
+    {
+      "path": "backend/src/auth.test.ts",
+      "ref": "verification/authentication-persistence-current-20261007"
+    },
+    {
+      "path": "backend/src/llm/character-expression-contract.test.ts",
+      "ref": "verification/retained-compact-expression-decoder-current-20261007"
+    },
+    {
+      "path": "backend/src/repositories/test-realm-assets.test.ts",
+      "ref": "verification/test-realm-assets-current-20261007"
+    },
+    {
+      "path": "backend/src/services/e2e-session.test.ts",
+      "ref": "verification/injected-e2e-session-current-20261007"
+    },
+    {
+      "path": "backend/src/routes-e2e-session.test.ts",
+      "ref": "verification/e2e-session-middleware-current-20261007"
+    },
+    {
+      "path": "packages/shared/src/dialogue-context.test.ts",
+      "ref": "verification/retained-dialogue-context-current-20261007"
+    },
+    {
+      "path": "backend/src/llm/conscious-dynamic.test.ts",
+      "ref": "verification/dynamic-v4-provider-current-20261007"
+    },
+    {
+      "path": "backend/src/repositories/dialogue-pipeline-settings.test.ts",
+      "ref": "verification/dialogue-settings-storage-current-20261007"
+    },
+    {
+      "path": "backend/src/services/conscious-agency-binding.test.ts",
+      "ref": "verification/retained-agency-v3-binding-current-20261007"
+    },
+    {
+      "path": "backend/src/services/conscious-agency-runtime.test.ts",
+      "ref": "verification/retained-agency-v3-runtime-current-20261007"
+    },
+    {
+      "path": "backend/src/services/conscious-agency-persistence.test.ts",
+      "ref": "verification/retained-agency-v3-persistence-current-20261007"
+    },
+    {
+      "path": "backend/src/repositories/battle-awareness-narration-reservation.test.ts",
+      "ref": "verification/narration-reservation-storage-current-20261007"
+    },
+    {
+      "path": "backend/src/repositories/battle-awareness-narrator.test.ts",
+      "ref": "verification/narrator-continuity-storage-current-20261007"
+    },
+    {
+      "path": "backend/src/services/awareness-narration-claim-snapshot.test.ts",
+      "ref": "verification/narration-claim-snapshot-current-20261007"
+    },
+    {
+      "path": "backend/src/services/awareness-narration-event-storage.test.ts",
+      "ref": "verification/narration-event-storage-current-20261007"
+    },
+    {
+      "path": "backend/src/services/awareness-narration-worker.test.ts",
+      "ref": "verification/awareness-narration-worker-bounded-current-20261007"
+    },
+    {
+      "path": "backend/src/services/awareness-narration-continuation.test.ts",
+      "ref": "verification/awareness-narration-continuation-bounded-current-20261007"
+    },
+    {
+      "path": "backend/src/services/awareness-world-commit.test.ts",
+      "ref": "verification/awareness-world-commit-bounded-current-20261007"
+    },
+    {
+      "path": "backend/src/services/awareness-expression-commit.test.ts",
+      "ref": "verification/awareness-expression-commit-bounded-current-20261007"
+    },
+    {
+      "path": "backend/src/services/awareness-adjudication-guard.test.ts",
+      "ref": "verification/awareness-adjudication-guard-bounded-current-20261007"
+    },
+    {
+      "path": "backend/src/services/normal-awareness-policy.test.ts",
+      "ref": "verification/normal-awareness-policy-bounded-current-20261007"
+    },
+    {
+      "path": "backend/src/services/distributed-guard.test.ts",
+      "ref": "verification/distributed-guard-bounded-current-20261007"
+    },
+    {
+      "path": "backend/src/services/battle-causal-narration.test.ts",
+      "ref": "verification/battle-causal-narration-bounded-current-20261007"
+    },
+    {
+      "path": "backend/src/services/battle-consumer-wiring.test.ts",
+      "ref": "verification/battle-consumer-wiring-bounded-current-20261007"
+    },
+    {
+      "path": "packages/shared/src/character-manifestation.test.ts",
+      "ref": "verification/character-manifestation-bounded-character-contract-20261007"
+    },
+    {
+      "path": "backend/src/repositories/battle-awareness-creation.test.ts",
+      "ref": "verification/battle-awareness-creation-bounded-awareness-creation-20261007"
+    },
+    {
+      "path": "backend/src/repositories/battle-awareness.test.ts",
+      "ref": "verification/battle-awareness-bounded-awareness-creation-20261007"
+    },
+    {
+      "path": "backend/src/services/awareness-battle-creation.test.ts",
+      "ref": "verification/awareness-battle-creation-bounded-awareness-creation-20261007"
+    },
+    {
+      "path": "backend/src/services/awareness-battle-service.test.ts",
+      "ref": "verification/awareness-battle-service-bounded-awareness-creation-20261007"
+    },
+    {
+      "path": "backend/src/services/awareness-creation-encounter.test.ts",
+      "ref": "verification/awareness-creation-encounter-bounded-awareness-creation-20261007"
+    },
+    {
+      "path": "backend/src/services/battle-create-idempotency.test.ts",
+      "ref": "verification/battle-create-idempotency-bounded-awareness-creation-20261007"
+    },
+    {
+      "path": "backend/src/repositories/battle-awareness-postgres.test.ts",
+      "ref": "verification/battle-awareness-postgres-bounded-native-pg-20261007"
+    },
+    {
+      "path": "backend/src/repositories/battle-awareness-narration-events-postgres.test.ts",
+      "ref": "verification/battle-awareness-narration-events-postgres-bounded-native-pg-20261007"
+    },
+    {
+      "path": "backend/src/repositories/battle-awareness-narration-reservation-postgres.test.ts",
+      "ref": "verification/battle-awareness-narration-reservation-postgres-bounded-native-pg-20261007"
+    },
+    {
+      "path": "backend/src/llm/openai-compatible-agent.test.ts",
+      "ref": "verification/agent-typed-seam-bounded-20261008"
+    },
+    {
+      "path": "backend/src/llm/openai-compatible-perception.test.ts",
+      "ref": "verification/perception-typed-seam-bounded-20261008"
+    },
+    {
+      "path": "backend/src/llm/openai-compatible-routing.test.ts",
+      "ref": "verification/routing-typed-seam-bounded-20261008"
+    },
+    {
+      "path": "backend/src/llm/openai-compatible-psyche-repair.test.ts",
+      "ref": "verification/psyche-repair-bounded-20261008"
+    },
+    {
+      "path": "backend/src/services/character-portrait-v3.test.ts",
+      "ref": "verification/portrait-v3-bounded-20261008"
+    },
+    {
+      "path": "backend/src/services/character-agency-inventory.test.ts",
+      "ref": "verification/historical-agency-inventory-bounded-20261008"
+    },
+    {
+      "path": "backend/src/scripts/persistent-battle-e2e.test.ts",
+      "ref": "verification/persistent-battle-e2e-bounded-20261008"
+    },
+    {
+      "path": "backend/src/scripts/character-authoring-a2-freeze.test.ts",
+      "ref": "verification/character-authoring-a2-freeze-bounded-20261008"
+    },
+    {
+      "path": "backend/src/services/scene-beat-wiring.test.ts",
+      "ref": "verification/scene-beat-wiring-bounded-20261008"
+    },
+    {
+      "path": "backend/src/services/battle-speech-wiring.test.ts",
+      "ref": "verification/battle-speech-wiring-bounded-20261008"
+    },
+    {
+      "path": "scripts/adr-historical-exceptions.test.mjs",
+      "ref": "verification/adr-historical-exceptions-bounded-20261008"
+    },
+    {
+      "path": "packages/shared/src/battle-pacing.test.ts",
+      "ref": "verification/pacing-representation-bounded-20261008"
+    },
+    {
+      "path": "backend/src/routes-structured-asset-integration.test.ts",
+      "ref": "verification/structured-asset-integration-bounded-20261008"
+    },
+    {
+      "path": "backend/src/repositories/characters.test.ts",
+      "ref": "verification/owner-characters-rating-20261008"
+    },
+    {
+      "path": "backend/src/services/rating-service-transaction.test.ts",
+      "ref": "verification/owner-rating-transaction-20261008"
+    }
+  ],
+  "totalDivergedBindings": 92,
+  "statusSnapshot": "/tmp/kshiai-character-all-status.json",
+  "graphSnapshot": "/tmp/kshiai-character-all-graph.json",
+  "noSealMutation": true
+}

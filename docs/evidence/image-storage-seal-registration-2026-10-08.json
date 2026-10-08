@@ -1,0 +1,113 @@
+{
+  "entries": [
+    {
+      "key": "design-r2-helper",
+      "path": "docs/image-storage-test-contract-review-2026-10-07.md",
+      "parents": [
+        "requirements"
+      ],
+      "scope": "NFR-11 shared-media intent; key/URL/ID and injected PutObject command helper only. No live storage/access control/durability.",
+      "ref": "all-tests-20261007/design-r2-helper",
+      "test": false,
+      "sha256": "05c10da6635ab959ba776e968c4c822e052e5ada6392a134b1807ef6033ac606",
+      "sealId": "a1756caf7203f7ca707ca7e6f92468971ea6070c4b6bc6300c7a3bc99ae3ed93",
+      "causeSealIds": [
+        "203e66fc4e30772adab026012c67f1b1ac4ca86ad2ada11b501c639a27a19eac"
+      ]
+    },
+    {
+      "key": "design-image-service-helper",
+      "path": "docs/image-storage-test-contract-review-2026-10-07.md",
+      "parents": [
+        "requirements",
+        "profile",
+        "selectable",
+        "writes"
+      ],
+      "scope": "F-BF-08/F-CHR-10, Accepted ADR-0011 appearance-only brief and ADR-0010 immutable media; accepted V3 write boundary excludes ordinary V2 writers. Local helper/failed fixture only.",
+      "ref": "all-tests-20261007/design-image-service-helper",
+      "test": false,
+      "sha256": "05c10da6635ab959ba776e968c4c822e052e5ada6392a134b1807ef6033ac606",
+      "sealId": "ccecf98e73b7fa2bbd1146fa4f6619aaac931d752029ce54cd73961a08a27e29",
+      "causeSealIds": [
+        "203e66fc4e30772adab026012c67f1b1ac4ca86ad2ada11b501c639a27a19eac",
+        "a16926e3e7cc0153d24ac2ec61390a382f1a0a95abb1cf73d83af40da60f754e",
+        "c18419afb42060d887b3f7f86970b45312cb77a7665dfbc7398a697e3e3d7ad5",
+        "a1c688a46b255e61a935098665e31e0e6f368cc259b72b0b81d87a4ec1552c3a"
+      ]
+    },
+    {
+      "key": "implementation-r2-object-writer",
+      "path": "backend/src/services/r2-storage.ts",
+      "parents": [
+        "design-r2-helper"
+      ],
+      "scope": "Deterministic object key/URL and injected writer command; actual R2/S3 not exercised.",
+      "ref": "all-tests-20261007/implementation-r2-object-writer",
+      "test": false,
+      "sha256": "4b0983f09246c6f64b0ca02d097a1ce57a8b6c2f2da16b6aa0a4cdd32a15b03c",
+      "sealId": "d475027013758e0b2dceb9db4d3c0e8b43d7ad5258e81c0df7062baef95655f1",
+      "causeSealIds": [
+        "a1756caf7203f7ca707ca7e6f92468971ea6070c4b6bc6300c7a3bc99ae3ed93"
+      ]
+    },
+    {
+      "key": "implementation-image-prompt-and-failure",
+      "path": "backend/src/services/image-service.ts",
+      "parents": [
+        "design-image-service-helper"
+      ],
+      "scope": "Visual prompt composition, private field omission, immutable local URL and injected provider rejection. No DB activation atomicity/live quality claim.",
+      "ref": "all-tests-20261007/implementation-image-prompt-and-failure",
+      "test": false,
+      "sha256": "0d56ac0f9e10cace07fd3f16c94f12177cb35d75f84ff1ca38adf85140555a49",
+      "sealId": "2e8080970681f11a359d49612e97b062fd2d5522a31c478f9427666a53c78e63",
+      "causeSealIds": [
+        "ccecf98e73b7fa2bbd1146fa4f6619aaac931d752029ce54cd73961a08a27e29"
+      ]
+    },
+    {
+      "key": "r2-object-writer-bounded-20261008",
+      "path": "backend/src/services/r2-storage.test.ts",
+      "parents": [
+        "implementation-r2-object-writer"
+      ],
+      "scope": "Whole original three cases/assertions retained; case3 title corrected to observable command/URL. Injected writer only, no ACL or shared-read proof.",
+      "ref": "verification/r2-object-writer-bounded-20261008",
+      "test": true,
+      "sha256": "e6eb03a74cfd1750b7c53009bdd91ed9d055c929e91f0dec55b368a694ed49dd",
+      "sealId": "45b9038112c9bcc5457a59b4ef5d38db892060df76afd1a56969dd72bf1aab67",
+      "causeSealIds": [
+        "d475027013758e0b2dceb9db4d3c0e8b43d7ad5258e81c0df7062baef95655f1"
+      ]
+    },
+    {
+      "key": "image-prompt-failure-bounded-20261008",
+      "path": "backend/src/services/image-service.test.ts",
+      "parents": [
+        "implementation-image-prompt-and-failure"
+      ],
+      "scope": "Whole original four cases/assertions retained. Prompt/omission/revision URL/rejection only; V2 fixture does not authorize V2 mutations or persistence acceptance.",
+      "ref": "verification/image-prompt-failure-bounded-20261008",
+      "test": true,
+      "sha256": "cf9e1fa231f684d3263cc9f07bde9d18467d7014e0dfc76b05ea09524e6c1826",
+      "sealId": "3f50d637bc1ce231d9715116fa6fe905ab3d158f028d06abc0d169b386548770",
+      "causeSealIds": [
+        "2e8080970681f11a359d49612e97b062fd2d5522a31c478f9427666a53c78e63"
+      ]
+    }
+  ],
+  "roots": {
+    "requirements": "all-tests-20261007/authority-semantic-observation-requirements",
+    "profile": "adr/structured-character",
+    "selectable": "acceptance/adr-0010-existing-baseline",
+    "writes": "decision/character-v3-write-boundary-20261002"
+  },
+  "rootSealIds": {
+    "requirements": "203e66fc4e30772adab026012c67f1b1ac4ca86ad2ada11b501c639a27a19eac",
+    "profile": "a16926e3e7cc0153d24ac2ec61390a382f1a0a95abb1cf73d83af40da60f754e",
+    "selectable": "c18419afb42060d887b3f7f86970b45312cb77a7665dfbc7398a697e3e3d7ad5",
+    "writes": "a1c688a46b255e61a935098665e31e0e6f368cc259b72b0b81d87a4ec1552c3a"
+  },
+  "elapsedSeconds": 99.474
+}

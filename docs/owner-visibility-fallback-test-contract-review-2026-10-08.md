@@ -1,0 +1,5 @@
+# 公開範囲・一般LLM切替のwholefile契約
+
+Accepted ADR0060と直接所有者決定を根拠とする。元3shared visibility+1backend visibility+6fallbackケースを保持し、明示仕様変更を更新した。追加429境界receipt1ケースで合計11pass。独立INSIDE・全workspace型検査pass。unknown/missing/nullをprivate、owner/system例外とowner→viewerのfriend配線を保持。backendの元1ケースは共有predicateを実行する試験で、DBfriend向きはproducerコード照合の証拠でありこの1件がDB操作を実行したとは扱わない。
+
+一般routerの429はrate_limit、固定1時間、次providerへの切替とreceiptを検証。DNS/課金は既存設定休止、timeout/503/operation errorは同じerrorで終了。awareness専用roleは変更しない。実typedproviderのProxy targetとthis bindingを維持。元function成功を拒否期待へ縮退しない。有料/live/配備/LLM出力品質/現在価格証明は含まない。

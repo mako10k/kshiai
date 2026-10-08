@@ -1,0 +1,774 @@
+TAP version 13
+# Subtest: awareness execution
+    # Subtest: launches frozen A jobs before latent work, advances three ticks, and merges only at a later boundary
+    ok 1 - launches frozen A jobs before latent work, advances three ticks, and merges only at a later boundary
+      ---
+      duration_ms: 341.210876
+      type: 'test'
+      ...
+    # Subtest: restarts without resending outstanding jobs and reuses an already accepted latent tick
+    ok 2 - restarts without resending outstanding jobs and reuses an already accepted latent tick
+      ---
+      duration_ms: 76.441318
+      type: 'test'
+      ...
+    # Subtest: stops an incomplete tick after required failure without fabricating world results
+    ok 3 - stops an incomplete tick after required failure without fabricating world results
+      ---
+      duration_ms: 45.925277
+      type: 'test'
+      ...
+    # Subtest: requires verified full-input token and charge proof before any physical dispatch
+    ok 4 - requires verified full-input token and charge proof before any physical dispatch
+      ---
+      duration_ms: 15.32047
+      type: 'test'
+      ...
+    # Subtest: does not leak the counterpart's private felt projection into a frozen input
+    ok 5 - does not leak the counterpart's private felt projection into a frozen input
+      ---
+      duration_ms: 41.887354
+      type: 'test'
+      ...
+    # Subtest: keeps unaware tendencies and training on the latent side of the model boundary
+    ok 6 - keeps unaware tendencies and training on the latent side of the model boundary
+      ---
+      duration_ms: 53.982558
+      type: 'test'
+      ...
+    # Subtest: delivers live self-aware guidance from frozen assets through the actual decision and execution to the rendered prompt
+    ok 7 - delivers live self-aware guidance from frozen assets through the actual decision and execution to the rendered prompt
+      ---
+      duration_ms: 204.983484
+      type: 'test'
+      ...
+    # Subtest: rejects a missing guidance transfer before dispatching either character
+    ok 8 - rejects a missing guidance transfer before dispatching either character
+      ---
+      duration_ms: 7.972424
+      type: 'test'
+      ...
+    # Subtest: ends when an initial physical thought remains unknown past its deadline
+    ok 9 - ends when an initial physical thought remains unknown past its deadline
+      ---
+      duration_ms: 68.779526
+      type: 'test'
+      ...
+    # Subtest: does not free unknown physical slots after logical results and bounds their grace window
+    ok 10 - does not free unknown physical slots after logical results and bounds their grace window
+      ---
+      duration_ms: 152.006578
+      type: 'test'
+      ...
+    # Subtest: waits for a tick interval and retries the same target without duplicate model calls
+    ok 11 - waits for a tick interval and retries the same target without duplicate model calls
+      ---
+      duration_ms: 141.216017
+      type: 'test'
+      ...
+    # Subtest: merges results ready before the durable latent cutoff without a fixed tick delay
+    ok 12 - merges results ready before the durable latent cutoff without a fixed tick delay
+      ---
+      duration_ms: 46.488988
+      type: 'test'
+      ...
+    # Subtest: does not merge a post-cutoff result during a retry of the prepared tick
+    ok 13 - does not merge a post-cutoff result during a retry of the prepared tick
+      ---
+      duration_ms: 62.317841
+      type: 'test'
+      ...
+    # Subtest: admits combat tick 36 and rejects tick 37 without extra model dispatch
+    ok 14 - admits combat tick 36 and rejects tick 37 without extra model dispatch
+      ---
+      duration_ms: 62.127393
+      type: 'test'
+      ...
+    1..14
+ok 1 - awareness execution
+  ---
+  duration_ms: 1326.258159
+  type: 'suite'
+  ...
+# Subtest: observed execution accepts explicit null-cost proofs and retains role/physical limits
+ok 2 - observed execution accepts explicit null-cost proofs and retains role/physical limits
+  ---
+  duration_ms: 44.397306
+  type: 'test'
+  ...
+# Subtest: keeps unknown thought failure slots reserved but closes observed late validation failures without applying them
+ok 3 - keeps unknown thought failure slots reserved but closes observed late validation failures without applying them
+  ---
+  duration_ms: 92.786687
+  type: 'test'
+  ...
+# Subtest: awareness physically committed expressions
+    # Subtest: commits selected reflex and conscious speech exactly and lets the other observer hear it
+    ok 1 - commits selected reflex and conscious speech exactly and lets the other observer hear it
+      ---
+      duration_ms: 114.783309
+      type: 'test'
+      ...
+    # Subtest: does not manufacture utterances, narrator sources or heard evidence when no voice was selected
+    ok 2 - does not manufacture utterances, narrator sources or heard evidence when no voice was selected
+      ---
+      duration_ms: 53.989413
+      type: 'test'
+      ...
+    # Subtest: suppresses physically blocked or absent voice and unconscious or incapacitated speakers
+    ok 3 - suppresses physically blocked or absent voice and unconscious or incapacitated speakers
+      ---
+      duration_ms: 95.199086
+      type: 'test'
+      ...
+    # Subtest: preserves canonical speech when the recipient cannot hear while withholding their sound percept
+    ok 4 - preserves canonical speech when the recipient cannot hear while withholding their sound percept
+      ---
+      duration_ms: 18.112522
+      type: 'test'
+      ...
+    # Subtest: assigns distinct utterance event IDs across ticks of the same public turn
+    ok 5 - assigns distinct utterance event IDs across ticks of the same public turn
+      ---
+      duration_ms: 20.397212
+      type: 'test'
+      ...
+    1..5
+ok 4 - awareness physically committed expressions
+  ---
+  duration_ms: 305.589819
+  type: 'suite'
+  ...
+# [llm] inventory ready engine=inventory fast=inventory
+# [llm] inventory ready engine=inventory fast=inventory
+# [llm] inventory ready engine=inventory fast=inventory
+# [llm] inventory ready engine=inventory fast=inventory
+# [llm] inventory ready engine=inventory fast=inventory
+# [llm] inventory ready engine=inventory fast=inventory
+# [llm] inventory ready engine=inventory fast=inventory
+# [llm] inventory ready engine=inventory fast=inventory
+# [llm] inventory ready engine=inventory fast=inventory
+# [llm] inventory ready engine=inventory fast=inventory
+# [llm] inventory ready engine=inventory fast=inventory
+# [llm] inventory ready engine=inventory fast=inventory
+# [llm] inventory ready engine=inventory fast=inventory
+# [llm] inventory ready engine=inventory fast=inventory
+# [llm] inventory ready engine=inventory fast=inventory
+# [llm] inventory ready engine=inventory fast=inventory
+# [llm] inventory ready engine=inventory fast=inventory
+# [llm] inventory ready engine=inventory fast=inventory
+# [llm] inventory ready engine=inventory fast=inventory
+# [llm] inventory ready engine=inventory fast=inventory
+# [llm] inventory ready engine=inventory fast=inventory
+# [llm] inventory ready engine=inventory fast=inventory
+# [llm] inventory ready engine=inventory fast=inventory
+# Subtest: CA-00 existing agency boundary inventory (not model quality)
+    # Subtest: records legacy/prologue provider routing without network
+    ok 1 - records legacy/prologue provider routing without network
+      ---
+      duration_ms: 89.836064
+      type: 'test'
+      ...
+    # Subtest: records legacy/turn provider routing without network
+    ok 2 - records legacy/turn provider routing without network
+      ---
+      duration_ms: 49.279602
+      type: 'test'
+      ...
+    # Subtest: records legacy/aftermath provider routing without network
+    ok 3 - records legacy/aftermath provider routing without network
+      ---
+      duration_ms: 25.818007
+      type: 'test'
+      ...
+    # Subtest: records compact1/prologue provider routing without network
+    ok 4 - records compact1/prologue provider routing without network
+      ---
+      duration_ms: 38.346093
+      type: 'test'
+      ...
+    # Subtest: records compact1/turn provider routing without network
+    ok 5 - records compact1/turn provider routing without network
+      ---
+      duration_ms: 39.111884
+      type: 'test'
+      ...
+    # Subtest: records compact1/aftermath provider routing without network
+    ok 6 - records compact1/aftermath provider routing without network
+      ---
+      duration_ms: 35.334171
+      type: 'test'
+      ...
+    # Subtest: records compact2/prologue provider routing without network
+    ok 7 - records compact2/prologue provider routing without network
+      ---
+      duration_ms: 42.196679
+      type: 'test'
+      ...
+    # Subtest: records compact2/turn provider routing without network
+    ok 8 - records compact2/turn provider routing without network
+      ---
+      duration_ms: 45.706175
+      type: 'test'
+      ...
+    # Subtest: records compact2/aftermath provider routing without network
+    ok 9 - records compact2/aftermath provider routing without network
+      ---
+      duration_ms: 40.515574
+      type: 'test'
+      ...
+    # Subtest: retains the old unbound turn psyche call
+    ok 10 - retains the old unbound turn psyche call
+      ---
+      duration_ms: 22.228892
+      type: 'test'
+      ...
+    # Subtest: F01/F02 projects personality and known relationship without changing the fallback victory objective
+    ok 11 - F01/F02 projects personality and known relationship without changing the fallback victory objective
+      ---
+      duration_ms: 80.466709
+      type: 'test'
+      ...
+    # Subtest: F03/F04 removes unavailable skill and out-of-range basic action from the actual decision input
+    ok 12 - F03/F04 removes unavailable skill and out-of-range basic action from the actual decision input
+      ---
+      duration_ms: 94.773414
+      type: 'test'
+      ...
+    # Subtest: F05 changes conscious ability knowledge but not deterministic reaction
+    ok 13 - F05 changes conscious ability knowledge but not deterministic reaction
+      ---
+      duration_ms: 62.11727
+      type: 'test'
+      ...
+    # Subtest: F06 saves and reloads the old goal, rejects stale revisions, but still omits it from conscious input
+    ok 14 - F06 saves and reloads the old goal, rejects stale revisions, but still omits it from conscious input
+      ---
+      duration_ms: 207.792898
+      type: 'test'
+      ...
+    # Subtest: F07 records the later action adapter input without attributing an engine redecision to this helper test
+    ok 15 - F07 records the later action adapter input without attributing an engine redecision to this helper test
+      ---
+      duration_ms: 27.204546
+      type: 'test'
+      ...
+    # Subtest: F08 preserves repeated speech and keeps the private goal out of public projection
+    ok 16 - F08 preserves repeated speech and keeps the private goal out of public projection
+      ---
+      duration_ms: 47.17201
+      type: 'test'
+      ...
+    1..16
+ok 5 - CA-00 existing agency boundary inventory (not model quality)
+  ---
+  duration_ms: 952.032101
+  type: 'suite'
+  ...
+# Subtest: ADR-0028 immutable V3 tuple
+    # Subtest: binds existing character generations without author-origin metadata
+    ok 1 - binds existing character generations without author-origin metadata
+      ---
+      duration_ms: 59.155151
+      type: 'test'
+      ...
+    # Subtest: requires complete compiler inputs and matching bound generation
+    ok 2 - requires complete compiler inputs and matching bound generation
+      ---
+      duration_ms: 31.998098
+      type: 'test'
+      ...
+    # Subtest: rejects missing/mixed dialogue generation and reaction policy
+    ok 3 - rejects missing/mixed dialogue generation and reaction policy
+      ---
+      duration_ms: 32.150735
+      type: 'test'
+      ...
+    # Subtest: keeps override identity paired and rejects legacy override snapshots
+    ok 4 - keeps override identity paired and rejects legacy override snapshots
+      ---
+      duration_ms: 26.187306
+      type: 'test'
+      ...
+    # Subtest: supports explicit complete V3 without changing the default
+    ok 5 - supports explicit complete V3 without changing the default
+      ---
+      duration_ms: 29.158988
+      type: 'test'
+      ...
+    1..5
+ok 6 - ADR-0028 immutable V3 tuple
+  ---
+  duration_ms: 182.019443
+  type: 'suite'
+  ...
+# Subtest: scene beat narration deferral
+    # Subtest: does not enqueue a combat narration job while the beat is open
+    ok 1 - does not enqueue a combat narration job while the beat is open
+      ---
+      duration_ms: 144.080764
+      type: 'test'
+      ...
+    # Subtest: freezes a 3-micro-turn beat on new battles
+    ok 2 - freezes a 3-micro-turn beat on new battles
+      ---
+      duration_ms: 609.347078
+      type: 'test'
+      ...
+    # Subtest: advances past turn 5 on a new scene-beat battle
+    ok 3 - advances past turn 5 on a new scene-beat battle
+      ---
+      duration_ms: 7279.985324
+      type: 'test'
+      ...
+    # Subtest: holds the public turn across the first three combat beats
+    ok 4 - holds the public turn across the first three combat beats
+      ---
+      duration_ms: 4686.889611
+      type: 'test'
+      ...
+    # Subtest: persists a rejected later-bucket proposal and its deterministic choice
+    ok 5 - persists a rejected later-bucket proposal and its deterministic choice
+      ---
+      duration_ms: 169.232947
+      type: 'test'
+      ...
+    # Subtest: saves the first skip turn after a beat-close semantic patch
+    ok 6 - saves the first skip turn after a beat-close semantic patch
+      ---
+      duration_ms: 4572.097251
+      type: 'test'
+      ...
+    # Subtest: adopts an orphaned active advance instead of conflicting
+    ok 7 - adopts an orphaned active advance instead of conflicting
+      ---
+      duration_ms: 263.13209
+      type: 'test'
+      ...
+    1..7
+ok 7 - scene beat narration deferral
+  ---
+  duration_ms: 17728.274883
+  type: 'suite'
+  ...
+# Subtest: awareness-v5 battle version boundary
+    # Subtest: preserves complete V4 tuple and dynamic output semantics
+    ok 1 - preserves complete V4 tuple and dynamic output semantics
+      ---
+      duration_ms: 73.390414
+      type: 'test'
+      ...
+    # Subtest: requires frozen V5 policy, prompt/output revisions and both V3 generation compilers
+    ok 2 - requires frozen V5 policy, prompt/output revisions and both V3 generation compilers
+      ---
+      duration_ms: 57.43402
+      type: 'test'
+      ...
+    # Subtest: technical incomplete preserves the last committed world without a winner
+    ok 3 - technical incomplete preserves the last committed world without a winner
+      ---
+      duration_ms: 24.713221
+      type: 'test'
+      ...
+    # Subtest: requires an incomplete reason
+    ok 4 - requires an incomplete reason
+      ---
+      duration_ms: 35.922962
+      type: 'test'
+      ...
+    # Subtest: forbids an invented winner
+    ok 5 - forbids an invented winner
+      ---
+      duration_ms: 37.296522
+      type: 'test'
+      ...
+    # Subtest: forbids a canonical finish reason
+    ok 6 - forbids a canonical finish reason
+      ---
+      duration_ms: 48.082866
+      type: 'test'
+      ...
+    # Subtest: forbids old conscious agency
+    ok 7 - forbids old conscious agency
+      ---
+      duration_ms: 33.410861
+      type: 'test'
+      ...
+    # Subtest: does not add technical incomplete to older frozen V4 contracts
+    ok 8 - does not add technical incomplete to older frozen V4 contracts
+      ---
+      duration_ms: 59.354999
+      type: 'test'
+      ...
+    # Subtest: does not settle ratings on a technical incomplete
+    ok 9 - does not settle ratings on a technical incomplete
+      ---
+      duration_ms: 33.344185
+      type: 'test'
+      ...
+    1..9
+ok 8 - awareness-v5 battle version boundary
+  ---
+  duration_ms: 408.09833
+  type: 'suite'
+  ...
+# Subtest: battle pacing policy
+    # Subtest: keeps all pacing thresholds in one validated snapshot
+    ok 1 - keeps all pacing thresholds in one validated snapshot
+      ---
+      duration_ms: 4.652507
+      type: 'test'
+      ...
+    # Subtest: produces reproducible local measurements without speech generation
+    ok 2 - produces reproducible local measurements without speech generation
+      ---
+      duration_ms: 748.313437
+      type: 'test'
+      ...
+    # Subtest: does not erase parameter changes under the explicit-effects policy
+    ok 3 - does not erase parameter changes under the explicit-effects policy
+      ---
+      duration_ms: 11.392009
+      type: 'test'
+      ...
+    1..3
+ok 9 - battle pacing policy
+  ---
+  duration_ms: 766.769319
+  type: 'suite'
+  ...
+# Subtest: battle turn causal receipt
+    # Subtest: assembles explicit action, event, mechanics, semantic, and carry-forward owners
+    ok 1 - assembles explicit action, event, mechanics, semantic, and carry-forward owners
+      ---
+      duration_ms: 87.327625
+      type: 'test'
+      ...
+    # Subtest: keeps absent links unknown and never mines an event summary
+    ok 2 - keeps absent links unknown and never mines an event summary
+      ---
+      duration_ms: 38.872155
+      type: 'test'
+      ...
+    # Subtest: rejects dangling links and non-valid mechanical evidence
+    ok 3 - rejects dangling links and non-valid mechanical evidence
+      ---
+      duration_ms: 34.985416
+      type: 'test'
+      ...
+    # Subtest: rejects an applied patch that cannot reproduce committed semantic state
+    ok 4 - rejects an applied patch that cannot reproduce committed semantic state
+      ---
+      duration_ms: 25.692808
+      type: 'test'
+      ...
+    1..4
+ok 10 - battle turn causal receipt
+  ---
+  duration_ms: 189.87958
+  type: 'suite'
+  ...
+# Subtest: narration causal projection
+    # Subtest: projects external causal structure without IDs, raw values, or semantic paths
+    ok 1 - projects external causal structure without IDs, raw values, or semantic paths
+      ---
+      duration_ms: 42.765563
+      type: 'test'
+      ...
+    # Subtest: attributes accepted semantic change only in an exact omniscient chain
+    ok 2 - attributes accepted semantic change only in an exact omniscient chain
+      ---
+      duration_ms: 52.447811
+      type: 'test'
+      ...
+    # Subtest: keeps character-limited changes observed but causally unassigned
+    ok 3 - keeps character-limited changes observed but causally unassigned
+      ---
+      duration_ms: 32.524017
+      type: 'test'
+      ...
+    1..3
+ok 11 - narration causal projection
+  ---
+  duration_ms: 128.514694
+  type: 'suite'
+  ...
+# Subtest: structured character manifestation boundary
+    # Subtest: drops a private proposal that is not grounded in the observer packet
+    ok 1 - drops a private proposal that is not grounded in the observer packet
+      ---
+      duration_ms: 6.87059
+      type: 'test'
+      ...
+    # Subtest: keeps a proposal invisible until a carrier expression commits
+    ok 2 - keeps a proposal invisible until a carrier expression commits
+      ---
+      duration_ms: 8.164679
+      type: 'test'
+      ...
+    # Subtest: preserves structure when A and B are swapped
+    ok 3 - preserves structure when A and B are swapped
+      ---
+      duration_ms: 0.930843
+      type: 'test'
+      ...
+    1..3
+ok 12 - structured character manifestation boundary
+  ---
+  duration_ms: 21.036808
+  type: 'suite'
+  ...
+# Subtest: dialogue context contracts
+    # Subtest: bounds observer packet material without accepting an ambiguous side
+    ok 1 - bounds observer packet material without accepting an ambiguous side
+      ---
+      duration_ms: 4.48119
+      type: 'test'
+      ...
+    # Subtest: keeps expression guidance compact and private
+    ok 2 - keeps expression guidance compact and private
+      ---
+      duration_ms: 1.058847
+      type: 'test'
+      ...
+    # Subtest: requires compact psyche to carry its social feedback loop
+    ok 3 - requires compact psyche to carry its social feedback loop
+      ---
+      duration_ms: 2.638181
+      type: 'test'
+      ...
+    # Subtest: makes a stable battle-owned snapshot from operator settings
+    ok 4 - makes a stable battle-owned snapshot from operator settings
+      ---
+      duration_ms: 1.908012
+      type: 'test'
+      ...
+    # Subtest: selects the revised Compact contract only for V2 snapshots
+    ok 5 - selects the revised Compact contract only for V2 snapshots
+      ---
+      duration_ms: 0.429775
+      type: 'test'
+      ...
+    # Subtest: keeps old receipts readable and requires provenance for deployment overrides
+    ok 6 - keeps old receipts readable and requires provenance for deployment overrides
+      ---
+      duration_ms: 5.987182
+      type: 'test'
+      ...
+    # Subtest: projects only the observer's changed percepts and evidence references
+    ok 7 - projects only the observer's changed percepts and evidence references
+      ---
+      duration_ms: 1.696868
+      type: 'test'
+      ...
+    # Subtest: retains event provenance across perception projection and packet construction
+    ok 8 - retains event provenance across perception projection and packet construction
+      ---
+      duration_ms: 15.550419
+      type: 'test'
+      ...
+    # Subtest: does not carry unobserved evidence into the other observer packet
+    ok 9 - does not carry unobserved evidence into the other observer packet
+      ---
+      duration_ms: 1.798912
+      type: 'test'
+      ...
+    # Subtest: keeps committed utterance perception in conversation rather than result packets
+    ok 10 - keeps committed utterance perception in conversation rather than result packets
+      ---
+      duration_ms: 1.535345
+      type: 'test'
+      ...
+    1..10
+ok 13 - dialogue context contracts
+  ---
+  duration_ms: 40.986987
+  type: 'suite'
+  ...
+# Subtest: observer perception projection
+    # Subtest: starts with visible counterpart presence and retains it without new evidence
+    ok 1 - starts with visible counterpart presence and retains it without new evidence
+      ---
+      duration_ms: 32.918394
+      type: 'test'
+      ...
+    # Subtest: separates canonical identity from witnessed and unwitnessed apparent forms
+    ok 2 - separates canonical identity from witnessed and unwitnessed apparent forms
+      ---
+      duration_ms: 7.07802
+      type: 'test'
+      ...
+    # Subtest: keeps hallucinated identity observer-local without creating a canonical entity
+    ok 3 - keeps hallucinated identity observer-local without creating a canonical entity
+      ---
+      duration_ms: 4.939957
+      type: 'test'
+      ...
+    # Subtest: lowers access from structured hiding occlusion absence and observer impairment
+    ok 4 - lowers access from structured hiding occlusion absence and observer impairment
+      ---
+      duration_ms: 16.214251
+      type: 'test'
+      ...
+    # Subtest: accepts only committed explicit loss evidence as a non-world access drop
+    ok 5 - accepts only committed explicit loss evidence as a non-world access drop
+      ---
+      duration_ms: 7.170898
+      type: 'test'
+      ...
+    # Subtest: separates self, an unknown counterpart contact, ambient cues, and raw-free mechanics
+    ok 6 - separates self, an unknown counterpart contact, ambient cues, and raw-free mechanics
+      ---
+      duration_ms: 30.359176
+      type: 'test'
+      ...
+    # Subtest: reuses contacts, preserves lost identity, and promotes a later identification prospectively
+    ok 7 - reuses contacts, preserves lost identity, and promotes a later identification prospectively
+      ---
+      duration_ms: 15.047454
+      type: 'test'
+      ...
+    # Subtest: splits an ambiguous group only into newly numbered future contacts
+    ok 8 - splits an ambiguous group only into newly numbered future contacts
+      ---
+      duration_ms: 6.806259
+      type: 'test'
+      ...
+    # Subtest: evicts the oldest low-salience lost unknown contact without reusing ids
+    ok 9 - evicts the oldest low-salience lost unknown contact without reusing ids
+      ---
+      duration_ms: 19.553073
+      type: 'test'
+      ...
+    # Subtest: keeps an untracked cue ambient when no lost unknown contact can be evicted
+    ok 10 - keeps an untracked cue ambient when no lost unknown contact can be evicted
+      ---
+      duration_ms: 28.637739
+      type: 'test'
+      ...
+    # Subtest: is symmetric when A and B roles are swapped
+    ok 11 - is symmetric when A and B roles are swapped
+      ---
+      duration_ms: 4.534652
+      type: 'test'
+      ...
+    # Subtest: retains the registry in the engine-only fallback and seeds legacy identity without access
+    ok 12 - retains the registry in the engine-only fallback and seeds legacy identity without access
+      ---
+      duration_ms: 11.983
+      type: 'test'
+      ...
+    1..12
+ok 14 - observer perception projection
+  ---
+  duration_ms: 190.832837
+  type: 'suite'
+  ...
+# Subtest: profile grounding
+    # Subtest: freezes a complete mechanics-free own-profile anchor
+    ok 1 - freezes a complete mechanics-free own-profile anchor
+      ---
+      duration_ms: 7.406262
+      type: 'test'
+      ...
+    # Subtest: keeps null identity facts unknown instead of inventing them
+    ok 2 - keeps null identity facts unknown instead of inventing them
+      ---
+      duration_ms: 1.562778
+      type: 'test'
+      ...
+    # Subtest: does not expose the counterpart anchor to character-limited narration
+    ok 3 - does not expose the counterpart anchor to character-limited narration
+      ---
+      duration_ms: 1.114699
+      type: 'test'
+      ...
+    # Subtest: projects a removed profile item into both current profile and scene state
+    ok 4 - projects a removed profile item into both current profile and scene state
+      ---
+      duration_ms: 23.892895
+      type: 'test'
+      ...
+    1..4
+ok 15 - profile grounding
+  ---
+  duration_ms: 36.349459
+  type: 'suite'
+  ...
+# Subtest: committed utterance perception
+    # Subtest: commits character-authored speech and projects exact hearing without identity leakage
+    ok 1 - commits character-authored speech and projects exact hearing without identity leakage
+      ---
+      duration_ms: 23.922251
+      type: 'test'
+      ...
+    # Subtest: projects partial, misunderstood, unattributed, and unheard speech separately
+    ok 2 - projects partial, misunderstood, unattributed, and unheard speech separately
+      ---
+      duration_ms: 11.809718
+      type: 'test'
+      ...
+    # Subtest: rejects physically impossible expressions and stays symmetric by side
+    ok 3 - rejects physically impossible expressions and stays symmetric by side
+      ---
+      duration_ms: 20.076786
+      type: 'test'
+      ...
+    # Subtest: does not relink an unwitnessed transformed speaker by canonical voice label
+    ok 4 - does not relink an unwitnessed transformed speaker by canonical voice label
+      ---
+      duration_ms: 15.647421
+      type: 'test'
+      ...
+    1..4
+ok 16 - committed utterance perception
+  ---
+  duration_ms: 73.428775
+  type: 'suite'
+  ...
+# Subtest: historical ADR checker exceptions
+    # Subtest: recognizes only the unchanged 0015-e2e-operator-session-reentry pair
+    ok 1 - recognizes only the unchanged 0015-e2e-operator-session-reentry pair
+      ---
+      duration_ms: 4.288076
+      type: 'test'
+      ...
+    # Subtest: recognizes only the unchanged 0016-scene-beats-batched-narration pair
+    ok 2 - recognizes only the unchanged 0016-scene-beats-batched-narration pair
+      ---
+      duration_ms: 3.480371
+      type: 'test'
+      ...
+    # Subtest: recognizes only the unchanged 0017-public-turn-intra-turn-beats pair
+    ok 3 - recognizes only the unchanged 0017-public-turn-intra-turn-beats pair
+      ---
+      duration_ms: 1.742009
+      type: 'test'
+      ...
+    # Subtest: recognizes only the unchanged 0019-observation-token-and-cost-admission pair
+    ok 4 - recognizes only the unchanged 0019-observation-token-and-cost-admission pair
+      ---
+      duration_ms: 1.042606
+      type: 'test'
+      ...
+    # Subtest: checks new ADRs through the ordinary path
+    ok 5 - checks new ADRs through the ordinary path
+      ---
+      duration_ms: 0.344698
+      type: 'test'
+      ...
+    1..5
+ok 17 - historical ADR checker exceptions
+  ---
+  duration_ms: 16.069012
+  type: 'suite'
+  ...
+1..17
+# tests 106
+# suites 15
+# pass 106
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 20443.306585

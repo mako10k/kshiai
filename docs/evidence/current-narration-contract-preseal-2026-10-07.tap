@@ -1,0 +1,136 @@
+TAP version 13
+# [llm] xai ready engine=grok-test fast=grok-test
+# Subtest: constructed narration content and receipt contracts
+    # Subtest: preserves committed speech in direct runtime APIs when a model rewrites punctuation
+    ok 1 - preserves committed speech in direct runtime APIs when a model rewrites punctuation
+      ---
+      duration_ms: 15.952556
+      type: 'test'
+      ...
+    # Subtest: uses current exact-speech instructions in all direct consumer builders
+    ok 2 - uses current exact-speech instructions in all direct consumer builders
+      ---
+      duration_ms: 2.185205
+      type: 'test'
+      ...
+    # Subtest: changes only registered historical grammar and speech permission while preserving style and observation rules
+    ok 3 - changes only registered historical grammar and speech permission while preserving style and observation rules
+      ---
+      duration_ms: 3.111901
+      type: 'test'
+      ...
+    # Subtest: constructs every real phase with only the strict receipts grammar and valid examples
+    ok 4 - constructs every real phase with only the strict receipts grammar and valid examples
+      ---
+      duration_ms: 36.309702
+      type: 'test'
+      ...
+    # Subtest: constructs alternate combat batches through the same repaired phase contract
+    ok 5 - constructs alternate combat batches through the same repaired phase contract
+      ---
+      duration_ms: 8.64473
+      type: 'test'
+      ...
+    1..5
+ok 1 - constructed narration content and receipt contracts
+  ---
+  duration_ms: 69.172423
+  type: 'suite'
+  ...
+# [llm] xai ready engine=grok-4-fast-non-reasoning fast=grok-4-fast-non-reasoning
+# [llm] xai ready engine=grok-4-fast-non-reasoning fast=grok-4-fast-non-reasoning
+# [llm] xai ready engine=grok-4.3 fast=grok-4.3
+# Subtest: OpenAI-compatible narrator speech rendering
+    # Subtest: hides canonical speaker names, accepts free labels, and keeps scene speech
+    ok 1 - hides canonical speaker names, accepts free labels, and keeps scene speech
+      ---
+      duration_ms: 11.692358
+      type: 'test'
+      ...
+    1..1
+ok 2 - OpenAI-compatible narrator speech rendering
+  ---
+  duration_ms: 13.30711
+  type: 'suite'
+  ...
+# Subtest: OpenAI-compatible causal narration input
+    # Subtest: sends a role-labelled brief and adds causal facts only with a projection
+    ok 1 - sends a role-labelled brief and adds causal facts only with a projection
+      ---
+      duration_ms: 4.833958
+      type: 'test'
+      ...
+    1..1
+ok 3 - OpenAI-compatible causal narration input
+  ---
+  duration_ms: 5.108835
+  type: 'suite'
+  ...
+# Subtest: OpenAI-compatible judgment presentation input
+    # Subtest: admits the public projection but not raw adjudication prose
+    ok 1 - admits the public projection but not raw adjudication prose
+      ---
+      duration_ms: 2.267979
+      type: 'test'
+      ...
+    1..1
+ok 4 - OpenAI-compatible judgment presentation input
+  ---
+  duration_ms: 2.577175
+  type: 'suite'
+  ...
+# [llm] xai ready engine=test fast=test
+# [llm] openai ready engine=test fast=test
+# [llm] openai/engine model=test ok 122ms
+# Subtest: xAI outgoing response-schema graph
+    # Subtest: accepts every existing strict perception format without modifying it
+    ok 1 - accepts every existing strict perception format without modifying it
+      ---
+      duration_ms: 9.046889
+      type: 'test'
+      ...
+    # Subtest: rejects direct, transitive, root and escaped-pointer cycles
+    ok 2 - rejects direct, transitive, root and escaped-pointer cycles
+      ---
+      duration_ms: 1.692869
+      type: 'test'
+      ...
+    # Subtest: allows shared acyclic definitions and treats literal refs as data
+    ok 3 - allows shared acyclic definitions and treats literal refs as data
+      ---
+      duration_ms: 0.958254
+      type: 'test'
+      ...
+    # Subtest: resolves escaped and percent-encoded local pointers and array indices
+    ok 4 - resolves escaped and percent-encoded local pointers and array indices
+      ---
+      duration_ms: 1.132929
+      type: 'test'
+      ...
+    # Subtest: rejects at the ordinary xAI boundary before fetch, even with fallback enabled
+    ok 5 - rejects at the ordinary xAI boundary before fetch, even with fallback enabled
+      ---
+      duration_ms: 9.073423
+      type: 'test'
+      ...
+    # Subtest: does not impose xAI recursion policy on another provider
+    ok 6 - does not impose xAI recursion policy on another provider
+      ---
+      duration_ms: 123.764091
+      type: 'test'
+      ...
+    1..6
+ok 5 - xAI outgoing response-schema graph
+  ---
+  duration_ms: 148.890601
+  type: 'suite'
+  ...
+1..5
+# tests 14
+# suites 5
+# pass 14
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 1357.222296

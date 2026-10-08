@@ -1,0 +1,16 @@
+domain CharacterContractVocabulary:
+  description "Remove the contract-test vocabulary widening without changing negative-membership behavior"
+problem P1:
+  "structured-character.test.ts casts the registered observed-event-kind tuple to readonly string[] before testing direct_address membership."
+evidence E1:
+  "The observed-event vocabulary excludes direct_address, whereas the registered speech reactTo vocabulary includes it. The original assertion expects false and is accompanied by safeParse rejection and accepted utterance tests."
+evidence E2:
+  "The assertion widens a contract constant to bypass the narrow includes parameter type. Runtime TypeScript erasure leaves the original values unchanged; a passing assertion cannot prove the absence of this escape. The separate schema rejection test already verifies runtime exclusion."
+evidence E3:
+  "Repository rules require contract-related escapes found during a repair to be closed, preserving required information and original test cases. Independent read-only review identified exactly this expression among five files."
+premise U1:
+  "This is a local test-expression type bypass, not evidence of runtime vocabulary widening, production data loss or a historical introduction cause. A string-typed Set can accept an arbitrary query while retaining the same literal source values."
+decision D1 based_on P1, E1, E2, E3, U1:
+  "The producing condition is selecting a narrow literal tuple includes signature then asserting the tuple as broad strings to query an intentionally unsupported value. Remove the cast by constructing Set<string> from the unchanged tuple and testing has(direct_address). Preserve the false expectation, schema rejection, original test labels and all other assertions. No production type, schema, vocabulary or behavior changes."
+decision D2 based_on D1, E1, E2, E3, U1:
+  "Run all original seven-file cases, standalone strict imported-type check and workspace check. Compare original assertions except for this explicitly equivalent membership operation; establish unchanged literal input and expected false. Seal only the reviewed pure schema/helper/reader scope and preserve the global unsealed stop."

@@ -1,0 +1,9 @@
+# ワークフロー静的ガードの契約レビュー
+
+独立レビュー battle_helper_contract_review のINSIDE対象は元7ケース。診断pass7/fail0/skip0。実装・元assertionを変更しない。
+
+release_processのbuild once/promote・exact commit/image/Worker revision・staging acceptance・rollback/smoke、Accepted ADR0006の実況OIDC、ADR0015のoperator identity、ADR0018のStage限定overrideとordinary productionのpersisted setting、ADR0024のauthoring OIDCとfence、ADR0057のCompact/persisted_settingと公開観測・promotion controls、ADR0017の固定policy継続に基づく。
+
+確認はStage/Promote/Observeの既存ガード文字列のみ。pacingはcurrent/candidate-12-v2という選択値がStageとPromoteで一致することだけであり、候補の全数値mechanic採用や選択を証明しない。administrator付与、HTTP/SSE、OIDC配送の実行成功、実モデル品質、A3有料呼び出し許可、B8意味上の移行証明、公開受入を証明しない。
+
+既存workflowの保持は破棄済みOLD_CUTOVER_TRIALの再開・検証ではない。テスト実行はローカルファイル読込のみで、workflow/Cloud Tasks/配備/providerを実行しない。

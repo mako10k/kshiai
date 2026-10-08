@@ -1,0 +1,108 @@
+[
+  {
+    "key": "semantic-recovery-provider-bounded-20261008",
+    "path": "backend/src/llm/semantic-authoring-provider.test.ts",
+    "parents": [
+      "implementation-semantic-recovery-provider",
+      "implementation-semantic-recovery-execution-policy"
+    ],
+    "scope": "Existing Accepted controlled semantic kernel/adapters/public mapping wholefile recovery only; no current full route readiness, ProposedADR0059, runtime numeric policy selection or live provider proof. Whole originalcases/assertions unchanged, no skips.",
+    "ref": "verification/semantic-recovery-provider-bounded-20261008",
+    "test": true,
+    "sha256": "0c6846d3422cd538e3470456622d5f278fa5635a03e4f0844b5db27f0df466b0",
+    "sealId": "f19a4794b62dd0a61f80da7097be1fe096cdcf3aa2a16bb7ab8a0da1c1035fc6",
+    "causeSealIds": [
+      "a420f0e74f6e4a46c2af413afecbe4ac4242dee94441c1a7c7af599b7eda17e2",
+      "11195c24131e1d66289d5b5aebd457862a7ac82f700f1d814c78794024a3b049"
+    ],
+    "priorInventoryRef": "verification/semantic-authoring-provider-v1"
+  },
+  {
+    "key": "semantic-recovery-character-adapter-bounded-20261008",
+    "path": "backend/src/services/semantic-authoring/adapters/character-v3.test.ts",
+    "parents": [
+      "implementation-semantic-recovery-character-adapter",
+      "implementation-semantic-recovery-character-contracts"
+    ],
+    "scope": "Existing Accepted controlled semantic kernel/adapters/public mapping wholefile recovery only; no current full route readiness, ProposedADR0059, runtime numeric policy selection or live provider proof. Whole originalcases/assertions unchanged, no skips.",
+    "ref": "verification/semantic-recovery-character-adapter-bounded-20261008",
+    "test": true,
+    "sha256": "fd544e0245832e806755cceb7ad9259ecaf15fc6e2f785566cb886735e26e8c1",
+    "sealId": "be15cea5ea4c2138822b7be1de0b0cfdc9b71f9c71fe2dcf40e9b57d4679bd7c",
+    "causeSealIds": [
+      "afda05765c014a51e5bdccde6533d3345268857b7f80caa03848738226b838a7",
+      "76a338c00973d0a9bcd270f6277959943e519fbd520b1b57b97a59c735e0bad8"
+    ],
+    "priorInventoryRef": "verification/character-v3-migrate-preservation-bound-current-20260925"
+  },
+  {
+    "key": "semantic-recovery-public-mapping-bounded-20261008",
+    "path": "backend/src/services/semantic-authoring/public-mapping.test.ts",
+    "parents": [
+      "implementation-semantic-recovery-public-mapping",
+      "implementation-semantic-recovery-public-contracts"
+    ],
+    "scope": "Existing Accepted controlled semantic kernel/adapters/public mapping wholefile recovery only; no current full route readiness, ProposedADR0059, runtime numeric policy selection or live provider proof. Whole originalcases/assertions unchanged, no skips.",
+    "ref": "verification/semantic-recovery-public-mapping-bounded-20261008",
+    "test": true,
+    "sha256": "5589d87f82716abea927164acfc781bd3a26f2d808bab9287d73fab1c482ffe8",
+    "sealId": "2f3b6bec2875281902834e1c5ffb62345bae870f806a6d51df18578caf65a534",
+    "causeSealIds": [
+      "2e6f4497926f275f8b36245fa399489540da8f5a83df7b5f641229252999e0e3",
+      "83679d5bb368229ae76ddbff8bec58b81ce51e9a75a51672c7bb7ebe55c14408"
+    ],
+    "priorInventoryRef": "verification/semantic-authoring-public-mapping-v1"
+  },
+  {
+    "key": "semantic-recovery-character-contracts-bounded-20261008",
+    "path": "packages/shared/src/character-semantic-authoring.test.ts",
+    "parents": [
+      "implementation-semantic-recovery-character-contracts",
+      "implementation-semantic-recovery-migration-contracts"
+    ],
+    "scope": "Existing Accepted controlled semantic kernel/adapters/public mapping wholefile recovery only; no current full route readiness, ProposedADR0059, runtime numeric policy selection or live provider proof. Whole originalcases/assertions unchanged, no skips.",
+    "ref": "verification/semantic-recovery-character-contracts-bounded-20261008",
+    "test": true,
+    "sha256": "9adcf3f338043773019a137517952e94d35baa1656fe5a461492846fc24098ae",
+    "sealId": "77ff51eceaa58daedbd1002d60b15b6c42ab7eb54cb27b66db3ef37efa569345",
+    "causeSealIds": [
+      "76a338c00973d0a9bcd270f6277959943e519fbd520b1b57b97a59c735e0bad8",
+      "e7d0eb64a239fc06dc5669d23a6cb2bb32ff6001a83c3445710cc0a5d46c8a10"
+    ],
+    "priorInventoryRef": "verification/semantic-authoring-character-contracts-v1"
+  },
+  {
+    "key": "semantic-recovery-conformance-bounded-20261008",
+    "path": "backend/src/services/semantic-authoring/conformance.test.ts",
+    "parents": [
+      "implementation-semantic-recovery-contracts",
+      "implementation-semantic-recovery-orchestration",
+      "implementation-semantic-recovery-execution",
+      "implementation-semantic-recovery-ports",
+      "implementation-semantic-recovery-progress-monitor",
+      "implementation-semantic-recovery-scripted-ports",
+      "implementation-semantic-recovery-character-adapter",
+      "implementation-semantic-recovery-battlefield-adapter",
+      "implementation-semantic-recovery-narration-adapter",
+      "implementation-semantic-recovery-public-mapping"
+    ],
+    "scope": "Existing Accepted controlled semantic kernel/adapters/public mapping wholefile recovery only; no current full route readiness, ProposedADR0059, runtime numeric policy selection or live provider proof. Whole originalcases/assertions unchanged, no skips.",
+    "ref": "verification/semantic-recovery-conformance-bounded-20261008",
+    "test": true,
+    "sha256": "0e9ababee0db7df3a18c365ae8fac859e518c0f4fa07d473296b27092479ee31",
+    "sealId": "5e80483ea3621c45eaf972acfc5b047d35bf82f8902ad6b731bd89b58d190332",
+    "causeSealIds": [
+      "90df3c2c74cfedc2d5f0de6187786bb4d9470d7b5e49d789721378ad11df8240",
+      "11aa98609796b3fb676c1baefb648556aa90ebf6cab150f56590aa01b61ee91f",
+      "a5af3c2d06a7e3dd3912a744e0f8bced86a13f214caa2248bd1487894f635748",
+      "058e6cfb7f73892647ac3dd22dfdb040c3ce088ac36422f99867080286203254",
+      "8c2a2e735262c7fb2b62c6bff2139d0eb33ba3e75d2a65eaf4e896483e5d0509",
+      "a3058ee1e284b6eff25136b61aa3b828d47e1d3c15b26cc522802e37c1a91c52",
+      "afda05765c014a51e5bdccde6533d3345268857b7f80caa03848738226b838a7",
+      "8531034c70ea9751330345dd99fb0d64e7817a9ecfa21fda37d2cd26b2bcbb15",
+      "603632db17373c90f1abd2b832c67f6697b04ce21b1f9b9253ae6a480dcfcede",
+      "2e6f4497926f275f8b36245fa399489540da8f5a83df7b5f641229252999e0e3"
+    ],
+    "priorInventoryRef": "verification/semantic-authoring-conformance-current-provisional-20260918"
+  }
+]

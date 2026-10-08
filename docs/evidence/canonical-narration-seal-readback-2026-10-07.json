@@ -1,0 +1,16 @@
+{
+  "newRefs": 44,
+  "previousHeadsUnchanged": true,
+  "previousHeadCount": 964,
+  "totalRefs": 1008,
+  "sourceBytesMatch": true,
+  "stale": 0,
+  "fsck": "ok",
+  "limitations": [
+    "All original77cases/assertions preserved; two test fixture/type repairs only",
+    "Local SQLite/fake HTTP/clock/provider/pure helper proofs, not PostgreSQL/live/public completion or actual pricing",
+    "Existing backend noImplicitAny:false is bypassed by targeted standalone strict compiler; normal workspace success alone not that proof",
+    "Normal-policy synthetic seed not discarded cutover revival; old certified/explicit timing policies retained",
+    "Whole251files retained, unresolved owner paths and unsealed fail-closed gate unchanged"
+  ]
+}

@@ -29,7 +29,7 @@ test("shows the stored structured difference without presenting incomplete work 
     },
   } }));
   await page.goto("/reviews/focused-review");
-  await expect(page.getByRole("heading", { name: "保存済みの構造化候補（V3）" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "保存済みの構造化候補（キャラクター定義 v3）" })).toBeVisible();
   await page.getByText("外見（変更あり）", { exact: true }).click();
   await expect(page.getByText("赤い外套", { exact: true })).toBeVisible();
   await expect(page.getByText("青い外套", { exact: true })).toBeVisible();
@@ -148,7 +148,7 @@ test("keeps an owned V2 profile readable without advertising unavailable migrati
     selectable: false, upgradeAction: null };
   await page.route("**/api/characters/read-only-character", (route) => route.fulfill({ json: { character, isOwner: true } }));
   await page.goto("/characters/read-only-character");
-  await expect(page.getByText("現在、自動でV3へ移行する機能は利用できません。この旧版は閲覧できます。", { exact: true })).toBeVisible();
+  await expect(page.getByText("現在、自動でキャラクター定義 v3へ移行する機能は利用できません。この旧版は閲覧できます。", { exact: true })).toBeVisible();
   await expect(page.getByRole("button", { name: "このキャラをV3へ移行" })).toHaveCount(0);
   await expect(page.getByRole("heading", { name: "改善提案（戦績コーチ）" })).toHaveCount(0);
   await expect(page.getByRole("button", { name: "削除", exact: true })).toHaveCount(0);

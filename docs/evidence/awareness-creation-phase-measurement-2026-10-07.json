@@ -1,0 +1,23 @@
+{
+  "scope": "6-file phase from recorded diagnostic start through review, fixture repair, registration and final readback; earlier exploratory preparation excluded",
+  "startedUnix": 1791366674.869874,
+  "finishedUnix": 1791367837.057916,
+  "elapsedSeconds": 1162.1880424022675,
+  "wholeFiles": 6,
+  "cases": 29,
+  "registrationWriter": {
+    "scope": "registration writer only, excludes prior review and verification",
+    "elapsedSeconds": 489.40264225006104,
+    "wholeFiles": 6,
+    "newRefs": 12,
+    "causeEdges": 51
+  },
+  "method": "six-file creation/initial advancement contract review, reused independent audit plus one type-only delta, parallel diagnostic/strict, exact source/cause readback",
+  "comparison": {
+    "previousRegistrationOnlySeconds": 1017.8405129909515,
+    "previousWholeFiles": 12,
+    "currentRegistrationSecondsPerFile": 81.56710704167683,
+    "previousRegistrationSecondsPerFile": 84.82004274924596,
+    "limitations": "Writer-only samples have different source sizes and cause-edge counts; do not compare previous writer time against current whole-phase time or infer general performance."
+  }
+}

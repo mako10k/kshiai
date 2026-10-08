@@ -1,0 +1,17 @@
+{
+  "reviewer": "battle_helper_contract_review",
+  "classification": "INSIDE",
+  "originalCases": 32,
+  "files": {
+    "backend/src/llm/character-definition-response-schema.test.ts": "17372875baea26e49c6609a270bdd5dc82ea84f3924a69979acea06e55666f85",
+    "backend/src/llm/openai-compatible-character-definition.test.ts": "19cac8805bf1830aad7a4405efc0b0fcc6430057363701cebdb76345c0cd6b68",
+    "backend/src/llm/character-migration-ollama-provider.test.ts": "7c42f81dd9c98d9b367e51f8f50061aac1cd6f066678e6628e8b8b83e75153f5",
+    "backend/src/llm/character-definition-response-schema.ts": "1bde925d3b5326e5af3da3e625432cc1ffec452c119e1f75e0ea55433e087949",
+    "backend/src/llm/openai-compatible.ts": "8d4be097ddbfcb0da515dd0db402c7dc6dddccb763d625fce16165e7c524d2a5",
+    "backend/src/llm/character-migration-ollama-provider.ts": "7cef1a87df486d894ad5848f78c9800c2746f266698e892d04ba85bd47cf5816",
+    "backend/src/llm/provider-response-schema.ts": "252d84ebbd83a63c6fd81fab89fcae0faef6b0fd9ab46def4af957e055a1987a"
+  },
+  "ordinaryV2AuthoringAuthorized": false,
+  "proposedADR0059Used": false,
+  "sourceTestsChanged": false
+}

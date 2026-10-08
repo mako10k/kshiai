@@ -1,4 +1,5 @@
 import { z } from "zod";
+// R: Validate and advance serializable causal-turn decision and commit checkpoints.
 import {
   BattleTemporalPlanSchema,
   BattleTemporalSideSchema,
@@ -67,7 +68,11 @@ export const CausalTurnExecutionSchema = z.object({
         message: "terminal execution must be past the final bucket",
       });
     }
-    if (execution.committedBucketIndices.length !== execution.temporalPlan.buckets.length) {
+    const committed = new Set(execution.committedBucketIndices);
+    if (
+      execution.committedBucketIndices.length !== execution.temporalPlan.buckets.length ||
+      execution.temporalPlan.buckets.some((_, index) => !committed.has(index))
+    ) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
         path: ["committedBucketIndices"],
@@ -95,6 +100,7 @@ export const CausalTurnExecutionSchema = z.object({
   if (
     execution.status === "awaiting_bucket_commit" &&
     (execution.decidedSides.length !== expected.size ||
+      new Set(execution.decidedSides).size !== expected.size ||
       execution.decidedSides.some((side) => !expected.has(side)))
   ) {
     ctx.addIssue({

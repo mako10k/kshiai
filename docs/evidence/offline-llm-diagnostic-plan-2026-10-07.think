@@ -1,0 +1,10 @@
+domain OFFLINE_LLM_DIAGNOSTIC:
+  description "Collect actual LLM unit test failures in isolated local processes."
+evidence AUTHORITY:
+  "Owner active goal includes all-test conformance; diagnostic runs are permitted but not formal eligibility acceptance."
+evidence REVIEW:
+  "Read-only execution review covers42 LLM tests; real HTTP routes are injected/mocked. Six create temp SQLite before dynamic config imports. Existing past static-import/config bug requires fallback isolation."
+premise METHOD:
+  "A Node native-only preloader creates a fresh per-process temp fallback DB environment before application imports. It does not import config/db, change tests or stub assertions. Each test may override environment before its own dynamic imports. DATABASE_URL blank protects production Postgres. Cleanup only its own freshly-created directory on exit. Tests needing their intended path can still fail if early config caching exists."
+decision D1 based_on AUTHORITY, REVIEW, METHOD:
+  "Audit then diagnostically execute42 LLM tests plus mocked image test with Node22, capture TAP, preserve all failures and skip counts, do not claim formal Seal pass."

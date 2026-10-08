@@ -1,0 +1,103 @@
+TAP version 13
+# Subtest: character-focus ablation report
+    # Subtest: requires two complete eligibility-correct reviews and a reconciled set
+    ok 1 - requires two complete eligibility-correct reviews and a reconciled set
+      ---
+      duration_ms: 38.764362
+      type: 'test'
+      ...
+    # Subtest: macro-aggregates the frozen thresholds only after reconciliation
+    ok 2 - macro-aggregates the frozen thresholds only after reconciliation
+      ---
+      duration_ms: 60.167325
+      type: 'test'
+      ...
+    1..2
+ok 1 - character-focus ablation report
+  ---
+  duration_ms: 102.592876
+  type: 'suite'
+  ...
+# Subtest: character-focus expression ablation protocol
+    # Subtest: freezes 144 randomized calls with balanced arms and samples
+    ok 1 - freezes 144 randomized calls with balanced arms and samples
+      ---
+      duration_ms: 54.571765
+      type: 'test'
+      ...
+    # Subtest: keeps control exact and places ID-free focus last only in treatment inputs
+    ok 2 - keeps control exact and places ID-free focus last only in treatment inputs
+      ---
+      duration_ms: 14.329104
+      type: 'test'
+      ...
+    # Subtest: isolates foregrounding, state persistence, and focus-band modulation
+    ok 3 - isolates foregrounding, state persistence, and focus-band modulation
+      ---
+      duration_ms: 5.061407
+      type: 'test'
+      ...
+    # Subtest: does not reveal the arm in the blinded review context
+    ok 4 - does not reveal the arm in the blinded review context
+      ---
+      duration_ms: 10.429805
+      type: 'test'
+      ...
+    # Subtest: exports one serializable immutable protocol material
+    ok 5 - exports one serializable immutable protocol material
+      ---
+      duration_ms: 14.512949
+      type: 'test'
+      ...
+    1..5
+ok 2 - character-focus expression ablation protocol
+  ---
+  duration_ms: 103.03493
+  type: 'suite'
+  ...
+# Subtest: deterministic character focus policy V1
+    # Subtest: passes the twelve frozen observer-relative scenarios at every focus band
+    ok 1 - passes the twelve frozen observer-relative scenarios at every focus band
+      ---
+      duration_ms: 50.766876
+      type: 'test'
+      ...
+    # Subtest: is replay deterministic and does not score observation prose
+    ok 2 - is replay deterministic and does not score observation prose
+      ---
+      duration_ms: 2.513487
+      type: 'test'
+      ...
+    # Subtest: fails closed on missing or mismatched focus inputs
+    ok 3 - fails closed on missing or mismatched focus inputs
+      ---
+      duration_ms: 1.094338
+      type: 'test'
+      ...
+    # Subtest: keeps structure symmetric when A and B labels are swapped
+    ok 4 - keeps structure symmetric when A and B labels are swapped
+      ---
+      duration_ms: 0.756982
+      type: 'test'
+      ...
+    # Subtest: uses high focus only for weak-cue detection and secondary capacity
+    ok 5 - uses high focus only for weak-cue detection and secondary capacity
+      ---
+      duration_ms: 1.806911
+      type: 'test'
+      ...
+    1..5
+ok 3 - deterministic character focus policy V1
+  ---
+  duration_ms: 61.859616
+  type: 'suite'
+  ...
+1..3
+# tests 12
+# suites 3
+# pass 12
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 1805.810631

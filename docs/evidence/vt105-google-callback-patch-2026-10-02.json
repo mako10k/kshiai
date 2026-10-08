@@ -1,0 +1,3 @@
+{
+  "uri_allow_list": "https://kshiai.mk10.org/auth/callback,http://localhost:5188/auth/callback,http://127.0.0.1:5188/auth/callback,https://26ff9223-kshiai-web.mako10k.workers.dev/auth/callback"
+}

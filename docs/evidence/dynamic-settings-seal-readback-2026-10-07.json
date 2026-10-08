@@ -1,0 +1,15 @@
+{
+  "newRefs": 13,
+  "previousHeadsUnchanged": true,
+  "previousHeadCount": 919,
+  "totalRefs": 932,
+  "sourceBytesMatch": true,
+  "stale": 0,
+  "fsck": "ok",
+  "limitations": [
+    "Original20 cases/assertions retained; no code/test changes",
+    "Dynamic-v4 helper and mocked HTTPadapter; not awareness-v5 or live provider quality",
+    "Injected reservation not persistent CAS/restart repairbudget proof",
+    "IsolatedSQLite settings only, not complete receipt/Stage/adminHTTP/Postgres/generationcontent acceptance"
+  ]
+}

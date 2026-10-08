@@ -1,0 +1,21 @@
+{
+  "startedAt": "2026-10-02T04:47:25.784Z",
+  "ownerUserId": "usr_568b632d7ad86cfe3e356171",
+  "characterId": "chr_7cb0db2370d44d616c097b6a",
+  "sourceGenerationId": "character:chr_7cb0db2370d44d616c097b6a:g2:187adb371d2a6bf3",
+  "sourceContentDigest": "187adb371d2a6bf38eeb54bf58eb39dad3cf3d227d2da6021b9332251d1be449",
+  "requestDigest": "bf87ea0c795aa8876f0dc6d6a309f1b423c1d1a4e95757d058b511bc7bd0d566",
+  "authorization": "V3に直接移行してOK。いやだったら、今の調整機能で自分で修正します。",
+  "maximum": {
+    "attempt": 1,
+    "activation": 1,
+    "providerCalls": 0
+  },
+  "stage": "activated",
+  "attemptId": "cat_a5a1f372a2f1c073b13cd9ab",
+  "candidateDigest": "a8539a0536b041e58a93d811e7d1533e48caffbfa90ca35350b6b932ade7cba9",
+  "targetGenerationId": "character:chr_7cb0db2370d44d616c097b6a:g3:a8539a0536b041e5",
+  "targetContentDigest": "a8539a0536b041e58a93d811e7d1533e48caffbfa90ca35350b6b932ade7cba9",
+  "schemaVersion": 3,
+  "finishedAt": "2026-10-02T04:47:26.481Z"
+}

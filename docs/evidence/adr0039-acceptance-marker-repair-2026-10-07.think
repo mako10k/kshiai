@@ -1,0 +1,12 @@
+domain ADR0039AcceptanceMarkerRepair:
+  description "Project existing owner acceptance into the formal decision marker without changing the accepted decision"
+problem P1:
+  "The checker requires OWNER_ACCEPTANCE evidence and decision ACCEPTANCE for Accepted records; ADR0039 has the former but not the latter."
+evidence E1:
+  "Current four package hashes equal cc319 accepted identity readback. Existing owner acceptance record explicitly authorizes accepted metadata and replacement of pending adoption text, preserving the accepted decision body."
+evidence E2:
+  "Independent review confirms this is same-decision receipt projection, not a new adoption. D1-D4, VERIFY, suspended vt102 and separate operational authorities must be preserved."
+premise U1:
+  "The historical reason that the formal marker was omitted is unknown. Its current absence is a directly observed checker mismatch, not missing owner assent."
+decision D1 based_on P1, E1, E2, U1:
+  "Append only decision ACCEPTANCE derived from existing OWNER_ACCEPTANCE. Verify the old file remains an exact byte prefix, all decisions remain unchanged, and audit plus whole ADR check. Do not infer new deployment or discarded trial authority."

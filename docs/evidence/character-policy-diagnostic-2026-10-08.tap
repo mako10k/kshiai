@@ -1,0 +1,162 @@
+TAP version 13
+# Subtest: semantic authoring transport policy
+    # Subtest: requires explicit time-policy identity and values when the route is selected
+    ok 1 - requires explicit time-policy identity and values when the route is selected
+      ---
+      duration_ms: 3.504928
+      type: 'test'
+      ...
+    # Subtest: uses the explicitly supplied provider timeout without a whole-attempt deadline
+    ok 2 - uses the explicitly supplied provider timeout without a whole-attempt deadline
+      ---
+      duration_ms: 0.844214
+      type: 'test'
+      ...
+    # Subtest: fails closed when an unimplemented same-run recovery policy is selected
+    ok 3 - fails closed when an unimplemented same-run recovery policy is selected
+      ---
+      duration_ms: 0.428817
+      type: 'test'
+      ...
+    1..3
+ok 1 - semantic authoring transport policy
+  ---
+  duration_ms: 8.259578
+  type: 'suite'
+  ...
+# Subtest: frozen character authoring call budget
+    # Subtest: allows profile and claim calls only for newly registered create/revise policies
+    ok 1 - allows profile and claim calls only for newly registered create/revise policies
+      ---
+      duration_ms: 2.017409
+      type: 'test'
+      ...
+    # Subtest: restores old create/revise runs at eight calls and preserves their accounting identities
+    ok 2 - restores old create/revise runs at eight calls and preserves their accounting identities
+      ---
+      duration_ms: 0.856217
+      type: 'test'
+      ...
+    # Subtest: retains cumulative token and money limits despite the two additional calls
+    ok 3 - retains cumulative token and money limits despite the two additional calls
+      ---
+      duration_ms: 0.782289
+      type: 'test'
+      ...
+    # Subtest: rejects unknown policy identities and a ten-call migration instead of choosing a default
+    ok 4 - rejects unknown policy identities and a ten-call migration instead of choosing a default
+      ---
+      duration_ms: 0.724705
+      type: 'test'
+      ...
+    1..4
+ok 2 - frozen character authoring call budget
+  ---
+  duration_ms: 7.252814
+  type: 'suite'
+  ...
+# Subtest: focused authoring through the real owner command and worker
+    # Subtest: generates from source through HTTP, exposes the stored owner candidate, and does not activate it
+    ok 1 - generates from source through HTTP, exposes the stored owner candidate, and does not activate it
+      ---
+      duration_ms: 337.828862
+      type: 'test'
+      ...
+    # Subtest: routes a create HTTP command through bounded focused recovery and persists failure without legacy calls
+    not ok 2 - routes a create HTTP command through bounded focused recovery and persists failure without legacy calls
+      ---
+      duration_ms: 181.417184
+      type: 'test'
+      location: '/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/character-focused-authoring.test.ts:1:15247'
+      failureType: 'testCodeFailure'
+      error: |-
+        Expected values to be strictly equal:
+        + actual - expected
+        
+        + 'claimed'
+        - 'failed'
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 'failed'
+      actual: 'claimed'
+      operator: 'strictEqual'
+      stack: |-
+        TestContext.<anonymous> (/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/character-focused-authoring.test.ts:298:12)
+        process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async Suite.processPendingSubtests (node:internal/test_runner/test:744:7)
+      ...
+    # Subtest: routes an appearance revision from the real owner HTTP command to a non-current review candidate
+    ok 3 - routes an appearance revision from the real owner HTTP command to a non-current review candidate
+      ---
+      duration_ms: 174.619991
+      type: 'test'
+      ...
+    # Subtest: does not generate a candidate for ambiguous, multi-area, or invalid scope
+    ok 4 - does not generate a candidate for ambiguous, multi-area, or invalid scope
+      ---
+      duration_ms: 136.982713
+      type: 'test'
+      ...
+    # Subtest: carries changed-role migration meaning through the real worker into a review candidate
+    ok 5 - carries changed-role migration meaning through the real worker into a review candidate
+      ---
+      duration_ms: 89.657005
+      type: 'test'
+      ...
+    # Subtest: routes an exact ready V2 upgrade command into focused migration without activating it
+    ok 6 - routes an exact ready V2 upgrade command into focused migration without activating it
+      ---
+      duration_ms: 221.600386
+      type: 'test'
+      ...
+    # Subtest: lets the owner accept the exact focused migration candidate for Stage-scoped V3 selection
+    ok 7 - lets the owner accept the exact focused migration candidate for Stage-scoped V3 selection
+      ---
+      duration_ms: 182.326945
+      type: 'test'
+      ...
+    # Subtest: rolls back V3 append when the frozen source pointer drifts before owner acceptance
+    ok 8 - rolls back V3 append when the frozen source pointer drifts before owner acceptance
+      ---
+      duration_ms: 136.66233
+      type: 'test'
+      ...
+    # Subtest: carries an optional legacy meaning deferral through the real upgrade route
+    ok 9 - carries an optional legacy meaning deferral through the real upgrade route
+      ---
+      duration_ms: 108.019908
+      type: 'test'
+      ...
+    # Subtest: retries a failed owner command from the same source with a new attempt and idempotent replay
+    ok 10 - retries a failed owner command from the same source with a new attempt and idempotent replay
+      ---
+      duration_ms: 114.820339
+      type: 'test'
+      ...
+    # Subtest: persists source-drift failure in both lifecycles before any dispatch
+    ok 11 - persists source-drift failure in both lifecycles before any dispatch
+      ---
+      duration_ms: 10.964856
+      type: 'test'
+      ...
+    1..11
+not ok 3 - focused authoring through the real owner command and worker
+  ---
+  duration_ms: 1719.498109
+  type: 'suite'
+  location: '/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/character-focused-authoring.test.ts:1:13146'
+  failureType: 'subtestsFailed'
+  error: '1 subtest failed'
+  code: 'ERR_TEST_FAILURE'
+  ...
+1..3
+# tests 18
+# suites 3
+# pass 17
+# fail 1
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 4287.825075

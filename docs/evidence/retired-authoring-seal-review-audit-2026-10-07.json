@@ -1,0 +1,156 @@
+{
+  "thought_id": "tmp-kshiai-retired-authoring-seal-review",
+  "id_source": "file",
+  "report": {
+    "engine_version": "0.1.0",
+    "document_id": "tmp-kshiai-retired-authoring-seal-review",
+    "generated_at": "2026-10-07T01:32:51.273Z",
+    "summary": {
+      "fatal_count": 0,
+      "error_count": 0,
+      "warning_count": 0,
+      "info_count": 0,
+      "hint_count": 6
+    },
+    "results": [
+      {
+        "issue_id": "ISSUE-001",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "RETIRED_WRITER_SEAL",
+            "role": "domain"
+          }
+        ],
+        "message": "domain RETIRED_WRITER_SEAL の description は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 2,
+          "column": 3,
+          "text": "Seal the current retired-writer regression against AcceptedADR0043, keeping old success obligations in current validators.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-002",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "REVIEW",
+            "role": "evidence",
+            "step_id": "S-REVIEW"
+          }
+        ],
+        "message": "evidence REVIEW は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 4,
+          "column": 3,
+          "text": "Read Accepted0043 and its existing non-draft decision/character-v3-write-boundary-20261002 root: exact bytes match, no stale. Four repaired sourceKind tests reject this retired entry with no model calls, progress publication or generated input mutation; adjustment parsing remains covered. Diagnostic five tests pass. Unsupported V3 claim readiness negative added separately, related four tests pass.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-003",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "SCOPE",
+            "role": "premise",
+            "step_id": "S-SCOPE"
+          }
+        ],
+        "message": "premise SCOPE は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 6,
+          "column": 3,
+          "text": "New ADR observer links exact existing owner boundary decision. Implementation binding covers retired builder and retained adjustment parser only; it does not assert all legacy import or conversion conformance. Verification links actual source and exact accepted ADR. No legacy writer is revived; permitted separate migration/historical import is not prohibited by this test.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-004",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "UNKNOWN",
+            "role": "premise",
+            "step_id": "S-UNKNOWN"
+          }
+        ],
+        "message": "premise UNKNOWN は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 8,
+          "column": 3,
+          "text": "New source bindings and nine diagnostic passes do not prove whole-test aggregate success, deployment, provider fidelity or route storage atomicity. Other V3 positive/migration coverage remains unchanged and separately reviewed.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-005",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "ALTERNATIVES",
+            "role": "premise",
+            "step_id": "S-ALTERNATIVES"
+          }
+        ],
+        "message": "premise ALTERNATIVES は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 10,
+          "column": 3,
+          "text": "Keep the existing root/head, avoid creating duplicate owner authority or accepting old incompatible success assertions. Do not register unrelated profile test without its full dependency review.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-006",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "D1",
+            "role": "decision",
+            "step_id": "S-D1"
+          }
+        ],
+        "message": "decision D1 は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 12,
+          "column": 3,
+          "text": "Audit then add three exact refs and register only retired service test; verify source/Causes/readback and existing heads.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      }
+    ],
+    "query_results": []
+  }
+}

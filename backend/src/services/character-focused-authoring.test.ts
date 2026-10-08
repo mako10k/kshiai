@@ -32,10 +32,13 @@ const { processNextCharacterAuthoringJob, drainCharacterAuthoringJobs } = await 
 const attempts = await import("../repositories/character-assets-v2.js");
 const runs = await import("../repositories/semantic-authoring.js");
 const generations = await import("../testing/historical-asset-generations.js");
+const { assetContentDigest: assetContentDigestForTest } = await import("../repositories/asset-generations.js");
 const generationReader = await import("../repositories/character-generation-reader.js");
 const { buildImportedCharacterEnvelopeV2 } = await import("./character-authoring-service.js");
 
 const { createV3StageTrialCandidate } = await import("../fixtures/neva-v3.js");
+const { FocusedCharacterCompleteReviewV1Schema, FocusedCharacterProfileGenerationV1Schema,
+  FocusedCharacterProfileClaimsV1Schema } = await import("./semantic-authoring/adapters/character-profile-work.js");
 
 const scaffold = createCharacterSemanticAuthoringAdapterV3().buildBaseline(
   { kind: "create", naturalText: "fixture" }, "create").candidate;
@@ -73,6 +76,13 @@ const contextSchema = z.object({
     capabilitySessionId: z.string(), proposalSchemaIdentity: z.string() }),
 });
 type Context = z.infer<typeof contextSchema>;
+const profileContextSchema = z.object({
+  work: z.object({ kind: z.enum(["profile_generation", "profile_claim_validation"]), workItemId: z.string() }),
+  publicInput: z.record(z.unknown()), proposal: contextSchema.shape.proposal,
+  obligationId: z.enum(["profile_generation", "profile_claim_validation"]),
+});
+type ProfilePayload = { kind: "generate_profile"; value: z.infer<typeof FocusedCharacterProfileGenerationV1Schema> }
+  | { kind: "validate_profile_claims"; value: z.infer<typeof FocusedCharacterProfileClaimsV1Schema> };
 let seen: Context[] = [];
 let scopeSeen: string[] = [];
 let scopeBehavior: "appearance" | "ambiguous" | "multi" | "invalid" = "appearance";
@@ -157,7 +167,11 @@ const server = createServer(async (req, res) => {
       usage: { prompt_tokens: 100, completion_tokens: 50 } }));
       return;
     }
-    const context = contextSchema.parse(contextValue);
+    const profileContext = profileContextSchema.safeParse(contextValue);
+    const context = profileContext.success ? contextSchema.parse({
+      mode: "profile", source: {}, work: profileContext.data.work, findings: [],
+      obligations: [{ obligationId: profileContext.data.obligationId }], proposal: profileContext.data.proposal,
+    }) : contextSchema.parse(contextValue);
     seen.push(context);
     // The durable reservation must exist BEFORE the real HTTP server sees a request.
     const receipts = await runs.listSemanticAuthoringRequestsV1(context.proposal.runId);
@@ -166,7 +180,18 @@ const server = createServer(async (req, res) => {
     assert.equal(receipts.at(-1)?.outcome, null);
     if (behavior === "unavailable") { res.writeHead(503).end(); return; }
     const invalid = behavior === "invalid" || (behavior === "repair" && seen.length === 1);
-    const proposalPayload = payload(context);
+    let proposalPayload: CharacterProposalPayloadV1 | ProfilePayload;
+    if (profileContext.success && profileContext.data.work.kind === "profile_generation") {
+      const publicInput = z.object({ displayName: z.string() }).parse(profileContext.data.publicInput);
+      proposalPayload = { kind: "generate_profile", value: {
+        description: publicInput.displayName, assistantMessage: "候補を作成しました。",
+        segments: [{ id: "name", text: publicInput.displayName, kind: "fact", supportRefs: ["identity.displayName"] }],
+      } };
+    } else if (profileContext.success) {
+      proposalPayload = { kind: "validate_profile_claims", value: { segments: [{
+        segmentId: "name", verdict: "supported", supportRefs: ["identity.displayName"], riskCodes: [],
+      }] } };
+    } else proposalPayload = payload(context);
     const disposition = proposalPayload.kind === "classify_source_disposition"
       ? proposalPayload.decisions[0] : null;
     const speechTransform = context.mode === "migrate"
@@ -249,7 +274,7 @@ after(async () => {
 });
 
 describe("focused authoring through the real owner command and worker", () => {
-  it("generates from source through HTTP, exposes the stored owner candidate, and does not activate it", async () => {
+  it("generates a complete owner candidate through HTTP and activates only the explicitly confirmed digest", async () => {
     seen = []; behavior = "complete";
     const provider = llm();
     const app = buildRoutes({ llm: provider });
@@ -266,9 +291,9 @@ describe("focused authoring through the real owner command and worker", () => {
       headers: { Cookie: "kshiai_session=focused-session" } });
     assert.equal(responseReview.status, 200);
     const review = CharacterAuthoringReviewSchema.parse(await responseReview.json());
-    assert.ok(review.semanticCandidateReview?.fields.some((f) => f.key === "identity" && f.candidate.includes("灯")));
+    assert.ok(review.semanticCandidateReview?.fields.some((f) => f.key === "definition.identity" && f.candidate.includes("灯")));
     assert.equal(review.progress, null);
-    assert.equal(review.canAccept, false, "structural completion alone is not activation readiness");
+    assert.equal(review.canAccept, true, "complete profile and independent claim receipts permit owner confirmation");
     const latest = await app.request("/api/character-drafts/latest", {
       headers: { Cookie: "kshiai_session=focused-session" } });
     assert.equal(z.object({ reviewAttemptId: z.string() }).parse(await latest.json()).reviewAttemptId, accepted.attemptId);
@@ -276,7 +301,25 @@ describe("focused authoring through the real owner command and worker", () => {
       method: "POST", headers: { Cookie: "kshiai_session=focused-session" } });
     assert.equal(forcedAcceptance.status, 409);
     assert.equal(await generations.getCurrentAssetGeneration("character", review.characterId), null);
-    assert.equal(seen.length, 8, "the final admitted call must still be applied");
+    assert.equal(seen.length, 10, "structure, profile generation, and independent claims share one budget");
+    assert.deepEqual(seen.slice(-2).map((item) => item.work.kind), ["profile_generation", "profile_claim_validation"]);
+    assert.ok(attempt?.candidate);
+    assert.equal(attempt.candidateDigest, assetContentDigestForTest(attempt.candidate));
+    const confirmed = await app.request(`/api/characters/${accepted.attemptId}/confirm`, {
+      method: "POST", headers: { Cookie: "kshiai_session=focused-session", "Content-Type": "application/json" },
+      body: JSON.stringify({ candidateDigest: attempt.candidateDigest }),
+    });
+    assert.equal(confirmed.status, 200, await confirmed.clone().text());
+    const activated = await generations.getCurrentAssetGeneration("character", review.characterId);
+    assert.ok(activated);
+    assert.equal(seen.length, 10, "confirmation must not generate or repair the candidate");
+    const repeated = await app.request(`/api/characters/${accepted.attemptId}/confirm`, {
+      method: "POST", headers: { Cookie: "kshiai_session=focused-session", "Content-Type": "application/json" },
+      body: JSON.stringify({ candidateDigest: attempt.candidateDigest }),
+    });
+    assert.equal(repeated.status, 200);
+    assert.equal((await generations.getCurrentAssetGeneration("character", review.characterId))?.generationId,
+      activated.generationId, "confirmation replay must not append another generation");
   });
 
   it("routes a create HTTP command through bounded focused recovery and persists failure without legacy calls", async () => {
@@ -293,16 +336,43 @@ describe("focused authoring through the real owner command and worker", () => {
     const attempt = await attempts.getCharacterAuthoringAttempt(accepted.attemptId, "focused-owner");
     assert.equal(attempt?.status, "failed");
     assert.notEqual(attempt?.errorCode, "LEGACY_ROUTE_CALLED");
-    assert.ok(seen.length >= 2 && seen.length <= 8, `calls=${seen.length}`);
+    assert.ok(seen.length >= 2 && seen.length <= 10, `calls=${seen.length}`);
     const stored = await runs.getSemanticAuthoringRunV1(seen[0]!.proposal.runId);
-    assert.equal(stored?.status, "failed");
-    assert.ok(stored.accounting.llmCalls >= 2);
+    assert.equal(stored?.status, "failed", `error=${attempt?.errorCode}, calls=${seen.length}, accounting=${JSON.stringify(stored?.accounting)}`);
+    assert.equal(stored.policyIdentity, "character_complete_review_policy_v2");
+    assert.equal(stored.accounting.llmCalls, 10, "the new policy settles all admitted calls before terminal failure");
     const calls = seen.length;
     await request();
     await drainCharacterAuthoringJobs({ llm: provider, workerId: "focused-replay-worker" });
     assert.equal(seen.length, calls, "terminal replay must not call the provider");
     assert.equal(attempt?.candidate, null);
     assert.equal(attempt?.resultGenerationId, null);
+  });
+
+  it("resumes a previously registered eight-call create without upgrading its frozen allowance", async () => {
+    seen = []; behavior = "invalid";
+    const provider = llm();
+    const app = buildRoutes({ llm: provider });
+    const response = await app.request("/api/characters/generate", { method: "POST",
+      headers: { Cookie: "kshiai_session=focused-session", "Content-Type": "application/json",
+        "Idempotency-Key": "focused-old-policy-create" },
+      body: JSON.stringify({ prompt: "保存済み旧policyの実行fixture" }) });
+    assert.equal(response.status, 202);
+    const { attemptId } = z.object({ attemptId: z.string() }).parse(await response.json());
+    // Private fixture: represent an old pending run before any worker dispatch.
+    const frozen = await query<{ run_id: string }>(`UPDATE semantic_authoring_runs
+      SET policy_identity = 'semantic_authoring_policy_v1', adapter_identity = 'character-semantic-authoring-v3'
+      WHERE attempt_id = $1 AND owner_user_id = 'focused-owner' AND status = 'pending'
+      RETURNING run_id`, [attemptId]);
+    assert.equal(frozen.rowCount, 1);
+    await drainCharacterAuthoringJobs({ llm: provider, workerId: "focused-old-policy-worker" });
+    assert.equal(seen.length, 8);
+    const stored = await runs.getSemanticAuthoringRunV1(frozen.rows[0]!.run_id);
+    assert.equal(stored?.status, "failed");
+    assert.equal(stored.policyIdentity, "semantic_authoring_policy_v1");
+    assert.equal(stored.accounting.llmCalls, 8);
+    await drainCharacterAuthoringJobs({ llm: provider, workerId: "focused-old-policy-replay-worker" });
+    assert.equal(seen.length, 8, "terminal replay cannot spend the two new-policy calls");
   });
 
   it("routes an appearance revision from the real owner HTTP command to a non-current review candidate", async () => {
@@ -338,19 +408,19 @@ describe("focused authoring through the real owner command and worker", () => {
     const saved = await query<{ result_json: unknown }>(`SELECT p.result_json FROM character_focused_authoring_payloads p
       JOIN semantic_authoring_runs r ON r.run_id = p.run_id WHERE r.attempt_id = $1`, [accepted.attemptId]);
     const raw = saved.rows[0]?.result_json;
-    const result = z.object({ kind: z.literal("ready_for_review"), finalCandidate: CharacterDefinitionV3Schema,
+    const result = z.object({ kind: z.literal("ready_for_review"), finalCandidate: FocusedCharacterCompleteReviewV1Schema,
       sourceLedger: z.object({ provenance: z.array(z.object({ targetClaimId: z.string() })).min(1),
         sourceDispositions: z.array(z.object({ sourceClaimId: z.string() })) }) })
       .parse(typeof raw === "string" ? JSON.parse(raw) : raw);
-    assert.equal(result.finalCandidate.appearance.publicSummary, "青い外套");
-    assert.deepEqual(result.finalCandidate.combat, complete.combat);
+    assert.equal(result.finalCandidate.envelope.definition.appearance.publicSummary, "青い外套");
+    assert.deepEqual(result.finalCandidate.envelope.definition.combat, complete.combat);
     const reviewResponse = await app.request(`/api/character-drafts/${accepted.attemptId}`, {
       headers: { Cookie: "kshiai_session=focused-session" },
     });
     assert.equal(reviewResponse.status, 200);
     const review = CharacterAuthoringReviewSchema.parse(await reviewResponse.json());
-    assert.equal(review.canAccept, false, "focused review remains separate from final acceptance");
-    assert.ok(review.semanticCandidateReview?.fields.some((field) => field.key === "appearance"
+    assert.equal(review.canAccept, true, "complete revision awaits explicit owner confirmation");
+    assert.ok(review.semanticCandidateReview?.fields.some((field) => field.key === "definition.appearance"
       && field.source?.includes("赤い外套") && field.candidate.includes("青い外套")));
     assert.equal((await generations.getCurrentAssetGeneration("character", characterId))?.generationId,
       original.generationId, "review candidate does not move the immutable source pointer");
@@ -957,6 +1027,138 @@ describe("focused authoring through the real owner command and worker", () => {
     assert.equal(replay.attemptId, accepted.attemptId);
     await drainCharacterAuthoringJobs({ llm: provider, workerId: "focused-retry-replay" });
     assert.equal(seen.length, count);
+  });
+
+  it("corrects a verified structural-only legacy review in a new run while preserving its predecessor", async () => {
+    seen = []; behavior = "complete"; scopeBehavior = "appearance";
+    const provider = llm();
+    const started = await attempts.beginCharacterAuthoringAttempt({ ownerUserId: "focused-owner", kind: "create",
+      idempotencyKey: "legacy-ready-correction", requestDigest: "a".repeat(64), sourceDigest: "b".repeat(64),
+      sourceText: "火を守る旅人", focused: { pricingIdentity: "controlled-prices-v1",
+        source: { kind: "create", naturalText: "火を守る旅人" } } });
+    await query(`UPDATE semantic_authoring_runs SET policy_identity = 'semantic_authoring_policy_v1',
+      adapter_identity = 'character-semantic-authoring-v3' WHERE attempt_id = $1`, [started.attempt.attemptId]);
+    await drainCharacterAuthoringJobs({ llm: provider, workerId: "legacy-ready-worker" });
+    const predecessor = await attempts.getCharacterAuthoringAttempt(started.attempt.attemptId, "focused-owner");
+    assert.equal(predecessor?.status, "awaiting_owner_acceptance", predecessor?.errorCode ?? "");
+    assert.equal(predecessor.candidate, null);
+    const { withTransaction } = await import("../db.js");
+    const { readCompleteFocusedCharacterReview } = await import("../repositories/character-focused-candidate.js");
+    const frozen = await withTransaction(connection => readCompleteFocusedCharacterReview(
+      connection, predecessor.attemptId, "focused-owner"));
+    assert.equal(frozen.complete.kind, "legacy_character_structural_review_v1");
+    const originalPayload = await query<{ result_json: string }>(
+      `SELECT result_json FROM character_focused_authoring_payloads WHERE run_id = $1`, [frozen.runId]);
+    const originalResult = JSON.parse(originalPayload.rows[0]!.result_json);
+    await query(`UPDATE character_focused_authoring_payloads SET result_json = $2 WHERE run_id = $1`,
+      [frozen.runId, JSON.stringify({ ...originalResult, attemptId: "foreign-attempt" })]);
+    await assert.rejects(withTransaction(connection => readCompleteFocusedCharacterReview(
+      connection, predecessor.attemptId, "focused-owner")), /CORRECTION_PREDECESSOR_BINDING_MISMATCH/);
+    await query(`UPDATE character_focused_authoring_payloads SET result_json = $2 WHERE run_id = $1`,
+      [frozen.runId, originalPayload.rows[0]!.result_json]);
+    const app = buildRoutes({ llm: provider });
+    const headers = { Cookie: "kshiai_session=focused-session", "Content-Type": "application/json" };
+    const callCount = seen.length;
+    const reviewResponse = await app.request(`/api/character-drafts/${predecessor.attemptId}`, { headers });
+    assert.equal(reviewResponse.status, 200, await reviewResponse.clone().text());
+    const review = CharacterAuthoringReviewSchema.parse(await reviewResponse.json());
+    assert.equal(review.canAccept, false);
+    assert.equal(review.canEditCandidate, true);
+    assert.equal(review.candidateDigest, frozen.complete.candidateDigest);
+    const premature = await app.request(`/api/characters/${predecessor.attemptId}/confirm`, {
+      method: "POST", headers, body: JSON.stringify({ candidateDigest: review.candidateDigest }) });
+    assert.equal(premature.status, 409, await premature.clone().text());
+    assert.equal(seen.length, callCount, "inspection and rejected confirmation never generate missing profile work");
+    const response = await app.request(`/api/character-drafts/${predecessor.attemptId}/chat`, {
+      method: "POST", headers: { ...headers, "Idempotency-Key": "legacy-ready-correction-command" },
+      body: JSON.stringify({ message: "外套を青に変更", candidateDigest: review.candidateDigest }) });
+    assert.equal(response.status, 202, await response.clone().text());
+    const corrected = SemanticAuthoringAcceptedV1Schema.parse(await response.json());
+    await drainCharacterAuthoringJobs({ llm: provider, workerId: "legacy-correction-worker" });
+    const candidate = await attempts.getCharacterAuthoringAttempt(corrected.attemptId, "focused-owner");
+    assert.equal(candidate?.status, "awaiting_owner_acceptance", candidate?.errorCode ?? "");
+    assert.equal(candidate.candidate?.definition.appearance.publicSummary, "青い外套");
+    assert.ok(candidate.candidate?.publicPresentation.claimValidation);
+    assert.deepEqual(await attempts.getCharacterAuthoringAttempt(predecessor.attemptId, "focused-owner"), predecessor);
+    assert.deepEqual((await query<{ result_json: string }>(
+      `SELECT result_json FROM character_focused_authoring_payloads WHERE run_id = $1`, [frozen.runId])).rows,
+      originalPayload.rows);
+  });
+
+  it("inherits disclosure from the exact frozen generation when correcting an old revision", async () => {
+    seen = []; scopeSeen = []; behavior = "repair"; scopeBehavior = "appearance";
+    const characterId = "legacy-revision-correction-character";
+    const now = new Date().toISOString();
+    const fixture = await new MockLlmProvider().generateCharacter({ prompt: "legacy revision fixture" });
+    await query(`INSERT INTO characters (id, owner_user_id, sheet_json, created_at, updated_at)
+      VALUES ($1, $2, $3, $4, $4)`, [characterId, "focused-owner", JSON.stringify({
+        ...fixture.sheet, id: characterId, ownerUserId: "focused-owner", createdAt: now, updatedAt: now }), now]);
+    const envelope = { ...createV3StageTrialCandidate(), definition: complete };
+    const generation = await generations.createAssetGeneration({ assetType: "character", assetId: characterId,
+      schemaVersion: 3, content: envelope });
+    await query(`INSERT INTO character_asset_states
+      (character_id, compatibility_status, current_generation_id, active_attempt_id, reason_code, updated_at)
+      VALUES ($1, 'ready', $2, NULL, NULL, $3)`, [characterId, generation.generationId, now]);
+    const provider = llm();
+    const started = await attempts.beginCharacterAuthoringAttempt({ ownerUserId: "focused-owner", kind: "revision",
+      characterId, idempotencyKey: "legacy-revision-ready", requestDigest: "c".repeat(64), sourceDigest: "d".repeat(64),
+      sourceText: "外套を青に変更", focused: { pricingIdentity: "controlled-prices-v1",
+        source: { kind: "revise_pending_scope", definition: complete, naturalText: "外套を青に変更" } } });
+    await query(`UPDATE semantic_authoring_runs SET policy_identity = 'semantic_authoring_policy_v1',
+      adapter_identity = 'character-semantic-authoring-v3' WHERE attempt_id = $1`, [started.attempt.attemptId]);
+    await drainCharacterAuthoringJobs({ llm: provider, workerId: "legacy-revision-ready-worker" });
+    const predecessor = await attempts.getCharacterAuthoringAttempt(started.attempt.attemptId, "focused-owner");
+    assert.equal(predecessor?.status, "awaiting_owner_acceptance", predecessor?.errorCode ?? "");
+    const { withTransaction } = await import("../db.js");
+    const { readCompleteFocusedCharacterReview } = await import("../repositories/character-focused-candidate.js");
+    const frozen = await withTransaction(connection => readCompleteFocusedCharacterReview(
+      connection, predecessor.attemptId, "focused-owner"));
+    assert.equal(frozen.complete.kind, "legacy_character_structural_review_v1");
+    if (frozen.complete.kind !== "legacy_character_structural_review_v1") assert.fail("legacy source expected");
+    assert.deepEqual(frozen.complete.disclosurePolicy, envelope.disclosurePolicy);
+    behavior = "complete";
+    const corrected = await attempts.beginCharacterDraftCorrection({ ownerUserId: "focused-owner",
+      predecessorAttemptId: predecessor.attemptId, candidateDigest: frozen.complete.candidateDigest,
+      message: "外套を青に変更", idempotencyKey: "legacy-revision-correction", pricingIdentity: "controlled-prices-v1" });
+    await drainCharacterAuthoringJobs({ llm: provider, workerId: "legacy-revision-correction-worker" });
+    const candidate = await attempts.getCharacterAuthoringAttempt(corrected.attempt.attemptId, "focused-owner");
+    assert.equal(candidate?.status, "awaiting_owner_acceptance", candidate?.errorCode ?? "");
+    assert.deepEqual(candidate.candidate?.disclosurePolicy, envelope.disclosurePolicy);
+    assert.equal(candidate.expectedGenerationId, generation.generationId);
+    assert.equal((await generations.getCurrentAssetGeneration("character", characterId))?.generationId, generation.generationId);
+    assert.deepEqual(await attempts.getCharacterAuthoringAttempt(predecessor.attemptId, "focused-owner"), predecessor);
+  });
+
+  it("retries a failed correction from its frozen reviewed candidate without editing the predecessor", async () => {
+    seen = []; behavior = "complete"; scopeBehavior = "appearance";
+    const provider = llm();
+    const app = buildRoutes({ llm: provider });
+    const created = await attempts.beginCharacterAuthoringAttempt({ ownerUserId: "focused-owner", kind: "create",
+      idempotencyKey: "correction-retry-create", requestDigest: "c".repeat(64), sourceDigest: "d".repeat(64),
+      sourceText: "火を守る旅人", focused: { pricingIdentity: "controlled-prices-v1",
+        source: { kind: "create", naturalText: "火を守る旅人" } } });
+    await drainCharacterAuthoringJobs({ llm: provider, workerId: "correction-retry-create-worker" });
+    const predecessor = await attempts.getCharacterAuthoringAttempt(created.attempt.attemptId, "focused-owner");
+    assert.ok(predecessor?.candidateDigest);
+    const correction = await attempts.beginCharacterDraftCorrection({ ownerUserId: "focused-owner",
+      predecessorAttemptId: predecessor.attemptId, candidateDigest: predecessor.candidateDigest,
+      message: "外套を青に変更", idempotencyKey: "correction-retry-command", pricingIdentity: "controlled-prices-v1" });
+    scopeBehavior = "invalid";
+    await drainCharacterAuthoringJobs({ llm: provider, workerId: "correction-retry-fail-worker" });
+    assert.equal((await attempts.getCharacterAuthoringAttempt(correction.attempt.attemptId, "focused-owner"))?.status, "failed");
+    scopeBehavior = "appearance";
+    const response = await app.request(`/api/authoring/attempts/${correction.attempt.attemptId}/retries`, {
+      method: "POST", headers: { Cookie: "kshiai_session=focused-session", "Content-Type": "application/json" },
+      body: JSON.stringify({ commandId: "correction-retry-owner-command" }) });
+    assert.equal(response.status, 202, await response.clone().text());
+    const accepted = SemanticAuthoringAcceptedV1Schema.parse(await response.json());
+    await drainCharacterAuthoringJobs({ llm: provider, workerId: "correction-retry-success-worker" });
+    const retried = await attempts.getCharacterAuthoringAttempt(accepted.attemptId, "focused-owner");
+    assert.equal(retried?.status, "awaiting_owner_acceptance", retried?.errorCode ?? "");
+    assert.equal(retried?.characterId, predecessor.characterId);
+    assert.equal(retried?.expectedGenerationId, null);
+    assert.equal(retried?.candidate?.definition.appearance.publicSummary, "青い外套");
+    assert.deepEqual(await attempts.getCharacterAuthoringAttempt(predecessor.attemptId, "focused-owner"), predecessor);
   });
 
   it("persists source-drift failure in both lifecycles before any dispatch", async () => {

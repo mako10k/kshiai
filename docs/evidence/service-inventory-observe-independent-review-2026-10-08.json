@@ -1,0 +1,15 @@
+{
+  "verdict": "PASS",
+  "files": {
+    "backend/src/services/character-agency-inventory.test.ts": "5526bd5b27046ddc7f47539542ec7e5811bbdae632dffc3c9c4ddee6029a7262",
+    "backend/src/services/character-agency-inventory.fixtures.ts": "997c8d115eef2caf8c609dc63c6b22dee03f8aaf1473559c1d05f9cb0fa8b90e",
+    "backend/src/services/internal-observability.test.ts": "fd3cd392b7a93c5f8215e2d08783550aeddf6e6d7a5b8b9a56322f2c6aee1c5a",
+    "backend/src/services/internal-observability.ts": "612627778c66ec7b434aaaf2b1defae562ee8e1b43663232d09b595ec2808e98",
+    "backend/src/services/battle-service.ts": "80eda28c060f4f789dfb64a13a3babf2e4d82db77a8b34cebeb938cba040bce8",
+    "backend/src/repositories/battles.ts": "e0f5d0977e5a103249a382bbd5ac318f0a7a7b2abcde95ad2f4491ead5ca892f"
+  },
+  "reviewer": "/root/battle_helper_contract_review",
+  "sourceReview": "docs/evidence/service-contract-cohort-independent-review-2026-10-08.json",
+  "scope": "internal sanitized private readmodel1case + frozen schema2 historical inventory16cases",
+  "earlierFindingsCorrected": true
+}

@@ -1,0 +1,25 @@
+{
+  "reviewer": "/root/battle_helper_contract_review",
+  "mode": "readonly",
+  "verdict": "PASS",
+  "classification": "INSIDE_ACCEPTED_ADR0059",
+  "materialDefects": [],
+  "confirmed": [
+    "create/revise complete adapter and profile work share one frozen run, budget, reservations and settlement",
+    "profile input contains only approved public projection",
+    "complete envelope, definition/profile/claim receipts and digest are mandatory",
+    "candidate/result/status/notification/job save share the owner-fenced durable transaction",
+    "old policy8 and migration paths remain separate",
+    "generic V3 confirmation requires exact candidate digest and owner scope"
+  ],
+  "sourceSha256": {
+    "backend/src/services/semantic-authoring/adapters/character-complete.ts": "e6f0e1bc786ded058a725b89d70fa5cf308951b6b7a4535734b1f68cb87f57a5",
+    "backend/src/services/character-focused-authoring.ts": "4b3adf0df19bb08453252a0aa28e76bb9afeaf486cd463e7b8ae2dd0b265745c",
+    "backend/src/repositories/character-focused-candidate.ts": "1f869d0a07d300b3c3f21d79c750f38ecf5f8648c8211fe4762d9d89ed20b98a",
+    "backend/src/routes.ts": "c439f80d61ad54dc8431eae8a6f49844510853eca5fc6123f0e99b31d27489fb",
+    "backend/src/testing/offline-focused-authoring-provider.ts": "b9a976e01b265f74a8dfb4812e41f33ffcd42c462d01b21dba90e6b91640ff44",
+    "backend/src/services/character-focused-authoring.test.ts": "c28be6d7e5ab3b4aa37b26e670c37a0338c680798a17aa891b16b27af861e492"
+  },
+  "subsequentChange": "Root added explicit digest confirmation and idempotent confirmation replay assertions to the existing first case after this review; production sources unchanged.",
+  "remaining": ["immutable correction attempt/chat", "all original 15 HTTP cases passing", "current-source Seal propagation", "all 251 formal tests"]
+}

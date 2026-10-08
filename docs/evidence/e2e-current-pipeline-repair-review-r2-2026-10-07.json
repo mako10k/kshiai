@@ -1,0 +1,128 @@
+{
+  "schema": "kshiai/e2e-current-pipeline-repair-review/v2",
+  "readOnly": true,
+  "workspace": "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai",
+  "testPath": "e2e/v3-local-integration.spec.ts",
+  "supersedes": "/tmp/kshiai-e2e-current-pipeline-repair-review.json",
+  "audit": {
+    "tool": "llmthink dsl audit --text",
+    "status": "passed",
+    "fatal": 0,
+    "error": 0,
+    "warnings": 0
+  },
+  "correctedFindings": [
+    {
+      "path": "backend/src/services/awareness-creation-encounter.ts:30-54",
+      "finding": "roles.adjudicationProvider is only the domain provider entrypoint; the provider call must execute one admission-guarded physical dispatch. The function explicitly throws AWARENESS_CREATION_UNACCOUNTED_PROVIDER when guard.run was not entered exactly once.",
+      "effect": "Simply assigning MockLlmProvider as adjudicationProvider cannot make creation pass: MockLlmProvider.prepareBattleEncounter computes locally and never enters the guard."
+    },
+    {
+      "path": "docs/adr/0043-v3-character-updates-with-historical-v2-display.md:40",
+      "finding": "repository saveSheet is no longer a V2 creation/import route; V2 historical seed data belongs to backend/src/testing/historical-character-fixtures.ts.",
+      "effect": "The E2E's management-only V2 fixtures should use saveHistoricalCharacterFixture, while keeping the 409 rejection assertions."
+    }
+  ],
+  "governingSources": [
+    {
+      "path": "docs/adr/0051-observed-llm-usage-accounting.md",
+      "clause": "26-32, 52",
+      "status": "Accepted",
+      "why": "New awareness battles bind immutable policy and record every physical attempt, including unknown usage; no automatic fallback/retry or paid run is authorized."
+    },
+    {
+      "path": "docs/adr/0054-normal-awareness-waiting-deadlines.md",
+      "clause": "26-28, 44-48",
+      "status": "Accepted",
+      "why": "New ordinary battles bind awareness-v5-usage-v2 through creation, manifest/runtime, dispatch, and provider request; historical policies remain unchanged and no migration/paid call is included."
+    },
+    {
+      "path": "docs/battle-consciousness-implementation-decisions-2026-10-05.md",
+      "clause": "5, 12-16, 18, 22",
+      "status": "Owner adopted",
+      "why": "awareness-v5 is new-battle-only with immutable policy/prompt/output/asset snapshots; role ports are typed and the orchestrator has no SDK/DB dependency."
+    },
+    {
+      "path": "docs/adr/0043-v3-character-updates-with-historical-v2-display.md",
+      "clause": "40",
+      "status": "Accepted",
+      "why": "V2 historical fixtures use testing-only modules; saveSheet requires a V3 target."
+    },
+    {
+      "path": "backend/src/services/awareness-creation-encounter.ts",
+      "clause": "36-54",
+      "status": "Actual implementation",
+      "why": "The actual admission guard validates route/limits, reserves one creation attempt, increments sends, invokes the physical callback, and requires sends === 1."
+    }
+  ],
+  "currentSpecMismatches": [
+    {
+      "path": "e2e/v3-local-integration.spec.ts:61-62",
+      "issue": "MockLlmProvider has no awareness roles; adding it as adjudicationProvider alone still fails with AWARENESS_CREATION_UNACCOUNTED_PROVIDER."
+    },
+    {
+      "path": "e2e/v3-local-integration.spec.ts:144",
+      "issue": "Expected schemaVersion 4 conflicts with actual BattleAssetManifestV5 at backend/src/services/battle-service.ts:788-792."
+    },
+    {
+      "path": "e2e/v3-local-integration.spec.ts:229-242",
+      "issue": "V5 narration requires the awareness-aware worker/provider path; a legacy-only generator is insufficient."
+    },
+    {
+      "path": "e2e/v3-local-integration.spec.ts:259-260",
+      "issue": "saveSheet is an invalid way to create the V2 management fixture under ADR0043."
+    }
+  ],
+  "connection_options": [
+    {
+      "name": "typed_test_provider_with_guarded_dispatch",
+      "status": "preferred offline option",
+      "interface_contract": [
+        "Attach AwarenessProviderRoles to an E2E-local provider object, but implement adjudicationProvider.prepareBattleEncounter so it obtains currentAwarenessDispatchContext() and calls guard.run exactly once.",
+        "Build the AwarenessPricedRequest using the same provider/model, limits, rendered system/user material, output cap, deadline, response format, and request label expected by the actual awareness adjudication path; do not invent a relaxed request shape.",
+        "Inside guard.run's send callback, invoke the deterministic Mock domain computation and return { result: BattleEncounterProposal, usage: null }. This preserves observed admission, reservation, physical completion, and the sends === 1 check without network or SDK calls.",
+        "Use typed AwarenessModelProvider subconscious/conscious functions that return schema-valid deterministic outputs; use typed AwarenessNarrationProvider methods whose frozen results preserve battleId, turnReceiptId, phase, turn, source speeches, and recognition references.",
+        "Keep identities route-shaped for the current contracts (adjudication xai/grok engine; latent openai/gpt-6-luna; conscious xai/grok engine; narration xai/grok fast) while the test implementation remains local and deterministic."
+      ],
+      "verification": [
+        "Creation records one observed attempt and reaches ready.",
+        "No Mock.prepareBattleEncounter call occurs outside the guard callback.",
+        "V5 runtime and narration worker receive the same bound policy and immutable assets."
+      ]
+    },
+    {
+      "name": "real_provider_adapter_with_limited_fakewire",
+      "status": "valid alternative",
+      "interface_contract": [
+        "Use the existing provider adapter/awareness JSON transport and intercept only its loopback wire response; preserve the real adapter's currentAwarenessDispatchContext handling, one physical request, response validation, attempt accounting, and observed reservation.",
+        "Return deterministic schema-valid encounter, latent, conscious, adjudication, and frozen narration payloads from the loopback fakewire; make no external or paid call."
+      ],
+      "tradeoff": "Covers more serialization/adapter behavior but adds a transport surface to this browser E2E. It is unnecessary if typed role-port coverage is the intended acceptance boundary."
+    }
+  ],
+  "fixtureCorrections": [
+    {
+      "path": "e2e/v3-local-integration.spec.ts",
+      "action": "Import saveHistoricalCharacterFixture from backend/src/testing/historical-character-fixtures.ts and replace the two saveSheet calls only for the V2 management fixtures.",
+      "preserve": "Keep the three V2/mixed creation requests and their 409 assertions; this verifies retired V2 new-creation behavior."
+    }
+  ],
+  "assertions_to_preserve": [
+    "Real loopback browser and API path with ordinary authenticated user creation.",
+    "Immutable V3 generation IDs/digests remain bound after later authoring revisions.",
+    "advance, advance/stream, and action each retain idempotent replay and unchanged battle revision/assets.",
+    "Battle completes, ordered frozen narration is published, result survives reload, and no page errors occur.",
+    "Cutover deletes unfinished battle, all deleted routes return 404, late narration acknowledges, and finished history remains visible."
+  ],
+  "required_current_assertions": [
+    "Change the stale manifest check at line 144 to schemaVersion 5 and assert awareness-v5, bound policy, prompt revision, output revision, and immutable asset IDs/digests.",
+    "Use createLlmNarrationGenerator only as the existing dispatcher after llm.awareness.narration is installed; do not let V5 narration fall back to legacy Mock narration."
+  ],
+  "non_goals_and_unknowns": [
+    "Do not restore old production normal creation, remove the E2E, migrate existing battles, or alter accepted ADRs.",
+    "Do not make the SDK itself an acceptance requirement for this offline browser E2E; typed role doubles are allowed by the owner design, while the real app/API remains exercised.",
+    "Exact helper placement and deterministic prose are owner implementation choices; they do not create new product requirements.",
+    "No remote/provider, paid, deployment, Seal, or test execution was performed."
+  ],
+  "confidence": "high"
+}

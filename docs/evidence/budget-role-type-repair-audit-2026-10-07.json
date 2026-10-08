@@ -1,0 +1,134 @@
+{
+  "thought_id": "tmp-kshiai-budget-role-type-repair",
+  "id_source": "file",
+  "report": {
+    "engine_version": "0.1.0",
+    "document_id": "tmp-kshiai-budget-role-type-repair",
+    "generated_at": "2026-10-07T01:37:23.396Z",
+    "summary": {
+      "fatal_count": 0,
+      "error_count": 0,
+      "warning_count": 0,
+      "info_count": 0,
+      "hint_count": 5
+    },
+    "results": [
+      {
+        "issue_id": "ISSUE-001",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "ERROR",
+            "role": "evidence",
+            "step_id": "S-ERROR"
+          }
+        ],
+        "message": "evidence ERROR は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 4,
+          "column": 3,
+          "text": "Strict TypeScript compilation of new E2E helper reports awareness-reservation-budget.ts39 invalid budgetShares index because roleGroup return annotation includes subconscious/adjudication keys not present in budgetShares. Normal backend config retains historical noImplicitAny false and accepts it.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-002",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "SOURCE",
+            "role": "evidence",
+            "step_id": "S-SOURCE"
+          }
+        ],
+        "message": "evidence SOURCE は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 6,
+          "column": 3,
+          "text": "Full source read: roleGroup actual body already maps BOTH subconscious and adjudication to required; remaining actual returns are conscious/narration. Runtime mapping is correct. No runtime undefined/NaN defect is evidenced.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-003",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "BOUNDS",
+            "role": "premise",
+            "step_id": "S-BOUNDS"
+          }
+        ],
+        "message": "premise BOUNDS は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 8,
+          "column": 3,
+          "text": "Accepted adopted policy required/conscious/narration budget allocation remains unchanged. User explicitly authorizes mechanical typed handoffs and requires closing contract escapes on repaired paths. Change only return type to keyof AwarenessPipelineState policy budgetShares. No runtime statement, quota or accounting behavior changes.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-004",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "ALTERNATIVES",
+            "role": "premise",
+            "step_id": "S-ALTERNATIVES"
+          }
+        ],
+        "message": "premise ALTERNATIVES は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 10,
+          "column": 3,
+          "text": "Disabling strict noImplicitAny for the new helper hides the mismatch. A cast discards authoritative contract protection. Narrow accurate return type proves all index keys valid.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-005",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "D1",
+            "role": "decision",
+            "step_id": "S-D1"
+          }
+        ],
+        "message": "decision D1 は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 12,
+          "column": 3,
+          "text": "Audit then narrow one return annotation and rerun strict helper compilation plus backend typecheck. No new behavioral test required for type-only correction; existing reservation diagnostics remain valid.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      }
+    ],
+    "query_results": []
+  }
+}

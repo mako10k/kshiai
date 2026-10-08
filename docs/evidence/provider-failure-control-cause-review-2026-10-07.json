@@ -1,0 +1,85 @@
+{
+  "schema": "kshiai/provider-failure-control-cause-review/v1",
+  "upstream": [
+    {
+      "ref": "awareness-guidance-20261007/authority-current",
+      "sealId": "4a236b55e9ad9e4aa54eb2c6bbe9d77e0a318881ba8328363505153d16e151dd"
+    }
+  ],
+  "nodes": [
+    {
+      "key": "authority-retained-provider-retry",
+      "path": "docs/adr/0028-versioned-conscious-agency-contract.think",
+      "parents": [],
+      "scope": "Existing Accepted ADR0028 revision2 D8 retained transport helper ceiling only: max2 retries total, rate-limit max2, service-unavailable max1, timeout/ineligible no new retry category. Old phase/psyche/agency/model policies outside this scope; awareness latest policy keeps zero automatic retry.",
+      "test": false,
+      "ref": "all-tests-20261007/authority-retained-provider-retry",
+      "sha256": "b5ee7ff73adb102c2cefcc015ead40bf9afe6fa11993cb65234132146290d9ba"
+    },
+    {
+      "key": "implementation-provider-error-classification",
+      "path": "backend/src/llm/provider-errors.ts",
+      "parents": [
+        "authority-retained-provider-retry",
+        "authority"
+      ],
+      "scope": "Only tested lexical/status/cause-chain error classification and capped retry-header delay; rate limit precedence over 403 billing interpretation. No factual diagnosis of actual provider/account incident, application-result class or complete header/date branches certified.",
+      "test": false,
+      "ref": "all-tests-20261007/implementation-provider-error-classification",
+      "sha256": "e11320210883062c34809ae2cc32ffb7686e24b828ec5e294a83c4264a9fc2a6"
+    },
+    {
+      "key": "implementation-retained-provider-retry",
+      "path": "backend/src/llm/provider-retry.ts",
+      "parents": [
+        "authority-retained-provider-retry",
+        "implementation-provider-error-classification"
+      ],
+      "scope": "Only bounded invocation of the same supplied operation callback: max2 rate-limit retries, max1 service-unavailable within total2, known nonretryable failure rethrows exact error, canRetry false refuses. Default first two rate-limit backoff waits tested via injected sleep. No live HTTP, provider identity proof from callback, all mixed sequences, observer accounting or activation for no-retry awareness calls.",
+      "test": false,
+      "ref": "all-tests-20261007/implementation-retained-provider-retry",
+      "sha256": "b827adab5f4a64864810762b0d0c2a29b6de0a4cb721d9adef740692fdf4dfb2"
+    },
+    {
+      "key": "provider-errors",
+      "path": "backend/src/llm/provider-errors.test.ts",
+      "parents": [
+        "authority-retained-provider-retry",
+        "implementation-provider-error-classification"
+      ],
+      "scope": "All three local tests: 429/503/abort/402/403-credit/DNS cause/syntax classification, 403 rate limit not billing, retry headers2s/cap10s/missing. Classification is test of reported fields, not verified remote root cause; no retry activated.",
+      "test": true,
+      "ref": "verification/provider-errors-20261007",
+      "sha256": "a3daa816166230f6d96ebbcf9ac7c9012e96366536b27bafa7296c69115785d6"
+    },
+    {
+      "key": "provider-retry",
+      "path": "backend/src/llm/provider-retry.test.ts",
+      "parents": [
+        "authority-retained-provider-retry",
+        "implementation-provider-error-classification",
+        "implementation-retained-provider-retry"
+      ],
+      "scope": "All four local fake-operation tests: rate-limit two retries and injected waits1s/2s, 503 one retry and original failure, timeout/billing/DNS/parse zero retries, canRetry false once. No actual streaming fixture or provider identity/HTTP, account quota, complete mixed failures or latest awareness retry activation.",
+      "test": true,
+      "ref": "verification/provider-retry-20261007",
+      "sha256": "86959d337c539db3dc801949629f6fd5aa988a9dd45ad5c4dcdddd7ea7a16bd7"
+    }
+  ],
+  "diagnostic": {
+    "pass": 7,
+    "fail": 0,
+    "skipped": 0,
+    "strictTypecheckExit": 0
+  },
+  "clauses": [
+    "Accepted ADR0028 D8 retained existing helper retry ceilings; timeout/ineligible do not add category",
+    "ADR0051 inherited awareness no automatic retry/fallback remains unchanged"
+  ],
+  "limitations": [
+    "Two local files seven tests, fake operation/sleep only",
+    "Same callback invocation does not prove actual provider routing",
+    "No live incident cause/account/quota diagnosis or physical accounting proof",
+    "Awareness no-retry policy and earlier zero psyche call policy not reactivated"
+  ]
+}

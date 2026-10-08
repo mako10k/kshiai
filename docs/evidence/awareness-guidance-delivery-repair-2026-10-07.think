@@ -1,0 +1,14 @@
+domain GUIDANCE_REPAIR:
+  description "Restore accepted conscious guidance delivery without new behavior or persistence shape."
+evidence OWNER:
+  "Owner authorized implementation and resumes the identified guidance repair after contract comparison and independent review."
+evidence AUTHORITY:
+  "Accepted pipeline design section6 requires related values and U08 requires awareness-based injection. Compiler explicitly delegates live applicability to its consumer."
+evidence GAP:
+  "Decision metadata holds live projected guidance; awareness frame discards it; static compiler actionPrinciples are empty."
+premise BOUNDARY:
+  "Reuse existing applicability and disclosure projection; do not expose hidden needs, alter actions or add calls. Keep persisted conscious input schema unchanged by conveying guidance in existing characteristics."
+premise OPTIONS:
+  "Optional array preserves omission. Required evaluated receipt distinguishing none/applicable fails missing transport, while end-to-end nonempty fixtures detect incorrect empty projection. Mandatory new persisted input fields would need historical job migration and are unnecessary here."
+decision REPAIR based_on OWNER, AUTHORITY, GAP, BOUNDARY, OPTIONS:
+  "Add required transient guidance receipt across frame/context/execution and merge only into conscious frozen input. Write detailed mapping and source-to-prompt regression with negative controls. Preserve unsealed gate and report aggregate failure without blanket sealing."

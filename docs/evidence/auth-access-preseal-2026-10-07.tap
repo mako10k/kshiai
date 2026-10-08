@@ -1,0 +1,128 @@
+TAP version 13
+# Subtest: account realm access
+    # Subtest: fails unknown account kinds closed to the general realm
+    ok 1 - fails unknown account kinds closed to the general realm
+      ---
+      duration_ms: 1.922378
+      type: 'test'
+      ...
+    # Subtest: isolates general and test realms while administrators can access both
+    ok 2 - isolates general and test realms while administrators can access both
+      ---
+      duration_ms: 120.063409
+      type: 'test'
+      ...
+    # Subtest: hides internal observability from general users
+    ok 3 - hides internal observability from general users
+      ---
+      duration_ms: 99.493912
+      type: 'test'
+      ...
+    1..3
+ok 1 - account realm access
+  ---
+  duration_ms: 224.757997
+  type: 'suite'
+  ...
+# Subtest: asynchronous authentication persistence
+    # Subtest: registers, verifies, and destroys a shared session
+    ok 1 - registers, verifies, and destroys a shared session
+      ---
+      duration_ms: 835.648688
+      type: 'test'
+      ...
+    # Subtest: maps a Supabase identity to one stable application user
+    ok 2 - maps a Supabase identity to one stable application user
+      ---
+      duration_ms: 5.752356
+      type: 'test'
+      ...
+    # Subtest: maps unique username violations to the stable domain error
+    ok 3 - maps unique username violations to the stable domain error
+      ---
+      duration_ms: 228.999834
+      type: 'test'
+      ...
+    # Subtest: fails closed unless an administrator id or email is allow-listed
+    ok 4 - fails closed unless an administrator id or email is allow-listed
+      ---
+      duration_ms: 0.735349
+      type: 'test'
+      ...
+    1..4
+ok 2 - asynchronous authentication persistence
+  ---
+  duration_ms: 1074.826708
+  type: 'suite'
+  ...
+# Subtest: cloud origin verification
+    # Subtest: allows local operation when no origin secret is configured
+    ok 1 - allows local operation when no origin secret is configured
+      ---
+      duration_ms: 1.674151
+      type: 'test'
+      ...
+    # Subtest: accepts only the exact configured secret
+    ok 2 - accepts only the exact configured secret
+      ---
+      duration_ms: 0.516238
+      type: 'test'
+      ...
+    1..2
+ok 3 - cloud origin verification
+  ---
+  duration_ms: 4.478405
+  type: 'suite'
+  ...
+# Subtest: extracts a signed identity without any application database dependency
+ok 4 - extracts a signed identity without any application database dependency
+  ---
+  duration_ms: 20.601477
+  type: 'test'
+  ...
+# Subtest: rejects wrong issuer, audience, role and absent subject
+ok 5 - rejects wrong issuer, audience, role and absent subject
+  ---
+  duration_ms: 18.001594
+  type: 'test'
+  ...
+# Subtest: rejects a token signed by a different key and missing configuration
+ok 6 - rejects a token signed by a different key and missing configuration
+  ---
+  duration_ms: 6.90046
+  type: 'test'
+  ...
+# Subtest: rejects an expired token with otherwise valid identity claims
+ok 7 - rejects an expired token with otherwise valid identity claims
+  ---
+  duration_ms: 13.539428
+  type: 'test'
+  ...
+# Subtest: authenticatedFetch
+    # Subtest: adds the current access token to requests including SSE posts
+    ok 1 - adds the current access token to requests including SSE posts
+      ---
+      duration_ms: 67.459189
+      type: 'test'
+      ...
+    # Subtest: preserves an explicitly supplied authorization header
+    ok 2 - preserves an explicitly supplied authorization header
+      ---
+      duration_ms: 0.961483
+      type: 'test'
+      ...
+    1..2
+ok 8 - authenticatedFetch
+  ---
+  duration_ms: 71.312399
+  type: 'suite'
+  ...
+1..8
+# tests 15
+# suites 4
+# pass 15
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 2058.200058

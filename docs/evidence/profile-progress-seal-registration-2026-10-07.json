@@ -1,0 +1,140 @@
+{
+  "review": "docs/evidence/profile-progress-cause-review-2026-10-07.json",
+  "entries": [
+    {
+      "key": "design-world-profile-observer-boundary",
+      "path": "docs/battle-world-model.md",
+      "parents": [
+        "authority",
+        "basic"
+      ],
+      "scope": "Existing responsibility table: server world facts separate observer cognition/semantic interpretation/narrator wording; observer knowledge restricted. Lower existing design used only for tested canonical object placement projection, not proof every world-model section separately accepted or whole-engine behavior.",
+      "test": false,
+      "ref": "all-tests-20261007/design-world-profile-observer-boundary",
+      "sha256": "74e545bb06607fad697c5945730169f6968a2c26fa76edc00d2545bb2ccd5679",
+      "sealId": "75f897826d1b70f498a72cf58487f5fef17c791201ca5eee7515f80f7e495111",
+      "causeSealIds": [
+        "4a236b55e9ad9e4aa54eb2c6bbe9d77e0a318881ba8328363505153d16e151dd",
+        "1adba1d06106cfcc7537dcd2d85aa94f745a4a79ff6b3f5ac4911a11efdf79a8"
+      ]
+    },
+    {
+      "key": "contract-profile-anchor-character-source",
+      "path": "packages/shared/src/character.ts",
+      "parents": [
+        "profile",
+        "authority"
+      ],
+      "scope": "Only supplied CharacterSheet identity/appearance/descriptions and requireCombatReadyCharacterSheet plus default identity used by tested profile anchor. No full character default balancing, natural generation, immutable asset store or actual authored profile accuracy certified.",
+      "test": false,
+      "ref": "all-tests-20261007/contract-profile-anchor-character-source",
+      "sha256": "cfaf17cf30266a55256ccacc5878194d2a70dfe1971fe40b719c44d1b1533d90",
+      "sealId": "0a644f4030dfc8699a17a56cc993e2b18443acd89adebf26a227ea4106ae9574",
+      "causeSealIds": [
+        "51b88502ce6cf07710e956c6d10f128b83233b93d97309ce392a37a631be3dba",
+        "4a236b55e9ad9e4aa54eb2c6bbe9d77e0a318881ba8328363505153d16e151dd"
+      ]
+    },
+    {
+      "key": "implementation-world-profile-fixture-projection",
+      "path": "packages/shared/src/battle-world.ts",
+      "parents": [
+        "design-world-profile-observer-boundary",
+        "semantic",
+        "perception"
+      ],
+      "scope": "Only createBattleWorldState using supplied synthetic semantic state, strict add_entity and set_placement for supplied profile-derived hat; deriveBattleSceneStateFacts scene/worn placement and observerLabels access on this fixture. No LLM reconciliation or object concretization, complete operation validator/turn engine, fresh observation update or arbitrary canonical privacy proof.",
+      "test": false,
+      "ref": "all-tests-20261007/implementation-world-profile-fixture-projection",
+      "sha256": "f612883f9e9adf9e4dcb799ede0ac827c866548b77b826c25b016b90686f35a7",
+      "sealId": "e54f08ad6e2c12e8bc0d606d127673f1f5d1c9338b0f2e499742538ad42ab527",
+      "causeSealIds": [
+        "75f897826d1b70f498a72cf58487f5fef17c791201ca5eee7515f80f7e495111",
+        "dce107f59177be59fec704680461fb377ad1211e05fd35db9e654b94c0691b59",
+        "635dddb9346372392eefec016dc989a0bcf82d8dd14f049bb771d910c1a924ae"
+      ]
+    },
+    {
+      "key": "implementation-profile-grounding-snapshots",
+      "path": "packages/shared/src/profile-grounding.ts",
+      "parents": [
+        "authority",
+        "basic",
+        "contract-profile-anchor-character-source",
+        "implementation-world-profile-fixture-projection",
+        "selector"
+      ],
+      "scope": "Only tested frozen mechanics-free self anchor, rendering anchor unknown null identities, canonicalSelfReference, selected narrator anchors and copied current-state overrides from profile objects. Frozen base appearance remains unchanged; a supplied validated world placement drives separate current fact overrides. No generated public profile claim validation or full cognition delivery proof.",
+      "test": false,
+      "ref": "all-tests-20261007/implementation-profile-grounding-snapshots",
+      "sha256": "bd43652fde82d114b192131260e582991dbe1817336a6ad9404ef8e8a3b0f153",
+      "sealId": "98609625d668a2929cebd83722b31eb848a21ba9bfe836240e225906317833bb",
+      "causeSealIds": [
+        "4a236b55e9ad9e4aa54eb2c6bbe9d77e0a318881ba8328363505153d16e151dd",
+        "1adba1d06106cfcc7537dcd2d85aa94f745a4a79ff6b3f5ac4911a11efdf79a8",
+        "0a644f4030dfc8699a17a56cc993e2b18443acd89adebf26a227ea4106ae9574",
+        "e54f08ad6e2c12e8bc0d606d127673f1f5d1c9338b0f2e499742538ad42ab527",
+        "be8466f21cd3a7edf8a89934c23f058a1eef0acbf03a4ffc2d9db195d43eb48c"
+      ]
+    },
+    {
+      "key": "profile-grounding",
+      "path": "packages/shared/src/profile-grounding.test.ts",
+      "parents": [
+        "authority",
+        "basic",
+        "implementation-profile-grounding-snapshots",
+        "implementation-world-profile-fixture-projection"
+      ],
+      "scope": "All four cases: frozen mechanics-free own profile and nested identity array, null identity not invented, self/opponent/external narrator selection, profile-derived hat removed to scene then worn with base profile unchanged and observer-local scene visibility. Synthetic fixture only, no live world/perception generation, public profile validator or character-side pipeline delivery claim.",
+      "test": true,
+      "ref": "verification/profile-grounding-20261007",
+      "sha256": "3628449044a578782777d80f05cd91dfd98b447316645b5bd708ec45eb8ea8c0",
+      "sealId": "98eb01f9a2229b1050d699e1c8e523b56497059583a67ec0e1e72272fbdea38e",
+      "causeSealIds": [
+        "4a236b55e9ad9e4aa54eb2c6bbe9d77e0a318881ba8328363505153d16e151dd",
+        "1adba1d06106cfcc7537dcd2d85aa94f745a4a79ff6b3f5ac4911a11efdf79a8",
+        "98609625d668a2929cebd83722b31eb848a21ba9bfe836240e225906317833bb",
+        "e54f08ad6e2c12e8bc0d606d127673f1f5d1c9338b0f2e499742538ad42ab527"
+      ]
+    },
+    {
+      "key": "implementation-authoring-progress-presentation",
+      "path": "packages/shared/src/structured-assets.ts",
+      "parents": [
+        "queue"
+      ],
+      "scope": "Only isAssetAuthoringInFlight and toAssetAuthoringProgress tested status presentation. Generating structure maps upgrade to step2/5, validation label and terminal null; no worker stage transition, actual truthful timing or all status/locale branches certified.",
+      "test": false,
+      "ref": "all-tests-20261007/implementation-authoring-progress-presentation",
+      "sha256": "088c275e0d54a26be21451a23d5a6376ca7bf342e664d4b4370443e51643883c",
+      "sealId": "a1cf36e16b44559a34a90395d40e17280d71fa4fe129d717d9c854592101fb10",
+      "causeSealIds": [
+        "811d0305e67ce73b5902135bb8662e7ee31e6efaf98852b0ad5de8d1f0c15007"
+      ]
+    },
+    {
+      "key": "authoring-progress-presentation",
+      "path": "packages/shared/src/structured-assets.test.ts",
+      "parents": [
+        "queue",
+        "implementation-authoring-progress-presentation"
+      ],
+      "scope": "Entire one-case local regression of in-flight/awaiting classification, exact upgrade generation progress object, create structure-validation label, succeeded null. This is a pure presentation helper test, not evidence worker performed the advertised stage.",
+      "test": true,
+      "ref": "verification/authoring-progress-presentation-20261007",
+      "sha256": "b386c61e8998c3a5273e548d08cbeaa2ae23b5cfe221f70a0c3db080870b6e28",
+      "sealId": "da7b1c78e89d6bec4f11f7eced816ed7776d15f952b6674a34cc2f4ff7c8ca56",
+      "causeSealIds": [
+        "811d0305e67ce73b5902135bb8662e7ee31e6efaf98852b0ad5de8d1f0c15007",
+        "a1cf36e16b44559a34a90395d40e17280d71fa4fe129d717d9c854592101fb10"
+      ]
+    }
+  ],
+  "diagnostic": {
+    "pass": 5,
+    "fail": 0,
+    "skipped": 0,
+    "strictTypecheckExit": 0
+  }
+}

@@ -750,7 +750,7 @@ describe("battle engine", () => {
       sideB: sheet("b", "B"),
       turnLimit: 20,
       prologuePending: false,
-      battlefield: {
+      battlefield: { kind: "legacy", instance: {
         sourcePresetId: null,
         displayName: "テスト森",
         category: "forest",
@@ -760,7 +760,7 @@ describe("battle engine", () => {
         conditions: ["霧"],
         coefficients: { damage: 0.9, wind: 1.2 },
         narrativeSetup: "霧が立ちこめる。",
-      },
+      } },
     });
     assert.equal(state.situation.coefficients.damage, 0.9);
     assert.equal(state.battlefield?.displayName, "テスト森");
@@ -1548,7 +1548,7 @@ describe("battle engine", () => {
       sideB: b,
       turnLimit: 12,
       prologuePending: false,
-      battlefield: {
+      battlefield: { kind: "legacy", instance: {
         sourcePresetId: null,
         category: "arena",
         displayName: "三場",
@@ -1582,7 +1582,7 @@ describe("battle engine", () => {
             sound: "clear",
           },
         ],
-      },
+      } },
     });
     state.plannedActionA = { kind: "basic_attack" };
     state.plannedActionB = { kind: "wait" };

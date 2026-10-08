@@ -1,0 +1,87 @@
+{
+  "nodes": [
+    {
+      "key": "design-character-name-helper",
+      "path": "docs/names-config-test-contract-review-2026-10-07.md",
+      "parents": [
+        "requirements"
+      ],
+      "scope": "F-CHR-03c normalized name collision helper only; fixture suffix allocation, not full save/CAS/regeneration compliance.",
+      "ref": "all-tests-20261007/design-character-name-helper",
+      "test": false,
+      "sha256": "336278703f8be145706a30eecc436fc944b472cba9a2c51251450c3e0c731f84"
+    },
+    {
+      "key": "design-config-name-parser",
+      "path": "docs/names-config-test-contract-review-2026-10-07.md",
+      "parents": [
+        "shadow",
+        "override"
+      ],
+      "scope": "Existing recognized config-name/default/rejection and immutable identity syntax only; no candidate activation or Stage permission.",
+      "ref": "all-tests-20261007/design-config-name-parser",
+      "test": false,
+      "sha256": "336278703f8be145706a30eecc436fc944b472cba9a2c51251450c3e0c731f84"
+    },
+    {
+      "key": "implementation-character-name-helper",
+      "path": "backend/src/character-name-uniqueness.ts",
+      "parents": [
+        "design-character-name-helper"
+      ],
+      "scope": "Pure normalization/collision and deterministic mock suffix helper only.",
+      "ref": "all-tests-20261007/implementation-character-name-helper",
+      "test": false,
+      "sha256": "ebcf352f92dcbb9a79b3f664a77b4e4fee8725578b3402d60770dfe392cc13aa"
+    },
+    {
+      "key": "implementation-config-name-parser",
+      "path": "backend/src/config.ts",
+      "parents": [
+        "design-config-name-parser"
+      ],
+      "scope": "Only parseBattlePacingPolicy, parseCharacterFocusShadowMode and dialogue override/identity parser functions; no other config or live activation claim.",
+      "ref": "all-tests-20261007/implementation-config-name-parser",
+      "test": false,
+      "sha256": "6b58fd9428c378fefee216abc3e7f062d9798a9cec9d28c8d2ac831fb3cdc750"
+    },
+    {
+      "key": "character-name-helper-bounded",
+      "path": "backend/src/character-name-uniqueness.test.ts",
+      "parents": [
+        "implementation-character-name-helper"
+      ],
+      "scope": "Whole original three cases unchanged; normalized names, collision/noncollision, internal fixture suffix only.",
+      "ref": "verification/character-name-helper-bounded-20261007",
+      "test": true,
+      "sha256": "11d201dda5f9998639eb8848a8dae9382820a0c9473cab547b0d1c692b776309"
+    },
+    {
+      "key": "config-name-parser-bounded",
+      "path": "backend/src/config-pacing.test.ts",
+      "parents": [
+        "implementation-config-name-parser"
+      ],
+      "scope": "Whole original four parser cases unchanged; no numerical policy adoption, runtime activation or external authority.",
+      "ref": "verification/config-name-parser-bounded-20261007",
+      "test": true,
+      "sha256": "5a3bd5ed3e0e33114a5acaa5bf426a0781debd10212ca3a5d8b714ec89afeb6c"
+    }
+  ],
+  "seeds": {
+    "requirements": "all-tests-20261007/authority-semantic-observation-requirements",
+    "shadow": "all-tests-20261007/authority-character-focus-shadow",
+    "override": "all-tests-20261007/authority-dialogue-activation"
+  },
+  "diagnostic": {
+    "focusedPass": 7,
+    "fail": 0,
+    "skipped": 0,
+    "workspaceTypecheckEvidence": "docs/evidence/backend-implicit-any-workspace-types-2026-10-07.log"
+  },
+  "limitations": [
+    "Original seven helper/parser cases only",
+    "No complete saving/regeneration or Stage activation authority proof",
+    "Source/implementation unchanged, full251 goal incomplete"
+  ]
+}

@@ -1,0 +1,66 @@
+{
+  "entries": [
+    {
+      "ref": "all-tests-20261007/implementation-stable-area-ready-binding",
+      "previousSeal": "046b127d623138820b0ba14d0b15b619609d36a448b83a9e7e41e548fb0d01cb",
+      "sealId": "ab1413f458bb6178b7ca245e788c82d85325d9abbd7e0da59ae2a3bd10f9f9e8",
+      "path": "backend/src/services/battle-service.ts",
+      "causeSealIds": [
+        "20c050a7fb0b19ccae7df3d80e3740fb5f235b4f5dd500cf706fbd8093392b91",
+        "9a63b5e031f3ca89944c74ec4b3034ca95fe12921f7c628b68beb9a9b4dcec76",
+        "a65c9b0a1bf9589c18778e7cf7ca7985d7ccde11c3a36c7e0b5db5874f34c7b8",
+        "b4c3e3bc530e4707194dbdbebead357c1ba366ce7e24ab1f4a8b5440b6686459",
+        "bbac9d8f7324c9cc82705e42235739a129b0d0bd3d6b017b757e9ffffaa14508",
+        "6b7b9634d4b8729ba3cfdeffded746ba4f7b588cfacfaa271bff7b0763b3762e"
+      ]
+    },
+    {
+      "ref": "all-tests-20261007/implementation-stable-area-authoring-http",
+      "previousSeal": "d2efb94d5241f39f3228b1c628b659a66ba1cc8af91ca0df9b0eff21eaac6bb2",
+      "sealId": "2432d6aa7c1374fc5d1f2cd36936454f77529e4750bf3177a7a239232f37da78",
+      "path": "backend/src/routes.ts",
+      "causeSealIds": [
+        "ab1413f458bb6178b7ca245e788c82d85325d9abbd7e0da59ae2a3bd10f9f9e8",
+        "08e378322bfc5c7d21c1df48e50b51713fdf7cc429f0e2229de8ff2eba6bd8fb",
+        "7a8b93dcb2e8101713ce91646b5d4fd4221f80a15a43f69d70a800a764ae89fc",
+        "811d0305e67ce73b5902135bb8662e7ee31e6efaf98852b0ad5de8d1f0c15007",
+        "9a63b5e031f3ca89944c74ec4b3034ca95fe12921f7c628b68beb9a9b4dcec76",
+        "b4c3e3bc530e4707194dbdbebead357c1ba366ce7e24ab1f4a8b5440b6686459",
+        "b5d994be6d213058541cb20240ae3e13ae9db1d0bd44df1a4961c738f21077e8",
+        "b6f48bb19b9fc3a71a5c0dd0371df7841f1f4bf52f0c80fe63136be3966bcce5",
+        "c6ae9384dbe1557c3adb9d94530a4ce2e5f3e025c14cca05f418fd9879f1745c"
+      ]
+    },
+    {
+      "ref": "verification/stable-area-battlefield-http-acceptance-20261007",
+      "previousSeal": "375cd9f6138a65938b61f76b970c4f5968a12bac65816d042acbab5f69e42f63",
+      "sealId": "e683553900d5123d800b81b668a96f946946601f73e694dc3b19bf4c2681d6be",
+      "path": "backend/src/routes-structured-battlefield-acceptance.test.ts",
+      "causeSealIds": [
+        "ab1413f458bb6178b7ca245e788c82d85325d9abbd7e0da59ae2a3bd10f9f9e8",
+        "08e378322bfc5c7d21c1df48e50b51713fdf7cc429f0e2229de8ff2eba6bd8fb",
+        "54f969c54c0489a5a5b7f3cb3fd3d97c4af5833c1d71d0e4d26649e4886db6d5",
+        "b4c3e3bc530e4707194dbdbebead357c1ba366ce7e24ab1f4a8b5440b6686459",
+        "b6f48bb19b9fc3a71a5c0dd0371df7841f1f4bf52f0c80fe63136be3966bcce5",
+        "c6ae9384dbe1557c3adb9d94530a4ce2e5f3e025c14cca05f418fd9879f1745c",
+        "2432d6aa7c1374fc5d1f2cd36936454f77529e4750bf3177a7a239232f37da78"
+      ]
+    },
+    {
+      "ref": "verification/stable-area-narration-http-acceptance-20261007",
+      "previousSeal": "74945ba83bbcd251be235ef198a36aae9b3bae599339511a3a56689c61611aed",
+      "sealId": "ba767624a6df2dc60f7fb1ba4fc4dd68a7712865b44ae95e39c66658b0bb24cd",
+      "path": "backend/src/routes-structured-narration-acceptance.test.ts",
+      "causeSealIds": [
+        "ab1413f458bb6178b7ca245e788c82d85325d9abbd7e0da59ae2a3bd10f9f9e8",
+        "7a8b93dcb2e8101713ce91646b5d4fd4221f80a15a43f69d70a800a764ae89fc",
+        "7ed5f6b59fb21bfee662c9b29ac29e7fe915d4576b3bdd5d735e90248124c3cc",
+        "9a63b5e031f3ca89944c74ec4b3034ca95fe12921f7c628b68beb9a9b4dcec76",
+        "b5d994be6d213058541cb20240ae3e13ae9db1d0bd44df1a4961c738f21077e8",
+        "2432d6aa7c1374fc5d1f2cd36936454f77529e4750bf3177a7a239232f37da78"
+      ]
+    }
+  ],
+  "originalRelatedHttpCases": 14,
+  "sourceDelta": "docs/evidence/agency-state-presence-types-source-delta-2026-10-07.json"
+}

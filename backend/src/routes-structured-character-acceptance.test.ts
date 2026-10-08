@@ -1,19 +1,20 @@
 import assert from "node:assert/strict";
+import { z } from "zod";
 import { mkdtempSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { after, before, describe, it } from "node:test";
 import {
   CharacterGenerationEnvelopeV2Schema,
+  CharacterPublicSchema,
+  CharacterAuthoringReviewSchema,
+  OwnerNotificationPublicSchema,
+  CharacterSheetSchema,
   defaultParameters,
   defaultBasicAttack,
+  requireCombatReadyCharacterSheet,
   type CharacterSheet,
 } from "@kshiai/shared";
-import type {
-  GenerateCharacterDefinitionV2Input,
-  GenerateCharacterInput,
-  GenerateCharacterProfileInput,
-} from "./llm/types.js";
 
 const directory = mkdtempSync(join(tmpdir(), "kshiai-character-routes-v2-"));
 process.env.DATABASE_URL = "";
@@ -21,33 +22,27 @@ process.env.AUTH_PROVIDER = "legacy";
 process.env.DATABASE_PATH = join(directory, "routes.db");
 process.env.LLM_PROVIDER = "mock";
 
-const { saveHistoricalCharacterFixture } = await import("./testing/historical-character-fixtures.js");
+const { saveHistoricalCharacterFixture, activateHistoricalCharacterFixtureV2 } = await import("./testing/historical-character-fixtures.js");
 const { closeDatabase, query } = await import("./db.js");
+const { buildV3CharacterEnvelopeFixture } = await import("./testing/v3-character-envelope-fixture.js");
+const generations = await import("./testing/historical-asset-generations.js");
+const ErrorResponseSchema = z.object({ error: z.string() }).passthrough();
+const PublicCharacterWireSchema = CharacterPublicSchema.passthrough();
 const { MockLlmProvider } = await import("./llm/mock.js");
+const { createOfflineFocusedAuthoringProvider } = await import("./testing/offline-focused-authoring-provider.js");
 const characterRepo = await import("./repositories/characters.js");
+const { buildImportedCharacterEnvelopeV2 } = await import("./services/character-authoring-service.js");
+const CharactersResponseSchema = z.object({ characters: z.array(PublicCharacterWireSchema) });
+const AcceptedResponseSchema = z.object({ attemptId: z.string(), characterId: z.string() }).passthrough();
+const NotificationsResponseSchema = z.object({ unreadCount: z.number().int().nonnegative(),
+  notifications: z.array(OwnerNotificationPublicSchema.passthrough()) });
 const characterAssetRepo = await import("./repositories/character-assets-v2.js");
 const { drainCharacterAuthoringJobs } = await import("./services/character-authoring-jobs.js");
 const { buildRoutes } = await import("./routes.js");
 
-class PartialFailureProvider extends MockLlmProvider {
-  override async generateCharacterProfile(
-    _input: GenerateCharacterProfileInput,
-  ): Promise<never> {
-    throw new Error("PROVIDER_PROFILE_PARTIAL_FAILURE");
-  }
-}
-
-class InitialFailureProvider extends MockLlmProvider {
-  override async generateCharacter(
-    _input: GenerateCharacterInput,
-  ): Promise<never> {
-    throw new Error("PROVIDER_INITIAL_FAILURE");
-  }
-}
-
-const partialFailureLlm = new PartialFailureProvider();
-const initialFailureLlm = new InitialFailureProvider();
-const successLlm = new MockLlmProvider();
+const partialFailureLlm = createOfflineFocusedAuthoringProvider({ failAt: "after_skeleton" });
+const initialFailureLlm = createOfflineFocusedAuthoringProvider({ failAt: "first" });
+const successLlm = createOfflineFocusedAuthoringProvider();
 const app = buildRoutes({ llm: partialFailureLlm });
 const initialFailureApp = buildRoutes({ llm: initialFailureLlm });
 let generatedPortraitCalls = 0;
@@ -55,6 +50,7 @@ const generatedPortraitUrl =
   "/api/media/characters/route-ready-mine.generated.jpg";
 const successApp = buildRoutes({
   llm: successLlm,
+  enableCharacterMigrationAcceptanceTrial: true,
   generateCharacterPortrait: async (character) => {
     generatedPortraitCalls += 1;
     return {
@@ -70,7 +66,7 @@ const authHeaders = {
   Cookie: `kshiai_session=${sessionToken}`,
 };
 
-async function drainAuthoring(llm: typeof successLlm): Promise<void> {
+async function drainAuthoring(llm: InstanceType<typeof MockLlmProvider>): Promise<void> {
   await drainCharacterAuthoringJobs({ llm, workerId: "route-test-worker" });
 }
 
@@ -102,6 +98,12 @@ function sheet(input: {
     narrativeBlurb: `${input.displayName}の公開プロフィール。`,
     visibility: "public",
   };
+}
+
+function migrationSourceSheet(character: CharacterSheet): CharacterSheet {
+  const source = requireCombatReadyCharacterSheet(character);
+  return { ...source, basicAttack: { ...source.basicAttack,
+    name: "構え", description: "身構え、間合いを見て相手に働きかける" } };
 }
 
 async function insertLegacyCharacter(character: CharacterSheet): Promise<void> {
@@ -141,6 +143,14 @@ before(async () => {
     ownerUserId: "route-opponent",
     displayName: "準備済み相手",
   }));
+  for (const id of ["route-ready-mine", "route-ready-opponent"]) {
+    const current = await characterRepo.getSheet(id);
+    assert.ok(current);
+    const generation = await generations.createAssetGeneration({ assetType: "character", assetId: id,
+      schemaVersion: 3, content: buildV3CharacterEnvelopeFixture(current) });
+    await query("UPDATE character_asset_states SET current_generation_id = $2 WHERE character_id = $1",
+      [id, generation.generationId]);
+  }
   await insertLegacyCharacter(sheet({
     id: "route-legacy-mine",
     ownerUserId: "route-owner",
@@ -182,13 +192,15 @@ describe("structured character route acceptance", () => {
         routeApp: initialFailureApp,
         llm: initialFailureLlm,
         key: "route-initial-failure-001",
-        message: "PROVIDER_INITIAL_FAILURE",
+        message: "technical_failure",
+        expectedCalls: 1,
       },
       {
         routeApp: app,
         llm: partialFailureLlm,
         key: "route-partial-failure-001",
-        message: "PROVIDER_PROFILE_PARTIAL_FAILURE",
+        message: "technical_failure",
+        expectedCalls: 2,
       },
     ];
     for (const testCase of cases) {
@@ -202,7 +214,7 @@ describe("structured character route acceptance", () => {
         body: JSON.stringify({ prompt: "部分失敗を検証する旅人" }),
       });
       assert.equal(response.status, 202);
-      const accepted = await response.json() as { attemptId: string };
+      const accepted = z.object({ attemptId: z.string() }).parse(await response.json());
       assert.ok(accepted.attemptId);
       await drainAuthoring(testCase.llm);
 
@@ -220,6 +232,7 @@ describe("structured character route acceptance", () => {
       assert.equal(attempt.rows[0]?.status, "failed");
       assert.equal(attempt.rows[0]?.candidate_json, null);
       assert.equal(attempt.rows[0]?.error_code, testCase.message);
+      assert.equal(testCase.llm.focusedFixtureCalls(), testCase.expectedCalls);
       const characterId = attempt.rows[0]?.character_id;
       assert.ok(characterId);
       const partialRows = await query<{ count: number }>(
@@ -234,15 +247,14 @@ describe("structured character route acceptance", () => {
       headers: authHeaders,
     });
     assert.equal(latest.status, 200);
-    const latestBody = await latest.json() as {
-      draft: unknown;
-      failed: { errorCode: string | null } | null;
-    };
+    const latestBody = z.object({ draft: z.unknown(),
+      failed: z.object({ errorCode: z.string().nullable() }).nullable() })
+      .parse(await latest.json());
     assert.equal(latestBody.draft, null);
-    assert.equal(latestBody.failed?.errorCode, "PROVIDER_PROFILE_PARTIAL_FAILURE");
+    assert.equal(latestBody.failed?.errorCode, "technical_failure");
   });
 
-  it("uses only V2 attempts for create review confirm and discard routes", async () => {
+  it("uses current V3 attempts for create review confirm and discard routes", async () => {
     const generated = await successApp.request("/api/characters/generate", {
       method: "POST",
       headers: {
@@ -250,14 +262,11 @@ describe("structured character route acceptance", () => {
         "Content-Type": "application/json",
         "Idempotency-Key": "route-v2-create-001",
       },
-      body: JSON.stringify({ prompt: "V2経路だけで確定する航海士" }),
+      body: JSON.stringify({ prompt: "現行V3経路で確定する航海士" }),
     });
     assert.equal(generated.status, 202);
     await drainAuthoring(successLlm);
-    const generatedBody = await generated.json() as {
-      attemptId: string;
-      characterId: string;
-    };
+    const generatedBody = AcceptedResponseSchema.parse(await generated.json());
     const attemptId = generatedBody.attemptId;
 
     const latest = await successApp.request("/api/character-drafts/latest", {
@@ -265,40 +274,85 @@ describe("structured character route acceptance", () => {
     });
     assert.equal(latest.status, 200);
     assert.equal(
-      ((await latest.json()) as { draft: { id: string } }).draft.id,
+      z.object({ reviewAttemptId: z.string() }).parse(await latest.json()).reviewAttemptId,
       attemptId,
     );
+
+    const beforeChatResponse = await successApp.request(`/api/character-drafts/${attemptId}`, { headers: authHeaders });
+    const beforeChat = CharacterAuthoringReviewSchema.parse(await beforeChatResponse.json());
+    assert.ok(beforeChat.candidateDigest);
+    const predecessorBefore = await characterAssetRepo.getCharacterAuthoringAttempt(attemptId, "route-owner");
+    const callsBeforeCorrection = successLlm.focusedFixtureCalls();
 
     const adjusted = await successApp.request(
       `/api/character-drafts/${attemptId}/chat`,
       {
         method: "POST",
-        headers: { ...authHeaders, "Content-Type": "application/json" },
-        body: JSON.stringify({ message: "判断をより慎重にしてください" }),
+        headers: { ...authHeaders, "Content-Type": "application/json", "Idempotency-Key": "route-correction-001" },
+        body: JSON.stringify({ message: "判断をより慎重にしてください", candidateDigest: beforeChat.candidateDigest }),
       },
     );
     assert.equal(adjusted.status, 202);
+    const successor = AcceptedResponseSchema.extend({ predecessorAttemptId: z.string() }).parse(await adjusted.json());
+    assert.notEqual(successor.attemptId, attemptId);
+    assert.equal(successor.predecessorAttemptId, attemptId);
+    assert.equal(successor.characterId, generatedBody.characterId);
     await drainAuthoring(successLlm);
-    const afterChat = await successApp.request(`/api/character-drafts/${attemptId}`, {
+    const afterChat = await successApp.request(`/api/character-drafts/${successor.attemptId}`, {
       headers: authHeaders,
     });
-    const afterChatBody = await afterChat.json() as {
-      canAccept: boolean;
-      attemptId: string;
-    };
-    assert.equal(afterChatBody.attemptId, attemptId);
-    assert.equal(afterChatBody.canAccept, true);
+    const afterChatBody = CharacterAuthoringReviewSchema.parse(await afterChat.json());
+    assert.equal(afterChatBody.attemptId, successor.attemptId);
+    assert.equal(afterChatBody.canEditCandidate, true);
+    assert.equal(afterChatBody.canAccept, true,
+      `review=${JSON.stringify(afterChatBody.failed)}, work=${JSON.stringify(successLlm.focusedFixtureWork())}, bounds=${JSON.stringify(successLlm.focusedFixtureBounds())}`);
+    assert.notEqual(afterChatBody.candidateDigest, beforeChat.candidateDigest);
+    assert.deepEqual(await characterAssetRepo.getCharacterAuthoringAttempt(attemptId, "route-owner"), predecessorBefore);
+    const callsAfterCorrection = successLlm.focusedFixtureCalls();
+    assert.ok(callsAfterCorrection - callsBeforeCorrection <= 10, "scope and dependent work share the successor call cap");
+    assert.ok(successLlm.focusedFixtureBounds().every((bound) => bound.inputTokens <= 6000 && bound.inputBytes <= 24576));
+    console.info("CORRECTION_DIAGNOSTIC", JSON.stringify({
+      physicalCalls: callsAfterCorrection - callsBeforeCorrection,
+      preparedBounds: successLlm.focusedFixtureBounds().slice(callsBeforeCorrection),
+    }));
+    const replay = await successApp.request(`/api/character-drafts/${attemptId}/chat`, {
+      method: "POST", headers: { ...authHeaders, "Content-Type": "application/json", "Idempotency-Key": "route-correction-001" },
+      body: JSON.stringify({ message: "判断をより慎重にしてください", candidateDigest: beforeChat.candidateDigest }),
+    });
+    assert.equal(replay.status, 202);
+    assert.equal(AcceptedResponseSchema.parse(await replay.json()).attemptId, successor.attemptId);
+    const conflict = await successApp.request(`/api/character-drafts/${attemptId}/chat`, {
+      method: "POST", headers: { ...authHeaders, "Content-Type": "application/json", "Idempotency-Key": "route-correction-001" },
+      body: JSON.stringify({ message: "外套を青に変更", candidateDigest: beforeChat.candidateDigest }),
+    });
+    assert.equal(conflict.status, 409);
+    assert.equal(ErrorResponseSchema.parse(await conflict.json()).error, "AUTHORING_IDEMPOTENCY_CONFLICT");
+    const missingKey = await successApp.request(`/api/character-drafts/${attemptId}/chat`, {
+      method: "POST", headers: { ...authHeaders, "Content-Type": "application/json" },
+      body: JSON.stringify({ message: "判断をより慎重にしてください", candidateDigest: beforeChat.candidateDigest }),
+    });
+    assert.equal(missingKey.status, 400);
+    const staleConfirmation = await successApp.request(`/api/characters/${attemptId}/confirm`, {
+      method: "POST", headers: { ...authHeaders, "Content-Type": "application/json" },
+      body: JSON.stringify({ candidateDigest: beforeChat.candidateDigest }),
+    });
+    assert.equal(staleConfirmation.status, 409);
+    const wrongDigest = await successApp.request(`/api/characters/${successor.attemptId}/confirm`, {
+      method: "POST", headers: { ...authHeaders, "Content-Type": "application/json" },
+      body: JSON.stringify({ candidateDigest: beforeChat.candidateDigest }),
+    });
+    assert.equal(wrongDigest.status, 409);
+    assert.equal(successLlm.focusedFixtureCalls(), callsAfterCorrection, "replay, rejection and reads cannot generate");
 
     const confirmed = await successApp.request(
-      `/api/characters/${attemptId}/confirm`,
-      { method: "POST", headers: authHeaders },
+      `/api/characters/${successor.attemptId}/confirm`,
+      { method: "POST", headers: { ...authHeaders, "Content-Type": "application/json" },
+        body: JSON.stringify({ candidateDigest: afterChatBody.candidateDigest }) },
     );
     assert.equal(confirmed.status, 200);
-    const confirmedBody = await confirmed.json() as {
-      character: { id: string; compatibility: { status: string } };
-    };
+    const confirmedBody = z.object({ character: PublicCharacterWireSchema }).parse(await confirmed.json());
     assert.equal(confirmedBody.character.id, generatedBody.characterId);
-    assert.equal(confirmedBody.character.compatibility.status, "ready");
+    assert.equal(confirmedBody.character.compatibility?.status, "ready");
     assert.equal(
       (await characterAssetRepo.getReadyCharacterGeneration(
         confirmedBody.character.id,
@@ -313,13 +367,11 @@ describe("structured character route acceptance", () => {
         "Content-Type": "application/json",
         "Idempotency-Key": "route-v2-discard-001",
       },
-      body: JSON.stringify({ prompt: "破棄するV2候補" }),
+      body: JSON.stringify({ prompt: "破棄する現行V3候補" }),
     });
     assert.equal(discardCandidate.status, 202);
     await drainAuthoring(successLlm);
-    const discardAttemptId = ((await discardCandidate.json()) as {
-      attemptId: string;
-    }).attemptId;
+    const discardAttemptId = AcceptedResponseSchema.parse(await discardCandidate.json()).attemptId;
     const discarded = await successApp.request(
       `/api/character-drafts/${discardAttemptId}`,
       { method: "DELETE", headers: authHeaders },
@@ -338,11 +390,12 @@ describe("structured character route acceptance", () => {
     const latest = await successApp.request("/api/character-drafts/latest", {
       headers: authHeaders,
     });
-    assert.deepEqual(await latest.json(), {
-      draft: null,
-      progress: null,
-      failed: null,
-    });
+    const latestCurrent = z.object({ draft: z.unknown(), progress: z.unknown(), failed: z.unknown(),
+      reviewAttemptId: z.string().optional() }).parse(await latest.json());
+    assert.equal(latestCurrent.draft, null);
+    assert.equal(latestCurrent.progress, null);
+    assert.equal(latestCurrent.failed, null);
+    assert.notEqual(latestCurrent.reviewAttemptId, "route-legacy-draft");
 
     const chat = await successApp.request(
       "/api/character-drafts/route-legacy-draft/chat",
@@ -375,7 +428,7 @@ describe("structured character route acceptance", () => {
     );
     assert.equal(retained.rows.length, 1);
     assert.equal(
-      (JSON.parse(retained.rows[0]?.sheet_json ?? "{}") as CharacterSheet)
+      CharacterSheetSchema.parse(JSON.parse(retained.rows[0]?.sheet_json ?? "{}"))
         .displayName,
       "旧下書き",
     );
@@ -407,8 +460,8 @@ describe("structured character route acceptance", () => {
     for (const response of await Promise.all(requests)) {
       assert.equal(response.status, 409);
       assert.equal(
-        ((await response.json()) as { error: string }).error,
-        "character_upgrade_required",
+        ErrorResponseSchema.parse(await response.json()).error,
+        "character_v3_update_required",
       );
     }
     assert.equal(generatedPortraitCalls, portraitCallsBefore);
@@ -425,7 +478,7 @@ describe("structured character route acceptance", () => {
     assert.equal(Number(generations.rows[0]?.count), 0);
   });
 
-  it("commits image toggle and restore routes only as immutable V2 generations", async () => {
+  it("commits immutable V3 portrait generations and rejects unavailable restore", async () => {
     const initial = await characterAssetRepo.getReadyCharacterGeneration(
       "route-ready-mine",
     );
@@ -510,14 +563,16 @@ describe("structured character route acceptance", () => {
         },
       },
     );
-    assert.equal(restored.status, 200);
+    assert.equal(restored.status, 409);
+    assert.equal(ErrorResponseSchema.parse(await restored.json()).error, "character_update_unavailable");
     const afterRestore = await characterAssetRepo.getReadyCharacterGeneration(
       "route-ready-mine",
     );
-    assert.equal(afterRestore?.generation, (afterToggle?.generation ?? 0) + 1);
+    assert.equal(afterRestore?.generationId, afterToggle?.generationId);
+    assert.deepEqual(afterRestore?.content, afterToggle?.content);
     assert.equal(
       (await characterRepo.getSheet("route-ready-mine"))?.appearance.imageUrl,
-      generatedPortraitUrl,
+      "/api/media/characters/route-ready-mine.initial.jpg",
     );
     const replayedRestore = await successApp.request(
       "/api/characters/route-ready-mine/restore-revision",
@@ -529,7 +584,8 @@ describe("structured character route acceptance", () => {
         },
       },
     );
-    assert.equal(replayedRestore.status, 200);
+    assert.equal(replayedRestore.status, 409);
+    assert.equal(ErrorResponseSchema.parse(await replayedRestore.json()).error, "character_update_unavailable");
     assert.equal(
       (await characterAssetRepo.getReadyCharacterGeneration("route-ready-mine"))
         ?.generation,
@@ -543,9 +599,8 @@ describe("structured character route acceptance", () => {
       { headers: authHeaders },
     );
     assert.equal(ownedResponse.status, 200);
-    const owned = await ownedResponse.json() as {
-      characters: Array<{ id: string; selectable: boolean }>;
-    };
+    const owned = z.object({ characters: z.array(PublicCharacterWireSchema) })
+      .parse(await ownedResponse.json());
     const ownedIds = new Set(owned.characters.map((character) => character.id));
     assert.equal(ownedIds.has("route-ready-mine"), true);
     assert.equal(ownedIds.has("route-legacy-mine"), false);
@@ -556,9 +611,8 @@ describe("structured character route acceptance", () => {
       { headers: authHeaders },
     );
     assert.equal(candidateResponse.status, 200);
-    const candidates = await candidateResponse.json() as {
-      candidates: Array<{ id: string }>;
-    };
+    const candidates = z.object({ candidates: z.array(PublicCharacterWireSchema) })
+      .parse(await candidateResponse.json());
     const candidateIds = new Set(candidates.candidates.map((candidate) => candidate.id));
     assert.equal(candidateIds.has("route-ready-mine"), true);
     assert.equal(candidateIds.has("route-ready-opponent"), true);
@@ -572,7 +626,7 @@ describe("structured character route acceptance", () => {
     });
     assert.equal(randomResponse.status, 200);
     const randomOpponentId =
-      ((await randomResponse.json()) as { opponent: { id: string } }).opponent.id;
+      z.object({ opponent: PublicCharacterWireSchema }).parse(await randomResponse.json()).opponent.id;
     assert.equal(candidateIds.has(randomOpponentId), true);
     assert.notEqual(randomOpponentId, "route-ready-mine");
     assert.notEqual(randomOpponentId, "route-legacy-mine");
@@ -585,7 +639,7 @@ describe("structured character route acceptance", () => {
     });
     assert.equal(autoResponse.status, 200);
     const autoOpponentId =
-      ((await autoResponse.json()) as { opponent: { id: string } }).opponent.id;
+      z.object({ opponent: PublicCharacterWireSchema }).parse(await autoResponse.json()).opponent.id;
     assert.equal(candidateIds.has(autoOpponentId), true);
     assert.notEqual(autoOpponentId, "route-ready-mine");
     assert.notEqual(autoOpponentId, "route-legacy-mine");
@@ -598,13 +652,13 @@ describe("structured character route acceptance", () => {
         key: "route-battle-legacy-mine-001",
         myCharacterId: "route-legacy-mine",
         opponentCharacterId: "route-ready-opponent",
-        error: "my_character_upgrade_required",
+        error: "my_character_v3_capability_blocked",
       },
       {
         key: "route-battle-legacy-opponent-001",
         myCharacterId: "route-ready-mine",
         opponentCharacterId: "route-legacy-opponent",
-        error: "opponent_character_upgrade_required",
+        error: "opponent_character_v3_capability_blocked",
       },
     ];
     const originalConsoleError = console.error;
@@ -625,7 +679,7 @@ describe("structured character route acceptance", () => {
           }),
         });
         assert.equal(response.status, 409);
-        const body = await response.json() as { error: string };
+        const body = ErrorResponseSchema.parse(await response.json());
         assert.equal(body.error, testCase.error);
       }
     } finally {
@@ -638,22 +692,20 @@ describe("structured character route acceptance", () => {
   });
 
   it("upgrades an existing character only after owner confirmation", async () => {
+    const sourceSheet = await characterRepo.getSheet("route-legacy-mine");
+    assert.ok(sourceSheet);
+    const original = await activateHistoricalCharacterFixtureV2({ sheet: migrationSourceSheet(sourceSheet),
+      envelope: buildImportedCharacterEnvelopeV2({ sheet: migrationSourceSheet(sourceSheet), attemptId: "historical-migration-source" }) });
     const managementBefore = await successApp.request(
       "/api/characters?limit=20",
       { headers: authHeaders },
     );
-    const beforeCharacters = ((await managementBefore.json()) as {
-      characters: Array<{
-        id: string;
-        selectable: boolean;
-        upgradeAction: { targetSchemaVersion: number } | null;
-      }>;
-    }).characters;
+    const beforeCharacters = CharactersResponseSchema.parse(await managementBefore.json()).characters;
     const legacyBefore = beforeCharacters.find(
       (character) => character.id === "route-legacy-mine",
     );
     assert.equal(legacyBefore?.selectable, false);
-    assert.equal(legacyBefore?.upgradeAction?.targetSchemaVersion, 2);
+    assert.equal(legacyBefore?.upgradeAction?.targetSchemaVersion, 3);
 
     const upgrade = await successApp.request(
       "/api/characters/route-legacy-mine/upgrade",
@@ -667,7 +719,7 @@ describe("structured character route acceptance", () => {
     );
     assert.equal(upgrade.status, 202);
     await drainAuthoring(successLlm);
-    const attemptId = ((await upgrade.json()) as { attemptId: string }).attemptId;
+    const attemptId = AcceptedResponseSchema.parse(await upgrade.json()).attemptId;
     assert.equal(
       (await characterAssetRepo.getCharacterCompatibility("route-legacy-mine"))
         .status,
@@ -678,105 +730,67 @@ describe("structured character route acceptance", () => {
       null,
     );
 
+    assert.deepEqual((await generations.getAssetGeneration(original.generationId))?.content, original.content);
+    const migrationReview = await successApp.request(`/api/character-drafts/${attemptId}`, { headers: authHeaders });
+    const reviewed = CharacterAuthoringReviewSchema.parse(await migrationReview.json());
+    assert.equal(reviewed.canAccept, true, JSON.stringify({ reviewed, work: successLlm.focusedFixtureWork() }));
+    assert.equal(reviewed.semanticCandidateReview?.schemaVersion, 3);
     const confirmed = await successApp.request(
       `/api/characters/${attemptId}/confirm`,
       { method: "POST", headers: authHeaders },
     );
     assert.equal(confirmed.status, 200);
-    const confirmedCharacter = (await confirmed.json()) as {
-      character: {
-        id: string;
-        selectable: boolean;
-        compatibility: { status: string };
-      };
-    };
+    const confirmedCharacter = z.object({ character: PublicCharacterWireSchema }).parse(await confirmed.json());
     assert.equal(confirmedCharacter.character.id, "route-legacy-mine");
     assert.equal(confirmedCharacter.character.selectable, true);
-    assert.equal(confirmedCharacter.character.compatibility.status, "ready");
+    assert.equal(confirmedCharacter.character.compatibility?.status, "ready");
     assert.equal(
-      (await characterAssetRepo.getReadyCharacterGeneration("route-legacy-mine"))
+      (await generations.getCurrentAssetGeneration("character", "route-legacy-mine"))
         ?.generation,
-      1,
+      original.generation + 1,
     );
 
     const selectableAfter = await successApp.request(
       "/api/characters?selectable=true&limit=20",
       { headers: authHeaders },
     );
-    const selectableIds = new Set(
-      ((await selectableAfter.json()) as {
-        characters: Array<{ id: string }>;
-      }).characters.map((character) => character.id),
-    );
+    const selectableIds = new Set(CharactersResponseSchema.parse(await selectableAfter.json())
+      .characters.map((character) => character.id));
     assert.equal(selectableIds.has("route-legacy-mine"), true);
   });
 
-  it("exposes in-flight authoring progress while an upgrade is running", async () => {
-    class SlowStructureProvider extends MockLlmProvider {
-      override async generateCharacterDefinitionV2(
-        input: GenerateCharacterDefinitionV2Input,
-      ) {
-        await new Promise((resolve) => setTimeout(resolve, 250));
-        return super.generateCharacterDefinitionV2(input);
-      }
-    }
-
-    await insertLegacyCharacter(sheet({
-      id: "route-legacy-progress",
-      ownerUserId: "route-owner",
-      displayName: "進捗確認キャラ",
-    }));
-    const slowLlm = new SlowStructureProvider();
+  it("exposes in-flight authoring progress while an upgrade is running", { timeout: 10_000 }, async () => {
+    await saveHistoricalCharacterFixture(migrationSourceSheet(sheet({ id: "route-legacy-progress",
+      ownerUserId: "route-owner", displayName: "進捗確認キャラ" })));
+    let releaseReply: () => void = () => { throw new Error("reply gate not initialized"); };
+    const replyGate = new Promise<void>((resolve) => { releaseReply = resolve; });
+    let markEntered: () => void = () => { throw new Error("entry gate not initialized"); };
+    const entered = new Promise<void>((resolve) => { markEntered = resolve; });
+    const slowLlm = createOfflineFocusedAuthoringProvider({ beforeReply: async () => {
+      markEntered();
+      await replyGate;
+    } });
     const progressApp = buildRoutes({ llm: slowLlm });
-    const upgrade = await progressApp.request(
-      "/api/characters/route-legacy-progress/upgrade",
-      {
-        method: "POST",
-        headers: {
-          ...authHeaders,
-          "Idempotency-Key": "route-v2-progress-001",
-        },
-      },
-    );
-    assert.equal(upgrade.status, 202);
-    const draining = drainAuthoring(slowLlm);
-    type ProgressResponse = {
-      character: {
-        authoringProgress: {
-          status: string;
-          label: string;
-          step: number;
-          stepCount: number;
-        } | null;
-      };
-    };
-    let midBody: ProgressResponse | null = null;
-    const deadline = Date.now() + 2_000;
-    while (Date.now() < deadline) {
-      const mid = await progressApp.request(
-        "/api/characters/route-legacy-progress",
-        { headers: authHeaders },
-      );
+    let draining: Promise<void> | undefined;
+    try {
+      const upgrade = await progressApp.request("/api/characters/route-legacy-progress/upgrade", {
+        method: "POST", headers: { ...authHeaders, "Idempotency-Key": "route-v3-progress-001" },
+      });
+      assert.equal(upgrade.status, 202);
+      const accepted = AcceptedResponseSchema.parse(await upgrade.json());
+      draining = drainAuthoring(slowLlm);
+      await entered;
+      const mid = await progressApp.request("/api/characters/route-legacy-progress", { headers: authHeaders });
       assert.equal(mid.status, 200);
-      const observed = await mid.json() as ProgressResponse;
-      if (observed.character.authoringProgress?.status === "generating_structure") {
-        midBody = observed;
-        break;
-      }
-      await new Promise((resolve) => setTimeout(resolve, 20));
+      const observed = z.object({ character: PublicCharacterWireSchema }).parse(await mid.json());
+      assert.equal(observed.character.authoringProgress?.attemptId, accepted.attemptId);
+      assert.equal(observed.character.authoringProgress?.status, "generating_structure");
+      assert.match(observed.character.authoringProgress?.label ?? "", /構造/);
+      assert.equal(observed.character.authoringProgress?.stepCount, 5);
+    } finally {
+      releaseReply();
+      await draining;
     }
-    assert.ok(midBody);
-    assert.ok(midBody.character.authoringProgress);
-    assert.equal(
-      midBody.character.authoringProgress?.status,
-      "generating_structure",
-    );
-    assert.match(
-      midBody.character.authoringProgress?.label ?? "",
-      /構造/,
-    );
-    assert.equal(midBody.character.authoringProgress?.stepCount, 5);
-    await draining;
   });
 
   it("does not surface an older awaiting draft after a later attempt fails", async () => {
@@ -791,14 +805,17 @@ describe("structured character route acceptance", () => {
     });
     assert.equal(first.status, 202);
     await drainAuthoring(successLlm);
-    const firstId = ((await first.json()) as { attemptId: string }).attemptId;
+    const firstId = z.object({ attemptId: z.string() }).parse(await first.json()).attemptId;
     const latestBefore = await successApp.request("/api/character-drafts/latest", {
       headers: authHeaders,
     });
-    assert.equal(
-      ((await latestBefore.json()) as { draft: { id: string } }).draft.id,
-      firstId,
-    );
+    assert.equal(z.object({ reviewAttemptId: z.string() }).parse(await latestBefore.json()).reviewAttemptId,
+      firstId);
+    const storedReview = await successApp.request(`/api/character-drafts/${firstId}`, { headers: authHeaders });
+    assert.equal(storedReview.status, 200);
+    const structuredReview = CharacterAuthoringReviewSchema.parse(await storedReview.json());
+    assert.equal(structuredReview.status, "awaiting_owner_acceptance");
+    assert.equal(structuredReview.semanticCandidateReview?.schemaVersion, 3);
 
     const failed = await initialFailureApp.request("/api/characters/generate", {
       method: "POST",
@@ -814,12 +831,11 @@ describe("structured character route acceptance", () => {
     const latest = await initialFailureApp.request("/api/character-drafts/latest", {
       headers: authHeaders,
     });
-    const latestBody = await latest.json() as {
-      draft: unknown;
-      failed: { errorCode: string | null } | null;
-    };
+    const latestBody = z.object({ draft: z.unknown(),
+      failed: z.object({ errorCode: z.string().nullable() }).nullable() })
+      .parse(await latest.json());
     assert.equal(latestBody.draft, null);
-    assert.equal(latestBody.failed?.errorCode, "PROVIDER_INITIAL_FAILURE");
+    assert.equal(latestBody.failed?.errorCode, "technical_failure");
   });
 
   it("discards an unclaimed queued attempt before the worker runs", async () => {
@@ -833,7 +849,7 @@ describe("structured character route acceptance", () => {
       body: JSON.stringify({ prompt: "受け付け直後に破棄する" }),
     });
     assert.equal(generated.status, 202);
-    const attemptId = ((await generated.json()) as { attemptId: string }).attemptId;
+    const attemptId = z.object({ attemptId: z.string() }).parse(await generated.json()).attemptId;
     const discarded = await successApp.request(
       `/api/character-drafts/${attemptId}`,
       { method: "DELETE", headers: authHeaders },
@@ -861,31 +877,25 @@ describe("structured character route acceptance", () => {
     });
     assert.equal(generated.status, 202);
     await drainAuthoring(successLlm);
-    const attemptId = ((await generated.json()) as { attemptId: string }).attemptId;
+    const attemptId = z.object({ attemptId: z.string() }).parse(await generated.json()).attemptId;
     const review = await successApp.request(`/api/character-drafts/${attemptId}`, {
       headers: authHeaders,
     });
     assert.equal(review.status, 200);
-    const body = await review.json() as {
-      kind: string;
-      canAccept: boolean;
-      current: unknown;
-      candidate: { displayName: string } | null;
-      stale: boolean;
-    };
+    const body = CharacterAuthoringReviewSchema.parse(await review.json());
     assert.equal(body.kind, "create");
-    assert.equal(body.canAccept, true);
+    assert.equal(body.canAccept, true, JSON.stringify({ body, work: successLlm.focusedFixtureWork() }));
     assert.equal(body.current, null);
     assert.ok(body.candidate?.displayName);
     assert.equal(body.stale, false);
   });
 
   it("returns a compare review for upgrade and marks an older attempt stale", async () => {
-    await insertLegacyCharacter(sheet({
+    await saveHistoricalCharacterFixture(migrationSourceSheet(sheet({
       id: "route-legacy-review",
       ownerUserId: "route-owner",
       displayName: "比較用旧キャラ",
-    }));
+    })));
     const upgrade = await successApp.request(
       "/api/characters/route-legacy-review/upgrade",
       {
@@ -898,31 +908,21 @@ describe("structured character route acceptance", () => {
     );
     assert.equal(upgrade.status, 202);
     await drainAuthoring(successLlm);
-    const attemptId = ((await upgrade.json()) as { attemptId: string }).attemptId;
+    const attemptId = AcceptedResponseSchema.parse(await upgrade.json()).attemptId;
     const review = await successApp.request(`/api/character-drafts/${attemptId}`, {
       headers: authHeaders,
     });
     assert.equal(review.status, 200);
-    const body = await review.json() as {
-      kind: string;
-      canAccept: boolean;
-      current: { displayName: string } | null;
-      candidate: { displayName: string } | null;
-    };
+    const body = CharacterAuthoringReviewSchema.parse(await review.json());
     assert.equal(body.kind, "upgrade");
-    assert.equal(body.canAccept, true);
+    assert.equal(body.canAccept, true, JSON.stringify({ body, work: successLlm.focusedFixtureWork() }));
     assert.equal(body.current?.displayName, "比較用旧キャラ");
-    assert.ok(body.candidate?.displayName);
+    assert.equal(body.semanticCandidateReview?.schemaVersion, 3);
+    assert.ok(body.semanticCandidateReview?.fields.some((field) => field.key === "identity"));
     const listed = await successApp.request("/api/characters?limit=50", {
       headers: authHeaders,
     });
-    const listedBody = await listed.json() as {
-      characters: Array<{
-        id: string;
-        reviewState: string | null;
-        reviewAttemptId: string | null;
-      }>;
-    };
+    const listedBody = CharactersResponseSchema.parse(await listed.json());
     const marked = listedBody.characters.find((item) => item.id === "route-legacy-review");
     assert.equal(marked?.reviewState, "awaiting_acceptance");
     assert.equal(marked?.reviewAttemptId, attemptId);
@@ -958,40 +958,20 @@ describe("structured character route acceptance", () => {
     const stale = await successApp.request(`/api/character-drafts/${attemptId}`, {
       headers: authHeaders,
     });
-    const staleBody = await stale.json() as { stale: boolean; canAccept: boolean };
+    const staleBody = CharacterAuthoringReviewSchema.parse(await stale.json());
     assert.equal(staleBody.stale, true);
     assert.equal(staleBody.canAccept, false);
   });
 
   it("lists characters without deserializing a historical candidate", async () => {
     const characterId = "route-historical-candidate";
-    await insertLegacyCharacter(sheet({
-      id: characterId,
-      ownerUserId: "route-owner",
-      displayName: "過去候補を持つキャラ",
+    const historicalSheet = sheet({ id: characterId, ownerUserId: "route-owner",
+      displayName: "過去候補を持つキャラ" });
+    await insertLegacyCharacter(historicalSheet);
+    const attemptId = "cat_route_historical_candidate";
+    const candidate = CharacterGenerationEnvelopeV2Schema.parse(buildImportedCharacterEnvelopeV2({
+      sheet: historicalSheet, attemptId,
     }));
-    const upgrade = await successApp.request(
-      `/api/characters/${characterId}/upgrade`,
-      {
-        method: "POST",
-        headers: {
-          ...authHeaders,
-          "Idempotency-Key": "route-historical-candidate-001",
-        },
-      },
-    );
-    assert.equal(upgrade.status, 202);
-    await drainAuthoring(successLlm);
-    const attemptId = ((await upgrade.json()) as { attemptId: string }).attemptId;
-    const stored = await query<{ candidate_json: unknown }>(
-      `SELECT candidate_json FROM character_authoring_attempts
-        WHERE attempt_id = $1`,
-      [attemptId],
-    );
-    const rawCandidate = stored.rows[0]?.candidate_json;
-    const candidate = CharacterGenerationEnvelopeV2Schema.parse(
-      typeof rawCandidate === "string" ? JSON.parse(rawCandidate) : rawCandidate,
-    );
     candidate.definition.actionNorms = [{
       id: "historical-selectorless-norm",
       when: {
@@ -1012,23 +992,23 @@ describe("structured character route acceptance", () => {
       exceptions: [],
       description: null,
     }];
-    await query(
-      `UPDATE character_authoring_attempts SET candidate_json = $2
-        WHERE attempt_id = $1`,
-      [attemptId, JSON.stringify(candidate)],
-    );
+    // Reconstruct a stored pre-retirement candidate. No current authoring command
+    // may write this V2 payload or enqueue work for it.
+    const timestamp = new Date().toISOString();
+    await query(`INSERT INTO character_authoring_attempts
+      (attempt_id, owner_user_id, character_id, kind, idempotency_key, request_digest,
+       source_text, source_digest, status, candidate_json, candidate_digest,
+       created_at, updated_at, expires_at)
+      VALUES ($1, $2, $3, 'upgrade', $4, $5, $6, $5, 'awaiting_owner_acceptance', $7, $8, $9, $9, $10)`,
+    [attemptId, "route-owner", characterId, "historical-review-fixture", generations.assetContentDigest(historicalSheet.narrativeBlurb),
+      historicalSheet.narrativeBlurb, JSON.stringify(candidate), generations.assetContentDigest(candidate),
+      timestamp, "2099-08-15T00:00:00.000Z"]);
 
     const listed = await successApp.request("/api/characters?limit=50", {
       headers: authHeaders,
     });
     assert.equal(listed.status, 200);
-    const body = await listed.json() as {
-      characters: Array<{
-        id: string;
-        reviewState: string | null;
-        reviewAttemptId: string | null;
-      }>;
-    };
+    const body = CharactersResponseSchema.parse(await listed.json());
     const character = body.characters.find((item) => item.id === characterId);
     assert.equal(character?.reviewState, "awaiting_acceptance");
     assert.equal(character?.reviewAttemptId, attemptId);
@@ -1041,11 +1021,7 @@ describe("structured character route acceptance", () => {
       headers: authHeaders,
     });
     assert.equal(review.status, 200);
-    const reviewBody = await review.json() as {
-      candidate: unknown;
-      canAccept: boolean;
-      acceptanceError: string | null;
-    };
+    const reviewBody = CharacterAuthoringReviewSchema.parse(await review.json());
     assert.ok(reviewBody.candidate);
     assert.equal(reviewBody.canAccept, false);
     assert.equal(
@@ -1065,25 +1041,22 @@ describe("structured character route acceptance", () => {
       body: JSON.stringify({ prompt: "お知らせ用の成功" }),
     });
     assert.equal(generated.status, 202);
+    const accepted = AcceptedResponseSchema.parse(await generated.json());
+    await drainAuthoring(successLlm);
     await drainAuthoring(successLlm);
     const inbox = await successApp.request("/api/notifications?limit=20", {
       headers: authHeaders,
     });
     assert.equal(inbox.status, 200);
-    const inboxBody = await inbox.json() as {
-      unreadCount: number;
-      notifications: Array<{
-        id: string;
-        kind: string;
-        attemptId: string;
-        readAt: string | null;
-      }>;
-    };
-    const ready = inboxBody.notifications.find((item) => item.kind === "authoring_ready");
+    const inboxBody = NotificationsResponseSchema.parse(await inbox.json());
+    const readyItems = inboxBody.notifications.filter((item) => item.kind === "authoring_ready"
+      && item.attemptId === accepted.attemptId);
+    assert.equal(readyItems.length, 1);
+    const ready = readyItems[0];
     assert.ok(ready);
     assert.equal(ready?.readAt, null);
     assert.ok(inboxBody.unreadCount >= 1);
-    const marked = await successApp.request(`/api/notifications/${ready!.id}/read`, {
+    const marked = await successApp.request(`/api/notifications/${ready.id}/read`, {
       method: "POST",
       headers: authHeaders,
     });
@@ -1091,10 +1064,8 @@ describe("structured character route acceptance", () => {
     const afterRead = await successApp.request("/api/notifications?limit=20", {
       headers: authHeaders,
     });
-    const afterBody = await afterRead.json() as {
-      notifications: Array<{ id: string; readAt: string | null }>;
-    };
-    assert.ok(afterBody.notifications.find((item) => item.id === ready!.id)?.readAt);
+    const afterBody = NotificationsResponseSchema.parse(await afterRead.json());
+    assert.ok(afterBody.notifications.find((item) => item.id === ready.id)?.readAt);
 
     const failed = await initialFailureApp.request("/api/characters/generate", {
       method: "POST",
@@ -1106,13 +1077,14 @@ describe("structured character route acceptance", () => {
       body: JSON.stringify({ prompt: "お知らせ用の失敗" }),
     });
     assert.equal(failed.status, 202);
+    const failedAccepted = AcceptedResponseSchema.parse(await failed.json());
+    await drainAuthoring(initialFailureLlm);
     await drainAuthoring(initialFailureLlm);
     const failedInbox = await initialFailureApp.request("/api/notifications?limit=20", {
       headers: authHeaders,
     });
-    const failedBody = await failedInbox.json() as {
-      notifications: Array<{ kind: string }>;
-    };
-    assert.ok(failedBody.notifications.some((item) => item.kind === "authoring_failed"));
+    const failedBody = NotificationsResponseSchema.parse(await failedInbox.json());
+    assert.equal(failedBody.notifications.filter((item) => item.kind === "authoring_failed"
+      && item.attemptId === failedAccepted.attemptId).length, 1);
   });
 });

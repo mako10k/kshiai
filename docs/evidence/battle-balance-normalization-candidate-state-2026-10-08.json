@@ -1,0 +1,24 @@
+{
+  "stage": "superseded_by_direct_owner_decision",
+  "path": "docs/battle-balance-normalization-requirement-candidate-r1-2026-10-08.md",
+  "sha256": "69b2abd28e1556aadd339bad41602dd609bb6a3cf2297b90215db57acaf0dd25",
+  "accepted": false,
+  "independentReviewAuthorized": false,
+  "firstOwnerRoute": null,
+  "ownerQuestionPresented": true,
+  "laterEffectsAuthorized": false,
+  "originalCases": 4,
+  "wholeFiles": 1,
+  "selfReview": "Current formulas compared; helper cap distinguished from post-pressure final damage; effect truncation and non-idempotence disclosed; no deployment/data rewrite authority",
+  "diagnostic": {
+    "cases": 4,
+    "pass": 4,
+    "fail": 0,
+    "skip": 0,
+    "authorityProof": false,
+    "evidence": "docs/evidence/balance-normalization-preseal-2026-10-08.tap"
+  },
+  "originalCandidateAccepted": false,
+  "governingDecision": "docs/battle-test-contract-owner-decisions-2026-10-08.md",
+  "directOwnerDecisionReceived": true
+}

@@ -1,0 +1,107 @@
+{
+  "entries": [
+    {
+      "key": "design-character-name-helper",
+      "path": "docs/names-config-test-contract-review-2026-10-07.md",
+      "parents": [
+        "requirements"
+      ],
+      "scope": "F-CHR-03c normalized name collision helper only; fixture suffix allocation, not full save/CAS/regeneration compliance.",
+      "ref": "all-tests-20261007/design-character-name-helper",
+      "test": false,
+      "sha256": "336278703f8be145706a30eecc436fc944b472cba9a2c51251450c3e0c731f84",
+      "sealId": "33f68a82cc048025425b428b0e673d63b95ef0a2fabccacf162ed8ab9f0bff93",
+      "causeSealIds": [
+        "203e66fc4e30772adab026012c67f1b1ac4ca86ad2ada11b501c639a27a19eac"
+      ]
+    },
+    {
+      "key": "design-config-name-parser",
+      "path": "docs/names-config-test-contract-review-2026-10-07.md",
+      "parents": [
+        "shadow",
+        "override"
+      ],
+      "scope": "Existing recognized config-name/default/rejection and immutable identity syntax only; no candidate activation or Stage permission.",
+      "ref": "all-tests-20261007/design-config-name-parser",
+      "test": false,
+      "sha256": "336278703f8be145706a30eecc436fc944b472cba9a2c51251450c3e0c731f84",
+      "sealId": "06f0692c21d5659a28e48ff8058e259fb9f3904fc1abced93402dd8eb0bd9510",
+      "causeSealIds": [
+        "344428b8925d959dfe5325be535135f6b4004c638b3e4865cd6595ae0f75bd98",
+        "645e178be9a4b4662822f09d79c5977797a0830e072ee816510a4a62aa5b8e52"
+      ]
+    },
+    {
+      "key": "implementation-character-name-helper",
+      "path": "backend/src/character-name-uniqueness.ts",
+      "parents": [
+        "design-character-name-helper"
+      ],
+      "scope": "Pure normalization/collision and deterministic mock suffix helper only.",
+      "ref": "all-tests-20261007/implementation-character-name-helper",
+      "test": false,
+      "sha256": "ebcf352f92dcbb9a79b3f664a77b4e4fee8725578b3402d60770dfe392cc13aa",
+      "sealId": "f2851b0b4faeda598d3b18dbe9fe5e04aaa32390d7265450dbc5ff51a77eefae",
+      "causeSealIds": [
+        "33f68a82cc048025425b428b0e673d63b95ef0a2fabccacf162ed8ab9f0bff93"
+      ]
+    },
+    {
+      "key": "implementation-config-name-parser",
+      "path": "backend/src/config.ts",
+      "parents": [
+        "design-config-name-parser"
+      ],
+      "scope": "Only parseBattlePacingPolicy, parseCharacterFocusShadowMode and dialogue override/identity parser functions; no other config or live activation claim.",
+      "ref": "all-tests-20261007/implementation-config-name-parser",
+      "test": false,
+      "sha256": "6b58fd9428c378fefee216abc3e7f062d9798a9cec9d28c8d2ac831fb3cdc750",
+      "sealId": "6bfd9b808a3af265c3742fbb997d0ab6a932f221446aaeef72ee57bd932171b9",
+      "causeSealIds": [
+        "06f0692c21d5659a28e48ff8058e259fb9f3904fc1abced93402dd8eb0bd9510"
+      ]
+    },
+    {
+      "key": "character-name-helper-bounded",
+      "path": "backend/src/character-name-uniqueness.test.ts",
+      "parents": [
+        "implementation-character-name-helper"
+      ],
+      "scope": "Whole original three cases unchanged; normalized names, collision/noncollision, internal fixture suffix only.",
+      "ref": "verification/character-name-helper-bounded-20261007",
+      "test": true,
+      "sha256": "11d201dda5f9998639eb8848a8dae9382820a0c9473cab547b0d1c692b776309",
+      "sealId": "e92d2c6cb92a5d64482a512a0794eebba763f2737d0e7d398daf01c384216927",
+      "causeSealIds": [
+        "f2851b0b4faeda598d3b18dbe9fe5e04aaa32390d7265450dbc5ff51a77eefae"
+      ]
+    },
+    {
+      "key": "config-name-parser-bounded",
+      "path": "backend/src/config-pacing.test.ts",
+      "parents": [
+        "implementation-config-name-parser"
+      ],
+      "scope": "Whole original four parser cases unchanged; no numerical policy adoption, runtime activation or external authority.",
+      "ref": "verification/config-name-parser-bounded-20261007",
+      "test": true,
+      "sha256": "5a3bd5ed3e0e33114a5acaa5bf426a0781debd10212ca3a5d8b714ec89afeb6c",
+      "sealId": "6068d365e83a3a7c41319f6e4d812dc24284989fdad70d0e80393c349b6a92a8",
+      "causeSealIds": [
+        "6bfd9b808a3af265c3742fbb997d0ab6a932f221446aaeef72ee57bd932171b9"
+      ]
+    }
+  ],
+  "diagnostic": {
+    "focusedPass": 7,
+    "fail": 0,
+    "skipped": 0,
+    "workspaceTypecheckEvidence": "docs/evidence/backend-implicit-any-workspace-types-2026-10-07.log"
+  },
+  "limitations": [
+    "Original seven helper/parser cases only",
+    "No complete saving/regeneration or Stage activation authority proof",
+    "Source/implementation unchanged, full251 goal incomplete"
+  ]
+}

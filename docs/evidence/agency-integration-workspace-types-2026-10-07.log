@@ -1,0 +1,20 @@
+
+> kshiai@0.23.0 typecheck
+> npm run typecheck --workspaces --if-present && npm run typecheck:deployment
+
+
+> @kshiai/shared@0.23.0 typecheck
+> tsc -p tsconfig.json --noEmit
+
+
+> @kshiai/backend@0.23.0 typecheck
+> tsc -p tsconfig.json --noEmit
+
+
+> @kshiai/frontend@0.23.0 typecheck
+> tsc -b --noEmit
+
+
+> kshiai@0.23.0 typecheck:deployment
+> tsc -p infra/cloudflare-worker/tsconfig.json
+

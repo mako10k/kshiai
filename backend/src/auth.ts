@@ -20,6 +20,12 @@ export { adminIdentityMatches } from "./account-access.js";
 
 const COOKIE = "kshiai_session";
 const SESSION_DAYS = 14;
+
+function databaseErrorCode(error: unknown): unknown {
+  return typeof error === "object" && error !== null && "code" in error
+    ? error.code
+    : undefined;
+}
 const verifySupabaseIdentity = createSupabaseIdentityVerifier(config);
 
 export type AuthUser = UserPublic;
@@ -73,7 +79,7 @@ export async function ensureSupabaseUser(
         [identity.subject],
       );
       if (afterConflict.rows[0]) return toUserPublic(afterConflict.rows[0]);
-      const code = (error as { code?: string }).code;
+      const code = databaseErrorCode(error);
       const message = error instanceof Error ? error.message : String(error);
       if (code !== "23505" && !message.includes("UNIQUE")) throw error;
     }
@@ -111,7 +117,7 @@ export async function registerUser(
     );
   } catch (e) {
     const msg = e instanceof Error ? e.message : String(e);
-    if (msg.includes("UNIQUE") || (e as { code?: string }).code === "23505") {
+    if (msg.includes("UNIQUE") || databaseErrorCode(e) === "23505") {
       throw new Error("USERNAME_TAKEN");
     }
     throw e;

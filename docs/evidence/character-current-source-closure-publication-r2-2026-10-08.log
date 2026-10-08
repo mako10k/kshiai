@@ -1,0 +1,22 @@
+preflight valid; logical nodes=244; preserved published history=118
+46/244 verified; 1 new or repaired this run; all-tests-20261008/current-source-closure/all-tests-20261007/implementation-current-six-draft-read-routes
+69/244 verified; 2 new or repaired this run; all-tests-20261008/current-source-closure/all-tests-20261008/implementation-portrait-v3-route
+70/244 verified; 3 new or repaired this run; all-tests-20261008/current-source-closure/verification/portrait-v3-bounded-20261008
+119/244 verified; 4 new or repaired this run; all-tests-20261008/current-source-closure/verification/awareness-frozen-narration-20261007
+120/244 verified; 5 new or repaired this run; all-tests-20261008/current-source-closure/verification/battle-create-idempotency-bounded-awareness-creation-20261007
+121/244 verified; 6 new or repaired this run; all-tests-20261008/current-source-closure/verification/battle-speech-wiring-bounded-20261008
+122/244 verified; 7 new or repaired this run; all-tests-20261008/current-source-closure/all-tests-20261007/implementation-retained-compact-expression-decoder
+123/244 verified; 8 new or repaired this run; all-tests-20261008/current-source-closure/verification/retained-compact-expression-decoder-current-20261007
+124/244 verified; 9 new or repaired this run; all-tests-20261008/current-source-closure/verification/authoring-read-purity-current-20261007
+125/244 verified; 10 new or repaired this run; all-tests-20261008/current-source-closure/all-tests-20261007/implementation-narration-storage-events
+126/244 verified; 11 new or repaired this run; all-tests-20261008/current-source-closure/all-tests-20261007/implementation-native-pg-events
+127/244 verified; 12 new or repaired this run; all-tests-20261008/current-source-closure/all-tests-20261008/implementation-historical-agency-inventory
+128/244 verified; 13 new or repaired this run; all-tests-20261008/current-source-closure/verification/historical-agency-inventory-bounded-20261008
+129/244 verified; 14 new or repaired this run; all-tests-20261008/current-source-closure/all-tests-20261007/fixture-canonical-narration-candidate-seed
+130/244 verified; 15 new or repaired this run; all-tests-20261008/current-source-closure/all-tests-20261007/fixture-canonical-narration-offline-http
+131/244 verified; 16 new or repaired this run; all-tests-20261008/current-source-closure/all-tests-20261007/implementation-awareness-role-factory
+132/244 verified; 17 new or repaired this run; all-tests-20261008/current-source-closure/all-tests-20261007/implementation-canonical-narration-provider-assembly
+133/244 verified; 18 new or repaired this run; all-tests-20261008/current-source-closure/verification/normal-awareness-policy-bounded-current-20261007
+134/244 verified; 19 new or repaired this run; all-tests-20261008/current-source-closure/all-tests-20261008/design-historical-adr-classifier-bounded
+bounded stop before all-tests-20261008/current-source-closure/all-tests-20261008/implementation-historical-adr-classifier-bounded
+{"schema": "kshiai/repaired-source-closure-run/v1", "reused": 115, "newOrRepaired": 19, "verifiedLogicalNodes": 134, "plannedNodes": 244, "publishedHistoryEvents": 137, "priorHeadsUnchanged": true, "seconds": 443.337, "complete": false, "inventorySwitched": false, "deadline": "2026-10-08T20:25:00+09:00"}

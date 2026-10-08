@@ -1,0 +1,148 @@
+{
+  "nodes": [
+    {
+      "key": "design-retained-perception-projection",
+      "path": "docs/design.llmthink.dsl",
+      "parents": [
+        "requirements",
+        "legacy",
+        "narration",
+        "currentLegacyAdoption"
+      ],
+      "scope": "Retained legacy design clauses D16 counterpart identity/access and perspective rights, D23 unknown causal attribution/ordinal cues, D26 exact existing magnitude/reserve bands. Requirements section4.2/F-NAR05 plus Accepted ADR0051 inherited ADR0050 D12 old-generation continuation and ADR0006 canonical-owned immutable narration input. Only these clauses support this cohort; older parallel ordering, narrator-authored speech and winner policies elsewhere in this document are not adopted as current policy.",
+      "ref": "all-tests-20261007/design-retained-perception-projection",
+      "test": false,
+      "sha256": "af2faa86c2723aa1b0aee92c32b2dd7ec32c35642c7ddef96585aedec790afd6"
+    },
+    {
+      "key": "implementation-causal-qualitative-quantization",
+      "path": "packages/shared/src/perception-quantization.ts",
+      "parents": [
+        "design-retained-perception-projection",
+        "perception"
+      ],
+      "scope": "Pure quantitative-to-ordinal projection under D26: independent absolute and relative axes, explicit outcome classification, target/provenance retained only in server-only evidence, self reserve banding. Exact original constants remain unchanged. No raw value public delivery, actual LLM behavior or current pipeline invocation proof.",
+      "ref": "all-tests-20261007/implementation-causal-qualitative-quantization",
+      "test": false,
+      "sha256": "baa8db6a0068b79146b336070eeb94e3961e47b7e2c1b25323b8cfdab931ac59"
+    },
+    {
+      "key": "implementation-retained-narration-perspective",
+      "path": "packages/shared/src/narration-perspective.ts",
+      "parents": [
+        "design-retained-perception-projection",
+        "battle",
+        "perception"
+      ],
+      "scope": "Retained legacy CharacterAgentState digest projection and locked/fluid focus helpers; summary omits private material, counterpart condition requires identified plus coarse/clear access, detail selection restricted by focus. Not evidence that current awareness-v5 consumes these old-agent helpers; semantic owner values are supplied fixtures, not model quality evidence.",
+      "ref": "all-tests-20261007/implementation-retained-narration-perspective",
+      "test": false,
+      "sha256": "e6a9f4d6ef637a71950d44d20d102e6d9f90ee87021d24d4909bc932e9affa0f"
+    },
+    {
+      "key": "fixture-causal-receipt-engine-adapter",
+      "path": "packages/shared/src/battle-engine-test-helper.ts",
+      "parents": [
+        "engine",
+        "battle"
+      ],
+      "scope": "Existing test-only adapter fills explicitly optional test basic attack with defaultBasicAttack and invokes strict engine contracts. Used only to build synthetic two-sheet committed facts for receipt tests; no new gameplay implementation or certification of every engine rule, persistence, dispatch or live battle.",
+      "ref": "all-tests-20261007/fixture-causal-receipt-engine-adapter",
+      "test": false,
+      "sha256": "a6ae8e377e870a49152e9a10374ef997c114585c14ed20f9bd2f0999185917c0"
+    },
+    {
+      "key": "implementation-turn-causal-receipt-projection",
+      "path": "packages/shared/src/battle-turn-causal-receipt.ts",
+      "parents": [
+        "narration",
+        "intent",
+        "design-retained-perception-projection",
+        "implementation-causal-qualitative-quantization",
+        "battle",
+        "perception",
+        "semantic"
+      ],
+      "scope": "Pure ephemeral receipt builder from supplied owners and narrator projection. Typed effective intent retains producer values; action/event/evidence links validated structurally, prose not mined; accepted semantic patch replays to supplied committed state; unknown links remain unknown, output deeply frozen. Projection removes IDs/raw values and limits character modes to their view. Seven exercised cases only; not a persistent phase receipt or current awareness-v5 integration proof.",
+      "ref": "all-tests-20261007/implementation-turn-causal-receipt-projection",
+      "test": false,
+      "sha256": "0dfdc552e4f0967e9f4bf5b9ad117babd2294a89c310d2aeab7e862188626dc0"
+    },
+    {
+      "key": "perception-quantization-current",
+      "path": "packages/shared/src/perception-quantization.test.ts",
+      "parents": [
+        "design-retained-perception-projection",
+        "perception",
+        "implementation-causal-qualitative-quantization"
+      ],
+      "scope": "Entire unchanged six-case file: absolute/relative boundaries, independent axes, no-effect/immunity/incapacity/overkill, A/B and target symmetry without raw values, reserve boundaries and base-focus denominator. Synthetic evidence only, no live perception calibration or all parameter-key coverage claimed.",
+      "ref": "verification/perception-quantization-current-20261007",
+      "test": true,
+      "sha256": "d4c62678e20050d0737c273cf0c3290082a130e0c30aefa06c7a0f524ebd34db"
+    },
+    {
+      "key": "narration-perspective-current",
+      "path": "packages/shared/src/narration-perspective.test.ts",
+      "parents": [
+        "design-retained-perception-projection",
+        "implementation-retained-narration-perspective",
+        "battle",
+        "perception"
+      ],
+      "scope": "Entire unchanged four-case file: locked/fluid mapping, compact summary omits private detail, counterpart condition gated by current access/identity, allowed focus receives detail and external receives none. Not all focus-helper permutations, narrator response behavior or current awareness-v5 integration acceptance.",
+      "ref": "verification/narration-perspective-current-20261007",
+      "test": true,
+      "sha256": "431112fdecfedb5b4a267835a7d551696eff407064e674c2c794e9e4be687122"
+    },
+    {
+      "key": "turn-causal-receipt-current",
+      "path": "packages/shared/src/battle-turn-causal-receipt.test.ts",
+      "parents": [
+        "implementation-turn-causal-receipt-projection",
+        "fixture-causal-receipt-engine-adapter",
+        "implementation-causal-qualitative-quantization",
+        "semantic",
+        "perception"
+      ],
+      "scope": "Entire unchanged seven-case file: explicit supplied fact ownership/deep freeze; absent links unknown despite prose; dangling/noncommitted evidence rejected; applied semantic patch must reproduce state; external ID/raw/path removal; only unique omniscient semantic attribution; character-limited observed consequences remain unassigned. Fixture resolves synthetic legacy sheets using strict engine adapter, not persistence/live/current awareness-v5 or comprehensive engine proof.",
+      "ref": "verification/turn-causal-receipt-current-20261007",
+      "test": true,
+      "sha256": "2d58a6ac4e605bcdf2a900811af561db3416234a50395f3ff1c1131336871d98"
+    }
+  ],
+  "seeds": {
+    "requirements": "all-tests-20261007/authority-semantic-observation-requirements",
+    "legacy": "awareness-guidance-20261007/authority-inherited",
+    "narration": "all-tests-20261007/authority-narration-source-boundary",
+    "intent": "all-tests-20261007/authority-intent-adoption",
+    "perception": "all-tests-20261007/contract-adjudication-perception-wire",
+    "battle": "all-tests-20261007/implementation-closed-battle-contract",
+    "semantic": "all-tests-20261007/implementation-semantic-state-patch-observation",
+    "engine": "all-tests-20261007/implementation-stable-area-battle-initialization",
+    "currentLegacyAdoption": "awareness-guidance-20261007/authority-current"
+  },
+  "authority": [
+    "requirements section4.2 and F-NAR05",
+    "Accepted ADR0051 Context/Decision inheritance of ADR0050 D12 retained old generations",
+    "Accepted ADR0006 canonical owners and immutable narration input",
+    "Accepted ADR0045 producer value preservation"
+  ],
+  "diagnostic": {
+    "pass": 17,
+    "fail": 0,
+    "skipped": 0,
+    "strictTypecheckExit": 0
+  },
+  "phaseBoundary": {
+    "INSIDE": "Bind all cases in each complete file to their actual local fixture/implementation and governing retained contracts. Preserve original files, expectations, constants and cases.",
+    "OUTSIDE": "Real narrator quality, physical DB durability and current awareness-v5 consuming these old helpers need independent integration evidence.",
+    "BOUNDARY_DISPUTE": "None required to seal this bounded retained-helper verification; superseded ADR0002/0005/0044 not used as authority."
+  },
+  "limitations": [
+    "Original17cases retained; no source or test changes required",
+    "Pure synthetic/shared tests; not provider, persistence or whole current pipeline acceptance",
+    "Design file binding applies only to named retained clauses; contradictory historical ordering/speech/winner clauses elsewhere not adopted"
+  ],
+  "authorityReadbackCorrection": "ADR0050 status is Superseded. Current Accepted ADR0051 is now an exact direct Cause of the retained design node; all affected descendant seals were advanced with exact previous Cause assertions, preserving source/test bytes."
+}

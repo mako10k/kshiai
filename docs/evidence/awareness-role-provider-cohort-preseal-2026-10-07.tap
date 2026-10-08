@@ -1,0 +1,455 @@
+TAP version 13
+# [llm] xai ready engine=grok-4.5 fast=grok-4.3
+# [llm] xai/adjudicateFreeActions model=grok-4.5 ok 253ms
+# [llm] xai ready engine=grok-4.5 fast=grok-4.3
+# [llm] xai/reconcileTurnSemanticState model=grok-4.5 ok 20ms
+# Subtest: strict awareness adjudication results
+    # Subtest: rejects invalid winners and absent or fabricated referee rationales
+    ok 1 - rejects invalid winners and absent or fabricated referee rationales
+      ---
+      duration_ms: 9.585054
+      type: 'test'
+      ...
+    # Subtest: rejects corrupt operations, coerced situation values and missing required sensory evidence
+    ok 2 - rejects corrupt operations, coerced situation values and missing required sensory evidence
+      ---
+      duration_ms: 2.461264
+      type: 'test'
+      ...
+    # Subtest: preserves valid world operations with server-owned revision and event references
+    ok 3 - preserves valid world operations with server-owned revision and event references
+      ---
+      duration_ms: 2.96314
+      type: 'test'
+      ...
+    # Subtest: rejects a schema-valid empty batch instead of synthesizing failed free actions
+    ok 4 - rejects a schema-valid empty batch instead of synthesizing failed free actions
+      ---
+      duration_ms: 272.297029
+      type: 'test'
+      ...
+    # Subtest: throws after a successful HTTP response instead of silently normalizing invalid semantic content
+    ok 5 - throws after a successful HTTP response instead of silently normalizing invalid semantic content
+      ---
+      duration_ms: 27.726936
+      type: 'test'
+      ...
+    1..5
+ok 1 - strict awareness adjudication results
+  ---
+  duration_ms: 320.575937
+  type: 'suite'
+  ...
+# Subtest: awareness exact dispatch admission
+    # Subtest: binds full rendered prompts, model identity, and generation cap to a verified quote
+    ok 1 - binds full rendered prompts, model identity, and generation cap to a verified quote
+      ---
+      duration_ms: 21.960584
+      type: 'test'
+      ...
+    # Subtest: rejects missing contracts and cross-model quotes
+    ok 2 - rejects missing contracts and cross-model quotes
+      ---
+      duration_ms: 1.569201
+      type: 'test'
+      ...
+    # Subtest: rejects mismatched hashes, caps, incomplete framing, and malformed cost
+    ok 3 - rejects mismatched hashes, caps, incomplete framing, and malformed cost
+      ---
+      duration_ms: 17.179216
+      type: 'test'
+      ...
+    # Subtest: fails closed on quote service error and does not mutate the original request
+    ok 4 - fails closed on quote service error and does not mutate the original request
+      ---
+      duration_ms: 1.294134
+      type: 'test'
+      ...
+    # Subtest: leaves roles inadmissible without an unambiguous configured billing contract
+    ok 5 - leaves roles inadmissible without an unambiguous configured billing contract
+      ---
+      duration_ms: 83.302228
+      type: 'test'
+      ...
+    1..5
+ok 2 - awareness exact dispatch admission
+  ---
+  duration_ms: 142.027064
+  type: 'suite'
+  ...
+# Subtest: explicit observed dispatch admission
+    # Subtest: selects observed admission only through the immutable policy without contacting quote services
+    ok 1 - selects observed admission only through the immutable policy without contacting quote services
+      ---
+      duration_ms: 17.85177
+      type: 'test'
+      ...
+    # Subtest: hashes the latest actual request for every recorded prompt identity
+    ok 2 - hashes the latest actual request for every recorded prompt identity
+      ---
+      duration_ms: 76.61089
+      type: 'test'
+      ...
+    # Subtest: does not invent token or cost values and still enforces output and time limits
+    ok 3 - does not invent token or cost values and still enforces output and time limits
+      ---
+      duration_ms: 14.377163
+      type: 'test'
+      ...
+    1..3
+ok 3 - explicit observed dispatch admission
+  ---
+  duration_ms: 110.543507
+  type: 'suite'
+  ...
+# [llm] xai ready engine=grok-4.5 fast=grok-4.3
+# [llm] xai/engine model=grok-4.5 ok 289ms
+# [llm] xai ready engine=grok-4.5 fast=grok-4.3
+# [llm] xai/engine model=grok-4.5 ok 17ms
+# [llm] xai ready engine=grok-4.5 fast=grok-4.3
+# [llm] xai ready engine=grok-4.5 fast=grok-4.3
+# [llm] xai/engine model=grok-4.5 fail 3ms: test pre-dispatch stop
+# [llm] xai ready engine=grok-4.5 fast=grok-4.3
+# [llm] xai ready engine=grok-4.5 fast=grok-4.3
+# [llm] xai ready engine=grok-4.5 fast=grok-4.3
+# [llm] xai/engine model=grok-4.5 fail 2ms: verified maximum charge unavailable
+# [llm] xai ready engine=grok-4.5 fast=grok-4.3
+# [llm] xai/awareness-v5:narration-frozen model=grok-4.3 ok 18ms
+# Subtest: awareness adjudication dispatch context
+    # Subtest: quotes the exact prose, schema overhead and engine cap passed to the physical SDK request
+    ok 1 - quotes the exact prose, schema overhead and engine cap passed to the physical SDK request
+      ---
+      duration_ms: 302.760966
+      type: 'test'
+      ...
+    # Subtest: clips the quoted physical timeout to the absolute battle time remaining
+    ok 2 - clips the quoted physical timeout to the absolute battle time remaining
+      ---
+      duration_ms: 20.918347
+      type: 'test'
+      ...
+    # Subtest: prepares the bound adjudication deadline without dispatching or weakening token caps
+    ok 3 - prepares the bound adjudication deadline without dispatching or weakening token caps
+      ---
+      duration_ms: 12.020602
+      type: 'test'
+      ...
+    # Subtest: refuses streaming, tools, and mismatched model identities before dispatch
+    ok 4 - refuses streaming, tools, and mismatched model identities before dispatch
+      ---
+      duration_ms: 5.329696
+      type: 'test'
+      ...
+    # Subtest: never dispatches or retries when admission rejects the physical request
+    ok 5 - never dispatches or retries when admission rejects the physical request
+      ---
+      duration_ms: 3.951311
+      type: 'test'
+      ...
+    1..5
+ok 4 - awareness adjudication dispatch context
+  ---
+  duration_ms: 356.49699
+  type: 'suite'
+  ...
+# Subtest: frozen narration SDK strict response format
+    # Subtest: quotes and sends the same strict schema unmodified in one physical attempt
+    ok 1 - quotes and sends the same strict schema unmodified in one physical attempt
+      ---
+      duration_ms: 38.094589
+      type: 'test'
+      ...
+    1..1
+ok 5 - frozen narration SDK strict response format
+  ---
+  duration_ms: 38.674466
+  type: 'suite'
+  ...
+# Subtest: awareness frozen narration
+    # Subtest: dispatches the exact prepared material for every phase without another interpretation call
+    ok 1 - dispatches the exact prepared material for every phase without another interpretation call
+      ---
+      duration_ms: 62.623801
+      type: 'test'
+      ...
+    # Subtest: uses the bound long narration deadline and preserves a shorter absolute deadline
+    ok 2 - uses the bound long narration deadline and preserves a shorter absolute deadline
+      ---
+      duration_ms: 11.590002
+      type: 'test'
+      ...
+    # Subtest: applies a receipt-bound policy override without changing a shared provider's default
+    ok 3 - applies a receipt-bound policy override without changing a shared provider's default
+      ---
+      duration_ms: 6.992836
+      type: 'test'
+      ...
+    # Subtest: rejects mixed phases and batching noncombat phases
+    ok 4 - rejects mixed phases and batching noncombat phases
+      ---
+      duration_ms: 2.663456
+      type: 'test'
+      ...
+    # Subtest: keeps canonical verdict separate from generated framing
+    ok 5 - keeps canonical verdict separate from generated framing
+      ---
+      duration_ms: 5.621958
+      type: 'test'
+      ...
+    # Subtest: freezes typed prologue sources without canonical speaker names
+    ok 6 - freezes typed prologue sources without canonical speaker names
+      ---
+      duration_ms: 2.421315
+      type: 'test'
+      ...
+    1..6
+ok 6 - awareness frozen narration
+  ---
+  duration_ms: 105.530963
+  type: 'suite'
+  ...
+# Subtest: frozen narration strict provider grammar
+    # Subtest: derives all phase limits and exact batch counts from the runtime receipt shape
+    ok 1 - derives all phase limits and exact batch counts from the runtime receipt shape
+      ---
+      duration_ms: 57.965239
+      type: 'test'
+      ...
+    1..1
+ok 7 - frozen narration strict provider grammar
+  ---
+  duration_ms: 59.514163
+  type: 'suite'
+  ...
+# Subtest: compact whole-output examples retain feelings, learned reactions and both desire sources
+ok 8 - compact whole-output examples retain feelings, learned reactions and both desire sources
+  ---
+  duration_ms: 47.672556
+  type: 'test'
+  ...
+# Subtest: budget guidance supplies an intact compact example without imposing state item caps
+ok 9 - budget guidance supplies an intact compact example without imposing state item caps
+  ---
+  duration_ms: 2.799192
+  type: 'test'
+  ...
+# Subtest: awareness narration batch provider
+    # Subtest: publishes three ordered receipt outputs from one capped Grok call
+    ok 1 - publishes three ordered receipt outputs from one capped Grok call
+      ---
+      duration_ms: 38.69842
+      type: 'test'
+      ...
+    # Subtest: applies long measurement narration timeout only when explicitly bound
+    ok 2 - applies long measurement narration timeout only when explicitly bound
+      ---
+      duration_ms: 5.983556
+      type: 'test'
+      ...
+    # Subtest: validates against the frozen dispatch source after callers mutate their inputs
+    ok 3 - validates against the frozen dispatch source after callers mutate their inputs
+      ---
+      duration_ms: 5.070091
+      type: 'test'
+      ...
+    # Subtest: rejects missing receipt coverage without a second attempt
+    ok 4 - rejects missing receipt coverage without a second attempt
+      ---
+      duration_ms: 10.699845
+      type: 'test'
+      ...
+    # Subtest: rejects swapped identities and cross-receipt speech
+    ok 5 - rejects swapped identities and cross-receipt speech
+      ---
+      duration_ms: 16.73616
+      type: 'test'
+      ...
+    # Subtest: rejects duplicates, too-large batches, and expired deadlines before dispatch
+    ok 6 - rejects duplicates, too-large batches, and expired deadlines before dispatch
+      ---
+      duration_ms: 4.04177
+      type: 'test'
+      ...
+    # Subtest: rejects missing speech and unsupported recognition subjects
+    ok 7 - rejects missing speech and unsupported recognition subjects
+      ---
+      duration_ms: 11.390629
+      type: 'test'
+      ...
+    1..7
+ok 10 - awareness narration batch provider
+  ---
+  duration_ms: 98.238562
+  type: 'suite'
+  ...
+# Subtest: existing awareness output contract guidance
+    # Subtest: uses schema-valid examples for every supported action kind
+    ok 1 - uses schema-valid examples for every supported action kind
+      ---
+      duration_ms: 31.363434
+      type: 'test'
+      ...
+    # Subtest: explains why string actions and copied legal-option objects are invalid
+    ok 2 - explains why string actions and copied legal-option objects are invalid
+      ---
+      duration_ms: 18.383399
+      type: 'test'
+      ...
+    # Subtest: retains latent ambiguity while separating conscious thought and source roles
+    ok 3 - retains latent ambiguity while separating conscious thought and source roles
+      ---
+      duration_ms: 32.428799
+      type: 'test'
+      ...
+    1..3
+ok 11 - existing awareness output contract guidance
+  ---
+  duration_ms: 136.139482
+  type: 'suite'
+  ...
+# [llm] openai ready engine=gpt-6-luna fast=gpt-6-luna
+# [llm] xai ready engine=grok-4.5 fast=grok-4.3
+# Subtest: awareness provider role factory
+    # Subtest: binds Luna and preserves configured Grok identities with no fallback or retries
+    ok 1 - binds Luna and preserves configured Grok identities with no fallback or retries
+      ---
+      duration_ms: 18.464783
+      type: 'test'
+      ...
+    # Subtest: forwards an explicit bound measurement policy into the narration role
+    ok 2 - forwards an explicit bound measurement policy into the narration role
+      ---
+      duration_ms: 13.256201
+      type: 'test'
+      ...
+    # Subtest: exposes the configured Grok domain adapter without sending a request
+    ok 3 - exposes the configured Grok domain adapter without sending a request
+      ---
+      duration_ms: 19.363788
+      type: 'test'
+      ...
+    # Subtest: leaves all roles unconfigured when either credential is absent
+    ok 4 - leaves all roles unconfigured when either credential is absent
+      ---
+      duration_ms: 0.460815
+      type: 'test'
+      ...
+    # Subtest: rejects non-Grok models and invalid transport URLs before adapter creation
+    ok 5 - rejects non-Grok models and invalid transport URLs before adapter creation
+      ---
+      duration_ms: 1.54321
+      type: 'test'
+      ...
+    1..5
+ok 12 - awareness provider role factory
+  ---
+  duration_ms: 59.979813
+  type: 'suite'
+  ...
+# Subtest: awareness role provider
+    # Subtest: updates reflex and affect in one Luna call with prose and the accepted cap
+    ok 1 - updates reflex and affect in one Luna call with prose and the accepted cap
+      ---
+      duration_ms: 54.694711
+      type: 'test'
+      ...
+    # Subtest: passes the bound long measurement deadlines to both transports without changing caps
+    ok 2 - passes the bound long measurement deadlines to both transports without changing caps
+      ---
+      duration_ms: 20.299989
+      type: 'test'
+      ...
+    # Subtest: uses each battle policy instead of the application's current default
+    ok 3 - uses each battle policy instead of the application's current default
+      ---
+      duration_ms: 19.834747
+      type: 'test'
+      ...
+    # Subtest: passes only owner-facing feelings to Grok, preserving frozen sourceTick
+    ok 4 - passes only owner-facing feelings to Grok, preserving frozen sourceTick
+      ---
+      duration_ms: 4.761324
+      type: 'test'
+      ...
+    # Subtest: dispatches the selected immutable prompt revision and rejects unknown revisions before transport
+    ok 5 - dispatches the selected immutable prompt revision and rejects unknown revisions before transport
+      ---
+      duration_ms: 27.812361
+      type: 'test'
+      ...
+    # Subtest: rejects unexpected output and never repairs or falls back automatically
+    ok 6 - rejects unexpected output and never repairs or falls back automatically
+      ---
+      duration_ms: 7.616015
+      type: 'test'
+      ...
+    # Subtest: rejects a stale latent output tick
+    ok 7 - rejects a stale latent output tick
+      ---
+      duration_ms: 4.822651
+      type: 'test'
+      ...
+    # Subtest: rejects implicit cross-provider routes
+    ok 8 - rejects implicit cross-provider routes
+      ---
+      duration_ms: 1.855732
+      type: 'test'
+      ...
+    1..8
+ok 13 - awareness role provider
+  ---
+  duration_ms: 149.026321
+  type: 'suite'
+  ...
+# Subtest: awareness request preparation
+    # Subtest: includes complete system instructions and deterministically rendered data before dispatch
+    ok 1 - includes complete system instructions and deterministically rendered data before dispatch
+      ---
+      duration_ms: 53.661637
+      type: 'test'
+      ...
+    # Subtest: prepares the exact long-policy latent timeout while preserving default input content
+    ok 2 - prepares the exact long-policy latent timeout while preserving default input content
+      ---
+      duration_ms: 6.778406
+      type: 'test'
+      ...
+    # Subtest: executes the latest output guidance for historical and current prompt identities
+    ok 3 - executes the latest output guidance for historical and current prompt identities
+      ---
+      duration_ms: 66.862686
+      type: 'test'
+      ...
+    # Subtest: guides fresh conscious desire identities for both owners and frozen source ticks in every prompt revision
+    ok 4 - guides fresh conscious desire identities for both owners and frozen source ticks in every prompt revision
+      ---
+      duration_ms: 48.46668
+      type: 'test'
+      ...
+    # Subtest: rejects observer mismatch before producing a request
+    ok 5 - rejects observer mismatch before producing a request
+      ---
+      duration_ms: 8.424654
+      type: 'test'
+      ...
+    # Subtest: prepares conscious input from owner projection with the accepted cap
+    ok 6 - prepares conscious input from owner projection with the accepted cap
+      ---
+      duration_ms: 3.189336
+      type: 'test'
+      ...
+    1..6
+ok 14 - awareness request preparation
+  ---
+  duration_ms: 191.357696
+  type: 'suite'
+  ...
+1..14
+# tests 57
+# suites 12
+# pass 57
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 4731.981736

@@ -1,3 +1,4 @@
+import { z } from "zod";
 import assert from "node:assert/strict";
 import { mkdtempSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
@@ -5,13 +6,16 @@ import { join } from "node:path";
 import { after, before, describe, it } from "node:test";
 import {
   BATTLEFIELD_INSTANCE_COMPILER_V2,
-  defaultParameters,
-  defaultBasicAttack,
+  BattlefieldGenerationEnvelopeV2Schema,
+  defaultDialoguePipelineSettings,
   type BattlefieldImageBriefV2,
   type BattlefieldInstance,
   type BattlefieldPreset,
-  type CharacterSheet,
 } from "@kshiai/shared";
+import type { AwarenessProviderRoles } from "./llm/awareness-provider-factory.js";
+import { AwarenessConsciousOutputSchema, AwarenessLatentOutputSchema } from "@kshiai/shared";
+import { currentAwarenessDispatchContext } from "./llm/awareness-dispatch-context.js";
+import type { LlmProvider } from "./llm/types.js";
 
 const directory = mkdtempSync(join(tmpdir(), "kshiai-battlefield-routes-v2-"));
 process.env.DATABASE_URL = "";
@@ -19,7 +23,12 @@ process.env.AUTH_PROVIDER = "legacy";
 process.env.DATABASE_PATH = join(directory, "routes.db");
 process.env.LLM_PROVIDER = "mock";
 
-const { saveHistoricalCharacterFixture } = await import("./testing/historical-character-fixtures.js");
+const { createV3StageTrialCandidate, createV3StageTrialSource } = await import(
+  "./fixtures/neva-v3.js"
+);
+const { prepareV3TrialCharacter } = await import(
+  "./repositories/local-v3-trial-characters.js"
+);
 const { closeDatabase, query } = await import("./db.js");
 const { MockLlmProvider } = await import("./llm/mock.js");
 const battlefieldRepo = await import("./repositories/battlefields.js");
@@ -27,6 +36,7 @@ const battlefieldAssetRepo = await import(
   "./repositories/battlefield-assets-v2.js"
 );
 const battleRepo = await import("./repositories/battles.js");
+const settingsRepo = await import("./repositories/dialogue-pipeline-settings.js");
 const { drainCharacterAuthoringJobs } = await import(
   "./services/character-authoring-jobs.js"
 );
@@ -34,6 +44,27 @@ const { buildRoutes } = await import("./routes.js");
 
 class BattlefieldAcceptanceProvider extends MockLlmProvider {
   concretizeCalls = 0;
+
+  override async prepareBattleEncounter(
+    input: Parameters<LlmProvider["prepareBattleEncounter"]>[0],
+  ): ReturnType<LlmProvider["prepareBattleEncounter"]> {
+    const guard = currentAwarenessDispatchContext();
+    if (!guard) return super.prepareBattleEncounter(input);
+    return guard.run({
+      provider: guard.provider,
+      model: guard.model,
+      system: "test battle encounter system",
+      user: JSON.stringify(input),
+      options: {
+        tier: "engine",
+        timeoutMs: guard.limits.deadlineMs,
+        maxCompletionTokens: guard.limits.outputTokens,
+        label: "prepareBattleEncounter",
+        retry: "none",
+        responseFormat: { type: "json_object" },
+      },
+    }, async () => ({ result: await super.prepareBattleEncounter(input), usage: null }));
+  }
 
   override async concretizeBattlefield(input: {
     preset: BattlefieldPreset | null;
@@ -51,6 +82,28 @@ class BattlefieldStructureFailureProvider extends MockLlmProvider {
 }
 
 const llm = new BattlefieldAcceptanceProvider();
+const awarenessRoles: AwarenessProviderRoles = {
+  models: {
+    subconscious: async (input) => AwarenessLatentOutputSchema.parse({
+      state: { ...input.currentState, updatedTick: input.tick },
+      reflexDesires: [], affectiveDesires: [], reconsider: false, cancelThought: false,
+    }),
+    conscious: async () => AwarenessConsciousOutputSchema.parse({
+      goal: null, thought: "", desires: [], influences: [],
+    }),
+  },
+  adjudication: {
+    identity: { provider: "xai", engineModel: "grok-test", fastModel: "grok-test" },
+    requestJson: async () => { throw new Error("unexpected transport call"); },
+  },
+  adjudicationProvider: llm,
+  narration: {
+    identity: { provider: "xai", engineModel: "grok-test", fastModel: "grok-test" },
+    narrateBatch: async () => [],
+    narrateFrozenBatch: async () => [],
+  },
+};
+Object.assign(llm, { awareness: awarenessRoles, awarenessBillingContracts: [] });
 let generatedImageCalls = 0;
 let lastImageBrief: BattlefieldImageBriefV2 | undefined;
 const app = buildRoutes({
@@ -89,43 +142,10 @@ async function drainAuthoring(
 }
 
 async function acceptedAttemptId(response: Response): Promise<string> {
-  const body = (await response.json()) as {
-    attemptId?: string;
-    draft?: { id: string };
-  };
+  const body = z.object({ attemptId: z.string().optional(), draft: z.object({ id: z.string() }).optional() }).parse((await response.json()));
   const attemptId = body.attemptId ?? body.draft?.id;
   assert.ok(attemptId);
   return attemptId;
-}
-
-function sheet(input: {
-  id: string;
-  ownerUserId: string;
-  displayName: string;
-}): CharacterSheet {
-  const now = "2026-08-14T00:00:00.000Z";
-  return {
-    id: input.id,
-    ownerUserId: input.ownerUserId,
-    displayName: input.displayName,
-    tags: [],
-    createdAt: now,
-    updatedAt: now,
-    appearance: {
-      summary: `${input.displayName}の外見`,
-      visualPrompt: `${input.displayName} portrait`,
-      imageUrl: null,
-    },
-    traits: ["慎重"],
-    parameters: defaultParameters(),
-    basicAttack: defaultBasicAttack(),
-    skills: [],
-    weapon: null,
-    armor: null,
-    combatFlags: { canFight: true, irreversibleIncapacitated: false },
-    narrativeBlurb: `${input.displayName}の公開プロフィール。`,
-    visibility: "public",
-  };
 }
 
 function battlefield(input: {
@@ -191,16 +211,29 @@ before(async () => {
      VALUES ($1, $2, $3, $4)`,
     [sessionToken, "route-owner", now, "2099-08-15T00:00:00.000Z"],
   );
-  await saveHistoricalCharacterFixture(sheet({
-    id: "route-battlefield-mine",
-    ownerUserId: "route-owner",
-    displayName: "戦場検証自キャラ",
-  }));
-  await saveHistoricalCharacterFixture(sheet({
-    id: "route-battlefield-opponent",
-    ownerUserId: "route-opponent",
-    displayName: "戦場検証相手",
-  }));
+  const settings = defaultDialoguePipelineSettings();
+  await settingsRepo.updateDialoguePipelineSettings({
+    userId: "route-owner",
+    patch: { ...settings, schemaVersion: 3, contextProjectionMode: "compact", expectedRevision: 0 },
+  });
+  for (const input of [
+    { id: "route-battlefield-mine", ownerUserId: "route-owner" },
+    { id: "route-battlefield-opponent", ownerUserId: "route-opponent" },
+  ]) {
+    const prepared = await prepareV3TrialCharacter({
+      characterId: input.id,
+      ownerUserId: input.ownerUserId,
+      envelope: createV3StageTrialCandidate(),
+      source: createV3StageTrialSource(),
+    });
+    assert.equal(prepared.status, "awaiting_owner_acceptance");
+    assert.ok(prepared.candidateDigest);
+    await (await import("./repositories/character-assets-v2.js")).activateCharacterAuthoringAttempt({
+      attemptId: prepared.attemptId,
+      ownerUserId: input.ownerUserId,
+      candidateDigest: prepared.candidateDigest,
+    });
+  }
   await insertLegacyBattlefield(battlefield({
     id: "route-legacy-field",
     displayName: "未更新の遺跡",
@@ -236,7 +269,7 @@ describe("structured battlefield route acceptance", () => {
       body: JSON.stringify({ prompt: "途中失敗する戦場" }),
     });
     assert.equal(response.status, 202);
-    const accepted = await response.json() as { attemptId: string };
+    const accepted = z.object({ attemptId: z.string() }).parse(await response.json());
     assert.ok(accepted.attemptId);
     await drainAuthoring(failureLlm);
     const attempt = await query<{
@@ -262,14 +295,7 @@ describe("structured battlefield route acceptance", () => {
       headers: authHeaders,
     });
     assert.equal(management.status, 200);
-    const managed = (await management.json()) as {
-      battlefields: Array<{
-        id: string;
-        selectable: boolean;
-        compatibility: { status: string };
-        upgradeAction: { targetSchemaVersion: number } | null;
-      }>;
-    };
+    const managed = z.object({ battlefields: z.array(z.object({ id: z.string(), selectable: z.boolean(), compatibility: z.object({ status: z.string() }), upgradeAction: z.union([z.object({ targetSchemaVersion: z.number() }), z.null()]) })) }).parse((await management.json()));
     const legacy = managed.battlefields.find(
       (candidate) => candidate.id === "route-legacy-field",
     );
@@ -281,9 +307,7 @@ describe("structured battlefield route acceptance", () => {
       headers: authHeaders,
     });
     const selectableIds = new Set(
-      ((await selectable.json()) as {
-        battlefields: Array<{ id: string; selectable: boolean }>;
-      }).battlefields.map((candidate) => candidate.id),
+      (z.object({ battlefields: z.array(z.object({ id: z.string(), selectable: z.boolean() })) }).parse((await selectable.json()))).battlefields.map((candidate) => candidate.id),
     );
     assert.equal(selectableIds.has("route-ready-field"), true);
     assert.equal(selectableIds.has("route-legacy-field"), false);
@@ -300,7 +324,7 @@ describe("structured battlefield route acceptance", () => {
     });
     assert.equal(policies.status, 400);
     assert.equal(
-      ((await policies.json()) as { error: string }).error,
+      (z.object({ error: z.string() }).parse((await policies.json()))).error,
       "battlefield_upgrade_required",
     );
 
@@ -323,7 +347,7 @@ describe("structured battlefield route acceptance", () => {
       });
       assert.equal(battle.status, 409);
       assert.equal(
-        ((await battle.json()) as { error: string }).error,
+        (z.object({ error: z.string() }).parse((await battle.json()))).error,
         "battlefield_upgrade_required",
       );
     } finally {
@@ -364,9 +388,7 @@ describe("structured battlefield route acceptance", () => {
       { headers: authHeaders },
     );
     assert.equal(
-      ((await beforeConfirm.json()) as {
-        battlefields: Array<{ id: string }>;
-      }).battlefields.some((candidate) => candidate.id === "route-legacy-field"),
+      (z.object({ battlefields: z.array(z.object({ id: z.string() })) }).parse((await beforeConfirm.json()))).battlefields.some((candidate) => candidate.id === "route-legacy-field"),
       false,
     );
 
@@ -375,13 +397,7 @@ describe("structured battlefield route acceptance", () => {
       headers: authHeaders,
     });
     assert.equal(confirmed.status, 200);
-    const confirmedBody = (await confirmed.json()) as {
-      battlefield: {
-        id: string;
-        selectable: boolean;
-        compatibility: { status: string };
-      };
-    };
+    const confirmedBody = z.object({ battlefield: z.object({ id: z.string(), selectable: z.boolean(), compatibility: z.object({ status: z.string() }) }) }).parse((await confirmed.json()));
     assert.equal(confirmedBody.battlefield.id, "route-legacy-field");
     assert.equal(confirmedBody.battlefield.selectable, true);
     assert.equal(confirmedBody.battlefield.compatibility.status, "ready");
@@ -415,26 +431,14 @@ describe("structured battlefield route acceptance", () => {
       headers: authHeaders,
     });
     assert.equal(review.status, 200);
-    const body = await review.json() as {
-      family: string;
-      kind: string;
-      canAccept: boolean;
-      current: { displayName: string } | null;
-      candidate: { displayName: string } | null;
-    };
+    const body = z.object({ family: z.string(), kind: z.string(), canAccept: z.boolean(), current: z.union([z.object({ displayName: z.string() }), z.null()]), candidate: z.union([z.object({ displayName: z.string() }), z.null()]) }).parse(await review.json());
     assert.equal(body.family, "battlefield");
     assert.equal(body.kind, "upgrade");
     assert.equal(body.canAccept, true);
     assert.equal(body.current?.displayName, "比較用旧戦場");
     assert.ok(body.candidate?.displayName);
     const listed = await app.request("/api/battlefields", { headers: authHeaders });
-    const listedBody = await listed.json() as {
-      battlefields: Array<{
-        id: string;
-        reviewState: string | null;
-        reviewAttemptId: string | null;
-      }>;
-    };
+    const listedBody = z.object({ battlefields: z.array(z.object({ id: z.string(), reviewState: z.union([z.string(), z.null()]), reviewAttemptId: z.union([z.string(), z.null()]) })) }).parse(await listed.json());
     const marked = listedBody.battlefields.find((item) => item.id === "route-review-field");
     assert.equal(marked?.reviewState, "awaiting_acceptance");
     assert.equal(marked?.reviewAttemptId, attemptId);
@@ -471,7 +475,7 @@ describe("structured battlefield route acceptance", () => {
     });
     assert.equal(confirmed.status, 409);
     assert.equal(
-      ((await confirmed.json()) as { message: string }).message,
+      (z.object({ message: z.string() }).parse((await confirmed.json()))).message,
       "AUTHORING_ATTEMPT_EXPIRED",
     );
     assert.equal(await generationCount("route-expiry-field"), 0);
@@ -528,7 +532,7 @@ describe("structured battlefield route acceptance", () => {
     });
     assert.equal(confirmed.status, 409);
     assert.equal(
-      ((await confirmed.json()) as { message: string }).message,
+      (z.object({ message: z.string() }).parse((await confirmed.json()))).message,
       "ASSET_CURRENT_GENERATION_DRIFT",
     );
     assert.equal(await generationCount("route-drift-field"), 2);
@@ -562,11 +566,7 @@ describe("structured battlefield route acceptance", () => {
       headers: authHeaders,
     });
     assert.equal(review.status, 200);
-    const reviewBody = (await review.json()) as {
-      assetId: string;
-      canAccept: boolean;
-      candidate: { id: string } | null;
-    };
+    const reviewBody = z.object({ assetId: z.string(), canAccept: z.boolean(), candidate: z.union([z.object({ id: z.string() }), z.null()]) }).parse((await review.json()));
     assert.equal(reviewBody.canAccept, true);
     const battlefieldId = reviewBody.assetId;
     assert.ok(reviewBody.candidate);
@@ -580,7 +580,7 @@ describe("structured battlefield route acceptance", () => {
     });
     assert.equal(replayed.status, 200);
     assert.equal(
-      ((await replayed.json()) as { draft: { id: string } }).draft.id,
+      (z.object({ draft: z.object({ id: z.string() }) }).parse((await replayed.json()))).draft.id,
       attemptId,
     );
 
@@ -602,9 +602,7 @@ describe("structured battlefield route acceptance", () => {
       battlefieldId,
     );
     assert.equal(first?.generation, 1);
-    assert.ok((first?.content as {
-      definition?: { evolutionAffordances?: unknown[] };
-    }).definition?.evolutionAffordances?.length);
+    assert.ok(BattlefieldGenerationEnvelopeV2Schema.parse(first?.content).definition.evolutionAffordances.length);
     assert.ok(await battlefieldRepo.getPreset(battlefieldId));
 
     const revision = await app.request(`/api/battlefields/${battlefieldId}/chat`, {
@@ -691,7 +689,7 @@ describe("structured battlefield route acceptance", () => {
       }),
     });
     assert.equal(response.status, 200);
-    const battleId = ((await response.json()) as { battle: { id: string } })
+    const battleId = (z.object({ battle: z.object({ id: z.string() }) }).parse((await response.json())))
       .battle.id;
     const state = await battleRepo.getBattle(battleId);
     assert.ok(state?.assetManifest);
@@ -727,9 +725,7 @@ describe("structured battlefield route acceptance", () => {
       { method: "POST", headers: authHeaders },
     );
     assert.equal(copied.status, 200);
-    const copiedId = ((await copied.json()) as {
-      battlefield: { id: string };
-    }).battlefield.id;
+    const copiedId = (z.object({ battlefield: z.object({ id: z.string() }) }).parse((await copied.json()))).battlefield.id;
     assert.equal(
       (await battlefieldAssetRepo.getReadyBattlefieldGeneration(copiedId))
         ?.generation,

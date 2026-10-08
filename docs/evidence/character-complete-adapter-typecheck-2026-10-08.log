@@ -1,0 +1,4 @@
+
+> @kshiai/backend@0.23.0 typecheck
+> tsc -p tsconfig.json --noEmit
+

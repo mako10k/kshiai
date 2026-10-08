@@ -1,0 +1,87 @@
+{
+  "schema": "kshiai/characters-scene-repair-result/v1",
+  "readOnlyOutsideAuthorizedFiles": true,
+  "modifiedFiles": [
+    "backend/src/repositories/characters.test.ts",
+    "backend/src/services/scene-beat-wiring.test.ts"
+  ],
+  "authority": [
+    {
+      "path": "docs/adr/0043-v3-character-updates-with-historical-v2-display.md",
+      "clause": "ordinary writes/activation require V3; historical V2 remains read-only",
+      "status": "Accepted"
+    },
+    {
+      "path": "docs/adr/0039-v3-battle-lifecycle-and-cutover.md",
+      "clause": "new battle uses V3 immutable bindings; creation INSERT is distinct from progress UPDATE",
+      "status": "Accepted"
+    },
+    {
+      "path": "docs/adr/0054-normal-awareness-waiting-deadlines.md",
+      "clause": "new ordinary awareness battles bind awareness-v5-usage-v2; existing policies remain exact",
+      "status": "Accepted"
+    }
+  ],
+  "changes": [
+    {
+      "path": "backend/src/repositories/characters.test.ts",
+      "details": [
+        "Added local V3 envelope fixture with battle-mechanics@3 compatibility and valid basic-action references.",
+        "Activated V3 generations for matchmaking/deletion fixtures while retaining historical V2 rows.",
+        "Kept repository matching/rating/population obligations and closed the contract-cast gap."
+      ]
+    },
+    {
+      "path": "backend/src/services/scene-beat-wiring.test.ts",
+      "details": [
+        "Preserved the first test's explicit insert before update and BattleStateSchema parsing.",
+        "Added valid V3 generation fixtures for the six startBattle cases.",
+        "Configured the typed offline awareness provider and V3 dialogue pipeline rather than bypassing current guards.",
+        "Preserved pacing, semantic patch, replay/orphan, and trace assertions."
+      ]
+    }
+  ],
+  "verification": [
+    {
+      "command": "Node 22 + tsx + /tmp/kshiai-diagnostic-db-env.mjs --test backend/src/repositories/characters.test.ts",
+      "result": "6 passed, 0 failed",
+      "evidence": "/tmp/kshiai-characters-repair.tap"
+    },
+    {
+      "command": "Node 22 + tsx + /tmp/kshiai-diagnostic-db-env.mjs --test both target files",
+      "result": "11 passed, 2 failed",
+      "evidence": "/tmp/kshiai-repair-diagnostic.tap",
+      "note": "The first run had provider-route failures before the offline provider was configured; subsequent targeted runs verified the provider/configuration repair."
+    },
+    {
+      "command": "Node 22 + tsx + /tmp/kshiai-diagnostic-db-env.mjs --test scene-beat-wiring.test.ts",
+      "result": "6 of 7 pass after V3/offline-provider changes; one remains stale",
+      "evidence": "/tmp/kshiai-scene-repair.tap"
+    }
+  ],
+  "remainingFailure": {
+    "testPath": "backend/src/services/scene-beat-wiring.test.ts",
+    "test": "persists a rejected later-bucket proposal and its deterministic choice",
+    "currentFailure": "causalLaterDecision remains absent after current V5 awareness battle advances",
+    "causeClassification": "stale test phase/contract, not proven implementation defect",
+    "evidence": [
+      "Current startBattle with typed offline awareness provider creates awareness V5 state.",
+      "battle-service later-bucket legacy decision wiring is skipped for assetManifest schemaVersion 5.",
+      "The old assertion expects the pre-cutover causalLaterDecision path; extending the loop or changing HP does not restore that path."
+    ],
+    "safeOptions": [
+      "Classify this case as a historical V4 continuation and seed an immutable BattleAssetManifestV4/BattleState fixture through an approved historical seam, then preserve the deterministic later-bucket assertion.",
+      "Refactor it to a pure V3 non-awareness engine seam only if an existing accepted fixture/API exists."
+    ],
+    "forbidden": [
+      "Do not remove the assertion silently.",
+      "Do not disable the V5 awareness route or revive V2 creation.",
+      "Do not invent a V4 fixture or helper without owner/test-maintainer acceptance of that phase classification."
+    ]
+  },
+  "scopeChecks": [
+    "No production source, offline-awareness-provider.ts, Seal, Git, PERT, inventory, external service, or shared environment was changed.",
+    "No tests were skipped and no contract casts were added."
+  ],
+  "confidence": "high for fixture/route diagnosis; medium for the unresolved test's intended successor phase"
+}

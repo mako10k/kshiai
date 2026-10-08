@@ -1,0 +1,13 @@
+{
+  "newRefs": 17,
+  "previousHeadsUnchanged": true,
+  "previousHeadCount": 816,
+  "totalRefs": 833,
+  "sourceBytesMatch": true,
+  "stale": 0,
+  "limitations": [
+    "Three whole local historical migration files only",
+    "No live provider acceptance or full migration engine certification",
+    "Scripted provider and isolated SQLite only. Ledger raw fixture is not full target domain validity; initial historical input comparison excludes targetDefinitionSchema representation. Nineteen retained corpus hashes read back."
+  ]
+}

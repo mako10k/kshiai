@@ -1,33 +1,38 @@
 import assert from "node:assert/strict";
-import { describe, it } from "node:test";
-import { OpenAiCompatibleProvider } from "./openai-compatible.js";
+import { describe, it, type TestContext } from "node:test";
+import { Completions } from "openai/resources/chat/completions";
+import { OpenAiCompatibleProvider, type ChatOpts } from "./openai-compatible.js";
 
-type PrivateProvider = {
-  client: {
-    chat: {
-      completions: {
-        create(
-          body: unknown,
-          options: { timeout?: number },
-        ): Promise<unknown>;
-      };
-    };
-  };
-  chatJson(
-    system: string,
-    user: string,
-    opts?: { tier?: "fast" | "engine"; label?: string },
-  ): Promise<unknown>;
-};
+// R: Exercise routing/retry contracts through typed SDK and protected provider seams.
+class RoutingProvider extends OpenAiCompatibleProvider {
+  override chatJson(system: string, user: string, opts?: ChatOpts): Promise<unknown> {
+    return super.chatJson(system, user, opts);
+  }
+}
 
-function privateProvider(): PrivateProvider {
-  return new OpenAiCompatibleProvider({
-    name: "primary",
-    apiKey: "test-only",
-    baseUrl: "https://example.invalid/v1",
-    modelEngine: "engine-model",
-    modelFast: "fast-model",
-  }) as unknown as PrivateProvider;
+function routingProvider(): RoutingProvider {
+  return new RoutingProvider({
+    name: "primary", apiKey: "test-only", baseUrl: "https://example.invalid/v1",
+    modelEngine: "engine-model", modelFast: "fast-model",
+  });
+}
+
+const originalCreate = Completions.prototype.create;
+type CreateArgs = Parameters<typeof originalCreate>;
+function observeCreate(t: TestContext, observe: (...args: CreateArgs) => void) {
+  t.mock.method(Completions.prototype, "create", function (
+    this: Completions, ...args: CreateArgs
+  ): ReturnType<typeof originalCreate> {
+    observe(...args);
+    return originalCreate.apply(this, args);
+  });
+}
+
+function mockCompletion(t: TestContext) {
+  t.mock.method(globalThis, "fetch", async () => new Response(
+    JSON.stringify(completion('{"ok":true}')),
+    { headers: { "content-type": "application/json" } },
+  ));
 }
 
 function completion(content: string): unknown {
@@ -35,58 +40,42 @@ function completion(content: string): unknown {
 }
 
 describe("OpenAI-compatible provider routing policy", () => {
-  it("requests xAI grok-4.3 directly with reasoning effort none", async () => {
-    const provider = new OpenAiCompatibleProvider({
+  it("requests xAI grok-4.3 directly with reasoning effort none", async (t) => {
+    mockCompletion(t);
+    const provider = new RoutingProvider({
       name: "xai",
       apiKey: "test-only",
       baseUrl: "https://example.invalid/v1",
       modelEngine: "grok-4.5",
       modelFast: "grok-4.3",
-    }) as unknown as PrivateProvider;
-    const bodies: Array<Record<string, unknown>> = [];
-    provider.client = {
-      chat: {
-        completions: {
-          create: async (value) => {
-            bodies.push(value as Record<string, unknown>);
-            return completion('{"ok":true}');
-          },
-        },
-      },
-    };
+    });
+    const bodies: Array<CreateArgs[0]> = [];
+    observeCreate(t, (value) => { bodies.push(value); });
 
     await provider.chatJson("system", "user", { tier: "fast" });
     assert.equal(bodies[0]?.model, "grok-4.3");
     assert.equal(bodies[0]?.reasoning_effort, "none");
   });
 
-  it("does not send xAI-only reasoning effort to another provider", async () => {
-    const provider = new OpenAiCompatibleProvider({
+  it("does not send xAI-only reasoning effort to another provider", async (t) => {
+    mockCompletion(t);
+    const provider = new RoutingProvider({
       name: "openai",
       apiKey: "test-only",
       baseUrl: "https://example.invalid/v1",
       modelEngine: "gpt-4.1",
       modelFast: "gpt-4.1-mini",
-    }) as unknown as PrivateProvider;
-    const bodies: Array<Record<string, unknown>> = [];
-    provider.client = {
-      chat: {
-        completions: {
-          create: async (value) => {
-            bodies.push(value as Record<string, unknown>);
-            return completion('{"ok":true}');
-          },
-        },
-      },
-    };
+    });
+    const bodies: Array<CreateArgs[0]> = [];
+    observeCreate(t, (value) => { bodies.push(value); });
 
     await provider.chatJson("system", "user", { tier: "fast" });
     assert.equal(bodies[0]?.model, "gpt-4.1-mini");
     assert.equal("reasoning_effort" in (bodies[0] ?? {}), false);
   });
 
-  it("routes turn-limit referee rationale through the fast tier", async () => {
-    const provider = new OpenAiCompatibleProvider({
+  it("routes turn-limit referee rationale through the fast tier", async (t) => {
+    const provider = new RoutingProvider({
       name: "primary",
       apiKey: "test-only",
       baseUrl: "https://example.invalid/v1",
@@ -94,21 +83,14 @@ describe("OpenAI-compatible provider routing policy", () => {
       modelFast: "fast-model",
     });
     let observedTier: "fast" | "engine" | undefined;
-    const privateProvider = provider as unknown as {
-      chatJson(
-        system: string,
-        user: string,
-        opts?: { tier?: "fast" | "engine"; label?: string },
-      ): Promise<unknown>;
-    };
-    privateProvider.chatJson = async (_system, _user, opts) => {
+    t.mock.method(provider, "chatJson", async (_system: string, _user: string, opts?: ChatOpts) => {
       observedTier = opts?.tier;
       return {
         winnerSide: "b",
         reason: "確定済みの事実を要約した。",
         reasonFacts: [],
       };
-    };
+    });
 
     const result = await provider.referee({
       sideAName: "A",
@@ -131,27 +113,18 @@ describe("OpenAI-compatible provider routing policy", () => {
     assert.equal(result.winnerSide, "b");
   });
 
-  it("uses the extended fast timeout and retries 429 in the same client", async () => {
-    const provider = privateProvider();
+  it("uses the extended fast timeout and retries 429 in the same client", async (t) => {
+    mockCompletion(t);
+    const provider = routingProvider();
     const timeouts: Array<number | undefined> = [];
     let calls = 0;
-    provider.client = {
-      chat: {
-        completions: {
-          create: async (_body, options) => {
-            calls += 1;
-            timeouts.push(options.timeout);
-            if (calls < 3) {
-              throw Object.assign(new Error("rate limit"), {
-                status: 429,
-                headers: { "retry-after-ms": "0" },
-              });
-            }
-            return completion('{"ok":true}');
-          },
-        },
-      },
-    };
+    observeCreate(t, (_body, options) => {
+      calls += 1;
+      timeouts.push(options?.timeout);
+      if (calls < 3) throw Object.assign(new Error("rate limit"), {
+        status: 429, headers: { "retry-after-ms": "0" },
+      });
+    });
 
     assert.deepEqual(
       await provider.chatJson("system", "user", {
@@ -164,23 +137,17 @@ describe("OpenAI-compatible provider routing policy", () => {
     assert.deepEqual(timeouts, [30_000, 30_000, 30_000]);
   });
 
-  it("limits 503 to one same-provider retry", async () => {
-    const provider = privateProvider();
+  it("limits 503 to one same-provider retry", async (t) => {
+    const provider = routingProvider();
     let calls = 0;
     const failure = Object.assign(new Error("unavailable"), {
       status: 503,
       headers: { "retry-after-ms": "0" },
     });
-    provider.client = {
-      chat: {
-        completions: {
-          create: async () => {
-            calls += 1;
-            throw failure;
-          },
-        },
-      },
-    };
+    observeCreate(t, () => {
+      calls += 1;
+      throw failure;
+    });
 
     await assert.rejects(
       provider.chatJson("system", "user", { tier: "fast", label: "test503" }),
@@ -189,20 +156,14 @@ describe("OpenAI-compatible provider routing policy", () => {
     assert.equal(calls, 2);
   });
 
-  it("does not retry an aborted timeout", async () => {
-    const provider = privateProvider();
+  it("does not retry an aborted timeout", async (t) => {
+    const provider = routingProvider();
     let calls = 0;
     const failure = new Error("Request was aborted.");
-    provider.client = {
-      chat: {
-        completions: {
-          create: async () => {
-            calls += 1;
-            throw failure;
-          },
-        },
-      },
-    };
+    observeCreate(t, () => {
+      calls += 1;
+      throw failure;
+    });
 
     await assert.rejects(
       provider.chatJson("system", "user", { tier: "fast", label: "timeout" }),

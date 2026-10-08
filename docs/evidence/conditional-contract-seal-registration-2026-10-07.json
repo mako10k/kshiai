@@ -1,0 +1,113 @@
+{
+  "entries": [
+    {
+      "key": "authority-finite-conditional-contracts",
+      "path": "docs/adr/0046-align-conditional-contracts.think",
+      "parents": [],
+      "scope": "Accepted ADR0046 D1 and ACCEPTANCE: finite existing runtime branch invariants inferred from schemas, preserve original producer values, retain dynamic checks. This registration exercises D1 only; no present deployment or remote write authority is inferred from historical D2.",
+      "ref": "all-tests-20261007/authority-finite-conditional-contracts",
+      "test": false,
+      "sha256": "ba27268d92f3e74db31e07830461170339fc7a2f219257f2d638b95ae4022b6e",
+      "sealId": "df1074f8d520f877ab0f1fb62633520c31da784118e1933cfaa5a1b3d409d577",
+      "causeSealIds": []
+    },
+    {
+      "key": "implementation-conditional-v2-norm-schema",
+      "path": "packages/shared/src/structured-character.ts",
+      "parents": [
+        "authority-finite-conditional-contracts"
+      ],
+      "scope": "CharacterActionNormV2Schema force/disposition branch parity only: constraint accepts forbid/allow_only, preference/commitment accepts prefer/avoid. Tested original valid constraint payload preserved and incompatible commitment rejected. No whole V2 authoring, compiler, active use or other schema certification.",
+      "ref": "all-tests-20261007/implementation-conditional-v2-norm-schema",
+      "test": false,
+      "sha256": "b505129a97ad24c44285f6779e0be2736433a8560e66a312a4ddbc62f874aa42",
+      "sealId": "0f9bf2d3535ad4a9bef4f42cb1a66996be9b1177779fb9f9d01c3ce2447ba27c",
+      "causeSealIds": [
+        "df1074f8d520f877ab0f1fb62633520c31da784118e1933cfaa5a1b3d409d577"
+      ]
+    },
+    {
+      "key": "implementation-conditional-v3-norm-capability-schema",
+      "path": "packages/shared/src/character-definition-v3.ts",
+      "parents": [
+        "authority-finite-conditional-contracts",
+        "implementation-conditional-v2-norm-schema"
+      ],
+      "scope": "V3 force/disposition union and nonempty selector dynamic check, plus CharacterCompilerCapabilityV1Schema registered literal consumer/version pairs. Tested original payload preserved, mismatch rejected, registered pair accepted and incremented version rejected. No proof registration list complete for all consumers, compiler implementations or public profile validity.",
+      "ref": "all-tests-20261007/implementation-conditional-v3-norm-capability-schema",
+      "test": false,
+      "sha256": "aa6fd84424cf938c8d87bb8048e706d251cb8a5d576b7b1b23b6058d448daacf",
+      "sealId": "22c7a9fb36f968cfada1ce5432d74a49fadedd11906e9c035029e093f7b2733e",
+      "causeSealIds": [
+        "df1074f8d520f877ab0f1fb62633520c31da784118e1933cfaa5a1b3d409d577",
+        "0f9bf2d3535ad4a9bef4f42cb1a66996be9b1177779fb9f9d01c3ce2447ba27c"
+      ]
+    },
+    {
+      "key": "implementation-conditional-skeleton-operation-schema",
+      "path": "packages/shared/src/character-semantic-authoring.ts",
+      "parents": [
+        "authority-finite-conditional-contracts",
+        "implementation-conditional-v3-norm-capability-schema"
+      ],
+      "scope": "CharacterSkeletonPhaseOperationV1Schema existing allowed operation subset inferred as union. Tested remove_background original ID remains intact and remove_action_norm rejected statically/runtime. No complete migration operation/provenance or worker review behavior certification.",
+      "ref": "all-tests-20261007/implementation-conditional-skeleton-operation-schema",
+      "test": false,
+      "sha256": "0cfb956c351c00186764f3a1e66f8b7698c6ca117e56f780d9c2581ce7f00d9a",
+      "sealId": "87787f8c0a85f997c6c6cbcaf714b613f74349b27041ca56977b454f900ad97f",
+      "causeSealIds": [
+        "df1074f8d520f877ab0f1fb62633520c31da784118e1933cfaa5a1b3d409d577",
+        "22c7a9fb36f968cfada1ce5432d74a49fadedd11906e9c035029e093f7b2733e"
+      ]
+    },
+    {
+      "key": "conditional-action-norm-contract",
+      "path": "packages/shared/src/action-norm-contract.test.ts",
+      "parents": [
+        "authority-finite-conditional-contracts",
+        "implementation-conditional-v2-norm-schema",
+        "implementation-conditional-v3-norm-capability-schema"
+      ],
+      "scope": "Entire one-case file: static V2/V3 incompatible force/disposition not assignable; V3 original constraint payload deep equality, incompatible forces/disposition and empty selectors rejected; valid V2 original payload deep equality and commitment mismatch rejected. Bounded local schema proof, no generated norm semantic accuracy.",
+      "ref": "verification/conditional-action-norm-contract-20261007",
+      "test": true,
+      "sha256": "c0ec6e636194d3821c8779f772431856ffb6e6af6450a07db7487619a2ebff4d",
+      "sealId": "9604a73031c8f95e3db9412c5c9cb4b13faba1e9631fde550f020553edc9796a",
+      "causeSealIds": [
+        "df1074f8d520f877ab0f1fb62633520c31da784118e1933cfaa5a1b3d409d577",
+        "0f9bf2d3535ad4a9bef4f42cb1a66996be9b1177779fb9f9d01c3ce2447ba27c",
+        "22c7a9fb36f968cfada1ce5432d74a49fadedd11906e9c035029e093f7b2733e"
+      ]
+    },
+    {
+      "key": "conditional-compiler-phase-contract",
+      "path": "packages/shared/src/compiler-phase-contract.test.ts",
+      "parents": [
+        "authority-finite-conditional-contracts",
+        "implementation-conditional-v3-norm-capability-schema",
+        "implementation-conditional-skeleton-operation-schema"
+      ],
+      "scope": "Entire two-case file: invalid battle-mechanics version not statically assignable; every currently registered compiler pair roundtrips and version+1 rejects; remove_background operation exact payload preserved and remove_action_norm not allowed in skeleton phase statically/runtime. No claim all allowed operations individually covered or every required compiler registered.",
+      "ref": "verification/conditional-compiler-phase-contract-20261007",
+      "test": true,
+      "sha256": "e84cfb6e54192806c0f76dd9ea935de6578b5a2f0d69c99998b43ecee1cff0c8",
+      "sealId": "715280eb1c2ba5512f2a2875dac09dde038770d966565b9fc46bef3f0173ef88",
+      "causeSealIds": [
+        "df1074f8d520f877ab0f1fb62633520c31da784118e1933cfaa5a1b3d409d577",
+        "22c7a9fb36f968cfada1ce5432d74a49fadedd11906e9c035029e093f7b2733e",
+        "87787f8c0a85f997c6c6cbcaf714b613f74349b27041ca56977b454f900ad97f"
+      ]
+    }
+  ],
+  "diagnostic": {
+    "pass": 3,
+    "fail": 0,
+    "skipped": 0,
+    "strictTypecheckExit": 0
+  },
+  "limitations": [
+    "Two whole local schema test files only",
+    "No upstream architectural change or live/deployment acceptance",
+    "Compiler test validates current registry pair consistency, not completeness of registry or compiler implementations"
+  ]
+}

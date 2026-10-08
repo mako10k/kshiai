@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+// R: Resolve asset publication settings and viewer eligibility under ADR0060.
+
 /** Who may pick this owner asset outside the owner account. */
 export const AssetVisibilitySchema = z.enum([
   "public",
@@ -10,7 +12,7 @@ export type AssetVisibility = z.infer<typeof AssetVisibilitySchema>;
 
 export function assetVisibilityOf(value: unknown): AssetVisibility {
   const parsed = AssetVisibilitySchema.safeParse(value);
-  return parsed.success ? parsed.data : "public";
+  return parsed.success ? parsed.data : "private";
 }
 
 export function canExposeAssetByVisibility(input: {
@@ -20,7 +22,7 @@ export function canExposeAssetByVisibility(input: {
   viewerIsFriendOfOwner: boolean;
 }): boolean {
   if (input.isOwner || input.isSystem) return true;
-  const visibility = input.visibility ?? "public";
+  const visibility = assetVisibilityOf(input.visibility);
   if (visibility === "public") return true;
   if (visibility === "private") return false;
   return input.viewerIsFriendOfOwner;

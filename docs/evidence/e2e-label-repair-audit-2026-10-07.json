@@ -1,0 +1,156 @@
+{
+  "thought_id": "tmp-kshiai-e2e-label-repair",
+  "id_source": "file",
+  "report": {
+    "engine_version": "0.1.0",
+    "document_id": "tmp-kshiai-e2e-label-repair",
+    "generated_at": "2026-10-07T01:25:28.730Z",
+    "summary": {
+      "fatal_count": 0,
+      "error_count": 0,
+      "warning_count": 0,
+      "info_count": 0,
+      "hint_count": 6
+    },
+    "results": [
+      {
+        "issue_id": "ISSUE-001",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "CURRENT_VERSION_LABEL",
+            "role": "domain"
+          }
+        ],
+        "message": "domain CURRENT_VERSION_LABEL の description は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 2,
+          "column": 3,
+          "text": "Align existing browser assertions with the owner accepted named version display rule.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-002",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "FAILURE",
+            "role": "evidence",
+            "step_id": "S-FAILURE"
+          }
+        ],
+        "message": "evidence FAILURE は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 4,
+          "column": 3,
+          "text": "All four E2E files executed with exact browser1193: seven pass and three fail on old standalone V3 heading or retirement message. Actual page text names character definition v3.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-003",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "AUTHORITY",
+            "role": "evidence",
+            "step_id": "S-AUTHORITY"
+          }
+        ],
+        "message": "evidence AUTHORITY は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 6,
+          "column": 3,
+          "text": "Read docs/version-display-rules.md: owner requires target plus version; existing schema IDs and historical contracts are unchanged. Accepted ADR0051 follows observed accounting and named versions.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-004",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "BOUNDS",
+            "role": "premise",
+            "step_id": "S-BOUNDS"
+          }
+        ],
+        "message": "premise BOUNDS は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 8,
+          "column": 3,
+          "text": "Change only three expected display strings in two existing tests; retain every behavior and browser step, no production edit. Further downstream failures remain unresolved and will not be bypassed. Existing verification heads are preserved until exact Cause revision review.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-005",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "ALTERNATIVES",
+            "role": "premise",
+            "step_id": "S-ALTERNATIVES"
+          }
+        ],
+        "message": "premise ALTERNATIVES は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 10,
+          "column": 3,
+          "text": "Reverting UI to ambiguous standalone V3 contradicts owner rule. Removing browser assertions hides a current presentation obligation.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-006",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "D1",
+            "role": "decision",
+            "step_id": "S-D1"
+          }
+        ],
+        "message": "decision D1 は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 12,
+          "column": 3,
+          "text": "Audit then update expected labels and rerun both affected specifications using disposable local configuration.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      }
+    ],
+    "query_results": []
+  }
+}

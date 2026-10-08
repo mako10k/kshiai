@@ -1,0 +1,41 @@
+TAP version 13
+# Subtest: improvement analysis eligibility
+    # Subtest: blocks until the first threshold
+    ok 1 - blocks until the first threshold
+      ---
+      duration_ms: 2.040952
+      type: 'test'
+      ...
+    # Subtest: allows the first analysis at 5 finished battles
+    ok 2 - allows the first analysis at 5 finished battles
+      ---
+      duration_ms: 0.488205
+      type: 'test'
+      ...
+    # Subtest: requires 10 more battles after an analysis
+    ok 3 - requires 10 more battles after an analysis
+      ---
+      duration_ms: 0.596409
+      type: 'test'
+      ...
+    # Subtest: uses the snapshot battle count, not absolute multiples of 10
+    ok 4 - uses the snapshot battle count, not absolute multiples of 10
+      ---
+      duration_ms: 1.290013
+      type: 'test'
+      ...
+    1..4
+ok 1 - improvement analysis eligibility
+  ---
+  duration_ms: 5.480003
+  type: 'suite'
+  ...
+1..1
+# tests 4
+# suites 1
+# pass 4
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 170.835477

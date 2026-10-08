@@ -1,0 +1,67 @@
+{
+  "scope": "New canonical battlefield initialization and tested one-hop movement",
+  "repairApplied": true,
+  "sourceHashes": [
+    {
+      "path": "packages/shared/src/battlefield-creation.ts",
+      "sha256": "f6206d609be71e280a821ea7730b355bbaae83e1d8cbe24641283039ace95637"
+    },
+    {
+      "path": "packages/shared/src/battle-world.ts",
+      "sha256": "f14926cad2ed92274b0373d15da068399eee0ed48cac7a1d77d76476ca4c72d4"
+    },
+    {
+      "path": "packages/shared/src/battle-engine.ts",
+      "sha256": "5d838d68b5a7832ef051670770ce117b5aec53d3eb650233a9b8ad0c0971f0ae"
+    },
+    {
+      "path": "backend/src/services/battle-service.ts",
+      "sha256": "7c9e7a83c5767688e1d5f702f12875d2664218b59a5998429295b94dc3bfd09d"
+    },
+    {
+      "path": "packages/shared/src/reposition-transition.test.ts",
+      "sha256": "d0926e719277e998293d177deb7beb35287fa7cc2b42e629178042f58c33cf45"
+    },
+    {
+      "path": "packages/shared/src/structured-battlefield.test.ts",
+      "sha256": "2881118bb9a2cc42652a1f1f884b3104f1050c394237e34d79aece611cf70b91"
+    }
+  ],
+  "diagnostic": {
+    "targeted8Files": {
+      "pass": 110,
+      "fail": 0,
+      "skip": 0,
+      "proof": "docs/evidence/stable-area-preseal-2026-10-07.tap"
+    },
+    "sharedAll66Files": {
+      "pass": 419,
+      "fail": 0,
+      "skip": 0,
+      "proof": "docs/evidence/stable-area-shared-all-2026-10-07.tap"
+    }
+  },
+  "strictImportedTypes": {
+    "exit": 0,
+    "proof": "docs/evidence/stable-area-repair-strict-2026-10-07.log"
+  },
+  "workspaceTypes": {
+    "exit": 0,
+    "proof": "docs/evidence/stable-area-repair-workspace-types-2026-10-07.log"
+  },
+  "causalAudit": "docs/evidence/stable-area-repair-review-audit-2026-10-07.json",
+  "sealReadback": "docs/evidence/stable-area-seal-readback-2026-10-07.json",
+  "registration": {
+    "sourceAndTestRefs": 16,
+    "fullTestFiles": 6,
+    "newlyRegisteredFiles": 3,
+    "refReplacements": 3,
+    "historyPreserved": true
+  },
+  "limitations": [
+    "Local pure and isolated SQLite diagnostics; no live provider/deployment acceptance.",
+    "Only six full files sealed here, including three already sealed files refreshed. Other diagnostic files retain their own unsealed gate.",
+    "Existing saved world state retained; previously saved mismatched areas are not migrated.",
+    "Prior broader source snapshots for changed world/engine/service/fixtures need remaining scope reconciliation."
+  ]
+}

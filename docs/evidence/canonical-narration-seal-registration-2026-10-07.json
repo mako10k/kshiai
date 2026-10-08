@@ -1,0 +1,858 @@
+{
+  "entries": [
+    {
+      "key": "authority-canonical-narration-latest",
+      "path": "docs/adr/0056-latest-prompt-contract-until-completion.think",
+      "parents": [],
+      "scope": "Accepted canonical0056: latest contracts for new and retained continuations, preserve frozen facts/style/observer boundaries. No engine migration.",
+      "ref": "all-tests-20261007/authority-canonical-narration-latest",
+      "test": false,
+      "sha256": "f38d2501512b13f0a2313eaf81551435e36d9698f084a59dc1175c90a31cdee9",
+      "sealId": "9aae6f378e9b227f6909912129368e8317bdc4d773933342da1ca3914be6dae0",
+      "causeSealIds": []
+    },
+    {
+      "key": "evidence-canonical-narration-fixture-types",
+      "path": "docs/evidence/canonical-narration-fixture-types-rca-2026-10-07.think",
+      "parents": [
+        "requirements",
+        "current"
+      ],
+      "scope": "CLI audited fatal/error/warning0: test-local implicit-any and incomplete fixture casts only. No production runtime loss or historical cause claim.",
+      "ref": "all-tests-20261007/evidence-canonical-narration-fixture-types",
+      "test": false,
+      "sha256": "878583b81be0c4e9924f2eda0965d28f0399f96f563e8f8549107fabb7852963",
+      "sealId": "7f60c4227c3aa156fd467254f11885f89b6907dc74a46665869a1d933f946f62",
+      "causeSealIds": [
+        "203e66fc4e30772adab026012c67f1b1ac4ca86ad2ada11b501c639a27a19eac",
+        "4a236b55e9ad9e4aa54eb2c6bbe9d77e0a318881ba8328363505153d16e151dd"
+      ]
+    },
+    {
+      "key": "design-canonical-narration-cohort",
+      "path": "docs/canonical-narration-test-contract-review-2026-10-07.md",
+      "parents": [
+        "requirements",
+        "current",
+        "narration",
+        "waits",
+        "profile",
+        "placement",
+        "authority-canonical-narration-latest",
+        "evidence-canonical-narration-fixture-types"
+      ],
+      "scope": "Original twelve files77cases. Exact inherited0050 via0051, separate0006 canonical/narrator fences, new0054 policy, latest0056 outputs; bounded current helper and local transport/SQLite proof only.",
+      "ref": "all-tests-20261007/design-canonical-narration-cohort",
+      "test": false,
+      "sha256": "3ab73036914c8de07f1be8909607e0092bc40dc00bce9ac558f872b75f8434db",
+      "sealId": "f32a6e8815e72a3186332393e8182c1fe1f096b30fc5cf3e9715593fafebaaba",
+      "causeSealIds": [
+        "203e66fc4e30772adab026012c67f1b1ac4ca86ad2ada11b501c639a27a19eac",
+        "4a236b55e9ad9e4aa54eb2c6bbe9d77e0a318881ba8328363505153d16e151dd",
+        "78f9fec1b418020c221d67930654a6ead967fb85393603a544651cea83a61371",
+        "f16e9ead78dda44031acb7b49b711d967e3284a6d113edafbbb57cbbd15e49fe",
+        "51b88502ce6cf07710e956c6d10f128b83233b93d97309ce392a37a631be3dba",
+        "bbdf88f6e4a55ed11c978c75df29f590ddd1d99c7383eac1a9b26d54609c9031",
+        "9aae6f378e9b227f6909912129368e8317bdc4d773933342da1ca3914be6dae0",
+        "7f60c4227c3aa156fd467254f11885f89b6907dc74a46665869a1d933f946f62"
+      ]
+    },
+    {
+      "key": "implementation-canonical-narration-fixture-engine",
+      "path": "packages/shared/src/battle-engine.ts",
+      "parents": [
+        "design-canonical-narration-cohort",
+        "battle"
+      ],
+      "scope": "Only createBattleState/resolveTurn/buildBattleTurnRecord exercised fixture paths; not full balance/finisher/engine policy acceptance.",
+      "ref": "all-tests-20261007/implementation-canonical-narration-fixture-engine",
+      "test": false,
+      "sha256": "5d838d68b5a7832ef051670770ce117b5aec53d3eb650233a9b8ad0c0971f0ae",
+      "sealId": "6a27811e1eb660c9de4c5c7f4a1adf9f8561c4af42d15847c3e0f2f622787c1b",
+      "causeSealIds": [
+        "f32a6e8815e72a3186332393e8182c1fe1f096b30fc5cf3e9715593fafebaaba",
+        "fd2692da29f2deaf81b6567e5499276f95ece18dfd67f0a669fd1a2077292209"
+      ]
+    },
+    {
+      "key": "implementation-canonical-narration-character-compiler",
+      "path": "packages/shared/src/battle-character-compiler.ts",
+      "parents": [
+        "design-canonical-narration-cohort",
+        "battle",
+        "character"
+      ],
+      "scope": "Closed retained V2 compiler tuple and named-consumer projection contracts; complete fixtures, not current authoring approval.",
+      "ref": "all-tests-20261007/implementation-canonical-narration-character-compiler",
+      "test": false,
+      "sha256": "514a313317345ba71de24caac0cd8850308b9a3e3b86d5ec73a978432b5cc08a",
+      "sealId": "b6683e212b1c82e07a5b341859a78be13b3a62470a32ee4dbfefdf68f0d302a9",
+      "causeSealIds": [
+        "f32a6e8815e72a3186332393e8182c1fe1f096b30fc5cf3e9715593fafebaaba",
+        "fd2692da29f2deaf81b6567e5499276f95ece18dfd67f0a669fd1a2077292209",
+        "bfde8f080c876d8d85fac51d3a482e8fa36d0b925a0deef58b24403b21ee5f7d"
+      ]
+    },
+    {
+      "key": "implementation-canonical-narration-character-rules",
+      "path": "packages/shared/src/character-definition-rules.ts",
+      "parents": [
+        "implementation-canonical-narration-character-compiler",
+        "design-canonical-narration-cohort"
+      ],
+      "scope": "Scope bound V2 norm and relationship program/resolution used by eight consumer cases. No whole rule matrix coverage or V2 authoring revival.",
+      "ref": "all-tests-20261007/implementation-canonical-narration-character-rules",
+      "test": false,
+      "sha256": "617df09b099755e6c086c8bfbbe8bd3e8864ee14b6336c9c397c5fad602774d2",
+      "sealId": "6ff4c29637092fa43f351ba55137fdcebfa272214c4f4c4e6ac34431aba47897",
+      "causeSealIds": [
+        "b6683e212b1c82e07a5b341859a78be13b3a62470a32ee4dbfefdf68f0d302a9",
+        "f32a6e8815e72a3186332393e8182c1fe1f096b30fc5cf3e9715593fafebaaba"
+      ]
+    },
+    {
+      "key": "implementation-canonical-narration-manifestation",
+      "path": "packages/shared/src/character-manifestation.ts",
+      "parents": [
+        "design-canonical-narration-cohort",
+        "utters",
+        "observer"
+      ],
+      "scope": "Scope committed manifestation cue/evidence projection selected by narrator focus; no provider-generated manifestation validity blanket.",
+      "ref": "all-tests-20261007/implementation-canonical-narration-manifestation",
+      "test": false,
+      "sha256": "c2d8bdbe5b9ed78f87e8b04ee1d287e0590e905e871a4156237c6c7218234bab",
+      "sealId": "16be9b8a43befa369a76887d79cffa96b9d953994bb1f917056fe279b26401af",
+      "causeSealIds": [
+        "f32a6e8815e72a3186332393e8182c1fe1f096b30fc5cf3e9715593fafebaaba",
+        "a6bf11b8b7f44ce01470acc41b8b93ac2f8aa84b08c9461ea2016e6795dbc912",
+        "f6cd3f76e5e1fd9e559e33dc09754baadd630a8bfb8de5387ba73f6aa8f7276c"
+      ]
+    },
+    {
+      "key": "implementation-canonical-narration-world-validation",
+      "path": "backend/src/services/awareness-world-validation.ts",
+      "parents": [
+        "design-canonical-narration-cohort",
+        "battle",
+        "db"
+      ],
+      "scope": "Prepared/cutoff/time and technical incomplete canonical equality guards, parsed stored baseline. SQLite fixtures only.",
+      "ref": "all-tests-20261007/implementation-canonical-narration-world-validation",
+      "test": false,
+      "sha256": "e082f4d7f3e5d427b9b2a2e804a27a36fb5dea96ba67322111b30c009ad8afda",
+      "sealId": "e6739ea48a4e1cbb16036f9459c4d4e8db9e4d1d7395206e62267cc90aa43d67",
+      "causeSealIds": [
+        "f32a6e8815e72a3186332393e8182c1fe1f096b30fc5cf3e9715593fafebaaba",
+        "fd2692da29f2deaf81b6567e5499276f95ece18dfd67f0a669fd1a2077292209",
+        "4ea52a357e72328f2c5e136344aa945c23078b1c6957fc150f77a6153663ebee"
+      ]
+    },
+    {
+      "key": "implementation-canonical-narration-world-commit",
+      "path": "backend/src/services/awareness-world-commit.ts",
+      "parents": [
+        "implementation-canonical-narration-world-validation",
+        "runtime",
+        "storage",
+        "state"
+      ],
+      "scope": "Current runtime read plus atomic canonical/runtime CAS preserving asynchronous thoughts/accounting, terminal invalidation. Not rating equation acceptance or PG race.",
+      "ref": "all-tests-20261007/implementation-canonical-narration-world-commit",
+      "test": false,
+      "sha256": "72ae18cc27dca377d1faaccb5e5bac18c1decd8f9d476ba620269dedc44dc9ac",
+      "sealId": "2eadf15f7ef9403f0aad82beb796200ae5dced7a0ab82693f5b2c80536d41bd5",
+      "causeSealIds": [
+        "e6739ea48a4e1cbb16036f9459c4d4e8db9e4d1d7395206e62267cc90aa43d67",
+        "8c03873ba349ed1531f1dc6adf2d11b86b8e525c3cf6e501e38ff6ff2bf25cef",
+        "f09f7e2e5eae9da983979783a5f430dbf5372ce31ae52deaeac5da3c79ffa192",
+        "cea338023663fcb0df2f08b3e889a61b0033e7d60008a6301090ccac8a3fe50a"
+      ]
+    },
+    {
+      "key": "implementation-canonical-narration-expression-commit",
+      "path": "backend/src/services/awareness-expression-commit.ts",
+      "parents": [
+        "design-canonical-narration-cohort",
+        "utters",
+        "observer",
+        "implementation-canonical-narration-fixture-engine"
+      ],
+      "scope": "Selected voices physically admitted to canonical utterances and observer frames/record; five pure cases, not all service wiring.",
+      "ref": "all-tests-20261007/implementation-canonical-narration-expression-commit",
+      "test": false,
+      "sha256": "6decfaa44b13a095c5a2aac1c38409b9c272cd951aa41111f0fe42d0d356edd6",
+      "sealId": "a7ebc3885929116751d1ca8b004bdefb37438a01bef62e5641d69c0bdf6a34ec",
+      "causeSealIds": [
+        "f32a6e8815e72a3186332393e8182c1fe1f096b30fc5cf3e9715593fafebaaba",
+        "a6bf11b8b7f44ce01470acc41b8b93ac2f8aa84b08c9461ea2016e6795dbc912",
+        "f6cd3f76e5e1fd9e559e33dc09754baadd630a8bfb8de5387ba73f6aa8f7276c",
+        "6a27811e1eb660c9de4c5c7f4a1adf9f8561c4af42d15847c3e0f2f622787c1b"
+      ]
+    },
+    {
+      "key": "implementation-canonical-narration-adjudication-guard",
+      "path": "backend/src/services/awareness-adjudication-guard.ts",
+      "parents": [
+        "design-canonical-narration-cohort",
+        "runtime",
+        "admission",
+        "usage"
+      ],
+      "scope": "Exact synthetic proof/observed no-quote policy, persisted-before-send and sticky failure/unknown physical-cost settlement; no actual network or pricing authority.",
+      "ref": "all-tests-20261007/implementation-canonical-narration-adjudication-guard",
+      "test": false,
+      "sha256": "d807ac499b21bddd093d44e823c059b3c3cbc162e6522ea0c226a35da98d9153",
+      "sealId": "1440b7b10330cdeb4563200b59c17cc83df897acfd22b02abd936e8d567ff52c",
+      "causeSealIds": [
+        "f32a6e8815e72a3186332393e8182c1fe1f096b30fc5cf3e9715593fafebaaba",
+        "8c03873ba349ed1531f1dc6adf2d11b86b8e525c3cf6e501e38ff6ff2bf25cef",
+        "8abba1a9c8979c938c12dd7bfb72af72c43496dbb487ff827477c7ff5951482f",
+        "a716bc3b8e2473ca01d2cf7408bdc93dc769f8556428f493d9ee803dd7859619"
+      ]
+    },
+    {
+      "key": "implementation-canonical-narration-queue",
+      "path": "backend/src/services/awareness-narration-queue.ts",
+      "parents": [
+        "design-canonical-narration-cohort",
+        "policy"
+      ],
+      "scope": "Pure bounded queue, receipt identity/immutability, deadline/fence/coverage/order and one physical batch. No DB/task delivery.",
+      "ref": "all-tests-20261007/implementation-canonical-narration-queue",
+      "test": false,
+      "sha256": "54438681b3fe27d9a871c012fc391037172753fe6b82e34650d4b45e788934d8",
+      "sealId": "44cb0e5bd493d6fad7909158b30a73d652b61cdb046827eb868aba25aa7fe535",
+      "causeSealIds": [
+        "f32a6e8815e72a3186332393e8182c1fe1f096b30fc5cf3e9715593fafebaaba",
+        "c064db895ea9f010d2f6fb28360b243285cbe93156c19f8286e161ec2d0d731a"
+      ]
+    },
+    {
+      "key": "implementation-canonical-narration-urgency",
+      "path": "backend/src/services/awareness-narration-urgency.ts",
+      "parents": [
+        "design-canonical-narration-cohort",
+        "battle"
+      ],
+      "scope": "Four exercised ordinary movement and consciousness/speech/vision classification cases only.",
+      "ref": "all-tests-20261007/implementation-canonical-narration-urgency",
+      "test": false,
+      "sha256": "194c24cab9bae228bae958ca7dfb09aa9e5394436fa7ec964a09c59a26472bdf",
+      "sealId": "c46950ec1e0d73d6a6e223d47bb9e6e42e0a6a54040e203ef06df758665b0add",
+      "causeSealIds": [
+        "f32a6e8815e72a3186332393e8182c1fe1f096b30fc5cf3e9715593fafebaaba",
+        "fd2692da29f2deaf81b6567e5499276f95ece18dfd67f0a669fd1a2077292209"
+      ]
+    },
+    {
+      "key": "implementation-canonical-narration-convergence",
+      "path": "backend/src/scripts/awareness-narration-convergence.ts",
+      "parents": [
+        "design-canonical-narration-cohort"
+      ],
+      "scope": "Pure success-terminal convergence predicate and historical binding-format-v4 retained criteria; not real public completion or discarded cutover trial.",
+      "ref": "all-tests-20261007/implementation-canonical-narration-convergence",
+      "test": false,
+      "sha256": "a3b9d1a9e924bd638dd8823902836027f0a46bb0c7d33ad33249d5bc71578704",
+      "sealId": "f796f26e767192edebf48503a667c67ef03f86a1f8d0877ac9a876f8e783232a",
+      "causeSealIds": [
+        "f32a6e8815e72a3186332393e8182c1fe1f096b30fc5cf3e9715593fafebaaba"
+      ]
+    },
+    {
+      "key": "implementation-canonical-narration-worker-contract",
+      "path": "backend/src/services/awareness-narration-worker-contract.ts",
+      "parents": [
+        "design-canonical-narration-cohort",
+        "transport",
+        "battle"
+      ],
+      "scope": "Typed private worker material/lease/selected batch/admission/result contracts used by current worker. No runtime validation by types alone.",
+      "ref": "all-tests-20261007/implementation-canonical-narration-worker-contract",
+      "test": false,
+      "sha256": "072f7c1680a4724e01d70b2deb9f6c992a437a1991a9ec99d559111f659523ef",
+      "sealId": "d6129681d343c9f44cbf0f39d047984b4897c01d0b2fef68f2169f50aa55204b",
+      "causeSealIds": [
+        "f32a6e8815e72a3186332393e8182c1fe1f096b30fc5cf3e9715593fafebaaba",
+        "e2947758c2d961f4547d77ef7e166ac4e4af9639a8d93de682ce5cede88a71bc",
+        "fd2692da29f2deaf81b6567e5499276f95ece18dfd67f0a669fd1a2077292209"
+      ]
+    },
+    {
+      "key": "implementation-canonical-narration-worker-lifecycle",
+      "path": "backend/src/services/awareness-narration-worker-lifecycle.ts",
+      "parents": [
+        "implementation-canonical-narration-worker-contract",
+        "runtime",
+        "db"
+      ],
+      "scope": "Strict stored battle read, fenced failure, generation requeue and conservative completion settlement. SQLite tests, not PG concurrency.",
+      "ref": "all-tests-20261007/implementation-canonical-narration-worker-lifecycle",
+      "test": false,
+      "sha256": "4c0b879175780e4bda737e2efdd454a621884db69f3e4b83d35bf9553104dec3",
+      "sealId": "bbefc21e793484a92eea8b30f852d3f6df04600e549652a1051995b02bbf8037",
+      "causeSealIds": [
+        "d6129681d343c9f44cbf0f39d047984b4897c01d0b2fef68f2169f50aa55204b",
+        "8c03873ba349ed1531f1dc6adf2d11b86b8e525c3cf6e501e38ff6ff2bf25cef",
+        "4ea52a357e72328f2c5e136344aa945c23078b1c6957fc150f77a6153663ebee"
+      ]
+    },
+    {
+      "key": "implementation-canonical-narration-worker-material",
+      "path": "backend/src/services/awareness-narration-worker-material.ts",
+      "parents": [
+        "design-canonical-narration-cohort",
+        "frozen"
+      ],
+      "scope": "Material identity/schema and result identity/turn/phase conversion for all tested phases. No cryptographic identity proof.",
+      "ref": "all-tests-20261007/implementation-canonical-narration-worker-material",
+      "test": false,
+      "sha256": "496a5ff5faba0f0dbbf7143108cde2e062ed6c3845cfc89f8ca2b7d6ae287af2",
+      "sealId": "387482a8c005ec8729e50f5036a7773e0272deba439ef9bff2a9b23d5a5fe69e",
+      "causeSealIds": [
+        "f32a6e8815e72a3186332393e8182c1fe1f096b30fc5cf3e9715593fafebaaba",
+        "3ce85102892804dcfeb7df194b5e93d477ab783cef102356d02ed300e993ea69"
+      ]
+    },
+    {
+      "key": "implementation-canonical-narration-worker-claim",
+      "path": "backend/src/services/awareness-narration-worker-claim.ts",
+      "parents": [
+        "implementation-canonical-narration-worker-lifecycle",
+        "implementation-canonical-narration-queue",
+        "implementation-canonical-narration-worker-material",
+        "capture",
+        "context"
+      ],
+      "scope": "Entries-first snapshot, exact digest/receipt source, phase/recognition target prefix, outstanding/deadline handling and claim/context atomic capture.",
+      "ref": "all-tests-20261007/implementation-canonical-narration-worker-claim",
+      "test": false,
+      "sha256": "4f722f32cf28b5f72302f42fe0ae0a5ea0a9bdc2f967d6efc3cb51caf9b34124",
+      "sealId": "b51c3e396014bfb3bf78ec7ea799459d1dd0344116bdf853db085aabd196a01b",
+      "causeSealIds": [
+        "bbefc21e793484a92eea8b30f852d3f6df04600e549652a1051995b02bbf8037",
+        "44cb0e5bd493d6fad7909158b30a73d652b61cdb046827eb868aba25aa7fe535",
+        "387482a8c005ec8729e50f5036a7773e0272deba439ef9bff2a9b23d5a5fe69e",
+        "c391faa470d5e149ef6e6403509f6f837177c3f25e13caa3915ec4f1b621fa1b",
+        "2bb4f69f1e8be4176a337798da73e71336d20744dad624903b89adee8d66fb1d"
+      ]
+    },
+    {
+      "key": "implementation-canonical-narration-worker-dispatch",
+      "path": "backend/src/services/awareness-narration-worker-dispatch.ts",
+      "parents": [
+        "implementation-canonical-narration-worker-lifecycle",
+        "implementation-canonical-narration-worker-material",
+        "frozen",
+        "admission",
+        "reservation",
+        "physical",
+        "accounting",
+        "usage"
+      ],
+      "scope": "One accounted physical dispatch, deadline vs physical completion, observed/certified branches, exact coverage and late closure. Mock provider/quote does not certify price or real provider capability.",
+      "ref": "all-tests-20261007/implementation-canonical-narration-worker-dispatch",
+      "test": false,
+      "sha256": "4c90158f18ad0e2c790677d22c0d088e018ad81f2ad3973acf77b0074cffd184",
+      "sealId": "e384bc27bed1d61cea6168b68b36860acafe6f98cee66fdc10bed96406a32301",
+      "causeSealIds": [
+        "bbefc21e793484a92eea8b30f852d3f6df04600e549652a1051995b02bbf8037",
+        "387482a8c005ec8729e50f5036a7773e0272deba439ef9bff2a9b23d5a5fe69e",
+        "3ce85102892804dcfeb7df194b5e93d477ab783cef102356d02ed300e993ea69",
+        "8abba1a9c8979c938c12dd7bfb72af72c43496dbb487ff827477c7ff5951482f",
+        "3aed68d44713782e7c1b6bd96ded8f20bc91524ac0c2cd0a6af648359f510774",
+        "104b75473d4236887e586474778688398b1ebe3f49681ba9d7c633e221b8ffc9",
+        "3e3d68c7042ed2fede7acc127dcdc9fe321a480cb43f8bf506605fde4dcae03e",
+        "a716bc3b8e2473ca01d2cf7408bdc93dc769f8556428f493d9ee803dd7859619"
+      ]
+    },
+    {
+      "key": "implementation-canonical-narration-worker-publication",
+      "path": "backend/src/services/awareness-narration-worker-publication.ts",
+      "parents": [
+        "implementation-canonical-narration-worker-lifecycle",
+        "implementation-canonical-narration-worker-dispatch",
+        "context"
+      ],
+      "scope": "Current fence/deadline, all receipt presentations and recognition/public events/outbox atomically; callbacks tested in SQLite only.",
+      "ref": "all-tests-20261007/implementation-canonical-narration-worker-publication",
+      "test": false,
+      "sha256": "b35c383c88966d7bb72e8d414303fef4047415ae93474e1af61267614df569cb",
+      "sealId": "b98da3e6b7a06b7342465fd512231e6fc85303d87f3ee0efc838252eac52352a",
+      "causeSealIds": [
+        "bbefc21e793484a92eea8b30f852d3f6df04600e549652a1051995b02bbf8037",
+        "e384bc27bed1d61cea6168b68b36860acafe6f98cee66fdc10bed96406a32301",
+        "2bb4f69f1e8be4176a337798da73e71336d20744dad624903b89adee8d66fb1d"
+      ]
+    },
+    {
+      "key": "implementation-canonical-narration-worker",
+      "path": "backend/src/services/awareness-narration-worker.ts",
+      "parents": [
+        "implementation-canonical-narration-worker-claim",
+        "implementation-canonical-narration-worker-dispatch",
+        "implementation-canonical-narration-worker-publication",
+        "clock"
+      ],
+      "scope": "Current complete awareness binding selects independent lease, claim, one dispatch and publication; no broad legacy worker acceptance.",
+      "ref": "all-tests-20261007/implementation-canonical-narration-worker",
+      "test": false,
+      "sha256": "960b5b71712ae2a3a3d9d1e8ddb31c6729349db19994b4d3b3e6e4ca6b8be6be",
+      "sealId": "1672b08444367393454a76d2c3f3a5f41fd269f4e2dd6b79032535854cc83f07",
+      "causeSealIds": [
+        "b51c3e396014bfb3bf78ec7ea799459d1dd0344116bdf853db085aabd196a01b",
+        "e384bc27bed1d61cea6168b68b36860acafe6f98cee66fdc10bed96406a32301",
+        "b98da3e6b7a06b7342465fd512231e6fc85303d87f3ee0efc838252eac52352a",
+        "fc54c4ffbc6bedd844b9e1e489fc436ca217a6e9abce6417de58c79b5ecc671b"
+      ]
+    },
+    {
+      "key": "implementation-canonical-narration-entrypoint",
+      "path": "backend/src/services/narration-worker.ts",
+      "parents": [
+        "implementation-canonical-narration-worker",
+        "events",
+        "digest",
+        "db"
+      ],
+      "scope": "Scope processNextNarration awareness routing, enqueue and actual SQLite narration fence/event ports. Unexercised legacy generator casts outside this cohort are not accepted.",
+      "ref": "all-tests-20261007/implementation-canonical-narration-entrypoint",
+      "test": false,
+      "sha256": "c974acbc5a95035d2d6ae0a25a3d6954f60779cad8c7ff45eab1e2b5cca55c9d",
+      "sealId": "baf4bd284d37bd6516d76d8bf29e9d34279cf93e6abc314c3daeee8be73348c4",
+      "causeSealIds": [
+        "1672b08444367393454a76d2c3f3a5f41fd269f4e2dd6b79032535854cc83f07",
+        "d064bd9b7b5a1cff846d2c79b56f213876e6157d0afede6f913f17fda0474e19",
+        "0c4348cef5ad7b65ce5ac75ae5408a5428cd6133ee752eaf168432e19c315f8b",
+        "4ea52a357e72328f2c5e136344aa945c23078b1c6957fc150f77a6153663ebee"
+      ]
+    },
+    {
+      "key": "implementation-canonical-narration-creation-adoption",
+      "path": "backend/src/repositories/battle-awareness-creation.ts",
+      "parents": [
+        "design-canonical-narration-cohort",
+        "state",
+        "db"
+      ],
+      "scope": "Normal policy fixture reaches prepare/dispatch/adopt bootstrap into real runtime; no whole creation race/retry or PG acceptance.",
+      "ref": "all-tests-20261007/implementation-canonical-narration-creation-adoption",
+      "test": false,
+      "sha256": "0fa81094da6da7c061318719a2651836d4ad1adc883bb21e2289e4e8c92ea378",
+      "sealId": "b032bb02400e49e7c727eb9a35b1d7488b740bfb02bff55c62892cc216c80374",
+      "causeSealIds": [
+        "f32a6e8815e72a3186332393e8182c1fe1f096b30fc5cf3e9715593fafebaaba",
+        "cea338023663fcb0df2f08b3e889a61b0033e7d60008a6301090ccac8a3fe50a",
+        "4ea52a357e72328f2c5e136344aa945c23078b1c6957fc150f77a6153663ebee"
+      ]
+    },
+    {
+      "key": "implementation-canonical-narration-creation-encounter",
+      "path": "backend/src/services/awareness-creation-encounter.ts",
+      "parents": [
+        "implementation-canonical-narration-creation-adoption",
+        "admission",
+        "accounting",
+        "usage"
+      ],
+      "scope": "Only normal ordinary creation encounter fixture, observed policy fake transport and bound request options; no live semantic or cost proof.",
+      "ref": "all-tests-20261007/implementation-canonical-narration-creation-encounter",
+      "test": false,
+      "sha256": "84dd49b45795edf215bac5baf3114a847f421724a4f16b1b1c35c76d0dc399a0",
+      "sealId": "2d99aa018a2e32804418c6537e3484698d89df8772d0c4db281f29230eb45976",
+      "causeSealIds": [
+        "b032bb02400e49e7c727eb9a35b1d7488b740bfb02bff55c62892cc216c80374",
+        "8abba1a9c8979c938c12dd7bfb72af72c43496dbb487ff827477c7ff5951482f",
+        "3e3d68c7042ed2fede7acc127dcdc9fe321a480cb43f8bf506605fde4dcae03e",
+        "a716bc3b8e2473ca01d2cf7408bdc93dc769f8556428f493d9ee803dd7859619"
+      ]
+    },
+    {
+      "key": "implementation-canonical-narration-battle-boundary",
+      "path": "backend/src/services/awareness-battle-boundary.ts",
+      "parents": [
+        "design-canonical-narration-cohort",
+        "runtime",
+        "execution"
+      ],
+      "scope": "Normal initial prologue boundary passes bound policy to current latent/conscious execution; not full battle completion or every context contract.",
+      "ref": "all-tests-20261007/implementation-canonical-narration-battle-boundary",
+      "test": false,
+      "sha256": "23b45fb9136ec0d28d3a300439c4a6ff340cf8c330a53e8f099ca45e5ef6c8b6",
+      "sealId": "8bc7b858c5b6ce68d4fbd3160e28c1417b6d4b3fd0bef25e67279add9207ea7b",
+      "causeSealIds": [
+        "f32a6e8815e72a3186332393e8182c1fe1f096b30fc5cf3e9715593fafebaaba",
+        "8c03873ba349ed1531f1dc6adf2d11b86b8e525c3cf6e501e38ff6ff2bf25cef",
+        "6eb5f3240dfbfcf076911bba3a4ae3c8f0289ea0411368d58e5098fcf5426d91"
+      ]
+    },
+    {
+      "key": "implementation-canonical-narration-provider-assembly",
+      "path": "backend/src/llm/index.ts",
+      "parents": [
+        "design-canonical-narration-cohort",
+        "roles",
+        "sdk"
+      ],
+      "scope": "Only configured xai primary plus explicit awareness roles used by offline normal-policy case; unresolved legacy fallback/quota policy not accepted.",
+      "ref": "all-tests-20261007/implementation-canonical-narration-provider-assembly",
+      "test": false,
+      "sha256": "f478870163f6c295f643c27c18d498780a1e55221020544bb79509cc11e50855",
+      "sealId": "ae27a3a0d74786dd4155d2ab94eaa17bea2c220e9ca916477e395189f00ae030",
+      "causeSealIds": [
+        "f32a6e8815e72a3186332393e8182c1fe1f096b30fc5cf3e9715593fafebaaba",
+        "938f2d59786fbd4d6929fcfa1411ab23d23fd0fccdfe75b25a7a20647117880b",
+        "11ad190b10415f87aaf38a9598ec3ac3e05031fd2c03800aac12da69ae178d91"
+      ]
+    },
+    {
+      "key": "implementation-canonical-narration-battle-service",
+      "path": "backend/src/services/battle-service.ts",
+      "parents": [
+        "design-canonical-narration-cohort",
+        "grounding",
+        "character",
+        "implementation-canonical-narration-character-rules",
+        "implementation-canonical-narration-manifestation",
+        "causal",
+        "implementation-canonical-narration-creation-encounter",
+        "implementation-canonical-narration-battle-boundary",
+        "implementation-canonical-narration-world-commit"
+      ],
+      "scope": "Scope consumer/profile/scene/narration-causal helpers plus ordinary policy binding and initial advance propagation only. Not all legacy/current battle flow or engine rules.",
+      "ref": "all-tests-20261007/implementation-canonical-narration-battle-service",
+      "test": false,
+      "sha256": "80eda28c060f4f789dfb64a13a3babf2e4d82db77a8b34cebeb938cba040bce8",
+      "sealId": "29f8c4e12b07b449473dc30f4a32d9b580001da28438bde3c77b88d86a17bbac",
+      "causeSealIds": [
+        "f32a6e8815e72a3186332393e8182c1fe1f096b30fc5cf3e9715593fafebaaba",
+        "98609625d668a2929cebd83722b31eb848a21ba9bfe836240e225906317833bb",
+        "bfde8f080c876d8d85fac51d3a482e8fa36d0b925a0deef58b24403b21ee5f7d",
+        "6ff4c29637092fa43f351ba55137fdcebfa272214c4f4c4e6ac34431aba47897",
+        "16be9b8a43befa369a76887d79cffa96b9d953994bb1f917056fe279b26401af",
+        "380ac8824e9b71cb1f886088318ac2d539db126fe347c9a7467f3bcf9aec60b5",
+        "2d99aa018a2e32804418c6537e3484698d89df8772d0c4db281f29230eb45976",
+        "8bc7b858c5b6ce68d4fbd3160e28c1417b6d4b3fd0bef25e67279add9207ea7b",
+        "2eadf15f7ef9403f0aad82beb796200ae5dced7a0ab82693f5b2c80536d41bd5"
+      ]
+    },
+    {
+      "key": "fixture-canonical-narration-engine-adapter",
+      "path": "backend/src/services/battle-engine-test-helper.ts",
+      "parents": [
+        "implementation-canonical-narration-fixture-engine"
+      ],
+      "scope": "Synthetic resolveTurn supplies typed default basic attacks, not authorizing those values as new engine policy.",
+      "ref": "all-tests-20261007/fixture-canonical-narration-engine-adapter",
+      "test": false,
+      "sha256": "4208b6c13e405452478a768fce9a304395a3d962c8da843b71f59adc1ce528fd",
+      "sealId": "e9798badf954b488acf2089320db3628f278704b7190cb2729200a46e428f467",
+      "causeSealIds": [
+        "6a27811e1eb660c9de4c5c7f4a1adf9f8561c4af42d15847c3e0f2f622787c1b"
+      ]
+    },
+    {
+      "key": "fixture-canonical-narration-offline-http",
+      "path": "backend/src/testing/awareness-trial-http-fixture.ts",
+      "parents": [
+        "design-canonical-narration-cohort",
+        "sdk"
+      ],
+      "scope": "Fake schema-shaped fetch responses and monotonic fixture time only, no network/provider/real latency/cost acceptance.",
+      "ref": "all-tests-20261007/fixture-canonical-narration-offline-http",
+      "test": false,
+      "sha256": "088fc7ab1a38dc5f22da317e2dd7af97804e8790360aa88c2a1f4367c4fafc91",
+      "sealId": "646bb467ac7254071e722cbf78de03a051041bbe250f0435a738b11bac9ab3ca",
+      "causeSealIds": [
+        "f32a6e8815e72a3186332393e8182c1fe1f096b30fc5cf3e9715593fafebaaba",
+        "11ad190b10415f87aaf38a9598ec3ac3e05031fd2c03800aac12da69ae178d91"
+      ]
+    },
+    {
+      "key": "fixture-canonical-narration-candidate-reader",
+      "path": "backend/src/services/awareness-trial-candidate.ts",
+      "parents": [
+        "design-canonical-narration-cohort",
+        "character"
+      ],
+      "scope": "Strict synthetic candidate parsing used by local normal-policy preparation, no trial execution or candidate acceptance.",
+      "ref": "all-tests-20261007/fixture-canonical-narration-candidate-reader",
+      "test": false,
+      "sha256": "04bb11f519b4cc9e317d6944fe0ec4ef5563e2e21911c470722861cf3d58c760",
+      "sealId": "d6303c0a439c85505e8ce4754165c44ccbf946749adb1e3094b94b49cd173e15",
+      "causeSealIds": [
+        "f32a6e8815e72a3186332393e8182c1fe1f096b30fc5cf3e9715593fafebaaba",
+        "bfde8f080c876d8d85fac51d3a482e8fa36d0b925a0deef58b24403b21ee5f7d"
+      ]
+    },
+    {
+      "key": "fixture-canonical-narration-candidate-content",
+      "path": "docs/evidence/awareness-real-trial-candidate-2026-10-05.json",
+      "parents": [
+        "fixture-canonical-narration-candidate-reader"
+      ],
+      "scope": "Exact stored fixture character/battlefield material used locally; paid counts/prices and old approval statements are not current execution authority.",
+      "ref": "all-tests-20261007/fixture-canonical-narration-candidate-content",
+      "test": false,
+      "sha256": "9116f338280ab5738f73aac1ae444ad56f0dc5d763a7d8a156382b0341da4a58",
+      "sealId": "67ed96c062e3bf38aae7d1db0dd1da1c4f52d020ae129d82e131bab3f4ca0935",
+      "causeSealIds": [
+        "d6303c0a439c85505e8ce4754165c44ccbf946749adb1e3094b94b49cd173e15"
+      ]
+    },
+    {
+      "key": "fixture-canonical-narration-candidate-seed",
+      "path": "backend/src/services/awareness-trial-seed.ts",
+      "parents": [
+        "fixture-canonical-narration-candidate-reader",
+        "fixture-canonical-narration-candidate-content",
+        "db"
+      ],
+      "scope": "Synthetic seed into test-private SQLite only; no production writes, candidate activation or old cutover revival.",
+      "ref": "all-tests-20261007/fixture-canonical-narration-candidate-seed",
+      "test": false,
+      "sha256": "32947a08475ef8063e0f061e50a8d42e0ff0467f5b6622ea549bbba7be328974",
+      "sealId": "c07d69401886c8b5745234a9c4e9502a38c11eedfe043d3475bee6458d788b9d",
+      "causeSealIds": [
+        "d6303c0a439c85505e8ce4754165c44ccbf946749adb1e3094b94b49cd173e15",
+        "67ed96c062e3bf38aae7d1db0dd1da1c4f52d020ae129d82e131bab3f4ca0935",
+        "4ea52a357e72328f2c5e136344aa945c23078b1c6957fc150f77a6153663ebee"
+      ]
+    },
+    {
+      "key": "awareness-narration-worker-bounded-current",
+      "path": "backend/src/services/awareness-narration-worker.test.ts",
+      "parents": [
+        "implementation-canonical-narration-entrypoint",
+        "fixture",
+        "runtime",
+        "accounting"
+      ],
+      "scope": "All20cases/111assertions preserved; only2declared parameter annotations. Local SQLite worker/fake provider bounded contract proof.",
+      "ref": "verification/awareness-narration-worker-bounded-current-20261007",
+      "test": true,
+      "sha256": "49357c9c606e188b12e9bb93d079afd8895107568ff040a8395d18107158a426",
+      "sealId": "33dfa952fd82004670e4f57e61f6de107861ef9f0db681f40508964407ba79f5",
+      "causeSealIds": [
+        "baf4bd284d37bd6516d76d8bf29e9d34279cf93e6abc314c3daeee8be73348c4",
+        "6ac6f7936f62bf30134d2c26620c335f7b71357945f0713f35f4635a70754a31",
+        "8c03873ba349ed1531f1dc6adf2d11b86b8e525c3cf6e501e38ff6ff2bf25cef",
+        "3e3d68c7042ed2fede7acc127dcdc9fe321a480cb43f8bf506605fde4dcae03e"
+      ]
+    },
+    {
+      "key": "awareness-narration-continuation-bounded-current",
+      "path": "backend/src/services/awareness-narration-continuation.test.ts",
+      "parents": [
+        "implementation-canonical-narration-entrypoint",
+        "transport",
+        "prompt",
+        "fixture"
+      ],
+      "scope": "Whole unchanged outer1case with12phase/revision paths, fake transport/SQLite current output contract despite retained input revision.",
+      "ref": "verification/awareness-narration-continuation-bounded-current-20261007",
+      "test": true,
+      "sha256": "15d760b34cb85f9562bbfb931ad1c267e6fdef200eb7876e767a51d801edabb3",
+      "sealId": "5a1d9733b1bce56f548f5d8ba71f13ca584285d7d9bc3e3dda319aa134aff268",
+      "causeSealIds": [
+        "baf4bd284d37bd6516d76d8bf29e9d34279cf93e6abc314c3daeee8be73348c4",
+        "e2947758c2d961f4547d77ef7e166ac4e4af9639a8d93de682ce5cede88a71bc",
+        "f457c669375c1681fdf7277a8abd6f7e05848f33abb595d21df018b75b78866d",
+        "6ac6f7936f62bf30134d2c26620c335f7b71357945f0713f35f4635a70754a31"
+      ]
+    },
+    {
+      "key": "awareness-narration-queue-bounded-current",
+      "path": "backend/src/services/awareness-narration-queue.test.ts",
+      "parents": [
+        "implementation-canonical-narration-queue"
+      ],
+      "scope": "Whole unchanged9cases, pure timing/batch/immutable identity/coverage/order/fence; not provider or DB.",
+      "ref": "verification/awareness-narration-queue-bounded-current-20261007",
+      "test": true,
+      "sha256": "c98182bc664f259a2379e598905ee126769a893fdc685c832ee0a39b3d3390ac",
+      "sealId": "fa88e0ebb919cdf52263c397f61f98f11085837f1df1a4b2d23c697416bd98f7",
+      "causeSealIds": [
+        "44cb0e5bd493d6fad7909158b30a73d652b61cdb046827eb868aba25aa7fe535"
+      ]
+    },
+    {
+      "key": "awareness-narration-urgency-bounded-current",
+      "path": "backend/src/services/awareness-narration-urgency.test.ts",
+      "parents": [
+        "implementation-canonical-narration-urgency",
+        "fixture"
+      ],
+      "scope": "Whole unchanged4cases, local capability classification only.",
+      "ref": "verification/awareness-narration-urgency-bounded-current-20261007",
+      "test": true,
+      "sha256": "9d5f5e396a475213428a5427059d15f986aaa419db5de11de6180085e2f28651",
+      "sealId": "a5e8e7b885d54e5846b83092f7b05180d1d09c49fd9413a39dd47d0bc997526d",
+      "causeSealIds": [
+        "c46950ec1e0d73d6a6e223d47bb9e6e42e0a6a54040e203ef06df758665b0add",
+        "6ac6f7936f62bf30134d2c26620c335f7b71357945f0713f35f4635a70754a31"
+      ]
+    },
+    {
+      "key": "awareness-narration-convergence-bounded-current",
+      "path": "backend/src/scripts/awareness-narration-convergence.test.ts",
+      "parents": [
+        "implementation-canonical-narration-convergence"
+      ],
+      "scope": "Whole unchanged5cases, pure successful terminal acceptance predicates, not live verification.",
+      "ref": "verification/awareness-narration-convergence-bounded-current-20261007",
+      "test": true,
+      "sha256": "3d3d6ed84c9f8131452dd8206d82dfae181fee214de05cd58617a681f05f7f0f",
+      "sealId": "f59361225f9c06e9a785db582d8732f4aabe7846f05d01f68e9759ce87f9cffb",
+      "causeSealIds": [
+        "f796f26e767192edebf48503a667c67ef03f86a1f8d0877ac9a876f8e783232a"
+      ]
+    },
+    {
+      "key": "awareness-world-commit-bounded-current",
+      "path": "backend/src/services/awareness-world-commit.test.ts",
+      "parents": [
+        "implementation-canonical-narration-world-commit",
+        "fixture"
+      ],
+      "scope": "Whole unchanged10cases, actualSQLite rollback/prepared/time/late ready preservation/incomplete/terminal state, not numeric ratings/PG races.",
+      "ref": "verification/awareness-world-commit-bounded-current-20261007",
+      "test": true,
+      "sha256": "8a867e171939cacf798eb2b70e997ba5baa2709b77c3955df2e053d1f7617b45",
+      "sealId": "a363e08cb9aef61c7c464eaa28189c92602542da73e9aa8ce7af6ed52149876e",
+      "causeSealIds": [
+        "2eadf15f7ef9403f0aad82beb796200ae5dced7a0ab82693f5b2c80536d41bd5",
+        "6ac6f7936f62bf30134d2c26620c335f7b71357945f0713f35f4635a70754a31"
+      ]
+    },
+    {
+      "key": "awareness-expression-commit-bounded-current",
+      "path": "backend/src/services/awareness-expression-commit.test.ts",
+      "parents": [
+        "implementation-canonical-narration-expression-commit",
+        "fixture"
+      ],
+      "scope": "Whole unchanged5cases selected voice physical/sensory evidence/private exclusion and tick identity; pure helper only.",
+      "ref": "verification/awareness-expression-commit-bounded-current-20261007",
+      "test": true,
+      "sha256": "0d608e17db614eadd392d888901a1e0a88e24e3c237ae5cb1f9cc45d3d7e37ec",
+      "sealId": "52aff00439a13e0baefc7c3f23f1c35a29208ac967fa4a4b9401b55613c99a21",
+      "causeSealIds": [
+        "a7ebc3885929116751d1ca8b004bdefb37438a01bef62e5641d69c0bdf6a34ec",
+        "6ac6f7936f62bf30134d2c26620c335f7b71357945f0713f35f4635a70754a31"
+      ]
+    },
+    {
+      "key": "awareness-adjudication-guard-bounded-current",
+      "path": "backend/src/services/awareness-adjudication-guard.test.ts",
+      "parents": [
+        "implementation-canonical-narration-adjudication-guard",
+        "fixture"
+      ],
+      "scope": "Whole unchanged8cases exact synthetic quote, no-send/unknown/late/sticky/observed role scope withSQLite. No network or price verification.",
+      "ref": "verification/awareness-adjudication-guard-bounded-current-20261007",
+      "test": true,
+      "sha256": "64324f627e1900fa9310042b91c243d6457cdbde113685e6888e9b4b93a5674b",
+      "sealId": "688f265575540954312a939ffba8867509d4ecd23d3d3cccb00209e6435e31c0",
+      "causeSealIds": [
+        "1440b7b10330cdeb4563200b59c17cc83df897acfd22b02abd936e8d567ff52c",
+        "6ac6f7936f62bf30134d2c26620c335f7b71357945f0713f35f4635a70754a31"
+      ]
+    },
+    {
+      "key": "normal-awareness-policy-bounded-current",
+      "path": "backend/src/services/normal-awareness-policy.test.ts",
+      "parents": [
+        "implementation-canonical-narration-battle-service",
+        "implementation-canonical-narration-provider-assembly",
+        "fixture-canonical-narration-offline-http",
+        "fixture-canonical-narration-candidate-seed"
+      ],
+      "scope": "Whole unchanged1case actualSDKrole forwarding and frozen normal usage-v2/prompt4/runtime600s through privateSQLite/fakeHTTP; no real trial/complete battle.",
+      "ref": "verification/normal-awareness-policy-bounded-current-20261007",
+      "test": true,
+      "sha256": "1087c1538e41f95ed62224e11a464e5d08d412a32d865bad04e07ea2d27a078c",
+      "sealId": "2d4572e907ca67e06e01169f731871c91ecbada93252e3a200e5c0a06d0dd64b",
+      "causeSealIds": [
+        "29f8c4e12b07b449473dc30f4a32d9b580001da28438bde3c77b88d86a17bbac",
+        "ae27a3a0d74786dd4155d2ab94eaa17bea2c220e9ca916477e395189f00ae030",
+        "646bb467ac7254071e722cbf78de03a051041bbe250f0435a738b11bac9ab3ca",
+        "c07d69401886c8b5745234a9c4e9502a38c11eedfe043d3475bee6458d788b9d"
+      ]
+    },
+    {
+      "key": "distributed-guard-bounded-current",
+      "path": "backend/src/services/distributed-guard.test.ts",
+      "parents": [
+        "design-canonical-narration-cohort",
+        "digest",
+        "storage",
+        "db"
+      ],
+      "scope": "Whole unchanged3cases SQLite owner/expiry/fence and idempotency replay/conflict, not alltransaction receipt replay/heartbeat/PG.",
+      "ref": "verification/distributed-guard-bounded-current-20261007",
+      "test": true,
+      "sha256": "6ea0a9822d20a85fe31cbee6512f2650ec3a74efe4ac618e65db70e60f8d1aab",
+      "sealId": "fb881307c0733a90ab8fd970d25dd7e13710c09e1cc9e43a489f47192f236da0",
+      "causeSealIds": [
+        "f32a6e8815e72a3186332393e8182c1fe1f096b30fc5cf3e9715593fafebaaba",
+        "0c4348cef5ad7b65ce5ac75ae5408a5428cd6133ee752eaf168432e19c315f8b",
+        "f09f7e2e5eae9da983979783a5f430dbf5372ce31ae52deaeac5da3c79ffa192",
+        "4ea52a357e72328f2c5e136344aa945c23078b1c6957fc150f77a6153663ebee"
+      ]
+    },
+    {
+      "key": "battle-causal-narration-bounded-current",
+      "path": "backend/src/services/battle-causal-narration.test.ts",
+      "parents": [
+        "implementation-canonical-narration-battle-service",
+        "fixture-canonical-narration-engine-adapter",
+        "causal"
+      ],
+      "scope": "Whole unchanged3cases off no mutation, guarded consequences/scene projection, rejected evidence absence; no full balance or model quality.",
+      "ref": "verification/battle-causal-narration-bounded-current-20261007",
+      "test": true,
+      "sha256": "de513b805a8c5be525e4e44aa8d16a22a7bd4b6debba99d9986eebb4bbc49985",
+      "sealId": "24e1b5078b1a3153cf3ba2028a0349aeb8355fca9d890ac8827f8efe5ad6a812",
+      "causeSealIds": [
+        "29f8c4e12b07b449473dc30f4a32d9b580001da28438bde3c77b88d86a17bbac",
+        "e9798badf954b488acf2089320db3628f278704b7190cb2729200a46e428f467",
+        "380ac8824e9b71cb1f886088318ac2d539db126fe347c9a7467f3bcf9aec60b5"
+      ]
+    },
+    {
+      "key": "battle-consumer-wiring-bounded-current",
+      "path": "backend/src/services/battle-consumer-wiring.test.ts",
+      "parents": [
+        "implementation-canonical-narration-battle-service",
+        "implementation-canonical-narration-character-compiler",
+        "implementation-canonical-narration-fixture-engine"
+      ],
+      "scope": "All8cases/72assertions preserved; replace2manifest casts/events-only record cast/redundant clone cast with complete parsed synthetic retainedV2 fixture. No runtime/schema/authoring policy change.",
+      "ref": "verification/battle-consumer-wiring-bounded-current-20261007",
+      "test": true,
+      "sha256": "879473f6c4379c113c48e8694247f9908a10a65f5f0f7983b13a15ae843beba1",
+      "sealId": "850fe5669b8ae3ce1338eb380a4274ce6f11e316be1bc46dfcae1b0f48751b89",
+      "causeSealIds": [
+        "29f8c4e12b07b449473dc30f4a32d9b580001da28438bde3c77b88d86a17bbac",
+        "b6683e212b1c82e07a5b341859a78be13b3a62470a32ee4dbfefdf68f0d302a9",
+        "6a27811e1eb660c9de4c5c7f4a1adf9f8561c4af42d15847c3e0f2f622787c1b"
+      ]
+    }
+  ],
+  "diagnostic": {
+    "focusedPass": 77,
+    "fail": 0,
+    "skipped": 0,
+    "strictTypecheckExit": 0,
+    "workspaceTypecheckExit": 0
+  },
+  "limitations": [
+    "All original77cases/assertions preserved; two test fixture/type repairs only",
+    "Local SQLite/fake HTTP/clock/provider/pure helper proofs, not PostgreSQL/live/public completion or actual pricing",
+    "Existing backend noImplicitAny:false is bypassed by targeted standalone strict compiler; normal workspace success alone not that proof",
+    "Normal-policy synthetic seed not discarded cutover revival; old certified/explicit timing policies retained",
+    "Whole251files retained, unresolved owner paths and unsealed fail-closed gate unchanged"
+  ]
+}

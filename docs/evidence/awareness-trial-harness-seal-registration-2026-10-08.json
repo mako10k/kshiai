@@ -1,0 +1,170 @@
+{
+  "entries": [
+    {
+      "key": "design-awareness-trial-harness-bounded",
+      "path": "docs/awareness-trial-harness-test-contract-review-2026-10-08.md",
+      "parents": [
+        "usage",
+        "measurement",
+        "retained",
+        "completion"
+      ],
+      "scope": "Offline isolated8case measurement/failureaccounting harness with preimported local HTTP fixture; no live/providerquality/paid/deploy/fullbattle or discardedcutover verification.",
+      "ref": "all-tests-20261008/design-awareness-trial-harness-bounded",
+      "test": false,
+      "sha256": "74db00d4ef6cb1834bc1a721b54050f0ac7ef572c5a435ed67ed3e509a230757",
+      "sealId": "ac21e0e0ab51999d86a890a40e430cab3d909dc29eeb2d0dcea7175e842dd107",
+      "causeSealIds": [
+        "4a236b55e9ad9e4aa54eb2c6bbe9d77e0a318881ba8328363505153d16e151dd",
+        "66468c9b30e9ba4cd3a8649b7c3fa3f32a100622edb09d7864d54327be3db18a",
+        "7f8ac50262580d0a94e13d82627be496f8e2e8fd059c194c4d93d84d2af28f43",
+        "2c6888e9d07a676d4b429b041b241e1631845b18fac4fb4cda280a4a29670d50"
+      ]
+    },
+    {
+      "key": "implementation-trial-harness-run-awareness-trial",
+      "path": "backend/src/scripts/run-awareness-trial.ts",
+      "parents": [
+        "design-awareness-trial-harness-bounded"
+      ],
+      "scope": "Offline isolated8case measurement/failureaccounting harness with preimported local HTTP fixture; no live/providerquality/paid/deploy/fullbattle or discardedcutover verification.",
+      "ref": "all-tests-20261008/implementation-trial-harness-run-awareness-trial",
+      "test": false,
+      "sha256": "702e898034d578d235495a154de07409af18d47e4f90d13ea50116332a13d5b3",
+      "sealId": "6857078196ce6cf44c3baa619d672a7a2ed31e4031de4dae895b763d3f094115",
+      "causeSealIds": [
+        "ac21e0e0ab51999d86a890a40e430cab3d909dc29eeb2d0dcea7175e842dd107"
+      ]
+    },
+    {
+      "key": "implementation-trial-harness-awareness-trial-candidate",
+      "path": "backend/src/services/awareness-trial-candidate.ts",
+      "parents": [
+        "design-awareness-trial-harness-bounded"
+      ],
+      "scope": "Offline isolated8case measurement/failureaccounting harness with preimported local HTTP fixture; no live/providerquality/paid/deploy/fullbattle or discardedcutover verification.",
+      "ref": "all-tests-20261008/implementation-trial-harness-awareness-trial-candidate",
+      "test": false,
+      "sha256": "04bb11f519b4cc9e317d6944fe0ec4ef5563e2e21911c470722861cf3d58c760",
+      "sealId": "c3ec8867cc39f14262eda994a48345e5c124ec5afa5f11daebfb28614ca859c9",
+      "causeSealIds": [
+        "ac21e0e0ab51999d86a890a40e430cab3d909dc29eeb2d0dcea7175e842dd107"
+      ]
+    },
+    {
+      "key": "implementation-trial-harness-awareness-trial-http-fixture",
+      "path": "backend/src/testing/awareness-trial-http-fixture.ts",
+      "parents": [
+        "design-awareness-trial-harness-bounded"
+      ],
+      "scope": "Offline isolated8case measurement/failureaccounting harness with preimported local HTTP fixture; no live/providerquality/paid/deploy/fullbattle or discardedcutover verification.",
+      "ref": "all-tests-20261008/implementation-trial-harness-awareness-trial-http-fixture",
+      "test": false,
+      "sha256": "088fc7ab1a38dc5f22da317e2dd7af97804e8790360aa88c2a1f4367c4fafc91",
+      "sealId": "a6a1beb3b74fa4a188173a02fba889ba7bdb7c4b48294cf7a678ec305c4b4e12",
+      "causeSealIds": [
+        "ac21e0e0ab51999d86a890a40e430cab3d909dc29eeb2d0dcea7175e842dd107"
+      ]
+    },
+    {
+      "key": "implementation-trial-harness-awareness-trial-execution",
+      "path": "backend/src/services/awareness-trial-execution.ts",
+      "parents": [
+        "design-awareness-trial-harness-bounded"
+      ],
+      "scope": "Offline isolated8case measurement/failureaccounting harness with preimported local HTTP fixture; no live/providerquality/paid/deploy/fullbattle or discardedcutover verification.",
+      "ref": "all-tests-20261008/implementation-trial-harness-awareness-trial-execution",
+      "test": false,
+      "sha256": "3db6e2474a467ce7a97378ecb263da313bcf4218065b663195be56853ec69f1b",
+      "sealId": "2fb081084077ab3be4f263eb8dc2fca3ff9577956da4fbee86f8bf4ac1616ee2",
+      "causeSealIds": [
+        "ac21e0e0ab51999d86a890a40e430cab3d909dc29eeb2d0dcea7175e842dd107"
+      ]
+    },
+    {
+      "key": "implementation-trial-harness-awareness-trial-seed",
+      "path": "backend/src/services/awareness-trial-seed.ts",
+      "parents": [
+        "design-awareness-trial-harness-bounded"
+      ],
+      "scope": "Offline isolated8case measurement/failureaccounting harness with preimported local HTTP fixture; no live/providerquality/paid/deploy/fullbattle or discardedcutover verification.",
+      "ref": "all-tests-20261008/implementation-trial-harness-awareness-trial-seed",
+      "test": false,
+      "sha256": "32947a08475ef8063e0f061e50a8d42e0ff0467f5b6622ea549bbba7be328974",
+      "sealId": "235a3ea3d4f7cc5369f12f1603c6d7cda32188737d3ef5afc51e7eaf0213195a",
+      "causeSealIds": [
+        "ac21e0e0ab51999d86a890a40e430cab3d909dc29eeb2d0dcea7175e842dd107"
+      ]
+    },
+    {
+      "key": "implementation-trial-harness-awareness-trial-input-sizes",
+      "path": "backend/src/services/awareness-trial-input-sizes.ts",
+      "parents": [
+        "design-awareness-trial-harness-bounded"
+      ],
+      "scope": "Offline isolated8case measurement/failureaccounting harness with preimported local HTTP fixture; no live/providerquality/paid/deploy/fullbattle or discardedcutover verification.",
+      "ref": "all-tests-20261008/implementation-trial-harness-awareness-trial-input-sizes",
+      "test": false,
+      "sha256": "32516c5dd6f47b7e988a507332a33dd68d818b3530d4190bdf080bb4211da1d7",
+      "sealId": "57e1d8a4edfc7efd80d964c8dae14affa6ad250cd91fc7285498e0f06c5b413a",
+      "causeSealIds": [
+        "ac21e0e0ab51999d86a890a40e430cab3d909dc29eeb2d0dcea7175e842dd107"
+      ]
+    },
+    {
+      "key": "implementation-trial-harness-awareness-real-trial-candidate-2026-10-05",
+      "path": "docs/evidence/awareness-real-trial-candidate-2026-10-05.json",
+      "parents": [
+        "design-awareness-trial-harness-bounded"
+      ],
+      "scope": "Offline isolated8case measurement/failureaccounting harness with preimported local HTTP fixture; no live/providerquality/paid/deploy/fullbattle or discardedcutover verification.",
+      "ref": "all-tests-20261008/implementation-trial-harness-awareness-real-trial-candidate-2026-10-05",
+      "test": false,
+      "sha256": "9116f338280ab5738f73aac1ae444ad56f0dc5d763a7d8a156382b0341da4a58",
+      "sealId": "3e9bbee18c22f1bb0c99181fbc98be7d920e45edd7fa51251682e73c9406b9ab",
+      "causeSealIds": [
+        "ac21e0e0ab51999d86a890a40e430cab3d909dc29eeb2d0dcea7175e842dd107"
+      ]
+    },
+    {
+      "key": "awareness-trial-harness-bounded-20261008",
+      "path": "backend/src/services/awareness-trial-harness.test.ts",
+      "parents": [
+        "implementation-trial-harness-run-awareness-trial",
+        "implementation-trial-harness-awareness-trial-candidate",
+        "implementation-trial-harness-awareness-trial-http-fixture",
+        "implementation-trial-harness-awareness-trial-execution",
+        "implementation-trial-harness-awareness-trial-seed",
+        "implementation-trial-harness-awareness-trial-input-sizes",
+        "implementation-trial-harness-awareness-real-trial-candidate-2026-10-05"
+      ],
+      "scope": "Offline isolated8case measurement/failureaccounting harness with preimported local HTTP fixture; no live/providerquality/paid/deploy/fullbattle or discardedcutover verification. Whole8originalcases/assertions unchanged, no skips.",
+      "ref": "verification/awareness-trial-harness-bounded-20261008",
+      "test": true,
+      "sha256": "2774eedb6d4739f1a6b11ab0eb7ca49321e3dd6c5be0d09aff6b196b26fc0619",
+      "sealId": "67e8867798e7ae95ae016116db826e745fda94a76513e764752020314ff50a3d",
+      "causeSealIds": [
+        "6857078196ce6cf44c3baa619d672a7a2ed31e4031de4dae895b763d3f094115",
+        "c3ec8867cc39f14262eda994a48345e5c124ec5afa5f11daebfb28614ca859c9",
+        "a6a1beb3b74fa4a188173a02fba889ba7bdb7c4b48294cf7a678ec305c4b4e12",
+        "2fb081084077ab3be4f263eb8dc2fca3ff9577956da4fbee86f8bf4ac1616ee2",
+        "235a3ea3d4f7cc5369f12f1603c6d7cda32188737d3ef5afc51e7eaf0213195a",
+        "57e1d8a4edfc7efd80d964c8dae14affa6ad250cd91fc7285498e0f06c5b413a",
+        "3e9bbee18c22f1bb0c99181fbc98be7d920e45edd7fa51251682e73c9406b9ab"
+      ]
+    }
+  ],
+  "roots": {
+    "usage": "awareness-guidance-20261007/authority-current",
+    "measurement": "all-tests-20261007/authority-measurement",
+    "retained": "all-tests-20261007/authority-normal-waits",
+    "completion": "all-tests-20261007/authority-physical-completion-inherited"
+  },
+  "rootSealIds": {
+    "usage": "4a236b55e9ad9e4aa54eb2c6bbe9d77e0a318881ba8328363505153d16e151dd",
+    "measurement": "66468c9b30e9ba4cd3a8649b7c3fa3f32a100622edb09d7864d54327be3db18a",
+    "retained": "7f8ac50262580d0a94e13d82627be496f8e2e8fd059c194c4d93d84d2af28f43",
+    "completion": "2c6888e9d07a676d4b429b041b241e1631845b18fac4fb4cda280a4a29670d50"
+  },
+  "elapsedSeconds": 94.737
+}

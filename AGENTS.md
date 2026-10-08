@@ -60,3 +60,7 @@ Recent commits use short, imperative, sentence-case subjects (for example, `Impr
 Before creating a branch or worktree, run `npm run branches:preflight -- --new codex/<work-key>`, inspect local and remote state, and reuse an existing branch for the same task. Resolve uncommitted and unpushed work promptly. If isolation is necessary despite existing work, state the reason in the task handoff and rerun the preflight with `--reason "..."`; the preflight is read-only and an exception does not authorize a merge or discard. After review and merge, verify the remote result, then remove redundant local branches and worktrees whose unique work has been accounted for. Keep unfinished or unrelated work until its disposition is verified.
 
 While `main` and `codex/cc304-focused-revise` are the active development pair, collect in-scope changes in `codex/cc304-focused-revise`. Creating another branch or worktree requires the owner's explicit permission for that specific branch or worktree and its purpose. A preflight result, task plan, or possible parallelism does not supply that permission.
+
+## Version display
+
+For user-facing text, documentation, and progress reports, show the versioned object's name together with its version. Use labels such as character definition v3, battle binding format v5, and consciousness pipeline awareness-v5; follow docs/version-display-rules.md. Preserve stored identifiers and historical contracts. Apply the rule to new or materially edited text, then read back the affected labels.

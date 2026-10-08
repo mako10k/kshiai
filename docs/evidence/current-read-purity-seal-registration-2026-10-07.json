@@ -1,0 +1,95 @@
+{
+  "review": "docs/evidence/current-read-purity-cause-review-2026-10-07.json",
+  "entries": [
+    {
+      "key": "implementation-current-focused-pending-read",
+      "path": "backend/src/services/character-focused-authoring.ts",
+      "parents": [
+        "authority",
+        "v3",
+        "character"
+      ],
+      "scope": "Only readCharacterFocusedAuthoringReviewV3 on the supplied pending create run: SQL projection and no ready result returns null review. Full readiness/profile completion and migration/revision activation are not proven by this pending-read fixture.",
+      "test": false,
+      "ref": "all-tests-20261007/implementation-current-focused-pending-read",
+      "sha256": "d666c45e7522d5c659c51fa698a784ff0f9c780e1e8a9ed659bfe6f026ca7c2d",
+      "sealId": "18a1252ed2bfa2773aa446b80e9779cab123dd9f7ea1088ead63714d92e3aa1c",
+      "causeSealIds": [
+        "3d5d1e8e4ec99ffe6fdef1851bbe1ba54593c86e365b620af601c1d97747fe8c",
+        "480c02403f61dc6a9cd7d54861639b962dbc3bde86673481e02e0defc8415e17",
+        "71a3806f51ddb38886b2de44719b17f973c4d263a4257613274dfa1862a50ef4"
+      ]
+    },
+    {
+      "key": "implementation-current-narration-draft-read",
+      "path": "backend/src/repositories/narration-style-assets-v2.ts",
+      "parents": [
+        "authority"
+      ],
+      "scope": "Only latest/by-id/asset attempt SELECT and parsing invoked for a pending create attempt; changed activation validation is outside this GET proof. No all status/corrupt DB reads claim.",
+      "test": false,
+      "ref": "all-tests-20261007/implementation-current-narration-draft-read",
+      "sha256": "049d5bc7fa565eb24714deb6392b85d5f061655a5c335f68bc5c22bb6d431aa1",
+      "sealId": "480fa57d97ccda60a0e2406cbdadcba33373238a0e2ba935fe3544b19374f4bd",
+      "causeSealIds": [
+        "3d5d1e8e4ec99ffe6fdef1851bbe1ba54593c86e365b620af601c1d97747fe8c"
+      ]
+    },
+    {
+      "key": "implementation-current-six-draft-read-routes",
+      "path": "backend/src/routes.ts",
+      "parents": [
+        "authority",
+        "v3",
+        "character",
+        "battlefield",
+        "implementation-current-focused-pending-read",
+        "implementation-current-narration-draft-read"
+      ],
+      "scope": "Six latest/by-id draft GET handlers on three pending create attempts: no wake, claim, outbox or notification mutation. Whole route file and ready/failed/expired/unauthorized response behavior are outside this single fixture proof.",
+      "test": false,
+      "ref": "all-tests-20261007/implementation-current-six-draft-read-routes",
+      "sha256": "c62c1c59bfbd373480e43fd60b4f32c0a3ea73a051329bee3aa048da98ab209f",
+      "sealId": "0374262c05d28dee5d6b67d599280434b2fe91e7c416c66cda9c7ef975114e9c",
+      "causeSealIds": [
+        "3d5d1e8e4ec99ffe6fdef1851bbe1ba54593c86e365b620af601c1d97747fe8c",
+        "480c02403f61dc6a9cd7d54861639b962dbc3bde86673481e02e0defc8415e17",
+        "71a3806f51ddb38886b2de44719b17f973c4d263a4257613274dfa1862a50ef4",
+        "8fbfa4e7ad1ba73da9443dd233cc2e5fcb470e1a1390f212694b9cdd21f73997",
+        "18a1252ed2bfa2773aa446b80e9779cab123dd9f7ea1088ead63714d92e3aa1c",
+        "480fa57d97ccda60a0e2406cbdadcba33373238a0e2ba935fe3544b19374f4bd"
+      ]
+    },
+    {
+      "key": "authoring-read-purity-current",
+      "path": "backend/src/routes-authoring-read-purity.test.ts",
+      "parents": [
+        "authority",
+        "implementation-current-six-draft-read-routes",
+        "character",
+        "battlefield",
+        "implementation-current-focused-pending-read",
+        "implementation-current-narration-draft-read"
+      ],
+      "scope": "Entire one-case isolated SQLite regression: six authenticated draft reads repeated three rounds return200, 18 authoring persistence tables exactly unchanged, pending job/outbox delivery remains0, instrumented legacy authoring provider methods called0. Current focused request ledger unchanged; no complete instrumentation of arbitrary provider methods or all status/error/read paths claim.",
+      "test": true,
+      "ref": "verification/authoring-read-purity-current-20261007",
+      "sha256": "9b6a4162be627690488c80299eb1d4877ef98fc55b4f7a978d8d5e9314346be0",
+      "sealId": "33c3815b246bd1ad28daccc940c45e880d90e53913ee745a5a0b7463a05879f9",
+      "causeSealIds": [
+        "3d5d1e8e4ec99ffe6fdef1851bbe1ba54593c86e365b620af601c1d97747fe8c",
+        "0374262c05d28dee5d6b67d599280434b2fe91e7c416c66cda9c7ef975114e9c",
+        "71a3806f51ddb38886b2de44719b17f973c4d263a4257613274dfa1862a50ef4",
+        "8fbfa4e7ad1ba73da9443dd233cc2e5fcb470e1a1390f212694b9cdd21f73997",
+        "18a1252ed2bfa2773aa446b80e9779cab123dd9f7ea1088ead63714d92e3aa1c",
+        "480fa57d97ccda60a0e2406cbdadcba33373238a0e2ba935fe3544b19374f4bd"
+      ]
+    }
+  ],
+  "diagnostic": {
+    "pass": 1,
+    "fail": 0,
+    "skipped": 0,
+    "strictTypecheckExit": 0
+  }
+}

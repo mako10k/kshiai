@@ -1,0 +1,25 @@
+{
+  "reviewer": "/root/llm_boundary_seal_audit",
+  "mode": "read-only",
+  "files": 3,
+  "cases": 4,
+  "testHashes": {
+    "backend/src/repositories/battle-awareness-postgres.test.ts": "315fb6c0727d81631a5e9502984fcc1c12654b6324b83eeb7788bd498a0302d4",
+    "backend/src/repositories/battle-awareness-narration-events-postgres.test.ts": "1e4e39135aaa66e395818cb02c2d7132c17f667d60dc61860bdfcab8e69f5cdf",
+    "backend/src/repositories/battle-awareness-narration-reservation-postgres.test.ts": "d8a956e1ca25037187bc99b7cd744320440ae80bb25c5ac5ab196b88a641b539"
+  },
+  "sourceHashes": {
+    "backend/src/repositories/battle-awareness-initialization-query.ts": "e83016454a4db541f0ac6aebf6b1eb61f01a25796504a96be41b4409dfb698e5",
+    "backend/src/repositories/battle-awareness.ts": "7a1fb475a5b52153a4262f80a987bb0158988319a6cc0bf6f2b8df44beff2953",
+    "backend/src/services/narration-event-storage.ts": "6e9491bf319bdc73c964bcf08ecc6b71979f2db62d29288989e64c236c6176ef",
+    "backend/src/repositories/battle-awareness-narration-reservation.ts": "9a0bdd97ddc7819a042f7a1bef06e052e6412c1a3a364040f26aec42630e2667"
+  },
+  "inside": "No contract escape or accepted-clause contradiction found",
+  "limitations": [
+    "NativePG16 not PG17/Supabase",
+    "Initialization uses toy JSON as opaque SQL text, not schema-valid state",
+    "Reservation world CAS is directSQL model, not actual world engine writer",
+    "Per-test minimal schemas, not full migrations/SSE/cursor/privacy/batch3/prices",
+    "Tests only skip absent URL; actual run independently passes with URL and zero skip"
+  ]
+}

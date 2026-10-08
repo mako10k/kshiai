@@ -1,3 +1,4 @@
+// R: Verify ADR-0024 repeated draft reads leave authoring persistence and provider work unchanged.
 import assert from "node:assert/strict";
 import { mkdtempSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
@@ -21,6 +22,36 @@ const { buildRoutes } = await import("./routes.js");
 
 class CountingAuthoringProvider extends MockLlmProvider {
   authoringCalls = 0;
+
+  override async generateCharacterProfile(...args: Parameters<InstanceType<typeof MockLlmProvider>["generateCharacterProfile"]>) {
+    this.authoringCalls += 1;
+    return super.generateCharacterProfile(...args);
+  }
+
+  override async generateCharacterDefinitionV2(...args: Parameters<InstanceType<typeof MockLlmProvider>["generateCharacterDefinitionV2"]>) {
+    this.authoringCalls += 1;
+    return super.generateCharacterDefinitionV2(...args);
+  }
+
+  override async generateBattlefieldScene(...args: Parameters<InstanceType<typeof MockLlmProvider>["generateBattlefieldScene"]>) {
+    this.authoringCalls += 1;
+    return super.generateBattlefieldScene(...args);
+  }
+
+  override async generateBattlefieldDefinitionV2(...args: Parameters<InstanceType<typeof MockLlmProvider>["generateBattlefieldDefinitionV2"]>) {
+    this.authoringCalls += 1;
+    return super.generateBattlefieldDefinitionV2(...args);
+  }
+
+  override async generateNarrationDefinitionV2(...args: Parameters<InstanceType<typeof MockLlmProvider>["generateNarrationDefinitionV2"]>) {
+    this.authoringCalls += 1;
+    return super.generateNarrationDefinitionV2(...args);
+  }
+
+  override async generateNarrationStyleDescription(...args: Parameters<InstanceType<typeof MockLlmProvider>["generateNarrationStyleDescription"]>) {
+    this.authoringCalls += 1;
+    return super.generateNarrationStyleDescription(...args);
+  }
 
   override async generateCharacter(
     ...args: Parameters<InstanceType<typeof MockLlmProvider>["generateCharacter"]>
@@ -53,6 +84,20 @@ const app = buildRoutes({ llm: provider });
 const sessionToken = "ses_authoring_read_purity";
 const authHeaders = { Cookie: `kshiai_session=${sessionToken}` };
 
+async function snapshotAuthoringPersistence() {
+  const tables = [
+    "character_authoring_attempts", "battlefield_authoring_attempts", "narration_style_authoring_attempts",
+    "character_authoring_jobs", "battlefield_authoring_jobs", "narration_style_authoring_jobs",
+    "asset_authoring_outbox", "asset_authoring_scheduler", "owner_notifications",
+    "provider_operation_attempts", "semantic_authoring_runs", "semantic_authoring_provider_requests",
+    "character_focused_authoring_payloads", "asset_generations", "asset_current_generations",
+    "character_asset_states", "battlefield_asset_states", "narration_style_asset_states",
+  ] as const;
+  return Promise.all(tables.map(async (table) => ({
+    table, rows: (await query<Record<string, unknown>>(`SELECT * FROM ${table} ORDER BY rowid`)).rows,
+  })));
+}
+
 before(async () => {
   const now = "2026-09-08T00:00:00.000Z";
   await query(
@@ -81,6 +126,10 @@ describe("authoring draft read purity", () => {
       requestDigest: "a".repeat(64),
       sourceText: "read-only character",
       sourceDigest: "b".repeat(64),
+      focused: {
+        source: { kind: "create", naturalText: "read-only character" },
+        pricingIdentity: "controlled-test-prices-v1",
+      },
     });
     const battlefield = await battlefieldAssetRepo.beginBattlefieldAuthoringAttempt({
       ownerUserId: "read-owner",
@@ -120,6 +169,7 @@ describe("authoring draft read purity", () => {
         ORDER BY outbox.family`,
     );
 
+    const persistenceBefore = await snapshotAuthoringPersistence();
     const paths = [
       "/api/character-drafts/latest",
       `/api/character-drafts/${character.attempt.attemptId}`,
@@ -128,9 +178,11 @@ describe("authoring draft read purity", () => {
       "/api/narration-style-drafts/latest",
       `/api/narration-style-drafts/${narration.attempt.attemptId}`,
     ];
-    for (const path of paths) {
-      const response = await app.request(path, { headers: authHeaders });
-      assert.equal(response.status, 200, path);
+    for (let round = 0; round < 3; round += 1) {
+      for (const path of paths) {
+        const response = await app.request(path, { headers: authHeaders });
+        assert.equal(response.status, 200, path);
+      }
     }
     await new Promise((resolve) => setTimeout(resolve, 25));
 
@@ -156,6 +208,7 @@ describe("authoring draft read purity", () => {
         ORDER BY outbox.family`,
     );
     assert.deepEqual(afterState.rows, beforeState.rows);
+    assert.deepEqual(await snapshotAuthoringPersistence(), persistenceBefore);
     assert.deepEqual(
       afterState.rows.map((row) => [row.job_status, row.outbox_status, row.delivery_attempts]),
       [

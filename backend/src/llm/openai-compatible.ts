@@ -1,9 +1,10 @@
+import { CHARACTER_PROFILE_GENERATION_SYSTEM_V1, CHARACTER_PROFILE_CLAIM_SYSTEM_V1 } from "./character-profile-prompts.js";
 // R: Adapt domain LLM operations to accounted OpenAI-compatible chat requests.
 import { CURRENT_DIRECT_NARRATION_CONTRACT, type NarrationPromptContract } from "./narration-prompt-contract.js";
 import { observeLlmPhysicalAttempt } from "../repositories/llm-usage-observation.js";
 import { AwarenessDefaultPolicy } from "@kshiai/shared";
 import { decodeAwarenessRefereeResult, decodeAwarenessSemanticResult, AwarenessHappeningResultSchema } from "./awareness-adjudication-result.js";
-import { renderPromptSections } from "./prompt-prose.js";
+import { renderAdjudicationPrompt } from "./adjudication-prompt-prose.js";
 import { currentAwarenessDispatchContext } from "./awareness-dispatch-context.js";
 import { runConsciousGeneration, dynamicAgentResult, dynamicLaterInput } from "./conscious-dynamic.js";
 import { modelRequestOptions } from "./model-request-options.js";
@@ -922,7 +923,7 @@ export class OpenAiCompatibleProvider implements LlmProvider {
       // Legacy domain helpers serialize already-projected data. Convert it mechanically for this role only.
       try {
         const data: unknown = JSON.parse(user);
-        user = renderPromptSections([{ title: "裁定に使える確定資料", value: data }]);
+        user = renderAdjudicationPrompt(data);
       } catch (error) {
         if (!(error instanceof SyntaxError)) throw error;
       }
@@ -1621,33 +1622,19 @@ Safe-for-work anime portrait only.`,
   ): Promise<GenerateCharacterProfileResult> {
     if (!this.client) return this.fallback.generateCharacterProfile(input);
     try {
-      const data = await this.chatJson(
-        `You write a concise public character profile from a server-approved fact projection.
-Return JSON only: {
-  "description": string,
-  "segments": [{ "id": string, "text": string,
-    "kind": "fact"|"flavor", "supportRefs": string[] }],
-  "assistantMessage": string
-}
-Use the same language as the owner source. The owner source may guide tone and emphasis,
-but it is NOT permission to publish a fact. Every material factual segment must cite one
-or more exact supportRef values from approvedFacts. Flavor may add rhythm or metaphor,
-but must not add a proper noun, number, capability, item, relationship, history event,
-hidden cause, or information right. Do not expose schema names, IDs, control values,
-numeric combat values, hidden psyche dynamics, or disclosure rules. Keep the description
-to 2-4 natural sentences and no more than 1600 characters. description must be the exact
-segment texts joined in order, with no additional unsegmented prose.`,
+      const data = z.record(z.unknown()).parse(await this.chatJson(
+        CHARACTER_PROFILE_GENERATION_SYSTEM_V1,
         JSON.stringify({
           ownerSourceForToneOnly: input.sourceText.slice(0, 6000),
           displayName: input.projection.displayName,
           approvedFacts: input.projection.facts,
         }),
         { tier: "engine", label: "generateCharacterProfile", temperature: 0.6 },
-      ) as Record<string, unknown>;
+      ));
       const segments = (Array.isArray(data.segments) ? data.segments : [])
         .slice(0, 12)
         .map((raw, index) => {
-          const value = raw as Record<string, unknown>;
+          const value = z.record(z.unknown()).parse(raw);
           return {
             id: String(value.id ?? `segment-${index + 1}`).slice(0, 120),
             text: String(value.text ?? "").slice(0, 1200),
@@ -1981,28 +1968,8 @@ to wait or another default action.`,
     input: ValidateCharacterProfileClaimsInput,
   ): Promise<ValidateCharacterProfileClaimsResult> {
     if (!this.client) return this.fallback.validateCharacterProfileClaims(input);
-    const data = await this.chatJson(
-      `You are an independent bounded material-claim validator for a public character profile.
-Return JSON only: {
-  "segments": [{
-    "segmentId": string,
-    "verdict": "supported"|"flavor_only"|"unsupported",
-    "supportRefs": string[],
-    "riskCodes": string[]
-  }]
-}
-
-You receive ONLY the candidate public profile and the server-approved public projection.
-Assess every candidate segment exactly once. A fact is supported only when its complete
-material meaning follows from one or more approved facts; return their exact supportRef
-values. Do not infer from style, plausibility, common sense, or a character name.
-flavor_only is allowed only for a flavor segment that adds rhythm, imagery, or metaphor
-without adding any proper noun, number, capability, item, relationship, history event,
-hidden cause, information right, mechanics, contradiction, or control metadata.
-Otherwise return unsupported and all applicable riskCodes from:
-proper_noun, number, capability, item, relationship, history_event, hidden_cause,
-information_right, mechanics, contradiction, control_metadata.
-Never rewrite, repair, or omit a segment. Never expose or guess restricted information.`,
+    const data = z.record(z.unknown()).parse(await this.chatJson(
+      CHARACTER_PROFILE_CLAIM_SYSTEM_V1,
       JSON.stringify({
         approvedProjection: input.projection,
         candidateProfile: input.profile,
@@ -2012,11 +1979,11 @@ Never rewrite, repair, or omit a segment. Never expose or guess restricted infor
         label: "validateCharacterProfileClaims",
         temperature: 0,
       },
-    ) as Record<string, unknown>;
+    ));
     const rawSegments = Array.isArray(data.segments) ? data.segments : [];
     return {
       segments: rawSegments.slice(0, 12).map((raw) => {
-        const value = raw as Record<string, unknown>;
+        const value = z.record(z.unknown()).parse(raw);
         const verdict = value.verdict === "supported" ||
             value.verdict === "flavor_only" || value.verdict === "unsupported"
           ? value.verdict

@@ -1,0 +1,179 @@
+{
+  "thought_id": "tmp-kshiai-awareness-pipeline-seal-review",
+  "id_source": "file",
+  "report": {
+    "engine_version": "0.1.0",
+    "document_id": "tmp-kshiai-awareness-pipeline-seal-review",
+    "generated_at": "2026-10-07T01:28:06.714Z",
+    "summary": {
+      "fatal_count": 0,
+      "error_count": 0,
+      "warning_count": 0,
+      "info_count": 0,
+      "hint_count": 7
+    },
+    "results": [
+      {
+        "issue_id": "ISSUE-001",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "PIPELINE_SCHEMA_SEAL",
+            "role": "domain"
+          }
+        ],
+        "message": "domain PIPELINE_SCHEMA_SEAL の description は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 2,
+          "column": 3,
+          "text": "Seal six awareness schema assertions with current accounting and adopted subjective-state boundaries.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-002",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "AUTHORITY",
+            "role": "evidence",
+            "step_id": "S-AUTHORITY"
+          }
+        ],
+        "message": "evidence AUTHORITY は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 4,
+          "column": 3,
+          "text": "Read owner-projected U04 reflex split,U09 nonlogical affect,U11 no latent history and basic design section4; adopted decisions item4 strength0..1,lifetime1..3,separate body/voice and item8 max3receipt preserving receipt identity. Accepted0051 unknown cost and historical certified preservation; actual accounting detail reserves null as unknown and agrees summaries with identities.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-003",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "REVIEW",
+            "role": "evidence",
+            "step_id": "S-REVIEW"
+          }
+        ],
+        "message": "evidence REVIEW は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 6,
+          "column": 3,
+          "text": "Read complete awareness-pipeline.test.ts and pipeline/narration schemas: unknown summary consistency, unique max3receipt, historical default policy bounds and independent states, desire resource/lifetime validation, distinct latent source rejection and absent history. Shared diagnostic all415 cases passed including these six. Existing default180seconds is a historical schema initialization test, not current normal creation policy600seconds. Narration schema checks do not prove model source coverage or publication completion.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-004",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "SCOPE",
+            "role": "premise",
+            "step_id": "S-SCOPE"
+          }
+        ],
+        "message": "premise SCOPE は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 8,
+          "column": 3,
+          "text": "Reuse exact sealed pipeline input-contract, state implementation, current accounting authority, requirements/basic and adopted decisions. New narration contract observer depends on adopted batch/basic boundaries. Verification Cause targets all exercised contracts, not ProposedADR0038. Source bytes are bound; module registration only claims reviewed assertion obligations.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-005",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "UNKNOWN",
+            "role": "premise",
+            "step_id": "S-UNKNOWN"
+          }
+        ],
+        "message": "premise UNKNOWN は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 10,
+          "column": 3,
+          "text": "Full all-test goal, runtime dispatch and public/model completion remain unproven. This diagnostic is independent of formal aggregate eligibility. No actual provider costs or spending guarantee is claimed.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-006",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "ALTERNATIVES",
+            "role": "premise",
+            "step_id": "S-ALTERNATIVES"
+          }
+        ],
+        "message": "premise ALTERNATIVES は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 12,
+          "column": 3,
+          "text": "Do not reclassify historical initialization as current default, revive certified admission for new battles or Seal using an unaccepted narration Fragment.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-007",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "D1",
+            "role": "decision",
+            "step_id": "S-D1"
+          }
+        ],
+        "message": "decision D1 は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 14,
+          "column": 3,
+          "text": "Audit then create narration-contract and pipeline verification refs only, validate exact candidate bytes/targets, Seal, register the test and read back current sources/staleness/old heads.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      }
+    ],
+    "query_results": []
+  }
+}

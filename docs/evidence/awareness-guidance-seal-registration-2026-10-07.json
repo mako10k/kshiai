@@ -1,0 +1,209 @@
+{
+  "schema": "kshiai/scoped-seal-registration/v1",
+  "scope": "U08 and basic design section6 guidance transfer; old history retained; local only",
+  "coverageLimits": [
+    "No new requirement acceptance",
+    "Historical draft notes remain historical; current adoption/inheritance governs selected clauses",
+    "Module seals freeze bytes, not correctness of every unrelated function or complete import dependency coverage",
+    "Only three test files registered; other unsealed tests remain blockers"
+  ],
+  "entries": [
+    {
+      "key": "authority-inherited",
+      "ref": "awareness-guidance-20261007/authority-inherited",
+      "path": "docs/adr/0050-asynchronous-awareness-projected-character-pipeline.think",
+      "sha256": "727615d5b8603ea335a8c90d107c1a7ce80879850866bb6d16740efc46262ab1",
+      "causes": []
+    },
+    {
+      "key": "authority-current",
+      "ref": "awareness-guidance-20261007/authority-current",
+      "path": "docs/adr/0051-observed-llm-usage-accounting.md",
+      "sha256": "9a6ad28119b8f231d073ea4c6e55ceb35572b99305c28b40c2ca8b6b04550aa8",
+      "causes": [
+        "authority-inherited"
+      ]
+    },
+    {
+      "key": "requirements",
+      "ref": "awareness-guidance-20261007/requirements",
+      "path": "docs/battle-consciousness-requirements-2026-10-05.md",
+      "sha256": "8669a639c1eb8e06a83e653ef08e109be99e14ff97a1ccb18c6c09bc8775dbd9",
+      "causes": [
+        "authority-current"
+      ]
+    },
+    {
+      "key": "basic-design",
+      "ref": "awareness-guidance-20261007/basic-design",
+      "path": "docs/battle-consciousness-basic-design-2026-10-05.md",
+      "sha256": "807817263067321cb0325a5cd4fdb7d5ac02b5e0db3fff11d08e7a23f75a7428",
+      "causes": [
+        "requirements",
+        "authority-current"
+      ]
+    },
+    {
+      "key": "detail",
+      "ref": "awareness-guidance-20261007/detail",
+      "path": "docs/awareness-guidance-delivery-detail-2026-10-07.md",
+      "sha256": "6bf820811bd172f46a482b419deafec6d4490e10bed16b6898f2b960c6a544c9",
+      "causes": [
+        "basic-design"
+      ]
+    },
+    {
+      "key": "guidance-contract",
+      "ref": "awareness-guidance-20261007/guidance-contract",
+      "path": "packages/shared/src/awareness-guidance.ts",
+      "sha256": "2d0aee17f34bba6cdc1265174d4b0bc52a6037b56ba9dba9588de93687bb9163",
+      "causes": [
+        "detail"
+      ]
+    },
+    {
+      "key": "input-contract",
+      "ref": "awareness-guidance-20261007/input-contract",
+      "path": "packages/shared/src/awareness-pipeline.ts",
+      "sha256": "f2bd971d152f69c2a05ce670cb384576be3e56e5da196844d88ab7c82bcf84bd",
+      "causes": [
+        "basic-design"
+      ]
+    },
+    {
+      "key": "shared-exports",
+      "ref": "awareness-guidance-20261007/shared-exports",
+      "path": "packages/shared/src/index.ts",
+      "sha256": "db196b1b5c36ab892e5803c1c41b4705953cbdde969b9d8c8591f1843e3252e8",
+      "causes": [
+        "guidance-contract",
+        "input-contract"
+      ]
+    },
+    {
+      "key": "execution",
+      "ref": "awareness-guidance-20261007/execution",
+      "path": "backend/src/services/awareness-execution.ts",
+      "sha256": "af42217d0b0ce6f7fea3e9d8078437b1c354cff3cf00e1ece0fed4aae62be422",
+      "causes": [
+        "detail",
+        "guidance-contract",
+        "input-contract"
+      ]
+    },
+    {
+      "key": "context",
+      "ref": "awareness-guidance-20261007/context",
+      "path": "backend/src/services/awareness-context.ts",
+      "sha256": "97635741c69119c11b29b24dd3a7738d07de41cb7d7641affe60682c85e6291e",
+      "causes": [
+        "detail",
+        "guidance-contract",
+        "input-contract",
+        "execution"
+      ]
+    },
+    {
+      "key": "boundary",
+      "ref": "awareness-guidance-20261007/boundary",
+      "path": "backend/src/services/awareness-battle-boundary.ts",
+      "sha256": "23b45fb9136ec0d28d3a300439c4a6ff340cf8c330a53e8f099ca45e5ef6c8b6",
+      "causes": [
+        "detail",
+        "context",
+        "execution"
+      ]
+    },
+    {
+      "key": "battle-frame",
+      "ref": "awareness-guidance-20261007/battle-frame",
+      "path": "backend/src/services/battle-service.ts",
+      "sha256": "57ed4eeec6f5bf5a345bff9056618ecf6f31c90d6ff4e019c9d772ad6752f685",
+      "causes": [
+        "detail",
+        "boundary",
+        "guidance-contract"
+      ]
+    },
+    {
+      "key": "prompt",
+      "ref": "awareness-guidance-20261007/prompt",
+      "path": "backend/src/llm/awareness-request.ts",
+      "sha256": "1d14e53095da42c7c1891d5f91f389a97a045e4b067ba3727a650be006118995",
+      "causes": [
+        "input-contract",
+        "basic-design"
+      ]
+    },
+    {
+      "key": "fixture",
+      "ref": "awareness-guidance-20261007/fixture",
+      "path": "backend/src/services/awareness-guidance-test-fixture.ts",
+      "sha256": "be0fe4fb8ea78fa78bc414723ce5b471bfeac6ea84abec67e8bae1b7e621682f",
+      "causes": [
+        "detail",
+        "input-contract"
+      ]
+    },
+    {
+      "key": "verification-guidance",
+      "ref": "awareness-guidance-20261007/verification-guidance",
+      "path": "packages/shared/src/awareness-guidance.test.ts",
+      "sha256": "32221a7446d7dd70bb4c7fa84505fec4e4f3a615ddf55288f0550e1a1c056300",
+      "causes": [
+        "detail",
+        "guidance-contract"
+      ]
+    },
+    {
+      "key": "verification-context",
+      "ref": "awareness-guidance-20261007/verification-context",
+      "path": "backend/src/services/awareness-context.test.ts",
+      "sha256": "6f6fc695c4efaf8394c3248d6dc90a13db16453b7ec2532328247de589c921e2",
+      "causes": [
+        "detail",
+        "context",
+        "guidance-contract"
+      ]
+    },
+    {
+      "key": "verification-execution",
+      "ref": "awareness-guidance-20261007/verification-execution",
+      "path": "backend/src/services/awareness-execution.test.ts",
+      "sha256": "8d5123e514cd605b4fdc933212c2eba0b5d42a3d50b8a1363a476bdf6c5009b6",
+      "causes": [
+        "detail",
+        "battle-frame",
+        "boundary",
+        "context",
+        "execution",
+        "prompt",
+        "fixture"
+      ]
+    },
+    {
+      "key": "static-omission-evidence",
+      "ref": "awareness-guidance-20261007/static-omission-evidence",
+      "path": "docs/evidence/awareness-guidance-static-omission-readback-2026-10-07.json",
+      "sha256": "cddb86aec07bd6823c1240cb7f1f5f245659c37901d2ae02f1d8aa00bacbbbf3",
+      "causes": [
+        "guidance-contract",
+        "battle-frame",
+        "boundary",
+        "context",
+        "execution"
+      ]
+    },
+    {
+      "key": "runtime-readback",
+      "ref": "awareness-guidance-20261007/runtime-readback",
+      "path": "docs/evidence/awareness-guidance-delivery-readback-2026-10-07.json",
+      "sha256": "09f11a431181d74738951c96b75bd90dee828f43f460040361e310d15bbb2075",
+      "causes": [
+        "verification-guidance",
+        "verification-context",
+        "verification-execution"
+      ]
+    }
+  ]
+}

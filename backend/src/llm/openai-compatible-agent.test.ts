@@ -1,13 +1,29 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
+import { z } from "zod";
 import {
+  CharacterSelfProfileAnchorSchema,
+  CharacterAgentStateSchema,
   buildMinimalObserverPerception,
   createBattleSemanticState,
 } from "@kshiai/shared";
 import {
   CHARACTER_ACTION_PROPOSAL_OUTPUT_RULES,
   OpenAiCompatibleProvider,
+  type ChatOpts,
 } from "./openai-compatible.js";
+
+import type { CharacterDeepPsycheCompactInputV1 } from "./types.js";
+
+// R: Verify role-specific prompt projections with a typed response seam.
+class PromptProvider extends OpenAiCompatibleProvider {
+  response: (system: string, user: string, opts?: ChatOpts) => Promise<unknown> =
+    async () => { throw new Error("unexpected provider call"); };
+
+  protected override chatJson(system: string, user: string, opts?: ChatOpts): Promise<unknown> {
+    return this.response(system, user, opts);
+  }
+}
 
 describe("character-agent action proposal prompt", () => {
   it("keeps later-bucket action context separate from speech and psyche", async () => {
@@ -24,7 +40,7 @@ describe("character-agent action proposal prompt", () => {
       reserveEvidence: [],
       legacyCounterpartIdentified: true,
     }).frame;
-    const provider = new OpenAiCompatibleProvider({
+    const provider = new PromptProvider({
       name: "test-fast",
       apiKey: "test-only",
       baseUrl: "https://example.invalid/v1",
@@ -33,9 +49,7 @@ describe("character-agent action proposal prompt", () => {
     });
     let system = "";
     let user = "";
-    (provider as unknown as {
-      chatJson(system: string, user: string): Promise<unknown>;
-    }).chatJson = async (prompt, request) => {
+    provider.response = async (prompt, request) => {
       system = prompt;
       user = request;
       return { nextAction: { kind: "defend" } };
@@ -133,7 +147,7 @@ describe("character-agent action proposal prompt", () => {
       reserveEvidence: [],
       legacyCounterpartIdentified: true,
     }).frame;
-    const provider = new OpenAiCompatibleProvider({
+    const provider = new PromptProvider({
       name: "xai",
       apiKey: "test-only",
       baseUrl: "https://example.invalid/v1",
@@ -142,10 +156,7 @@ describe("character-agent action proposal prompt", () => {
     });
     let system = "";
     let user = "";
-    const privateProvider = provider as unknown as {
-      chatJson(system: string, user: string): Promise<unknown>;
-    };
-    privateProvider.chatJson = async (prompt, request) => {
+    provider.response = async (prompt, request) => {
       system = prompt;
       user = request;
       return {
@@ -261,7 +272,7 @@ describe("character-agent action proposal prompt", () => {
     assert.match(system, /deep-psyche stage/);
     assert.match(system, /separate bounded relationship-continuity thread/);
     assert.match(system, /trusted administrator-authored context/);
-    const pipeline = JSON.parse(user).dialoguePipeline;
+    const pipeline = z.object({ dialoguePipeline: z.unknown() }).parse(JSON.parse(user)).dialoguePipeline;
     assert.deepEqual(pipeline, {
       schemaVersion: 1,
       enabled: true,
@@ -274,7 +285,7 @@ describe("character-agent action proposal prompt", () => {
       updatedAt: "2026-08-09T00:00:00.000Z",
       updatedBy: "operator",
     });
-    const input = JSON.parse(user);
+    const input = z.record(z.string(), z.unknown()).parse(JSON.parse(user));
     assert.deepEqual(input.actionReaction, {
       schemaVersion: 1,
       turn: 2,
@@ -295,7 +306,7 @@ describe("character-agent action proposal prompt", () => {
     });
     assert.equal(result.interior.speechMode, "weave");
 
-    privateProvider.chatJson = async (prompt, request) => {
+    provider.response = async (prompt, request) => {
       system = prompt;
       user = request;
       return {
@@ -304,11 +315,11 @@ describe("character-agent action proposal prompt", () => {
     };
     const expression = await provider.advanceCharacterAgent({
       phase: "turn",
-      character: JSON.parse(user).character,
+      character: CharacterSelfProfileAnchorSchema.parse(input.character),
       psyche: {
-        ...JSON.parse(user).previous,
-        ...result,
-        interior: result.interior,
+        emotion: result.emotion,
+        speechStyle: result.speechStyle,
+        selfReference: CharacterAgentStateSchema.parse(input.previous).selfReference,
       },
       actionReaction: {
         schemaVersion: 1,
@@ -332,7 +343,7 @@ describe("character-agent action proposal prompt", () => {
   });
 
   it("requires compact psyche to carry a private appraisal into expression", async () => {
-    const provider = new OpenAiCompatibleProvider({
+    const provider = new PromptProvider({
       name: "xai",
       apiKey: "test-only",
       baseUrl: "https://example.invalid/v1",
@@ -341,10 +352,7 @@ describe("character-agent action proposal prompt", () => {
     });
     let system = "";
     let expressionUser = "";
-    const privateProvider = provider as unknown as {
-      chatJson(system: string, user: string): Promise<unknown>;
-    };
-    privateProvider.chatJson = async (prompt) => {
+    provider.response = async (prompt) => {
       system = prompt;
       return {
         delta: {
@@ -388,22 +396,11 @@ describe("character-agent action proposal prompt", () => {
       };
     };
 
-    const compactInput = {
-      contextMode: "compact",
-      phase: "turn",
-      character: {
-        schemaVersion: 1,
-        displayName: "ガク",
-        identity: { realName: null, nicknames: [], selfNames: ["俺"], epithets: [], gender: null, age: null },
-        tags: [],
-        appearanceSummary: "大剣を持つ剣士",
-        traits: ["頑固"],
-        narrativeBlurb: "圧力で道を開く剣士。",
-        basicAction: { name: "斬る", description: "大剣を振るう。" },
-        skills: [],
-        equipment: { weapon: null, armor: null },
-      },
-      previous: {
+    const previous: CharacterDeepPsycheCompactInputV1["previous"] & {
+      selfReference: string;
+      lastActionResult: string;
+      conversationHistory: [];
+    } = {
         privateMemory: "",
         currentGoal: "相手の構えを崩す",
         emotion: "苛立ち",
@@ -437,7 +434,24 @@ describe("character-agent action proposal prompt", () => {
             continuityDecision: "advance",
           },
         },
+      };
+
+    const compactInput: CharacterDeepPsycheCompactInputV1 = {
+      contextMode: "compact",
+      phase: "turn",
+      character: {
+        schemaVersion: 1,
+        displayName: "ガク",
+        identity: { realName: null, nicknames: [], selfNames: ["俺"], epithets: [], gender: null, age: null },
+        tags: [],
+        appearanceSummary: "大剣を持つ剣士",
+        traits: ["頑固"],
+        narrativeBlurb: "圧力で道を開く剣士。",
+        basicAction: { name: "斬る", description: "大剣を振るう。" },
+        skills: [],
+        equipment: { weapon: null, armor: null },
       },
+      previous,
       turnObservation: {
         schemaVersion: 1,
         turn: 2,
@@ -460,7 +474,7 @@ describe("character-agent action proposal prompt", () => {
         updatedBy: null,
       },
     };
-    const psyche = await provider.advanceCharacterPsyche(compactInput as never);
+    const psyche = await provider.advanceCharacterPsyche(compactInput);
 
     assert.match(system, /anticipatedImpact is the intent of the already-spoken previous expression/);
     assert.match(system, /attention, credibility, or emotional force/);
@@ -490,13 +504,14 @@ describe("character-agent action proposal prompt", () => {
       continuityDecision: "reframe",
     });
 
-    privateProvider.chatJson = async (prompt, user) => {
+    provider.response = async (prompt, user) => {
       system = prompt;
       expressionUser = user;
       return { speech: "端末ではない。お前の足が止まる場所を見ている。" };
     };
     const expression = await provider.advanceCharacterAgent({
       ...compactInput,
+      conversation: { ...compactInput.conversation, anchoredExchange: null },
       psyche: {
         emotion: compactInput.previous.emotion,
         speechStyle: compactInput.previous.speechStyle,
@@ -504,7 +519,7 @@ describe("character-agent action proposal prompt", () => {
       },
       expressionBrief: psyche.expressionBrief!,
       relevantMemory: null,
-    } as never);
+    });
     assert.match(system, /Raw latent psyche and interior state are deliberately absent/);
     assert.match(system, /expressionBrief is the bounded conscious projection/);
     assert.equal(expressionUser.includes('"interior"'), false);
@@ -536,7 +551,7 @@ describe("public character profile claim validator", () => {
   };
 
   it("receives no owner source or restricted definition", async () => {
-    const provider = new OpenAiCompatibleProvider({
+    const provider = new PromptProvider({
       name: "xai",
       apiKey: "test-only",
       baseUrl: "https://example.invalid/v1",
@@ -545,9 +560,7 @@ describe("public character profile claim validator", () => {
     });
     let system = "";
     let user = "";
-    (provider as unknown as {
-      chatJson(system: string, user: string): Promise<unknown>;
-    }).chatJson = async (prompt, request) => {
+    provider.response = async (prompt, request) => {
       system = prompt;
       user = request;
       return {
@@ -577,7 +590,7 @@ describe("public character profile claim validator", () => {
   });
 
   it("fails closed instead of using provider fallback", async () => {
-    const provider = new OpenAiCompatibleProvider({
+    const provider = new PromptProvider({
       name: "xai",
       apiKey: "test-only",
       baseUrl: "https://example.invalid/v1",
@@ -585,9 +598,7 @@ describe("public character profile claim validator", () => {
       modelFast: "grok-4.3",
       fallbackOnError: true,
     });
-    (provider as unknown as {
-      chatJson(system: string, user: string): Promise<unknown>;
-    }).chatJson = async () => {
+    provider.response = async () => {
       throw new Error("validator unavailable");
     };
     await assert.rejects(
@@ -595,4 +606,18 @@ describe("public character profile claim validator", () => {
       /validator unavailable/,
     );
   });
+
+  it("decodes profile response objects and segment objects instead of trusting contract casts", async () => {
+    const provider = new PromptProvider({ name: "xai", apiKey: "test-only",
+      baseUrl: "https://example.invalid/v1", modelEngine: "grok-4.3", modelFast: "grok-4.3",
+      fallbackOnError: false });
+    for (const response of [null, [], { segments: [null] }, { segments: [42] }]) {
+      provider.response = async () => response;
+      await assert.rejects(provider.validateCharacterProfileClaims(input),
+        (error) => error instanceof z.ZodError);
+      await assert.rejects(provider.generateCharacterProfile({ projection: input.projection,
+        sourceText: "public tone" }), (error) => error instanceof z.ZodError);
+    }
+  });
+
 });

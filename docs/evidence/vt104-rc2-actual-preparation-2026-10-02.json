@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "evidenceClass": "actual",
+  "kind": "preparation",
+  "identity": {
+    "commitSha": "4ab19719ef7fa61cdfb8571c4579c3c64cc96dfb",
+    "imageRef": "asia-northeast1-docker.pkg.dev/kshiai/kshiai/backend@sha256:2e7051ec6395d36a27124ace0cad8d032bbb6b47878509339b05ce27c679c056",
+    "revision": "kshiai-api-00147-pos",
+    "workerVersion": "26ff9223-7732-47e4-ac2b-f4a3f9b191cf",
+    "previewUrl": "https://26ff9223-kshiai-web.mako10k.workers.dev/",
+    "releaseTag": "v0.23.0-rc.2"
+  },
+  "startup": {
+    "ok": true,
+    "database": "postgres",
+    "auth": "supabase",
+    "revision": "kshiai-api-00147-pos"
+  },
+  "directProtection": {
+    "status": 404
+  },
+  "worker": {
+    "backendUrl": "https://v3-trial-36954429062-1---kshiai-api-crpgn6evfa-an.a.run.app",
+    "version": "26ff9223-7732-47e4-ac2b-f4a3f9b191cf"
+  },
+  "preflight": {
+    "packetDigest": "35f8e70a3f2a9bdc1ced6469924835971eaa1e1d41752a4e5f9a3e69a2724407"
+  }
+}

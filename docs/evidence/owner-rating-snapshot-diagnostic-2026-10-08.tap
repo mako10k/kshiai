@@ -1,0 +1,148 @@
+TAP version 13
+# [battle] semantic patch rejected protected_path: entities are tombstoned and cannot be replaced or removed
+# [battle] semantic reconciliation skipped provider unavailable
+# [battle] semantic reconciliation skipped provider unavailable
+# [battle] sensory evidence rejected evidence.bad: basis event missing.event is not committed
+# Subtest: public battle semantic projection
+    # Subtest: projects only explicitly visible pending effects without raw deltas
+    ok 1 - projects only explicitly visible pending effects without raw deltas
+      ---
+      duration_ms: 53.794625
+      type: 'test'
+      ...
+    # Subtest: exposes observable semantic state without mechanics or private agents
+    ok 2 - exposes observable semantic state without mechanics or private agents
+      ---
+      duration_ms: 13.204152
+      type: 'test'
+      ...
+    # Subtest: preserves contemporaneous settled rating snapshots despite current population changes
+    ok 3 - preserves contemporaneous settled rating snapshots despite current population changes
+      ---
+      duration_ms: 14.00466
+      type: 'test'
+      ...
+    # Subtest: keeps the committed state when a provider patch is invalid
+    ok 4 - keeps the committed state when a provider patch is invalid
+      ---
+      duration_ms: 30.916379
+      type: 'test'
+      ...
+    # Subtest: commits structured semantic location changes through the world boundary
+    ok 5 - commits structured semantic location changes through the world boundary
+      ---
+      duration_ms: 35.690364
+      type: 'test'
+      ...
+    # Subtest: skips semantic mutation when the provider fails
+    ok 6 - skips semantic mutation when the provider fails
+      ---
+      duration_ms: 40.631457
+      type: 'test'
+      ...
+    # Subtest: commits an accepted environment proposal only through semantic and world state
+    ok 7 - commits an accepted environment proposal only through semantic and world state
+      ---
+      duration_ms: 29.18884
+      type: 'test'
+      ...
+    # Subtest: drops a rejected environment proposal without a public fact or effect
+    ok 8 - drops a rejected environment proposal without a public fact or effect
+      ---
+      duration_ms: 19.923686
+      type: 'test'
+      ...
+    # Subtest: rejects a structured environment operation outside the selected affordance
+    ok 9 - rejects a structured environment operation outside the selected affordance
+      ---
+      duration_ms: 39.841535
+      type: 'test'
+      ...
+    # Subtest: gives the happening provider one deterministic authored affordance
+    ok 10 - gives the happening provider one deterministic authored affordance
+      ---
+      duration_ms: 26.576711
+      type: 'test'
+      ...
+    # Subtest: records an unavailable environment adjudication as skipped
+    ok 11 - records an unavailable environment adjudication as skipped
+      ---
+      duration_ms: 9.877821
+      type: 'test'
+      ...
+    # Subtest: freezes side-specific frames and keeps unknown source ids registry-private
+    ok 12 - freezes side-specific frames and keeps unknown source ids registry-private
+      ---
+      duration_ms: 16.896356
+      type: 'test'
+      ...
+    # Subtest: projects engine cues normally after invalid sensory evidence is rejected
+    ok 13 - projects engine cues normally after invalid sensory evidence is rejected
+      ---
+      duration_ms: 22.420976
+      type: 'test'
+      ...
+    # Subtest: does not normalize an invalid prior perception registry
+    ok 14 - does not normalize an invalid prior perception registry
+      ---
+      duration_ms: 18.635765
+      type: 'test'
+      ...
+    # Subtest: keeps only the latest transition and side-specific observations
+    ok 15 - keeps only the latest transition and side-specific observations
+      ---
+      duration_ms: 34.502008
+      type: 'test'
+      ...
+    1..15
+ok 1 - public battle semantic projection
+  ---
+  duration_ms: 411.492451
+  type: 'suite'
+  ...
+# Subtest: atomic dual-track rating settlement
+    # Subtest: rolls back both character tracks when canonical CAS fails (same owner)
+    ok 1 - rolls back both character tracks when canonical CAS fails (same owner)
+      ---
+      duration_ms: 251.079765
+      type: 'test'
+      ...
+    # Subtest: commits the existing accounting rules and returns the settled public state (same owner)
+    ok 2 - commits the existing accounting rules and returns the settled public state (same owner)
+      ---
+      duration_ms: 61.218155
+      type: 'test'
+      ...
+    # Subtest: rolls back both character tracks when canonical CAS fails (cross owner)
+    ok 3 - rolls back both character tracks when canonical CAS fails (cross owner)
+      ---
+      duration_ms: 48.777134
+      type: 'test'
+      ...
+    # Subtest: commits the existing accounting rules and returns the settled public state (cross owner)
+    ok 4 - commits the existing accounting rules and returns the settled public state (cross owner)
+      ---
+      duration_ms: 61.824932
+      type: 'test'
+      ...
+    # Subtest: never mutates accounting for an incomplete match
+    ok 5 - never mutates accounting for an incomplete match
+      ---
+      duration_ms: 34.846072
+      type: 'test'
+      ...
+    1..5
+ok 2 - atomic dual-track rating settlement
+  ---
+  duration_ms: 461.659691
+  type: 'suite'
+  ...
+1..2
+# tests 20
+# suites 2
+# pass 20
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 2631.858052

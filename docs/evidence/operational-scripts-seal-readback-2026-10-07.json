@@ -1,0 +1,15 @@
+{
+  "newRefs": 10,
+  "previousHeadsUnchanged": true,
+  "previousHeadCount": 1053,
+  "totalRefs": 1063,
+  "sourceBytesMatch": true,
+  "stale": 0,
+  "fsck": "ok",
+  "limitations": [
+    "All original three files eight cases and implementations unchanged",
+    "Only local helper/startup contracts",
+    "No public rollback/R2 health/cutover execution",
+    "251 original files and unsealed fail-closed preserved"
+  ]
+}

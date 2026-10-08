@@ -7,6 +7,7 @@ import { Hono } from "hono";
 import {
   BattlefieldChatRequestSchema,
   CharacterChatRequestSchema,
+  CharacterDraftCorrectionRequestSchema,
   CreateBattleRequestSchema,
   GenerateBattlefieldRequestSchema,
   GenerateCharacterRequestSchema,
@@ -250,8 +251,10 @@ async function focusedReviewAcceptance(
 ) {
   let error: string | null = null;
   let canAccept = false;
-  if (attempt.status === "awaiting_owner_acceptance" && hasSemanticCandidateReview) {
-    if (!enableCharacterMigrationAcceptanceTrial) {
+  if (attempt.status === "awaiting_owner_acceptance" && hasSemanticCandidateReview && !attempt.candidate) {
+    if (attempt.kind !== "upgrade") {
+      error = "FOCUSED_CHARACTER_PROFILE_REVIEW_INCOMPLETE";
+    } else if (!enableCharacterMigrationAcceptanceTrial) {
       error = "FOCUSED_CHARACTER_MIGRATION_ACTIVATION_DISABLED";
     } else {
       try {
@@ -360,10 +363,14 @@ async function characterReviewResponse(
       || (focusedAcceptance.canAccept && focusedAcceptance.error === null)),
     acceptanceError: acceptanceError ?? focusedAcceptance.error,
     failed: failedCharacterReview(attempt),
-    ...(focusedReview ? { ...focusedReview,
+    ...(focusedReview ? { semanticCandidateReview: focusedReview.semanticCandidateReview,
       sourceRetryAvailable: !stale && focusedReview.sourceRetryAvailable } : {}),
-    candidateDigest: attempt.candidateDigest,
+    candidateDigest: attempt.candidateDigest ?? focusedReview?.correctionSource?.candidateDigest ?? null,
     ...characterReviewOwnerMetadata(attempt, reviewBaseline?.content),
+    ...(focusedReview?.semanticCandidateReview ? { semanticCandidateReview: focusedReview.semanticCandidateReview } : {}),
+    canEditCandidate: !stale && attempt.status === "awaiting_owner_acceptance"
+      && Boolean(focusedReview?.correctionSource)
+      && attempt.kind !== "upgrade" && acceptanceError === null,
     reviewConfirmOnly,
     ...(reviewConfirmOnly ? { canEditCandidate: false, sourceRetryAvailable: false } : {}),
     progress: focusedReview?.semanticCandidateReview ? null
@@ -1163,15 +1170,29 @@ export function buildRoutes(options: {
 
   authed.post("/character-drafts/:id/chat", async (c) => {
     const user = c.get("user");
-    const body = CharacterChatRequestSchema.parse(await c.req.json());
     const structured = await charAssetRepo.getCharacterAuthoringAttempt(
       c.req.param("id"),
       user.id,
     );
-    if (structured?.status === "awaiting_owner_acceptance" && structured.candidate) {
-      return c.json({ error: "character_draft_revision_unavailable", message: "確定済みV3から新しい修正を開始してください。" }, 409);
+    if (!structured) return c.json({ error: "not_found" }, 404);
+    const body = CharacterDraftCorrectionRequestSchema.safeParse(await c.req.json());
+    if (!body.success) return c.json({ error: "invalid_correction_request" }, 400);
+    const idempotencyKey = readIdempotencyKey(c.req.header("Idempotency-Key"));
+    if (!idempotencyKey) return c.json({ error: "idempotency_key_required" }, 400);
+    if (!llm.semanticAuthoringProvider) return c.json({ error: "focused_authoring_unavailable" }, 409);
+    try {
+      const started = await charAssetRepo.beginCharacterDraftCorrection({
+        ownerUserId: user.id, predecessorAttemptId: structured.attemptId,
+        candidateDigest: body.data.candidateDigest, message: body.data.message,
+        idempotencyKey, pricingIdentity: llm.semanticAuthoringProvider.pricingIdentity,
+      });
+      await wakeAuthoringTasks(llm);
+      return c.json(SemanticAuthoringAcceptedV1Schema.parse({
+        ...authoringAcceptedFromAttempt(started.attempt), predecessorAttemptId: structured.attemptId,
+      }), 202);
+    } catch (error) {
+      return c.json({ error: error instanceof Error ? error.message : "CORRECTION_START_FAILED" }, 409);
     }
-    return c.json({ error: "not_found" }, 404);
   });
 
   authed.get("/character-drafts/latest", async (c) => {
@@ -1316,13 +1337,18 @@ export function buildRoutes(options: {
 
   async function prepareFocusedUpgrade(characterId: string) {
     const compatibility = await charAssetRepo.getCharacterCompatibility(characterId);
+    if (compatibility.status === "upgrading") return { error: "request_in_progress" as const };
     const semanticProvider = llm.semanticAuthoringProvider;
     if (!semanticProvider) return { error: "focused_authoring_unavailable" as const };
-    const generation = semanticProvider && compatibility.status === "ready" && compatibility.schemaVersion === 2
-      ? await charAssetRepo.getReadyCharacterGeneration(characterId) : null;
+    const currentGeneration = await getCurrentAssetGeneration("character", characterId);
+    const generation = currentGeneration?.schemaVersion === 2 ? currentGeneration : null;
     if (compatibility.status === "ready" && !generation) return { error: "already_current" as const };
     const parsed = generation ? CharacterGenerationEnvelopeV2Schema.safeParse(generation.content) : null;
     if (generation && !parsed?.success) return { error: "upgrade_start_failed" as const };
+    if (parsed?.success) {
+      try { assertCharacterCandidateReady(parsed.data); }
+      catch { return { error: "upgrade_start_failed" as const }; }
+    }
     const focusedInput = generation && parsed?.success && semanticProvider ? {
       generation,
       registration: { source: { kind: "migrate" as const, definition: parsed.data.definition,

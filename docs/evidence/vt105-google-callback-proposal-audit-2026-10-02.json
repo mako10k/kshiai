@@ -1,0 +1,44 @@
+thought_id: docs-evidence-vt105-google-callback-proposal-2026-10-02
+id_source: file
+status: draft
+draft: thoughts/docs-evidence-vt105-google-callback-proposal-2026-10-02/draft.think
+latest_audit: thoughts/docs-evidence-vt105-google-callback-proposal-2026-10-02/audits/2026-10-02T02-26-12.896Z.json
+next: reuse this thought_id with thought show/history/reflect/delete or dsl audit --id
+document: docs-evidence-vt105-google-callback-proposal-2026-10-02
+engine: 0.1.0
+summary: fatal=0 error=0 warning=0 info=0 hint=3
+
+issues:
+- [hint] semantic_hint: evidence BASELINE は 1 行の quoted text が長いため、block text に変えると読みやすい。 (BASELINE)
+  rationale: 長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。
+  suggestion: 長い 1 行本文を block text へ分割し、意味の切れ目で改行する。
+  syntax_help: llmthink dsl help syntax detail
+  syntax_guidance:
+    長い本文は block text を使い、意味の切れ目で改行する。
+    例:
+    problem P1:
+      |
+        1 行目の説明
+        2 行目の説明
+- [hint] semantic_hint: evidence AUTHORITY は 1 行の quoted text が長いため、block text に変えると読みやすい。 (AUTHORITY)
+  rationale: 長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。
+  suggestion: 長い 1 行本文を block text へ分割し、意味の切れ目で改行する。
+  syntax_help: llmthink dsl help syntax detail
+  syntax_guidance:
+    長い本文は block text を使い、意味の切れ目で改行する。
+    例:
+    problem P1:
+      |
+        1 行目の説明
+        2 行目の説明
+- [hint] semantic_hint: decision PROPOSE は 1 行の quoted text が長いため、block text に変えると読みやすい。 (PROPOSE)
+  rationale: 長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。
+  suggestion: 長い 1 行本文を block text へ分割し、意味の切れ目で改行する。
+  syntax_help: llmthink dsl help syntax detail
+  syntax_guidance:
+    長い本文は block text を使い、意味の切れ目で改行する。
+    例:
+    problem P1:
+      |
+        1 行目の説明
+        2 行目の説明

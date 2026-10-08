@@ -1,0 +1,83 @@
+{
+  "entries": [
+    {
+      "key": "design-absence-cohort",
+      "path": "docs/battle-engine-absence-test-contract-review-2026-10-07.md",
+      "parents": [
+        "current",
+        "continuation",
+        "intent"
+      ],
+      "scope": "Twelve unchanged cases strict/no fabricated substitute intent and durable absence; retained legacy route, no balance/full pipeline acceptance.",
+      "ref": "all-tests-20261007/design-absence-cohort",
+      "test": false,
+      "sha256": "72d77d669abeb3e11fd70d43c6c33a9dde3f78aaa45c0a53c9430ad02fdd3da6",
+      "sealId": "a72110d94498c4a1ee20eca5f8313227960971e6c48e68b986307075fb45230e",
+      "causeSealIds": [
+        "4a236b55e9ad9e4aa54eb2c6bbe9d77e0a318881ba8328363505153d16e151dd",
+        "2c84ef3d0dd122e76543935595e774cfd33957cb01713505644e50f9ec5678ba",
+        "ba3333b9f05bf5cfdb70a40dfb2ced8db112164cefb13ccfd80e0f4dc42afe8b"
+      ]
+    },
+    {
+      "key": "implementation-absence-engine",
+      "path": "packages/shared/src/battle-engine.ts",
+      "parents": [
+        "design-absence-cohort"
+      ],
+      "scope": "Only strict/absent-intent selection and committed receipt preservation paths reviewed; numeric damage/cooldown/whole engine outside scope.",
+      "ref": "all-tests-20261007/implementation-absence-engine",
+      "test": false,
+      "sha256": "5d838d68b5a7832ef051670770ce117b5aec53d3eb650233a9b8ad0c0971f0ae",
+      "sealId": "45867c376e614f18be8600a5de958d96a558c004bdb0f6ab5e7a000f2108a3a6",
+      "causeSealIds": [
+        "a72110d94498c4a1ee20eca5f8313227960971e6c48e68b986307075fb45230e"
+      ]
+    },
+    {
+      "key": "implementation-absence-continuation",
+      "path": "packages/shared/src/battle.ts",
+      "parents": [
+        "design-absence-cohort"
+      ],
+      "scope": "Only continuation absence/strict fields and explicit missing action validation; not whole battle schema.",
+      "ref": "all-tests-20261007/implementation-absence-continuation",
+      "test": false,
+      "sha256": "fc5d492df5fd5252b66e12017b265a4697cc3f798acc2811434b3c33d23b0752",
+      "sealId": "e0172f5b6435f4b0c657cc130f7f987cbeae565aa097d57d5e7e3d4fc06dce98",
+      "causeSealIds": [
+        "a72110d94498c4a1ee20eca5f8313227960971e6c48e68b986307075fb45230e"
+      ]
+    },
+    {
+      "key": "battle-engine-absence-bounded",
+      "path": "packages/shared/src/battle-engine-absence.test.ts",
+      "parents": [
+        "implementation-absence-engine",
+        "implementation-absence-continuation"
+      ],
+      "scope": "Whole unchanged twelve cases, no skip or case removal; intent absence and restart preservation only.",
+      "ref": "verification/battle-engine-absence-bounded-20261007",
+      "test": true,
+      "sha256": "23705444acb536920cc922ee4c9f24e39ff9cab681ad48262a91be64b7b1c9f2",
+      "sealId": "f25feef15fb6e6fc9d88d9e15d65ad7a9b61d85ad92166f2b06e56ccb354344a",
+      "causeSealIds": [
+        "45867c376e614f18be8600a5de958d96a558c004bdb0f6ab5e7a000f2108a3a6",
+        "e0172f5b6435f4b0c657cc130f7f987cbeae565aa097d57d5e7e3d4fc06dce98"
+      ]
+    }
+  ],
+  "diagnostic": {
+    "focusedPass": 12,
+    "fail": 0,
+    "skipped": 0,
+    "strictTypecheckExit": 0,
+    "workspaceTypecheckExit": 0,
+    "workspaceEvidenceReused": "docs/evidence/backend-implicit-any-workspace-types-2026-10-07.log"
+  },
+  "limitations": [
+    "Only absence/strict intent paths, not whole engine or numeric balancing",
+    "All original12cases/assertions unchanged",
+    "251files and unsealed fail-closed preserved"
+  ]
+}

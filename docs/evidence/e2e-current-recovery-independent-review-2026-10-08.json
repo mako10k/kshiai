@@ -1,0 +1,28 @@
+{
+  "reviewer": "battle_helper_contract_review",
+  "classification": "INSIDE",
+  "originalCases": 9,
+  "files": {
+    "e2e/battle-screen.spec.ts": "294aab09315703b2ef1dd60c8e5de4e7c143dc6ed0f2148da0867cf11cff0a20",
+    "e2e/character-focused-review.spec.ts": "48bc0247aaddd380c29304d60403d37006caa3763e010d46f77a2530e2ce5d0c",
+    "e2e/v3-local-integration.spec.ts": "fd0d642a0cbaaac8c93da00dcd1276424193d640c383dcecfa1313be19f9bd88"
+  },
+  "casesPerFile": {
+    "e2e/battle-screen.spec.ts": 3,
+    "e2e/character-focused-review.spec.ts": 5,
+    "e2e/v3-local-integration.spec.ts": 1
+  },
+  "diagnosticExecuted": false,
+  "sealed": false,
+  "scopes": [
+    "Mocked battle rendering/layout/SSEsnapshot consumption",
+    "Mocked V3review/digest/retry and retainedV2readonly profile",
+    "Localhost/disposableSQLite/offlineprovider V3binding/lifecycle integration"
+  ],
+  "excluded": [
+    "OLD_CUTOVER_TRIAL success",
+    "live/provider/publiccompletion",
+    "ordinarymanifest-v4 adoption",
+    "ProposedADR0038/0059"
+  ]
+}

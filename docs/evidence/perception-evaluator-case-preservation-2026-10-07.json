@@ -1,0 +1,10 @@
+{
+  "testFile": "backend/src/llm/perception-prompt-strategy.test.ts",
+  "originalCases": 11,
+  "currentCases": 11,
+  "sameCaseNamesAndOrder": true,
+  "originalAssertions": 66,
+  "currentAssertions": 68,
+  "addedAssertions": "Validated raw fixture remains deepEqual to original before deliberate invalid mutation",
+  "scope": "Case/structural assertion counts support preservation; actual all11-pass proof supplies behavior, not a generic AST completeness claim"
+}

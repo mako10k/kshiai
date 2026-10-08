@@ -1,5 +1,7 @@
+// R: Verify retained fixed perception evaluation with validated fixture/schema inputs; all original cases remain.
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
+import { z } from "zod";
 import {
   BattleSemanticStateSchema,
   PerceptionEvidenceSetSchema,
@@ -54,10 +56,15 @@ describe("perception prompt strategy", () => {
     assert.equal(PERCEPTION_PROMPT_FIXTURE_VERSION, "perception-prompts-v10");
     assert.equal(COMBINED_PERCEPTION_RESPONSE_FORMAT.type, "json_schema");
     assert.equal(COMBINED_PERCEPTION_RESPONSE_FORMAT.json_schema.strict, true);
-    const definitions = COMBINED_PERCEPTION_RESPONSE_FORMAT.json_schema.schema
-      .$defs as Record<string, {
-        properties?: Record<string, { enum?: string[] }>;
-      }>;
+    const stringEnum = z.object({ enum: z.array(z.string()) });
+    const definitions = z.object({
+      perceptionAccess: z.object({
+        properties: z.object({ direction: stringEnum, distance: stringEnum }),
+      }),
+      environmentDecision: z.object({
+        properties: z.object({ status: stringEnum }),
+      }),
+    }).parse(COMBINED_PERCEPTION_RESPONSE_FORMAT.json_schema.schema.$defs);
     const access = definitions.perceptionAccess?.properties;
     assert.ok(access);
     assert.deepEqual(access.direction?.enum?.includes("contact"), false);
@@ -89,8 +96,10 @@ describe("perception prompt strategy", () => {
   it("does not invalidate a valid combined world patch when sensory JSON fails", () => {
     const fixture = PERCEPTION_PROMPT_FIXTURES[2]!;
     const candidate = referenceCandidate({ fixture, topology: "combined" });
+    const raw = z.object({}).passthrough().parse(candidate.rawWorldResponse);
+    assert.deepEqual(raw, candidate.rawWorldResponse);
     candidate.rawWorldResponse = {
-      ...(candidate.rawWorldResponse as Record<string, unknown>),
+      ...raw,
       sensoryEvidence: [{ invalid: true }],
     };
     const score = scorePerceptionPromptCandidate({ fixture, candidate });
@@ -103,15 +112,11 @@ describe("perception prompt strategy", () => {
   it("detects wrong attribution and an unknown-identity name leak", () => {
     const fixture = PERCEPTION_PROMPT_FIXTURES[0]!;
     const candidate = referenceCandidate({ fixture, topology: "combined" });
-    const raw = candidate.rawWorldResponse as {
-      sensoryEvidence: Array<{
-        phenomenon: string;
-        accessBySide: {
-          a: { currentAccess: string; perceivedAs: string };
-          b: { currentAccess: string; perceivedAs: string };
-        };
-      }>;
-    };
+    const raw = z.object({
+      sensoryEvidence: PerceptionEvidenceSetSchema,
+    }).passthrough().parse(candidate.rawWorldResponse);
+    assert.deepEqual(raw, candidate.rawWorldResponse);
+    candidate.rawWorldResponse = raw;
     raw.sensoryEvidence[0]!.phenomenon = "夜渡りに命中した感触";
     raw.sensoryEvidence[0]!.accessBySide.b.currentAccess = "clear";
     const score = scorePerceptionPromptCandidate({ fixture, candidate });

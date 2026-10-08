@@ -1,0 +1,41 @@
+{
+  "currentAuthority": "awareness-guidance-20261007/authority-current",
+  "currentAuthoritySealId": "4a236b55e9ad9e4aa54eb2c6bbe9d77e0a318881ba8328363505153d16e151dd",
+  "history": [
+    {
+      "ref": "all-tests-20261007/design-retained-perception-projection",
+      "previousSealId": "21a73a3e8c157e90f0813d39f40524832683287c9ec8162b624a71f2947c9d8e",
+      "sealId": "8fcf782dd2cc070b868cda0ce065d86440a4c38a7e8ce5dc6928eb2583733cdd"
+    },
+    {
+      "ref": "all-tests-20261007/implementation-causal-qualitative-quantization",
+      "previousSealId": "ec7c774e4e86ba53b29247b601d1526584e4dfe84e3b7b7d3426a5f895cece3b",
+      "sealId": "1429b36aab4d03e9cb64acedfcf46329f345c0226b04f987449bad1875af2f42"
+    },
+    {
+      "ref": "all-tests-20261007/implementation-retained-narration-perspective",
+      "previousSealId": "fec69a710d6126fe6e2f7baf8f81ffcf2a4f64e375998cd14f293fa2583d5cae",
+      "sealId": "38385b665ca3a65736cb986e64a235ef583a37b0c519fb15c06fa27397c609c4"
+    },
+    {
+      "ref": "all-tests-20261007/implementation-turn-causal-receipt-projection",
+      "previousSealId": "5ff5c8a0a703fe61bd7b368142cb66327a77e0e54bbd616f0d928a6088764970",
+      "sealId": "380ac8824e9b71cb1f886088318ac2d539db126fe347c9a7467f3bcf9aec60b5"
+    },
+    {
+      "ref": "verification/perception-quantization-current-20261007",
+      "previousSealId": "bbbea0dcb73a73ced97ebb75929ec1f70a4b99ec8606fe32276c75f4e4a69036",
+      "sealId": "60df1fd849f35780d3671c2830c9b74341d3bd9f31bfa4f7138e944720a9406f"
+    },
+    {
+      "ref": "verification/narration-perspective-current-20261007",
+      "previousSealId": "de6146140281345d84eac333315a2c5325202842b78fcf97a0e7d8ef53caa44f",
+      "sealId": "c7396f2e10219ba2b40f0568afadb652e391f4d58f3ab78a8f079a5c39158ee2"
+    },
+    {
+      "ref": "verification/turn-causal-receipt-current-20261007",
+      "previousSealId": "8bcbe491c7b535028458d926dbbbcd50fb56b9a35139045ea0eec398ad25cf84",
+      "sealId": "29f2834d20fca31147321bbc97bf5407bd90a0120839585d469398abe40ce1a8"
+    }
+  ]
+}

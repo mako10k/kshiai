@@ -1,0 +1,158 @@
+TAP version 13
+# Subtest: causal turn execution
+    # Subtest: retains a sequential initiative receipt through serialized checkpoints
+    ok 1 - retains a sequential initiative receipt through serialized checkpoints
+      ---
+      duration_ms: 8.157994
+      type: 'test'
+      ...
+    # Subtest: rejects a repeated decision that leaves a simultaneous actor undecided
+    ok 2 - rejects a repeated decision that leaves a simultaneous actor undecided
+      ---
+      duration_ms: 2.162244
+      type: 'test'
+      ...
+    # Subtest: rejects terminal receipts that omit a planned bucket
+    ok 3 - rejects terminal receipts that omit a planned bucket
+      ---
+      duration_ms: 0.634137
+      type: 'test'
+      ...
+    # Subtest: persists the initiative order receipt before decisions
+    ok 4 - persists the initiative order receipt before decisions
+      ---
+      duration_ms: 0.502319
+      type: 'test'
+      ...
+    # Subtest: makes the later sequential bucket available only after a durable first commit
+    ok 5 - makes the later sequential bucket available only after a durable first commit
+      ---
+      duration_ms: 0.93688
+      type: 'test'
+      ...
+    # Subtest: requires all simultaneous-bucket decisions before commit
+    ok 6 - requires all simultaneous-bucket decisions before commit
+      ---
+      duration_ms: 0.983086
+      type: 'test'
+      ...
+    # Subtest: rejects a decision for a later bucket before its predecessor commits
+    ok 7 - rejects a decision for a later bucket before its predecessor commits
+      ---
+      duration_ms: 0.604976
+      type: 'test'
+      ...
+    1..7
+ok 1 - causal turn execution
+  ---
+  duration_ms: 15.718798
+  type: 'suite'
+  ...
+# Subtest: selectSequentialInitiativeOrder
+    # Subtest: orders unequal initiative without consuming a draw
+    ok 1 - orders unequal initiative without consuming a draw
+      ---
+      duration_ms: 3.609498
+      type: 'test'
+      ...
+    # Subtest: reuses the previous order when initiative is equal
+    ok 2 - reuses the previous order when initiative is equal
+      ---
+      duration_ms: 0.532717
+      type: 'test'
+      ...
+    # Subtest: uses the supplied ratio for the first equal-initiative order
+    ok 3 - uses the supplied ratio for the first equal-initiative order
+      ---
+      duration_ms: 0.622025
+      type: 'test'
+      ...
+    # Subtest: defaults to an exact fair draw and requires its sample
+    ok 4 - defaults to an exact fair draw and requires its sample
+      ---
+      duration_ms: 0.836058
+      type: 'test'
+      ...
+    # Subtest: builds two sequential v2 buckets even for equal initiative
+    ok 5 - builds two sequential v2 buckets even for equal initiative
+      ---
+      duration_ms: 0.928493
+      type: 'test'
+      ...
+    1..5
+ok 2 - selectSequentialInitiativeOrder
+  ---
+  duration_ms: 8.221755
+  type: 'suite'
+  ...
+# Subtest: buildBattleTemporalPlan
+    # Subtest: places equal and near-equal initiative in one atomic bucket
+    ok 1 - places equal and near-equal initiative in one atomic bucket
+      ---
+      duration_ms: 0.594162
+      type: 'test'
+      ...
+    # Subtest: orders a clearly faster side before the slower side
+    ok 2 - orders a clearly faster side before the slower side
+      ---
+      duration_ms: 0.467938
+      type: 'test'
+      ...
+    # Subtest: is invariant when side labels and speeds are swapped
+    ok 3 - is invariant when side labels and speeds are swapped
+      ---
+      duration_ms: 0.47246
+      type: 'test'
+      ...
+    # Subtest: rounds final effective speed before applying the simultaneity window
+    ok 4 - rounds final effective speed before applying the simultaneity window
+      ---
+      duration_ms: 0.439932
+      type: 'test'
+      ...
+    # Subtest: rejects non-finite initiative instead of inventing an order
+    ok 5 - rejects non-finite initiative instead of inventing an order
+      ---
+      duration_ms: 0.343562
+      type: 'test'
+      ...
+    # Subtest: forbids random ordering and defines the shared conflict outcomes
+    ok 6 - forbids random ordering and defines the shared conflict outcomes
+      ---
+      duration_ms: 0.113221
+      type: 'test'
+      ...
+    1..6
+ok 3 - buildBattleTemporalPlan
+  ---
+  duration_ms: 2.85425
+  type: 'suite'
+  ...
+# Subtest: resolveBattleTemporalExclusiveClaims
+    # Subtest: contests same-bucket movement and object claims without side priority
+    ok 1 - contests same-bucket movement and object claims without side priority
+      ---
+      duration_ms: 0.312486
+      type: 'test'
+      ...
+    # Subtest: commits independent exclusive claims
+    ok 2 - commits independent exclusive claims
+      ---
+      duration_ms: 0.118336
+      type: 'test'
+      ...
+    1..2
+ok 4 - resolveBattleTemporalExclusiveClaims
+  ---
+  duration_ms: 0.524943
+  type: 'suite'
+  ...
+1..4
+# tests 20
+# suites 4
+# pass 20
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 262.836582

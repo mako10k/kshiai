@@ -1,0 +1,15 @@
+{
+  "reviewer": "/root/llm_boundary_seal_audit",
+  "mode": "read-only",
+  "files": {
+    "backend/src/character-name-uniqueness.test.ts": "11d201dda5f9998639eb8848a8dae9382820a0c9473cab547b0d1c692b776309",
+    "backend/src/config-pacing.test.ts": "5a3bd5ed3e0e33114a5acaa5bf426a0781debd10212ca3a5d8b714ec89afeb6c",
+    "backend/src/config.ts": "6b58fd9428c378fefee216abc3e7f062d9798a9cec9d28c8d2ac831fb3cdc750"
+  },
+  "decision": "Both whole files can be sealed as bounded helper/parser regressions",
+  "limits": [
+    "No save/CAS/regeneration compliance proof from name helper",
+    "No candidate numeric adoption/runtime activation/Stage authority from config parser",
+    "Seven-case pass is diagnostic, not contract authority"
+  ]
+}

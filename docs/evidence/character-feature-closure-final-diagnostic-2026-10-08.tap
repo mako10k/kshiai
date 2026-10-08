@@ -1,0 +1,3639 @@
+TAP version 13
+# Subtest: account realm access
+    # Subtest: fails unknown account kinds closed to the general realm
+    ok 1 - fails unknown account kinds closed to the general realm
+      ---
+      duration_ms: 1.100255
+      type: 'test'
+      ...
+    # Subtest: isolates general and test realms while administrators can access both
+    ok 2 - isolates general and test realms while administrators can access both
+      ---
+      duration_ms: 58.099186
+      type: 'test'
+      ...
+    # Subtest: hides internal observability from general users
+    ok 3 - hides internal observability from general users
+      ---
+      duration_ms: 46.594913
+      type: 'test'
+      ...
+    1..3
+ok 1 - account realm access
+  ---
+  duration_ms: 107.609895
+  type: 'suite'
+  ...
+# Subtest: asynchronous authentication persistence
+    # Subtest: registers, verifies, and destroys a shared session
+    ok 1 - registers, verifies, and destroys a shared session
+      ---
+      duration_ms: 517.164631
+      type: 'test'
+      ...
+    # Subtest: maps a Supabase identity to one stable application user
+    ok 2 - maps a Supabase identity to one stable application user
+      ---
+      duration_ms: 3.612542
+      type: 'test'
+      ...
+    # Subtest: maps unique username violations to the stable domain error
+    ok 3 - maps unique username violations to the stable domain error
+      ---
+      duration_ms: 136.098611
+      type: 'test'
+      ...
+    # Subtest: fails closed unless an administrator id or email is allow-listed
+    ok 4 - fails closed unless an administrator id or email is allow-listed
+      ---
+      duration_ms: 0.523604
+      type: 'test'
+      ...
+    1..4
+ok 2 - asynchronous authentication persistence
+  ---
+  duration_ms: 660.370994
+  type: 'suite'
+  ...
+# [llm] xai ready engine=grok-4.5 fast=grok-4.3
+# [llm] xai/adjudicateFreeActions model=grok-4.5 ok 124ms
+# [llm] xai ready engine=grok-4.5 fast=grok-4.3
+# [llm] xai/reconcileTurnSemanticState model=grok-4.5 ok 5ms
+# Subtest: strict awareness adjudication results
+    # Subtest: rejects invalid winners and absent or fabricated referee rationales
+    ok 1 - rejects invalid winners and absent or fabricated referee rationales
+      ---
+      duration_ms: 2.289
+      type: 'test'
+      ...
+    # Subtest: rejects corrupt operations, coerced situation values and missing required sensory evidence
+    ok 2 - rejects corrupt operations, coerced situation values and missing required sensory evidence
+      ---
+      duration_ms: 2.188611
+      type: 'test'
+      ...
+    # Subtest: preserves valid world operations with server-owned revision and event references
+    ok 3 - preserves valid world operations with server-owned revision and event references
+      ---
+      duration_ms: 1.541573
+      type: 'test'
+      ...
+    # Subtest: rejects a schema-valid empty batch instead of synthesizing failed free actions
+    ok 4 - rejects a schema-valid empty batch instead of synthesizing failed free actions
+      ---
+      duration_ms: 131.785977
+      type: 'test'
+      ...
+    # Subtest: throws after a successful HTTP response instead of silently normalizing invalid semantic content
+    ok 5 - throws after a successful HTTP response instead of silently normalizing invalid semantic content
+      ---
+      duration_ms: 8.000006
+      type: 'test'
+      ...
+    1..5
+ok 3 - strict awareness adjudication results
+  ---
+  duration_ms: 148.934255
+  type: 'suite'
+  ...
+# [llm] xai ready engine=grok-4.5 fast=grok-4.3
+# [llm] xai/engine model=grok-4.5 ok 89ms
+# [llm] xai ready engine=grok-4.5 fast=grok-4.3
+# [llm] xai/engine model=grok-4.5 ok 3ms
+# [llm] xai ready engine=grok-4.5 fast=grok-4.3
+# [llm] xai ready engine=grok-4.5 fast=grok-4.3
+# [llm] xai/engine model=grok-4.5 fail 2ms: test pre-dispatch stop
+# [llm] xai ready engine=grok-4.5 fast=grok-4.3
+# [llm] xai ready engine=grok-4.5 fast=grok-4.3
+# [llm] xai ready engine=grok-4.5 fast=grok-4.3
+# [llm] xai/engine model=grok-4.5 fail 1ms: verified maximum charge unavailable
+# [llm] xai ready engine=grok-4.5 fast=grok-4.3
+# [llm] xai/awareness-v5:narration-frozen model=grok-4.3 ok 5ms
+# Subtest: awareness adjudication dispatch context
+    # Subtest: quotes the exact prose, schema overhead and engine cap passed to the physical SDK request
+    ok 1 - quotes the exact prose, schema overhead and engine cap passed to the physical SDK request
+      ---
+      duration_ms: 102.256768
+      type: 'test'
+      ...
+    # Subtest: clips the quoted physical timeout to the absolute battle time remaining
+    ok 2 - clips the quoted physical timeout to the absolute battle time remaining
+      ---
+      duration_ms: 7.040817
+      type: 'test'
+      ...
+    # Subtest: prepares the bound adjudication deadline without dispatching or weakening token caps
+    ok 3 - prepares the bound adjudication deadline without dispatching or weakening token caps
+      ---
+      duration_ms: 3.100946
+      type: 'test'
+      ...
+    # Subtest: refuses streaming, tools, and mismatched model identities before dispatch
+    ok 4 - refuses streaming, tools, and mismatched model identities before dispatch
+      ---
+      duration_ms: 1.645907
+      type: 'test'
+      ...
+    # Subtest: never dispatches or retries when admission rejects the physical request
+    ok 5 - never dispatches or retries when admission rejects the physical request
+      ---
+      duration_ms: 1.913011
+      type: 'test'
+      ...
+    1..5
+ok 4 - awareness adjudication dispatch context
+  ---
+  duration_ms: 118.380418
+  type: 'suite'
+  ...
+# Subtest: frozen narration SDK strict response format
+    # Subtest: quotes and sends the same strict schema unmodified in one physical attempt
+    ok 1 - quotes and sends the same strict schema unmodified in one physical attempt
+      ---
+      duration_ms: 10.255144
+      type: 'test'
+      ...
+    1..1
+ok 5 - frozen narration SDK strict response format
+  ---
+  duration_ms: 10.681627
+  type: 'suite'
+  ...
+# Subtest: awareness frozen narration
+    # Subtest: dispatches the exact prepared material for every phase without another interpretation call
+    ok 1 - dispatches the exact prepared material for every phase without another interpretation call
+      ---
+      duration_ms: 33.226719
+      type: 'test'
+      ...
+    # Subtest: uses the bound long narration deadline and preserves a shorter absolute deadline
+    ok 2 - uses the bound long narration deadline and preserves a shorter absolute deadline
+      ---
+      duration_ms: 10.406978
+      type: 'test'
+      ...
+    # Subtest: applies a receipt-bound policy override without changing a shared provider's default
+    ok 3 - applies a receipt-bound policy override without changing a shared provider's default
+      ---
+      duration_ms: 8.193832
+      type: 'test'
+      ...
+    # Subtest: rejects mixed phases and batching noncombat phases
+    ok 4 - rejects mixed phases and batching noncombat phases
+      ---
+      duration_ms: 2.564519
+      type: 'test'
+      ...
+    # Subtest: keeps canonical verdict separate from generated framing
+    ok 5 - keeps canonical verdict separate from generated framing
+      ---
+      duration_ms: 2.985832
+      type: 'test'
+      ...
+    # Subtest: freezes typed prologue sources without canonical speaker names
+    ok 6 - freezes typed prologue sources without canonical speaker names
+      ---
+      duration_ms: 2.422888
+      type: 'test'
+      ...
+    1..6
+ok 6 - awareness frozen narration
+  ---
+  duration_ms: 63.652358
+  type: 'suite'
+  ...
+# Subtest: frozen narration strict provider grammar
+    # Subtest: derives all phase limits and exact batch counts from the runtime receipt shape
+    ok 1 - derives all phase limits and exact batch counts from the runtime receipt shape
+      ---
+      duration_ms: 20.780941
+      type: 'test'
+      ...
+    1..1
+ok 7 - frozen narration strict provider grammar
+  ---
+  duration_ms: 22.149686
+  type: 'suite'
+  ...
+# Subtest: awareness narration batch provider
+    # Subtest: publishes three ordered receipt outputs from one capped Grok call
+    ok 1 - publishes three ordered receipt outputs from one capped Grok call
+      ---
+      duration_ms: 20.398129
+      type: 'test'
+      ...
+    # Subtest: applies long measurement narration timeout only when explicitly bound
+    ok 2 - applies long measurement narration timeout only when explicitly bound
+      ---
+      duration_ms: 5.436874
+      type: 'test'
+      ...
+    # Subtest: validates against the frozen dispatch source after callers mutate their inputs
+    ok 3 - validates against the frozen dispatch source after callers mutate their inputs
+      ---
+      duration_ms: 3.721916
+      type: 'test'
+      ...
+    # Subtest: rejects missing receipt coverage without a second attempt
+    ok 4 - rejects missing receipt coverage without a second attempt
+      ---
+      duration_ms: 5.552488
+      type: 'test'
+      ...
+    # Subtest: rejects swapped identities and cross-receipt speech
+    ok 5 - rejects swapped identities and cross-receipt speech
+      ---
+      duration_ms: 9.056583
+      type: 'test'
+      ...
+    # Subtest: rejects duplicates, too-large batches, and expired deadlines before dispatch
+    ok 6 - rejects duplicates, too-large batches, and expired deadlines before dispatch
+      ---
+      duration_ms: 2.880593
+      type: 'test'
+      ...
+    # Subtest: rejects missing speech and unsupported recognition subjects
+    ok 7 - rejects missing speech and unsupported recognition subjects
+      ---
+      duration_ms: 7.301285
+      type: 'test'
+      ...
+    1..7
+ok 8 - awareness narration batch provider
+  ---
+  duration_ms: 57.340709
+  type: 'suite'
+  ...
+# [llm] openai ready engine=gpt-6-luna fast=gpt-6-luna
+# [llm] xai ready engine=grok-4.5 fast=grok-4.3
+# Subtest: awareness provider role factory
+    # Subtest: binds Luna and preserves configured Grok identities with no fallback or retries
+    ok 1 - binds Luna and preserves configured Grok identities with no fallback or retries
+      ---
+      duration_ms: 5.729172
+      type: 'test'
+      ...
+    # Subtest: forwards an explicit bound measurement policy into the narration role
+    ok 2 - forwards an explicit bound measurement policy into the narration role
+      ---
+      duration_ms: 11.811122
+      type: 'test'
+      ...
+    # Subtest: exposes the configured Grok domain adapter without sending a request
+    ok 3 - exposes the configured Grok domain adapter without sending a request
+      ---
+      duration_ms: 9.572199
+      type: 'test'
+      ...
+    # Subtest: leaves all roles unconfigured when either credential is absent
+    ok 4 - leaves all roles unconfigured when either credential is absent
+      ---
+      duration_ms: 0.395785
+      type: 'test'
+      ...
+    # Subtest: rejects non-Grok models and invalid transport URLs before adapter creation
+    ok 5 - rejects non-Grok models and invalid transport URLs before adapter creation
+      ---
+      duration_ms: 1.410651
+      type: 'test'
+      ...
+    1..5
+ok 9 - awareness provider role factory
+  ---
+  duration_ms: 31.82207
+  type: 'suite'
+  ...
+# Subtest: Compact expression V2 result contract
+    # Subtest: decodes nextUtterance through a closed result schema
+    ok 1 - decodes nextUtterance through a closed result schema
+      ---
+      duration_ms: 4.993114
+      type: 'test'
+      ...
+    # Subtest: contains an invalid action without rejecting the valid utterance
+    ok 2 - contains an invalid action without rejecting the valid utterance
+      ---
+      duration_ms: 0.592956
+      type: 'test'
+      ...
+    1..2
+ok 10 - Compact expression V2 result contract
+  ---
+  duration_ms: 9.239027
+  type: 'suite'
+  ...
+# [llm] xai ready engine=test fast=test
+# [llm] xai/consciousDynamic model=test ok 84ms
+# Subtest: dynamic provider boundary (no network or live quality claims)
+    # Subtest: requests only current phase fields and restores the exact bound skill
+    ok 1 - requests only current phase fields and restores the exact bound skill
+      ---
+      duration_ms: 68.844693
+      type: 'test'
+      ...
+    # Subtest: keeps character speech guidance phase scoped and accepts chosen speech and silence independently
+    ok 2 - keeps character speech guidance phase scoped and accepts chosen speech and silence independently
+      ---
+      duration_ms: 36.900645
+      type: 'test'
+      ...
+    # Subtest: anchors the latest speaker roles without classifying or discarding repeated words
+    ok 3 - anchors the latest speaker roles without classifying or discarding repeated words
+      ---
+      duration_ms: 60.058038
+      type: 'test'
+      ...
+    # Subtest: repairs speech only, preserves action and blocks out-of-target overwrites
+    ok 4 - repairs speech only, preserves action and blocks out-of-target overwrites
+      ---
+      duration_ms: 22.324697
+      type: 'test'
+      ...
+    # Subtest: repairs invalid selections together with intent and provides exact candidates
+    ok 5 - repairs invalid selections together with intent and provides exact candidates
+      ---
+      duration_ms: 27.048976
+      type: 'test'
+      ...
+    # Subtest: keeps missing free-action content invalid and never synthesizes it
+    ok 6 - keeps missing free-action content invalid and never synthesizes it
+      ---
+      duration_ms: 29.375204
+      type: 'test'
+      ...
+    # Subtest: handles syntax as one domain repair and does not retry transport errors
+    ok 7 - handles syntax as one domain repair and does not retry transport errors
+      ---
+      duration_ms: 39.06822
+      type: 'test'
+      ...
+    # Subtest: does not repair optional omissions and obeys an already-reserved budget
+    ok 8 - does not repair optional omissions and obeys an already-reserved budget
+      ---
+      duration_ms: 26.861274
+      type: 'test'
+      ...
+    # Subtest: removes goal/speech from later and requires a concrete current decision
+    ok 9 - removes goal/speech from later and requires a concrete current decision
+      ---
+      duration_ms: 16.668535
+      type: 'test'
+      ...
+    # Subtest: sends the dynamic strict schema through the actual HTTP adapter
+    ok 10 - sends the dynamic strict schema through the actual HTTP adapter
+      ---
+      duration_ms: 113.055978
+      type: 'test'
+      ...
+    # Subtest: skips an empty target set and closes dependencies for partial generation
+    ok 11 - skips an empty target set and closes dependencies for partial generation
+      ---
+      duration_ms: 20.57767
+      type: 'test'
+      ...
+    # Subtest: repairs only missing payload slots while preserving selection, intent and valid description
+    ok 12 - repairs only missing payload slots while preserving selection, intent and valid description
+      ---
+      duration_ms: 28.76243
+      type: 'test'
+      ...
+    1..12
+ok 11 - dynamic provider boundary (no network or live quality claims)
+  ---
+  duration_ms: 493.880369
+  type: 'suite'
+  ...
+# [llm] xai ready engine=grok-test fast=grok-test
+# Subtest: constructed narration content and receipt contracts
+    # Subtest: preserves committed speech in direct runtime APIs when a model rewrites punctuation
+    ok 1 - preserves committed speech in direct runtime APIs when a model rewrites punctuation
+      ---
+      duration_ms: 12.653078
+      type: 'test'
+      ...
+    # Subtest: uses current exact-speech instructions in all direct consumer builders
+    ok 2 - uses current exact-speech instructions in all direct consumer builders
+      ---
+      duration_ms: 1.463356
+      type: 'test'
+      ...
+    # Subtest: changes only registered historical grammar and speech permission while preserving style and observation rules
+    ok 3 - changes only registered historical grammar and speech permission while preserving style and observation rules
+      ---
+      duration_ms: 3.495553
+      type: 'test'
+      ...
+    # Subtest: constructs every real phase with only the strict receipts grammar and valid examples
+    ok 4 - constructs every real phase with only the strict receipts grammar and valid examples
+      ---
+      duration_ms: 50.046577
+      type: 'test'
+      ...
+    # Subtest: constructs alternate combat batches through the same repaired phase contract
+    ok 5 - constructs alternate combat batches through the same repaired phase contract
+      ---
+      duration_ms: 5.942681
+      type: 'test'
+      ...
+    1..5
+ok 12 - constructed narration content and receipt contracts
+  ---
+  duration_ms: 77.136338
+  type: 'suite'
+  ...
+# Subtest: narrator presentation-focus pilot protocol
+    # Subtest: freezes eight paired scenarios and one initial sample per arm
+    ok 1 - freezes eight paired scenarios and one initial sample per arm
+      ---
+      duration_ms: 11.802504
+      type: 'test'
+      ...
+    # Subtest: changes only the explicit focus prompt when structured focus exists
+    ok 2 - changes only the explicit focus prompt when structured focus exists
+      ---
+      duration_ms: 4.360671
+      type: 'test'
+      ...
+    # Subtest: is an exact no-op for the no-structured-change scenario
+    ok 3 - is an exact no-op for the no-structured-change scenario
+      ---
+      duration_ms: 8.897614
+      type: 'test'
+      ...
+    # Subtest: keeps arm and sample identity out of blinded review context
+    ok 4 - keeps arm and sample identity out of blinded review context
+      ---
+      duration_ms: 2.794094
+      type: 'test'
+      ...
+    1..4
+ok 13 - narrator presentation-focus pilot protocol
+  ---
+  duration_ms: 29.874432
+  type: 'suite'
+  ...
+# [llm] test-fast ready engine=engine fast=fast
+# [llm] xai ready engine=grok-4-fast-non-reasoning fast=grok-4-fast-non-reasoning
+# [llm] xai ready engine=grok-4-fast-non-reasoning fast=grok-4-fast-non-reasoning
+# [llm] xai ready engine=grok-4.3 fast=grok-4.3
+# [llm] xai ready engine=grok-4.3 fast=grok-4.3
+# [llm] xai ready engine=grok-4.3 fast=grok-4.3
+# Subtest: character-agent action proposal prompt
+    # Subtest: keeps later-bucket action context separate from speech and psyche
+    ok 1 - keeps later-bucket action context separate from speech and psyche
+      ---
+      duration_ms: 23.38571
+      type: 'test'
+      ...
+    # Subtest: defines mutually exclusive action-kind output shapes
+    ok 2 - defines mutually exclusive action-kind output shapes
+      ---
+      duration_ms: 1.561512
+      type: 'test'
+      ...
+    # Subtest: receives administrator dialogue psychology as runtime pipeline context
+    ok 3 - receives administrator dialogue psychology as runtime pipeline context
+      ---
+      duration_ms: 5.750787
+      type: 'test'
+      ...
+    # Subtest: requires compact psyche to carry a private appraisal into expression
+    ok 4 - requires compact psyche to carry a private appraisal into expression
+      ---
+      duration_ms: 6.01035
+      type: 'test'
+      ...
+    1..4
+ok 14 - character-agent action proposal prompt
+  ---
+  duration_ms: 40.358021
+  type: 'suite'
+  ...
+# Subtest: public character profile claim validator
+    # Subtest: receives no owner source or restricted definition
+    ok 1 - receives no owner source or restricted definition
+      ---
+      duration_ms: 3.039968
+      type: 'test'
+      ...
+    # Subtest: fails closed instead of using provider fallback
+    ok 2 - fails closed instead of using provider fallback
+      ---
+      duration_ms: 1.414945
+      type: 'test'
+      ...
+    # Subtest: decodes profile response objects and segment objects instead of trusting contract casts
+    ok 3 - decodes profile response objects and segment objects instead of trusting contract casts
+      ---
+      duration_ms: 3.128914
+      type: 'test'
+      ...
+    1..3
+ok 15 - public character profile claim validator
+  ---
+  duration_ms: 8.827574
+  type: 'suite'
+  ...
+# [llm] xai ready engine=test fast=test
+# [llm] xai/generateCharacterDefinitionV2 model=test fail 140ms: Provider returned invalid JSON
+# [llm] xai/generateCharacterDefinitionV2Repair model=test ok 7ms
+# [llm] xai ready engine=test fast=test
+# [llm] xai/generateCharacterDefinitionV2 model=test ok 7ms
+# [llm] xai/generateCharacterDefinitionV2Repair model=test ok 7ms
+# [llm] xai ready engine=test fast=test
+# [llm] xai/generateCharacterDefinitionV2 model=test ok 7ms
+# [llm] xai/generateCharacterDefinitionV2Repair model=test ok 6ms
+# [llm] xai ready engine=test fast=test
+# [llm] xai/generateCharacterDefinitionV2 model=test fail 5ms: Provider returned invalid JSON
+# [llm] xai/generateCharacterDefinitionV2Repair model=test ok 6ms
+# [llm] xai ready engine=test fast=test
+# [llm] xai/generateCharacterDefinitionV2 model=test ok 8ms
+# [llm] xai/generateCharacterDefinitionV2Repair model=test ok 6ms
+# [llm] xai ready engine=test fast=test
+# [llm] xai/generateCharacterDefinitionV2 model=test ok 4ms
+# [llm] xai/generateCharacterDefinitionV2Repair model=test ok 4ms
+# [llm] xai ready engine=test fast=test
+# [llm] xai/generateCharacterDefinitionV2 model=test fail 3ms: Provider returned invalid JSON
+# [llm] xai/generateCharacterDefinitionV2Repair model=test ok 5ms
+# [llm] xai ready engine=test fast=test
+# [llm] xai/generateCharacterDefinitionV2 model=test ok 3ms
+# [llm] xai/generateCharacterDefinitionV2Repair model=test ok 8ms
+# [llm] xai ready engine=test fast=test
+# [llm] xai/generateCharacterDefinitionV2 model=test ok 4ms
+# [llm] xai/generateCharacterDefinitionV2Repair model=test ok 5ms
+# [llm] xai ready engine=test fast=test
+# [llm] xai/generateCharacterDefinitionV2 model=test fail 6ms: Provider returned invalid JSON
+# [llm] xai/generateCharacterDefinitionV2Repair model=test fail 5ms: Provider returned invalid JSON
+# [llm] xai ready engine=test fast=test
+# [llm] xai/generateCharacterDefinitionV2 model=test fail 5ms: Provider returned invalid JSON
+# [llm] xai/generateCharacterDefinitionV2Repair model=test ok 4ms
+# [llm] xai ready engine=test fast=test
+# [llm] xai/generateCharacterDefinitionV2 model=test fail 3ms: Provider returned invalid JSON
+# [llm] xai/generateCharacterDefinitionV2Repair model=test ok 4ms
+# [llm] xai ready engine=test fast=test
+# [llm] xai/generateCharacterDefinitionV2 model=test fail 8ms: 401 Unauthorized
+# [llm] xai ready engine=grok-4.5 fast=grok-4-fast-non-reasoning
+# [llm] xai ready engine=grok-4.5 fast=grok-4-fast-non-reasoning
+# [llm] xai ready engine=grok-4.5 fast=grok-4-fast-non-reasoning
+# [llm] xai ready engine=grok-4.5 fast=grok-4-fast-non-reasoning
+# [llm] xai ready engine=grok-4.5 fast=grok-4-fast-non-reasoning
+# [llm] xai ready engine=grok-4.5 fast=grok-4-fast-non-reasoning
+# [llm] xai ready engine=grok-4.5 fast=grok-4-fast-non-reasoning
+# [llm] xai ready engine=grok-4.5 fast=grok-4-fast-non-reasoning
+# [llm] xai ready engine=grok-4.5 fast=grok-4-fast-non-reasoning
+# [llm] xai ready engine=grok-4.5 fast=grok-4-fast-non-reasoning
+# [llm] xai ready engine=grok-4.5 fast=grok-4-fast-non-reasoning
+# [llm] xai ready engine=grok-4.5 fast=grok-4-fast-non-reasoning
+# Subtest: character definition recovery through SDK HTTP decoding
+    # Subtest: repairs syntax once for create_instruction without bypassing decoding
+    ok 1 - repairs syntax once for create_instruction without bypassing decoding
+      ---
+      duration_ms: 166.496706
+      type: 'test'
+      ...
+    # Subtest: repairs envelope once for create_instruction without bypassing decoding
+    ok 2 - repairs envelope once for create_instruction without bypassing decoding
+      ---
+      duration_ms: 18.955505
+      type: 'test'
+      ...
+    # Subtest: repairs definition once for create_instruction without bypassing decoding
+    ok 3 - repairs definition once for create_instruction without bypassing decoding
+      ---
+      duration_ms: 20.868867
+      type: 'test'
+      ...
+    # Subtest: repairs syntax once for revision_instruction without bypassing decoding
+    ok 4 - repairs syntax once for revision_instruction without bypassing decoding
+      ---
+      duration_ms: 20.898792
+      type: 'test'
+      ...
+    # Subtest: repairs envelope once for revision_instruction without bypassing decoding
+    ok 5 - repairs envelope once for revision_instruction without bypassing decoding
+      ---
+      duration_ms: 27.458423
+      type: 'test'
+      ...
+    # Subtest: repairs definition once for revision_instruction without bypassing decoding
+    ok 6 - repairs definition once for revision_instruction without bypassing decoding
+      ---
+      duration_ms: 15.26208
+      type: 'test'
+      ...
+    # Subtest: repairs syntax once for import without bypassing decoding
+    ok 7 - repairs syntax once for import without bypassing decoding
+      ---
+      duration_ms: 14.949067
+      type: 'test'
+      ...
+    # Subtest: repairs envelope once for import without bypassing decoding
+    ok 8 - repairs envelope once for import without bypassing decoding
+      ---
+      duration_ms: 17.128447
+      type: 'test'
+      ...
+    # Subtest: repairs definition once for import without bypassing decoding
+    ok 9 - repairs definition once for import without bypassing decoding
+      ---
+      duration_ms: 15.616494
+      type: 'test'
+      ...
+    # Subtest: fails closed after one rejected repair: {"definition": {,
+    ok 10 - fails closed after one rejected repair: {"definition": {,
+      ---
+      duration_ms: 17.844164
+      type: 'test'
+      ...
+    # Subtest: fails closed after one rejected repair: {"wrong":true}
+    ok 11 - fails closed after one rejected repair: {"wrong":true}
+      ---
+      duration_ms: 13.501302
+      type: 'test'
+      ...
+    # Subtest: fails closed after one rejected repair: {"definition":{}}
+    ok 12 - fails closed after one rejected repair: {"definition":{}}
+      ---
+      duration_ms: 12.307637
+      type: 'test'
+      ...
+    # Subtest: does not reinterpret HTTP authentication failure as a repairable candidate
+    ok 13 - does not reinterpret HTTP authentication failure as a repairable candidate
+      ---
+      duration_ms: 12.617459
+      type: 'test'
+      ...
+    # Subtest: keeps malformed candidate text bounded and out of diagnostic serialization
+    ok 14 - keeps malformed candidate text bounded and out of diagnostic serialization
+      ---
+      duration_ms: 0.275394
+      type: 'test'
+      ...
+    1..14
+ok 16 - character definition recovery through SDK HTTP decoding
+  ---
+  duration_ms: 377.3632
+  type: 'suite'
+  ...
+# Subtest: OpenAI-compatible character definition repair
+    # Subtest: does not issue a repair call for a natural string-description fill
+    ok 1 - does not issue a repair call for a natural string-description fill
+      ---
+      duration_ms: 9.871648
+      type: 'test'
+      ...
+    # Subtest: repairs a non-object fill with a bounded validation receipt
+    ok 2 - repairs a non-object fill with a bounded validation receipt
+      ---
+      duration_ms: 6.989817
+      type: 'test'
+      ...
+    # Subtest: fails closed after one unsuccessful repair attempt
+    ok 3 - fails closed after one unsuccessful repair attempt
+      ---
+      duration_ms: 3.959214
+      type: 'test'
+      ...
+    # Subtest: does not replace a structure error with mock output
+    ok 4 - does not replace a structure error with mock output
+      ---
+      duration_ms: 3.611207
+      type: 'test'
+      ...
+    # Subtest: rejects missing owner source while definition gaps remain
+    ok 5 - rejects missing owner source while definition gaps remain
+      ---
+      duration_ms: 3.218842
+      type: 'test'
+      ...
+    # Subtest: returns an already complete upgrade base without calling the provider
+    ok 6 - returns an already complete upgrade base without calling the provider
+      ---
+      duration_ms: 6.098629
+      type: 'test'
+      ...
+    # Subtest: routes revisions through complete definition generation
+    ok 7 - routes revisions through complete definition generation
+      ---
+      duration_ms: 3.761298
+      type: 'test'
+      ...
+    # Subtest: rejects an invalid review fill instead of treating it as no revision
+    ok 8 - rejects an invalid review fill instead of treating it as no revision
+      ---
+      duration_ms: 4.899961
+      type: 'test'
+      ...
+    1..8
+ok 17 - OpenAI-compatible character definition repair
+  ---
+  duration_ms: 43.413197
+  type: 'suite'
+  ...
+# Subtest: OpenAI-compatible character definition response format
+    # Subtest: contains no recursive definitions after constraint normalization
+    ok 1 - contains no recursive definitions after constraint normalization
+      ---
+      duration_ms: 15.110012
+      type: 'test'
+      ...
+    # Subtest: encodes observed_event_kind enums without speech reactTo values
+    ok 2 - encodes observed_event_kind enums without speech reactTo values
+      ---
+      duration_ms: 7.069046
+      type: 'test'
+      ...
+    1..2
+ok 18 - OpenAI-compatible character definition response format
+  ---
+  duration_ms: 22.477328
+  type: 'suite'
+  ...
+# Subtest: OpenAI-compatible battlefield definition fill
+    # Subtest: applies a natural string-description fill without repair
+    ok 1 - applies a natural string-description fill without repair
+      ---
+      duration_ms: 10.544731
+      type: 'test'
+      ...
+    1..1
+ok 19 - OpenAI-compatible battlefield definition fill
+  ---
+  duration_ms: 10.785606
+  type: 'suite'
+  ...
+# [llm] openai ready engine=gpt-4.1 fast=gpt-6-luna
+# [llm] openai/fast model=gpt-6-luna ok 137ms
+# [llm] openai ready engine=gpt-4.1 fast=gpt-6-luna
+# [llm] openai/fast model=gpt-6-luna ok stream 18ms
+# [llm] openai ready engine=gpt-4.1 fast=gpt-6-luna
+# [llm] openai ready engine=gpt-4.1 fast=gpt-6-luna
+# Subtest: OpenAI-compatible model wire requests
+    # Subtest: sends Luna none and explicit generation cap (JSON)
+    ok 1 - sends Luna none and explicit generation cap (JSON)
+      ---
+      duration_ms: 147.857237
+      type: 'test'
+      ...
+    # Subtest: sends Luna none and explicit generation cap (stream)
+    ok 2 - sends Luna none and explicit generation cap (stream)
+      ---
+      duration_ms: 19.898971
+      type: 'test'
+      ...
+    # Subtest: sends Luna none and explicit generation cap (character-tools)
+    ok 3 - sends Luna none and explicit generation cap (character-tools)
+      ---
+      duration_ms: 7.689532
+      type: 'test'
+      ...
+    # Subtest: sends Luna none and explicit generation cap (history-tools)
+    ok 4 - sends Luna none and explicit generation cap (history-tools)
+      ---
+      duration_ms: 5.193495
+      type: 'test'
+      ...
+    1..4
+ok 20 - OpenAI-compatible model wire requests
+  ---
+  duration_ms: 182.318478
+  type: 'suite'
+  ...
+# [llm] xai ready engine=grok-4-fast-non-reasoning fast=grok-4-fast-non-reasoning
+# [llm] xai ready engine=grok-4-fast-non-reasoning fast=grok-4-fast-non-reasoning
+# [llm] xai ready engine=grok-4.3 fast=grok-4.3
+# Subtest: OpenAI-compatible narrator speech rendering
+    # Subtest: hides canonical speaker names, accepts free labels, and keeps scene speech
+    ok 1 - hides canonical speaker names, accepts free labels, and keeps scene speech
+      ---
+      duration_ms: 13.251142
+      type: 'test'
+      ...
+    1..1
+ok 21 - OpenAI-compatible narrator speech rendering
+  ---
+  duration_ms: 15.519241
+  type: 'suite'
+  ...
+# Subtest: OpenAI-compatible causal narration input
+    # Subtest: sends a role-labelled brief and adds causal facts only with a projection
+    ok 1 - sends a role-labelled brief and adds causal facts only with a projection
+      ---
+      duration_ms: 3.46156
+      type: 'test'
+      ...
+    1..1
+ok 22 - OpenAI-compatible causal narration input
+  ---
+  duration_ms: 3.643822
+  type: 'suite'
+  ...
+# Subtest: OpenAI-compatible judgment presentation input
+    # Subtest: admits the public projection but not raw adjudication prose
+    ok 1 - admits the public projection but not raw adjudication prose
+      ---
+      duration_ms: 2.759822
+      type: 'test'
+      ...
+    1..1
+ok 23 - OpenAI-compatible judgment presentation input
+  ---
+  duration_ms: 3.122752
+  type: 'suite'
+  ...
+# [llm] xai ready engine=grok-4-fast-non-reasoning fast=grok-4-fast-non-reasoning
+# [llm] xai/reconcileTurnSemanticState model=grok-4-fast-non-reasoning ok 77ms
+# [llm] xai ready engine=grok-4-fast-non-reasoning fast=grok-4-fast-non-reasoning
+# [llm] xai/reconcileTurnSemanticState model=grok-4-fast-non-reasoning ok 5ms
+# Subtest: XAI perception reconciliation
+    # Subtest: aligns environment proposals with representable canonical transitions
+    ok 1 - aligns environment proposals with representable canonical transitions
+      ---
+      duration_ms: 1.680293
+      type: 'test'
+      ...
+    # Subtest: keeps a valid world patch when the combined sensory section is invalid
+    ok 2 - keeps a valid world patch when the combined sensory section is invalid
+      ---
+      duration_ms: 91.445336
+      type: 'test'
+      ...
+    # Subtest: keeps valid sensory evidence when the combined world section is invalid
+    ok 3 - keeps valid sensory evidence when the combined world section is invalid
+      ---
+      duration_ms: 7.906301
+      type: 'test'
+      ...
+    1..3
+ok 24 - XAI perception reconciliation
+  ---
+  duration_ms: 103.683833
+  type: 'suite'
+  ...
+# [llm] xai ready engine=grok-4.3 fast=grok-4.3
+# [llm] xai ready engine=grok-4.3 fast=grok-4.3
+# [llm] compact psyche semantic repair requested [
+#   {
+#     code: 'too_small',
+#     path: 'delta.interior.speechAppraisal.anticipatedImpact'
+#   },
+#   {
+#     code: 'custom',
+#     path: 'delta.interior.speechAppraisal.anticipatedImpact'
+#   }
+# ]
+# [llm] xai ready engine=grok-4.3 fast=grok-4.3
+# [llm] compact psyche semantic repair requested [ { code: 'invalid_type', path: 'expressionBrief' } ]
+# [llm] xai ready engine=grok-4.3 fast=grok-4.3
+# [llm] compact psyche semantic repair requested [
+#   {
+#     code: 'too_small',
+#     path: 'delta.interior.speechAppraisal.anticipatedImpact'
+#   },
+#   {
+#     code: 'custom',
+#     path: 'delta.interior.speechAppraisal.anticipatedImpact'
+#   }
+# ]
+# [llm] xai ready engine=grok-4.3 fast=grok-4.3
+# [llm] compact psyche semantic repair requested [
+#   {
+#     code: 'too_small',
+#     path: 'delta.interior.speechAppraisal.anticipatedImpact'
+#   },
+#   {
+#     code: 'custom',
+#     path: 'delta.interior.speechAppraisal.anticipatedImpact'
+#   }
+# ]
+# [llm] compact psyche rejected [ { path: 'expressionBrief.continuityDecision', code: 'custom' } ]
+# [llm] xai ready engine=grok-4.3 fast=grok-4.3
+# [llm] compact psyche semantic repair requested [
+#   {
+#     code: 'too_small',
+#     path: 'delta.interior.speechAppraisal.anticipatedImpact'
+#   },
+#   {
+#     code: 'custom',
+#     path: 'delta.interior.speechAppraisal.anticipatedImpact'
+#   }
+# ]
+# [llm] xai ready engine=grok-4.3 fast=grok-4.3
+# [llm] compact psyche rejected [ { path: 'narrativeCues.0.sourceEventIds.0', code: 'too_small' } ]
+# Subtest: Compact V2 psyche semantic-closure repair
+    # Subtest: keeps the valid first-result path to one call and states the non-empty contract
+    ok 1 - keeps the valid first-result path to one call and states the non-empty contract
+      ---
+      duration_ms: 12.956119
+      type: 'test'
+      ...
+    # Subtest: repairs the full semantic closure and preserves unrelated candidate state
+    ok 2 - repairs the full semantic closure and preserves unrelated candidate state
+      ---
+      duration_ms: 5.686643
+      type: 'test'
+      ...
+    # Subtest: states the complete brief contract when repairing a missing expression brief
+    ok 3 - states the complete brief contract when repairing a missing expression brief
+      ---
+      duration_ms: 4.198836
+      type: 'test'
+      ...
+    # Subtest: rejects an unauthorized repair root without a recursive repair
+    ok 4 - rejects an unauthorized repair root without a recursive repair
+      ---
+      duration_ms: 6.770281
+      type: 'test'
+      ...
+    # Subtest: revalidates cross-field meaning after merge and does not repair twice
+    ok 5 - revalidates cross-field meaning after merge and does not repair twice
+      ---
+      duration_ms: 4.106019
+      type: 'test'
+      ...
+    # Subtest: allows an explicit empty cue array to clear an affected optional root
+    ok 6 - allows an explicit empty cue array to clear an affected optional root
+      ---
+      duration_ms: 4.372727
+      type: 'test'
+      ...
+    # Subtest: does not repair a schema error outside the declared semantic group
+    ok 7 - does not repair a schema error outside the declared semantic group
+      ---
+      duration_ms: 3.265927
+      type: 'test'
+      ...
+    1..7
+ok 25 - Compact V2 psyche semantic-closure repair
+  ---
+  duration_ms: 44.67251
+  type: 'suite'
+  ...
+# [llm] xai ready engine=grok-4.5 fast=grok-4.3
+# [llm] xai/fast model=grok-4.3 ok 81ms
+# [llm] openai ready engine=gpt-4.1 fast=gpt-4.1-mini
+# [llm] openai/fast model=gpt-4.1-mini ok 5ms
+# [llm] primary ready engine=engine-model fast=fast-model
+# [llm] primary ready engine=engine-model fast=fast-model
+# [llm] primary/test429 retry=1 reason=rate_limit delay=0ms same-provider
+# Subtest: OpenAI-compatible provider routing policy
+    # Subtest: requests xAI grok-4.3 directly with reasoning effort none
+    ok 1 - requests xAI grok-4.3 directly with reasoning effort none
+      ---
+      duration_ms: 94.152163
+      type: 'test'
+      ...
+    # Subtest: does not send xAI-only reasoning effort to another provider
+    ok 2 - does not send xAI-only reasoning effort to another provider
+      ---
+      duration_ms: 5.628942
+      type: 'test'
+      ...
+    # Subtest: routes turn-limit referee rationale through the fast tier
+    ok 3 - routes turn-limit referee rationale through the fast tier
+      ---
+      duration_ms: 2.495148
+      type: 'test'
+      ...
+# [llm] primary/test429 retry=2 reason=rate_limit delay=0ms same-provider
+# [llm] primary/test429 model=fast-model ok 27ms
+# [llm] primary ready engine=engine-model fast=fast-model
+# [llm] primary/test503 retry=1 reason=service_unavailable delay=0ms same-provider
+    # Subtest: uses the extended fast timeout and retries 429 in the same client
+    ok 4 - uses the extended fast timeout and retries 429 in the same client
+      ---
+      duration_ms: 29.8294
+      type: 'test'
+      ...
+# [llm] primary/test503 model=fast-model fail 8ms: unavailable
+# [llm] primary ready engine=engine-model fast=fast-model
+# [llm] primary/timeout model=fast-model fail 2ms: Request was aborted.
+    # Subtest: limits 503 to one same-provider retry
+    ok 5 - limits 503 to one same-provider retry
+      ---
+      duration_ms: 10.755441
+      type: 'test'
+      ...
+    # Subtest: does not retry an aborted timeout
+    ok 6 - does not retry an aborted timeout
+      ---
+      duration_ms: 2.908683
+      type: 'test'
+      ...
+    1..6
+ok 26 - OpenAI-compatible provider routing policy
+  ---
+  duration_ms: 149.561444
+  type: 'suite'
+  ...
+# [llm] fake-provider ready engine=fake-engine fast=fake-fast
+# [llm] fake-provider/narrateTurn retry=1 reason=rate_limit delay=0ms same-provider
+# Subtest: provider operation accounting
+    # Subtest: rejects a configured closed provider attempt before accounting or transport
+    ok 1 - rejects a configured closed provider attempt before accounting or transport
+      ---
+      duration_ms: 17.749131
+      type: 'test'
+      ...
+    # Subtest: settles a known HTTP provider failure after failed-accounting readback
+    ok 2 - settles a known HTTP provider failure after failed-accounting readback
+      ---
+      duration_ms: 11.442294
+      type: 'test'
+      ...
+    # Subtest: keeps an ambiguous timeout indeterminate after failed-accounting readback
+    ok 3 - keeps an ambiguous timeout indeterminate after failed-accounting readback
+      ---
+      duration_ms: 10.787848
+      type: 'test'
+      ...
+    # Subtest: retains accounting-pending when a successful response cannot be persisted
+    ok 4 - retains accounting-pending when a successful response cannot be persisted
+      ---
+      duration_ms: 8.55303
+      type: 'test'
+      ...
+# [llm] fake-provider/narrateTurn model=fake-fast ok 77ms
+# [llm] xai ready engine=grok-test fast=grok-test
+# [llm] xai/awareness-v5:subconscious model=grok-test ok 6ms
+# [llm] xai/awareness-v5:conscious model=grok-test ok 5ms
+# [llm] xai/awareness-v5:narration-frozen model=grok-test ok 8ms
+# [llm] xai/awareness-v5:narration-batch model=grok-test ok 5ms
+# [llm] xai/advanceCharacterPsycheCompact model=grok-test ok 4ms
+# [llm] xai/advanceCharacterAgentCompact model=grok-test ok 6ms
+# [llm] xai/prepareBattleEncounter model=grok-test ok 7ms
+# [llm] xai/proposeHappening model=grok-test ok 7ms
+# [llm] xai/narrateTurn model=grok-test ok 5ms
+# [llm] xai/referee model=grok-test ok 5ms
+# [llm] xai/awareness-v5:not-registered model=grok-test fail 2ms: PROVIDER_OPERATION_UNCLASSIFIED
+# [llm] xai/awareness-v5:conscious model=grok-test fail 2ms: PROVIDER_OPERATION_CEILING_EXHAUSTED
+    # Subtest: accounts for each retry at the OpenAI-compatible transport boundary
+    ok 5 - accounts for each retry at the OpenAI-compatible transport boundary
+      ---
+      duration_ms: 85.314359
+      type: 'test'
+      ...
+    # Subtest: reserves actual SDK awareness labels in v3 and retains historical operation layers
+    ok 6 - reserves actual SDK awareness labels in v3 and retains historical operation layers
+      ---
+      duration_ms: 70.812093
+      type: 'test'
+      ...
+    # Subtest: reads preserved v2 ledger identity and entries without relabeling history
+    ok 7 - reads preserved v2 ledger identity and entries without relabeling history
+      ---
+      duration_ms: 2.970231
+      type: 'test'
+      ...
+    # Subtest: records every fake physical retry and preserves unknown usage
+    ok 8 - records every fake physical retry and preserves unknown usage
+      ---
+      duration_ms: 8.147314
+      type: 'test'
+      ...
+    # Subtest: makes a repeated reservation idempotent without consuming the ceiling
+    ok 9 - makes a repeated reservation idempotent without consuming the ceiling
+      ---
+      duration_ms: 3.292179
+      type: 'test'
+      ...
+    # Subtest: rejects the first attempt beyond the ceiling before fake transport I/O
+    ok 10 - rejects the first attempt beyond the ceiling before fake transport I/O
+      ---
+      duration_ms: 4.250356
+      type: 'test'
+      ...
+    # Subtest: fails closed for unknown operations, battle drift, inactive runs, and rebinding
+    ok 11 - fails closed for unknown operations, battle drift, inactive runs, and rebinding
+      ---
+      duration_ms: 5.990476
+      type: 'test'
+      ...
+    # Subtest: stores only bounded accounting metadata
+    ok 12 - stores only bounded accounting metadata
+      ---
+      duration_ms: 2.338946
+      type: 'test'
+      ...
+    1..12
+ok 27 - provider operation accounting
+  ---
+  duration_ms: 235.066587
+  type: 'suite'
+  ...
+# [llm] xai ready engine=test fast=test
+# [llm] xai/narrateTurn model=test fail 86ms: Provider returned invalid JSON
+# [llm] xai ready engine=test fast=test
+# [llm] xai/narrateTurn model=test fail 5ms: Provider returned invalid JSON
+# Subtest: settles actual HTTP usage before malformed JSON rejection without transport retry
+ok 28 - settles actual HTTP usage before malformed JSON rejection without transport retry
+  ---
+  duration_ms: 188.739269
+  type: 'test'
+  ...
+# Subtest: settles zero-token HTTP usage before empty JSON content rejection without retry
+ok 29 - settles zero-token HTTP usage before empty JSON content rejection without retry
+  ---
+  duration_ms: 10.858661
+  type: 'test'
+  ...
+# [llm] xai ready engine=test fast=test
+# [llm] openai ready engine=test fast=test
+# [llm] openai/engine model=test ok 96ms
+# Subtest: xAI outgoing response-schema graph
+    # Subtest: accepts every existing strict perception format without modifying it
+    ok 1 - accepts every existing strict perception format without modifying it
+      ---
+      duration_ms: 9.328852
+      type: 'test'
+      ...
+    # Subtest: rejects direct, transitive, root and escaped-pointer cycles
+    ok 2 - rejects direct, transitive, root and escaped-pointer cycles
+      ---
+      duration_ms: 1.676476
+      type: 'test'
+      ...
+    # Subtest: allows shared acyclic definitions and treats literal refs as data
+    ok 3 - allows shared acyclic definitions and treats literal refs as data
+      ---
+      duration_ms: 1.647049
+      type: 'test'
+      ...
+    # Subtest: resolves escaped and percent-encoded local pointers and array indices
+    ok 4 - resolves escaped and percent-encoded local pointers and array indices
+      ---
+      duration_ms: 0.747719
+      type: 'test'
+      ...
+    # Subtest: rejects at the ordinary xAI boundary before fetch, even with fallback enabled
+    ok 5 - rejects at the ordinary xAI boundary before fetch, even with fallback enabled
+      ---
+      duration_ms: 10.386277
+      type: 'test'
+      ...
+    # Subtest: does not impose xAI recursion policy on another provider
+    ok 6 - does not impose xAI recursion policy on another provider
+      ---
+      duration_ms: 98.092051
+      type: 'test'
+      ...
+    1..6
+ok 30 - xAI outgoing response-schema graph
+  ---
+  duration_ms: 124.468933
+  type: 'suite'
+  ...
+# Subtest: semantic authoring transport policy
+    # Subtest: requires explicit time-policy identity and values when the route is selected
+    ok 1 - requires explicit time-policy identity and values when the route is selected
+      ---
+      duration_ms: 3.130367
+      type: 'test'
+      ...
+    # Subtest: uses the explicitly supplied provider timeout without a whole-attempt deadline
+    ok 2 - uses the explicitly supplied provider timeout without a whole-attempt deadline
+      ---
+      duration_ms: 0.972047
+      type: 'test'
+      ...
+    # Subtest: fails closed when an unimplemented same-run recovery policy is selected
+    ok 3 - fails closed when an unimplemented same-run recovery policy is selected
+      ---
+      duration_ms: 0.46184
+      type: 'test'
+      ...
+    1..3
+ok 31 - semantic authoring transport policy
+  ---
+  duration_ms: 7.867516
+  type: 'suite'
+  ...
+# Subtest: frozen character authoring call budget
+    # Subtest: allows profile and claim calls only for newly registered create/revise policies
+    ok 1 - allows profile and claim calls only for newly registered create/revise policies
+      ---
+      duration_ms: 2.962248
+      type: 'test'
+      ...
+    # Subtest: restores old create/revise runs at eight calls and preserves their accounting identities
+    ok 2 - restores old create/revise runs at eight calls and preserves their accounting identities
+      ---
+      duration_ms: 0.52113
+      type: 'test'
+      ...
+    # Subtest: retains cumulative token and money limits despite the two additional calls
+    ok 3 - retains cumulative token and money limits despite the two additional calls
+      ---
+      duration_ms: 0.52353
+      type: 'test'
+      ...
+    # Subtest: rejects unknown policy identities and a ten-call migration instead of choosing a default
+    ok 4 - rejects unknown policy identities and a ten-call migration instead of choosing a default
+      ---
+      duration_ms: 0.386352
+      type: 'test'
+      ...
+    1..4
+ok 32 - frozen character authoring call budget
+  ---
+  duration_ms: 5.365487
+  type: 'suite'
+  ...
+# Subtest: pre-battle encounter ledger
+    # Subtest: binds observed creation and unknown maximum without weakening a stored certified policy
+    ok 1 - binds observed creation and unknown maximum without weakening a stored certified policy
+      ---
+      duration_ms: 30.287459
+      type: 'test'
+      ...
+    # Subtest: reserves a concurrent same-id dispatch exactly once and never resends after restart
+    ok 2 - reserves a concurrent same-id dispatch exactly once and never resends after restart
+      ---
+      duration_ms: 11.103616
+      type: 'test'
+      ...
+    # Subtest: rejects missing proof, expensive quotes and expired original deadline without dispatch
+    ok 3 - rejects missing proof, expensive quotes and expired original deadline without dispatch
+      ---
+      duration_ms: 5.208283
+      type: 'test'
+      ...
+    # Subtest: rolls back canonical insertion and adoption together, then transfers the original clock and expense
+    ok 4 - rolls back canonical insertion and adoption together, then transfers the original clock and expense
+      ---
+      duration_ms: 21.240515
+      type: 'test'
+      ...
+    # Subtest: retains unknown physical cost through adoption and routes a late actual receipt into runtime
+    ok 5 - retains unknown physical cost through adoption and routes a late actual receipt into runtime
+      ---
+      duration_ms: 12.022246
+      type: 'test'
+      ...
+    # Subtest: does not adopt failed or deadline-expired encounter results
+    ok 6 - does not adopt failed or deadline-expired encounter results
+      ---
+      duration_ms: 7.061673
+      type: 'test'
+      ...
+    # Subtest: preserves a timely logical result during late fee settlement and rejects actual overspend
+    ok 7 - preserves a timely logical result during late fee settlement and rejects actual overspend
+      ---
+      duration_ms: 6.134913
+      type: 'test'
+      ...
+    1..7
+ok 33 - pre-battle encounter ledger
+  ---
+  duration_ms: 96.552668
+  type: 'suite'
+  ...
+# Subtest: PostgreSQL event allocation serializes one battle, preserves others and retains prune floor
+ok 34 - PostgreSQL event allocation serializes one battle, preserves others and retains prune floor
+  ---
+  duration_ms: 250.455111
+  type: 'test'
+  ...
+# Subtest: PostgreSQL narrator admission preserves world fence and prevents concurrent budget oversubscription
+ok 35 - PostgreSQL narrator admission preserves world fence and prevents concurrent budget oversubscription
+  ---
+  duration_ms: 406.370337
+  type: 'test'
+  ...
+# Subtest: narrator reserves while world lease is live, preserving world fence and fresh world CAS budget
+ok 36 - narrator reserves while world lease is live, preserving world fence and fresh world CAS budget
+  ---
+  duration_ms: 117.546383
+  type: 'test'
+  ...
+# Subtest: stale, expired or incorrectly linked narrator capabilities never reserve
+ok 37 - stale, expired or incorrectly linked narrator capabilities never reserve
+  ---
+  duration_ms: 30.115996
+  type: 'test'
+  ...
+# Subtest: budget and inactive bounds remain enforced and transaction rollback removes proof and reservation
+ok 38 - budget and inactive bounds remain enforced and transaction rollback removes proof and reservation
+  ---
+  duration_ms: 24.777277
+  type: 'test'
+  ...
+# Subtest: projects only the requested subjective narrator perspective and never reseeds from a later baseline
+ok 39 - projects only the requested subjective narrator perspective and never reseeds from a later baseline
+  ---
+  duration_ms: 205.329462
+  type: 'test'
+  ...
+# Subtest: PostgreSQL awareness initialization enforces owner, fence, and lease expiry
+ok 40 - PostgreSQL awareness initialization enforces owner, fence, and lease expiry
+  ---
+  duration_ms: 120.906863
+  type: 'test'
+  ...
+# Subtest: PostgreSQL awareness initialization conflict preserves the original snapshot
+ok 41 - PostgreSQL awareness initialization conflict preserves the original snapshot
+  ---
+  duration_ms: 61.517141
+  type: 'test'
+  ...
+# Subtest: durable awareness runtime
+    # Subtest: keeps observed unknown maxima explicit while retaining physical limits and old certified refusal
+    ok 1 - keeps observed unknown maxima explicit while retaining physical limits and old certified refusal
+      ---
+      duration_ms: 34.334081
+      type: 'test'
+      ...
+    # Subtest: initializes once and rejects stale revisions without replacing accepted state
+    ok 2 - initializes once and rejects stale revisions without replacing accepted state
+      ---
+      duration_ms: 11.275771
+      type: 'test'
+      ...
+    # Subtest: rejects superseded and expired leases while allowing the current owner
+    ok 3 - rejects superseded and expired leases while allowing the current owner
+      ---
+      duration_ms: 13.175808
+      type: 'test'
+      ...
+    # Subtest: rolls back sidecar and canonical writes together when the outer transaction fails
+    ok 4 - rolls back sidecar and canonical writes together when the outer transaction fails
+      ---
+      duration_ms: 9.099375
+      type: 'test'
+      ...
+    # Subtest: rejects mismatched scope before invoking a transition
+    ok 5 - rejects mismatched scope before invoking a transition
+      ---
+      duration_ms: 2.050268
+      type: 'test'
+      ...
+    # Subtest: keeps unknown and cancelled maximum cost reserved and never reuses send IDs
+    ok 6 - keeps unknown and cancelled maximum cost reserved and never reuses send IDs
+      ---
+      duration_ms: 21.411364
+      type: 'test'
+      ...
+    # Subtest: reserves concurrent sends atomically and rejects admission beyond a role's physical limit
+    ok 7 - reserves concurrent sends atomically and rejects admission beyond a role's physical limit
+      ---
+      duration_ms: 10.04317
+      type: 'test'
+      ...
+    # Subtest: accepts a frozen thought once after world lease release and settles cancelled late replies without application
+    ok 8 - accepts a frozen thought once after world lease release and settles cancelled late replies without application
+      ---
+      duration_ms: 58.049732
+      type: 'test'
+      ...
+    # Subtest: admits only terminal narration inside the immutable drain and global deadlines
+    ok 9 - admits only terminal narration inside the immutable drain and global deadlines
+      ---
+      duration_ms: 11.988467
+      type: 'test'
+      ...
+    1..9
+ok 42 - durable awareness runtime
+  ---
+  duration_ms: 175.302594
+  type: 'suite'
+  ...
+# Subtest: current V3 authoring and historical V2 reads
+    # Subtest: requires owner acceptance and atomically activates one V3 generation
+    ok 1 - requires owner acceptance and atomically activates one V3 generation
+      ---
+      duration_ms: 332.957036
+      type: 'test'
+      ...
+    # Subtest: leaves an existing legacy row unsupported without an explicit upgrade
+    ok 2 - leaves an existing legacy row unsupported without an explicit upgrade
+      ---
+      duration_ms: 14.376874
+      type: 'test'
+      ...
+    # Subtest: persists expiry without activating a candidate or retaining an upgrade hold
+    ok 3 - persists expiry without activating a candidate or retaining an upgrade hold
+      ---
+      duration_ms: 45.132577
+      type: 'test'
+      ...
+    # Subtest: rolls back a stale revision candidate after concurrent pointer drift
+    ok 4 - rolls back a stale revision candidate after concurrent pointer drift
+      ---
+      duration_ms: 75.546834
+      type: 'test'
+      ...
+    # Subtest: excludes a pre-validator V2 generation until explicit update
+    ok 5 - excludes a pre-validator V2 generation until explicit update
+      ---
+      duration_ms: 36.393273
+      type: 'test'
+      ...
+    # Subtest: reads but does not select a V2 generation with selectorless action norms
+    ok 6 - reads but does not select a V2 generation with selectorless action norms
+      ---
+      duration_ms: 27.483941
+      type: 'test'
+      ...
+    1..6
+ok 43 - current V3 authoring and historical V2 reads
+  ---
+  duration_ms: 534.971918
+  type: 'suite'
+  ...
+# Subtest: owner-scoped character generation references
+    # Subtest: never returns another user's character from search or direct lookup
+    ok 1 - never returns another user's character from search or direct lookup
+      ---
+      duration_ms: 107.691797
+      type: 'test'
+      ...
+    # Subtest: lists all active identifying names for owner-scoped uniqueness checks
+    ok 2 - lists all active identifying names for owner-scoped uniqueness checks
+      ---
+      duration_ms: 2.843945
+      type: 'test'
+      ...
+    # Subtest: keeps bounded pre-battle plans and reflections for each opponent
+    ok 3 - keeps bounded pre-battle plans and reflections for each opponent
+      ---
+      duration_ms: 4.391869
+      type: 'test'
+      ...
+    # Subtest: auto-matches the nearest rating and combat profile
+    ok 4 - auto-matches the nearest rating and combat profile
+      ---
+      duration_ms: 107.841333
+      type: 'test'
+      ...
+    # Subtest: centers active character ratings without compensating for deletion
+    ok 5 - centers active character ratings without compensating for deletion
+      ---
+      duration_ms: 28.326092
+      type: 'test'
+      ...
+    # Subtest: isolates test characters and rating populations from general users
+    ok 6 - isolates test characters and rating populations from general users
+      ---
+      duration_ms: 73.795345
+      type: 'test'
+      ...
+    1..6
+ok 44 - owner-scoped character generation references
+  ---
+  duration_ms: 327.264199
+  type: 'suite'
+  ...
+# Subtest: dialogue pipeline settings
+    # Subtest: uses an auditable runtime default until an administrator saves
+    ok 1 - uses an auditable runtime default until an administrator saves
+      ---
+      duration_ms: 77.557272
+      type: 'test'
+      ...
+    # Subtest: persists one administrator revision and rejects stale saves
+    ok 2 - persists one administrator revision and rejects stale saves
+      ---
+      duration_ms: 29.933143
+      type: 'test'
+      ...
+    # Subtest: opts into V3, preserves it on omission, rejects legacy mode atomically, and permits explicit V2
+    ok 3 - opts into V3, preserves it on omission, rejects legacy mode atomically, and permits explicit V2
+      ---
+      duration_ms: 9.028794
+      type: 'test'
+      ...
+    1..3
+ok 45 - dialogue pipeline settings
+  ---
+  duration_ms: 119.83167
+  type: 'suite'
+  ...
+# [llm] xai ready engine=grok-engine fast=grok-fast
+# [llm] xai/engine model=grok-engine fail 120ms: Provider returned invalid JSON
+# [llm] xai ready engine=grok-engine fast=grok-fast
+# [llm] xai/engine model=grok-engine fail 10ms: Provider returned invalid JSON
+# [llm] xai ready engine=grok-engine fast=grok-fast
+# [llm] xai/engine model=grok-engine ok 20ms
+# [llm] xai ready engine=grok-engine fast=grok-fast
+# [llm] xai/engine model=grok-engine fail 8ms: 400 secret failure text
+# [llm] xai ready engine=grok-engine fast=grok-fast
+# [llm] xai/engine model=grok-engine fail 6ms: Request timed out.
+# [llm] xai ready engine=grok-engine fast=grok-fast
+# [llm] xai/engine model=grok-engine fail 4ms: Provider returned invalid JSON
+# [llm] xai ready engine=grok-engine fast=grok-fast
+# [llm] xai/engine retry=1 reason=rate_limit delay=0ms same-provider
+# Subtest: physical SDK usage ledger
+    # Subtest: retains empty-content diagnostics before parsing rejection and reads old snapshots
+    ok 1 - retains empty-content diagnostics before parsing rejection and reads old snapshots
+      ---
+      duration_ms: 134.860131
+      type: 'test'
+      ...
+    # Subtest: stores raw categories and correlation before invalid JSON is rejected and survives reload
+    ok 2 - stores raw categories and correlation before invalid JSON is rejected and survives reload
+      ---
+      duration_ms: 45.380454
+      type: 'test'
+      ...
+    # Subtest: records missing usage and HTTP failure as unknown categories rather than zero
+    ok 3 - records missing usage and HTTP failure as unknown categories rather than zero
+      ---
+      duration_ms: 31.560039
+      type: 'test'
+      ...
+    # Subtest: records timeout termination with unknown usage and preserves missing versus invalid token categories
+    ok 4 - records timeout termination with unknown usage and preserves missing versus invalid token categories
+      ---
+      duration_ms: 8.246416
+      type: 'test'
+      ...
+    # Subtest: confirms a received invalid response even when its token usage is absent
+    ok 5 - confirms a received invalid response even when its token usage is absent
+      ---
+      duration_ms: 6.640273
+      type: 'test'
+      ...
+# [llm] xai/engine model=grok-engine ok 23ms
+# [llm] xai ready engine=grok-engine fast=grok-fast
+# [llm] xai/engine model=grok-engine ok stream 24ms
+# [llm] xai ready engine=grok-engine fast=grok-fast
+# [llm] xai ready engine=grok-engine fast=grok-fast
+# [llm] xai ready engine=grok-engine fast=grok-fast
+# [llm] xai/engine model=grok-engine fail stream 6ms: stream stopped
+    # Subtest: records each physical retry with the same call ID and a distinct ordinal
+    ok 6 - records each physical retry with the same call ID and a distinct ordinal
+      ---
+      duration_ms: 24.848981
+      type: 'test'
+      ...
+    # Subtest: records streamed usage-only chunks and both tool dispatch paths
+    ok 7 - records streamed usage-only chunks and both tool dispatch paths
+      ---
+      duration_ms: 39.06062
+      type: 'test'
+      ...
+    # Subtest: retains observed stream usage and request identity when the stream fails afterwards
+    ok 8 - retains observed stream usage and request identity when the stream fails afterwards
+      ---
+      duration_ms: 7.783723
+      type: 'test'
+      ...
+    # Subtest: prints a usage-only report from the executable read path without a price file
+    ok 9 - prints a usage-only report from the executable read path without a price file
+      ---
+      duration_ms: 377.762383
+      type: 'test'
+      ...
+# [llm] xai ready engine=grok-engine fast=grok-fast
+    # Subtest: preserves provider usage when wall time moves backwards while elapsed time remains monotonic
+    ok 10 - preserves provider usage when wall time moves backwards while elapsed time remains monotonic
+      ---
+      duration_ms: 12.898482
+      type: 'test'
+      ...
+# [llm] xai/engine model=grok-engine ok 10ms
+    # Subtest: records a late physical result after its caller stops waiting
+    ok 11 - records a late physical result after its caller stops waiting
+      ---
+      duration_ms: 13.173693
+      type: 'test'
+      ...
+    1..11
+ok 46 - physical SDK usage ledger
+  ---
+  duration_ms: 706.899249
+  type: 'suite'
+  ...
+# Subtest: semantic authoring durable ports
+    # Subtest: upgrades the previous SQLite request constraint before timeout settlement
+    ok 1 - upgrades the previous SQLite request constraint before timeout settlement
+      ---
+      duration_ms: 3.231192
+      type: 'test'
+      ...
+    # Subtest: enforces the frozen family/mode/policy call allowance in SQLite storage
+    ok 2 - enforces the frozen family/mode/policy call allowance in SQLite storage
+      ---
+      duration_ms: 15.599062
+      type: 'test'
+      ...
+    # Subtest: claims a pending run and records a reservation only under the live fence
+    ok 3 - claims a pending run and records a reservation only under the live fence
+      ---
+      duration_ms: 6.806948
+      type: 'test'
+      ...
+    # Subtest: recovers process loss by fencing, charging unknown consumption, and rejecting late application
+    ok 4 - recovers process loss by fencing, charging unknown consumption, and rejecting late application
+      ---
+      duration_ms: 7.890808
+      type: 'test'
+      ...
+    # Subtest: records a transport timeout once and retains unknown usage at the reserved maximum
+    ok 5 - records a transport timeout once and retains unknown usage at the reserved maximum
+      ---
+      duration_ms: 5.313225
+      type: 'test'
+      ...
+    # Subtest: replays the same owner command identity to the same pending run
+    ok 6 - replays the same owner command identity to the same pending run
+      ---
+      duration_ms: 1.983046
+      type: 'test'
+      ...
+    # Subtest: writes a terminal failure under the live fence and closes outstanding requests
+    ok 7 - writes a terminal failure under the live fence and closes outstanding requests
+      ---
+      duration_ms: 7.581443
+      type: 'test'
+      ...
+    # Subtest: stores a ready_for_review family payload reference under the live fence
+    ok 8 - stores a ready_for_review family payload reference under the live fence
+      ---
+      duration_ms: 4.207117
+      type: 'test'
+      ...
+    # Subtest: writes a needs_owner_answer question and keeps the run closed after an answer
+    ok 9 - writes a needs_owner_answer question and keeps the run closed after an answer
+      ---
+      duration_ms: 6.484913
+      type: 'test'
+      ...
+    # Subtest: preserves stored old-policy run identities, request values, and receipts during table upgrade
+    ok 10 - preserves stored old-policy run identities, request values, and receipts during table upgrade
+      ---
+      duration_ms: 440.094105
+      type: 'test'
+      ...
+    1..10
+ok 47 - semantic authoring durable ports
+  ---
+  duration_ms: 502.94637
+  type: 'suite'
+  ...
+# Subtest: test-realm shared assets
+    # Subtest: shares test assets across test accounts without exposing them to general users
+    ok 1 - shares test assets across test accounts without exposing them to general users
+      ---
+      duration_ms: 300.566343
+      type: 'test'
+      ...
+    1..1
+ok 48 - test-realm shared assets
+  ---
+  duration_ms: 302.807925
+  type: 'suite'
+  ...
+# Subtest: authoring draft read purity
+    # Subtest: keeps all six draft reads free of claims writes and provider calls
+    ok 1 - keeps all six draft reads free of claims writes and provider calls
+      ---
+      duration_ms: 119.087927
+      type: 'test'
+      ...
+    1..1
+ok 49 - authoring draft read purity
+  ---
+  duration_ms: 120.842134
+  type: 'suite'
+  ...
+# Subtest: closed HTTP routes block public auth/media and preserve owner /api/me auth
+ok 50 - closed HTTP routes block public auth/media and preserve owner /api/me auth
+  ---
+  duration_ms: 2288.642722
+  type: 'test'
+  ...
+# Subtest: e2e session route guard
+    # Subtest: hides mint from general, test, and e2e callers
+    ok 1 - hides mint from general, test, and e2e callers
+      ---
+      duration_ms: 151.674324
+      type: 'test'
+      ...
+    1..1
+ok 51 - e2e session route guard
+  ---
+  duration_ms: 153.312695
+  type: 'suite'
+  ...
+# [battles] advance start btl_8674b814d77283fe18859c081672770f
+# [battles] advance ok btl_8674b814d77283fe18859c081672770f turn=0 279ms aft=0
+# Subtest: integrated structured asset cutover
+    # Subtest: keeps selection, binding, replay, history, and deletion on immutable generations
+    ok 1 - keeps selection, binding, replay, history, and deletion on immutable generations
+      ---
+      duration_ms: 909.061687
+      type: 'test'
+      ...
+    # Subtest: freezes legacy character rows without appending V1 generations
+    ok 2 - freezes legacy character rows without appending V1 generations
+      ---
+      duration_ms: 4.361534
+      type: 'test'
+      ...
+    1..2
+ok 52 - integrated structured asset cutover
+  ---
+  duration_ms: 1064.380983
+  type: 'suite'
+  ...
+# Subtest: structured battlefield route acceptance
+    # Subtest: records structure-stage failure without exposing a partial battlefield
+    ok 1 - records structure-stage failure without exposing a partial battlefield
+      ---
+      duration_ms: 76.119227
+      type: 'test'
+      ...
+    # Subtest: keeps legacy battlefields visible to management but out of every match binding
+    ok 2 - keeps legacy battlefields visible to management but out of every match binding
+      ---
+      duration_ms: 120.418088
+      type: 'test'
+      ...
+    # Subtest: upgrades a legacy battlefield only after explicit owner confirmation
+    ok 3 - upgrades a legacy battlefield only after explicit owner confirmation
+      ---
+      duration_ms: 71.513492
+      type: 'test'
+      ...
+    # Subtest: returns a compare review and list mark for an awaiting battlefield upgrade
+    ok 4 - returns a compare review and list mark for an awaiting battlefield upgrade
+      ---
+      duration_ms: 67.415016
+      type: 'test'
+      ...
+    # Subtest: expires an upgrade candidate without creating or selecting a generation
+    ok 5 - expires an upgrade candidate without creating or selecting a generation
+      ---
+      duration_ms: 18.955983
+      type: 'test'
+      ...
+    # Subtest: rejects a stale revision candidate after concurrent current-pointer drift
+    ok 6 - rejects a stale revision candidate after concurrent current-pointer drift
+      ---
+      duration_ms: 50.547873
+      type: 'test'
+      ...
+    # Subtest: commits create revision and image changes only as confirmed immutable generations
+    ok 7 - commits create revision and image changes only as confirmed immutable generations
+      ---
+      duration_ms: 107.305974
+      type: 'test'
+      ...
+    # Subtest: binds an exact preset revision and deterministic compiler without mutating it
+    ok 8 - binds an exact preset revision and deterministic compiler without mutating it
+      ---
+      duration_ms: 283.329588
+      type: 'test'
+      ...
+    1..8
+ok 53 - structured battlefield route acceptance
+  ---
+  duration_ms: 956.214789
+  type: 'suite'
+  ...
+# CORRECTION_DIAGNOSTIC {"physicalCalls":7,"preparedBounds":[{"inputTokens":1000,"inputBytes":945,"outputTokens":1500},{"inputTokens":5748,"inputBytes":6134,"outputTokens":1500},{"inputTokens":3112,"inputBytes":3238,"outputTokens":1500},{"inputTokens":3027,"inputBytes":3141,"outputTokens":1500},{"inputTokens":2940,"inputBytes":3042,"outputTokens":1500},{"inputTokens":3317,"inputBytes":3375,"outputTokens":1500},{"inputTokens":3806,"inputBytes":3923,"outputTokens":1500}]}
+# [image] route_hit asset=route-ready-mine
+# Subtest: structured character route acceptance
+    # Subtest: records provider failures without exposing a partial character
+    ok 1 - records provider failures without exposing a partial character
+      ---
+      duration_ms: 141.004884
+      type: 'test'
+      ...
+    # Subtest: uses current V3 attempts for create review confirm and discard routes
+    ok 2 - uses current V3 attempts for create review confirm and discard routes
+      ---
+      duration_ms: 623.94138
+      type: 'test'
+      ...
+    # Subtest: does not read mutate confirm or delete legacy draft rows
+    ok 3 - does not read mutate confirm or delete legacy draft rows
+      ---
+      duration_ms: 12.008685
+      type: 'test'
+      ...
+    # Subtest: rejects legacy restore and portrait mutations before side effects
+    ok 4 - rejects legacy restore and portrait mutations before side effects
+      ---
+      duration_ms: 3.910013
+      type: 'test'
+      ...
+    # Subtest: commits immutable V3 portrait generations and rejects unavailable restore
+    ok 5 - commits immutable V3 portrait generations and rejects unavailable restore
+      ---
+      duration_ms: 517.964436
+      type: 'test'
+      ...
+    # Subtest: excludes unsupported characters from every selector route
+    ok 6 - excludes unsupported characters from every selector route
+      ---
+      duration_ms: 97.218624
+      type: 'test'
+      ...
+    # Subtest: rejects direct battle creation for either unsupported side
+    ok 7 - rejects direct battle creation for either unsupported side
+      ---
+      duration_ms: 22.063027
+      type: 'test'
+      ...
+    # Subtest: upgrades an existing character only after owner confirmation
+    ok 8 - upgrades an existing character only after owner confirmation
+      ---
+      duration_ms: 216.20276
+      type: 'test'
+      ...
+    # Subtest: exposes in-flight authoring progress while an upgrade is running
+    ok 9 - exposes in-flight authoring progress while an upgrade is running
+      ---
+      duration_ms: 92.070728
+      type: 'test'
+      ...
+    # Subtest: does not surface an older awaiting draft after a later attempt fails
+    ok 10 - does not surface an older awaiting draft after a later attempt fails
+      ---
+      duration_ms: 196.42261
+      type: 'test'
+      ...
+    # Subtest: discards an unclaimed queued attempt before the worker runs
+    ok 11 - discards an unclaimed queued attempt before the worker runs
+      ---
+      duration_ms: 10.688897
+      type: 'test'
+      ...
+    # Subtest: returns a create review without a current character
+    ok 12 - returns a create review without a current character
+      ---
+      duration_ms: 164.366487
+      type: 'test'
+      ...
+    # Subtest: returns a compare review for upgrade and marks an older attempt stale
+    ok 13 - returns a compare review for upgrade and marks an older attempt stale
+      ---
+      duration_ms: 176.346084
+      type: 'test'
+      ...
+    # Subtest: lists characters without deserializing a historical candidate
+    ok 14 - lists characters without deserializing a historical candidate
+      ---
+      duration_ms: 67.072156
+      type: 'test'
+      ...
+    # Subtest: projects ready and failed notifications without duplicating them
+    ok 15 - projects ready and failed notifications without duplicating them
+      ---
+      duration_ms: 191.733179
+      type: 'test'
+      ...
+    1..15
+ok 54 - structured character route acceptance
+  ---
+  duration_ms: 2576.594034
+  type: 'suite'
+  ...
+# Subtest: structured narration route acceptance
+    # Subtest: records structure failure without exposing a partial style
+    ok 1 - records structure failure without exposing a partial style
+      ---
+      duration_ms: 100.879156
+      type: 'test'
+      ...
+    # Subtest: keeps legacy styles manageable but outside selectors and direct binding
+    ok 2 - keeps legacy styles manageable but outside selectors and direct binding
+      ---
+      duration_ms: 192.305294
+      type: 'test'
+      ...
+    # Subtest: creates and upgrades only after owner confirmation with idempotent readback
+    ok 3 - creates and upgrades only after owner confirmation with idempotent readback
+      ---
+      duration_ms: 103.768662
+      type: 'test'
+      ...
+    # Subtest: binds the exact ready generation and never appends one at battle start
+    ok 4 - binds the exact ready generation and never appends one at battle start
+      ---
+      duration_ms: 232.479478
+      type: 'test'
+      ...
+    # Subtest: persists expiry and rejects a candidate after current-pointer drift
+    ok 5 - persists expiry and rejects a candidate after current-pointer drift
+      ---
+      duration_ms: 19.5659
+      type: 'test'
+      ...
+    # Subtest: rejects corrupt stored styles on confirmation and completed replay without appending a generation
+    ok 6 - rejects corrupt stored styles on confirmation and completed replay without appending a generation
+      ---
+      duration_ms: 69.107314
+      type: 'test'
+      ...
+    1..6
+ok 55 - structured narration route acceptance
+  ---
+  duration_ms: 834.187464
+  type: 'suite'
+  ...
+# [llm] xai ready engine=grok-4.5 fast=grok-4-fast-non-reasoning
+# [llm] xai ready engine=grok-4.5 fast=grok-4-fast-non-reasoning
+# Subtest: character authoring A2 freeze
+    # Subtest: captures one create_instruction request against the acyclic v2 schema
+    ok 1 - captures one create_instruction request against the acyclic v2 schema
+      ---
+      duration_ms: 34.552044
+      type: 'test'
+      ...
+    1..1
+ok 56 - character authoring A2 freeze
+  ---
+  duration_ms: 37.372436
+  type: 'suite'
+  ...
+# Subtest: persistent battle E2E runner
+    # Subtest: rejects a successful health response from a different backend revision
+    ok 1 - rejects a successful health response from a different backend revision
+      ---
+      duration_ms: 2.880543
+      type: 'test'
+      ...
+    # Subtest: classifies every observation provider operation under one revision
+    ok 2 - classifies every observation provider operation under one revision
+      ---
+      duration_ms: 2.357361
+      type: 'test'
+      ...
+    # Subtest: requires an exact operator approval and rejects an over-budget observation
+    ok 3 - requires an exact operator approval and rejects an over-budget observation
+      ---
+      duration_ms: 2.336522
+      type: 'test'
+      ...
+    # Subtest: accepts only a terminal reconciled physical-attempt ledger
+    ok 4 - accepts only a terminal reconciled physical-attempt ledger
+      ---
+      duration_ms: 1.889204
+      type: 'test'
+      ...
+    # Subtest: generates a strong ephemeral password within the Supabase limit
+    ok 5 - generates a strong ephemeral password within the Supabase limit
+      ---
+      duration_ms: 1.532257
+      type: 'test'
+      ...
+    # Subtest: accepts only a bounded portable observation run ID
+    ok 6 - accepts only a bounded portable observation run ID
+      ---
+      duration_ms: 0.629061
+      type: 'test'
+      ...
+    # Subtest: validates and durably records a sanitized observation
+    ok 7 - validates and durably records a sanitized observation
+      ---
+      duration_ms: 77.82649
+      type: 'test'
+      ...
+    # Subtest: accepts only an explicitly allowed HTTPS origin
+    ok 8 - accepts only an explicitly allowed HTTPS origin
+      ---
+      duration_ms: 1.277547
+      type: 'test'
+      ...
+    # Subtest: derives the normal observation bound from the 36-tick policy
+    ok 9 - derives the normal observation bound from the 36-tick policy
+      ---
+      duration_ms: 0.843195
+      type: 'test'
+      ...
+    # Subtest: takes the authoritative done battle from an SSE response
+    ok 10 - takes the authoritative done battle from an SSE response
+      ---
+      duration_ms: 3.550903
+      type: 'test'
+      ...
+    # Subtest: accepts sparse strictly increasing narration sequences from a completed beat
+    ok 11 - accepts sparse strictly increasing narration sequences from a completed beat
+      ---
+      duration_ms: 1.159199
+      type: 'test'
+      ...
+    # Subtest: rejects an SSE error without a done event
+    ok 12 - rejects an SSE error without a done event
+      ---
+      duration_ms: 0.937767
+      type: 'test'
+      ...
+    # Subtest: retries only explicit SSE BATTLE_BUSY with the same idempotency key
+    ok 13 - retries only explicit SSE BATTLE_BUSY with the same idempotency key
+      ---
+      duration_ms: 61.608444
+      type: 'test'
+      ...
+    # Subtest: fails immediately for non-busy and ambiguous SSE outcomes
+    ok 14 - fails immediately for non-busy and ambiguous SSE outcomes
+      ---
+      duration_ms: 7.816278
+      type: 'test'
+      ...
+    # Subtest: never retries a busy error after an execution progress event
+    ok 15 - never retries a busy error after an execution progress event
+      ---
+      duration_ms: 2.754396
+      type: 'test'
+      ...
+    # Subtest: counts requests and waits against the absolute busy deadline
+    ok 16 - counts requests and waits against the absolute busy deadline
+      ---
+      duration_ms: 1.458068
+      type: 'test'
+      ...
+    # Subtest: bounds persistent contention without advancing the request identity
+    ok 17 - bounds persistent contention without advancing the request identity
+      ---
+      duration_ms: 5.264568
+      type: 'test'
+      ...
+    1..17
+ok 57 - persistent battle E2E runner
+  ---
+  duration_ms: 179.956331
+  type: 'suite'
+  ...
+# Subtest: authors a valid V2 source with both selectorless and executable preferences
+ok 58 - authors a valid V2 source with both selectorless and executable preferences
+  ---
+  duration_ms: 27.462169
+  type: 'test'
+  ...
+# Subtest: keeps V2 unchanged and assigns the corrected prompt an independent V3 run
+ok 59 - keeps V2 unchanged and assigns the corrected prompt an independent V3 run
+  ---
+  duration_ms: 3.258659
+  type: 'test'
+  ...
+# Subtest: binds the new run and corrected prompt without reusing the consumed v1 identity
+ok 60 - binds the new run and corrected prompt without reusing the consumed v1 identity
+  ---
+  duration_ms: 1358.25099
+  type: 'test'
+  ...
+# Subtest: persisted adjudication dispatch guard
+    # Subtest: quotes the exact request and persists its reservation before the physical send
+    ok 1 - quotes the exact request and persists its reservation before the physical send
+      ---
+      duration_ms: 119.26086
+      type: 'test'
+      ...
+    # Subtest: dispatches nothing without a verified proof and creates no reservation
+    ok 2 - dispatches nothing without a verified proof and creates no reservation
+      ---
+      duration_ms: 63.308529
+      type: 'test'
+      ...
+    # Subtest: retains the maximum reservation and physical slot when dispatch completion is unknown
+    ok 3 - retains the maximum reservation and physical slot when dispatch completion is unknown
+      ---
+      duration_ms: 52.553161
+      type: 'test'
+      ...
+    # Subtest: releases the physical slot after completion while retaining unknown dollar cost
+    ok 4 - releases the physical slot after completion while retaining unknown dollar cost
+      ---
+      duration_ms: 41.976207
+      type: 'test'
+      ...
+    # Subtest: refuses a proof that returns after the global deadline without sending or reserving
+    ok 5 - refuses a proof that returns after the global deadline without sending or reserving
+      ---
+      duration_ms: 39.234455
+      type: 'test'
+      ...
+    # Subtest: rejects a late completed judgment while retaining its maximum cost and releasing its physical slot
+    ok 6 - rejects a late completed judgment while retaining its maximum cost and releasing its physical slot
+      ---
+      duration_ms: 43.161092
+      type: 'test'
+      ...
+    # Subtest: keeps failure sticky even if a caller catches it and tries another dispatch
+    ok 7 - keeps failure sticky even if a caller catches it and tries another dispatch
+      ---
+      duration_ms: 34.125117
+      type: 'test'
+      ...
+    1..7
+ok 61 - persisted adjudication dispatch guard
+  ---
+  duration_ms: 396.76099
+  type: 'suite'
+  ...
+# Subtest: observed adjudication retains an unpriced reservation and scoped role without a quote
+ok 62 - observed adjudication retains an unpriced reservation and scoped role without a quote
+  ---
+  duration_ms: 44.408381
+  type: 'test'
+  ...
+# [llm] openai ready engine=gpt-6-luna fast=gpt-6-luna
+# [llm] xai ready engine=grok-engine fast=grok-fast
+# [llm] xai ready engine=grok-engine fast=grok-fast
+# [llm] xai/prepareBattleEncounter model=grok-engine ok 63ms
+# [llm] xai/awareness-v5:conscious model=grok-engine ok 31ms
+# [llm] xai/awareness-v5:conscious model=grok-engine ok 49ms
+# [llm] openai/awareness-v5:subconscious model=gpt-6-luna ok 36ms
+# [llm] openai/awareness-v5:subconscious model=gpt-6-luna ok 22ms
+# [llm] openai ready engine=gpt-6-luna fast=gpt-6-luna
+# [llm] xai ready engine=grok-engine fast=grok-fast
+# [llm] xai ready engine=grok-engine fast=grok-fast
+# [llm] xai/prepareBattleEncounter model=grok-engine ok 6ms
+# Subtest: actual awareness battle creation and advancement
+    # Subtest: binds immutable V5 assets, adopts encounter accounting and replays without duplicate dispatch
+    ok 1 - binds immutable V5 assets, adopts encounter accounting and replays without duplicate dispatch
+      ---
+      duration_ms: 1114.144752
+      type: 'test'
+      ...
+    1..1
+ok 63 - actual awareness battle creation and advancement
+  ---
+  duration_ms: 1116.903472
+  type: 'suite'
+  ...
+# Subtest: public advance stops incomplete with missing awareness route and preserves canonical facts
+ok 64 - public advance stops incomplete with missing awareness route and preserves canonical facts
+  ---
+  duration_ms: 225.983926
+  type: 'test'
+  ...
+# Subtest: public advance stops incomplete with missing billing proof and preserves canonical facts
+ok 65 - public advance stops incomplete with missing billing proof and preserves canonical facts
+  ---
+  duration_ms: 116.551522
+  type: 'test'
+  ...
+# [balance] battle ⚠ awareness-public-ko turns=1 maxHit=1% earlyKo=1 oneShot=0 winner=a
+# Subtest: public configured prologue then combat preserves absent body intents without legacy agent calls
+ok 66 - public configured prologue then combat preserves absent body intents without legacy agent calls
+  ---
+  duration_ms: 1457.884236
+  type: 'test'
+  ...
+# Subtest: public KO commits terminal combat and aftermath together without starting post-KO thoughts
+ok 67 - public KO commits terminal combat and aftermath together without starting post-KO thoughts
+  ---
+  duration_ms: 242.875311
+  type: 'test'
+  ...
+# Subtest: failed required semantic judgment preserves the last world instead of saving an earlier engine bucket
+ok 68 - failed required semantic judgment preserves the last world instead of saving an earlier engine bucket
+  ---
+  duration_ms: 202.631778
+  type: 'test'
+  ...
+# [llm] openai ready engine=gpt-6-luna fast=gpt-6-luna
+# [llm] xai ready engine=grok-engine fast=grok-fast
+# [llm] xai ready engine=grok-engine fast=grok-fast
+# [llm] xai/prepareBattleEncounter model=grok-engine ok 57ms
+# [llm] openai ready engine=gpt-6-luna fast=gpt-6-luna
+# [llm] xai ready engine=grok-engine fast=grok-fast
+# [llm] xai ready engine=grok-engine fast=grok-fast
+# [llm] xai/prepareBattleEncounter model=grok-engine fail 2ms: AWARENESS_VERIFIED_ADMISSION_REQUIRED
+# [llm] openai ready engine=gpt-6-luna fast=gpt-6-luna
+# [llm] xai ready engine=grok-engine fast=grok-fast
+# [llm] xai ready engine=grok-engine fast=grok-fast
+# [llm] xai/prepareBattleEncounter model=grok-engine ok 5ms
+# [llm] openai ready engine=gpt-6-luna fast=gpt-6-luna
+# [llm] xai ready engine=grok-engine fast=grok-fast
+# [llm] xai ready engine=grok-engine fast=grok-fast
+# [llm] xai/prepareBattleEncounter model=grok-engine ok 6ms
+# [llm] openai ready engine=gpt-6-luna fast=gpt-6-luna
+# [llm] xai ready engine=grok-engine fast=grok-fast
+# [llm] xai ready engine=grok-engine fast=grok-fast
+# [llm] xai/prepareBattleEncounter model=grok-engine ok 5ms
+# Subtest: admitted creation encounter through actual compatible SDK
+    # Subtest: preserves V5 world and perceptions without synthesizing legacy subjective agents
+    ok 1 - preserves V5 world and perceptions without synthesizing legacy subjective agents
+      ---
+      duration_ms: 52.204717
+      type: 'test'
+      ...
+    # Subtest: quotes the full prose engine request capped at 1500 and reuses the durable ready result
+    ok 2 - quotes the full prose engine request capped at 1500 and reuses the durable ready result
+      ---
+      duration_ms: 152.3515
+      type: 'test'
+      ...
+    # Subtest: makes zero HTTP calls without verified billing proof and creates no canonical battle
+    ok 3 - makes zero HTTP calls without verified billing proof and creates no canonical battle
+      ---
+      duration_ms: 7.884279
+      type: 'test'
+      ...
+    # Subtest: persists an invalid provider proposal as failure and never retries transmission
+    ok 4 - persists an invalid provider proposal as failure and never retries transmission
+      ---
+      duration_ms: 14.263938
+      type: 'test'
+      ...
+    # Subtest: adopts the reserved encounter runtime atomically in actual canonical insertNewBattle
+    ok 5 - adopts the reserved encounter runtime atomically in actual canonical insertNewBattle
+      ---
+      duration_ms: 55.505948
+      type: 'test'
+      ...
+    1..5
+ok 69 - admitted creation encounter through actual compatible SDK
+  ---
+  duration_ms: 284.166683
+  type: 'suite'
+  ...
+# Subtest: observed creation sends one scoped SDK call without a pricing contract
+ok 70 - observed creation sends one scoped SDK call without a pricing contract
+  ---
+  duration_ms: 10.66699
+  type: 'test'
+  ...
+# Subtest: narration claim statement read order
+    # Subtest: captures old entries before an interleaved atomic commit and validates them against the newer battle
+    ok 1 - captures old entries before an interleaved atomic commit and validates them against the newer battle
+      ---
+      duration_ms: 118.357046
+      type: 'test'
+      ...
+    # Subtest: includes a newly committed receipt when its atomic commit precedes entry capture
+    ok 2 - includes a newly committed receipt when its atomic commit precedes entry capture
+      ---
+      duration_ms: 28.805948
+      type: 'test'
+      ...
+    # Subtest: leaves a receipt arriving after an empty capture for the next capture
+    ok 3 - leaves a receipt arriving after an empty capture for the next capture
+      ---
+      duration_ms: 62.388302
+      type: 'test'
+      ...
+    # Subtest: preserves missing battle acknowledgement and missing runtime errors even for empty entries
+    ok 4 - preserves missing battle acknowledgement and missing runtime errors even for empty entries
+      ---
+      duration_ms: 24.261072
+      type: 'test'
+      ...
+    # Subtest: does not repair or discard a corrupted material before the strict material validator sees it
+    ok 5 - does not repair or discard a corrupted material before the strict material validator sees it
+      ---
+      duration_ms: 20.587848
+      type: 'test'
+      ...
+    1..5
+ok 71 - narration claim statement read order
+  ---
+  duration_ms: 256.861468
+  type: 'suite'
+  ...
+# Subtest: continues every phase and retained prompt revision through current transport publication
+ok 72 - continues every phase and retained prompt revision through current transport publication
+  ---
+  duration_ms: 1030.575757
+  type: 'test'
+  ...
+# Subtest: SQLite appends exact public IDs and continues above the retained floor after full pruning
+ok 73 - SQLite appends exact public IDs and continues above the retained floor after full pruning
+  ---
+  duration_ms: 153.42533
+  type: 'test'
+  ...
+# Subtest: rollback publishes no event and permits reuse of its unpublished sequence
+ok 74 - rollback publishes no event and permits reuse of its unpublished sequence
+  ---
+  duration_ms: 1.753689
+  type: 'test'
+  ...
+# Subtest: uses a bound 60-second narration request and publishes beyond the old 36-second window
+ok 75 - uses a bound 60-second narration request and publishes beyond the old 36-second window
+  ---
+  duration_ms: 282.048845
+  type: 'test'
+  ...
+# Subtest: missing verified proof sends zero calls and never fabricates a presentation or changes world
+ok 76 - missing verified proof sends zero calls and never fabricates a presentation or changes world
+  ---
+  duration_ms: 74.704304
+  type: 'test'
+  ...
+# Subtest: publishes one batch while the world lease remains held
+ok 77 - publishes one batch while the world lease remains held
+  ---
+  duration_ms: 80.574617
+  type: 'test'
+  ...
+# Subtest: publishes a selected receipt and requeues an unselected input while the world lease remains held
+ok 78 - publishes a selected receipt and requeues an unselected input while the world lease remains held
+  ---
+  duration_ms: 88.830638
+  type: 'test'
+  ...
+# Subtest: requeues a preclaim flush wait and accepts only the fresh delivery generation
+ok 79 - requeues a preclaim flush wait and accepts only the fresh delivery generation
+  ---
+  duration_ms: 79.548149
+  type: 'test'
+  ...
+# Subtest: requeues an outstanding batch input without a second provider call
+ok 80 - requeues an outstanding batch input without a second provider call
+  ---
+  duration_ms: 36.974805
+  type: 'test'
+  ...
+# Subtest: requeues an unselected input after successful publication without touching its successor
+ok 81 - requeues an unselected input after successful publication without touching its successor
+  ---
+  duration_ms: 67.39991
+  type: 'test'
+  ...
+# Subtest: publishes three frozen receipts atomically with one call and one retained fee reservation
+ok 82 - publishes three frozen receipts atomically with one call and one retained fee reservation
+  ---
+  duration_ms: 105.606521
+  type: 'test'
+  ...
+# Subtest: tampered frozen input is rejected before dispatch
+ok 83 - tampered frozen input is rejected before dispatch
+  ---
+  duration_ms: 46.282156
+  type: 'test'
+  ...
+# Subtest: rejects partial batch coverage without publishing any receipt
+ok 84 - rejects partial batch coverage without publishing any receipt
+  ---
+  duration_ms: 58.367786
+  type: 'test'
+  ...
+# Subtest: expired publication window sends zero calls
+ok 85 - expired publication window sends zero calls
+  ---
+  duration_ms: 58.974429
+  type: 'test'
+  ...
+# Subtest: initial prologue uses its frozen typed phase and publishes through the V5 worker
+ok 86 - initial prologue uses its frozen typed phase and publishes through the V5 worker
+  ---
+  duration_ms: 398.120702
+  type: 'test'
+  ...
+# Subtest: logical timeout retains physical occupancy and late completion only closes accounting
+ok 87 - logical timeout retains physical occupancy and late completion only closes accounting
+  ---
+  duration_ms: 98.49422
+  type: 'test'
+  ...
+# Subtest: closes a completed physical response rejected during validation while retaining unknown transport failures
+ok 88 - closes a completed physical response rejected during validation while retaining unknown transport failures
+  ---
+  duration_ms: 98.693806
+  type: 'test'
+  ...
+# Subtest: closes late observed response rejection after logical timeout without publishing its rejected result
+ok 89 - closes late observed response rejection after logical timeout without publishing its rejected result
+  ---
+  duration_ms: 44.189791
+  type: 'test'
+  ...
+# Subtest: persists recognition only with publication and quotes the next batch's actual public predecessor history
+ok 90 - persists recognition only with publication and quotes the next batch's actual public predecessor history
+  ---
+  duration_ms: 88.342385
+  type: 'test'
+  ...
+# Subtest: history-inclusive token admission rejects a second call without advancing narrator cognition
+ok 91 - history-inclusive token admission rejects a second call without advancing narrator cognition
+  ---
+  duration_ms: 128.219352
+  type: 'test'
+  ...
+# Subtest: splits mixed recognition targets so one subjective context never enters the other side's receipt
+ok 92 - splits mixed recognition targets so one subjective context never enters the other side's receipt
+  ---
+  duration_ms: 72.980807
+  type: 'test'
+  ...
+# Subtest: immutable observed policy dispatches without a price quote while retaining unknown cost
+ok 93 - immutable observed policy dispatches without a price quote while retaining unknown cost
+  ---
+  duration_ms: 43.270743
+  type: 'test'
+  ...
+# Subtest: atomic awareness world commit
+    # Subtest: rolls back all writes when the actual clock crosses the deadline inside the transaction
+    ok 1 - rolls back all writes when the actual clock crosses the deadline inside the transaction
+      ---
+      duration_ms: 130.800432
+      type: 'test'
+      ...
+    # Subtest: rejects a prepared world commit at the global deadline without writing either store
+    ok 2 - rejects a prepared world commit at the global deadline without writing either store
+      ---
+      duration_ms: 44.216557
+      type: 'test'
+      ...
+    # Subtest: requires the exact prepared boundary and leaves both stores unchanged on mismatch
+    ok 3 - requires the exact prepared boundary and leaves both stores unchanged on mismatch
+      ---
+      duration_ms: 22.897971
+      type: 'test'
+      ...
+    # Subtest: rejects an early prepared marker before the latent cutoff has committed
+    ok 4 - rejects an early prepared marker before the latent cutoff has committed
+      ---
+      duration_ms: 31.409719
+      type: 'test'
+      ...
+    # Subtest: rolls back the sidecar update when canonical revision CAS fails
+    ok 5 - rolls back the sidecar update when canonical revision CAS fails
+      ---
+      duration_ms: 38.573494
+      type: 'test'
+      ...
+    # Subtest: preserves a ready thought and accounting that arrive after subjective preparation
+    ok 6 - preserves a ready thought and accounting that arrive after subjective preparation
+      ---
+      duration_ms: 45.289252
+      type: 'test'
+      ...
+    # Subtest: persists technical incomplete without advancing canonical turn or assigning a winner
+    ok 7 - persists technical incomplete without advancing canonical turn or assigning a winner
+      ---
+      duration_ms: 62.782789
+      type: 'test'
+      ...
+    # Subtest: rejects turn mutation disguised as technical incomplete and preserves both stores
+    ok 8 - rejects turn mutation disguised as technical incomplete and preserves both stores
+      ---
+      duration_ms: 37.947113
+      type: 'test'
+      ...
+    # Subtest: rejects world mutation disguised as technical incomplete and preserves both stores
+    ok 9 - rejects world mutation disguised as technical incomplete and preserves both stores
+      ---
+      duration_ms: 39.778367
+      type: 'test'
+      ...
+    # Subtest: invalidates outstanding thought generations on canonical terminal completion
+    ok 10 - invalidates outstanding thought generations on canonical terminal completion
+      ---
+      duration_ms: 41.428126
+      type: 'test'
+      ...
+    1..10
+ok 94 - atomic awareness world commit
+  ---
+  duration_ms: 503.236365
+  type: 'suite'
+  ...
+# Subtest: guarded narration causal projection wiring
+    # Subtest: omits the projection in off mode without changing the turn
+    ok 1 - omits the projection in off mode without changing the turn
+      ---
+      duration_ms: 49.501738
+      type: 'test'
+      ...
+    # Subtest: builds one narrator-only projection in guarded mode
+    ok 2 - builds one narrator-only projection in guarded mode
+      ---
+      duration_ms: 37.624839
+      type: 'test'
+      ...
+    # Subtest: falls back to the legacy narrator input when committed evidence is invalid
+    ok 3 - falls back to the legacy narrator input when committed evidence is invalid
+      ---
+      duration_ms: 18.350376
+      type: 'test'
+      ...
+    1..3
+ok 95 - guarded narration causal projection wiring
+  ---
+  duration_ms: 107.634384
+  type: 'suite'
+  ...
+# Subtest: battle perception consumer wiring
+    # Subtest: applies battle-bound action norms without exposing internal receipts
+    ok 1 - applies battle-bound action norms without exposing internal receipts
+      ---
+      duration_ms: 59.757352
+      type: 'test'
+      ...
+    # Subtest: wires A and B only to their own frozen perception frame
+    ok 2 - wires A and B only to their own frozen perception frame
+      ---
+      duration_ms: 19.578697
+      type: 'test'
+      ...
+    # Subtest: grounds each agent in a frozen complete own profile
+    ok 3 - grounds each agent in a frozen complete own profile
+      ---
+      duration_ms: 10.868006
+      type: 'test'
+      ...
+    # Subtest: filters prologue and aftermath rendering anchors by narration focus
+    ok 4 - filters prologue and aftermath rendering anchors by narration focus
+      ---
+      duration_ms: 1.439232
+      type: 'test'
+      ...
+    # Subtest: selects static narrator context by focus and only carries committed manifestations
+    ok 5 - selects static narrator context by focus and only carries committed manifestations
+      ---
+      duration_ms: 24.601592
+      type: 'test'
+      ...
+    # Subtest: wires canonical profile and scene projections without mutating the sheet
+    ok 6 - wires canonical profile and scene projections without mutating the sheet
+      ---
+      duration_ms: 17.093638
+      type: 'test'
+      ...
+    # Subtest: reveals counterpart name and condition only at the frame's knowledge level
+    ok 7 - reveals counterpart name and condition only at the frame's knowledge level
+      ---
+      duration_ms: 19.001532
+      type: 'test'
+      ...
+    # Subtest: gives legacy-seeded consumers the visible setup counterpart
+    ok 8 - gives legacy-seeded consumers the visible setup counterpart
+      ---
+      duration_ms: 10.598767
+      type: 'test'
+      ...
+    1..8
+ok 96 - battle perception consumer wiring
+  ---
+  duration_ms: 165.374214
+  type: 'suite'
+  ...
+# Subtest: battle create idempotency
+    # Subtest: reads back one deterministic battle without repeating encounter LLM work
+    ok 1 - reads back one deterministic battle without repeating encounter LLM work
+      ---
+      duration_ms: 1494.341346
+      type: 'test'
+      ...
+    1..1
+ok 97 - battle create idempotency
+  ---
+  duration_ms: 1495.908911
+  type: 'suite'
+  ...
+# [battle] side A deep psyche retained prior state Error: timeout:advanceCharacterPsyche:20000ms
+#     at MockLlmProvider.provider.advanceCharacterPsyche (/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/battle-speech-wiring.test.ts:924:13)
+#     at advanceCharacterAgents (/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/battle-service.ts:2392:32)
+#     at TestContext.<anonymous> (/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/battle-speech-wiring.test.ts:927:26)
+#     at Test.runInAsyncScope (node:async_hooks:214:14)
+#     at Test.run (node:internal/test_runner/test:1047:25)
+#     at Suite.processPendingSubtests (node:internal/test_runner/test:744:18)
+#     at Test.postRun (node:internal/test_runner/test:1173:19)
+#     at Test.run (node:internal/test_runner/test:1101:12)
+#     at async Suite.processPendingSubtests (node:internal/test_runner/test:744:7)
+# [battle] side B deep psyche retained prior state Error: timeout:advanceCharacterPsyche:20000ms
+#     at MockLlmProvider.provider.advanceCharacterPsyche (/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/battle-speech-wiring.test.ts:924:13)
+#     at advanceCharacterAgents (/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/battle-service.ts:2393:32)
+#     at TestContext.<anonymous> (/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/battle-speech-wiring.test.ts:927:26)
+#     at Test.runInAsyncScope (node:async_hooks:214:14)
+#     at Test.run (node:internal/test_runner/test:1047:25)
+#     at Suite.processPendingSubtests (node:internal/test_runner/test:744:18)
+#     at Test.postRun (node:internal/test_runner/test:1173:19)
+#     at Test.run (node:internal/test_runner/test:1101:12)
+#     at async Suite.processPendingSubtests (node:internal/test_runner/test:744:7)
+# [battle] side A deep psyche retained prior state LlmApplicationResultError: LLM_APPLICATION_RESULT_SCHEMA_INVALID:delta.interior.speechAppraisal:invalid_type
+#     at MockLlmProvider.provider.advanceCharacterPsyche (/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/battle-speech-wiring.test.ts:964:13)
+#     at advanceCharacterAgents (/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/battle-service.ts:2392:32)
+#     at TestContext.<anonymous> (/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/battle-speech-wiring.test.ts:970:26)
+#     at Test.runInAsyncScope (node:async_hooks:214:14)
+#     at Test.run (node:internal/test_runner/test:1047:25)
+#     at Suite.processPendingSubtests (node:internal/test_runner/test:744:18)
+#     at Test.postRun (node:internal/test_runner/test:1173:19)
+#     at Test.run (node:internal/test_runner/test:1101:12)
+#     at async Suite.processPendingSubtests (node:internal/test_runner/test:744:7) {
+#   reason: 'schema_invalid',
+#   detail: 'delta.interior.speechAppraisal:invalid_type'
+# }
+# [battle] side B deep psyche retained prior state LlmApplicationResultError: LLM_APPLICATION_RESULT_SCHEMA_INVALID:delta.interior.speechAppraisal:invalid_type
+#     at MockLlmProvider.provider.advanceCharacterPsyche (/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/battle-speech-wiring.test.ts:964:13)
+#     at advanceCharacterAgents (/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/battle-service.ts:2393:32)
+#     at TestContext.<anonymous> (/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/battle-speech-wiring.test.ts:970:26)
+#     at Test.runInAsyncScope (node:async_hooks:214:14)
+#     at Test.run (node:internal/test_runner/test:1047:25)
+#     at Suite.processPendingSubtests (node:internal/test_runner/test:744:18)
+#     at Test.postRun (node:internal/test_runner/test:1173:19)
+#     at Test.run (node:internal/test_runner/test:1101:12)
+#     at async Suite.processPendingSubtests (node:internal/test_runner/test:744:7) {
+#   reason: 'schema_invalid',
+#   detail: 'delta.interior.speechAppraisal:invalid_type'
+# }
+# [battle] semantic reconciliation skipped provider unavailable
+# [battle] committed expression projection rejected atomically [
+#   {
+#     "code": "custom",
+#     "path": [
+#       "observerSide"
+#     ],
+#     "message": "side A registry must use observer side a"
+#   }
+# ]
+# [llm] test-provider ready engine=test-engine fast=test-fast
+# Subtest: character-authored public speech
+    # Subtest: persists internal character-rule receipts outside provider input
+    ok 1 - persists internal character-rule receipts outside provider input
+      ---
+      duration_ms: 111.565229
+      type: 'test'
+      ...
+    # Subtest: runs only the selected isolated character context
+    ok 2 - runs only the selected isolated character context
+      ---
+      duration_ms: 50.129172
+      type: 'test'
+      ...
+    # Subtest: binds normal settings authority and isolated override provenance
+    ok 3 - binds normal settings authority and isolated override provenance
+      ---
+      duration_ms: 2.793953
+      type: 'test'
+      ...
+    # Subtest: persists narrator recognition only for subjects in the selected view
+    ok 4 - persists narrator recognition only for subjects in the selected view
+      ---
+      duration_ms: 19.963968
+      type: 'test'
+      ...
+    # Subtest: commits accepted character speech before narration and projects it to each frame
+    ok 5 - commits accepted character speech before narration and projects it to each frame
+      ---
+      duration_ms: 84.852767
+      type: 'test'
+      ...
+    # Subtest: commits a grounded manifestation only after the expression realizes it
+    ok 6 - commits a grounded manifestation only after the expression realizes it
+      ---
+      duration_ms: 73.293073
+      type: 'test'
+      ...
+    # Subtest: projects deterministic psyche and no-effect focus shadow without another model call
+    ok 7 - projects deterministic psyche and no-effect focus shadow without another model call
+      ---
+      duration_ms: 47.998681
+      type: 'test'
+      ...
+    # Subtest: separates V2 Compact state from consumed utterance history
+    ok 8 - separates V2 Compact state from consumed utterance history
+      ---
+      duration_ms: 30.025776
+      type: 'test'
+      ...
+    # Subtest: keeps matchup memory separate from compact battle-private memory
+    ok 9 - keeps matchup memory separate from compact battle-private memory
+      ---
+      duration_ms: 28.636402
+      type: 'test'
+      ...
+    # Subtest: clears inherited compact private memory when prologue psyche is unavailable
+    ok 10 - clears inherited compact private memory when prologue psyche is unavailable
+      ---
+      duration_ms: 68.870412
+      type: 'test'
+      ...
+    # Subtest: records deep-psyche schema rejection as an application defect
+    ok 11 - records deep-psyche schema rejection as an application defect
+      ---
+      duration_ms: 39.645966
+      type: 'test'
+      ...
+    # Subtest: records fulfilled speech with a rejected action as application rejection
+    ok 12 - records fulfilled speech with a rejected action as application rejection
+      ---
+      duration_ms: 43.638192
+      type: 'test'
+      ...
+    # Subtest: uses initial perception for prologue decisions and reaction-only aftermath
+    ok 13 - uses initial perception for prologue decisions and reaction-only aftermath
+      ---
+      duration_ms: 21.0666
+      type: 'test'
+      ...
+    # Subtest: applies the administrator history window only to character context
+    ok 14 - applies the administrator history window only to character context
+      ---
+      duration_ms: 14.373075
+      type: 'test'
+      ...
+    # Subtest: does not publish or remember an agent line that the world blocks
+    ok 15 - does not publish or remember an agent line that the world blocks
+      ---
+      duration_ms: 25.483671
+      type: 'test'
+      ...
+    # Subtest: continues the eligible side when the other side has no self-directed action
+    ok 16 - continues the eligible side when the other side has no self-directed action
+      ---
+      duration_ms: 32.052058
+      type: 'test'
+      ...
+    # Subtest: carries committed utterances into the next agent perception without a provider
+    ok 17 - carries committed utterances into the next agent perception without a provider
+      ---
+      duration_ms: 27.711228
+      type: 'test'
+      ...
+    # Subtest: keeps committed speech within the perception limit and continues from the current registry
+    ok 18 - keeps committed speech within the perception limit and continues from the current registry
+      ---
+      duration_ms: 24.701426
+      type: 'test'
+      ...
+    # Subtest: rejects expression commit atomically when current projection continuity is invalid
+    ok 19 - rejects expression commit atomically when current projection continuity is invalid
+      ---
+      duration_ms: 17.40867
+      type: 'test'
+      ...
+    # Subtest: keeps character facts authoritative while accepting placement and punctuation
+    ok 20 - keeps character facts authoritative while accepting placement and punctuation
+      ---
+      duration_ms: 4.956632
+      type: 'test'
+      ...
+    # Subtest: accepts narrator-authored display labels without changing canonical speech
+    ok 21 - accepts narrator-authored display labels without changing canonical speech
+      ---
+      duration_ms: 0.822293
+      type: 'test'
+      ...
+    # Subtest: keeps scene-grounded third-party speech without treating it as canonical A/B speech
+    ok 22 - keeps scene-grounded third-party speech without treating it as canonical A/B speech
+      ---
+      duration_ms: 0.425761
+      type: 'test'
+      ...
+    # Subtest: keeps actual speech in private continuity regardless of public rendering
+    ok 23 - keeps actual speech in private continuity regardless of public rendering
+      ---
+      duration_ms: 1.672102
+      type: 'test'
+      ...
+    # Subtest: accepts a V2 utterance while rejecting only its invalid action
+    ok 24 - accepts a V2 utterance while rejecting only its invalid action
+      ---
+      duration_ms: 1.173991
+      type: 'test'
+      ...
+    # Subtest: accepts actual speech but rejects an action outside the server list
+    ok 25 - accepts actual speech but rejects an action outside the server list
+      ---
+      duration_ms: 1.038075
+      type: 'test'
+      ...
+    # Subtest: records action proposal acceptance and targeted rejection reasons
+    ok 26 - records action proposal acceptance and targeted rejection reasons
+      ---
+      duration_ms: 3.203437
+      type: 'test'
+      ...
+    # Subtest: writes reflect analysis into battle-volatile memory only
+    ok 27 - writes reflect analysis into battle-volatile memory only
+      ---
+      duration_ms: 31.997878
+      type: 'test'
+      ...
+    # Subtest: keeps valid state and speech when an OpenAI-compatible action proposal is invalid
+    ok 28 - keeps valid state and speech when an OpenAI-compatible action proposal is invalid
+      ---
+      duration_ms: 25.224939
+      type: 'test'
+      ...
+    # Subtest: overrides contradictory continuity with canonical self names
+    ok 29 - overrides contradictory continuity with canonical self names
+      ---
+      duration_ms: 0.994862
+      type: 'test'
+      ...
+    # Subtest: bounds invalid or out-of-range narrator placement
+    ok 30 - bounds invalid or out-of-range narrator placement
+      ---
+      duration_ms: 0.446657
+      type: 'test'
+      ...
+    # Subtest: builds turn-limit input only from committed records
+    ok 31 - builds turn-limit input only from committed records
+      ---
+      duration_ms: 3.153919
+      type: 'test'
+      ...
+    # Subtest: persists one canonical adjudication independent of presentation inputs
+    ok 32 - persists one canonical adjudication independent of presentation inputs
+      ---
+      duration_ms: 7.989697
+      type: 'test'
+      ...
+    # Subtest: commits ordered combat and judgment receipts from frozen canonical facts
+    ok 33 - commits ordered combat and judgment receipts from frozen canonical facts
+      ---
+      duration_ms: 12.334189
+      type: 'test'
+      ...
+    # Subtest: projects only factor identity and discards raw adjudication prose
+    ok 34 - projects only factor identity and discards raw adjudication prose
+      ---
+      duration_ms: 4.901904
+      type: 'test'
+      ...
+    # Subtest: projects draw and inconsistent winner facts without exposing internals
+    ok 35 - projects draw and inconsistent winner facts without exposing internals
+      ---
+      duration_ms: 2.415317
+      type: 'test'
+      ...
+    # Subtest: keeps only the exact outcome immutable across narration styles
+    ok 36 - keeps only the exact outcome immutable across narration styles
+      ---
+      duration_ms: 0.917406
+      type: 'test'
+      ...
+    # Subtest: inserts one immutable aftermath result and rejects invented outcomes or speech
+    ok 37 - inserts one immutable aftermath result and rejects invented outcomes or speech
+      ---
+      duration_ms: 1.611353
+      type: 'test'
+      ...
+    1..37
+ok 98 - character-authored public speech
+  ---
+  duration_ms: 882.039326
+  type: 'suite'
+  ...
+# Subtest: focused authoring through the real owner command and worker
+    # Subtest: generates a complete owner candidate through HTTP and activates only the explicitly confirmed digest
+    ok 1 - generates a complete owner candidate through HTTP and activates only the explicitly confirmed digest
+      ---
+      duration_ms: 864.9887
+      type: 'test'
+      ...
+    # Subtest: routes a create HTTP command through bounded focused recovery and persists failure without legacy calls
+    ok 2 - routes a create HTTP command through bounded focused recovery and persists failure without legacy calls
+      ---
+      duration_ms: 232.277131
+      type: 'test'
+      ...
+    # Subtest: resumes a previously registered eight-call create without upgrading its frozen allowance
+    ok 3 - resumes a previously registered eight-call create without upgrading its frozen allowance
+      ---
+      duration_ms: 186.874774
+      type: 'test'
+      ...
+    # Subtest: routes an appearance revision from the real owner HTTP command to a non-current review candidate
+    ok 4 - routes an appearance revision from the real owner HTTP command to a non-current review candidate
+      ---
+      duration_ms: 295.736717
+      type: 'test'
+      ...
+    # Subtest: does not generate a candidate for ambiguous, multi-area, or invalid scope
+    ok 5 - does not generate a candidate for ambiguous, multi-area, or invalid scope
+      ---
+      duration_ms: 199.422427
+      type: 'test'
+      ...
+    # Subtest: carries changed-role migration meaning through the real worker into a review candidate
+    ok 6 - carries changed-role migration meaning through the real worker into a review candidate
+      ---
+      duration_ms: 102.656889
+      type: 'test'
+      ...
+    # Subtest: routes an exact ready V2 upgrade command into focused migration without activating it
+    ok 7 - routes an exact ready V2 upgrade command into focused migration without activating it
+      ---
+      duration_ms: 419.865128
+      type: 'test'
+      ...
+    # Subtest: lets the owner accept the exact focused migration candidate for Stage-scoped V3 selection
+    ok 8 - lets the owner accept the exact focused migration candidate for Stage-scoped V3 selection
+      ---
+      duration_ms: 330.311227
+      type: 'test'
+      ...
+    # Subtest: rolls back V3 append when the frozen source pointer drifts before owner acceptance
+    ok 9 - rolls back V3 append when the frozen source pointer drifts before owner acceptance
+      ---
+      duration_ms: 190.588209
+      type: 'test'
+      ...
+    # Subtest: carries an optional legacy meaning deferral through the real upgrade route
+    ok 10 - carries an optional legacy meaning deferral through the real upgrade route
+      ---
+      duration_ms: 139.924706
+      type: 'test'
+      ...
+    # Subtest: retries a failed owner command from the same source with a new attempt and idempotent replay
+    ok 11 - retries a failed owner command from the same source with a new attempt and idempotent replay
+      ---
+      duration_ms: 207.894568
+      type: 'test'
+      ...
+    # Subtest: corrects a verified structural-only legacy review in a new run while preserving its predecessor
+    ok 12 - corrects a verified structural-only legacy review in a new run while preserving its predecessor
+      ---
+      duration_ms: 411.425442
+      type: 'test'
+      ...
+    # Subtest: inherits disclosure from the exact frozen generation when correcting an old revision
+    ok 13 - inherits disclosure from the exact frozen generation when correcting an old revision
+      ---
+      duration_ms: 370.039627
+      type: 'test'
+      ...
+    # Subtest: retries a failed correction from its frozen reviewed candidate without editing the predecessor
+    ok 14 - retries a failed correction from its frozen reviewed candidate without editing the predecessor
+      ---
+      duration_ms: 522.826841
+      type: 'test'
+      ...
+    # Subtest: persists source-drift failure in both lifecycles before any dispatch
+    ok 15 - persists source-drift failure in both lifecycles before any dispatch
+      ---
+      duration_ms: 17.201025
+      type: 'test'
+      ...
+    1..15
+ok 99 - focused authoring through the real owner command and worker
+  ---
+  duration_ms: 4556.268688
+  type: 'suite'
+  ...
+# [image] route_hit asset=portrait-character
+# [image] route_hit asset=portrait-character
+# [characters/image] test provider failure
+# [image] route_error asset=portrait-character test provider failure
+# Subtest: V3 portrait owner lifecycle
+    # Subtest: generates an immutable V3 revision, keeps definition/profile and replays without provider work
+    ok 1 - generates an immutable V3 revision, keeps definition/profile and replays without provider work
+      ---
+      duration_ms: 672.175095
+      type: 'test'
+      ...
+    # Subtest: rejects stale and non-owner activation without moving the pointer, then switches only the portrait
+    ok 2 - rejects stale and non-owner activation without moving the pointer, then switches only the portrait
+      ---
+      duration_ms: 101.554217
+      type: 'test'
+      ...
+    # Subtest: rejects active authoring and provider failure without appending a generation
+    ok 3 - rejects active authoring and provider failure without appending a generation
+      ---
+      duration_ms: 50.520526
+      type: 'test'
+      ...
+    1..3
+ok 100 - V3 portrait owner lifecycle
+  ---
+  duration_ms: 926.742657
+  type: 'suite'
+  ...
+# Subtest: V2 display without ordinary writes
+    # Subtest: serves the bound old profile despite invalid executable battle data and retains access controls
+    ok 1 - serves the bound old profile despite invalid executable battle data and retains access controls
+      ---
+      duration_ms: 58.115049
+      type: 'test'
+      ...
+    # Subtest: keeps current old-version display available
+    ok 2 - keeps current old-version display available
+      ---
+      duration_ms: 15.801223
+      type: 'test'
+      ...
+    # Subtest: does not advertise unavailable migration or create an attempt when it is requested
+    ok 3 - does not advertise unavailable migration or create an attempt when it is requested
+      ---
+      duration_ms: 14.566138
+      type: 'test'
+      ...
+    # Subtest: rejects every ordinary owner mutation before creating attempts or changing the row
+    ok 4 - rejects every ordinary owner mutation before creating attempts or changing the row
+      ---
+      duration_ms: 35.669035
+      type: 'test'
+      ...
+    # Subtest: rejects programmatic V2 creation and updates without changing stored rows
+    ok 5 - rejects programmatic V2 creation and updates without changing stored rows
+      ---
+      duration_ms: 3.818397
+      type: 'test'
+      ...
+    # Subtest: retires dormant V2 provider generation before touching the provider or reporting work
+    ok 6 - retires dormant V2 provider generation before touching the provider or reporting work
+      ---
+      duration_ms: 1.910549
+      type: 'test'
+      ...
+    # Subtest: rejects V2 portrait writes and keeps full restore unavailable
+    ok 7 - rejects V2 portrait writes and keeps full restore unavailable
+      ---
+      duration_ms: 4.867324
+      type: 'test'
+      ...
+    # Subtest: rejects legacy generation writes through the real generic repository
+    ok 8 - rejects legacy generation writes through the real generic repository
+      ---
+      duration_ms: 24.132487
+      type: 'test'
+      ...
+    # Subtest: keeps historical fixture writes outside the runtime dependency graph
+    ok 9 - keeps historical fixture writes outside the runtime dependency graph
+      ---
+      duration_ms: 30.133727
+      type: 'test'
+      ...
+    # Subtest: preserves the legacy definition when saving bound battle accounting facts
+    ok 10 - preserves the legacy definition when saving bound battle accounting facts
+      ---
+      duration_ms: 6.0532
+      type: 'test'
+      ...
+    # Subtest: does not fall back to V2 creation or migration when no V3 authoring provider exists
+    ok 11 - does not fall back to V2 creation or migration when no V3 authoring provider exists
+      ---
+      duration_ms: 11.894295
+      type: 'test'
+      ...
+    # Subtest: rejects confirmation of a previously stored V2 candidate without changing its generation
+    ok 12 - rejects confirmation of a previously stored V2 candidate without changing its generation
+      ---
+      duration_ms: 23.038627
+      type: 'test'
+      ...
+    # Subtest: retains direct validated V3 candidate preparation and activation
+    ok 13 - retains direct validated V3 candidate preparation and activation
+      ---
+      duration_ms: 45.751156
+      type: 'test'
+      ...
+    # Subtest: keeps a bound V2 profile independent of the owner's current V3 generation
+    ok 14 - keeps a bound V2 profile independent of the owner's current V3 generation
+      ---
+      duration_ms: 27.56514
+      type: 'test'
+      ...
+    1..14
+ok 101 - V2 display without ordinary writes
+  ---
+  duration_ms: 311.280693
+  type: 'suite'
+  ...
+# Subtest: compacts schema constraints without changing bounds or confusing enum strings with JSON literals
+ok 102 - compacts schema constraints without changing bounds or confusing enum strings with JSON literals
+  ---
+  duration_ms: 3.366085
+  type: 'test'
+  ...
+# Subtest: preserves restrictive and preference norm values through the V3 profile adapter
+ok 103 - preserves restrictive and preference norm values through the V3 profile adapter
+  ---
+  duration_ms: 34.242928
+  type: 'test'
+  ...
+# Subtest: keeps previous profile facts exact when guidance has no explicit public permission
+ok 104 - keeps previous profile facts exact when guidance has no explicit public permission
+  ---
+  duration_ms: 17.376602
+  type: 'test'
+  ...
+# Subtest: projects only explicitly public unconditional guidance statements
+ok 105 - projects only explicitly public unconditional guidance statements
+  ---
+  duration_ms: 24.356914
+  type: 'test'
+  ...
+# Subtest: accepts a real V3 candidate with a guidance-backed unchanged public statement
+ok 106 - accepts a real V3 candidate with a guidance-backed unchanged public statement
+  ---
+  duration_ms: 29.353073
+  type: 'test'
+  ...
+# Subtest: requires generated profile and independent claim receipt before a complete focused result
+ok 107 - requires generated profile and independent claim receipt before a complete focused result
+  ---
+  duration_ms: 73.374331
+  type: 'test'
+  ...
+# Subtest: invalidates both profile products when definition or disclosure changes and preserves unchanged state
+ok 108 - invalidates both profile products when definition or disclosure changes and preserves unchanged state
+  ---
+  duration_ms: 60.806264
+  type: 'test'
+  ...
+# Subtest: rejects generated facts without public support and description outside its segments
+ok 109 - rejects generated facts without public support and description outside its segments
+  ---
+  duration_ms: 30.857183
+  type: 'test'
+  ...
+# Subtest: requires exactly one clean independent assessment of every segment
+ok 110 - requires exactly one clean independent assessment of every segment
+  ---
+  duration_ms: 88.951508
+  type: 'test'
+  ...
+# Subtest: gives profile work only approved public facts, with no raw owner source
+ok 111 - gives profile work only approved public facts, with no raw owner source
+  ---
+  duration_ms: 28.960168
+  type: 'test'
+  ...
+# Subtest: rejects restored progress whose digest or claim validation no longer matches its inputs
+ok 112 - rejects restored progress whose digest or claim validation no longer matches its inputs
+  ---
+  duration_ms: 27.956885
+  type: 'test'
+  ...
+# Subtest: preserves structural-only correction sources without inventing profile receipts
+ok 113 - preserves structural-only correction sources without inventing profile receipts
+  ---
+  duration_ms: 45.015225
+  type: 'test'
+  ...
+# Subtest: ADR-0028 private agency state persistence
+    # Subtest: keeps retired legacy characters blocked from new battle creation
+    ok 1 - keeps retired legacy characters blocked from new battle creation
+      ---
+      duration_ms: 285.406986
+      type: 'test'
+      ...
+    # Subtest: runs V3 service acceptance, SQLite reload, second judgment and stale-save rejection together
+    ok 2 - runs V3 service acceptance, SQLite reload, second judgment and stale-save rejection together
+      ---
+      duration_ms: 153.324211
+      type: 'test'
+      ...
+    # Subtest: persists initial and second accepted decisions via real SQLite and rejects stale CAS
+    ok 3 - persists initial and second accepted decisions via real SQLite and rejects stale CAS
+      ---
+      duration_ms: 91.990163
+      type: 'test'
+      ...
+    1..3
+ok 114 - ADR-0028 private agency state persistence
+  ---
+  duration_ms: 532.976912
+  type: 'suite'
+  ...
+# [llm] agency-fixture ready engine=fixture fast=fixture
+# [llm] agency-fixture ready engine=fixture fast=fixture
+# [llm] agency-fixture ready engine=fixture fast=fixture
+# [llm] agency-fixture ready engine=fixture fast=fixture
+# [llm] agency-fixture ready engine=fixture fast=fixture
+# [llm] agency-fixture ready engine=fixture fast=fixture
+# [llm] agency-fixture ready engine=fixture fast=fixture
+# [battle] character agents skipped: no observer-safe action available
+# [battle] character agents skipped: no observer-safe action available
+# [llm] agency-fixture ready engine=fixture fast=fixture
+# Subtest: ADR-0028 V3 runtime routing (network replaced, not model-quality evidence)
+    # Subtest: prologue: one conscious request, no psyche request, no old free-text input
+    ok 1 - prologue: one conscious request, no psyche request, no old free-text input
+      ---
+      duration_ms: 126.608888
+      type: 'test'
+      ...
+    # Subtest: turn: one conscious request, no psyche request, no old free-text input
+    ok 2 - turn: one conscious request, no psyche request, no old free-text input
+      ---
+      duration_ms: 79.437305
+      type: 'test'
+      ...
+    # Subtest: aftermath: one conscious request, no psyche request, no old free-text input
+    ok 3 - aftermath: one conscious request, no psyche request, no old free-text input
+      ---
+      duration_ms: 45.371037
+      type: 'test'
+      ...
+    # Subtest: passes the accepted prior decision to the next call, permits repeated speech, and keeps private goal out of public DTO
+    ok 4 - passes the accepted prior decision to the next call, permits repeated speech, and keeps private goal out of public DTO
+      ---
+      duration_ms: 100.4605
+      type: 'test'
+      ...
+    # Subtest: retains valid speech independently of rejected goal/intent/action
+    ok 5 - retains valid speech independently of rejected goal/intent/action
+      ---
+      duration_ms: 44.014326
+      type: 'test'
+      ...
+    # Subtest: rejects tuple drift before dispatch and never silently falls back
+    ok 6 - rejects tuple drift before dispatch and never silently falls back
+      ---
+      duration_ms: 33.693131
+      type: 'test'
+      ...
+    # Subtest: disabled and missing observation do not dispatch, missing input holds reaction
+    ok 7 - disabled and missing observation do not dispatch, missing input holds reaction
+      ---
+      duration_ms: 62.679371
+      type: 'test'
+      ...
+    # Subtest: later reuses agency/reaction without ticking and excludes private/extra envelope keys
+    ok 8 - later reuses agency/reaction without ticking and excludes private/extra envelope keys
+      ---
+      duration_ms: 46.396313
+      type: 'test'
+      ...
+    # Subtest: rejects V3 legacy override before activation
+    ok 9 - rejects V3 legacy override before activation
+      ---
+      duration_ms: 35.28914
+      type: 'test'
+      ...
+    1..9
+ok 115 - ADR-0028 V3 runtime routing (network replaced, not model-quality evidence)
+  ---
+  duration_ms: 578.823697
+  type: 'suite'
+  ...
+# Subtest: multi-instance battle leases
+    # Subtest: allows one owner at a time and permits takeover after expiry
+    ok 1 - allows one owner at a time and permits takeover after expiry
+      ---
+      duration_ms: 4.853252
+      type: 'test'
+      ...
+    # Subtest: rejects a checkpoint write after the lease fencing token changes
+    ok 2 - rejects a checkpoint write after the lease fencing token changes
+      ---
+      duration_ms: 18.606843
+      type: 'test'
+      ...
+    1..2
+ok 116 - multi-instance battle leases
+  ---
+  duration_ms: 25.514858
+  type: 'suite'
+  ...
+# Subtest: shared idempotency records
+    # Subtest: replays a completed response and rejects key reuse with another request
+    ok 1 - replays a completed response and rejects key reuse with another request
+      ---
+      duration_ms: 6.318645
+      type: 'test'
+      ...
+    1..1
+ok 117 - shared idempotency records
+  ---
+  duration_ms: 6.684971
+  type: 'suite'
+  ...
+# Subtest: e2e session mint
+    # Subtest: allows only administrators and developers to mint
+    ok 1 - allows only administrators and developers to mint
+      ---
+      duration_ms: 1.676679
+      type: 'test'
+      ...
+    # Subtest: rotates a new password, keeps the fixture identity, and writes a non-secret audit
+    ok 2 - rotates a new password, keeps the fixture identity, and writes a non-secret audit
+      ---
+      duration_ms: 108.07824
+      type: 'test'
+      ...
+    # Subtest: fails closed when the fixture application user is missing
+    ok 3 - fails closed when the fixture application user is missing
+      ---
+      duration_ms: 1.938669
+      type: 'test'
+      ...
+    1..3
+ok 118 - e2e session mint
+  ---
+  duration_ms: 114.965737
+  type: 'suite'
+  ...
+# [llm] xai ready engine=grok-4.5 fast=grok-4.3
+# [llm] openai ready engine=gpt-4.1 fast=gpt-4.1-mini
+# [llm] openai ready engine=gpt-6-luna fast=gpt-6-luna
+# [llm] xai ready engine=grok-4.5 fast=grok-4.3
+# [llm] xai/prepareBattleEncounter model=grok-4.5 ok 106ms
+# [llm] xai/awareness-v5:conscious model=grok-4.5 ok 36ms
+# [llm] xai/awareness-v5:conscious model=grok-4.5 ok 66ms
+# [llm] openai/awareness-v5:subconscious model=gpt-6-luna ok 56ms
+# [llm] openai/awareness-v5:subconscious model=gpt-6-luna ok 28ms
+# Subtest: persists usage-v2 for default creation and overrides a legacy provider's shorter timing
+ok 119 - persists usage-v2 for default creation and overrides a legacy provider's shorter timing
+  ---
+  duration_ms: 984.19186
+  type: 'test'
+  ...
+# Subtest: atomic dual-track rating settlement
+    # Subtest: rolls back both character tracks when canonical CAS fails (same owner)
+    ok 1 - rolls back both character tracks when canonical CAS fails (same owner)
+      ---
+      duration_ms: 217.431294
+      type: 'test'
+      ...
+    # Subtest: commits the existing accounting rules and returns the settled public state (same owner)
+    ok 2 - commits the existing accounting rules and returns the settled public state (same owner)
+      ---
+      duration_ms: 53.019204
+      type: 'test'
+      ...
+    # Subtest: rolls back both character tracks when canonical CAS fails (cross owner)
+    ok 3 - rolls back both character tracks when canonical CAS fails (cross owner)
+      ---
+      duration_ms: 56.288281
+      type: 'test'
+      ...
+    # Subtest: commits the existing accounting rules and returns the settled public state (cross owner)
+    ok 4 - commits the existing accounting rules and returns the settled public state (cross owner)
+      ---
+      duration_ms: 43.545
+      type: 'test'
+      ...
+    # Subtest: never mutates accounting for an incomplete match
+    ok 5 - never mutates accounting for an incomplete match
+      ---
+      duration_ms: 24.699525
+      type: 'test'
+      ...
+    1..5
+ok 120 - atomic dual-track rating settlement
+  ---
+  duration_ms: 398.939537
+  type: 'suite'
+  ...
+# Subtest: character V3 semantic authoring adapter
+    # Subtest: preserves the pending-copy digest ordering used by stored candidates
+    ok 1 - preserves the pending-copy digest ordering used by stored candidates
+      ---
+      duration_ms: 28.6991
+      type: 'test'
+      ...
+    # Subtest: rejects deferral when no consumer-scoped obligation is registered
+    ok 2 - rejects deferral when no consumer-scoped obligation is registered
+      ---
+      duration_ms: 7.707544
+      type: 'test'
+      ...
+    # Subtest: copies executable V2 fragments and keeps each changed-role claim unresolved
+    ok 3 - copies executable V2 fragments and keeps each changed-role claim unresolved
+      ---
+      duration_ms: 27.83152
+      type: 'test'
+      ...
+    # Subtest: closes a changed-role source claim only when an exact capsule copy exists
+    ok 4 - closes a changed-role source claim only when an exact capsule copy exists
+      ---
+      duration_ms: 10.034917
+      type: 'test'
+      ...
+    # Subtest: resolves discard-as-nonmaterial only for an exact frozen capsule copy
+    ok 5 - resolves discard-as-nonmaterial only for an exact frozen capsule copy
+      ---
+      duration_ms: 24.634008
+      type: 'test'
+      ...
+    # Subtest: accepts only optional registered legacy meaning deferral and retains it across refresh
+    ok 6 - accepts only optional registered legacy meaning deferral and retains it across refresh
+      ---
+      duration_ms: 22.047439
+      type: 'test'
+      ...
+    # Subtest: rejects pending preservation whose aggregate content exceeds 256 KiB
+    ok 7 - rejects pending preservation whose aggregate content exceeds 256 KiB
+      ---
+      duration_ms: 9.859645
+      type: 'test'
+      ...
+    # Subtest: builds a create baseline and requires skeleton work first
+    ok 8 - builds a create baseline and requires skeleton work first
+      ---
+      duration_ms: 6.945196
+      type: 'test'
+      ...
+    # Subtest: stages a skeleton identity replacement without touching portrait or combat
+    ok 9 - stages a skeleton identity replacement without touching portrait or combat
+      ---
+      duration_ms: 4.794217
+      type: 'test'
+      ...
+    # Subtest: rejects unknown portrait operations at decode
+    ok 10 - rejects unknown portrait operations at decode
+      ---
+      duration_ms: 5.20506
+      type: 'test'
+      ...
+    # Subtest: rejects appearance operations during the skeleton phase
+    ok 11 - rejects appearance operations during the skeleton phase
+      ---
+      duration_ms: 3.101495
+      type: 'test'
+      ...
+    # Subtest: hides the preservation capsule from create and revise tools
+    ok 12 - hides the preservation capsule from create and revise tools
+      ---
+      duration_ms: 2.445424
+      type: 'test'
+      ...
+    # Subtest: exposes the preservation capsule only on migrate ledger work
+    ok 13 - exposes the preservation capsule only on migrate ledger work
+      ---
+      duration_ms: 7.766519
+      type: 'test'
+      ...
+    # Subtest: reruns a compiler lens without changing the candidate
+    ok 14 - reruns a compiler lens without changing the candidate
+      ---
+      duration_ms: 6.454349
+      type: 'test'
+      ...
+    # Subtest: rejects complete_cluster while skeleton work is active
+    ok 15 - rejects complete_cluster while skeleton work is active
+      ---
+      duration_ms: 2.681072
+      type: 'test'
+      ...
+    # Subtest: does not resolve skeleton needs from a self-declared obligation list
+    ok 16 - does not resolve skeleton needs from a self-declared obligation list
+      ---
+      duration_ms: 2.196099
+      type: 'test'
+      ...
+    # Subtest: opens the requested revise cluster instead of finalizing an unchanged character
+    ok 17 - opens the requested revise cluster instead of finalizing an unchanged character
+      ---
+      duration_ms: 3.107381
+      type: 'test'
+      ...
+    # Subtest: repairs a registered action-norm dependant and rejects an unregistered extra field
+    ok 18 - repairs a registered action-norm dependant and rejects an unregistered extra field
+      ---
+      duration_ms: 5.97354
+      type: 'test'
+      ...
+    1..18
+ok 121 - character V3 semantic authoring adapter
+  ---
+  duration_ms: 190.050631
+  type: 'suite'
+  ...
+# Subtest: semantic authoring adapter conformance
+    # Subtest: F1 sparse create starts focused work for every family and completes family adapters
+    ok 1 - F1 sparse create starts focused work for every family and completes family adapters
+      ---
+      duration_ms: 20.244204
+      type: 'test'
+      ...
+    # Subtest: F2 revision of a named family definition does not reopen identity
+    ok 2 - F2 revision of a named family definition does not reopen identity
+      ---
+      duration_ms: 1.024076
+      type: 'test'
+      ...
+    # Subtest: F3 migrate exposes the capsule only on ledger work
+    ok 3 - F3 migrate exposes the capsule only on ledger work
+      ---
+      duration_ms: 1.011282
+      type: 'test'
+      ...
+    # Subtest: F4 focused repair retains prior valid work after a rejected proposal
+    ok 4 - F4 focused repair retains prior valid work after a rejected proposal
+      ---
+      duration_ms: 3.619309
+      type: 'test'
+      ...
+    # Subtest: F5 minor contradiction does not force an owner question
+    ok 5 - F5 minor contradiction does not force an owner question
+      ---
+      duration_ms: 1.772047
+      type: 'test'
+      ...
+    # Subtest: F6 protected contradiction maps to a question, not a silent review
+    ok 6 - F6 protected contradiction maps to a question, not a silent review
+      ---
+      duration_ms: 2.868786
+      type: 'test'
+      ...
+    # Subtest: F7 finalization is schema-gated after focused completion
+    ok 7 - F7 finalization is schema-gated after focused completion
+      ---
+      duration_ms: 11.867257
+      type: 'test'
+      ...
+    # Subtest: F8 restricted preservation is excluded from ordinary create consumers
+    ok 8 - F8 restricted preservation is excluded from ordinary create consumers
+      ---
+      duration_ms: 5.657557
+      type: 'test'
+      ...
+    # Subtest: F9 public attempt statuses stay unchanged during internal adoption
+    ok 9 - F9 public attempt statuses stay unchanged during internal adoption
+      ---
+      duration_ms: 1.182416
+      type: 'test'
+      ...
+    # Subtest: F10 counted steps accumulate across select and staging
+    ok 10 - F10 counted steps accumulate across select and staging
+      ---
+      duration_ms: 5.849973
+      type: 'test'
+      ...
+    # Subtest: F11 no-progress repetition and A-B oscillation are bounded
+    ok 11 - F11 no-progress repetition and A-B oscillation are bounded
+      ---
+      duration_ms: 0.768582
+      type: 'test'
+      ...
+    # Subtest: F12 temporary regression is not treated as mandatory every-step improvement
+    ok 12 - F12 temporary regression is not treated as mandatory every-step improvement
+      ---
+      duration_ms: 0.561941
+      type: 'test'
+      ...
+    # Subtest: F13 invalid proposals retain trusted state and corruption fails closed
+    ok 13 - F13 invalid proposals retain trusted state and corruption fails closed
+      ---
+      duration_ms: 4.876805
+      type: 'test'
+      ...
+    # Subtest: F14 timeout charges the reservation and ignores a late result
+    ok 14 - F14 timeout charges the reservation and ignores a late result
+      ---
+      duration_ms: 1.586305
+      type: 'test'
+      ...
+    # Subtest: records the route timeout through asynchronous execution without replaying the call
+    ok 15 - records the route timeout through asynchronous execution without replaying the call
+      ---
+      duration_ms: 48.895926
+      type: 'test'
+      ...
+    # Subtest: F15 failure receipts support source-based retry without answering a question
+    ok 16 - F15 failure receipts support source-based retry without answering a question
+      ---
+      duration_ms: 0.793762
+      type: 'test'
+      ...
+    1..16
+ok 122 - semantic authoring adapter conformance
+  ---
+  duration_ms: 120.486763
+  type: 'suite'
+  ...
+# [battles] advance start v3-battle-bound
+# [battles] advance ok v3-battle-bound turn=1 140ms aft=0
+# [battles] advance stream start v3-battle-bound
+# [battles] advance stream ok v3-battle-bound turn=2 96ms aft=0
+# [balance] battle ok v3-battle-bound turns=12 maxHit=15% earlyKo=0 oneShot=0 winner=b
+# [battles] startBattle failed MY_CHARACTER_V3_CAPABILITY_BLOCKED Error: MY_CHARACTER_V3_CAPABILITY_BLOCKED
+#     at resolveBattleParticipants (/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/battle-service.ts:604:49)
+#     at async startBattle (/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/battle-service.ts:633:7)
+#     at async <anonymous> (/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/routes.ts:2637:11)
+#     at async dispatch (file:///home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/node_modules/hono/dist/compose.js:22:17)
+#     at async requireUser (/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/auth.ts:233:3)
+#     at async dispatch (file:///home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/node_modules/hono/dist/compose.js:22:17)
+#     at async dispatch (file:///home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/node_modules/hono/dist/compose.js:22:17)
+#     at async file:///home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/node_modules/hono/dist/hono-base.js:308:25
+#     at async TestContext.<anonymous> (/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/v3-battle-creation.test.ts:345:27)
+#     at async Test.run (node:internal/test_runner/test:1054:7)
+# [battles] advance start btl_15badb7f34869b37514b401ec1f94efb
+# [battles] advance ok btl_15badb7f34869b37514b401ec1f94efb turn=0 153ms aft=0
+# [battles] advance stream start btl_15badb7f34869b37514b401ec1f94efb
+# [battles] advance stream ok btl_15badb7f34869b37514b401ec1f94efb turn=1 1026ms aft=0
+# Subtest: ADR-0039 V3 character battle binding
+    # Subtest: continues a historical V4 battle and keeps exact V3 character generations after pointer changes and reload
+    ok 1 - continues a historical V4 battle and keeps exact V3 character generations after pointer changes and reload
+      ---
+      duration_ms: 4691.115808
+      type: 'test'
+      ...
+    # Subtest: creates awareness-v5 with V3 characters and keeps their exact generations after pointer changes
+    ok 2 - creates awareness-v5 with V3 characters and keeps their exact generations after pointer changes
+      ---
+      duration_ms: 162.533728
+      type: 'test'
+      ...
+    # Subtest: advances a V4 battle whose frozen norms allow only free actions
+    ok 3 - advances a V4 battle whose frozen norms allow only free actions
+      ---
+      duration_ms: 89.429208
+      type: 'test'
+      ...
+    # Subtest: reserves repair durably without committing unfinished phase state and does not reset on reload
+    ok 4 - reserves repair durably without committing unfinished phase state and does not reset on reload
+      ---
+      duration_ms: 115.813575
+      type: 'test'
+      ...
+    1..4
+ok 123 - ADR-0039 V3 character battle binding
+  ---
+  duration_ms: 5060.368138
+  type: 'suite'
+  ...
+1..123
+# tests 470
+# suites 67
+# pass 470
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 38875.398923

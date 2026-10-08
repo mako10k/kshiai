@@ -1,0 +1,537 @@
+TAP version 13
+# Subtest: V5 accepts successful batch receipts after multiple no-send deferrals
+ok 1 - V5 accepts successful batch receipts after multiple no-send deferrals
+  ---
+  duration_ms: 3.885938
+  type: 'test'
+  ...
+# Subtest: V5 rejects failed, cancelled and unresolved receipts
+ok 2 - V5 rejects failed, cancelled and unresolved receipts
+  ---
+  duration_ms: 4.255094
+  type: 'test'
+  ...
+# Subtest: V5 rejects empty, zero, negative, noninteger or missing claim counts
+ok 3 - V5 rejects empty, zero, negative, noninteger or missing claim counts
+  ---
+  duration_ms: 3.198826
+  type: 'test'
+  ...
+# Subtest: V4 retains historical terminal statuses and exactly one attempt
+ok 4 - V4 retains historical terminal statuses and exactly one attempt
+  ---
+  duration_ms: 1.086281
+  type: 'test'
+  ...
+# Subtest: convergence evidence describes V5 terminal uniqueness without claiming one historical attempt
+ok 5 - convergence evidence describes V5 terminal uniqueness without claiming one historical attempt
+  ---
+  duration_ms: 5.639037
+  type: 'test'
+  ...
+# Subtest: persisted adjudication dispatch guard
+    # Subtest: quotes the exact request and persists its reservation before the physical send
+    ok 1 - quotes the exact request and persists its reservation before the physical send
+      ---
+      duration_ms: 564.345794
+      type: 'test'
+      ...
+    # Subtest: dispatches nothing without a verified proof and creates no reservation
+    ok 2 - dispatches nothing without a verified proof and creates no reservation
+      ---
+      duration_ms: 212.99896
+      type: 'test'
+      ...
+    # Subtest: retains the maximum reservation and physical slot when dispatch completion is unknown
+    ok 3 - retains the maximum reservation and physical slot when dispatch completion is unknown
+      ---
+      duration_ms: 124.809367
+      type: 'test'
+      ...
+    # Subtest: releases the physical slot after completion while retaining unknown dollar cost
+    ok 4 - releases the physical slot after completion while retaining unknown dollar cost
+      ---
+      duration_ms: 92.288213
+      type: 'test'
+      ...
+    # Subtest: refuses a proof that returns after the global deadline without sending or reserving
+    ok 5 - refuses a proof that returns after the global deadline without sending or reserving
+      ---
+      duration_ms: 92.865512
+      type: 'test'
+      ...
+    # Subtest: rejects a late completed judgment while retaining its maximum cost and releasing its physical slot
+    ok 6 - rejects a late completed judgment while retaining its maximum cost and releasing its physical slot
+      ---
+      duration_ms: 63.980385
+      type: 'test'
+      ...
+    # Subtest: keeps failure sticky even if a caller catches it and tries another dispatch
+    ok 7 - keeps failure sticky even if a caller catches it and tries another dispatch
+      ---
+      duration_ms: 85.32099
+      type: 'test'
+      ...
+    1..7
+ok 6 - persisted adjudication dispatch guard
+  ---
+  duration_ms: 1255.490508
+  type: 'suite'
+  ...
+# Subtest: observed adjudication retains an unpriced reservation and scoped role without a quote
+ok 7 - observed adjudication retains an unpriced reservation and scoped role without a quote
+  ---
+  duration_ms: 68.875839
+  type: 'test'
+  ...
+# Subtest: awareness physically committed expressions
+    # Subtest: commits selected reflex and conscious speech exactly and lets the other observer hear it
+    ok 1 - commits selected reflex and conscious speech exactly and lets the other observer hear it
+      ---
+      duration_ms: 595.656261
+      type: 'test'
+      ...
+    # Subtest: does not manufacture utterances, narrator sources or heard evidence when no voice was selected
+    ok 2 - does not manufacture utterances, narrator sources or heard evidence when no voice was selected
+      ---
+      duration_ms: 197.710646
+      type: 'test'
+      ...
+    # Subtest: suppresses physically blocked or absent voice and unconscious or incapacitated speakers
+    ok 3 - suppresses physically blocked or absent voice and unconscious or incapacitated speakers
+      ---
+      duration_ms: 394.22055
+      type: 'test'
+      ...
+    # Subtest: preserves canonical speech when the recipient cannot hear while withholding their sound percept
+    ok 4 - preserves canonical speech when the recipient cannot hear while withholding their sound percept
+      ---
+      duration_ms: 120.691527
+      type: 'test'
+      ...
+    # Subtest: assigns distinct utterance event IDs across ticks of the same public turn
+    ok 5 - assigns distinct utterance event IDs across ticks of the same public turn
+      ---
+      duration_ms: 68.148353
+      type: 'test'
+      ...
+    1..5
+ok 8 - awareness physically committed expressions
+  ---
+  duration_ms: 1394.074311
+  type: 'suite'
+  ...
+# Subtest: continues every phase and retained prompt revision through current transport publication
+ok 9 - continues every phase and retained prompt revision through current transport publication
+  ---
+  duration_ms: 2005.026795
+  type: 'test'
+  ...
+# Subtest: awareness narration queue policy
+    # Subtest: uses the bound long measurement window while preserving legacy timing defaults
+    ok 1 - uses the bound long measurement window while preserving legacy timing defaults
+      ---
+      duration_ms: 32.544268
+      type: 'test'
+      ...
+    # Subtest: flushes three ordered receipts in one batch and blocks a second physical call
+    ok 2 - flushes three ordered receipts in one batch and blocks a second physical call
+      ---
+      duration_ms: 18.6125
+      type: 'test'
+      ...
+    # Subtest: uses oldest six-second flush and immediate urgent or terminal flush
+    ok 3 - uses oldest six-second flush and immediate urgent or terminal flush
+      ---
+      duration_ms: 2.084537
+      type: 'test'
+      ...
+    # Subtest: retains a copied immutable source and idempotent exact receipt admission
+    ok 4 - retains a copied immutable source and idempotent exact receipt admission
+      ---
+      duration_ms: 15.602857
+      type: 'test'
+      ...
+    # Subtest: rejects a thirteenth pending beat and retains already published receipts
+    ok 5 - rejects a thirteenth pending beat and retains already published receipts
+      ---
+      duration_ms: 2.813576
+      type: 'test'
+      ...
+    # Subtest: stops on oldest publication deadline even while a physical call remains outstanding
+    ok 6 - stops on oldest publication deadline even while a physical call remains outstanding
+      ---
+      duration_ms: 1.647707
+      type: 'test'
+      ...
+    # Subtest: shortens terminal drain to the earliest global or receipt deadline
+    ok 7 - shortens terminal drain to the earliest global or receipt deadline
+      ---
+      duration_ms: 0.83951
+      type: 'test'
+      ...
+    # Subtest: publishes whole single-attempt coverage in receipt order and keeps later queued work
+    ok 8 - publishes whole single-attempt coverage in receipt order and keeps later queued work
+      ---
+      duration_ms: 3.769675
+      type: 'test'
+      ...
+    # Subtest: rejects incomplete, reordered or stale result coverage without partial publication
+    ok 9 - rejects incomplete, reordered or stale result coverage without partial publication
+      ---
+      duration_ms: 9.715364
+      type: 'test'
+      ...
+    # Subtest: keeps unknown physical termination occupied after logical failure
+    ok 10 - keeps unknown physical termination occupied after logical failure
+      ---
+      duration_ms: 2.387166
+      type: 'test'
+      ...
+    1..10
+ok 10 - awareness narration queue policy
+  ---
+  duration_ms: 112.12001
+  type: 'suite'
+  ...
+# Subtest: keeps a normal movement or ordinary world revision batchable
+ok 11 - keeps a normal movement or ordinary world revision batchable
+  ---
+  duration_ms: 306.892648
+  type: 'test'
+  ...
+# Subtest: flushes an actual consciousness impairment without a speech event
+ok 12 - flushes an actual consciousness impairment without a speech event
+  ---
+  duration_ms: 296.171059
+  type: 'test'
+  ...
+# Subtest: flushes an actual speech impairment without a speech event
+ok 13 - flushes an actual speech impairment without a speech event
+  ---
+  duration_ms: 240.642373
+  type: 'test'
+  ...
+# Subtest: flushes an actual vision impairment without a speech event
+ok 14 - flushes an actual vision impairment without a speech event
+  ---
+  duration_ms: 68.250727
+  type: 'test'
+  ...
+# Subtest: uses a bound 60-second narration request and publishes beyond the old 36-second window
+ok 15 - uses a bound 60-second narration request and publishes beyond the old 36-second window
+  ---
+  duration_ms: 1124.00243
+  type: 'test'
+  ...
+# Subtest: missing verified proof sends zero calls and never fabricates a presentation or changes world
+ok 16 - missing verified proof sends zero calls and never fabricates a presentation or changes world
+  ---
+  duration_ms: 139.193928
+  type: 'test'
+  ...
+# Subtest: publishes one batch while the world lease remains held
+ok 17 - publishes one batch while the world lease remains held
+  ---
+  duration_ms: 184.158899
+  type: 'test'
+  ...
+# Subtest: publishes a selected receipt and requeues an unselected input while the world lease remains held
+ok 18 - publishes a selected receipt and requeues an unselected input while the world lease remains held
+  ---
+  duration_ms: 253.190347
+  type: 'test'
+  ...
+# Subtest: requeues a preclaim flush wait and accepts only the fresh delivery generation
+ok 19 - requeues a preclaim flush wait and accepts only the fresh delivery generation
+  ---
+  duration_ms: 241.07097
+  type: 'test'
+  ...
+# Subtest: requeues an outstanding batch input without a second provider call
+ok 20 - requeues an outstanding batch input without a second provider call
+  ---
+  duration_ms: 92.029638
+  type: 'test'
+  ...
+# Subtest: requeues an unselected input after successful publication without touching its successor
+ok 21 - requeues an unselected input after successful publication without touching its successor
+  ---
+  duration_ms: 168.855844
+  type: 'test'
+  ...
+# Subtest: publishes three frozen receipts atomically with one call and one retained fee reservation
+ok 22 - publishes three frozen receipts atomically with one call and one retained fee reservation
+  ---
+  duration_ms: 223.237704
+  type: 'test'
+  ...
+# Subtest: tampered frozen input is rejected before dispatch
+ok 23 - tampered frozen input is rejected before dispatch
+  ---
+  duration_ms: 171.678151
+  type: 'test'
+  ...
+# Subtest: rejects partial batch coverage without publishing any receipt
+ok 24 - rejects partial batch coverage without publishing any receipt
+  ---
+  duration_ms: 233.645054
+  type: 'test'
+  ...
+# Subtest: expired publication window sends zero calls
+ok 25 - expired publication window sends zero calls
+  ---
+  duration_ms: 147.270462
+  type: 'test'
+  ...
+# Subtest: initial prologue uses its frozen typed phase and publishes through the V5 worker
+ok 26 - initial prologue uses its frozen typed phase and publishes through the V5 worker
+  ---
+  duration_ms: 872.531888
+  type: 'test'
+  ...
+# Subtest: logical timeout retains physical occupancy and late completion only closes accounting
+ok 27 - logical timeout retains physical occupancy and late completion only closes accounting
+  ---
+  duration_ms: 189.23609
+  type: 'test'
+  ...
+# Subtest: closes a completed physical response rejected during validation while retaining unknown transport failures
+ok 28 - closes a completed physical response rejected during validation while retaining unknown transport failures
+  ---
+  duration_ms: 210.666886
+  type: 'test'
+  ...
+# Subtest: closes late observed response rejection after logical timeout without publishing its rejected result
+ok 29 - closes late observed response rejection after logical timeout without publishing its rejected result
+  ---
+  duration_ms: 86.198178
+  type: 'test'
+  ...
+# Subtest: persists recognition only with publication and quotes the next batch's actual public predecessor history
+ok 30 - persists recognition only with publication and quotes the next batch's actual public predecessor history
+  ---
+  duration_ms: 105.701869
+  type: 'test'
+  ...
+# Subtest: history-inclusive token admission rejects a second call without advancing narrator cognition
+ok 31 - history-inclusive token admission rejects a second call without advancing narrator cognition
+  ---
+  duration_ms: 157.826296
+  type: 'test'
+  ...
+# Subtest: splits mixed recognition targets so one subjective context never enters the other side's receipt
+ok 32 - splits mixed recognition targets so one subjective context never enters the other side's receipt
+  ---
+  duration_ms: 104.141205
+  type: 'test'
+  ...
+# Subtest: immutable observed policy dispatches without a price quote while retaining unknown cost
+ok 33 - immutable observed policy dispatches without a price quote while retaining unknown cost
+  ---
+  duration_ms: 56.328295
+  type: 'test'
+  ...
+# Subtest: atomic awareness world commit
+    # Subtest: rolls back all writes when the actual clock crosses the deadline inside the transaction
+    ok 1 - rolls back all writes when the actual clock crosses the deadline inside the transaction
+      ---
+      duration_ms: 303.080349
+      type: 'test'
+      ...
+    # Subtest: rejects a prepared world commit at the global deadline without writing either store
+    ok 2 - rejects a prepared world commit at the global deadline without writing either store
+      ---
+      duration_ms: 101.754478
+      type: 'test'
+      ...
+    # Subtest: requires the exact prepared boundary and leaves both stores unchanged on mismatch
+    ok 3 - requires the exact prepared boundary and leaves both stores unchanged on mismatch
+      ---
+      duration_ms: 88.053562
+      type: 'test'
+      ...
+    # Subtest: rejects an early prepared marker before the latent cutoff has committed
+    ok 4 - rejects an early prepared marker before the latent cutoff has committed
+      ---
+      duration_ms: 84.418281
+      type: 'test'
+      ...
+    # Subtest: rolls back the sidecar update when canonical revision CAS fails
+    ok 5 - rolls back the sidecar update when canonical revision CAS fails
+      ---
+      duration_ms: 130.30079
+      type: 'test'
+      ...
+    # Subtest: preserves a ready thought and accounting that arrive after subjective preparation
+    ok 6 - preserves a ready thought and accounting that arrive after subjective preparation
+      ---
+      duration_ms: 147.793983
+      type: 'test'
+      ...
+    # Subtest: persists technical incomplete without advancing canonical turn or assigning a winner
+    ok 7 - persists technical incomplete without advancing canonical turn or assigning a winner
+      ---
+      duration_ms: 191.591886
+      type: 'test'
+      ...
+    # Subtest: rejects turn mutation disguised as technical incomplete and preserves both stores
+    ok 8 - rejects turn mutation disguised as technical incomplete and preserves both stores
+      ---
+      duration_ms: 68.449191
+      type: 'test'
+      ...
+    # Subtest: rejects world mutation disguised as technical incomplete and preserves both stores
+    ok 9 - rejects world mutation disguised as technical incomplete and preserves both stores
+      ---
+      duration_ms: 72.89058
+      type: 'test'
+      ...
+    # Subtest: invalidates outstanding thought generations on canonical terminal completion
+    ok 10 - invalidates outstanding thought generations on canonical terminal completion
+      ---
+      duration_ms: 82.558124
+      type: 'test'
+      ...
+    1..10
+ok 34 - atomic awareness world commit
+  ---
+  duration_ms: 1276.237604
+  type: 'suite'
+  ...
+# Subtest: guarded narration causal projection wiring
+    # Subtest: omits the projection in off mode without changing the turn
+    ok 1 - omits the projection in off mode without changing the turn
+      ---
+      duration_ms: 200.249247
+      type: 'test'
+      ...
+    # Subtest: builds one narrator-only projection in guarded mode
+    ok 2 - builds one narrator-only projection in guarded mode
+      ---
+      duration_ms: 144.105039
+      type: 'test'
+      ...
+    # Subtest: falls back to the legacy narrator input when committed evidence is invalid
+    ok 3 - falls back to the legacy narrator input when committed evidence is invalid
+      ---
+      duration_ms: 37.414141
+      type: 'test'
+      ...
+    1..3
+ok 35 - guarded narration causal projection wiring
+  ---
+  duration_ms: 385.661128
+  type: 'suite'
+  ...
+# Subtest: battle perception consumer wiring
+    # Subtest: applies battle-bound action norms without exposing internal receipts
+    ok 1 - applies battle-bound action norms without exposing internal receipts
+      ---
+      duration_ms: 136.939591
+      type: 'test'
+      ...
+    # Subtest: wires A and B only to their own frozen perception frame
+    ok 2 - wires A and B only to their own frozen perception frame
+      ---
+      duration_ms: 36.254127
+      type: 'test'
+      ...
+    # Subtest: grounds each agent in a frozen complete own profile
+    ok 3 - grounds each agent in a frozen complete own profile
+      ---
+      duration_ms: 36.825831
+      type: 'test'
+      ...
+    # Subtest: filters prologue and aftermath rendering anchors by narration focus
+    ok 4 - filters prologue and aftermath rendering anchors by narration focus
+      ---
+      duration_ms: 1.852801
+      type: 'test'
+      ...
+    # Subtest: selects static narrator context by focus and only carries committed manifestations
+    ok 5 - selects static narrator context by focus and only carries committed manifestations
+      ---
+      duration_ms: 61.042724
+      type: 'test'
+      ...
+    # Subtest: wires canonical profile and scene projections without mutating the sheet
+    ok 6 - wires canonical profile and scene projections without mutating the sheet
+      ---
+      duration_ms: 32.975962
+      type: 'test'
+      ...
+    # Subtest: reveals counterpart name and condition only at the frame's knowledge level
+    ok 7 - reveals counterpart name and condition only at the frame's knowledge level
+      ---
+      duration_ms: 67.968742
+      type: 'test'
+      ...
+    # Subtest: gives legacy-seeded consumers the visible setup counterpart
+    ok 8 - gives legacy-seeded consumers the visible setup counterpart
+      ---
+      duration_ms: 17.656745
+      type: 'test'
+      ...
+    1..8
+ok 36 - battle perception consumer wiring
+  ---
+  duration_ms: 396.549196
+  type: 'suite'
+  ...
+# Subtest: multi-instance battle leases
+    # Subtest: allows one owner at a time and permits takeover after expiry
+    ok 1 - allows one owner at a time and permits takeover after expiry
+      ---
+      duration_ms: 21.294073
+      type: 'test'
+      ...
+    # Subtest: rejects a checkpoint write after the lease fencing token changes
+    ok 2 - rejects a checkpoint write after the lease fencing token changes
+      ---
+      duration_ms: 40.631654
+      type: 'test'
+      ...
+    1..2
+ok 37 - multi-instance battle leases
+  ---
+  duration_ms: 82.395056
+  type: 'suite'
+  ...
+# Subtest: shared idempotency records
+    # Subtest: replays a completed response and rejects key reuse with another request
+    ok 1 - replays a completed response and rejects key reuse with another request
+      ---
+      duration_ms: 32.18781
+      type: 'test'
+      ...
+    1..1
+ok 38 - shared idempotency records
+  ---
+  duration_ms: 35.8841
+  type: 'suite'
+  ...
+# [llm] xai ready engine=grok-4.5 fast=grok-4.3
+# [llm] openai ready engine=gpt-4.1 fast=gpt-4.1-mini
+# [llm] openai ready engine=gpt-6-luna fast=gpt-6-luna
+# [llm] xai ready engine=grok-4.5 fast=grok-4.3
+# [llm] xai/prepareBattleEncounter model=grok-4.5 ok 220ms
+# [llm] xai/awareness-v5:conscious model=grok-4.5 ok 84ms
+# [llm] xai/awareness-v5:conscious model=grok-4.5 ok 128ms
+# [llm] openai/awareness-v5:subconscious model=gpt-6-luna ok 100ms
+# [llm] openai/awareness-v5:subconscious model=gpt-6-luna ok 60ms
+# Subtest: persists usage-v2 for default creation and overrides a legacy provider's shorter timing
+ok 39 - persists usage-v2 for default creation and overrides a legacy provider's shorter timing
+  ---
+  duration_ms: 1919.242757
+  type: 'test'
+  ...
+1..39
+# tests 77
+# suites 8
+# pass 77
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 8362.511213

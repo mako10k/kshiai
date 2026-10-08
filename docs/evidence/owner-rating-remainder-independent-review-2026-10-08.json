@@ -1,0 +1,28 @@
+{
+  "reviewer": "battle_helper_contract_review",
+  "verdict": "INSIDE",
+  "wholeFiles": 4,
+  "originalCases": 23,
+  "files": {
+    "packages/shared/src/rating.test.ts": "ea560c3b3641f3a3e156ab8568acbbdf75704cfb2b742ee3a118c302fa0e6f1f",
+    "frontend/src/match-rating.test.ts": "1267896f6290efe93c6e96f0d99e8f61021253f8c73841ce9514cf9c1ef5290a",
+    "backend/src/repositories/characters.test.ts": "3bace9c3766a651f31db306bb72eacc00a70b788817812f7c368c8f87664da0c",
+    "backend/src/services/rating-service-transaction.test.ts": "3e221c88bf7d3bb10e7787d2d17174cd59ed9b09f6fb1f1218175160354d5685",
+    "packages/shared/src/rating.ts": "bd2cedc5f6f7f57fcd344ffae96d6b5f9b5664935757f073f4106cedf2aa281e",
+    "frontend/src/match-rating.ts": "441306c1a95cabd43c1db1860ab4d8bd8617f7745631d5121659f13217bd48e9",
+    "backend/src/repositories/characters.ts": "3ea23344eefe964550f2a775beda786cff5bb03512444c14d38ce6d9839335ce",
+    "backend/src/services/rating-service.ts": "17912afa98143f0d52cecf2119d9da8949598e95339839d744aba1b3975e8e7f"
+  },
+  "scope": [
+    "Inherited Elo/dual tracks and current profile centering",
+    "Match rating/public versus overall/display",
+    "Owner character management/realm/profile population",
+    "Canonical transaction and both rating tracks rollback"
+  ],
+  "excluded": [
+    "Historical DTO population rebasing",
+    "New numerical policies/calibration",
+    "Live/deploy/paid",
+    "Missing historical snapshot reconstruction"
+  ]
+}

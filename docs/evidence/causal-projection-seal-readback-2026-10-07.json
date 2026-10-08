@@ -1,0 +1,14 @@
+{
+  "newRefs": 8,
+  "previousHeadsUnchanged": true,
+  "previousHeadCount": 840,
+  "totalRefs": 848,
+  "sourceBytesMatch": true,
+  "stale": 0,
+  "fsck": "ok",
+  "limitations": [
+    "Original17cases retained; no source or test changes required",
+    "Pure synthetic/shared tests; not provider, persistence or whole current pipeline acceptance",
+    "Design file binding applies only to named retained clauses; contradictory historical ordering/speech/winner clauses elsewhere not adopted"
+  ]
+}

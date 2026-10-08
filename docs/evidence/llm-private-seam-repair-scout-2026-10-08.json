@@ -1,0 +1,30 @@
+{
+  "reviewer": "/root/battle_helper_contract_review",
+  "scope": "Read-only planning scout, not implementation or final Seal review",
+  "files": {
+    "backend/src/llm/openai-compatible.ts": "8d4be097ddbfcb0da515dd0db402c7dc6dddccb763d625fce16165e7c524d2a5",
+    "backend/src/llm/openai-compatible-perception.test.ts": "03edace26ef0cc9a70c98eabf81df99522ee14a12ebd45e77fe40e164c302b05",
+    "backend/src/llm/openai-compatible-agent.test.ts": "463101d84b7d2e60830abd05d439285400704e484f7d800689c5cab9ea88d074",
+    "backend/src/llm/openai-compatible-routing.test.ts": "037328c8de574aac49ff18765002ecc14b785577ddd1af81b953d7ace2df3a45",
+    "backend/src/llm/openai-compatible-psyche-repair.test.ts": "4f142cca3295556e9c369f0522ae77701a00e60b8460b30dfab111f11c2143c0",
+    "backend/src/llm/mock.test.ts": "bff68bfca3e264fdd8a1c2a73f092b6c382781ac09c1e2d99d26072c16759a3c",
+    "backend/src/llm/fallback.test.ts": "311c1031ccd2d204c38c572bc943aaf57be4af7c7402dbcc91114af1e2e604ed"
+  },
+  "repairUnit": [
+    "openai-compatible-perception.test.ts",
+    "openai-compatible-agent.test.ts",
+    "openai-compatible-routing.test.ts"
+  ],
+  "typeEscapesMustClose": true,
+  "design": "Real provider public/protected-test-subclass methods with queued globalfetch fixture. Typed public SDK Completions.prototype.create wrapper records timeout options and forwards actual requests; original30k assertion remains. No production test API/privateclient casts.",
+  "routingTimeoutFeasible": true,
+  "sdkTypePointer": "backend/node_modules/openai/resources/chat/completions/completions.d.ts:56",
+  "otherCandidates": [
+    "openai-compatible-psyche-repair.test.ts",
+    "mock.test.ts",
+    "fallback.test.ts"
+  ],
+  "fallbackScope": "Legacy general router only; not awareness-v5 transport retry/fallback admission",
+  "implemented": false,
+  "sealed": false
+}

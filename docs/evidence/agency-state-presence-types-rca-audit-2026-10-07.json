@@ -1,0 +1,258 @@
+{
+  "thought_id": "docs-evidence-agency-state-presence-types-rca-2026-10-07",
+  "id_source": "file",
+  "report": {
+    "engine_version": "0.1.0",
+    "document_id": "docs-evidence-agency-state-presence-types-rca-2026-10-07",
+    "generated_at": "2026-10-07T08:27:13.739Z",
+    "summary": {
+      "fatal_count": 0,
+      "error_count": 0,
+      "warning_count": 0,
+      "info_count": 0,
+      "hint_count": 10
+    },
+    "results": [
+      {
+        "issue_id": "ISSUE-001",
+        "category": "contradiction_candidate",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "D1",
+            "role": "decision",
+            "step_id": "S-D1"
+          },
+          {
+            "ref_id": "D2",
+            "role": "decision",
+            "step_id": "S-D2"
+          }
+        ],
+        "message": "D1 と D2 は同一根拠 E1, E4, U1 を共有しており、緊張関係にある可能性がある。",
+        "rationale": "複数の decision が同じ based_on 参照を共有しているため、観点と結論の整合性を再確認するべきである。",
+        "metadata": {
+          "shared_refs": [
+            "E1",
+            "E4",
+            "U1"
+          ],
+          "line": 15,
+          "column": 10,
+          "end_column": 12
+        }
+      },
+      {
+        "issue_id": "ISSUE-002",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "P1",
+            "role": "problem"
+          }
+        ],
+        "message": "problem P1 は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 4,
+          "column": 3,
+          "text": "The exercised advanceCharacterAgents final canonical assembly asserts optional fields as CharacterAgentState rather than retaining their statically established presence.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-003",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "E1",
+            "role": "evidence",
+            "step_id": "S-E1"
+          }
+        ],
+        "message": "evidence E1 は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 6,
+          "column": 3,
+          "text": "Current service constructs stateAfterUtterances with acceptedA.state and acceptedB.state. Each is a typed CharacterAgentState. Two later reassignments spread this same local state and alter only perception fields, not agent fields.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-004",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "E2",
+            "role": "evidence",
+            "step_id": "S-E2"
+          }
+        ],
+        "message": "evidence E2 は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 8,
+          "column": 3,
+          "text": "The local variable is annotated BattleState, whose agentStateA/B are optional. Final conversation-history assembly casts each optional value as CharacterAgentState. Independent read-only review identifies these casts on the canonical state path.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-005",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "E3",
+            "role": "evidence",
+            "step_id": "S-E3"
+          }
+        ],
+        "message": "evidence E3 は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 10,
+          "column": 3,
+          "text": "Before repair all seventeen unchanged binding/runtime/persistence tests and strict imported TypeScript check pass. The fixtures cover existing agent states; the casts prevent checking the missing-state possibility at the final assembly. No production missing-state failure or historical introduction is observed.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-006",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "E4",
+            "role": "evidence",
+            "step_id": "S-E4"
+          }
+        ],
+        "message": "evidence E4 は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 12,
+          "column": 3,
+          "text": "Repository guidance requires closing contract-related type escapes found during a repair. The user asks to mechanically check handoffs through types and to preserve all original tests. No new state ownership, fallback or lifecycle rule is requested.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-007",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "U1",
+            "role": "premise",
+            "step_id": "S-U1"
+          }
+        ],
+        "message": "premise U1 は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 14,
+          "column": 3,
+          "text": "This finding is a static type-contract loss. It does not establish runtime data loss, actual absent agent states, or the cause of another pipeline incident. Existing raw unknown-record sanitization is independently schema-validated and is not this canonical state cast.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-008",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "D1",
+            "role": "decision",
+            "step_id": "S-D1"
+          }
+        ],
+        "message": "decision D1 は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 16,
+          "column": 3,
+          "text": "The producing condition is the broad local BattleState annotation erasing the two required initialized fields; the casts mask that type obligation. The trigger is an independent path review. Detection gap: successful existing fixtures and strict checks cannot reject an obligation deliberately asserted by casts.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-009",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "D2",
+            "role": "decision",
+            "step_id": "S-D2"
+          }
+        ],
+        "message": "decision D2 は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 18,
+          "column": 3,
+          "text": "Retain BattleState intersected with Required Pick of agentStateA/B for this local assembly, remove both casts, and keep every reassignment subject to that required type. No fallback, error branch or runtime behavior change. Reverify the seventeen original cases, related expression/state wiring suites, strict types and workspace types; read back the exact source and cause graph before accepting its Seal.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-010",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "D1",
+            "role": "decision",
+            "step_id": "S-D1"
+          },
+          {
+            "ref_id": "D2",
+            "role": "decision",
+            "step_id": "S-D2"
+          }
+        ],
+        "message": "D1 と D2 は意味的に近接している可能性がある。",
+        "metadata": {
+          "line": 15,
+          "column": 10,
+          "end_column": 12,
+          "similarity": 0.6874,
+          "semantic_distance": 0.3126,
+          "embedding_provider": "ollama",
+          "embedding_model": "nomic-embed-text"
+        }
+      }
+    ],
+    "query_results": []
+  }
+}

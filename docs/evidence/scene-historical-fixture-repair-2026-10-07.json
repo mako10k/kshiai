@@ -1,0 +1,31 @@
+{
+  "schema": "kshiai/historical-scene-fixture-repair/v1",
+  "authority": "docs/battle-consciousness-implementation-decisions-2026-10-05.md Q06: existing dynamic-v4 and earlier battles continue at their generation",
+  "test": "backend/src/services/scene-beat-wiring.test.ts",
+  "sha256": "76e81f3717ecb271da902e629e6cc44cb21454f154b5599ca712dcf998616490",
+  "change": "Seed the existing complete schema-2 historical fixture through insertNewBattle with its frozen dialogue snapshot; preserve current new-battle awareness-v5 creation. Check rejected unavailable skill, available basic-attack fallback, durable provider metadata and actual one physical test-provider invocation.",
+  "expectationCorrection": "Previous defend assertion disagreed with retained basic-attack preference; basic_attack is available in this fixture. No production selection change.",
+  "results": {
+    "sceneBeat": {
+      "passed": 7,
+      "failed": 0,
+      "skipped": 0
+    },
+    "fallback": {
+      "passed": 3,
+      "failed": 0,
+      "skipped": 0
+    },
+    "strictImportedPath": {
+      "exitCode": 0,
+      "log": "/tmp/kshiai-scene-strict-final.log"
+    },
+    "allWorkspaceTypecheck": {
+      "exitCode": 0,
+      "log": "docs/evidence/scene-historical-typecheck-2026-10-07.log"
+    }
+  },
+  "formalSceneSeal": "pending full scene-beat causal contract review",
+  "productionChanged": false,
+  "externalCalls": 0
+}

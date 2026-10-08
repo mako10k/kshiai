@@ -1,0 +1,156 @@
+{
+  "thought_id": "tmp-kshiai-ollama-test-rca",
+  "id_source": "file",
+  "report": {
+    "engine_version": "0.1.0",
+    "document_id": "tmp-kshiai-ollama-test-rca",
+    "generated_at": "2026-10-07T01:06:02.858Z",
+    "summary": {
+      "fatal_count": 0,
+      "error_count": 0,
+      "warning_count": 0,
+      "info_count": 0,
+      "hint_count": 6
+    },
+    "results": [
+      {
+        "issue_id": "ISSUE-001",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "OLLAMA_TEST_REPAIR",
+            "role": "domain"
+          }
+        ],
+        "message": "domain OLLAMA_TEST_REPAIR の description は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 2,
+          "column": 3,
+          "text": "Repair the diagnostic recursive-schema assertion without accepting draft provider authority.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-002",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "FAILURE",
+            "role": "evidence",
+            "step_id": "S-FAILURE"
+          }
+        ],
+        "message": "evidence FAILURE は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 4,
+          "column": 3,
+          "text": "LLM/image diagnostic236 cases:235pass1fail. Ollama test reads definitions at hardcoded name ending operations_items_properties_value; parse receives undefined.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-003",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "SHAPE",
+            "role": "evidence",
+            "step_id": "S-SHAPE"
+          }
+        ],
+        "message": "evidence SHAPE は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 6,
+          "column": 3,
+          "text": "Native schema inspection shows discriminated operation anyOf branches and recursive generic JSON now at operations_items_anyOf_2_properties_value. Six alternatives and array/object self references remain. Synthesize value references that definition. Runtime adapter produced the recursive schema; no HTTP executed.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-004",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "ALTERNATIVES",
+            "role": "premise",
+            "step_id": "S-ALTERNATIVES"
+          }
+        ],
+        "message": "premise ALTERNATIVES は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 8,
+          "column": 3,
+          "text": "Could be missing recursion in implementation or stale generated-name expectation. Inspection confirms recursive six-way definition exists and synthesize references it; only hardcoded name is absent. Trigger is operation-union representation and automatic helper naming. Detection gap: this test is provisional draft_basis and excluded from aggregate, separate from producing brittle expectation. Exact historical introducing commit not yet inspected.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-005",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "SCOPE",
+            "role": "premise",
+            "step_id": "S-SCOPE"
+          }
+        ],
+        "message": "premise SCOPE は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 10,
+          "column": 3,
+          "text": "Owner all-tests conformance authorizes test assertion repair. Follow synthesize value's definitions reference, assert six JSON branches and both recursive references. Do not change production adapter, semantic schema, provider endpoint or provisional authority status. Preserve old Seal history and record source divergence pending reviewed draft disposition.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-006",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "D1",
+            "role": "decision",
+            "step_id": "S-D1"
+          }
+        ],
+        "message": "decision D1 は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 12,
+          "column": 3,
+          "text": "Audit the supported immediate mechanism, replace only brittle generated-definition lookup with structural reference traversal and exact recursive assertions, rerun this test and affected LLM diagnostic. Keep draft basis unresolved; no promotion or live provider call.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      }
+    ],
+    "query_results": []
+  }
+}

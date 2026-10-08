@@ -1,0 +1,7 @@
+{
+  "schema": "sealgraph/fsck/v2",
+  "result": "ok",
+  "refs": 755,
+  "seals": 1388,
+  "blobs": 4408
+}

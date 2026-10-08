@@ -1,0 +1,18 @@
+{
+  "reviewer": "/root/llm_boundary_seal_audit",
+  "readOnly": true,
+  "decision": "same accepted decision receipt projection, not new adoption",
+  "verifiedAcceptedIdentityMatches": 4,
+  "constraints": [
+    "Append only formal ACCEPTANCE derived from existing OWNER_ACCEPTANCE",
+    "Preserve D1-D4/VERIFY and existing bytes",
+    "Do not revive suspended vt102 or discarded trial",
+    "No Stage/production/cloud/data-operation authority implied"
+  ],
+  "ownerRecordSha256": "5ef3a6de2e9cf125e5b8b0b39fc0a1a944b4c1e8697698cb430071f5729bfb3b",
+  "thinkSha256": "4e472cae4154be6cc77190dad31b6a662fce2a33d214f366039f05c2f6a673cf",
+  "configHashCorrection": {
+    "actual": "6b58fd9428c378fefee216abc3e7f062d9798a9cec9d28c8d2ac831fb3cdc750",
+    "reason": "reviewer transcription, not source change"
+  }
+}

@@ -1,0 +1,14 @@
+domain AuthObservationSeal:
+  description "Seal authenticated smoke and actual-usage verification helpers within observed local boundaries"
+problem P1:
+  "Three original wholefiles/seven cases have no verification mappings despite preserved accepted read/SSE/accounting contracts."
+evidence E1:
+  "Accepted ADR0043 preserves immutable historical reads and retires ordinary V2 mutations. ADR0057 retains API/SSE and requires actual V5 completion/usage evidence; ADR0051 preserves SDK token null/unknown and privacy. ADR0056 requires current effective output contracts."
+evidence E2:
+  "Independent review passes exact unchanged tests/producers. Private Node22 diagnostic7pass0fail0skip. Read probes are injected fetch; only main SSE case exercises real local Hono/auth/routes/SQLite terminal-error fixture; awareness verification uses typed synthetic runtime/usage rows."
+premise A1:
+  "Unit scopes cannot establish successful battle completion, actual SDK/DB usage persistence, live authentication/origin, public endpoints, prices or deployment. Old cutover trial remains discarded. All251 original files/cases/assertions remain required."
+decision D1 based_on P1, E1, E2, A1:
+  "Seal three scoped designs, actual helper producers and unchanged whole tests; link accepted roots and preserve all existing heads. Do not seal routes/DB whole implementation as if all paths were verified."
+decision D2 based_on D1, A1:
+  "Read exact sources/Causes/statuses/fsck, map only reviewed tests, recheck formal no-execution failure and full diagnostic inventory. Overall goal remains active and unresolved policies remain visible."

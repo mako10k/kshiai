@@ -1,0 +1,21 @@
+{
+  "reviewer": "battle_helper_contract_review",
+  "verdict": "INSIDE",
+  "contradictions": [],
+  "originalBattlePublicCases": 15,
+  "diagnosticCases": 20,
+  "files": {
+    "docs/rating-settlement-snapshot-design-2026-10-08.md": "c9aa6433707f6dcdc606d108af62abafd0ce052b7b393dc7bf982528bc31a1e4",
+    "backend/src/services/battle-public-projection.ts": "df6e8d86c696507428e05ce8eb370949b79726f58a6e266ae0ff0ecfa434dc56",
+    "backend/src/services/battle-service.ts": "b1cb72011a0b1c40872b4d56da313d4a01504a8e2a860dd96b087b2e7b712af1",
+    "backend/src/services/battle-public.test.ts": "2395441fbd8f6b1cd879eb6a132eab77b28cab569e1d99d6ae6514c5a976621a",
+    "backend/src/services/rating-service.ts": "17912afa98143f0d52cecf2119d9da8949598e95339839d744aba1b3975e8e7f"
+  },
+  "scope": "Stored contemporaneous settlement before/after/delta projected without current population normalization; viewer current population lookup removed; retained legacy track fallback and current profile normalization",
+  "excluded": [
+    "New storage or migration",
+    "Reconstruction of old displayed normalization",
+    "Settlement numerical changes",
+    "Live/deploy"
+  ]
+}

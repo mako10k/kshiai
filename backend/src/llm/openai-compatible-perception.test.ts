@@ -1,5 +1,7 @@
+// R: Verify independent acceptance of combined perception sections through the SDK request seam.
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
+import { Completions } from "openai/resources/chat/completions";
 import {
   ENVIRONMENT_PROPOSAL_SYSTEM_PROMPT,
   OpenAiCompatibleProvider,
@@ -9,7 +11,6 @@ import {
   COMBINED_PERCEPTION_SYSTEM_PROMPT,
   PERCEPTION_PROMPT_FIXTURES,
   WORLD_RECONCILIATION_SYSTEM_PROMPT,
-  type PerceptionPromptResponseFormat,
 } from "./perception-prompt-strategy.js";
 
 describe("XAI perception reconciliation", () => {
@@ -36,7 +37,26 @@ describe("XAI perception reconciliation", () => {
     );
   });
 
-  it("keeps a valid world patch when the combined sensory section is invalid", async () => {
+  it("keeps a valid world patch when the combined sensory section is invalid", async (t) => {
+    let observedSystem: unknown;
+    let observedResponseFormat: unknown;
+    const originalCreate = Completions.prototype.create;
+    t.mock.method(Completions.prototype, "create", function (
+      this: Completions,
+      ...args: Parameters<typeof originalCreate>
+    ): ReturnType<typeof originalCreate> {
+      observedSystem = args[0].messages[0]?.content;
+      observedResponseFormat = args[0].response_format;
+      return originalCreate.apply(this, args);
+    });
+    t.mock.method(globalThis, "fetch", async () => new Response(JSON.stringify({
+      choices: [{ message: { content: JSON.stringify({
+        patch: { operations: [] },
+        nextSituation: null,
+        sensoryEvidence: [{ invalid: true }],
+      }) } }],
+    }), { headers: { "content-type": "application/json" } }));
+    const fixture = PERCEPTION_PROMPT_FIXTURES[0]!;
     const provider = new OpenAiCompatibleProvider({
       name: "xai",
       apiKey: "test-only",
@@ -44,25 +64,6 @@ describe("XAI perception reconciliation", () => {
       modelEngine: "grok-4-fast-non-reasoning",
       modelFast: "grok-4-fast-non-reasoning",
     });
-    let observedSystem = "";
-    let observedResponseFormat: PerceptionPromptResponseFormat | undefined;
-    const privateProvider = provider as unknown as {
-      chatJson(
-        system: string,
-        user: string,
-        opts: { responseFormat?: PerceptionPromptResponseFormat },
-      ): Promise<unknown>;
-    };
-    privateProvider.chatJson = async (system, _user, opts) => {
-      observedSystem = system;
-      observedResponseFormat = opts.responseFormat;
-      return {
-        patch: { operations: [] },
-        nextSituation: null,
-        sensoryEvidence: [{ invalid: true }],
-      };
-    };
-    const fixture = PERCEPTION_PROMPT_FIXTURES[0]!;
     const result = await provider.reconcileTurnSemanticState({
       ...fixture.input,
       battlefield: undefined,
@@ -77,22 +78,21 @@ describe("XAI perception reconciliation", () => {
     assert.deepEqual(result.sensoryEvidence, []);
   });
 
-  it("keeps valid sensory evidence when the combined world section is invalid", async () => {
+  it("keeps valid sensory evidence when the combined world section is invalid", async (t) => {
+    const fixture = PERCEPTION_PROMPT_FIXTURES[0]!;
+    t.mock.method(globalThis, "fetch", async () => new Response(JSON.stringify({
+      choices: [{ message: { content: JSON.stringify({
+        patch: { operations: [{ op: "unsupported" }] },
+        nextSituation: null,
+        sensoryEvidence: fixture.expectedSensoryEvidence,
+      }) } }],
+    }), { headers: { "content-type": "application/json" } }));
     const provider = new OpenAiCompatibleProvider({
       name: "xai",
       apiKey: "test-only",
       baseUrl: "https://example.invalid/v1",
       modelEngine: "grok-4-fast-non-reasoning",
       modelFast: "grok-4-fast-non-reasoning",
-    });
-    const privateProvider = provider as unknown as {
-      chatJson(): Promise<unknown>;
-    };
-    const fixture = PERCEPTION_PROMPT_FIXTURES[0]!;
-    privateProvider.chatJson = async () => ({
-      patch: { operations: [{ op: "unsupported" }] },
-      nextSituation: null,
-      sensoryEvidence: fixture.expectedSensoryEvidence,
     });
     const result = await provider.reconcileTurnSemanticState({
       ...fixture.input,

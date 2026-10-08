@@ -1,0 +1,171 @@
+{
+  "entries": [
+    {
+      "key": "design-persistent-observation-bounded",
+      "path": "docs/persistent-capture-test-contract-review-2026-10-08.md",
+      "parents": [
+        "observation",
+        "waits",
+        "narration",
+        "identity"
+      ],
+      "scope": "Private observationclient guards only; historical12/89 arithmetic is not normal36tick/200policy. No publiccompletion, providercredentials, livecalls, deployment, pricing or exhaustiveschema claim.",
+      "ref": "all-tests-20261008/design-persistent-observation-bounded",
+      "test": false,
+      "sha256": "36744e0f30c1511d465b9ec79510a4252be6ee7cf3647ed0d8744a94edf42518",
+      "sealId": "7dfe6961efd96af67b598b99073d8910d2774c45889271d5d39c2879810f1d9d",
+      "causeSealIds": [
+        "f37d62dd130cf26f48ced720565c4fad035b93a3f3ad1c3e98943cdc9bf585d1",
+        "7f8ac50262580d0a94e13d82627be496f8e2e8fd059c194c4d93d84d2af28f43",
+        "78f9fec1b418020c221d67930654a6ead967fb85393603a544651cea83a61371",
+        "9a193a751c31ca13af8d4258564fadf6bab164f38170c1fd72e8ee6f9d61f990"
+      ]
+    },
+    {
+      "key": "design-historical-a2-capture-bounded",
+      "path": "docs/persistent-capture-test-contract-review-2026-10-08.md",
+      "parents": [
+        "retained"
+      ],
+      "scope": "HistoricalV2 capture-only schema/request reproducibility; typed transport override stops before network. Oldmodel/rates/options are artifactidentity, not current selection/pricing or permission to execute/write/activate.",
+      "ref": "all-tests-20261008/design-historical-a2-capture-bounded",
+      "test": false,
+      "sha256": "36744e0f30c1511d465b9ec79510a4252be6ee7cf3647ed0d8744a94edf42518",
+      "sealId": "6819bb639e55b0bbdfdc200a870475172c90568df6f6146edf6d394369f9cde6",
+      "causeSealIds": [
+        "480c02403f61dc6a9cd7d54861639b962dbc3bde86673481e02e0defc8415e17"
+      ]
+    },
+    {
+      "key": "implementation-persistent-client-bounded",
+      "path": "backend/src/scripts/persistent-battle-e2e.ts",
+      "parents": [
+        "design-persistent-observation-bounded",
+        "policy",
+        "db"
+      ],
+      "scope": "Private observationclient guards only; historical12/89 arithmetic is not normal36tick/200policy. No publiccompletion, providercredentials, livecalls, deployment, pricing or exhaustiveschema claim.",
+      "ref": "all-tests-20261008/implementation-persistent-client-bounded",
+      "test": false,
+      "sha256": "cbfb373590a3c99fda40176805f2d2b95ce07c15e33bdf5ffde2469094578b10",
+      "sealId": "b088922ab4f0f73fad2a0a7cf9632e4ba54143ee07f6dfbea313c15cce86531b",
+      "causeSealIds": [
+        "7dfe6961efd96af67b598b99073d8910d2774c45889271d5d39c2879810f1d9d",
+        "c064db895ea9f010d2f6fb28360b243285cbe93156c19f8286e161ec2d0d731a",
+        "29388522fd326751bb29a58fc9145bbf64bc1f96d80e2f54420065b80363d535"
+      ]
+    },
+    {
+      "key": "implementation-persistent-advance-bounded",
+      "path": "backend/src/scripts/persistent-battle-e2e-advance.ts",
+      "parents": [
+        "design-persistent-observation-bounded"
+      ],
+      "scope": "Private observationclient guards only; historical12/89 arithmetic is not normal36tick/200policy. No publiccompletion, providercredentials, livecalls, deployment, pricing or exhaustiveschema claim.",
+      "ref": "all-tests-20261008/implementation-persistent-advance-bounded",
+      "test": false,
+      "sha256": "7f781bf67a2b447578648647d430cb224f9494653b2bbfd3580f96a259fb67a4",
+      "sealId": "6b4a6e02e794658e9d5780f21100ebeb681f079d0fc8192da7ca8103bcf70cb7",
+      "causeSealIds": [
+        "7dfe6961efd96af67b598b99073d8910d2774c45889271d5d39c2879810f1d9d"
+      ]
+    },
+    {
+      "key": "implementation-normal-observation-bound",
+      "path": "backend/src/scripts/awareness-observation-advances.ts",
+      "parents": [
+        "design-persistent-observation-bounded",
+        "policy"
+      ],
+      "scope": "Private observationclient guards only; historical12/89 arithmetic is not normal36tick/200policy. No publiccompletion, providercredentials, livecalls, deployment, pricing or exhaustiveschema claim.",
+      "ref": "all-tests-20261008/implementation-normal-observation-bound",
+      "test": false,
+      "sha256": "28122676ecb21681f4a9356f160232f62bddde04f84240a47fa7e1cafef7b5c3",
+      "sealId": "829f59a87f7b45bfcc6982a3d8a5bc60ca23e551f78ac6f2c47ff7493268da64",
+      "causeSealIds": [
+        "7dfe6961efd96af67b598b99073d8910d2774c45889271d5d39c2879810f1d9d",
+        "c064db895ea9f010d2f6fb28360b243285cbe93156c19f8286e161ec2d0d731a"
+      ]
+    },
+    {
+      "key": "implementation-historical-a2-capture-bounded",
+      "path": "backend/src/scripts/character-authoring-a2-freeze.ts",
+      "parents": [
+        "design-historical-a2-capture-bounded",
+        "sdk",
+        "schema"
+      ],
+      "scope": "HistoricalV2 capture-only schema/request reproducibility; typed transport override stops before network. Oldmodel/rates/options are artifactidentity, not current selection/pricing or permission to execute/write/activate.",
+      "ref": "all-tests-20261008/implementation-historical-a2-capture-bounded",
+      "test": false,
+      "sha256": "30f41943dbcfacd2ad0bb8247fd6f87dd5ba0feb8669b988d89253abe231559c",
+      "sealId": "2b22a189f4d0208bbff9aedd3b2ae18c30263830fac3c6a2014a5752d67753b2",
+      "causeSealIds": [
+        "6819bb639e55b0bbdfdc200a870475172c90568df6f6146edf6d394369f9cde6",
+        "42b6ff80a71caa184ae9ccec1a087e025eb5e831d7e900d23bb08860ef918df4",
+        "f44e1e324e4106c510863a8af563cce4a7a06bf76e61f271bd54fba33d067bd4"
+      ]
+    },
+    {
+      "key": "persistent-battle-e2e-bounded-20261008",
+      "path": "backend/src/scripts/persistent-battle-e2e.test.ts",
+      "parents": [
+        "implementation-persistent-client-bounded",
+        "implementation-persistent-advance-bounded",
+        "implementation-normal-observation-bound",
+        "db"
+      ],
+      "scope": "Private observationclient guards only; historical12/89 arithmetic is not normal36tick/200policy. No publiccompletion, providercredentials, livecalls, deployment, pricing or exhaustiveschema claim.",
+      "ref": "verification/persistent-battle-e2e-bounded-20261008",
+      "test": true,
+      "sha256": "f66c6844461bb0c4b3c25851ed0beeddab1c28b4f284e795d2822259861df8d7",
+      "sealId": "80a2e7de5b1077749bd377f650eca25cf49db53584341cdeaceca2f1fc8340e1",
+      "causeSealIds": [
+        "b088922ab4f0f73fad2a0a7cf9632e4ba54143ee07f6dfbea313c15cce86531b",
+        "6b4a6e02e794658e9d5780f21100ebeb681f079d0fc8192da7ca8103bcf70cb7",
+        "829f59a87f7b45bfcc6982a3d8a5bc60ca23e551f78ac6f2c47ff7493268da64",
+        "29388522fd326751bb29a58fc9145bbf64bc1f96d80e2f54420065b80363d535"
+      ]
+    },
+    {
+      "key": "character-authoring-a2-freeze-bounded-20261008",
+      "path": "backend/src/scripts/character-authoring-a2-freeze.test.ts",
+      "parents": [
+        "implementation-historical-a2-capture-bounded",
+        "schema"
+      ],
+      "scope": "HistoricalV2 capture-only schema/request reproducibility; typed transport override stops before network. Oldmodel/rates/options are artifactidentity, not current selection/pricing or permission to execute/write/activate.",
+      "ref": "verification/character-authoring-a2-freeze-bounded-20261008",
+      "test": true,
+      "sha256": "0e4bdd3c7bb781b9b5d3a55dd5fd8cdc9efb90c8eff2ad557ce4e08f26402180",
+      "sealId": "6d13151cbf3a36368cc65085413161fb2ca63a2a940ac2328c67471ccc4928bd",
+      "causeSealIds": [
+        "2b22a189f4d0208bbff9aedd3b2ae18c30263830fac3c6a2014a5752d67753b2",
+        "f44e1e324e4106c510863a8af563cce4a7a06bf76e61f271bd54fba33d067bd4"
+      ]
+    }
+  ],
+  "roots": {
+    "observation": "all-tests-20261007/authority-provider-observation",
+    "waits": "all-tests-20261007/authority-normal-waits",
+    "narration": "all-tests-20261007/authority-narration-source-boundary",
+    "identity": "all-tests-20261007/authority-retained-operator-identity",
+    "retained": "all-tests-20261007/authority-v3-writes",
+    "policy": "all-tests-20261007/implementation-awareness-policy",
+    "db": "all-tests-20261008/implementation-boundary-db",
+    "sdk": "all-tests-20261008/implementation-openai-compatible-character-definition-recovery-bounded",
+    "schema": "all-tests-20261008/implementation-provider-response-schema-recovery-bounded"
+  },
+  "rootSealIds": {
+    "observation": "f37d62dd130cf26f48ced720565c4fad035b93a3f3ad1c3e98943cdc9bf585d1",
+    "waits": "7f8ac50262580d0a94e13d82627be496f8e2e8fd059c194c4d93d84d2af28f43",
+    "narration": "78f9fec1b418020c221d67930654a6ead967fb85393603a544651cea83a61371",
+    "identity": "9a193a751c31ca13af8d4258564fadf6bab164f38170c1fd72e8ee6f9d61f990",
+    "retained": "480c02403f61dc6a9cd7d54861639b962dbc3bde86673481e02e0defc8415e17",
+    "policy": "c064db895ea9f010d2f6fb28360b243285cbe93156c19f8286e161ec2d0d731a",
+    "db": "29388522fd326751bb29a58fc9145bbf64bc1f96d80e2f54420065b80363d535",
+    "sdk": "42b6ff80a71caa184ae9ccec1a087e025eb5e831d7e900d23bb08860ef918df4",
+    "schema": "f44e1e324e4106c510863a8af563cce4a7a06bf76e61f271bd54fba33d067bd4"
+  },
+  "elapsedSeconds": 118.838
+}

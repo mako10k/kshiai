@@ -1,0 +1,14 @@
+sealed all-tests-20261008/authority-retained-adr-checker-policy
+sealed all-tests-20261008/design-historical-adr-classifier-bounded
+sealed all-tests-20261008/implementation-historical-adr-classifier-bounded
+sealed all-tests-20261008/implementation-historical-adr-consumer-bounded
+sealed all-tests-20261008/fixture-historical-adr-0015-think
+sealed all-tests-20261008/fixture-historical-adr-0015-md
+sealed all-tests-20261008/fixture-historical-adr-0016-think
+sealed all-tests-20261008/fixture-historical-adr-0016-md
+sealed all-tests-20261008/fixture-historical-adr-0017-think
+sealed all-tests-20261008/fixture-historical-adr-0017-md
+sealed all-tests-20261008/fixture-historical-adr-0019-think
+sealed all-tests-20261008/fixture-historical-adr-0019-md
+sealed verification/adr-historical-exceptions-bounded-20261008
+readback complete

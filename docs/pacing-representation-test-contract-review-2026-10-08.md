@@ -1,0 +1,16 @@
+# 進行policyの元3ケース：表現とオフライン測定の契約
+
+独立レビュー: docs/evidence/pacing-representation-independent-review-2026-10-08.json。元3ケース・assertionを保持する。
+
+Accepted ADR0017の12公開turnと、F-BTL02の決定的な機械効果を基礎とする。候補資料は非規範的な docs/battle-pacing-candidate-12-v2.md と battle-pacing-local-measurement-2026-08-12.md。過去のlocal measurementや実装の存在はcandidate数値の本番採用ではない。
+
+1件目はcurrent helperと名前付き12turn候補がpolicy schemaへ適合すること、候補のturnLimit12とexplicit_effects_only表現を検証する。他の係数やcurrent policyの正確な値を承認するassertionではない。
+2件目は明示注入した候補とseedのオフライン計測が再現可能で、発声を未測定と明記し、測定用遅延効果が解決することを検証する。LLMとDBと公開試合は使わない。
+3件目はテスト状態へ候補を明示注入したとき、wait解決で変更済みatkを自動的に基準値へ戻さない分岐を検証する。これは候補の意味の回帰試験であり、一般の自動回復要求を廃止する決定ではない。
+
+## 現在の通常作成への接続と別の根拠不足
+
+名前にLOCALがあるが、現在のbackend/src/services/battle-service.tsの通常作成712〜718行はこの候補を直接束縛する。config.tsのBATTLE_PACING_POLICYはparseされるが作成時に参照されない。この実接続を隠して「リポジトリ全体でローカル専用」とは言わない。
+F-BTL11/12とADR0017の自動回復に対し、explicit_effects_onlyを通常作成へ選ぶ現在接続のAccepted置換根拠は未確認。別の根拠不足証跡 docs/evidence/pacing-production-authority-gap-2026-10-08.json に保持する。このSealは作成selector/configの正しさ、候補全数値の本番採用、balance品質、発声、全パイプラインの受入を証明しない。実接続はこの作業で変更しない。
+
+Accepted契約→本設計と非規範的候補資料→現在policy/observer、同一sourceを確認したengine/helper→元wholefileへ接続する。既存engine Sealを再利用しても、以前の検証がこの試験や本番数値の採用を証明したとは扱わない。

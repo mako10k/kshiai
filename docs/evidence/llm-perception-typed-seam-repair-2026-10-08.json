@@ -1,0 +1,20 @@
+{
+  "implemented": true,
+  "sealed": false,
+  "path": "backend/src/llm/openai-compatible-perception.test.ts",
+  "originalCases": 3,
+  "originalAssertions": 14,
+  "assertionTextsPreserved": true,
+  "typeEscapesRemoved": 2,
+  "transport": "real SDK create with typed prototype wrapper; mocked fetch installed before constructor",
+  "productionSourceChanged": false,
+  "diagnostic": {
+    "pass": 3,
+    "fail": 0,
+    "skip": 0
+  },
+  "sha256": "b7ca04101d8e6943cf4fd2ea4f2ac5030286cde106f8d197b0babc99087e9c03",
+  "next": "Review and Seal with agent/routing cohort; full suite remains blocked by unsealed tests.",
+  "workspaceTypecheckExit": 0,
+  "formalUnitGate": "stops before execution because unsealed files remain"
+}

@@ -1,0 +1,211 @@
+TAP version 13
+# [llm-router] primary unavailable reason=billing; cooldown=3600s; trying next provider
+# [llm-router] primary unavailable reason=billing; cooldown=3600s; trying next provider
+# [llm-router] primary unavailable reason=dns; cooldown=3600s; trying next provider
+# [llm-router] primary generateNarrationStyle failed reason=timeout; provider fallback disabled
+# [llm-router] primary generateNarrationStyle failed reason=rate_limit; provider fallback disabled
+# [llm-router] primary generateNarrationStyle failed reason=service_unavailable; provider fallback disabled
+# [llm-router] primary generateNarrationStyle failed reason=other; provider fallback disabled
+# [llm-router] primary unavailable reason=dns; cooldown=3600s; trying next provider
+# [llm-router] primary unavailable reason=dns; cooldown=60s; trying next provider
+# [llm-router] secondary unavailable reason=dns; cooldown=60s; trying next provider
+# Subtest: LLM provider fallback
+    # Subtest: recognizes only DNS and billing as provider unavailable
+    ok 1 - recognizes only DNS and billing as provider unavailable
+      ---
+      duration_ms: 2.629545
+      type: 'test'
+      ...
+    # Subtest: skips a billing-unavailable provider until the cooldown expires
+    ok 2 - skips a billing-unavailable provider until the cooldown expires
+      ---
+      duration_ms: 5.598187
+      type: 'test'
+      ...
+    # Subtest: cools down DNS failures before using the next provider
+    ok 3 - cools down DNS failures before using the next provider
+      ---
+      duration_ms: 1.631628
+      type: 'test'
+      ...
+    # Subtest: does not provider-fallback on timeout 429 503 or operation errors
+    ok 4 - does not provider-fallback on timeout 429 503 or operation errors
+      ---
+      duration_ms: 2.888842
+      type: 'test'
+      ...
+    # Subtest: captures failed and cooldown-active routing with the selected provider
+    ok 5 - captures failed and cooldown-active routing with the selected provider
+      ---
+      duration_ms: 3.557439
+      type: 'test'
+      ...
+    # Subtest: captures exhausted routing with no selected provider
+    ok 6 - captures exhausted routing with no selected provider
+      ---
+      duration_ms: 2.161409
+      type: 'test'
+      ...
+    1..6
+ok 1 - LLM provider fallback
+  ---
+  duration_ms: 20.268308
+  type: 'suite'
+  ...
+# Subtest: mock LLM natural-language handling
+    # Subtest: keeps self-reference in isolated character-agent continuity
+    ok 1 - keeps self-reference in isolated character-agent continuity
+      ---
+      duration_ms: 22.362635
+      type: 'test'
+      ...
+    # Subtest: renders explicit and unknown identity profiles without inventing gender
+    ok 2 - renders explicit and unknown identity profiles without inventing gender
+      ---
+      duration_ms: 0.918411
+      type: 'test'
+      ...
+    # Subtest: does not change structured combat fields from keyword matches
+    ok 3 - does not change structured combat fields from keyword matches
+      ---
+      duration_ms: 1.236549
+      type: 'test'
+      ...
+    # Subtest: stores an explicitly requested humane priority in the private decision profile
+    ok 4 - stores an explicitly requested humane priority in the private decision profile
+      ---
+      duration_ms: 0.542996
+      type: 'test'
+      ...
+    # Subtest: does not reuse an owner-scoped reserved name
+    ok 5 - does not reuse an owner-scoped reserved name
+      ---
+      duration_ms: 0.708031
+      type: 'test'
+      ...
+    # Subtest: analyzes battles via tools and builds a concept-safe improvement prompt
+    ok 6 - analyzes battles via tools and builds a concept-safe improvement prompt
+      ---
+      duration_ms: 0.906865
+      type: 'test'
+      ...
+    # Subtest: returns three genre-neutral two-choice policy perspectives
+    ok 7 - returns three genre-neutral two-choice policy perspectives
+      ---
+      duration_ms: 0.663891
+      type: 'test'
+      ...
+    1..7
+ok 2 - mock LLM natural-language handling
+  ---
+  duration_ms: 29.628282
+  type: 'suite'
+  ...
+# [llm] xai ready engine=grok-4.3 fast=grok-4.3
+# [llm] xai ready engine=grok-4.3 fast=grok-4.3
+# [llm] compact psyche semantic repair requested [
+#   {
+#     code: 'too_small',
+#     path: 'delta.interior.speechAppraisal.anticipatedImpact'
+#   },
+#   {
+#     code: 'custom',
+#     path: 'delta.interior.speechAppraisal.anticipatedImpact'
+#   }
+# ]
+# [llm] xai ready engine=grok-4.3 fast=grok-4.3
+# [llm] compact psyche semantic repair requested [ { code: 'invalid_type', path: 'expressionBrief' } ]
+# [llm] xai ready engine=grok-4.3 fast=grok-4.3
+# [llm] compact psyche semantic repair requested [
+#   {
+#     code: 'too_small',
+#     path: 'delta.interior.speechAppraisal.anticipatedImpact'
+#   },
+#   {
+#     code: 'custom',
+#     path: 'delta.interior.speechAppraisal.anticipatedImpact'
+#   }
+# ]
+# [llm] xai ready engine=grok-4.3 fast=grok-4.3
+# [llm] compact psyche semantic repair requested [
+#   {
+#     code: 'too_small',
+#     path: 'delta.interior.speechAppraisal.anticipatedImpact'
+#   },
+#   {
+#     code: 'custom',
+#     path: 'delta.interior.speechAppraisal.anticipatedImpact'
+#   }
+# ]
+# [llm] compact psyche rejected [ { path: 'expressionBrief.continuityDecision', code: 'custom' } ]
+# [llm] xai ready engine=grok-4.3 fast=grok-4.3
+# [llm] compact psyche semantic repair requested [
+#   {
+#     code: 'too_small',
+#     path: 'delta.interior.speechAppraisal.anticipatedImpact'
+#   },
+#   {
+#     code: 'custom',
+#     path: 'delta.interior.speechAppraisal.anticipatedImpact'
+#   }
+# ]
+# [llm] xai ready engine=grok-4.3 fast=grok-4.3
+# [llm] compact psyche rejected [ { path: 'narrativeCues.0.sourceEventIds.0', code: 'too_small' } ]
+# Subtest: Compact V2 psyche semantic-closure repair
+    # Subtest: keeps the valid first-result path to one call and states the non-empty contract
+    ok 1 - keeps the valid first-result path to one call and states the non-empty contract
+      ---
+      duration_ms: 8.321668
+      type: 'test'
+      ...
+    # Subtest: repairs the full semantic closure and preserves unrelated candidate state
+    ok 2 - repairs the full semantic closure and preserves unrelated candidate state
+      ---
+      duration_ms: 4.950469
+      type: 'test'
+      ...
+    # Subtest: states the complete brief contract when repairing a missing expression brief
+    ok 3 - states the complete brief contract when repairing a missing expression brief
+      ---
+      duration_ms: 2.32297
+      type: 'test'
+      ...
+    # Subtest: rejects an unauthorized repair root without a recursive repair
+    ok 4 - rejects an unauthorized repair root without a recursive repair
+      ---
+      duration_ms: 2.87142
+      type: 'test'
+      ...
+    # Subtest: revalidates cross-field meaning after merge and does not repair twice
+    ok 5 - revalidates cross-field meaning after merge and does not repair twice
+      ---
+      duration_ms: 3.078112
+      type: 'test'
+      ...
+    # Subtest: allows an explicit empty cue array to clear an affected optional root
+    ok 6 - allows an explicit empty cue array to clear an affected optional root
+      ---
+      duration_ms: 1.821852
+      type: 'test'
+      ...
+    # Subtest: does not repair a schema error outside the declared semantic group
+    ok 7 - does not repair a schema error outside the declared semantic group
+      ---
+      duration_ms: 1.787173
+      type: 'test'
+      ...
+    1..7
+ok 3 - Compact V2 psyche semantic-closure repair
+  ---
+  duration_ms: 27.35439
+  type: 'suite'
+  ...
+1..3
+# tests 20
+# suites 3
+# pass 20
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 1010.073665

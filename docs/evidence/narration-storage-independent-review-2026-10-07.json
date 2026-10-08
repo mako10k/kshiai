@@ -1,0 +1,31 @@
+{
+  "reviewer": "/root/llm_boundary_seal_audit",
+  "mode": "read-only",
+  "cases": 11,
+  "files": [
+    {
+      "path": "backend/src/repositories/battle-awareness-narration-reservation.test.ts",
+      "sha256": "1ed5e287b8cd89856a54cb77b3ac5a3c486f4db42cb8062cf128cbfc149d7282"
+    },
+    {
+      "path": "backend/src/repositories/battle-awareness-narrator.test.ts",
+      "sha256": "e40e13bf97d2abf4a5f3d1e33e03218228d9a4bfdcab6f6db43c79015cc153dd"
+    },
+    {
+      "path": "backend/src/services/awareness-narration-claim-snapshot.test.ts",
+      "sha256": "800e7f2532359b912a981606fdd27ac032ff48f1b641a349fe4bd1bb6e1e03c3"
+    },
+    {
+      "path": "backend/src/services/awareness-narration-event-storage.test.ts",
+      "sha256": "b122739d04537224cead567e658d2d9dd205566f150100631623e24b187d67ab"
+    }
+  ],
+  "finding": "No material contract contradiction or final-contract type escape found",
+  "limits": [
+    "SQLite serial tests, noPostgres concurrency",
+    "One receipt reservation, no full batching/ADR0016 alignment",
+    "Fakeports ordering, no DB isolation",
+    "Allocator only, no cursor/SSE/reset",
+    "Proof string persistence, no cryptographicsemantic truth"
+  ]
+}

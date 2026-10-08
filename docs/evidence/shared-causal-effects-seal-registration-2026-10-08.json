@@ -1,0 +1,113 @@
+{
+  "entries": [
+    {
+      "key": "design-battle-causality-bounded",
+      "path": "docs/shared-causal-effects-test-contract-review-2026-10-08.md",
+      "parents": [
+        "requirements",
+        "canonical"
+      ],
+      "scope": "Original3cases canonical modifier composition, A/B symmetry and hidden cause privacy; not model/full pipeline certification.",
+      "ref": "all-tests-20261008/design-battle-causality-bounded",
+      "test": false,
+      "sha256": "6b37d86a955bddec9a1f21dc6cdbb4a003f9cc57c9f04c7fecf72037c7d96c49",
+      "sealId": "48c0821e5e90d20e9e53a9f9eb493d94ce1ef5daa6c21adaaf8948181738a3d0",
+      "causeSealIds": [
+        "203e66fc4e30772adab026012c67f1b1ac4ca86ad2ada11b501c639a27a19eac",
+        "bbdf88f6e4a55ed11c978c75df29f590ddd1d99c7383eac1a9b26d54609c9031"
+      ]
+    },
+    {
+      "key": "implementation-battle-causality-bounded",
+      "path": "packages/shared/src/battle-causality.ts",
+      "parents": [
+        "design-battle-causality-bounded"
+      ],
+      "scope": "Original3cases canonical modifier composition, A/B symmetry and hidden cause privacy; not model/full pipeline certification.",
+      "ref": "all-tests-20261008/implementation-battle-causality-bounded",
+      "test": false,
+      "sha256": "a3748c02f1a2eef130300df51805eeca5a07c3f83e7e7670fc7c090b281a6bdd",
+      "sealId": "ae3946ce8d1e768a0ac0b57505d5406c1a6dc7fc06d5e221405860717b733f57",
+      "causeSealIds": [
+        "48c0821e5e90d20e9e53a9f9eb493d94ce1ef5daa6c21adaaf8948181738a3d0"
+      ]
+    },
+    {
+      "key": "battle-causality-bounded-20261008",
+      "path": "packages/shared/src/battle-causality.test.ts",
+      "parents": [
+        "implementation-battle-causality-bounded"
+      ],
+      "scope": "Original3cases canonical modifier composition, A/B symmetry and hidden cause privacy; not model/full pipeline certification. Whole originalcases/assertions unchanged, no skips.",
+      "ref": "verification/battle-causality-bounded-20261008",
+      "test": true,
+      "sha256": "4d7024d3cda2c34dcdcd52dfeaefd32e0fd804ddead4269105d0e752d6d6a8f5",
+      "sealId": "c306bd4c3408cdaee91d1de27710aa83bb9d02f6eac0ef17886c789cd4dde64d",
+      "causeSealIds": [
+        "ae3946ce8d1e768a0ac0b57505d5406c1a6dc7fc06d5e221405860717b733f57"
+      ]
+    },
+    {
+      "key": "design-battle-effects-bounded",
+      "path": "docs/shared-causal-effects-test-contract-review-2026-10-08.md",
+      "parents": [
+        "requirements",
+        "temporal",
+        "closed"
+      ],
+      "scope": "Original2cases pending effect due-once, provenance, predicate, cancellation and expiry under Accepted continuation/order; not full engine policy.",
+      "ref": "all-tests-20261008/design-battle-effects-bounded",
+      "test": false,
+      "sha256": "6b37d86a955bddec9a1f21dc6cdbb4a003f9cc57c9f04c7fecf72037c7d96c49",
+      "sealId": "7e27f84722d82bba38319694ee9e19b14d7bc619eae2f0235059af786e63f569",
+      "causeSealIds": [
+        "203e66fc4e30772adab026012c67f1b1ac4ca86ad2ada11b501c639a27a19eac",
+        "a47ee884ec95e1a9af74ef53818561b9d101791ad982c26f456bd5ffc17c4270",
+        "2c84ef3d0dd122e76543935595e774cfd33957cb01713505644e50f9ec5678ba"
+      ]
+    },
+    {
+      "key": "implementation-battle-effects-bounded",
+      "path": "packages/shared/src/battle-effects.ts",
+      "parents": [
+        "design-battle-effects-bounded"
+      ],
+      "scope": "Original2cases pending effect due-once, provenance, predicate, cancellation and expiry under Accepted continuation/order; not full engine policy.",
+      "ref": "all-tests-20261008/implementation-battle-effects-bounded",
+      "test": false,
+      "sha256": "da972f848699331de1a1537900ed4ae44f76d289308742b1d8263e7654f31b94",
+      "sealId": "8ab8a6dd338783f7f04477fa1e4b138af0095a3339e5144e99fa2332840ed2d2",
+      "causeSealIds": [
+        "7e27f84722d82bba38319694ee9e19b14d7bc619eae2f0235059af786e63f569"
+      ]
+    },
+    {
+      "key": "battle-effects-bounded-20261008",
+      "path": "packages/shared/src/battle-effects.test.ts",
+      "parents": [
+        "implementation-battle-effects-bounded"
+      ],
+      "scope": "Original2cases pending effect due-once, provenance, predicate, cancellation and expiry under Accepted continuation/order; not full engine policy. Whole originalcases/assertions unchanged, no skips.",
+      "ref": "verification/battle-effects-bounded-20261008",
+      "test": true,
+      "sha256": "8da7c6add1f5d158bd18b7ddc88bb933745b0463b044a64f091069e809773bdb",
+      "sealId": "d2c5fa7877ab37286d7a80bf5dab0f7d9c287ba945742b7966e3a3fd9cd40bd2",
+      "causeSealIds": [
+        "8ab8a6dd338783f7f04477fa1e4b138af0095a3339e5144e99fa2332840ed2d2"
+      ]
+    }
+  ],
+  "roots": {
+    "requirements": "all-tests-20261007/authority-semantic-observation-requirements",
+    "canonical": "all-tests-20261007/authority-canonical-placement-separation",
+    "temporal": "all-tests-20261007/authority-temporal-order",
+    "closed": "all-tests-20261007/authority-closed-contract"
+  },
+  "rootSealIds": {
+    "requirements": "203e66fc4e30772adab026012c67f1b1ac4ca86ad2ada11b501c639a27a19eac",
+    "canonical": "bbdf88f6e4a55ed11c978c75df29f590ddd1d99c7383eac1a9b26d54609c9031",
+    "temporal": "a47ee884ec95e1a9af74ef53818561b9d101791ad982c26f456bd5ffc17c4270",
+    "closed": "2c84ef3d0dd122e76543935595e774cfd33957cb01713505644e50f9ec5678ba"
+  },
+  "elapsedSeconds": 64.845
+}

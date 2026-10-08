@@ -1,0 +1,14 @@
+domain ImageResponseContractRepair:
+  description "Validate the image response boundary without trusting an assertion"
+problem P1:
+  "Image adapter returns numeric sourceUrl from malformed successful provider JSON."
+evidence E1:
+  "Local injected fetch returned data[0].url=123; actual adapter output sourceUrl is a number, violating the existing ImageGenerationResult string contract. No endpoint was contacted."
+evidence E2:
+  "The producing condition is JSON.parse(text) as typeof parsed followed by a truthiness branch. The assertion accepts unvalidated url/b64_json values as strings. Original two cases supply valid strings and ordinary fallback, so they do not detect this condition."
+evidence E3:
+  "Independent read-only review found the same reachable success-path contract violation. F-CFG-07 and the existing ImageProvider architecture govern image response handling; no new provider selection or quota rule is authorized."
+decision D1 based_on P1, E1, E2, E3:
+  "Decode provider JSON as unknown in a pure image-response module. Validate record/array/field types before constructing a string result; preserve existing error names, moderation rejection, valid URL/base64 branches and ordinary fallback. Remove both response assertions from the repaired adapter boundary."
+decision D2 based_on D1, E1, E2, E3:
+  "Preserve original two cases/assertions and add meaningful malformed-field plus valid-base64 regression cases. Run local diagnosis and strict workspace typecheck, obtain independent repaired-boundary review, then Seal exact normative/design/implementation/test scope. Do not claim paid/live compatibility or whole251 completion."

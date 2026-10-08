@@ -1,0 +1,63 @@
+{
+  "nodes": [
+    {
+      "key": "authority-cloud-edge-contract",
+      "path": "docs/cloud_runtime.md",
+      "parents": [
+        "release"
+      ],
+      "scope": "Only existing SPA/streaming API proxy/protected origin contract; exclude old price/resource/deployment observations.",
+      "ref": "all-tests-20261007/authority-cloud-edge-contract",
+      "test": false,
+      "sha256": "7cb2bc8dbf0225650a62b521599a299c9fa96b8c0f7692a86e154b42e951f971"
+    },
+    {
+      "key": "design-worker-edge",
+      "path": "docs/worker-edge-test-contract-review-2026-10-07.md",
+      "parents": [
+        "authority-cloud-edge-contract",
+        "release"
+      ],
+      "scope": "Three unchanged local cases/injected fetch; no real deployment/backend verifier proof.",
+      "ref": "all-tests-20261007/design-worker-edge",
+      "test": false,
+      "sha256": "872b0f7bdb13da966cf5516dc175968ecbd9657a2561e593553c5e5f25192e0b"
+    },
+    {
+      "key": "implementation-worker-edge",
+      "path": "infra/cloudflare-worker/src/index.ts",
+      "parents": [
+        "design-worker-edge"
+      ],
+      "scope": "Static assets and fixed origin proxy header overwrite/fail closed; no deployment mutations.",
+      "ref": "all-tests-20261007/implementation-worker-edge",
+      "test": false,
+      "sha256": "b7987b341f53a64f223e5e124db81434418fb5b30c03f237a56ccc59c987fb57"
+    },
+    {
+      "key": "worker-edge-bounded",
+      "path": "infra/cloudflare-worker/src/index.test.ts",
+      "parents": [
+        "implementation-worker-edge"
+      ],
+      "scope": "Whole original three cases unchanged; static/proxy/secret absent guard only.",
+      "ref": "verification/worker-edge-bounded-20261007",
+      "test": true,
+      "sha256": "aeb049eb06feb0667f6502c63526dc3f4f573bda17b1203e6da3772c6f5542ca"
+    }
+  ],
+  "seeds": {
+    "release": "all-tests-20261007/authority-release-policy"
+  },
+  "diagnostic": {
+    "focusedPass": 3,
+    "fail": 0,
+    "skipped": 0,
+    "workspaceTypecheckEvidence": "docs/evidence/backend-implicit-any-workspace-types-2026-10-07.log"
+  },
+  "limitations": [
+    "Only original three local worker cases",
+    "Injected fetch/static assets, not deployment or actual backend verifier",
+    "Source/implementation unchanged, full251 goal incomplete"
+  ]
+}

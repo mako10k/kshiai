@@ -1,0 +1,11 @@
+{
+  "cases": 23,
+  "pass": 23,
+  "fail": 0,
+  "skip": 0,
+  "diagnosticOnly": true,
+  "sealed": false,
+  "independentReview": "INSIDE",
+  "evidence": "docs/evidence/owner-rating-remainder-preseal-2026-10-08.tap",
+  "review": "docs/evidence/owner-rating-remainder-independent-review-2026-10-08.json"
+}

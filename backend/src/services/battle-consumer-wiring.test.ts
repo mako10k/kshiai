@@ -1,7 +1,19 @@
+// R: Verify frozen private/public consumer projections with complete schema-validated fixtures.
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import {
   applyBattleWorldTransition,
+  BattleAssetManifestSchema,
+  BattleTurnRecordSchema,
+  buildBattleTurnRecord,
+  BattlefieldInstanceSchema,
+  compileCharacterPsycheTraitsV1,
+  defaultDialoguePipelineSettings,
+  defaultNarrationSnapshot,
+  projectCharacterDeepPsycheV2,
+  requireCombatReadyCharacterSheet,
+  snapshotDialoguePipelineSettings,
+  type CharacterBattleCompilerInputsV2,
   createBattleState,
   buildCharacterSelfProfileAnchor,
   CharacterDefinitionV2Schema,
@@ -44,6 +56,44 @@ function sheet(id: string, displayName: string): CharacterSheet {
     combatFlags: { canFight: true, irreversibleIncapacitated: false },
     narrativeBlurb: `${displayName}の物語。`,
   };
+}
+
+// Full synthetic retained-format bindings; zero digests are fixture values, not provenance proof.
+function manifestFor(
+  a: CharacterSheet,
+  b: CharacterSheet,
+  aInputs: Partial<CharacterBattleCompilerInputsV2>,
+  bInputs: Partial<CharacterBattleCompilerInputsV2> = {},
+) {
+  const binding = (source: CharacterSheet, overrides: Partial<CharacterBattleCompilerInputsV2>) => {
+    const definition = legacyCharacterSheetToDefinitionV2(source);
+    const generationId = `consumer-fixture-${source.id}`;
+    return {
+      assetId: source.id,
+      generationId,
+      contentDigest: "0".repeat(64),
+      snapshot: requireCombatReadyCharacterSheet(source),
+      basicAttackSource: { kind: "character_generation_v2", generationId, definitionPath: "capabilities.basicAction" },
+      compilerInputsV2: {
+        psycheTraits: compileCharacterPsycheTraitsV1(definition),
+        deepPsyche: projectCharacterDeepPsycheV2(definition),
+        consciousSelf: projectCharacterConsciousSelfV2(definition),
+        ...overrides,
+      },
+    };
+  };
+  const style = defaultNarrationSnapshot();
+  return BattleAssetManifestSchema.parse({
+    schemaVersion: 2,
+    boundAt: a.createdAt,
+    characters: { a: binding(a, aInputs), b: binding(b, bInputs) },
+    narrationStyle: { assetId: style.id, generationId: "consumer-style", snapshot: style },
+    battlefield: { assetId: null, generationId: "consumer-field", snapshot: BattlefieldInstanceSchema.parse({
+      displayName: "試験場", scene: "対決の舞台", terrain: "平地", narrativeSetup: "向き合う",
+    }) },
+    dialoguePipeline: { generationId: "consumer-dialogue", snapshot: snapshotDialoguePipelineSettings(defaultDialoguePipelineSettings()) },
+    rules: { battleEngine: "battle-engine-v1", temporalRules: "initiative-window-v2", characterDefinitionRules: "character-definition-rules-v2" },
+  });
 }
 
 const previous = {
@@ -111,20 +161,14 @@ describe("battle perception consumer wiring", () => {
       turnLimit: 20,
       prologuePending: false,
     });
-    state.assetManifest = {
-      characters: {
-        a: {
-          compilerInputsV2: {
-            consciousSelf: projectCharacterConsciousSelfV2(definition),
-            actionNorms: compileCharacterActionNormProgramV2(definition),
-            relationship: resolveCharacterRelationshipV2({
-              program: compileCharacterRelationshipProgramV2(definition),
-              counterpartCharacterAssetId: sideB.id,
-            }),
-          },
-        },
-      },
-    } as BattleState["assetManifest"];
+    state.assetManifest = manifestFor(sideA, sideB, {
+      consciousSelf: projectCharacterConsciousSelfV2(definition),
+      actionNorms: compileCharacterActionNormProgramV2(definition),
+      relationship: resolveCharacterRelationshipV2({
+        program: compileCharacterRelationshipProgramV2(definition),
+        counterpartCharacterAssetId: sideB.id,
+      }),
+    });
 
     const input = buildCharacterAgentConsumerInput({
       state,
@@ -345,14 +389,14 @@ describe("battle perception consumer wiring", () => {
       turnLimit: 20,
       prologuePending: false,
     });
-    const structuredState = structuredClone(state) as BattleState;
-    structuredState.assetManifest = {
-      characters: {
-        a: { compilerInputsV2: { narratorViews: definitionFor(sideA, "Aだけの内面") } },
-        b: { compilerInputsV2: { narratorViews: definitionFor(sideB, "Bだけの内面") } },
-      },
-    } as BattleState["assetManifest"];
-    structuredState.turnRecords = [{
+    const structuredState = structuredClone(state);
+    structuredState.assetManifest = manifestFor(sideA, sideB,
+      { narratorViews: definitionFor(sideA, "Aだけの内面") },
+      { narratorViews: definitionFor(sideB, "Bだけの内面") },
+    );
+    structuredState.turnRecords = [BattleTurnRecordSchema.parse(buildBattleTurnRecord({
+      before: structuredState,
+      after: structuredState,
       events: [{
         id: "event.hit.1",
         type: "damage",
@@ -385,7 +429,7 @@ describe("battle perception consumer wiring", () => {
         },
         summary: "アオが観測可能な反応を示した。",
       }],
-    }] as BattleState["turnRecords"];
+    }))];
 
     const self = buildNarratorStructuredCharacterContextsV2({
       state: structuredState,

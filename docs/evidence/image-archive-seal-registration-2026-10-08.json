@@ -1,0 +1,130 @@
+{
+  "entries": [
+    {
+      "ref": "all-tests-20261008/design-local-media-archive",
+      "path": "docs/image-archive-test-connection-repair-2026-10-08.md",
+      "sha256": "4ecd92b2029d2b9ab4fecdfa804d85bc0928778f7be7fcb6111c0bce76191782",
+      "sealId": "f1e98287afcd1864dfe24ed1e16e83c2ee2b39e4980738b25fe3ff0f67892e5d",
+      "causeLinks": [
+        {
+          "target_seal": "203e66fc4e30772adab026012c67f1b1ac4ca86ad2ada11b501c639a27a19eac",
+          "previous_revision_seal_of_target_seal": [],
+          "messages": [
+            "F-CHR-09 retained local media helper and immutable/appearance/write-boundary limits; repair service-bypassing original cases. No V2 writer/hosted persistence adoption."
+          ]
+        },
+        {
+          "target_seal": "a16926e3e7cc0153d24ac2ec61390a382f1a0a95abb1cf73d83af40da60f754e",
+          "previous_revision_seal_of_target_seal": [],
+          "messages": [
+            "F-CHR-09 retained local media helper and immutable/appearance/write-boundary limits; repair service-bypassing original cases. No V2 writer/hosted persistence adoption."
+          ]
+        },
+        {
+          "target_seal": "a1c688a46b255e61a935098665e31e0e6f368cc259b72b0b81d87a4ec1552c3a",
+          "previous_revision_seal_of_target_seal": [],
+          "messages": [
+            "F-CHR-09 retained local media helper and immutable/appearance/write-boundary limits; repair service-bypassing original cases. No V2 writer/hosted persistence adoption."
+          ]
+        },
+        {
+          "target_seal": "c18419afb42060d887b3f7f86970b45312cb77a7665dfbc7398a697e3e3d7ad5",
+          "previous_revision_seal_of_target_seal": [],
+          "messages": [
+            "F-CHR-09 retained local media helper and immutable/appearance/write-boundary limits; repair service-bypassing original cases. No V2 writer/hosted persistence adoption."
+          ]
+        }
+      ],
+      "new": true
+    },
+    {
+      "ref": "all-tests-20261008/implementation-local-media-store",
+      "path": "backend/src/services/local-media-store.ts",
+      "sha256": "fb68dc04e3f866a3e03ccaf6e8b0fc10815206392d02faa633b04a246ac040c4",
+      "sealId": "637edecb93b11419b985df4c5c33b9d5ba32b8e958589a2af8a90df02ad22f06",
+      "causeLinks": [
+        {
+          "target_seal": "f1e98287afcd1864dfe24ed1e16e83c2ee2b39e4980738b25fe3ff0f67892e5d",
+          "previous_revision_seal_of_target_seal": [],
+          "messages": [
+            "Single real local filesystem implementation with caller root/log sink; preserves prior URL/path/copy/null semantics. Private real-file verification, no R2/DB/provider claim."
+          ]
+        }
+      ],
+      "new": true
+    },
+    {
+      "ref": "all-tests-20261007/implementation-image-prompt-and-failure",
+      "path": "backend/src/services/image-service.ts",
+      "sha256": "0cb1cd245fa214059ca86e638c954a5f2c096dec9d4742f860bc6e4ef245e88d",
+      "sealId": "ea0f1b545851ccf646289c09e0bc35ca7b2de1d316046d3ac182ce59fa61d203",
+      "previousHead": "2e8080970681f11a359d49612e97b062fd2d5522a31c478f9427666a53c78e63",
+      "causeLinks": [
+        {
+          "target_seal": "637edecb93b11419b985df4c5c33b9d5ba32b8e958589a2af8a90df02ad22f06",
+          "previous_revision_seal_of_target_seal": [],
+          "messages": [
+            "Revalidated existing prompt/failure scope after extraction; typed default store preserves production root/logger and wrappers delegate to real local media module. No new image route activation."
+          ]
+        },
+        {
+          "target_seal": "ccecf98e73b7fa2bbd1146fa4f6619aaac931d752029ce54cd73961a08a27e29",
+          "previous_revision_seal_of_target_seal": [],
+          "messages": [
+            "Visual prompt composition, private field omission, immutable local URL and injected provider rejection. No DB activation atomicity/live quality claim."
+          ]
+        }
+      ],
+      "new": false
+    },
+    {
+      "ref": "verification/image-prompt-failure-bounded-20261008",
+      "path": "backend/src/services/image-service.test.ts",
+      "sha256": "cf9e1fa231f684d3263cc9f07bde9d18467d7014e0dfc76b05ea09524e6c1826",
+      "sealId": "2a7d347e701c2845f8d11d9cdc8eccc63776118e96c104c8a20ba6344935e917",
+      "previousHead": "3f50d637bc1ce231d9715116fa6fe905ab3d158f028d06abc0d169b386548770",
+      "causeLinks": [
+        {
+          "target_seal": "ea0f1b545851ccf646289c09e0bc35ca7b2de1d316046d3ac182ce59fa61d203",
+          "previous_revision_seal_of_target_seal": [
+            "2e8080970681f11a359d49612e97b062fd2d5522a31c478f9427666a53c78e63"
+          ],
+          "messages": [
+            "Original four prompt/failure cases re-run after local-media extraction; 11-case focused diagnostic pass, unchanged original test bytes and scope.",
+            "Whole original four cases/assertions retained. Prompt/omission/revision URL/rejection only; V2 fixture does not authorize V2 mutations or persistence acceptance."
+          ]
+        }
+      ],
+      "new": false
+    },
+    {
+      "ref": "verification/local-media-archive-connected-20261008",
+      "path": "backend/src/services/image-archive.test.ts",
+      "sha256": "ce81fffdc4a5c16bea360033ef2c819dcbb12cafcebb39ed0efc87b3500b3dec",
+      "sealId": "080dee86c76fd39748418936c6bb903d29d55367938338b966cf04b19910ac96",
+      "causeLinks": [
+        {
+          "target_seal": "ea0f1b545851ccf646289c09e0bc35ca7b2de1d316046d3ac182ce59fa61d203",
+          "previous_revision_seal_of_target_seal": [],
+          "messages": [
+            "Original two cases/five assertions retained; service wrappers use private real filesystem. Added active revision selection and missing-file behavior. Four cases local helper only, no immutable DB activation or live writer success."
+          ]
+        }
+      ],
+      "new": true
+    }
+  ],
+  "roots": {
+    "requirements": "all-tests-20261007/authority-semantic-observation-requirements",
+    "profile": "adr/structured-character",
+    "selectable": "acceptance/adr-0010-existing-baseline",
+    "writes": "decision/character-v3-write-boundary-20261002"
+  },
+  "rootSealIds": {
+    "requirements": "203e66fc4e30772adab026012c67f1b1ac4ca86ad2ada11b501c639a27a19eac",
+    "profile": "a16926e3e7cc0153d24ac2ec61390a382f1a0a95abb1cf73d83af40da60f754e",
+    "selectable": "c18419afb42060d887b3f7f86970b45312cb77a7665dfbc7398a697e3e3d7ad5",
+    "writes": "a1c688a46b255e61a935098665e31e0e6f368cc259b72b0b81d87a4ec1552c3a"
+  },
+  "elapsedSeconds": 97.97
+}

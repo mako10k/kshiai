@@ -1,0 +1,12 @@
+domain ROLE_GROUP_TYPE:
+  description "Close an overbroad return annotation exposed by strict fixture compilation."
+evidence ERROR:
+  "Strict TypeScript compilation of new E2E helper reports awareness-reservation-budget.ts39 invalid budgetShares index because roleGroup return annotation includes subconscious/adjudication keys not present in budgetShares. Normal backend config retains historical noImplicitAny false and accepts it."
+evidence SOURCE:
+  "Full source read: roleGroup actual body already maps BOTH subconscious and adjudication to required; remaining actual returns are conscious/narration. Runtime mapping is correct. No runtime undefined/NaN defect is evidenced."
+premise BOUNDS:
+  "Accepted adopted policy required/conscious/narration budget allocation remains unchanged. User explicitly authorizes mechanical typed handoffs and requires closing contract escapes on repaired paths. Change only return type to keyof AwarenessPipelineState policy budgetShares. No runtime statement, quota or accounting behavior changes."
+premise ALTERNATIVES:
+  "Disabling strict noImplicitAny for the new helper hides the mismatch. A cast discards authoritative contract protection. Narrow accurate return type proves all index keys valid."
+decision D1 based_on ERROR, SOURCE, BOUNDS, ALTERNATIVES:
+  "Audit then narrow one return annotation and rerun strict helper compilation plus backend typecheck. No new behavioral test required for type-only correction; existing reservation diagnostics remain valid."

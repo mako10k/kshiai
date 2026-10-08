@@ -36,7 +36,7 @@ function fixture() {
     battlefield: { assetId: null, generationId: "field-generation", contentDigest: "0".repeat(64), snapshot: battlefield },
     dialoguePipeline: { generationId: "dialogue-generation", contentDigest: "0".repeat(64), snapshot, activationSource: "persisted_setting" },
     rules: { battleEngine: "battle-engine-v1", temporalRules: "initiative-window-v2", psycheReaction: "psyche-reaction-policy-v1", characterDefinitionRules: "character-definition-rules-v3", battlefieldDefinitionRules: "battlefield-instance-v2", narrationStyleRules: "narration-prompt-v2" } });
-  const state = createBattleState({ id: "battle", sideA: a, sideB: b, turnLimit: 12, battlefield, prologuePending: false });
+  const state = createBattleState({ id: "battle", sideA: a, sideB: b, turnLimit: 12, battlefield: { kind: "legacy", instance: battlefield }, prologuePending: false });
   state.assetManifest = manifest;
   state.agentStateA = CharacterAgentStateSchema.parse({ consciousAgencyV2: initialConsciousAgencyV2() });
   state.agentStateB = CharacterAgentStateSchema.parse({ consciousAgencyV2: initialConsciousAgencyV2() });

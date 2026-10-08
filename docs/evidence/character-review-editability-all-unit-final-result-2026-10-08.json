@@ -1,0 +1,8 @@
+{
+  "diagnosticOnly": true,
+  "files": 247,
+  "exit": 0,
+  "seconds": 112.43,
+  "privatePostgresStopExit": 0,
+  "postgres": "Private owned loopback-only dedicated test database; no live database or OS installation."
+}

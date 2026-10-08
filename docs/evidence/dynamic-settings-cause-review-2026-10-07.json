@@ -1,0 +1,227 @@
+{
+  "nodes": [
+    {
+      "key": "design-dynamic-settings-test-contract",
+      "path": "docs/dynamic-settings-test-contract-review-2026-10-07.md",
+      "parents": [
+        "requirements",
+        "current",
+        "activation",
+        "expression",
+        "dynamic",
+        "intent"
+      ],
+      "scope": "Twenty unchanged cases: dynamic-v4 decoder/plan/targeted-repair/mock HTTP and isolatedSQLite settings. No awareness-v5, live quality, persistent CAS/restart repair budget, immutable battle receipt or actual operator setting write acceptance.",
+      "ref": "all-tests-20261007/design-dynamic-settings-test-contract",
+      "test": false,
+      "sha256": "1dfad1acebea5c6b8e5d4bdff3dae07b499cbffc8db56acaf76721c2ae9ebcc0"
+    },
+    {
+      "key": "design-adopted-dynamic-output-v4",
+      "path": "docs/conscious-dynamic-output-design-2026-10-03.md",
+      "parents": [
+        "dynamic",
+        "current",
+        "intent",
+        "design-dynamic-settings-test-contract"
+      ],
+      "scope": "ADR0047 adopts concrete design despite original design-only introductory status. Sections2-7/10 exercised structural generation, exact restoration, dependency closure and bounded partial repair only; sections8-9 persistent restart/CAS/binding proof separate. No new policy or historical migration.",
+      "ref": "all-tests-20261007/design-adopted-dynamic-output-v4",
+      "test": false,
+      "sha256": "5aecabcdaaa8656b9986245014c6adb737d35c225e15d8fe99737a183fd0fc36"
+    },
+    {
+      "key": "design-retained-dialogue-settings-v3",
+      "path": "docs/adr/0028-versioned-conscious-agency-contract.md",
+      "parents": [
+        "dynamic",
+        "current",
+        "activation",
+        "design-dynamic-settings-test-contract"
+      ],
+      "scope": "Superseded0028 D2 retained settings contract only: version omission preserves stored3, otherwise write2, explicit3 requirescompact, explicit2 permits oldmodes, expectedRevision CAS. Historical inheritance only, not standaloneAccepted root or old response/repair rules fordynamic-v4.",
+      "ref": "all-tests-20261007/design-retained-dialogue-settings-v3",
+      "test": false,
+      "sha256": "0d5167c343930935860fe424fe5ddf2716d98d8dedd6e63d16f3f3bfda0b59a4"
+    },
+    {
+      "key": "implementation-dynamic-v4-shared-acceptance",
+      "path": "packages/shared/src/conscious-dynamic.ts",
+      "parents": [
+        "battle",
+        "design-adopted-dynamic-output-v4",
+        "design-dynamic-settings-test-contract"
+      ],
+      "scope": "Versioned V4 raw-field decoding, omission/null origins and genuine supplied goals/currentrefs/action validation. Five exercised state cases; no fabricated semantics or proof of allphases/CAS/runtime service.",
+      "ref": "all-tests-20261007/implementation-dynamic-v4-shared-acceptance",
+      "test": false,
+      "sha256": "441f9dc3be94d3fc1a2d9b25f734d32bf6cd505f5859eff9c934c5fa4a213261"
+    },
+    {
+      "key": "implementation-retained-v3-agency-decoder",
+      "path": "packages/shared/src/conscious-agency.ts",
+      "parents": [
+        "battle",
+        "dynamic",
+        "current",
+        "design-dynamic-settings-test-contract"
+      ],
+      "scope": "Only strict legacy decodeConsciousOutputV3 and AgencyFacts schemas exercised by V4 acceptance. Retained legacy missing goal/rationale remains invalid. No whole legacy orchestration or current latent/context acceptance.",
+      "ref": "all-tests-20261007/implementation-retained-v3-agency-decoder",
+      "test": false,
+      "sha256": "6dff7d4af9f07460536001771168d3115ed1fa6e38630d630f8f143ee0b2c870"
+    },
+    {
+      "key": "implementation-dynamic-v4-prompt-context",
+      "path": "backend/src/llm/conscious-prompt-input.ts",
+      "parents": [
+        "requirements",
+        "expression",
+        "design-adopted-dynamic-output-v4",
+        "design-dynamic-settings-test-contract"
+      ],
+      "scope": "Current frozen structuredSelf/speech/history indices/choice/ref/repair context to natural prose; tested speaker positions and speech propagation. No full knowledge truth or independently proven physical observation/privacy end-to-end.",
+      "ref": "all-tests-20261007/implementation-dynamic-v4-prompt-context",
+      "test": false,
+      "sha256": "eaffd97e8a373ee8ceebcd09087bce2561fc953aeee92595427582d4160ed3e0"
+    },
+    {
+      "key": "implementation-dynamic-v4-fixture-reaction",
+      "path": "backend/src/llm/conscious-agency.ts",
+      "parents": [
+        "battle",
+        "current",
+        "design-adopted-dynamic-output-v4",
+        "design-dynamic-settings-test-contract"
+      ],
+      "scope": "Scope only consciousReaction used to construct the typed V4 fixture input; not complete manifest binding/private goal/request reconstruction or runtime orchestration coverage.",
+      "ref": "all-tests-20261007/implementation-dynamic-v4-fixture-reaction",
+      "test": false,
+      "sha256": "7f8d227dbebe1a6542a4764520014baa08022220052d3e06bc0afc71af922136"
+    },
+    {
+      "key": "implementation-dynamic-v4-generation",
+      "path": "backend/src/llm/conscious-dynamic.ts",
+      "parents": [
+        "battle",
+        "intent",
+        "implementation-dynamic-v4-shared-acceptance",
+        "implementation-retained-v3-agency-decoder",
+        "implementation-dynamic-v4-prompt-context",
+        "design-adopted-dynamic-output-v4",
+        "design-dynamic-settings-test-contract"
+      ],
+      "scope": "Plan/schema/prompt/exactchoices/partialtarget/one injected-reservation domain repair and closed final decoder. Raw records are guards/staging, not cast final contracts. Mock chat errors only, not durable logical identity budget/CAS restart acceptance.",
+      "ref": "all-tests-20261007/implementation-dynamic-v4-generation",
+      "test": false,
+      "sha256": "7d1a92d3384ac63bac7e12ad3ead79aa59ffd64c7188a81927cf526352ca012d"
+    },
+    {
+      "key": "implementation-sdk-retained-dynamic-v4-dispatch",
+      "path": "backend/src/llm/openai-compatible.ts",
+      "parents": [
+        "implementation-dynamic-v4-generation",
+        "design-adopted-dynamic-output-v4",
+        "design-dynamic-settings-test-contract"
+      ],
+      "scope": "advanceCharacterAgent contractVersion4 dispatch and chat HTTP serialization under mocked fetch to example.invalid. One strict schema request and boundskill output only. Not real provider capability/usage/cost/network, other legacy adapters or awareness-v5 dispatch.",
+      "ref": "all-tests-20261007/implementation-sdk-retained-dynamic-v4-dispatch",
+      "test": false,
+      "sha256": "8d4be097ddbfcb0da515dd0db402c7dc6dddccb763d625fce16165e7c524d2a5"
+    },
+    {
+      "key": "implementation-retained-dialogue-settings-storage",
+      "path": "backend/src/repositories/dialogue-pipeline-settings.ts",
+      "parents": [
+        "activation",
+        "snapshot",
+        "storage",
+        "db",
+        "design-retained-dialogue-settings-v3",
+        "design-dynamic-settings-test-contract"
+      ],
+      "scope": "IsolatedSQLite default/persisted source, settings revision/CAS and V3 compact version continuity/atomic invalid update refusal. Existing transaction generationwriter reached, contents not directly asserted. No Postgres/concurrency race/HTTP admin guard/Stage or immutable battle receipt acceptance.",
+      "ref": "all-tests-20261007/implementation-retained-dialogue-settings-storage",
+      "test": false,
+      "sha256": "5d3c3c3f418abe8969029e25a3c51a04738e8245140fe0d113ce90ac5679250b"
+    },
+    {
+      "key": "dynamic-v4-shared-current",
+      "path": "packages/shared/src/conscious-dynamic.test.ts",
+      "parents": [
+        "requirements",
+        "dynamic",
+        "implementation-dynamic-v4-shared-acceptance",
+        "implementation-retained-v3-agency-decoder",
+        "battle",
+        "design-dynamic-settings-test-contract"
+      ],
+      "scope": "Entire unchanged five-case file: genuine initialization, state/decision hold, provenance, invalidrefs/lateraction, newstate/strictlegacy separation. Pure closed input/state tests, not semantic tactical quality or whole lifecycle.",
+      "ref": "verification/dynamic-v4-shared-current-20261007",
+      "test": true,
+      "sha256": "e35fb9cf68c433b0240a5cb0df97e983ab007eb6c286b66d83f69f42a66ad123"
+    },
+    {
+      "key": "dynamic-v4-provider-current",
+      "path": "backend/src/llm/conscious-dynamic.test.ts",
+      "parents": [
+        "requirements",
+        "dynamic",
+        "expression",
+        "implementation-dynamic-v4-generation",
+        "implementation-dynamic-v4-prompt-context",
+        "implementation-dynamic-v4-fixture-reaction",
+        "implementation-sdk-retained-dynamic-v4-dispatch",
+        "design-dynamic-settings-test-contract"
+      ],
+      "scope": "Entire unchanged twelve-case file, synthetic inputs/chat and actualHTTPadapter withfetchmock. Phase/schema/restoration/speechhistory/oneboundedrepair/transportpropagation/partialdependencies/payload preservation. No paid/live calls or persistentCAS/restart claim.",
+      "ref": "verification/dynamic-v4-provider-current-20261007",
+      "test": true,
+      "sha256": "e420beea2467d72f8d3a68ce5bfc2c445d0f63c13e538e9c88cb9114e0a62e05"
+    },
+    {
+      "key": "dialogue-settings-storage-current",
+      "path": "backend/src/repositories/dialogue-pipeline-settings.test.ts",
+      "parents": [
+        "activation",
+        "design-retained-dialogue-settings-v3",
+        "implementation-retained-dialogue-settings-storage",
+        "snapshot",
+        "design-dynamic-settings-test-contract"
+      ],
+      "scope": "Entire unchanged three-case file using isolatedSQLite, settings defaults/source/CAS/V3 omission/compact rejection/explicitV2. Retain stored numericdefaults as regression only; not newpolicy, immutable receipt, generationcontents, adminHTTP or liveoperator writes.",
+      "ref": "verification/dialogue-settings-storage-current-20261007",
+      "test": true,
+      "sha256": "2873dad08c18196dad4cdbc4d99d0d34df219eddb8c84d8666ed35fbceb55b63"
+    }
+  ],
+  "seeds": {
+    "requirements": "all-tests-20261007/authority-semantic-observation-requirements",
+    "current": "awareness-guidance-20261007/authority-current",
+    "battle": "all-tests-20261007/implementation-closed-battle-contract",
+    "activation": "all-tests-20261007/authority-dialogue-activation",
+    "expression": "all-tests-20261007/authority-separated-compact-expression",
+    "dynamic": "all-tests-20261007/authority-dynamic-historical-continuation",
+    "intent": "all-tests-20261007/authority-intent-adoption",
+    "snapshot": "all-tests-20261007/implementation-retained-dialogue-snapshots",
+    "storage": "all-tests-20261007/implementation-selectable-generation-storage",
+    "db": "all-tests-20261007/implementation-provider-control-sqlite-schema"
+  },
+  "authority": [
+    "Accepted canonicalADR0018/25/47/45/current0051",
+    "ADR0047 adopted detailed design",
+    "Retained0028 D2 only via0047/0051"
+  ],
+  "diagnostic": {
+    "focusedPass": 20,
+    "fail": 0,
+    "skipped": 0,
+    "strictTypecheckExit": 0
+  },
+  "limitations": [
+    "Original20 cases/assertions retained; no code/test changes",
+    "Dynamic-v4 helper and mocked HTTPadapter; not awareness-v5 or live provider quality",
+    "Injected reservation not persistent CAS/restart repairbudget proof",
+    "IsolatedSQLite settings only, not complete receipt/Stage/adminHTTP/Postgres/generationcontent acceptance"
+  ]
+}

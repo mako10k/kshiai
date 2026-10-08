@@ -1,0 +1,11 @@
+# セマンティック作成層の5 wholefile復旧レビュー
+
+元の5ファイル・47ケースを保持し、4 disabledと1 provisionalの検証接続を復旧する。独立レビュー battle_helper_contract_review は INSIDE、追加のaccounting/capability-session/kernel/character-deferral/change-set producerもINSIDE。最新shared build後の診断47pass/0fail/0skip。通常routeの最終ready、現行focusedレビュー全payload、route cutover、provider品質はこの検証の成立範囲ではない。Proposed ADR0059をCauseにしない。
+
+基盤要件v3のexact SHA b5693f6d…とキャラ要件v5のexact SHA17596f17…は、それぞれ独立受入記録でAccepted。候補headerは作成時の記録であり、受入記録のtarget hashと現在bytesが一致する。既存current-use要件snapshot・受入receiptを保持してCauseにする。
+
+Accepted ADR0032はADR0031の非時間のkernel/adapters/ports、bounded repair、Q&A、source-based new-run retry、進捗・破損、public mappingを継承し、provider transport、worker、semantic progress、累積資源を分離する。Accepted ADR0033はConfig generationをdurable run identityに含めず、fence/期限など正しさに必要な事実を保持する。Accepted design revision6のpre-acceptance SHAはa0f2ba909d3c71fb7de2235bd84125b420663f6f8b5400c4236eaf92e832ebff。現在900a98f…の文書はstatus/acceptance/historyを追記したprojectionであり、そのbytes自体がownerの受理対象だったとは扱わない。既存current design Sealと受入記録を対応させ、実装条項の出所を区別する。
+
+provider3ケースは明示したcontrolled transport設定と未実装recovery拒否、adapter18ケースはtyped proposal/source ledger/preservation/capsule/claim境界、public6ケースは既存statusへの投影・質問とretryの分離・command identityとdigest、shared4ケースはclosed focused payloadとlossless migration bridge、conformance16ケースはF1–F15とtimeout/late-result補足を、三つのcontrolled adapterで確認する。数字はcontrolled fixtureまたは既存設計内のdetailであり、本番timeout/model/route選択を採用しない。
+
+source graphはcontracts→accounting/kernel/session/progress→orchestration/ports/execution、contracts→family adapter、migration contracts→ledger/deferral/preservation→character adapter、public contracts→mapping、config→providerの方向に接続する。実装相互Causeやdraft旧basisを使わず、実際に検証される現在moduleをsource-bound producerに固定する。広い旧implementation refsと全既存HEADは変更しない。同じ5 test pathを新しいwholefile検証refへ接続し、旧draft/不整合refsは歴史として保持する。

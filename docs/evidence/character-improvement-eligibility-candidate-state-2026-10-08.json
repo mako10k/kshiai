@@ -1,0 +1,13 @@
+{
+  "stage": "accepted_by_direct_owner_instruction",
+  "path": "docs/character-improvement-eligibility-requirement-candidate-r1-2026-10-08.md",
+  "sha256": "ce836f4eaa05e914e558b8cd9958658548312625e0291c0121b332d781c7d71b",
+  "accepted": true,
+  "independentReviewAuthorized": false,
+  "firstOwnerRoute": null,
+  "ownerQuestionPresented": true,
+  "laterEffectsAuthorized": false,
+  "originalCases": 4,
+  "selfReview": "Current behavior compared with actual shared/backend/DB/UI; accepted rules retained; numerical authority gap explicit.",
+  "ownerAcceptance": "docs/adr/0061-manual-improvement-analysis-eligibility.think"
+}

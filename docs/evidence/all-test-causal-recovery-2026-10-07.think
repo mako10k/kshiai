@@ -1,0 +1,12 @@
+domain ALL_TEST_RECOVERY:
+  description "All discovered tests have verified current causal authority and pass; aggregate success must cover every discovered test."
+evidence OWNER:
+  "Owner sets active goal: correctly organize and verify causal relationships while sealing tests, establish and pass all tests."
+evidence INVENTORY:
+  "Current inventory: unit247 active39/provisional2/disabled206 with unsealed189/source-diverged13/stale4; e2e4 active3/unsealed1."
+premise BOUNDARY:
+  "Read current assertions and authority. Do not invent adoption for Proposed sources, silence failures by exclusion or blindly relink. Historical inactive trial obligations require exact owner disposition/current-contract reconciliation. Use isolated local databases and no paid/production calls."
+premise METHODS:
+  "Delegate read-only disjoint cause mapping; main reviews integrations, Seals and test execution. Diagnostic runs collect failures but are not official acceptance until all eligibility is restored."
+decision RECOVER based_on OWNER, INVENTORY, BOUNDARY, METHODS:
+  "Reconcile each test's obligations, source bytes and exact upstream Seals; repair stale/source mismatch or actual defects within accepted contracts, publish reviewed scoped changes, and execute full unit/e2e plus required checks. Keep goal active until every discovered test is eligible, executes and passes; retain unresolved requirements and environment prerequisites explicitly."

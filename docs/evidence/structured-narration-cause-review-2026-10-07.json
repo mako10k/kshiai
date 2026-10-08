@@ -1,0 +1,199 @@
+{
+  "schema": "kshiai/structured-narration-cause-review/v1",
+  "upstream": [
+    {
+      "ref": "all-tests-20261007/authority-selectable-envelope",
+      "sealId": "fdaeaeb9f3694421a8776649f58ec4e89962ae6f95fc3249b8ca4b6a93b6e3ed"
+    },
+    {
+      "ref": "all-tests-20261007/contract-selectable-envelope",
+      "sealId": "5a84c8424772e34504daf62f2737bb29646a8762a07c26db984696686be56e3c"
+    },
+    {
+      "ref": "all-tests-20261007/authority-authoring-review",
+      "sealId": "811d0305e67ce73b5902135bb8662e7ee31e6efaf98852b0ad5de8d1f0c15007"
+    },
+    {
+      "ref": "awareness-guidance-20261007/authority-current",
+      "sealId": "4a236b55e9ad9e4aa54eb2c6bbe9d77e0a318881ba8328363505153d16e151dd"
+    }
+  ],
+  "nodes": [
+    {
+      "key": "authority-structured-narration",
+      "path": "docs/adr/0013-structured-narration-definition.md",
+      "parents": [],
+      "scope": "Accepted ADR0013 retained structured narration definition, private rhetoric/control exclusion, six-phase compiler and immutable selected generation. No pricing or natural live quality assertion.",
+      "test": false,
+      "ref": "all-tests-20261007/authority-structured-narration",
+      "sha256": "e8eef95efd2a7f3ceab1c82f102065532a5eaccfe1e9dd550ad15ecf56bd29d5"
+    },
+    {
+      "key": "implementation-structured-narration-contract",
+      "path": "packages/shared/src/structured-narration.ts",
+      "parents": [
+        "authority-structured-narration",
+        "contract"
+      ],
+      "scope": "Strict definition validation, public projection whitelist, claim receipt identity and bounded deterministic phase compiler. Supplied supported receipt only; no recomputed projection digest or real independent provider assessment proof.",
+      "test": false,
+      "ref": "all-tests-20261007/implementation-structured-narration-contract",
+      "sha256": "5ece3ceb469b7ce84e1c77908f4a685e5ca678b939ff5fd8877349506b7afd90"
+    },
+    {
+      "key": "implementation-narration-phase-bridge",
+      "path": "packages/shared/src/narration-style.ts",
+      "parents": [
+        "implementation-structured-narration-contract"
+      ],
+      "scope": "Snapshot and phase mapping bridge used by four shared tests; no all narration pipeline performance guarantee.",
+      "test": false,
+      "ref": "all-tests-20261007/implementation-narration-phase-bridge",
+      "sha256": "3070bc64e492c21967de92a1bdb3fc4e460029ad0cbed4b9a6d633bf40483158"
+    },
+    {
+      "key": "implementation-narration-candidate-building",
+      "path": "backend/src/services/narration-style-authoring-service.ts",
+      "parents": [
+        "authority-structured-narration",
+        "envelope",
+        "implementation-structured-narration-contract"
+      ],
+      "scope": "Typed candidate definition/public projection/profile/receipt assembly tested using injected mock provider; trusted fixture imports distinct from natural generation. No actual provider quality or billable calls.",
+      "test": false,
+      "ref": "all-tests-20261007/implementation-narration-candidate-building",
+      "sha256": "cbba4b90456aeb594303242ef32abb69dc20635fcf6720874d1e88434790c6e7"
+    },
+    {
+      "key": "implementation-narration-activation-validated-storage",
+      "path": "backend/src/repositories/narration-style-assets-v2.ts",
+      "parents": [
+        "envelope",
+        "queue",
+        "implementation-narration-candidate-building"
+      ],
+      "scope": "Create/revision persistence, activation/replay, expiry and generation drift tested. Stored NarrationStyleSchema now rejects corrupt instruction before replay or append. No all malformed storage branches or historical immutable replay projection proof.",
+      "test": false,
+      "ref": "all-tests-20261007/implementation-narration-activation-validated-storage",
+      "sha256": "049d5bc7fa565eb24714deb6392b85d5f061655a5c335f68bc5c22bb6d431aa1"
+    },
+    {
+      "key": "implementation-narration-family-runner",
+      "path": "backend/src/services/family-authoring-runners.ts",
+      "parents": [
+        "queue",
+        "implementation-narration-candidate-building",
+        "implementation-narration-activation-validated-storage"
+      ],
+      "scope": "Only narration style worker success and injected structure failure handling exercised by route suite. Other family runners not certified.",
+      "test": false,
+      "ref": "all-tests-20261007/implementation-narration-family-runner",
+      "sha256": "b8a15b2b733da84dbf0fbb979a5cc05e54bdebe30f51ccf32d2d0b9434cc52df"
+    },
+    {
+      "key": "implementation-narration-battle-binding",
+      "path": "backend/src/services/battle-service.ts",
+      "parents": [
+        "world",
+        "implementation-narration-activation-validated-storage",
+        "implementation-narration-phase-bridge"
+      ],
+      "scope": "Only current battle creation reads ready immutable narration generation, manifest digest and compiled phase rules with no extra style generation. Not battle progress, waiting clock or whole service conformance.",
+      "test": false,
+      "ref": "all-tests-20261007/implementation-narration-battle-binding",
+      "sha256": "0c1982e7e9a0ed28a36654be55be3bfbd25fbb0ac445bcbb73c364bed91440fc"
+    },
+    {
+      "key": "implementation-narration-battle-storage",
+      "path": "backend/src/repositories/battles.ts",
+      "parents": [
+        "implementation-narration-battle-binding"
+      ],
+      "scope": "Only persistence/readback of created battle manifest and frozen narration policy observed in this suite. No full battle history or lifecycle proof.",
+      "test": false,
+      "ref": "all-tests-20261007/implementation-narration-battle-storage",
+      "sha256": "e0f5d0977e5a103249a382bbd5ac318f0a7a7b2abcde95ad2f4491ead5ca892f"
+    },
+    {
+      "key": "fixture-narration-route-offline-awareness",
+      "path": "backend/src/testing/offline-awareness-provider.ts",
+      "parents": [
+        "world"
+      ],
+      "scope": "Injected typed offline provider supports current battle creation. Fake transport and usage only; no actual model tokens or quality.",
+      "test": false,
+      "ref": "all-tests-20261007/fixture-narration-route-offline-awareness",
+      "sha256": "1eca62e07410c63ad3b89a02cde87b5c45694a719d99470fa0cf4e7e3494147e"
+    },
+    {
+      "key": "fixture-narration-route-v3-envelope",
+      "path": "backend/src/testing/v3-character-envelope-fixture.ts",
+      "parents": [
+        "envelope"
+      ],
+      "scope": "Synthetic trusted V3 character envelope used for narration battle-binding case. Never proof natural character-create profile completion.",
+      "test": false,
+      "ref": "all-tests-20261007/fixture-narration-route-v3-envelope",
+      "sha256": "c3eff395a23dc3ee82cee6a5a20d1525ee2fb2984ce28bc24f1d2cc61e420c57"
+    },
+    {
+      "key": "implementation-narration-route-acceptance",
+      "path": "backend/src/routes.ts",
+      "parents": [
+        "implementation-narration-family-runner",
+        "implementation-narration-activation-validated-storage",
+        "implementation-narration-battle-storage",
+        "fixture-narration-route-offline-awareness",
+        "fixture-narration-route-v3-envelope",
+        "world"
+      ],
+      "scope": "Only narration authoring review/confirm, legacy selector refusal, and current awareness battle creation frozen narration binding exercised. Character create failures remain unresolved, other routes not certified.",
+      "test": false,
+      "ref": "all-tests-20261007/implementation-narration-route-acceptance",
+      "sha256": "c62c1c59bfbd373480e43fd60b4f32c0a3ea73a051329bee3aa048da98ab209f"
+    },
+    {
+      "key": "structured-narration",
+      "path": "packages/shared/src/structured-narration.test.ts",
+      "parents": [
+        "implementation-structured-narration-contract",
+        "implementation-narration-phase-bridge"
+      ],
+      "scope": "All four cases strict phases/IDs/markers, public private-field exclusion, bounded compiler and bridge, compiler registry and receipt presence. No live LLM or all invalid receipts matrix.",
+      "test": true,
+      "ref": "verification/structured-narration-20261007",
+      "sha256": "8df3a0c2d4d8b1e2aa2a5eafa3598ef6e35ea0f7575c26b1382f3f1b74dbcae1"
+    },
+    {
+      "key": "structured-narration-acceptance",
+      "path": "backend/src/routes-structured-narration-acceptance.test.ts",
+      "parents": [
+        "implementation-narration-route-acceptance",
+        "implementation-narration-activation-validated-storage",
+        "implementation-narration-candidate-building"
+      ],
+      "scope": "All six isolated SQLite cases: injected structure failure no partial activation, legacy management and selector exclusion, create/upgrade review and zero-call confirmation replay, immutable narration binding at awareness-v5 battle creation, expiry/drift no append, corrupt stored style both rejection branches and unchanged generation/restored replay. Synthetic V3 fixture characters and offline awareness provider; no full battle progress or natural character creation proof.",
+      "test": true,
+      "ref": "verification/structured-narration-acceptance-20261007",
+      "sha256": "6f29961ea9996842bf7b28421491c8b002efb56b40d44242c7316ff43707d385"
+    }
+  ],
+  "diagnostic": {
+    "pass": 10,
+    "fail": 0,
+    "skipped": 0,
+    "strictTypecheckExit": 0
+  },
+  "clauses": [
+    "Accepted ADR0013 structured narration sections",
+    "Accepted ADR0010 readiness envelopes",
+    "Accepted ADR0014 owner review and queued worker",
+    "Accepted ADR0051 retained frozen asset binding"
+  ],
+  "limitations": [
+    "Ten offline cases only",
+    "No live provider or paid quality experiment",
+    "Character create failures and ADR0059 pending",
+    "Existing read-purity source binding must be refreshed after validated storage repair"
+  ]
+}

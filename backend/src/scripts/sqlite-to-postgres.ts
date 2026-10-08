@@ -1,3 +1,4 @@
+// R: Coordinate explicitly requested SQLite source inspection and PostgreSQL migration.
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import SqliteDatabase from "better-sqlite3";
@@ -251,9 +252,9 @@ export function readSourceSnapshot(sourcePath: string): SourceSnapshot {
     fileMustExist: true,
   });
   try {
-    const integrity = database.pragma("integrity_check") as Array<{
-      integrity_check: string;
-    }>;
+    const integrity = database
+      .prepare<[], { integrity_check: string }>("PRAGMA integrity_check")
+      .all();
     const errors = integrity
       .filter((row) => row.integrity_check !== "ok")
       .map((row) => `SQLite integrity check: ${row.integrity_check}`);
@@ -262,8 +263,8 @@ export function readSourceSnapshot(sourcePath: string): SourceSnapshot {
       const result = new Map<string, SourceRow[]>();
       for (const spec of tableSpecs) {
         const rawRows = database
-          .prepare(`SELECT ${spec.columns.join(", ")} FROM ${spec.name}`)
-          .all() as SourceRow[];
+          .prepare<[], SourceRow>(`SELECT ${spec.columns.join(", ")} FROM ${spec.name}`)
+          .all();
         result.set(
           spec.name,
           rawRows.map((row, index) =>

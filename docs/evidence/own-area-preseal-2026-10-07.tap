@@ -1,0 +1,297 @@
+TAP version 13
+# Subtest: structured battlefield route acceptance
+    # Subtest: records structure-stage failure without exposing a partial battlefield
+    ok 1 - records structure-stage failure without exposing a partial battlefield
+      ---
+      duration_ms: 63.778921
+      type: 'test'
+      ...
+    # Subtest: keeps legacy battlefields visible to management but out of every match binding
+    ok 2 - keeps legacy battlefields visible to management but out of every match binding
+      ---
+      duration_ms: 102.367383
+      type: 'test'
+      ...
+    # Subtest: upgrades a legacy battlefield only after explicit owner confirmation
+    ok 3 - upgrades a legacy battlefield only after explicit owner confirmation
+      ---
+      duration_ms: 55.722333
+      type: 'test'
+      ...
+    # Subtest: returns a compare review and list mark for an awaiting battlefield upgrade
+    ok 4 - returns a compare review and list mark for an awaiting battlefield upgrade
+      ---
+      duration_ms: 53.252886
+      type: 'test'
+      ...
+    # Subtest: expires an upgrade candidate without creating or selecting a generation
+    ok 5 - expires an upgrade candidate without creating or selecting a generation
+      ---
+      duration_ms: 12.923686
+      type: 'test'
+      ...
+    # Subtest: rejects a stale revision candidate after concurrent current-pointer drift
+    ok 6 - rejects a stale revision candidate after concurrent current-pointer drift
+      ---
+      duration_ms: 28.411848
+      type: 'test'
+      ...
+    # Subtest: commits create revision and image changes only as confirmed immutable generations
+    ok 7 - commits create revision and image changes only as confirmed immutable generations
+      ---
+      duration_ms: 69.705149
+      type: 'test'
+      ...
+    # Subtest: binds an exact preset revision and deterministic compiler without mutating it
+    ok 8 - binds an exact preset revision and deterministic compiler without mutating it
+      ---
+      duration_ms: 201.254022
+      type: 'test'
+      ...
+    1..8
+ok 1 - structured battlefield route acceptance
+  ---
+  duration_ms: 693.370401
+  type: 'suite'
+  ...
+# Subtest: structured narration route acceptance
+    # Subtest: records structure failure without exposing a partial style
+    ok 1 - records structure failure without exposing a partial style
+      ---
+      duration_ms: 73.222203
+      type: 'test'
+      ...
+    # Subtest: keeps legacy styles manageable but outside selectors and direct binding
+    ok 2 - keeps legacy styles manageable but outside selectors and direct binding
+      ---
+      duration_ms: 117.07925
+      type: 'test'
+      ...
+    # Subtest: creates and upgrades only after owner confirmation with idempotent readback
+    ok 3 - creates and upgrades only after owner confirmation with idempotent readback
+      ---
+      duration_ms: 69.243086
+      type: 'test'
+      ...
+    # Subtest: binds the exact ready generation and never appends one at battle start
+    ok 4 - binds the exact ready generation and never appends one at battle start
+      ---
+      duration_ms: 143.535252
+      type: 'test'
+      ...
+    # Subtest: persists expiry and rejects a candidate after current-pointer drift
+    ok 5 - persists expiry and rejects a candidate after current-pointer drift
+      ---
+      duration_ms: 13.402471
+      type: 'test'
+      ...
+    # Subtest: rejects corrupt stored styles on confirmation and completed replay without appending a generation
+    ok 6 - rejects corrupt stored styles on confirmation and completed replay without appending a generation
+      ---
+      duration_ms: 57.825179
+      type: 'test'
+      ...
+    1..6
+ok 2 - structured narration route acceptance
+  ---
+  duration_ms: 570.517815
+  type: 'suite'
+  ...
+# Subtest: server-owned battle world
+    # Subtest: starts exposed opponents near each other with working senses
+    ok 1 - starts exposed opponents near each other with working senses
+      ---
+      duration_ms: 17.369375
+      type: 'test'
+      ...
+    # Subtest: commits sensory mental object and pair changes atomically
+    ok 2 - commits sensory mental object and pair changes atomically
+      ---
+      duration_ms: 6.617021
+      type: 'test'
+      ...
+    # Subtest: represents a worn blindfold and its server-derived vision constraint
+    ok 3 - represents a worn blindfold and its server-derived vision constraint
+      ---
+      duration_ms: 4.270018
+      type: 'test'
+      ...
+    # Subtest: rejects an inconsistent disappearance without partially changing state
+    ok 4 - rejects an inconsistent disappearance without partially changing state
+      ---
+      duration_ms: 5.735104
+      type: 'test'
+      ...
+    # Subtest: rejects cyclic object placement as one atomic transition
+    ok 5 - rejects cyclic object placement as one atomic transition
+      ---
+      duration_ms: 4.771333
+      type: 'test'
+      ...
+    # Subtest: keeps narration and unknown event IDs outside world transitions
+    ok 6 - keeps narration and unknown event IDs outside world transitions
+      ---
+      duration_ms: 2.335294
+      type: 'test'
+      ...
+    # Subtest: derives separate-area distance only from structured locations
+    ok 7 - derives separate-area distance only from structured locations
+      ---
+      duration_ms: 4.489344
+      type: 'test'
+      ...
+    # Subtest: derives an atomic world transition from structured semantic changes
+    ok 8 - derives an atomic world transition from structured semantic changes
+      ---
+      duration_ms: 24.783488
+      type: 'test'
+      ...
+    # Subtest: does not restore fighter placement or pair from stale semantic labels
+    ok 9 - does not restore fighter placement or pair from stale semantic labels
+      ---
+      duration_ms: 4.567636
+      type: 'test'
+      ...
+    # Subtest: does not move an object the engine already placed this turn
+    ok 10 - does not move an object the engine already placed this turn
+      ---
+      duration_ms: 4.397509
+      type: 'test'
+      ...
+    # Subtest: loads legacy dependents of absent semantic parents as absent
+    ok 11 - loads legacy dependents of absent semantic parents as absent
+      ---
+      duration_ms: 2.691981
+      type: 'test'
+      ...
+    # Subtest: promotes an observer-labeled object and concretizes it without changing identity
+    ok 12 - promotes an observer-labeled object and concretizes it without changing identity
+      ---
+      duration_ms: 4.879116
+      type: 'test'
+      ...
+    1..12
+ok 3 - server-owned battle world
+  ---
+  duration_ms: 90.312369
+  type: 'suite'
+  ...
+# Subtest: rejects an inherited object property as an undeclared canonical area
+ok 4 - rejects an inherited object property as an undeclared canonical area
+  ---
+  duration_ms: 4.742176
+  type: 'test'
+  ...
+# Subtest: reposition transition
+    # Subtest: hops one adjacent area toward the counterpart
+    ok 1 - hops one adjacent area toward the counterpart
+      ---
+      duration_ms: 51.214971
+      type: 'test'
+      ...
+    # Subtest: opens an in-area rank when too close
+    ok 2 - opens an in-area rank when too close
+      ---
+      duration_ms: 13.656648
+      type: 'test'
+      ...
+    # Subtest: treats a present scene counterpart as localized in unique world
+    ok 3 - treats a present scene counterpart as localized in unique world
+      ---
+      duration_ms: 13.300154
+      type: 'test'
+      ...
+    1..3
+ok 5 - reposition transition
+  ---
+  duration_ms: 80.84245
+  type: 'suite'
+  ...
+# Subtest: preserves a declared area ID that is also an inherited object property
+ok 6 - preserves a declared area ID that is also an inherited object property
+  ---
+  duration_ms: 15.925405
+  type: 'test'
+  ...
+# Subtest: BattlefieldDefinitionV2
+    # Subtest: maps legacy fields deterministically and drops unknown coefficient keys
+    ok 1 - maps legacy fields deterministically and drops unknown coefficient keys
+      ---
+      duration_ms: 13.92769
+      type: 'test'
+      ...
+    # Subtest: rejects dangling references, reserved ids, and cross-section duplicates
+    ok 2 - rejects dangling references, reserved ids, and cross-section duplicates
+      ---
+      duration_ms: 5.528196
+      type: 'test'
+      ...
+    # Subtest: compiles byte-equivalent instances without provider or public prose input
+    ok 3 - compiles byte-equivalent instances without provider or public prose input
+      ---
+      duration_ms: 30.328352
+      type: 'test'
+      ...
+    # Subtest: selects only authored evolution affordances deterministically
+    ok 4 - selects only authored evolution affordances deterministically
+      ---
+      duration_ms: 5.33232
+      type: 'test'
+      ...
+    # Subtest: places both semantic character roots at their exact authored entry areas
+    ok 5 - places both semantic character roots at their exact authored entry areas
+      ---
+      duration_ms: 88.56497
+      type: 'test'
+      ...
+    # Subtest: preserves distinct area and entity placements when display names are identical
+    ok 6 - preserves distinct area and entity placements when display names are identical
+      ---
+      duration_ms: 40.845282
+      type: 'test'
+      ...
+    # Subtest: rejects missing or dangling initial scene placement references
+    ok 7 - rejects missing or dangling initial scene placement references
+      ---
+      duration_ms: 21.010419
+      type: 'test'
+      ...
+    # Subtest: rejects using a structured instance without its required creation layout
+    ok 8 - rejects using a structured instance without its required creation layout
+      ---
+      duration_ms: 10.449975
+      type: 'test'
+      ...
+    # Subtest: keeps mechanics, hidden objects, and evolution controls out of public projections
+    ok 9 - keeps mechanics, hidden objects, and evolution controls out of public projections
+      ---
+      duration_ms: 3.517514
+      type: 'test'
+      ...
+    # Subtest: requires every compiler and an exact claim-validation receipt
+    ok 10 - requires every compiler and an exact claim-validation receipt
+      ---
+      duration_ms: 5.55417
+      type: 'test'
+      ...
+    1..10
+ok 7 - BattlefieldDefinitionV2
+  ---
+  duration_ms: 228.751182
+  type: 'suite'
+  ...
+# Subtest: requires structured placement handoff at compile time
+ok 8 - requires structured placement handoff at compile time
+  ---
+  duration_ms: 0.246498
+  type: 'test'
+  ...
+1..8
+# tests 42
+# suites 5
+# pass 42
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 2373.109317

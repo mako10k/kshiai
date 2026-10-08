@@ -1,0 +1,884 @@
+{
+  "schema": "kshiai/llm-test-execution-safety/v1",
+  "scope": "backend/src/llm/*.test.ts",
+  "count": 42,
+  "readOnly": true,
+  "testExecutionPerformed": false,
+  "externalContactPerformed": false,
+  "paidCallsPerformed": false,
+  "mainFindings": [
+    "Six tests deliberately create and write isolated temp SQLite databases and set DATABASE_PATH before dynamic DB imports.",
+    "An early preloader importing config/db can cache the default/preloader database path before those assignments; do not use that shape for the offline diagnostic.",
+    "Physical HTTP-shaped tests replace fetch/client or inject fetchers; configured .invalid/loopback endpoints are not contacted in the current test paths.",
+    "provider-accounting.test.ts directly writes accounting/cutover tables in its temp database; it is the strongest DB mutation case.",
+    "No executable skip/todo/only markers were found."
+  ],
+  "entries": [
+    {
+      "testPath": "backend/src/llm/adjudication-prompt-prose.test.ts",
+      "nonLoopbackNetwork": {
+        "status": "mocked_or_not_called",
+        "evidence": "No fetch/network call found in the test path; provider-like values are data or local mocks.",
+        "paidCallRisk": "none observed; no credentialed provider call is made"
+      },
+      "database": {
+        "status": "none observed",
+        "evidencePaths": [],
+        "defaultDbRisk": "none observed in test body"
+      },
+      "environmentAssumptions": [],
+      "skipMarkers": [
+        "No skip/todo/only marker found."
+      ],
+      "tempDbPreloaderInterference": "No DB connection is opened by this test as written; a preloader importing config/db can still cache process-global configuration for transitive provider modules, so keep the offline preloader side-effect free.",
+      "confidence": 0.82
+    },
+    {
+      "testPath": "backend/src/llm/awareness-adjudication-result.test.ts",
+      "nonLoopbackNetwork": {
+        "status": "mocked_or_not_called",
+        "evidence": "Physical HTTP-shaped code is exercised, but the transport is locally mocked; no non-loopback packet should be emitted. The endpoint is a .invalid test URL.",
+        "paidCallRisk": "none observed; no credentialed provider call is made"
+      },
+      "database": {
+        "status": "isolated temporary SQLite is intentionally initialized/written; closing/removing occurs in after hook.",
+        "evidencePaths": [
+          "backend/src/db.ts",
+          "backend/src/repositories/llm-usage.ts"
+        ],
+        "defaultDbRisk": "high with an early config/db preloader"
+      },
+      "environmentAssumptions": [
+        "Sets DATABASE_URL=\"\", AUTH_PROVIDER=\"legacy\", and a per-file DATABASE_PATH under mkdtemp before dynamic db/provider imports."
+      ],
+      "skipMarkers": [
+        "No executable skip/todo/only marker; textual matches are assertion names or ordinary words."
+      ],
+      "tempDbPreloaderInterference": "A DB preloader that imports config/db before this test sets DATABASE_PATH defeats the test's temp-path setup; calls can then write the preloader/default DB. Do not combine with such a preloader unless it sets the path before any module import and isolates workers.",
+      "confidence": 0.9
+    },
+    {
+      "testPath": "backend/src/llm/awareness-dispatch-admission.test.ts",
+      "nonLoopbackNetwork": {
+        "status": "mocked_or_not_called",
+        "evidence": "No fetch/network call found in the test path; provider-like values are data or local mocks.",
+        "paidCallRisk": "none observed; no credentialed provider call is made"
+      },
+      "database": {
+        "status": "none observed",
+        "evidencePaths": [],
+        "defaultDbRisk": "none observed in test body"
+      },
+      "environmentAssumptions": [],
+      "skipMarkers": [
+        "No executable skip/todo/only marker; textual matches are assertion names or ordinary words."
+      ],
+      "tempDbPreloaderInterference": "No DB connection is opened by this test as written; a preloader importing config/db can still cache process-global configuration for transitive provider modules, so keep the offline preloader side-effect free.",
+      "confidence": 0.82
+    },
+    {
+      "testPath": "backend/src/llm/awareness-dispatch-context.test.ts",
+      "nonLoopbackNetwork": {
+        "status": "mocked_or_not_called",
+        "evidence": "Physical HTTP-shaped code is exercised, but the transport is locally mocked; no non-loopback packet should be emitted. The endpoint is a .invalid test URL.",
+        "paidCallRisk": "none observed; no credentialed provider call is made"
+      },
+      "database": {
+        "status": "isolated temporary SQLite is intentionally initialized/written; closing/removing occurs in after hook.; static openai-compatible import transitively loads usage/db modules, but no connection/write occurs unless a real accounted request is invoked.",
+        "evidencePaths": [
+          "backend/src/db.ts",
+          "backend/src/repositories/llm-usage.ts"
+        ],
+        "defaultDbRisk": "high with an early config/db preloader"
+      },
+      "environmentAssumptions": [
+        "Sets DATABASE_URL=\"\", AUTH_PROVIDER=\"legacy\", and a per-file DATABASE_PATH under mkdtemp before dynamic db/provider imports."
+      ],
+      "skipMarkers": [
+        "No executable skip/todo/only marker; textual matches are assertion names or ordinary words."
+      ],
+      "tempDbPreloaderInterference": "A DB preloader that imports config/db before this test sets DATABASE_PATH defeats the test's temp-path setup; calls can then write the preloader/default DB. Do not combine with such a preloader unless it sets the path before any module import and isolates workers.",
+      "confidence": 0.9
+    },
+    {
+      "testPath": "backend/src/llm/awareness-frozen-narration.test.ts",
+      "nonLoopbackNetwork": {
+        "status": "mocked_or_not_called",
+        "evidence": "No fetch/network call found in the test path; provider-like values are data or local mocks.",
+        "paidCallRisk": "none observed; no credentialed provider call is made"
+      },
+      "database": {
+        "status": "none observed",
+        "evidencePaths": [],
+        "defaultDbRisk": "none observed in test body"
+      },
+      "environmentAssumptions": [],
+      "skipMarkers": [
+        "No skip/todo/only marker found."
+      ],
+      "tempDbPreloaderInterference": "No DB connection is opened by this test as written; a preloader importing config/db can still cache process-global configuration for transitive provider modules, so keep the offline preloader side-effect free.",
+      "confidence": 0.82
+    },
+    {
+      "testPath": "backend/src/llm/awareness-latent-output-guidance.test.ts",
+      "nonLoopbackNetwork": {
+        "status": "mocked_or_not_called",
+        "evidence": "No fetch/network call found in the test path; provider-like values are data or local mocks.",
+        "paidCallRisk": "none observed; no credentialed provider call is made"
+      },
+      "database": {
+        "status": "none observed",
+        "evidencePaths": [],
+        "defaultDbRisk": "none observed in test body"
+      },
+      "environmentAssumptions": [],
+      "skipMarkers": [
+        "No skip/todo/only marker found."
+      ],
+      "tempDbPreloaderInterference": "No DB connection is opened by this test as written; a preloader importing config/db can still cache process-global configuration for transitive provider modules, so keep the offline preloader side-effect free.",
+      "confidence": 0.82
+    },
+    {
+      "testPath": "backend/src/llm/awareness-narration.test.ts",
+      "nonLoopbackNetwork": {
+        "status": "mocked_or_not_called",
+        "evidence": "No fetch/network call found in the test path; provider-like values are data or local mocks.",
+        "paidCallRisk": "none observed; no credentialed provider call is made"
+      },
+      "database": {
+        "status": "none observed",
+        "evidencePaths": [],
+        "defaultDbRisk": "none observed in test body"
+      },
+      "environmentAssumptions": [],
+      "skipMarkers": [
+        "No executable skip/todo/only marker; textual matches are assertion names or ordinary words."
+      ],
+      "tempDbPreloaderInterference": "No DB connection is opened by this test as written; a preloader importing config/db can still cache process-global configuration for transitive provider modules, so keep the offline preloader side-effect free.",
+      "confidence": 0.82
+    },
+    {
+      "testPath": "backend/src/llm/awareness-output-contract.test.ts",
+      "nonLoopbackNetwork": {
+        "status": "mocked_or_not_called",
+        "evidence": "No fetch/network call found in the test path; provider-like values are data or local mocks.",
+        "paidCallRisk": "none observed; no credentialed provider call is made"
+      },
+      "database": {
+        "status": "none observed",
+        "evidencePaths": [],
+        "defaultDbRisk": "none observed in test body"
+      },
+      "environmentAssumptions": [],
+      "skipMarkers": [
+        "No skip/todo/only marker found."
+      ],
+      "tempDbPreloaderInterference": "No DB connection is opened by this test as written; a preloader importing config/db can still cache process-global configuration for transitive provider modules, so keep the offline preloader side-effect free.",
+      "confidence": 0.82
+    },
+    {
+      "testPath": "backend/src/llm/awareness-provider-factory.test.ts",
+      "nonLoopbackNetwork": {
+        "status": "mocked_or_not_called",
+        "evidence": "Adapter factory receives an injected factory/transport in exercised paths; no physical send is made to configured .invalid URLs.",
+        "paidCallRisk": "none observed; no credentialed provider call is made"
+      },
+      "database": {
+        "status": "none observed; static openai-compatible import transitively loads usage/db modules, but no connection/write occurs unless a real accounted request is invoked.",
+        "evidencePaths": [
+          "backend/src/db.ts",
+          "backend/src/repositories/llm-usage.ts"
+        ],
+        "defaultDbRisk": "none observed in test body"
+      },
+      "environmentAssumptions": [],
+      "skipMarkers": [
+        "No executable skip/todo/only marker; textual matches are assertion names or ordinary words."
+      ],
+      "tempDbPreloaderInterference": "No DB connection is opened by this test as written; a preloader importing config/db can still cache process-global configuration for transitive provider modules, so keep the offline preloader side-effect free.",
+      "confidence": 0.82
+    },
+    {
+      "testPath": "backend/src/llm/awareness-provider.test.ts",
+      "nonLoopbackNetwork": {
+        "status": "mocked_or_not_called",
+        "evidence": "No fetch/network call found in the test path; provider-like values are data or local mocks.",
+        "paidCallRisk": "none observed; no credentialed provider call is made"
+      },
+      "database": {
+        "status": "none observed",
+        "evidencePaths": [],
+        "defaultDbRisk": "none observed in test body"
+      },
+      "environmentAssumptions": [],
+      "skipMarkers": [
+        "No executable skip/todo/only marker; textual matches are assertion names or ordinary words."
+      ],
+      "tempDbPreloaderInterference": "No DB connection is opened by this test as written; a preloader importing config/db can still cache process-global configuration for transitive provider modules, so keep the offline preloader side-effect free.",
+      "confidence": 0.82
+    },
+    {
+      "testPath": "backend/src/llm/awareness-request.test.ts",
+      "nonLoopbackNetwork": {
+        "status": "mocked_or_not_called",
+        "evidence": "No fetch/network call found in the test path; provider-like values are data or local mocks.",
+        "paidCallRisk": "none observed; no credentialed provider call is made"
+      },
+      "database": {
+        "status": "none observed",
+        "evidencePaths": [],
+        "defaultDbRisk": "none observed in test body"
+      },
+      "environmentAssumptions": [],
+      "skipMarkers": [
+        "No skip/todo/only marker found."
+      ],
+      "tempDbPreloaderInterference": "No DB connection is opened by this test as written; a preloader importing config/db can still cache process-global configuration for transitive provider modules, so keep the offline preloader side-effect free.",
+      "confidence": 0.82
+    },
+    {
+      "testPath": "backend/src/llm/character-definition-response-schema.test.ts",
+      "nonLoopbackNetwork": {
+        "status": "mocked_or_not_called",
+        "evidence": "No fetch/network call found in the test path; provider-like values are data or local mocks.",
+        "paidCallRisk": "none observed; no credentialed provider call is made"
+      },
+      "database": {
+        "status": "none observed",
+        "evidencePaths": [],
+        "defaultDbRisk": "none observed in test body"
+      },
+      "environmentAssumptions": [],
+      "skipMarkers": [
+        "No executable skip/todo/only marker; textual matches are assertion names or ordinary words."
+      ],
+      "tempDbPreloaderInterference": "No DB connection is opened by this test as written; a preloader importing config/db can still cache process-global configuration for transitive provider modules, so keep the offline preloader side-effect free.",
+      "confidence": 0.82
+    },
+    {
+      "testPath": "backend/src/llm/character-expression-contract.test.ts",
+      "nonLoopbackNetwork": {
+        "status": "mocked_or_not_called",
+        "evidence": "No fetch/network call found in the test path; provider-like values are data or local mocks.",
+        "paidCallRisk": "none observed; no credentialed provider call is made"
+      },
+      "database": {
+        "status": "none observed; static openai-compatible import transitively loads usage/db modules, but no connection/write occurs unless a real accounted request is invoked.",
+        "evidencePaths": [
+          "backend/src/db.ts",
+          "backend/src/repositories/llm-usage.ts"
+        ],
+        "defaultDbRisk": "none observed in test body"
+      },
+      "environmentAssumptions": [],
+      "skipMarkers": [
+        "No skip/todo/only marker found."
+      ],
+      "tempDbPreloaderInterference": "No DB connection is opened by this test as written; a preloader importing config/db can still cache process-global configuration for transitive provider modules, so keep the offline preloader side-effect free.",
+      "confidence": 0.82
+    },
+    {
+      "testPath": "backend/src/llm/character-focus-ablation-report.test.ts",
+      "nonLoopbackNetwork": {
+        "status": "mocked_or_not_called",
+        "evidence": "No fetch/network call found in the test path; provider-like values are data or local mocks.",
+        "paidCallRisk": "none observed; no credentialed provider call is made"
+      },
+      "database": {
+        "status": "none observed",
+        "evidencePaths": [],
+        "defaultDbRisk": "none observed in test body"
+      },
+      "environmentAssumptions": [],
+      "skipMarkers": [
+        "No executable skip/todo/only marker; textual matches are assertion names or ordinary words."
+      ],
+      "tempDbPreloaderInterference": "No DB connection is opened by this test as written; a preloader importing config/db can still cache process-global configuration for transitive provider modules, so keep the offline preloader side-effect free.",
+      "confidence": 0.82
+    },
+    {
+      "testPath": "backend/src/llm/character-focus-ablation.test.ts",
+      "nonLoopbackNetwork": {
+        "status": "mocked_or_not_called",
+        "evidence": "No fetch/network call found in the test path; provider-like values are data or local mocks.",
+        "paidCallRisk": "none observed; no credentialed provider call is made"
+      },
+      "database": {
+        "status": "none observed",
+        "evidencePaths": [],
+        "defaultDbRisk": "none observed in test body"
+      },
+      "environmentAssumptions": [],
+      "skipMarkers": [
+        "No executable skip/todo/only marker; textual matches are assertion names or ordinary words."
+      ],
+      "tempDbPreloaderInterference": "No DB connection is opened by this test as written; a preloader importing config/db can still cache process-global configuration for transitive provider modules, so keep the offline preloader side-effect free.",
+      "confidence": 0.82
+    },
+    {
+      "testPath": "backend/src/llm/character-migration-ollama-provider.test.ts",
+      "nonLoopbackNetwork": {
+        "status": "mocked_or_not_called",
+        "evidence": "createOllamaMigrationCheckProvider receives an injected fetcher; localhost route is only a rejected drift input. No non-loopback packet should be emitted.",
+        "paidCallRisk": "none observed; no credentialed provider call is made"
+      },
+      "database": {
+        "status": "none observed",
+        "evidencePaths": [],
+        "defaultDbRisk": "none observed in test body"
+      },
+      "environmentAssumptions": [],
+      "skipMarkers": [
+        "No executable skip/todo/only marker; textual matches are assertion names or ordinary words."
+      ],
+      "tempDbPreloaderInterference": "No DB connection is opened by this test as written; a preloader importing config/db can still cache process-global configuration for transitive provider modules, so keep the offline preloader side-effect free.",
+      "confidence": 0.9
+    },
+    {
+      "testPath": "backend/src/llm/character-migration-probe-provider.test.ts",
+      "nonLoopbackNetwork": {
+        "status": "mocked_or_not_called",
+        "evidence": "createMigrationProbeProvider receives an injected fetcher; no ambient fetch is used. No non-loopback packet should be emitted.",
+        "paidCallRisk": "none observed; no credentialed provider call is made"
+      },
+      "database": {
+        "status": "none observed",
+        "evidencePaths": [],
+        "defaultDbRisk": "none observed in test body"
+      },
+      "environmentAssumptions": [
+        "Reads a checked-in evidence JSON fixture via import.meta.url."
+      ],
+      "skipMarkers": [
+        "No executable skip/todo/only marker; textual matches are assertion names or ordinary words."
+      ],
+      "tempDbPreloaderInterference": "No DB connection is opened by this test as written; a preloader importing config/db can still cache process-global configuration for transitive provider modules, so keep the offline preloader side-effect free.",
+      "confidence": 0.9
+    },
+    {
+      "testPath": "backend/src/llm/character-migration-response-schema.test.ts",
+      "nonLoopbackNetwork": {
+        "status": "mocked_or_not_called",
+        "evidence": "No fetch/network call found in the test path; provider-like values are data or local mocks.",
+        "paidCallRisk": "none observed; no credentialed provider call is made"
+      },
+      "database": {
+        "status": "none observed",
+        "evidencePaths": [],
+        "defaultDbRisk": "none observed in test body"
+      },
+      "environmentAssumptions": [
+        "Reads a checked-in evidence JSON fixture via import.meta.url."
+      ],
+      "skipMarkers": [
+        "No executable skip/todo/only marker; textual matches are assertion names or ordinary words."
+      ],
+      "tempDbPreloaderInterference": "No DB connection is opened by this test as written; a preloader importing config/db can still cache process-global configuration for transitive provider modules, so keep the offline preloader side-effect free.",
+      "confidence": 0.82
+    },
+    {
+      "testPath": "backend/src/llm/conscious-dynamic.test.ts",
+      "nonLoopbackNetwork": {
+        "status": "mocked_or_not_called",
+        "evidence": "provider/client path is fixture-controlled; no ambient fetch call is present; no non-loopback packet should be emitted.",
+        "paidCallRisk": "none observed; no credentialed provider call is made"
+      },
+      "database": {
+        "status": "none observed; static openai-compatible import transitively loads usage/db modules, but no connection/write occurs unless a real accounted request is invoked.",
+        "evidencePaths": [
+          "backend/src/db.ts",
+          "backend/src/repositories/llm-usage.ts"
+        ],
+        "defaultDbRisk": "none observed in test body"
+      },
+      "environmentAssumptions": [],
+      "skipMarkers": [
+        "No executable skip/todo/only marker; textual matches are assertion names or ordinary words."
+      ],
+      "tempDbPreloaderInterference": "No DB connection is opened by this test as written; a preloader importing config/db can still cache process-global configuration for transitive provider modules, so keep the offline preloader side-effect free.",
+      "confidence": 0.82
+    },
+    {
+      "testPath": "backend/src/llm/fallback.test.ts",
+      "nonLoopbackNetwork": {
+        "status": "mocked_or_not_called",
+        "evidence": "No fetch/network call found in the test path; provider-like values are data or local mocks.",
+        "paidCallRisk": "none observed; no credentialed provider call is made"
+      },
+      "database": {
+        "status": "none observed",
+        "evidencePaths": [],
+        "defaultDbRisk": "none observed in test body"
+      },
+      "environmentAssumptions": [],
+      "skipMarkers": [
+        "No executable skip/todo/only marker; textual matches are assertion names or ordinary words."
+      ],
+      "tempDbPreloaderInterference": "No DB connection is opened by this test as written; a preloader importing config/db can still cache process-global configuration for transitive provider modules, so keep the offline preloader side-effect free.",
+      "confidence": 0.82
+    },
+    {
+      "testPath": "backend/src/llm/llm-physical-completion.test.ts",
+      "nonLoopbackNetwork": {
+        "status": "mocked_or_not_called",
+        "evidence": "No fetch/network call found in the test path; provider-like values are data or local mocks.",
+        "paidCallRisk": "none observed; no credentialed provider call is made"
+      },
+      "database": {
+        "status": "none observed",
+        "evidencePaths": [],
+        "defaultDbRisk": "none observed in test body"
+      },
+      "environmentAssumptions": [],
+      "skipMarkers": [
+        "No skip/todo/only marker found."
+      ],
+      "tempDbPreloaderInterference": "No DB connection is opened by this test as written; a preloader importing config/db can still cache process-global configuration for transitive provider modules, so keep the offline preloader side-effect free.",
+      "confidence": 0.82
+    },
+    {
+      "testPath": "backend/src/llm/mock.test.ts",
+      "nonLoopbackNetwork": {
+        "status": "mocked_or_not_called",
+        "evidence": "No fetch/network call found in the test path; provider-like values are data or local mocks.",
+        "paidCallRisk": "none observed; no credentialed provider call is made"
+      },
+      "database": {
+        "status": "none observed",
+        "evidencePaths": [],
+        "defaultDbRisk": "none observed in test body"
+      },
+      "environmentAssumptions": [],
+      "skipMarkers": [
+        "No skip/todo/only marker found."
+      ],
+      "tempDbPreloaderInterference": "No DB connection is opened by this test as written; a preloader importing config/db can still cache process-global configuration for transitive provider modules, so keep the offline preloader side-effect free.",
+      "confidence": 0.82
+    },
+    {
+      "testPath": "backend/src/llm/model-request-options.test.ts",
+      "nonLoopbackNetwork": {
+        "status": "mocked_or_not_called",
+        "evidence": "No fetch/network call found in the test path; provider-like values are data or local mocks.",
+        "paidCallRisk": "none observed; no credentialed provider call is made"
+      },
+      "database": {
+        "status": "none observed",
+        "evidencePaths": [],
+        "defaultDbRisk": "none observed in test body"
+      },
+      "environmentAssumptions": [],
+      "skipMarkers": [
+        "No skip/todo/only marker found."
+      ],
+      "tempDbPreloaderInterference": "No DB connection is opened by this test as written; a preloader importing config/db can still cache process-global configuration for transitive provider modules, so keep the offline preloader side-effect free.",
+      "confidence": 0.82
+    },
+    {
+      "testPath": "backend/src/llm/narration-prompt-contract.test.ts",
+      "nonLoopbackNetwork": {
+        "status": "mocked_or_not_called",
+        "evidence": "NarrationContractProvider overrides chatJson; no non-loopback packet should be emitted.",
+        "paidCallRisk": "none observed; no credentialed provider call is made"
+      },
+      "database": {
+        "status": "none observed; static openai-compatible import transitively loads usage/db modules, but no connection/write occurs unless a real accounted request is invoked.",
+        "evidencePaths": [
+          "backend/src/db.ts",
+          "backend/src/repositories/llm-usage.ts"
+        ],
+        "defaultDbRisk": "none observed in test body"
+      },
+      "environmentAssumptions": [],
+      "skipMarkers": [
+        "No executable skip/todo/only marker; textual matches are assertion names or ordinary words."
+      ],
+      "tempDbPreloaderInterference": "No DB connection is opened by this test as written; a preloader importing config/db can still cache process-global configuration for transitive provider modules, so keep the offline preloader side-effect free.",
+      "confidence": 0.82
+    },
+    {
+      "testPath": "backend/src/llm/narrator-presentation-focus-evaluation.test.ts",
+      "nonLoopbackNetwork": {
+        "status": "mocked_or_not_called",
+        "evidence": "No fetch/network call found in the test path; provider-like values are data or local mocks.",
+        "paidCallRisk": "none observed; no credentialed provider call is made"
+      },
+      "database": {
+        "status": "none observed",
+        "evidencePaths": [],
+        "defaultDbRisk": "none observed in test body"
+      },
+      "environmentAssumptions": [],
+      "skipMarkers": [
+        "No executable skip/todo/only marker; textual matches are assertion names or ordinary words."
+      ],
+      "tempDbPreloaderInterference": "No DB connection is opened by this test as written; a preloader importing config/db can still cache process-global configuration for transitive provider modules, so keep the offline preloader side-effect free.",
+      "confidence": 0.82
+    },
+    {
+      "testPath": "backend/src/llm/openai-compatible-agent.test.ts",
+      "nonLoopbackNetwork": {
+        "status": "mocked_or_not_called",
+        "evidence": "OpenAiCompatibleProvider.chatJson is replaced with an in-memory function; no non-loopback packet should be emitted.",
+        "paidCallRisk": "none observed; no credentialed provider call is made"
+      },
+      "database": {
+        "status": "none observed; static openai-compatible import transitively loads usage/db modules, but no connection/write occurs unless a real accounted request is invoked.",
+        "evidencePaths": [
+          "backend/src/db.ts",
+          "backend/src/repositories/llm-usage.ts"
+        ],
+        "defaultDbRisk": "none observed in test body"
+      },
+      "environmentAssumptions": [],
+      "skipMarkers": [
+        "No executable skip/todo/only marker; textual matches are assertion names or ordinary words."
+      ],
+      "tempDbPreloaderInterference": "No DB connection is opened by this test as written; a preloader importing config/db can still cache process-global configuration for transitive provider modules, so keep the offline preloader side-effect free.",
+      "confidence": 0.82
+    },
+    {
+      "testPath": "backend/src/llm/openai-compatible-character-definition.test.ts",
+      "nonLoopbackNetwork": {
+        "status": "mocked_or_not_called",
+        "evidence": "StubProvider.chatJson is overridden with an in-memory function; no non-loopback packet should be emitted.",
+        "paidCallRisk": "none observed; no credentialed provider call is made"
+      },
+      "database": {
+        "status": "isolated temporary SQLite is intentionally initialized/written; closing/removing occurs in after hook.; static openai-compatible import transitively loads usage/db modules, but no connection/write occurs unless a real accounted request is invoked.",
+        "evidencePaths": [
+          "backend/src/db.ts",
+          "backend/src/repositories/llm-usage.ts"
+        ],
+        "defaultDbRisk": "high with an early config/db preloader"
+      },
+      "environmentAssumptions": [
+        "Sets DATABASE_URL=\"\", AUTH_PROVIDER=\"legacy\", and a per-file DATABASE_PATH under mkdtemp before dynamic db/provider imports."
+      ],
+      "skipMarkers": [
+        "No executable skip/todo/only marker; textual matches are assertion names or ordinary words."
+      ],
+      "tempDbPreloaderInterference": "A DB preloader that imports config/db before this test sets DATABASE_PATH defeats the test's temp-path setup; calls can then write the preloader/default DB. Do not combine with such a preloader unless it sets the path before any module import and isolates workers.",
+      "confidence": 0.9
+    },
+    {
+      "testPath": "backend/src/llm/openai-compatible-model-options.test.ts",
+      "nonLoopbackNetwork": {
+        "status": "mocked_or_not_called",
+        "evidence": "Physical HTTP-shaped code is exercised, but the transport is locally mocked; no non-loopback packet should be emitted. The endpoint is a .invalid test URL.",
+        "paidCallRisk": "none observed; no credentialed provider call is made"
+      },
+      "database": {
+        "status": "isolated temporary SQLite is intentionally initialized/written; closing/removing occurs in after hook.; static openai-compatible import transitively loads usage/db modules, but no connection/write occurs unless a real accounted request is invoked.",
+        "evidencePaths": [
+          "backend/src/db.ts",
+          "backend/src/repositories/llm-usage.ts"
+        ],
+        "defaultDbRisk": "high with an early config/db preloader"
+      },
+      "environmentAssumptions": [
+        "Sets DATABASE_URL=\"\", AUTH_PROVIDER=\"legacy\", and a per-file DATABASE_PATH under mkdtemp before dynamic db/provider imports."
+      ],
+      "skipMarkers": [
+        "No executable skip/todo/only marker; textual matches are assertion names or ordinary words."
+      ],
+      "tempDbPreloaderInterference": "A DB preloader that imports config/db before this test sets DATABASE_PATH defeats the test's temp-path setup; calls can then write the preloader/default DB. Do not combine with such a preloader unless it sets the path before any module import and isolates workers.",
+      "confidence": 0.9
+    },
+    {
+      "testPath": "backend/src/llm/openai-compatible-narration.test.ts",
+      "nonLoopbackNetwork": {
+        "status": "mocked_or_not_called",
+        "evidence": "provider.chatJson is replaced with an in-memory function; no non-loopback packet should be emitted.",
+        "paidCallRisk": "none observed; no credentialed provider call is made"
+      },
+      "database": {
+        "status": "none observed; static openai-compatible import transitively loads usage/db modules, but no connection/write occurs unless a real accounted request is invoked.",
+        "evidencePaths": [
+          "backend/src/db.ts",
+          "backend/src/repositories/llm-usage.ts"
+        ],
+        "defaultDbRisk": "none observed in test body"
+      },
+      "environmentAssumptions": [],
+      "skipMarkers": [
+        "No executable skip/todo/only marker; textual matches are assertion names or ordinary words."
+      ],
+      "tempDbPreloaderInterference": "No DB connection is opened by this test as written; a preloader importing config/db can still cache process-global configuration for transitive provider modules, so keep the offline preloader side-effect free.",
+      "confidence": 0.82
+    },
+    {
+      "testPath": "backend/src/llm/openai-compatible-perception.test.ts",
+      "nonLoopbackNetwork": {
+        "status": "mocked_or_not_called",
+        "evidence": "provider.chatJson is replaced with an in-memory function; no non-loopback packet should be emitted.",
+        "paidCallRisk": "none observed; no credentialed provider call is made"
+      },
+      "database": {
+        "status": "none observed; static openai-compatible import transitively loads usage/db modules, but no connection/write occurs unless a real accounted request is invoked.",
+        "evidencePaths": [
+          "backend/src/db.ts",
+          "backend/src/repositories/llm-usage.ts"
+        ],
+        "defaultDbRisk": "none observed in test body"
+      },
+      "environmentAssumptions": [],
+      "skipMarkers": [
+        "No executable skip/todo/only marker; textual matches are assertion names or ordinary words."
+      ],
+      "tempDbPreloaderInterference": "No DB connection is opened by this test as written; a preloader importing config/db can still cache process-global configuration for transitive provider modules, so keep the offline preloader side-effect free.",
+      "confidence": 0.82
+    },
+    {
+      "testPath": "backend/src/llm/openai-compatible-psyche-repair.test.ts",
+      "nonLoopbackNetwork": {
+        "status": "mocked_or_not_called",
+        "evidence": "StubProvider.chatJson is overridden with an in-memory function; no non-loopback packet should be emitted.",
+        "paidCallRisk": "none observed; no credentialed provider call is made"
+      },
+      "database": {
+        "status": "none observed; static openai-compatible import transitively loads usage/db modules, but no connection/write occurs unless a real accounted request is invoked.",
+        "evidencePaths": [
+          "backend/src/db.ts",
+          "backend/src/repositories/llm-usage.ts"
+        ],
+        "defaultDbRisk": "none observed in test body"
+      },
+      "environmentAssumptions": [],
+      "skipMarkers": [
+        "No executable skip/todo/only marker; textual matches are assertion names or ordinary words."
+      ],
+      "tempDbPreloaderInterference": "No DB connection is opened by this test as written; a preloader importing config/db can still cache process-global configuration for transitive provider modules, so keep the offline preloader side-effect free.",
+      "confidence": 0.82
+    },
+    {
+      "testPath": "backend/src/llm/openai-compatible-routing.test.ts",
+      "nonLoopbackNetwork": {
+        "status": "mocked_or_not_called",
+        "evidence": "provider.chatJson is replaced with an in-memory function for routing assertions; no non-loopback packet should be emitted.",
+        "paidCallRisk": "none observed; no credentialed provider call is made"
+      },
+      "database": {
+        "status": "none observed; static openai-compatible import transitively loads usage/db modules, but no connection/write occurs unless a real accounted request is invoked.",
+        "evidencePaths": [
+          "backend/src/db.ts",
+          "backend/src/repositories/llm-usage.ts"
+        ],
+        "defaultDbRisk": "none observed in test body"
+      },
+      "environmentAssumptions": [],
+      "skipMarkers": [
+        "No executable skip/todo/only marker; textual matches are assertion names or ordinary words."
+      ],
+      "tempDbPreloaderInterference": "No DB connection is opened by this test as written; a preloader importing config/db can still cache process-global configuration for transitive provider modules, so keep the offline preloader side-effect free.",
+      "confidence": 0.82
+    },
+    {
+      "testPath": "backend/src/llm/perception-evidence.test.ts",
+      "nonLoopbackNetwork": {
+        "status": "mocked_or_not_called",
+        "evidence": "No fetch/network call found in the test path; provider-like values are data or local mocks.",
+        "paidCallRisk": "none observed; no credentialed provider call is made"
+      },
+      "database": {
+        "status": "none observed",
+        "evidencePaths": [],
+        "defaultDbRisk": "none observed in test body"
+      },
+      "environmentAssumptions": [],
+      "skipMarkers": [
+        "No executable skip/todo/only marker; textual matches are assertion names or ordinary words."
+      ],
+      "tempDbPreloaderInterference": "No DB connection is opened by this test as written; a preloader importing config/db can still cache process-global configuration for transitive provider modules, so keep the offline preloader side-effect free.",
+      "confidence": 0.82
+    },
+    {
+      "testPath": "backend/src/llm/perception-prompt-strategy.test.ts",
+      "nonLoopbackNetwork": {
+        "status": "mocked_or_not_called",
+        "evidence": "No fetch/network call found in the test path; provider-like values are data or local mocks.",
+        "paidCallRisk": "none observed; no credentialed provider call is made"
+      },
+      "database": {
+        "status": "none observed",
+        "evidencePaths": [],
+        "defaultDbRisk": "none observed in test body"
+      },
+      "environmentAssumptions": [],
+      "skipMarkers": [
+        "No executable skip/todo/only marker; textual matches are assertion names or ordinary words."
+      ],
+      "tempDbPreloaderInterference": "No DB connection is opened by this test as written; a preloader importing config/db can still cache process-global configuration for transitive provider modules, so keep the offline preloader side-effect free.",
+      "confidence": 0.82
+    },
+    {
+      "testPath": "backend/src/llm/prompt-prose.test.ts",
+      "nonLoopbackNetwork": {
+        "status": "mocked_or_not_called",
+        "evidence": "No fetch/network call found in the test path; provider-like values are data or local mocks.",
+        "paidCallRisk": "none observed; no credentialed provider call is made"
+      },
+      "database": {
+        "status": "none observed",
+        "evidencePaths": [],
+        "defaultDbRisk": "none observed in test body"
+      },
+      "environmentAssumptions": [],
+      "skipMarkers": [
+        "No skip/todo/only marker found."
+      ],
+      "tempDbPreloaderInterference": "No DB connection is opened by this test as written; a preloader importing config/db can still cache process-global configuration for transitive provider modules, so keep the offline preloader side-effect free.",
+      "confidence": 0.82
+    },
+    {
+      "testPath": "backend/src/llm/provider-accounting.test.ts",
+      "nonLoopbackNetwork": {
+        "status": "mocked_or_not_called",
+        "evidence": "Physical HTTP-shaped code is exercised, but the transport is locally mocked; no non-loopback packet should be emitted. The endpoint is a .invalid test URL.",
+        "paidCallRisk": "none observed; no credentialed provider call is made"
+      },
+      "database": {
+        "status": "isolated temporary SQLite is intentionally initialized/written; closing/removing occurs in after hook.",
+        "evidencePaths": [
+          "backend/src/db.ts",
+          "backend/src/repositories/llm-usage.ts"
+        ],
+        "defaultDbRisk": "high with an early config/db preloader"
+      },
+      "environmentAssumptions": [
+        "Sets DATABASE_URL=\"\", AUTH_PROVIDER=\"legacy\", and a per-file DATABASE_PATH under mkdtemp before dynamic db/provider imports."
+      ],
+      "skipMarkers": [
+        "No executable skip/todo/only marker; textual matches are assertion names or ordinary words."
+      ],
+      "tempDbPreloaderInterference": "A DB preloader that imports config/db before this test sets DATABASE_PATH defeats the test's temp-path setup; calls can then write the preloader/default DB. Do not combine with such a preloader unless it sets the path before any module import and isolates workers.",
+      "confidence": 0.9
+    },
+    {
+      "testPath": "backend/src/llm/provider-config.test.ts",
+      "nonLoopbackNetwork": {
+        "status": "mocked_or_not_called",
+        "evidence": "No fetch/network call found in the test path; provider-like values are data or local mocks.",
+        "paidCallRisk": "none observed; no credentialed provider call is made"
+      },
+      "database": {
+        "status": "none observed",
+        "evidencePaths": [],
+        "defaultDbRisk": "none observed in test body"
+      },
+      "environmentAssumptions": [
+        "Static config.ts import loads .env; assertions pass explicit nodeEnv/provider arguments, but DEFAULT_XAI_FAST_MODEL is environment-independent only if config defaults remain unchanged."
+      ],
+      "skipMarkers": [
+        "No executable skip/todo/only marker; textual matches are assertion names or ordinary words."
+      ],
+      "tempDbPreloaderInterference": "No DB connection is opened by this test as written; a preloader importing config/db can still cache process-global configuration for transitive provider modules, so keep the offline preloader side-effect free.",
+      "confidence": 0.82
+    },
+    {
+      "testPath": "backend/src/llm/provider-errors.test.ts",
+      "nonLoopbackNetwork": {
+        "status": "mocked_or_not_called",
+        "evidence": "No fetch/network call found in the test path; provider-like values are data or local mocks.",
+        "paidCallRisk": "none observed; no credentialed provider call is made"
+      },
+      "database": {
+        "status": "none observed",
+        "evidencePaths": [],
+        "defaultDbRisk": "none observed in test body"
+      },
+      "environmentAssumptions": [],
+      "skipMarkers": [
+        "No skip/todo/only marker found."
+      ],
+      "tempDbPreloaderInterference": "No DB connection is opened by this test as written; a preloader importing config/db can still cache process-global configuration for transitive provider modules, so keep the offline preloader side-effect free.",
+      "confidence": 0.82
+    },
+    {
+      "testPath": "backend/src/llm/provider-json.test.ts",
+      "nonLoopbackNetwork": {
+        "status": "mocked_or_not_called",
+        "evidence": "Physical HTTP-shaped code is exercised, but the transport is locally mocked; no non-loopback packet should be emitted. The endpoint is a .invalid test URL.",
+        "paidCallRisk": "none observed; no credentialed provider call is made"
+      },
+      "database": {
+        "status": "isolated temporary SQLite is intentionally initialized/written; closing/removing occurs in after hook.",
+        "evidencePaths": [
+          "backend/src/db.ts",
+          "backend/src/repositories/llm-usage.ts"
+        ],
+        "defaultDbRisk": "high with an early config/db preloader"
+      },
+      "environmentAssumptions": [
+        "Sets DATABASE_URL=\"\", AUTH_PROVIDER=\"legacy\", and a per-file DATABASE_PATH under mkdtemp before dynamic db/provider imports."
+      ],
+      "skipMarkers": [
+        "No executable skip/todo/only marker; textual matches are assertion names or ordinary words."
+      ],
+      "tempDbPreloaderInterference": "A DB preloader that imports config/db before this test sets DATABASE_PATH defeats the test's temp-path setup; calls can then write the preloader/default DB. Do not combine with such a preloader unless it sets the path before any module import and isolates workers.",
+      "confidence": 0.9
+    },
+    {
+      "testPath": "backend/src/llm/provider-response-schema.test.ts",
+      "nonLoopbackNetwork": {
+        "status": "mocked_or_not_called",
+        "evidence": "Exercises response-schema validation before fetch; no fetch stub is needed because the boundary rejects/inspects locally.",
+        "paidCallRisk": "none observed; no credentialed provider call is made"
+      },
+      "database": {
+        "status": "none observed; static openai-compatible import transitively loads usage/db modules, but no connection/write occurs unless a real accounted request is invoked.",
+        "evidencePaths": [
+          "backend/src/db.ts",
+          "backend/src/repositories/llm-usage.ts"
+        ],
+        "defaultDbRisk": "none observed in test body"
+      },
+      "environmentAssumptions": [],
+      "skipMarkers": [
+        "No skip/todo/only marker found."
+      ],
+      "tempDbPreloaderInterference": "No DB connection is opened by this test as written; a preloader importing config/db can still cache process-global configuration for transitive provider modules, so keep the offline preloader side-effect free.",
+      "confidence": 0.82
+    },
+    {
+      "testPath": "backend/src/llm/provider-retry.test.ts",
+      "nonLoopbackNetwork": {
+        "status": "mocked_or_not_called",
+        "evidence": "No fetch/network call found in the test path; provider-like values are data or local mocks.",
+        "paidCallRisk": "none observed; no credentialed provider call is made"
+      },
+      "database": {
+        "status": "none observed",
+        "evidencePaths": [],
+        "defaultDbRisk": "none observed in test body"
+      },
+      "environmentAssumptions": [],
+      "skipMarkers": [
+        "No skip/todo/only marker found."
+      ],
+      "tempDbPreloaderInterference": "No DB connection is opened by this test as written; a preloader importing config/db can still cache process-global configuration for transitive provider modules, so keep the offline preloader side-effect free.",
+      "confidence": 0.82
+    },
+    {
+      "testPath": "backend/src/llm/semantic-authoring-provider.test.ts",
+      "nonLoopbackNetwork": {
+        "status": "mocked_or_not_called",
+        "evidence": "Only builds/prepares a provider and validates policy; no send method is called.",
+        "paidCallRisk": "none observed; no credentialed provider call is made"
+      },
+      "database": {
+        "status": "none observed",
+        "evidencePaths": [],
+        "defaultDbRisk": "none observed in test body"
+      },
+      "environmentAssumptions": [
+        "Uses explicit environment objects and literal 127.0.0.1 endpoint; no process environment mutation."
+      ],
+      "skipMarkers": [
+        "No executable skip/todo/only marker; textual matches are assertion names or ordinary words."
+      ],
+      "tempDbPreloaderInterference": "No DB connection is opened by this test as written; a preloader importing config/db can still cache process-global configuration for transitive provider modules, so keep the offline preloader side-effect free.",
+      "confidence": 0.82
+    }
+  ]
+}

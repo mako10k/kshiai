@@ -1,0 +1,273 @@
+TAP version 13
+# Subtest: current V3 authoring and historical V2 reads
+    # Subtest: requires owner acceptance and atomically activates one V3 generation
+    ok 1 - requires owner acceptance and atomically activates one V3 generation
+      ---
+      duration_ms: 317.918942
+      type: 'test'
+      ...
+    # Subtest: leaves an existing legacy row unsupported without an explicit upgrade
+    ok 2 - leaves an existing legacy row unsupported without an explicit upgrade
+      ---
+      duration_ms: 5.452265
+      type: 'test'
+      ...
+    # Subtest: persists expiry without activating a candidate or retaining an upgrade hold
+    ok 3 - persists expiry without activating a candidate or retaining an upgrade hold
+      ---
+      duration_ms: 27.966712
+      type: 'test'
+      ...
+    # Subtest: rolls back a stale revision candidate after concurrent pointer drift
+    ok 4 - rolls back a stale revision candidate after concurrent pointer drift
+      ---
+      duration_ms: 67.374031
+      type: 'test'
+      ...
+    # Subtest: excludes a pre-validator V2 generation until explicit update
+    ok 5 - excludes a pre-validator V2 generation until explicit update
+      ---
+      duration_ms: 27.076384
+      type: 'test'
+      ...
+    # Subtest: reads but does not select a V2 generation with selectorless action norms
+    ok 6 - reads but does not select a V2 generation with selectorless action norms
+      ---
+      duration_ms: 25.700268
+      type: 'test'
+      ...
+    1..6
+ok 1 - current V3 authoring and historical V2 reads
+  ---
+  duration_ms: 474.474043
+  type: 'suite'
+  ...
+# Subtest: authoring draft read purity
+    # Subtest: keeps all six draft reads free of claims writes and provider calls
+    ok 1 - keeps all six draft reads free of claims writes and provider calls
+      ---
+      duration_ms: 86.171367
+      type: 'test'
+      ...
+    1..1
+ok 2 - authoring draft read purity
+  ---
+  duration_ms: 88.537776
+  type: 'suite'
+  ...
+# [image] route_hit asset=route-ready-mine
+# Subtest: structured character route acceptance
+    # Subtest: records provider failures without exposing a partial character
+    ok 1 - records provider failures without exposing a partial character
+      ---
+      duration_ms: 144.528251
+      type: 'test'
+      ...
+    # Subtest: uses current V3 attempts for create review confirm and discard routes
+    not ok 2 - uses current V3 attempts for create review confirm and discard routes
+      ---
+      duration_ms: 134.114731
+      type: 'test'
+      location: '/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/routes-structured-character-acceptance.test.ts:9:542'
+      failureType: 'testCodeFailure'
+      error: |-
+        Expected values to be strictly equal:
+        
+        404 !== 202
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 202
+      actual: 404
+      operator: 'strictEqual'
+      stack: |-
+        TestContext.<anonymous> (/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/routes-structured-character-acceptance.test.ts:289:12)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async Suite.processPendingSubtests (node:internal/test_runner/test:744:7)
+      ...
+    # Subtest: does not read mutate confirm or delete legacy draft rows
+    ok 3 - does not read mutate confirm or delete legacy draft rows
+      ---
+      duration_ms: 14.153925
+      type: 'test'
+      ...
+    # Subtest: rejects legacy restore and portrait mutations before side effects
+    ok 4 - rejects legacy restore and portrait mutations before side effects
+      ---
+      duration_ms: 10.267579
+      type: 'test'
+      ...
+    # Subtest: commits immutable V3 portrait generations and rejects unavailable restore
+    ok 5 - commits immutable V3 portrait generations and rejects unavailable restore
+      ---
+      duration_ms: 544.708263
+      type: 'test'
+      ...
+    # Subtest: excludes unsupported characters from every selector route
+    ok 6 - excludes unsupported characters from every selector route
+      ---
+      duration_ms: 65.534396
+      type: 'test'
+      ...
+    # Subtest: rejects direct battle creation for either unsupported side
+    ok 7 - rejects direct battle creation for either unsupported side
+      ---
+      duration_ms: 17.681745
+      type: 'test'
+      ...
+    # Subtest: upgrades an existing character only after owner confirmation
+    ok 8 - upgrades an existing character only after owner confirmation
+      ---
+      duration_ms: 167.153978
+      type: 'test'
+      ...
+    # Subtest: exposes in-flight authoring progress while an upgrade is running
+    ok 9 - exposes in-flight authoring progress while an upgrade is running
+      ---
+      duration_ms: 79.325969
+      type: 'test'
+      ...
+    # Subtest: does not surface an older awaiting draft after a later attempt fails
+    ok 10 - does not surface an older awaiting draft after a later attempt fails
+      ---
+      duration_ms: 117.931175
+      type: 'test'
+      ...
+    # Subtest: discards an unclaimed queued attempt before the worker runs
+    ok 11 - discards an unclaimed queued attempt before the worker runs
+      ---
+      duration_ms: 11.303301
+      type: 'test'
+      ...
+    # Subtest: returns a create review without a current character
+    not ok 12 - returns a create review without a current character
+      ---
+      duration_ms: 60.182664
+      type: 'test'
+      location: '/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/routes-structured-character-acceptance.test.ts:12:13317'
+      failureType: 'testCodeFailure'
+      error: |-
+        {"body":{"attemptId":"cat_c4f1827f9a9583319b455114","kind":"create","status":"awaiting_owner_acceptance","assistantMessage":"","expiresAt":"2026-10-08T03:18:53.078Z","latestAttemptId":"cat_c4f1827f9a9583319b455114","stale":false,"canAccept":false,"failed":null,"progress":null,"reviewConfirmOnly":false,"characterId":"chr_5d57eb504f4c7b1a7807488e","candidate":null,"candidateDigest":null,"current":null,"acceptanceError":"FOCUSED_CHARACTER_MIGRATION_NOT_READY","sourceRetryAvailable":false,"semanticCandidateReview":{"schemaVersion":3,"fields":[{"key":"identity","label":"人物設定","source":null,"candidate":"{\n  \"displayName\": \"灯\",\n  \"names\": [],\n  \"presentation\": {\n    \"form\": null,\n    \"gender\": null,\n    \"ageDescription\": null,\n    \"pronouns\": []\n  },\n  \"tags\": []\n}"},{"key":"appearance","label":"外見","source":null,"candidate":"{\n  \"publicSummary\": \"青い外套\",\n  \"details\": [],\n  \"visualPrompt\": \"unspecified\",\n  \"portrait\": null\n}"},{"key":"profileBackground","label":"背景","source":null,"candidate":"[]"},{"key":"psycheDisposition","label":"心理傾向","source":null,"candidate":"{\n  \"dynamicsVersion\": \"psyche-trait-profile-v1\",\n  \"dynamics\": {\n    \"adverseSensitivity\": 500,\n    \"uncertaintySensitivity\": 500,\n    \"recoverySpeed\": 500,\n    \"irritationPersistence\": 500,\n    \"anxietyPersistence\": 500,\n    \"approachTendency\": 500,\n    \"withdrawalTendency\": 500,\n    \"impulseInhibition\": 500,\n    \"expressionRestraint\": 500\n  },\n  \"coreNeeds\": [\n    {\n      \"id\": \"protect\",\n      \"description\": {\n        \"text\": \"守る\",\n        \"consumerTags\": [],\n        \"sourceSupportRefs\": []\n      },\n      \"selfAwareness\": \"aware\"\n    }\n  ],\n  \"tendencies\": [],\n  \"description\": null\n}"},{"key":"speechPolicy","label":"話し方","source":null,"candidate":"{\n  \"selfAwareness\": \"aware\",\n  \"frequency\": \"measured\",\n  \"phasePolicy\": {\n    \"prologue\": \"allow\",\n    \"turn\": \"allow\",\n    \"aftermath\": \"allow\"\n  },\n  \"reactTo\": [\n    \"direct_address\",\n    \"self_impact\",\n    \"counterpart_impact\",\n    \"ambient_change\"\n  ],\n  \"silenceRules\": [],\n  \"register\": \"丁寧\",\n  \"cadence\": \"既存プロフィールからは特定しない\",\n  \"sentenceLength\": \"mixed\",\n  \"vocabularyHabits\": [],\n  \"addressRules\": [],\n  \"selfReferenceNameId\": null,\n  \"examples\": [],\n  \"counterexamples\": [],\n  \"description\": null\n}"},{"key":"relationshipSeeds","label":"関係性","source":null,"candidate":"[\n  {\n    \"id\": \"rival\",\n    \"target\": {\n      \"kind\": \"role\",\n      \"role\": \"rival\"\n    },\n    \"relationKinds\": [\n      \"rival\"\n    ],\n    \"historySummary\": null,\n    \"defaultAddress\": null,\n    \"selfAwareness\": \"aware\",\n    \"dynamics\": {\n      \"trust\": 0,\n      \"affiliation\": 0,\n      \"fear\": 0,\n      \"competition\": 0\n    },\n    \"priority\": 50\n  }\n]"},{"key":"combat","label":"戦闘設定","source":null,"candidate":"{\n  \"parameters\": {\n    \"hp\": 100,\n    \"maxHp\": 100,\n    \"mp\": 40,\n    \"maxMp\": 40,\n    \"stamina\": 50,\n    \"maxStamina\": 50,\n    \"atk\": 12,\n    \"def\": 10,\n    \"spd\": 10,\n    \"mag\": 10,\n    \"res\": 10,\n    \"focus\": 10,\n    \"luck\": 10\n  },\n  \"flags\": {\n    \"canFight\": true,\n    \"irreversibleIncapacitated\": false\n  }\n}"},{"key":"capabilities","label":"能力・行動","source":null,"candidate":"{\n  \"basicAction\": {\n    \"id\": \"basic-action\",\n    \"name\": \"構え\",\n    \"description\": {\n      \"text\": \"消耗時にも使える、そのキャラクターらしい基本行動。\",\n      \"consumerTags\": [\n        \"profile-generator\",\n        \"battle-mechanics\",\n        \"conscious-action\",\n        \"conscious-expression\"\n      ],\n      \"sourceSupportRefs\": []\n    },\n    \"kind\": \"basic\",\n    \"mechanics\": {\n      \"targetParameter\": \"hp\",\n      \"scalingParameter\": \"atk\",\n      \"resistanceParameter\": \"def\",\n      \"power\": 0.75,\n      \"costMp\": 0,\n      \"costStamina\": 0,\n      \"effects\": [],\n      \"constraints\": {\n        \"reach\": \"same_area\",\n        \"requiresSight\": false,\n        \"mobility\": \"limited\",\n        \"requiresSpeech\": false,\n        \"requiresUsableHeldObject\": false\n      }\n    },\n    \"tacticTags\": [],\n    \"expressionNotes\": null\n  },\n  \"skills\": []\n}"},{"key":"inventory","label":"所持品","source":null,"candidate":"[]"},{"key":"initialLoadout","label":"初期装備","source":null,"candidate":"[]"},{"key":"expressionNotes","label":"表現上の注記","source":null,"candidate":"{\n  \"text\": \"未設定\",\n  \"consumerTags\": [\n    \"profile-generator\",\n    \"deep-psyche\",\n    \"conscious-expression\"\n  ],\n  \"sourceSupportRefs\": []\n}"},{"key":"schemaVersion","label":"定義版","source":null,"candidate":"3"},{"key":"actionNorms","label":"行動規範","source":null,"candidate":"[\n  {\n    \"id\": \"prefer-basic\",\n    \"when\": {\n      \"match\": \"all\",\n      \"clauses\": [\n        {\n          \"kind\": \"always\",\n          \"operator\": \"is\",\n          \"value\": \"true\"\n        }\n      ]\n    },\n    \"response\": {\n      \"disposition\": \"prefer\",\n      \"actionRefs\": [\n        \"basic-action\"\n      ],\n      \"actionKinds\": [],\n      \"tacticTags\": []\n    },\n    \"priority\": 50,\n    \"force\": \"preference\",\n    \"exceptions\": [],\n    \"description\": null\n  }\n]"},{"key":"consciousGuidance","label":"意識的な指針","source":null,"candidate":"[]"},{"key":"mechanicalConflictFallbacks","label":"機械的な競合時の代替","source":null,"candidate":"[]"}],"sourceDispositions":[],"pendingPreservation":[],"deferredValues":[],"compatibility":null,"limitation":"構造化候補を保存しました。意味・公開範囲の検証と最終採用の接続は未完了です。現在の世代は変更していません。"}},"work":[{"kind":"skeleton","obligationIds":["identity","psycheDisposition:coreNeeds"]},{"kind":"skeleton","obligationIds":["capabilities:actions:basic-action","relationshipSeeds"]},{"kind":"cluster","cluster":"mechanics","obligationIds":["mechanics"]},{"kind":"cluster","cluster":"relationship-expression","obligationIds":["relationship-expression"]},{"kind":"cluster","cluster":"appearance","obligationIds":["appearance"]},{"kind":"ledger","obligationIds":["lens:compiler","lens:disclosure","lens:cross-reference"]},{"kind":"ledger","obligationIds":["lens:disclosure","lens:cross-reference"]},{"kind":"ledger","obligationIds":["lens:cross-reference"]},{"kind":"skeleton","obligationIds":["psycheDisposition:coreNeeds","relationshipSeeds"]},{"kind":"cluster","cluster":"mechanics","obligationIds":["mechanics"]},{"kind":"cluster","cluster":"relationship-expression","obligationIds":["relationship-expression"]},{"kind":"ledger","obligationIds":["source:speechPolicy"]},{"kind":"ledger","obligationIds":["lens:compiler","lens:disclosure","lens:cross-reference"]},{"kind":"ledger","obligationIds":["lens:disclosure","lens:cross-reference"]},{"kind":"ledger","obligationIds":["lens:cross-reference"]},{"kind":"skeleton","obligationIds":["identity","psycheDisposition:coreNeeds"]},{"kind":"skeleton","obligationIds":["capabilities:actions:basic-action","relationshipSeeds"]},{"kind":"cluster","cluster":"mechanics","obligationIds":["mechanics"]},{"kind":"cluster","cluster":"relationship-expression","obligationIds":["relationship-expression"]},{"kind":"cluster","cluster":"appearance","obligationIds":["appearance"]},{"kind":"ledger","obligationIds":["lens:compiler","lens:disclosure","lens:cross-reference"]},{"kind":"ledger","obligationIds":["lens:disclosure","lens:cross-reference"]},{"kind":"ledger","obligationIds":["lens:cross-reference"]},{"kind":"skeleton","obligationIds":["identity","psycheDisposition:coreNeeds"]},{"kind":"skeleton","obligationIds":["capabilities:actions:basic-action","relationshipSeeds"]},{"kind":"cluster","cluster":"mechanics","obligationIds":["mechanics"]},{"kind":"cluster","cluster":"relationship-expression","obligationIds":["relationship-expression"]},{"kind":"cluster","cluster":"appearance","obligationIds":["appearance"]},{"kind":"ledger","obligationIds":["lens:compiler","lens:disclosure","lens:cross-reference"]},{"kind":"ledger","obligationIds":["lens:disclosure","lens:cross-reference"]},{"kind":"ledger","obligationIds":["lens:cross-reference"]}]}
+        
+        false !== true
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: true
+      actual: false
+      operator: 'strictEqual'
+      stack: |-
+        TestContext.<anonymous> (/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/routes-structured-character-acceptance.test.ts:838:12)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async Suite.processPendingSubtests (node:internal/test_runner/test:744:7)
+      ...
+    # Subtest: returns a compare review for upgrade and marks an older attempt stale
+    ok 13 - returns a compare review for upgrade and marks an older attempt stale
+      ---
+      duration_ms: 156.421502
+      type: 'test'
+      ...
+    # Subtest: lists characters without deserializing a historical candidate
+    ok 14 - lists characters without deserializing a historical candidate
+      ---
+      duration_ms: 35.27341
+      type: 'test'
+      ...
+    # Subtest: projects ready and failed notifications without duplicating them
+    ok 15 - projects ready and failed notifications without duplicating them
+      ---
+      duration_ms: 93.675182
+      type: 'test'
+      ...
+    1..15
+not ok 3 - structured character route acceptance
+  ---
+  duration_ms: 1733.837945
+  type: 'suite'
+  location: '/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/routes-structured-character-acceptance.test.ts:6:242'
+  failureType: 'subtestsFailed'
+  error: '2 subtests failed'
+  code: 'ERR_TEST_FAILURE'
+  ...
+# Subtest: focused authoring through the real owner command and worker
+    # Subtest: generates from source through HTTP, exposes the stored owner candidate, and does not activate it
+    ok 1 - generates from source through HTTP, exposes the stored owner candidate, and does not activate it
+      ---
+      duration_ms: 336.826359
+      type: 'test'
+      ...
+    # Subtest: routes a create HTTP command through bounded focused recovery and persists failure without legacy calls
+    ok 2 - routes a create HTTP command through bounded focused recovery and persists failure without legacy calls
+      ---
+      duration_ms: 167.689788
+      type: 'test'
+      ...
+    # Subtest: routes an appearance revision from the real owner HTTP command to a non-current review candidate
+    ok 3 - routes an appearance revision from the real owner HTTP command to a non-current review candidate
+      ---
+      duration_ms: 168.129247
+      type: 'test'
+      ...
+    # Subtest: does not generate a candidate for ambiguous, multi-area, or invalid scope
+    ok 4 - does not generate a candidate for ambiguous, multi-area, or invalid scope
+      ---
+      duration_ms: 143.804597
+      type: 'test'
+      ...
+    # Subtest: carries changed-role migration meaning through the real worker into a review candidate
+    ok 5 - carries changed-role migration meaning through the real worker into a review candidate
+      ---
+      duration_ms: 90.711449
+      type: 'test'
+      ...
+    # Subtest: routes an exact ready V2 upgrade command into focused migration without activating it
+    ok 6 - routes an exact ready V2 upgrade command into focused migration without activating it
+      ---
+      duration_ms: 224.90883
+      type: 'test'
+      ...
+    # Subtest: lets the owner accept the exact focused migration candidate for Stage-scoped V3 selection
+    ok 7 - lets the owner accept the exact focused migration candidate for Stage-scoped V3 selection
+      ---
+      duration_ms: 184.657122
+      type: 'test'
+      ...
+    # Subtest: rolls back V3 append when the frozen source pointer drifts before owner acceptance
+    ok 8 - rolls back V3 append when the frozen source pointer drifts before owner acceptance
+      ---
+      duration_ms: 141.126283
+      type: 'test'
+      ...
+    # Subtest: carries an optional legacy meaning deferral through the real upgrade route
+    ok 9 - carries an optional legacy meaning deferral through the real upgrade route
+      ---
+      duration_ms: 93.813779
+      type: 'test'
+      ...
+    # Subtest: retries a failed owner command from the same source with a new attempt and idempotent replay
+    ok 10 - retries a failed owner command from the same source with a new attempt and idempotent replay
+      ---
+      duration_ms: 114.282836
+      type: 'test'
+      ...
+    # Subtest: persists source-drift failure in both lifecycles before any dispatch
+    ok 11 - persists source-drift failure in both lifecycles before any dispatch
+      ---
+      duration_ms: 9.105498
+      type: 'test'
+      ...
+    1..11
+ok 4 - focused authoring through the real owner command and worker
+  ---
+  duration_ms: 1702.190869
+  type: 'suite'
+  ...
+1..4
+# tests 33
+# suites 4
+# pass 31
+# fail 2
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 3664.357017

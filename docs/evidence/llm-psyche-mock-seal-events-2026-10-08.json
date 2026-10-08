@@ -1,0 +1,100 @@
+[
+  {
+    "key": "design-psyche-repair-bounded",
+    "path": "docs/llm-psyche-mock-test-contract-review-2026-10-08.md",
+    "parents": [
+      "closure",
+      "agency",
+      "phase"
+    ],
+    "scope": "Retained compact psyche semantic closure application repair at mostonce through typed protected seam, full merge validation and preservation. Original7cases, not live quality or complete SDK accounting.",
+    "ref": "all-tests-20261008/design-psyche-repair-bounded",
+    "test": false,
+    "sha256": "d813cd121a49ab8516f5a1a906e4cd5973207f6ee5d01d02542425e76b7db9b8",
+    "sealId": "437176d1f5efcc8353b39038ada727e6aa70296f0fa065b2448cfc76f3512139",
+    "causeSealIds": [
+      "c78380a91ca246910ea6d9293cdda86e877d36ca34590a73e1d76ccb026ce855",
+      "87d4106035e8b09c667d27d164691b16b93c12c6c683b414097b3763b0c53e5d",
+      "e4164afcfc9119cfd59fb013ab3ec8a365d2e40e96bdb93c0c064728a7e25143"
+    ]
+  },
+  {
+    "key": "implementation-psyche-repair-bounded",
+    "path": "backend/src/llm/openai-compatible.ts",
+    "parents": [
+      "design-psyche-repair-bounded"
+    ],
+    "scope": "Retained compact psyche semantic closure application repair at mostonce through typed protected seam, full merge validation and preservation. Original7cases, not live quality or complete SDK accounting.",
+    "ref": "all-tests-20261008/implementation-psyche-repair-bounded",
+    "test": false,
+    "sha256": "8d4be097ddbfcb0da515dd0db402c7dc6dddccb763d625fce16165e7c524d2a5",
+    "sealId": "3c919c7c047bddd5eeabad3f7c74e5416c147c4df4817b89c945178a90567a20",
+    "causeSealIds": [
+      "437176d1f5efcc8353b39038ada727e6aa70296f0fa065b2448cfc76f3512139"
+    ]
+  },
+  {
+    "key": "psyche-repair-bounded-20261008",
+    "path": "backend/src/llm/openai-compatible-psyche-repair.test.ts",
+    "parents": [
+      "implementation-psyche-repair-bounded"
+    ],
+    "scope": "Retained compact psyche semantic closure application repair at mostonce through typed protected seam, full merge validation and preservation. Original7cases, not live quality or complete SDK accounting.",
+    "ref": "verification/psyche-repair-bounded-20261008",
+    "test": true,
+    "sha256": "4f142cca3295556e9c369f0522ae77701a00e60b8460b30dfab111f11c2143c0",
+    "sealId": "09d61c50f520e3a93618d90fd0f96b72f374a48cc14568715c488daae5d79ef6",
+    "causeSealIds": [
+      "3c919c7c047bddd5eeabad3f7c74e5416c147c4df4817b89c945178a90567a20"
+    ]
+  },
+  {
+    "key": "design-mock-bounded",
+    "path": "docs/llm-psyche-mock-test-contract-review-2026-10-08.md",
+    "parents": [
+      "requirements",
+      "agency",
+      "profile"
+    ],
+    "scope": "Deterministic test-double identity/non-invention/no keyword mechanics/private priority/reserved names/tool-fed improvement/policy shape only. Original7cases, not production semantic authority or actual balance.",
+    "ref": "all-tests-20261008/design-mock-bounded",
+    "test": false,
+    "sha256": "d813cd121a49ab8516f5a1a906e4cd5973207f6ee5d01d02542425e76b7db9b8",
+    "sealId": "65d2bffa7cc0ab64f764a48200e34c64806d3b57d1b236d79575609b4e19b6a5",
+    "causeSealIds": [
+      "203e66fc4e30772adab026012c67f1b1ac4ca86ad2ada11b501c639a27a19eac",
+      "87d4106035e8b09c667d27d164691b16b93c12c6c683b414097b3763b0c53e5d",
+      "6a3de70a468b8d9270936f1ff76559d209677912e022a71feaf66be7a1da99d9"
+    ]
+  },
+  {
+    "key": "implementation-mock-bounded",
+    "path": "backend/src/llm/mock.ts",
+    "parents": [
+      "design-mock-bounded"
+    ],
+    "scope": "Deterministic test-double identity/non-invention/no keyword mechanics/private priority/reserved names/tool-fed improvement/policy shape only. Original7cases, not production semantic authority or actual balance.",
+    "ref": "all-tests-20261008/implementation-mock-bounded",
+    "test": false,
+    "sha256": "df9fa66abdcd601351516c3903a09030690717b493454e8b5d141f0506cf385c",
+    "sealId": "e418d4ec33efce96955bece728bddb6140a4effb4e9c36b6f2fb46ac89ef85e4",
+    "causeSealIds": [
+      "65d2bffa7cc0ab64f764a48200e34c64806d3b57d1b236d79575609b4e19b6a5"
+    ]
+  },
+  {
+    "key": "mock-bounded-20261008",
+    "path": "backend/src/llm/mock.test.ts",
+    "parents": [
+      "implementation-mock-bounded"
+    ],
+    "scope": "Deterministic test-double identity/non-invention/no keyword mechanics/private priority/reserved names/tool-fed improvement/policy shape only. Original7cases, not production semantic authority or actual balance.",
+    "ref": "verification/mock-bounded-20261008",
+    "test": true,
+    "sha256": "bff68bfca3e264fdd8a1c2a73f092b6c382781ac09c1e2d99d26072c16759a3c",
+    "sealId": "6c9b15cac35128f3ec21e1586d2db5b9f01eb7e516c4dcdc4ef6697106c0cbe4",
+    "causeSealIds": [
+      "e418d4ec33efce96955bece728bddb6140a4effb4e9c36b6f2fb46ac89ef85e4"
+    ]
+  }
+]

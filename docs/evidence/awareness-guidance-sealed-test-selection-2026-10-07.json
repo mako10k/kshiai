@@ -1,0 +1,26 @@
+{
+  "schema": "kshiai/scoped-test-selection-readback/v1",
+  "tests": [
+    {
+      "path": "backend/src/services/awareness-context.test.ts",
+      "ref": "awareness-guidance-20261007/verification-context",
+      "state": "active",
+      "reason": "current"
+    },
+    {
+      "path": "backend/src/services/awareness-execution.test.ts",
+      "ref": "awareness-guidance-20261007/verification-execution",
+      "state": "active",
+      "reason": "current"
+    },
+    {
+      "path": "packages/shared/src/awareness-guidance.test.ts",
+      "ref": "awareness-guidance-20261007/verification-guidance",
+      "state": "active",
+      "reason": "current"
+    }
+  ],
+  "activeTotal": 39,
+  "unsealedTotal": 189,
+  "formalAggregateExecuted": false
+}

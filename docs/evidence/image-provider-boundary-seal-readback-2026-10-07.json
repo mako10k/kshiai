@@ -1,0 +1,16 @@
+{
+  "newRefs": 6,
+  "previousHeadsUnchanged": true,
+  "previousHeadCount": 1073,
+  "totalRefs": 1079,
+  "sourceHashesMatch": true,
+  "writerExactRawBytesReadback": true,
+  "causeTargetsMessagesPreviousVerified": true,
+  "stale": 0,
+  "fsck": "ok",
+  "limitations": [
+    "Original two cases/assertions preserved, three meaningful boundary regressions added",
+    "No quota/live interoperability/storage/quality/trim/path/header proof",
+    "Numeric sourceUrl leakage repaired, full251 goal incomplete"
+  ]
+}

@@ -1,0 +1,38 @@
+{
+  "reviewer": "/root/archive_connection_review",
+  "mode": "read-only",
+  "mappingVerdict": "PASS within scoped local helpers",
+  "implementationVerdict": "PASS",
+  "files": {
+    "backend/src/postgres-config.test.ts": "f1459e2994c6934d8ca25e4e4fbe8659929472b3a203844a834b2d6b49553a19",
+    "backend/src/scripts/postgres-migrations.test.ts": "e3b41f8d8d5acff6e2859cf56fea0de0b842ae956b46db6d8450ff9b631a524d",
+    "backend/src/scripts/sqlite-to-postgres.test.ts": "ee644bb4ede42f337c0d6a882fceb8e83ba3e4cce9170b721e54840b251bac49",
+    "backend/src/postgres-config.ts": "d7d4548434eef8685dc1caa2afc725595d7b1b05010db46a97b5b382b456e347",
+    "backend/src/scripts/postgres-migrations.ts": "7e1bff3fa02c75299d4f9e17a37746221114c06236c1ba97fef96768b9fd3e2e",
+    "backend/src/scripts/sqlite-to-postgres.ts": "76f9ff7ffc9e286681d3b24122994c939dc4eb80e8996079bd62cbcdf81f977d"
+  },
+  "INSIDE": {
+    "blockers": [],
+    "verified": [
+      "Original7 cases/assertions retained",
+      "KnownSQLcontent SHA256 checks close constant-hex false green",
+      "HistoricalIDvalues and warning texts retained",
+      "Actual CLI rejects private invalidJSON source before target mode",
+      "Typed prepared query replaces both casts without changing query/readonly/transaction/count behavior",
+      "7pass/0fail/0skip"
+    ]
+  },
+  "OUTSIDE": [
+    "PG17/Supabase/TLS/CAtrust",
+    "Applied migrations/check/rollback",
+    "Target import/upsert/count and live DB",
+    "NFR10 completeness and current battle JSON normative validity"
+  ],
+  "BOUNDARY_DISPUTE": [],
+  "normativeRoot": "all-tests-20261007/authority-semantic-observation-requirements",
+  "remainingGates": [
+    "Workspace types",
+    "ExactCause/head/source/fsck",
+    "All251 formal execution"
+  ]
+}

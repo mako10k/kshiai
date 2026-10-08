@@ -1,0 +1,22 @@
+{
+  "observedAt": "2026-10-02T10:20:12.209601+09:00",
+  "node": "22.22.3",
+  "checks": [
+    {
+      "name": "missing reviewed plan",
+      "error": "TRIAL_REVIEWED_INPUT_REQUIRED",
+      "exitCode": 1
+    },
+    {
+      "name": "missing real stop policy",
+      "error": "TRIAL_REVIEWED_INPUT_REQUIRED",
+      "exitCode": 1
+    },
+    {
+      "name": "corrupt reviewed bytes",
+      "error": "TRIAL_PLAN_BYTES_MISMATCH",
+      "exitCode": 1
+    }
+  ],
+  "scope": "Invalid input refusal before compiled database import; no shared DB writes or Cloud Run changes. Not an apply success proof."
+}

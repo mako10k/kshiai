@@ -1,0 +1,25 @@
+# 画像アーカイブ試験の接続修正案 — 2026-10-08
+
+全251ファイルを保持する封印作業の次の対象。既存2ケースとその期待値を保持し、実サービスへの接続を追加する。作成時点では実装・封印前の案。下記に実装後の検証結果を記録する。
+
+## 観測された欠落
+
+`image-archive.test.ts`の最初のケースは`fs.copyFileSync`を直接呼び、`archiveActiveCharacterPortrait`を呼んでいない。このため、サービスがコピーをしなくても同ケースは合格する。2つ目のケースは存在しないファイルに対するnullを確認するだけで、previous名が受理されたことを区別できない。
+
+## 次の修正
+
+ローカルメディアのパス解決・アーカイブを、保存先rootとログ記録の依存を受け取る小さいモジュールへ抽出する。既存サービスの公開関数は現在のrootとログを渡して委譲し、呼出元の契約・既存ファイル配置を維持する。テストはprivate一時ディレクトリと実ファイルを使い、サービスが使う同一の処理を呼ぶ。単なるfsの模倣や別実装を合格の根拠にしない。
+
+最初のケースでは現在の画像を用意して実アーカイブ処理を呼び、previous URLとコピーされた元バイト、primary更新後もpreviousバイトが維持されることを確認する。2つ目のケースでは同じ解決処理で実在previousファイルが解決できることと、既存のmissing/null期待値・公開URL期待値を保持する。一時ファイルは試験終了時に削除する。
+
+既存の原ケース/assertion削除、通常のキャラ定義v2画像writer復活、実R2・DB原子性・画像品質の実証を含めない。Accepted ADR-0010/0011と採用済みのキャラ定義v3更新境界を維持する。抽出前に型契約・呼出元・独立レビューを照合し、型チェック・原画像helper試験・アーカイブ試験の結果に基づいて影響した既存Sealの再検証も行う。
+
+## 実装と独立レビュー
+
+`createLocalMediaStore(root, recordArchiveEvent)`が実ファイルの解決・コピーを所有し、既存サービスは既定root/loggerで委譲する。`archiveActiveCharacterPortrait(sheet, store=defaultStore)`と`resolveMediaFile(kind,file,store=defaultStore)`の任意の型付き依存で、原2ケースはサービスwrapper自体を実行する。呼出元は既定値を使い続ける。旧キャプチャのcastと非null assertionは通常のstring検査で除去した。
+
+原2ケース/5assertionは保持。active revisionをprimaryより優先するケースと、missingがnull/no file/no eventを返すケースを追加。全4archiveケースと既存7helperケースの診断は11pass/0fail/0skip。各fixtureはt.afterで一時rootを削除。独立設計・実装レビューはPASS（exact hashesはevidence/image-archive-independent-review-2026-10-08.json）。
+
+規範の範囲はF-CHR-09の既存ローカルメディアhelperの保持検証、F-CHR-10とAccepted ADR-0011の画像入力、Accepted ADR-0010のimmutable asset/mediaと採用済みキャラ定義v3更新境界。previousスロットは既存helperの局所動作としてのみ扱い、immutable asset generationや現在の画像更新routeの成功を証明しない。新規契約や通常のキャラ定義v2 writer採用をしない。
+
+Seal時は新設計→新local module→変更service wrapper→原ケースを含むarchive検証を接続し、変更serviceの既存implementationと既存4case verificationも診断に基づき再検証する。置換Causeは新リンクを追加してから旧リンクを外し、旧target revisionをpreviousとして保持する。既存の非対象HEADは保持する。

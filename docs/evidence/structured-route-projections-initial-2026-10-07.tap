@@ -1,0 +1,463 @@
+TAP version 13
+# Subtest: integrated structured asset cutover
+    # Subtest: keeps selection, binding, replay, history, and deletion on immutable generations
+    not ok 1 - keeps selection, binding, replay, history, and deletion on immutable generations
+      ---
+      duration_ms: 656.49482
+      type: 'test'
+      location: '/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/routes-structured-asset-integration.test.ts:5:1379'
+      failureType: 'testCodeFailure'
+      error: |-
+        Expected values to be strictly deep-equal:
+        + actual - expected
+        
+          {
+        +   aftermathPending: false,
+        +   availableActions: [],
+        +   battlefield: {
+        +     category: 'urban',
+        +     categoryLabel: '市街地',
+        +     conditions: [
+        +       '薄明'
+        +     ],
+        +     displayName: '統合固定戦場',
+        +     imageUrl: '/battlefields/urban.jpg?v=%E5%85%AC%E9%96%8B%E7%94%A8%E3%81%AE%E9%9D%99%E3%81%8B%E3%81%AA%E5%BA%83%E5%A0%B4%E3%80%82%E8%96%84%E6%98%8E',
+        +     narrativeSetup: '公開用の静かな広場。薄明',
+        +     obstacles: [
+        +       '噴水'
+        +     ],
+        +     scene: '統合固定戦場',
+        +     sourcePresetId: 'asset-integration-field',
+        +     terrain: '石畳（solid）'
+        +   },
+        +   finishReason: null,
+            id: 'btl_8674b814d77283fe18859c081672770f',
+        +   log: [],
+        +   narrationStyleName: '統合固定語り',
+        +   objectStates: [
+        +     {
+        +       active: true,
+        +       kind: 'object',
+        +       label: '物体',
+        +       placementSummary: '石畳',
+        +       presence: 'present',
+        +       states: []
+        +     },
+        +     {
+        +       active: true,
+        +       kind: 'terrain',
+        +       label: '地形',
+        +       placementSummary: '石畳',
+        +       presence: 'present',
+        +       states: []
+        +     },
+        +     {
+        +       active: true,
+        +       kind: 'effect',
+        +       label: '効果',
+        +       placementSummary: '石畳',
+        +       presence: 'present',
+        +       states: []
+        +     }
+        +   ],
+        +   opponentPolicySummary: 'お任せ',
+        +   pendingEffects: [],
+        +   policies: [],
+        +   policySummary: 'お任せ',
+        +   priorMatchSummary: null,
+        +   prologuePending: true,
+        +   ratingSettlement: null,
+        +   receipts: [],
+        +   resultSummary: null,
+        +   scene: '統合固定戦場',
+        +   semanticState: {
+        +     latestDiff: {
+        +       fromRevision: 0,
+        +       operations: [],
+        +       toRevision: 0
+        +     },
+        +     snapshot: {
+        +       entities: {
+        +         'area.1': {
+        +           active: true,
+        +           createdTurn: 0,
+        +           facts: {
+        +             audibility: 'clear',
+        +             movement: 'normal',
+        +             surface_conditions: [],
+        +             terrain: 'solid',
+        +             visibility: 'open'
+        +           },
+        +           kind: 'terrain',
+        +           label: '石畳',
+        +           location: {
+        +             area: '石畳',
+        +             type: 'scene'
+        +           },
+        +           updatedTurn: 0
+        +         },
+        +         'character.a': {
+        +           active: true,
+        +           createdTurn: 0,
+        +           facts: {
+        +             appearance_changes: {},
+        +             baseline_appearance: '濃紺の外套と、風を含んだ小さな灯籠を携えた旅人。',
+        +             visible_conditions: {}
+        +           },
+        +           kind: 'character',
+        +           label: '夜航の灯守・ネヴァ',
+        +           location: {
+        +             area: '石畳',
+        +             type: 'scene'
+        +           },
+        +           updatedTurn: 0
+        +         },
+        +         'character.b': {
+        +           active: true,
+        +           createdTurn: 0,
+        +           facts: {
+        +             appearance_changes: {},
+        +             baseline_appearance: '濃紺の外套と、風を含んだ小さな灯籠を携えた旅人。',
+        +             visible_conditions: {}
+        +           },
+        +           kind: 'character',
+        +           label: '夜航の灯守・ネヴァ',
+        +           location: {
+        +             area: '石畳',
+        +             type: 'scene'
+        +           },
+        +           updatedTurn: 0
+        +         },
+        +         'effect.1': {
+        +           active: true,
+        +           createdTurn: 0,
+        +           facts: {
+        +             cancellation: 'none',
+        +             coefficient_modifiers: {},
+        +             duration: 'persistent',
+        +             observable: true,
+        +             target: 'scene',
+        +             trigger: 'battle_start'
+        +           },
+        +           kind: 'effect',
+        +           label: '薄明',
+        +           location: {
+        +             area: '石畳',
+        +             type: 'scene'
+        +           },
+        +           updatedTurn: 0
+        +         },
+        +         'object.1': {
+        +           active: true,
+        +           createdTurn: 0,
+        +           facts: {
+        +             blocking: true,
+        +             cover: 'partial',
+        +             durability: 'stable',
+        +             exposure: 'public',
+        +             portable: false,
+        +             usable: true
+        +           },
+        +           kind: 'object',
+        +           label: '噴水',
+        +           location: {
+        +             area: '石畳',
+        +             type: 'scene'
+        +           },
+        +           updatedTurn: 0
+        +         }
+        +       },
+        +       revision: 0,
+        +       scene: {
+        +         facts: {
+        +           atmosphere: [
+        +             '薄明'
+        +           ],
+        +           category: 'urban',
+        +           conditions: [
+        +             '薄明'
+        +           ],
+        +           entry_area_a: 'area.1',
+        +           entry_area_b: 'area.1',
+        +           notes: '公開用の静かな広場。薄明',
+        +           scale: 'site',
+        +           terrain: '石畳（solid）',
+        +           topology: []
+        +         },
+        +         summary: '統合固定戦場'
+        +       }
+        +     }
+        +   },
+        +   sideA: {
+        +     canFight: true,
+        +     characterId: 'asset-integration-mine',
+        +     displayName: '夜航の灯守・ネヴァ',
+        +     imageUrl: null
+        +   },
+        +   sideB: {
+        +     canFight: true,
+        +     characterId: 'asset-integration-opponent',
+        +     displayName: '夜航の灯守・ネヴァ',
+        +     imageUrl: null
+        +   },
+        +   situationNotes: '公開用の静かな広場。薄明',
+        +   status: 'active',
+        +   turn: 0,
+        +   turnLimit: 12,
+        +   winnerSide: null
+          }
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected:
+        id: 'btl_8674b814d77283fe18859c081672770f'
+      actual:
+        id: 'btl_8674b814d77283fe18859c081672770f'
+        status: 'active'
+        turn: 0
+        turnLimit: 12
+        sideA:
+          characterId: 'asset-integration-mine'
+          displayName: '夜航の灯守・ネヴァ'
+          canFight: true
+          imageUrl: ~
+        sideB:
+          characterId: 'asset-integration-opponent'
+          displayName: '夜航の灯守・ネヴァ'
+          canFight: true
+          imageUrl: ~
+        policies:
+        policySummary: 'お任せ'
+        opponentPolicySummary: 'お任せ'
+        scene: '統合固定戦場'
+        situationNotes: '公開用の静かな広場。薄明'
+        battlefield:
+          sourcePresetId: 'asset-integration-field'
+          displayName: '統合固定戦場'
+          category: 'urban'
+          categoryLabel: '市街地'
+          scene: '統合固定戦場'
+          terrain: '石畳（solid）'
+          obstacles:
+            0: '噴水'
+          conditions:
+            0: '薄明'
+          narrativeSetup: '公開用の静かな広場。薄明'
+          imageUrl: '/battlefields/urban.jpg?v=%E5%85%AC%E9%96%8B%E7%94%A8%E3%81%AE%E9%9D%99%E3%81%8B%E3%81%AA%E5%BA%83%E5%A0%B4%E3%80%82%E8%96%84%E6%98%8E'
+        semanticState:
+          snapshot:
+            revision: 0
+            scene:
+              summary: '統合固定戦場'
+              facts:
+                notes: '公開用の静かな広場。薄明'
+                terrain: '石畳（solid）'
+                conditions:
+                  0: '薄明'
+                category: 'urban'
+                scale: 'site'
+                atmosphere:
+                  0: '薄明'
+                entry_area_a: 'area.1'
+                entry_area_b: 'area.1'
+                topology:
+            entities:
+              character.a:
+                kind: 'character'
+                label: '夜航の灯守・ネヴァ'
+                location:
+                  type: 'scene'
+                  area: '石畳'
+                active: true
+                createdTurn: 0
+                updatedTurn: 0
+                facts:
+                  baseline_appearance: '濃紺の外套と、風を含んだ小さな灯籠を携えた旅人。'
+                  visible_conditions:
+                  appearance_changes:
+              character.b:
+                kind: 'character'
+                label: '夜航の灯守・ネヴァ'
+                location:
+                  type: 'scene'
+                  area: '石畳'
+                active: true
+                createdTurn: 0
+                updatedTurn: 0
+                facts:
+                  baseline_appearance: '濃紺の外套と、風を含んだ小さな灯籠を携えた旅人。'
+                  visible_conditions:
+                  appearance_changes:
+              area.1:
+                kind: 'terrain'
+                label: '石畳'
+                location:
+                  type: 'scene'
+                  area: '石畳'
+                active: true
+                createdTurn: 0
+                updatedTurn: 0
+                facts:
+                  terrain: 'solid'
+                  movement: 'normal'
+                  visibility: 'open'
+                  audibility: 'clear'
+                  surface_conditions:
+              effect.1:
+                kind: 'effect'
+                label: '薄明'
+                location:
+                  type: 'scene'
+                  area: '石畳'
+                active: true
+                createdTurn: 0
+                updatedTurn: 0
+                facts:
+                  trigger: 'battle_start'
+                  duration: 'persistent'
+                  target: 'scene'
+                  cancellation: 'none'
+                  observable: true
+                  coefficient_modifiers:
+              object.1:
+                kind: 'object'
+                label: '噴水'
+                location:
+                  type: 'scene'
+                  area: '石畳'
+                active: true
+                createdTurn: 0
+                updatedTurn: 0
+                facts:
+                  portable: false
+                  usable: true
+                  cover: 'partial'
+                  blocking: true
+                  durability: 'stable'
+                  exposure: 'public'
+          latestDiff:
+            fromRevision: 0
+            toRevision: 0
+            operations:
+        objectStates:
+          0:
+            label: '物体'
+            kind: 'object'
+            active: true
+            presence: 'present'
+            states:
+            placementSummary: '石畳'
+          1:
+            label: '地形'
+            kind: 'terrain'
+            active: true
+            presence: 'present'
+            states:
+            placementSummary: '石畳'
+          2:
+            label: '効果'
+            kind: 'effect'
+            active: true
+            presence: 'present'
+            states:
+            placementSummary: '石畳'
+        pendingEffects:
+        log:
+        receipts:
+        availableActions:
+        winnerSide: ~
+        finishReason: ~
+        aftermathPending: false
+        prologuePending: true
+        narrationStyleName: '統合固定語り'
+        priorMatchSummary: ~
+        resultSummary: ~
+        ratingSettlement: ~
+      operator: 'deepStrictEqual'
+      stack: |-
+        TestContext.<anonymous> (/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/routes-structured-asset-integration.test.ts:393:12)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async Promise.all (index 0)
+        async Suite.run (node:internal/test_runner/test:1442:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: freezes legacy character rows without appending V1 generations
+    ok 2 - freezes legacy character rows without appending V1 generations
+      ---
+      duration_ms: 5.939832
+      type: 'test'
+      ...
+    1..2
+not ok 1 - integrated structured asset cutover
+  ---
+  duration_ms: 861.83451
+  type: 'suite'
+  location: '/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/routes-structured-asset-integration.test.ts:5:1327'
+  failureType: 'subtestsFailed'
+  error: '1 subtest failed'
+  code: 'ERR_TEST_FAILURE'
+  ...
+# Subtest: structured battlefield route acceptance
+    # Subtest: records structure-stage failure without exposing a partial battlefield
+    ok 1 - records structure-stage failure without exposing a partial battlefield
+      ---
+      duration_ms: 96.748089
+      type: 'test'
+      ...
+    # Subtest: keeps legacy battlefields visible to management but out of every match binding
+    ok 2 - keeps legacy battlefields visible to management but out of every match binding
+      ---
+      duration_ms: 212.070847
+      type: 'test'
+      ...
+    # Subtest: upgrades a legacy battlefield only after explicit owner confirmation
+    ok 3 - upgrades a legacy battlefield only after explicit owner confirmation
+      ---
+      duration_ms: 101.275935
+      type: 'test'
+      ...
+    # Subtest: returns a compare review and list mark for an awaiting battlefield upgrade
+    ok 4 - returns a compare review and list mark for an awaiting battlefield upgrade
+      ---
+      duration_ms: 94.700335
+      type: 'test'
+      ...
+    # Subtest: expires an upgrade candidate without creating or selecting a generation
+    ok 5 - expires an upgrade candidate without creating or selecting a generation
+      ---
+      duration_ms: 24.387945
+      type: 'test'
+      ...
+    # Subtest: rejects a stale revision candidate after concurrent current-pointer drift
+    ok 6 - rejects a stale revision candidate after concurrent current-pointer drift
+      ---
+      duration_ms: 52.066028
+      type: 'test'
+      ...
+    # Subtest: commits create revision and image changes only as confirmed immutable generations
+    ok 7 - commits create revision and image changes only as confirmed immutable generations
+      ---
+      duration_ms: 122.67491
+      type: 'test'
+      ...
+    # Subtest: binds an exact preset revision and deterministic compiler without mutating it
+    ok 8 - binds an exact preset revision and deterministic compiler without mutating it
+      ---
+      duration_ms: 492.559294
+      type: 'test'
+      ...
+    1..8
+ok 2 - structured battlefield route acceptance
+  ---
+  duration_ms: 1361.234853
+  type: 'suite'
+  ...
+1..2
+# tests 10
+# suites 2
+# pass 9
+# fail 1
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 3562.020612

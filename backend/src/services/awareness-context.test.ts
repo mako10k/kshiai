@@ -44,7 +44,7 @@ function fixture() {
   return { state, generation, content, binding };
 }
 function project(input: ReturnType<typeof fixture>) {
-  return buildAwarenessExecutionContext({ state: input.state, side: "a", generation: input.generation, availableActions: [], receivedSpeech: false, intentCompleted: false, intentInvalid: false });
+  return buildAwarenessExecutionContext({ state: input.state, side: "a", generation: input.generation, availableActions: [], consciousGuidance: { kind: "none" }, receivedSpeech: false, intentCompleted: false, intentInvalid: false });
 }
 
 describe("awareness immutable context projection", () => {
@@ -57,6 +57,13 @@ describe("awareness immutable context projection", () => {
     assert.equal(context.consciousCharacteristics.some((text) => text.includes("知ら") || text.includes("意識せず")), false);
     assert.deepEqual(context.training, []);
     assert.deepEqual(context.consciousTraining, []);
+  });
+  it("rejects missing or unevaluated guidance instead of treating it as no applicable principle", () => {
+    const source = fixture();
+    const input = { state: source.state, side: "a" as const, generation: source.generation, availableActions: [],
+      consciousGuidance: { kind: "none" as const }, receivedSpeech: false, intentCompleted: false, intentInvalid: false };
+    Reflect.deleteProperty(input, "consciousGuidance");
+    assert.throws(() => buildAwarenessExecutionContext(input));
   });
   it("rejects mismatched asset, generation, digest, and missing immutable compiler", () => {
     for (const patch of [ { assetId: "another-character" }, { generationId: "current-pointer-generation" }, { contentDigest: "different-digest" }, { assetType: "battlefield" } ]) {

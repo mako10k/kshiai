@@ -1,0 +1,41 @@
+{
+  "schema": "kshiai/independent-implementation-review/v1",
+  "boundary": "Accepted ADR0059 D3 and detailed design: bounded character call policy, frozen run restoration and durable request constraint. Full profile/final payload/correction remains required next implementation, not proved by this unit.",
+  "reviewer": "/root/battle_helper_contract_review",
+  "primaryVerdict": "INSIDE / no material defect",
+  "deltaVerdict": "PASS / INSIDE",
+  "materialDefects": [],
+  "files": {
+    "packages/shared/src/semantic-authoring.ts": "2071026700dd927f17f7d81d055db6e29a040e8e9cbbdc4a938dc50cc4000bc1",
+    "backend/src/services/semantic-authoring/execution-policy.ts": "9693736ed735375d7ffd6a9efb722a9bc729c8f3c584d6620456bf7fd31ebb6a",
+    "backend/src/services/character-focused-authoring.ts": "772e7333314785c417f08bd5b3a8c73b2291273cf03b2ca95fbd13ad5cebeb25",
+    "backend/src/db.ts": "70bacc4e8b0e53f88fe25c15e45c0a1d9aa1c67d6a3925282d9fdec277b8f77e",
+    "backend/migrations/0036_character_complete_review_call_budget.sql": "da5a2df9e23e77cc708cf02ec83107c9603b6d413edb94539f7b9f7623075976",
+    "backend/src/llm/semantic-authoring-provider.test.ts": "4a08690a38f094750ab2abc5df72fd5523b948fecb0f480153e43e72f9dd376a",
+    "backend/src/repositories/semantic-authoring.test.ts": "248a451fd87353f5a9ec435a11b9af1a77d8b3559d10735dcc394b6ea4da1c00",
+    "backend/src/services/character-focused-authoring.test.ts": "3db243302415e60cdb0a608fb78c115ec99312b04ba564749d709cb7503c5b56"
+  },
+  "diagnostic": {
+    "path": "docs/evidence/character-policy-final-diagnostic-2026-10-08.tap",
+    "passed": 29,
+    "failed": 0,
+    "skipped": 0,
+    "formal": false
+  },
+  "verified": [
+    "new create/revise 10 calls; old/migrate/other-family 8",
+    "token/byte/cost/step/concurrency ceilings unchanged",
+    "stored policy identity restored before scope or main dispatch",
+    "SQLite insert/update bounds and real old rows preserved through initialization",
+    "current HTTP worker settles exact10 new/exact8 old; terminal replay sends none"
+  ],
+  "outsideRequiredWork": [
+    "same-run profile and independent claim work",
+    "complete typed envelope/receipts and atomic candidate/digest save",
+    "immutable correction attempt and HTTP success paths",
+    "all current source bindings/Cause propagation and all251 formal tests"
+  ],
+  "unverified": [
+    "PostgreSQL migration execution; no live/paid/deploy execution"
+  ]
+}

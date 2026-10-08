@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { after, before, describe, it } from "node:test";
-import { mkdtempSync, rmSync } from "node:fs";
+import { copyFileSync, mkdtempSync, rmSync } from "node:fs";
+import { execFileSync } from "node:child_process";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import SqliteDatabase from "better-sqlite3";
@@ -83,6 +84,34 @@ describe("semantic authoring durable ports", () => {
       "SELECT sql FROM sqlite_master WHERE type = 'table' AND name = 'semantic_authoring_provider_requests'",
     );
     assert.match(table.rows[0]?.sql ?? "", /provider_transport_timeout/);
+  });
+
+  it("enforces the frozen family/mode/policy call allowance in SQLite storage", async () => {
+    for (const [key, family, mode, policyIdentity, limit] of [
+      ["new-create", "character", "create", "character_complete_review_policy_v2", 10],
+      ["new-revise", "character", "revise", "character_complete_review_policy_v2", 10],
+      ["old-create", "character", "create", "semantic_authoring_policy_v1", 8],
+      ["migration", "character", "migrate", "character_complete_review_policy_v2", 8],
+      ["other-family", "narration-style", "create", "character_complete_review_policy_v2", 8],
+    ] as const) {
+      const runId = `policy-${key}`;
+      await authoring.insertPendingSemanticAuthoringRunV1({
+        run: { ...runInput(runId, `attempt-${key}`), family, mode, policyIdentity },
+        sourcePayloadRef: `source:${key}`, predecessorRunId: null, createdAt: now,
+      });
+      const insert = (ordinal: number) => query(`INSERT INTO semantic_authoring_provider_requests
+        (request_id, run_id, ordinal, reservation_json, request_digest, provider_route, created_at)
+        VALUES ($1, $2, $3, $4, $5, $6, $7)`,
+      [`${runId}-${ordinal}`, runId, ordinal, JSON.stringify(reservation), "digest", "private-fixture", now]);
+      await insert(limit);
+      await assert.rejects(insert(limit + 1), /SEMANTIC_AUTHORING_REQUEST_POLICY_LIMIT|CHECK constraint/);
+      await assert.rejects(query(`UPDATE semantic_authoring_provider_requests SET ordinal = $2
+        WHERE request_id = $1`, [`${runId}-${limit}`, limit + 1]),
+      /SEMANTIC_AUTHORING_REQUEST_POLICY_LIMIT|CHECK constraint/);
+      const rows = await query<{ ordinal: number; reservation_json: string }>(
+        `SELECT ordinal, reservation_json FROM semantic_authoring_provider_requests WHERE run_id = $1`, [runId]);
+      assert.deepEqual(rows.rows, [{ ordinal: limit, reservation_json: JSON.stringify(reservation) }]);
+    }
   });
 
   it("claims a pending run and records a reservation only under the live fence", async () => {
@@ -432,4 +461,56 @@ describe("semantic authoring durable ports", () => {
     const storedQuestion = await authoring.getSemanticAuthoringQuestionV1("question-1");
     assert.equal(storedQuestion?.state, "answered");
   });
+
+  it("preserves stored old-policy run identities, request values, and receipts during table upgrade", async () => {
+    await closeDatabase();
+    const fixturePath = join(directory, "previous-policy.db");
+    copyFileSync(join(directory, "authoring.db"), fixturePath);
+    const fixture = new SqliteDatabase(fixturePath);
+    // This isolated fixture represents the old schema, which cannot contain calls 9/10.
+    fixture.exec(`
+      DROP TRIGGER semantic_authoring_request_policy_insert;
+      DROP TRIGGER semantic_authoring_request_policy_update;
+      ALTER TABLE semantic_authoring_provider_requests RENAME TO requests_current;
+      CREATE TABLE semantic_authoring_provider_requests (
+        request_id TEXT PRIMARY KEY,
+        run_id TEXT NOT NULL REFERENCES semantic_authoring_runs(run_id) ON DELETE CASCADE,
+        ordinal INTEGER NOT NULL CHECK (ordinal BETWEEN 1 AND 8),
+        reservation_json TEXT NOT NULL, request_digest TEXT NOT NULL, provider_route TEXT NOT NULL,
+        outcome TEXT CHECK (outcome IN ('succeeded', 'failed', 'unknown_consumption', 'provider_transport_timeout')),
+        accounting_json TEXT, created_at TEXT NOT NULL, finished_at TEXT,
+        UNIQUE (run_id, ordinal)
+      );
+      INSERT INTO semantic_authoring_provider_requests SELECT * FROM requests_current WHERE ordinal <= 8;
+      DROP TABLE requests_current;
+    `);
+    const expected = {
+      requests: fixture.prepare("SELECT * FROM semantic_authoring_provider_requests ORDER BY request_id").all(),
+      runs: fixture.prepare("SELECT * FROM semantic_authoring_runs ORDER BY run_id").all(),
+    };
+    assert.ok(expected.requests.length > 0, "migration fixture must carry actual settled and reserved requests");
+    fixture.close();
+    const child = `
+      const { query, closeDatabase } = await import(${JSON.stringify(new URL("../db.ts", import.meta.url).href)});
+      try {
+        const requests = await query("SELECT * FROM semantic_authoring_provider_requests ORDER BY request_id");
+        const runs = await query("SELECT * FROM semantic_authoring_runs ORDER BY run_id");
+        console.log(JSON.stringify({requests: requests.rows, runs: runs.rows}));
+      } finally { await closeDatabase(); }
+    `;
+    const result = execFileSync(process.execPath, ["--import", "tsx", "--input-type=module", "-e", child], {
+      cwd: process.cwd(), encoding: "utf8",
+      env: { ...process.env, DATABASE_PATH: fixturePath, DATABASE_URL: "", DIRECT_URL: "" },
+      timeout: 30_000,
+    });
+    assert.deepEqual(JSON.parse(result), expected);
+    const upgraded = new SqliteDatabase(fixturePath);
+    try {
+      const schema = upgraded.prepare("SELECT sql FROM sqlite_master WHERE type = 'table' AND name = 'semantic_authoring_provider_requests'").get();
+      assert.ok(typeof schema === "object" && schema !== null && "sql" in schema && typeof schema.sql === "string");
+      assert.match(schema.sql, /ordinal BETWEEN 1 AND 10/);
+      assert.equal(upgraded.prepare("SELECT name FROM sqlite_master WHERE type = 'trigger' AND name LIKE 'semantic_authoring_request_policy_%'").all().length, 2);
+    } finally { upgraded.close(); }
+  });
+
 });

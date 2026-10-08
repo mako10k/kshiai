@@ -1,0 +1,53 @@
+{
+  "schema": "kshiai/guidance-delivery-repair-readback/v1",
+  "baselineCommit": "d7fe6df1287ee834fcdd9e9c3e0069b3f32b3696",
+  "scope": "live self-aware guidance delivery, transient required receipt, source-to-prompt diagnostics",
+  "diagnosticTests": {
+    "tests": 23,
+    "passed": 23,
+    "failed": 0,
+    "authoritativeAcceptance": false
+  },
+  "mutationChecks": [
+    {
+      "target": "battle-service frame construction: replace projected guidance with empty array",
+      "exitCode": 1,
+      "restored": true
+    },
+    {
+      "target": "awareness-battle-boundary transfer: replace applicable guidance with none",
+      "exitCode": 1,
+      "restored": true
+    }
+  ],
+  "aggregate": {
+    "exitCode": 1,
+    "active": 36,
+    "provisional": 2,
+    "disabled": 209,
+    "unsealedBlockers": 192,
+    "testExecutionStarted": false
+  },
+  "independentReview": {
+    "initialFinding": "production boundary transfer not exercised by diagnostic",
+    "resolution": "production and diagnostic both call buildAwarenessBoundaryContext; boundary-only mutation detected",
+    "remainingMajorFindings": 0
+  },
+  "localDiagnosticCleanup": {
+    "inadvertentWrites": "configuration loaded before isolated DB setup",
+    "removedExactFixtureBattleRows": 16,
+    "unrelatedBattleCountUnchanged": true,
+    "prevention": "assert isolated config databasePath and null databaseUrl before any database writes"
+  },
+  "remaining": [
+    "Seal/Cause registration with exact upstream basis",
+    "formal CI normal and missing-transfer acceptance",
+    "PERT owner confirmation for task addition"
+  ],
+  "published": false,
+  "committed": false,
+  "typecheck": {
+    "exitCode": 0,
+    "scope": "all workspaces and deployment"
+  }
+}

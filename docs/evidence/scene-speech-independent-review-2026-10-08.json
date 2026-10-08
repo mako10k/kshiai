@@ -1,0 +1,18 @@
+{
+  "reviewer": "battle_helper_contract_review",
+  "classification": "INSIDE",
+  "originalCases": 44,
+  "pass": 44,
+  "fail": 0,
+  "skip": 0,
+  "files": {
+    "backend/src/services/scene-beat-wiring.test.ts": "76e81f3717ecb271da902e629e6cc44cb21454f154b5599ca712dcf998616490",
+    "backend/src/services/battle-speech-wiring.test.ts": "9546f063aaceec17aa7cd528bde0ad91431a3e0d803f65bf96b850656314ff48"
+  },
+  "sceneProof": "docs/evidence/scene-speech-preseal-2026-10-08.tap",
+  "speechAfterRepairProof": "docs/evidence/battle-speech-type-repair-2026-10-08.tap",
+  "typecheckExit": 0,
+  "scope": "Retained historical scene/utterance/canonical-observer wiring, not full awareness-v5 integration or live acceptance",
+  "repairReviewed": "2partialmanifest and6trace casts closed; original37cases250assertions preserved",
+  "rejectedADR0029Used": false
+}

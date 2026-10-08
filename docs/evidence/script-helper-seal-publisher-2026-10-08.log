@@ -1,0 +1,10 @@
+sealed all-tests-20261008/design-dialogue-quality-helper
+sealed all-tests-20261008/implementation-dialogue-quality-helper
+sealed verification/dialogue-quality-helper-bounded-20261008
+sealed all-tests-20261008/design-migrate-legacy-account-helper
+sealed all-tests-20261008/implementation-migrate-legacy-account-helper
+sealed verification/migrate-legacy-account-helper-bounded-20261008
+sealed all-tests-20261008/design-supabase-auth-smoke-helper
+sealed all-tests-20261008/implementation-supabase-auth-smoke-helper
+sealed verification/supabase-auth-smoke-helper-bounded-20261008
+readback complete

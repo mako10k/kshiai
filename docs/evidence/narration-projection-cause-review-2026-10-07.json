@@ -1,0 +1,161 @@
+{
+  "schema": "kshiai/narration-projection-cause-review/v1",
+  "upstream": [
+    {
+      "ref": "awareness-guidance-20261007/authority-current",
+      "sealId": "4a236b55e9ad9e4aa54eb2c6bbe9d77e0a318881ba8328363505153d16e151dd"
+    },
+    {
+      "ref": "all-tests-20261007/authority-current-output-guidance",
+      "sealId": "2c6888e9d07a676d4b429b041b241e1631845b18fac4fb4cda280a4a29670d50"
+    },
+    {
+      "ref": "awareness-guidance-20261007/basic-design",
+      "sealId": "1adba1d06106cfcc7537dcd2d85aa94f745a4a79ff6b3f5ac4911a11efdf79a8"
+    },
+    {
+      "ref": "all-tests-20261007/implementation-current-narration-content-rules",
+      "sealId": "f457c669375c1681fdf7277a8abd6f7e05848f33abb595d21df018b75b78866d"
+    },
+    {
+      "ref": "all-tests-20261007/implementation-current-narration-builder-contracts",
+      "sealId": "871b4b46e531e367409a529704c6b64bb1d041a22d3643fb0f6da4705473c1dc"
+    },
+    {
+      "ref": "all-tests-20261007/contract-adjudication-perception-wire",
+      "sealId": "635dddb9346372392eefec016dc989a0bcf82d8dd14f049bb771d910c1a924ae"
+    }
+  ],
+  "nodes": [
+    {
+      "key": "authority-judgment-presentation",
+      "path": "docs/adr/0009-separate-adjudication-from-judgment-presentation.md",
+      "parents": [],
+      "scope": "Existing Accepted Markdown authority (ADR0001-0014 retain Markdown per ADR README). Only judgment prompt receives public projection and ignores raw audit reason; canonical winner/narration boundary. This is source recording, not a new acceptance or full publication verification.",
+      "test": false,
+      "ref": "all-tests-20261007/authority-judgment-presentation",
+      "sha256": "2d8e0982b145e6164c16d57ba1f3a9f5a1ee0c435e64628abb2970380ad829e2"
+    },
+    {
+      "key": "authority-narration-source-boundary",
+      "path": "docs/adr/0006-terminal-snapshot-narration-delivery.md",
+      "parents": [],
+      "scope": "Existing Accepted Markdown authority (ADR0001-0014 retain Markdown). Only immutable committed narration input and narrator cannot overwrite world/winner/character speech; no full queue/SSE/delivery topology verification.",
+      "test": false,
+      "ref": "all-tests-20261007/authority-narration-source-boundary",
+      "sha256": "dde999ff40599efb88cebe2e4b918b82fbb42d460479a455f0b8934bd880110f"
+    },
+    {
+      "key": "design-judgment-projection-input",
+      "path": "docs/judgment-presentation-projection-design.md",
+      "parents": [
+        "authority-judgment-presentation"
+      ],
+      "scope": "Accepted existing design: projection admitted to existing judgment call, raw reason ignored, no new outcome/cause. Cohort checks prompt input admission only, not projection producer, worker or public DTO delivery.",
+      "test": false,
+      "ref": "all-tests-20261007/design-judgment-projection-input",
+      "sha256": "eb1ab6730351036f8c61359d1e7452eeb219284596ccd1fc0ff92da6c25db9f0"
+    },
+    {
+      "key": "design-narrator-presentation-focus",
+      "path": "docs/narrator-presentation-focus-design.md",
+      "parents": [
+        "authority-narration-source-boundary"
+      ],
+      "scope": "Existing accepted local implementation/synthetic evaluation scope only: optional mode, ID/raw/free-text-free ranking, one copied committed result and no invented change, no ordinary activation. No actual paid pilot, adoption or claimed presentation improvement.",
+      "test": false,
+      "ref": "all-tests-20261007/design-narrator-presentation-focus",
+      "sha256": "9bf0bd87bd790b9d4d072dc7ebb5d87347791b472eb1f4242b772f836f4cf4d1"
+    },
+    {
+      "key": "implementation-narration-profile-anchor-selection",
+      "path": "packages/shared/src/profile-grounding.ts",
+      "parents": [
+        "authority",
+        "basic"
+      ],
+      "scope": "Only selectNarratorRenderingProfileAnchors called by tested view builder: self/opponent/external selections from supplied typed anchors. No full character profile compilation or grounding, claim support, immutable revision binding or actual profile truth proof.",
+      "test": false,
+      "ref": "all-tests-20261007/implementation-narration-profile-anchor-selection",
+      "sha256": "bd43652fde82d114b192131260e582991dbe1817336a6ad9404ef8e8a3b0f153"
+    },
+    {
+      "key": "implementation-narration-view-projections",
+      "path": "packages/shared/src/narration-perception.ts",
+      "parents": [
+        "authority",
+        "basic",
+        "perception",
+        "authority-narration-source-boundary",
+        "design-narrator-presentation-focus",
+        "implementation-narration-profile-anchor-selection"
+      ],
+      "scope": "Tested view/recognition/catalog/ID rendering, action/profile viewpoint filtering and frozen cloned view/brief; supplied causal chains become action-adjacent facts with explanation and continuing conditions, no old duplicated outcomes; optional focus ranks committed structured evidence only. Null continuity branch only; input causalProjection is assumed caller-projected and this cohort does not prove all arbitrary payloads safe. Generic generated-block identifier repair is not proof of authorization to rewrite committed A/B source speech.",
+      "test": false,
+      "ref": "all-tests-20261007/implementation-narration-view-projections",
+      "sha256": "bd7743b435aeb47cd539a8bd2478de7f4142539736458e83d78aac8eb67000c3"
+    },
+    {
+      "key": "implementation-direct-narration-projection-input",
+      "path": "backend/src/llm/openai-compatible.ts",
+      "parents": [
+        "current",
+        "content",
+        "builders",
+        "design-judgment-projection-input",
+        "implementation-narration-view-projections"
+      ],
+      "scope": "Only tested direct narration input/output paths: view-safe speaker material omits canonical speaker field, model display labels and valid scene speech/recognition preserved while missing side excluded, causal facts/optional focus via brief, supplied public judgment projection included and raw legacy reason ignored. Typed protected test seam with valid raw fixtures, no malformed response enforcement or full scene-speech semantic grounding/privacy proof.",
+      "test": false,
+      "ref": "all-tests-20261007/implementation-direct-narration-projection-input",
+      "sha256": "8d4be097ddbfcb0da515dd0db402c7dc6dddccb763d625fce16165e7c524d2a5"
+    },
+    {
+      "key": "narration-perception-projection",
+      "path": "packages/shared/src/narration-perception.test.ts",
+      "parents": [
+        "authority",
+        "basic",
+        "implementation-narration-view-projections",
+        "design-narrator-presentation-focus"
+      ],
+      "scope": "All eleven local tests: viewpoints A/B, stable recognition refs, unlinked apparent identity, omniscient versus public ID access, fluid focus mapping, generic generated prose/scene dialogue ID replacement, frozen A/B/public view/brief action/profile privacy, deterministic decisive focus, quiet committed release, no stable/unattributed target focus, explicit local experimental activation only. No input causal compiler, continuity branch, committed A/B text rewrite permission or actual effect/public acceptance.",
+      "test": true,
+      "ref": "verification/narration-perception-projection-20261007",
+      "sha256": "990362f27e4f1e9f3830cafdd02c95f9595b0abb23d949c6102edced8fc2f198"
+    },
+    {
+      "key": "direct-narration-projection-input",
+      "path": "backend/src/llm/openai-compatible-narration.test.ts",
+      "parents": [
+        "current",
+        "design-judgment-projection-input",
+        "design-narrator-presentation-focus",
+        "implementation-narration-view-projections",
+        "implementation-direct-narration-projection-input"
+      ],
+      "scope": "All three typed local fake-transport tests after removing private double casts: canonical speaker privacy/free labels/scene speech/stable recognition, causal brief/explanation and explicit optional emphasis, public judgment basis with raw legacy reason exclusion. All original assertions retained. No physical provider call, malformed response parsing, world truth or full ordinary adoption claim.",
+      "test": true,
+      "ref": "verification/direct-narration-projection-input-20261007",
+      "sha256": "986e751f9e43d24da92088b479a386cdbf6ccef9d03ceb45b6a083f002138aa1"
+    }
+  ],
+  "diagnostic": {
+    "pass": 14,
+    "fail": 0,
+    "skipped": 0,
+    "strictTypecheckExit": 0
+  },
+  "clauses": [
+    "Accepted ADR0009: raw adjudication internal; judgment input is public projection, no second outcome authority",
+    "Accepted ADR0006 immutable committed source and narrator authority boundary",
+    "Inherited ADR0050/0051 and basic design: viewpoint/private knowledge boundary",
+    "Accepted presentation-focus design: local implementation/synthetic evaluation, optional explicit mode only"
+  ],
+  "limitations": [
+    "Two local files 14 tests, typed fake model response only",
+    "No full causal projection compiler or malformed direct response decoding guarantee",
+    "Generic generated block ID repair test does not authorize rewriting committed A/B source speech",
+    "No actual paid pilot, product-effect claim, ordinary focus adoption, public publication, worker or queue/SSE acceptance"
+  ]
+}

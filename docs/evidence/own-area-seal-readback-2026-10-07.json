@@ -1,0 +1,11 @@
+{
+  "newRefs": 5,
+  "previousHeadsUnchanged": true,
+  "previousHeadCount": 787,
+  "totalRefs": 792,
+  "sourceBytesMatch": true,
+  "stale": 0,
+  "limitations": [
+    "Three full test files replace earlier inventory refs; existing seals remain historical. Other upstream workfile freshness still requires aggregate reconciliation. No production acceptance."
+  ]
+}

@@ -1,0 +1,231 @@
+{
+  "schema": "kshiai/authoring-retirement-replacement-review/v1",
+  "readOnly": true,
+  "scope": {
+    "testPath": "backend/src/services/character-authoring-service.test.ts",
+    "oldCases": 5,
+    "proposedSourceKinds": [
+      "create_instruction",
+      "revision_instruction",
+      "upgrade_description",
+      "import"
+    ],
+    "proposedAssertions": [
+      "buildCharacterGenerationCandidate rejects LEGACY_CHARACTER_AUTHORING_RETIRED",
+      "provider is not called",
+      "reportStatus is not called"
+    ]
+  },
+  "governingSources": [
+    {
+      "path": "docs/adr/0043-v3-character-updates-with-historical-v2-display.md",
+      "clause": "Decision, lines 14-16; verification, line 36",
+      "status": "Accepted",
+      "why": "Ordinary owner create/revise must use focused V3 or fail before provider work; V2 schemas/readers and migration-source readers remain, while ordinary V2 mutation and candidate activation are rejected."
+    },
+    {
+      "path": "docs/adr/0048-v3-profile-guidance-source-projection.md",
+      "clause": "Decision, lines 26-30; verification, line 50",
+      "status": "Accepted",
+      "why": "Current V3 profile projection preserves typed facts and only explicitly public unconditional guidance; private leakage and fabricated claim receipts are disallowed."
+    },
+    {
+      "path": "docs/adr/0030-llm-assisted-character-semantic-migration.md",
+      "clause": "V3 identities and preservation, lines 59-87; response/repair, lines 96-115",
+      "status": "Accepted",
+      "why": "V3 separates executable norms from conscious guidance, preserves displaced source, rejects invented authority, and bounds repair to two rounds/six requests."
+    }
+  ],
+  "replacementAssessment": {
+    "classification": "aligned_but_insufficient_as_a_sole_replacement",
+    "implementationPaths": [
+      "backend/src/services/character-authoring-service.ts:166-182",
+      "backend/src/services/character-focused-authoring.ts",
+      "backend/src/services/character-v3-profile-adapter.ts",
+      "backend/src/services/semantic-authoring/adapters/character-v3.ts"
+    ],
+    "finding": "The implementation currently throws LEGACY_CHARACTER_AUTHORING_RETIRED at the first statement of the legacy V2 candidate builder, so a four-sourceKind boundary matrix can directly prove rejection and zero provider/status work. It cannot by itself preserve the five old behavioral obligations.",
+    "recommendation": "Do not simply delete the five old cases. Replace the obsolete positive path with the four-sourceKind boundary test, while retaining or adding current V3/semantic migration tests for each obligation below. Keep historical V2 fixture/import coverage separate from ordinary authoring."
+  },
+  "obligationReviews": [
+    {
+      "id": "privacy_public_projection",
+      "oldAssertions": [
+        "claim validator receives only profile/projection",
+        "private source text and dynamics are absent",
+        "public claim validator contract is present"
+      ],
+      "oldCase": "character-authoring-service.test.ts:104-147",
+      "status": "covered_current_equivalent_with_scope_change",
+      "existingEvidence": [
+        {
+          "path": "backend/src/services/character-v3-profile-adapter.test.ts",
+          "cases": [
+            "53-57",
+            "59-74",
+            "76-94"
+          ],
+          "why": "V3 projection preserves previous facts, admits only an explicitly public unconditional guidance statement, rejects owner/narrator/conditional/unknown paths, and candidate readiness requires matching disclosure and claim projection."
+        },
+        {
+          "path": "docs/adr/0048-v3-profile-guidance-source-projection.md",
+          "clause": "26-30, 48-50",
+          "why": "Accepted current contract is the V3 typed projector and claim receipt; old V2 call ordering is no longer an ordinary authoring obligation."
+        }
+      ],
+      "gap": "The exact old mock assertion about serialized PRIVATE_SOURCE_SENTINEL/dynamics and the old V2 provider call sequence is not reproduced in current V3 tests. That is expected only if the old V2 path is retired; a V3 route-level privacy test remains useful if public projection is changed."
+    },
+    {
+      "id": "unsupported_claim_rejection",
+      "oldAssertions": [
+        "unsupported profile claim rejects with PROFILE_UNSUPPORTED_CLAIM",
+        "no activatable envelope is returned"
+      ],
+      "oldCase": "character-authoring-service.test.ts:149-178",
+      "status": "covered_shared_validator_not_route_equivalent",
+      "existingEvidence": [
+        {
+          "path": "packages/shared/src/structured-character.test.ts",
+          "cases": [
+            "320-317 (unsupported claim at 300-317)",
+            "320-375"
+          ],
+          "why": "The shared claim assessment rejects an unsupported segment with PROFILE_UNSUPPORTED_CLAIM and rejects unknown support references."
+        },
+        {
+          "path": "backend/src/services/character-v3-profile-adapter.test.ts",
+          "cases": [
+            "76-94"
+          ],
+          "why": "V3 candidate readiness accepts a properly supported claim receipt and rejects a disclosure policy mismatch."
+        }
+      ],
+      "gap": "No inspected current V3 focused-authoring route test injects an unsupported claim and proves the route stores no ready/activatable candidate. The shared validator covers the core contract, but exact old service-level non-activation behavior is not shown by the V3 adapter test. Retain/add one current V3 candidate-readiness or route test if this service boundary is required."
+    },
+    {
+      "id": "prose_does_not_escalate_to_executable_norm",
+      "oldAssertions": [
+        "first-stage prose principles do not populate persisted actionNorm authority",
+        "unstructured action norm sources are not silently compiled into mechanics"
+      ],
+      "oldCase": "character-authoring-service.test.ts:180-210",
+      "status": "covered_current_equivalent",
+      "existingEvidence": [
+        {
+          "path": "packages/shared/src/character-definition-rules.test.ts",
+          "cases": [
+            "133-176"
+          ],
+          "why": "Unstructured legacy principles are rejected from direct compilation and only exposed through explicit structured-generation preparation with empty executable norms."
+        },
+        {
+          "path": "backend/src/services/character-v3-profile-adapter.test.ts",
+          "cases": [
+            "13-31",
+            "53-74"
+          ],
+          "why": "V3 action norm values remain distinct from conscious guidance and projection does not infer public rights."
+        },
+        {
+          "path": "backend/src/services/semantic-authoring/adapters/character-v3.test.ts",
+          "cases": [
+            "82-117",
+            "184-323"
+          ],
+          "why": "Migration copies executable fragments, leaves changed-role claims unresolved, and closes them only through exact capsule/provenance operations."
+        }
+      ],
+      "gap": "The old test's exact GenerateCharacterDefinitionV2 input capture is retired with the path; current tests cover the semantic rule rather than that legacy call graph."
+    },
+    {
+      "id": "mechanics_identity_preservation",
+      "oldAssertions": [
+        "upgrade preserves identity and mechanics despite provider drift",
+        "action norm source context is retained",
+        "result remains a review candidate rather than silently changing current state"
+      ],
+      "oldCase": "character-authoring-service.test.ts:212-284",
+      "status": "covered_current_v3_migration_equivalent",
+      "existingEvidence": [
+        {
+          "path": "backend/src/services/character-focused-authoring.test.ts",
+          "cases": [
+            "308-373",
+            "473-541",
+            "685-740"
+          ],
+          "why": "Focused V3 revision preserves combat and keeps the immutable source pointer unchanged; exact ready V2 upgrade enters focused migration, reaches a V3 candidate, and activates only through explicit owner acceptance."
+        },
+        {
+          "path": "packages/shared/src/character-definition-check.test.ts",
+          "cases": [
+            "140-162",
+            "266-277"
+          ],
+          "why": "Review fill preserves combat parameters and skills, while incomplete action norms are rejected instead of inventing mechanics."
+        },
+        {
+          "path": "backend/src/services/semantic-authoring/adapters/character-v3.test.ts",
+          "cases": [
+            "82-117",
+            "184-323"
+          ],
+          "why": "V3 migration ledger records preserve/disposition/provenance and exact capsule copy before changed-role closure."
+        }
+      ],
+      "gap": "The old V2 field-by-field drift repair is not itself a current obligation; current equivalent must remain V3-focused/migration based."
+    },
+    {
+      "id": "bounded_repair_and_fail_closed",
+      "oldAssertions": [
+        "review fill can repair a bounded gap",
+        "remaining invalid mechanics fail closed rather than activating",
+        "provider/status behavior is visible in the old path"
+      ],
+      "oldCase": "character-authoring-service.test.ts:286-approximately 390",
+      "status": "covered_current_migration_bounded_repair",
+      "existingEvidence": [
+        {
+          "path": "backend/src/services/character-semantic-migration.test.ts",
+          "cases": [
+            "293-330",
+            "449-483",
+            "485-498",
+            "500-526",
+            "545-554",
+            "597-605"
+          ],
+          "why": "Current semantic migration tests exercise bounded repair and fresh review, semantic dependant closure, structural validation despite an incorrect reviewer, replay without calls, exactly six receipted requests after two failed repairs, and unavailable compiler without paid repair."
+        },
+        {
+          "path": "backend/src/services/semantic-authoring/adapters/character-v3.test.ts",
+          "cases": [
+            "785-907"
+          ],
+          "why": "Registered dependant repair is accepted while unregistered extra fields are rejected."
+        },
+        {
+          "path": "backend/src/services/character-focused-authoring.test.ts",
+          "cases": [
+            "282-306",
+            "375-406"
+          ],
+          "why": "Focused create failure is persisted after bounded recovery, replay is provider-free, and ambiguous/multi/invalid scope produces no candidate."
+        }
+      ],
+      "gap": "The old test's exact V2 status strings and self-review fill are retired behavior. Current tests cover the accepted V3 repair ceiling and fail-closed semantics; do not require old status names in the replacement boundary test."
+    }
+  ],
+  "fixturePaths": [
+    "backend/src/fixtures/neva-v3.ts",
+    "backend/src/services/character-focused-authoring.test.ts",
+    "backend/src/services/character-semantic-migration.test.ts",
+    "backend/src/services/semantic-authoring/adapters/character-v3.test.ts"
+  ],
+  "unresolvedIssues": [
+    "The proposed four-sourceKind boundary test does not itself verify public projection privacy, unsupported claim rejection, norm/guidance separation, mechanics preservation, or bounded repair.",
+    "Unsupported-claim non-activation is directly covered by the shared validator but lacks an inspected current V3 route-level negative case; retain/add that coverage before removing the old service case.",
+    "No conclusion here changes Accepted ADR scope or authorizes implementation; parent must run the required CLI llmthink audit before adopting causal/remedial conclusions."
+  ],
+  "confidence": "high"
+}

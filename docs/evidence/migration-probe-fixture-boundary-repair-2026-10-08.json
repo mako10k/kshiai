@@ -1,0 +1,49 @@
+{
+  "cause": "Test-only fixture outside testing directory imported historical generation writer; runtime-directory invariant scanned it",
+  "reproduction": "docs/evidence/last-disabled-battle-boundary-preseal-2026-10-08.tap",
+  "oldPath": "backend/src/scripts/semantic-migration-probe-fixture.ts",
+  "newPath": "backend/src/testing/semantic-migration-probe-fixture.ts",
+  "beforeSha256": "81681738a078eb1b70c9656bde0b82bc5c3880d70a047362ebe5e16d3b274034",
+  "afterSha256": "3ec818b6e90fdaa2b190ea0ab7533d0ec283a5c1592ee55a0fcf0f156aa5c3c4",
+  "functionBodiesUnchanged": true,
+  "testCasesAssertionsUnchanged": true,
+  "tests": [
+    {
+      "path": "backend/src/scripts/semantic-migration-probe-fixture.test.ts",
+      "beforeSha256": "b7d60794c90761615727909d4cdd7fb5b2f9b384ce3389f3d93c4c6d4918bf1f",
+      "afterSha256": "bbfc3baf480ea17abd09a717bbd32727853d37dc3acc788523113d4df17a4cd2",
+      "change": "import path only"
+    },
+    {
+      "path": "backend/src/scripts/semantic-migration-probe-run.test.ts",
+      "beforeSha256": "54d76a822808910d22e2d2208d86cf7f72a72e8090cd52740e353488992fec0f",
+      "afterSha256": "59475275b3f3778669695c34438a6eb38a5edd0b77c89e81d32ddc348bd18edc",
+      "change": "import path only"
+    }
+  ],
+  "runtimeConsumersFound": 1,
+  "initialTwoConsumerClaimCorrected": true,
+  "launchersRelocated": [
+    {
+      "oldPath": "backend/src/scripts/replay-semantic-migration.ts",
+      "newPath": "backend/src/testing/replay-semantic-migration.ts",
+      "beforeSha256": "fbe1d1b10973d6ed91db843d368b65b5d1d6cd264604bbc9109264be65636d9c",
+      "afterSha256": "860dcecc7312f4e5352238182e518ef7c4650074dfbe2f8a92201f425afc4d79",
+      "effect": "Relocation and import paths only; explicit proof/once-only execution guards retained"
+    },
+    {
+      "oldPath": "backend/src/scripts/replay-semantic-migration-v3.ts",
+      "newPath": "backend/src/testing/replay-semantic-migration-v3.ts",
+      "beforeSha256": "32f5d432163c694309c0c757202ad6415fa3142df5fd74fec5abdae746f4f898",
+      "afterSha256": "8e20ff26b82863316b48de0fd460b940d854ee92a123fb129f2c16e396087b2e",
+      "effect": "Relocation and import paths only; explicit proof/once-only execution guards retained"
+    }
+  ],
+  "sourceSnapshotChanged": true,
+  "priorPaidApprovalReused": false,
+  "finalDiagnostic": "docs/evidence/migration-probe-fixture-boundary-final-2026-10-08.tap",
+  "finalDiagnosticCases": 17,
+  "finalDiagnosticPass": 17,
+  "finalDiagnosticFail": 0,
+  "finalDiagnosticSkip": 0
+}

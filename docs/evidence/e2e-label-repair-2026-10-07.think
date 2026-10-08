@@ -1,0 +1,12 @@
+domain CURRENT_VERSION_LABEL:
+  description "Align existing browser assertions with the owner accepted named version display rule."
+evidence FAILURE:
+  "All four E2E files executed with exact browser1193: seven pass and three fail on old standalone V3 heading or retirement message. Actual page text names character definition v3."
+evidence AUTHORITY:
+  "Read docs/version-display-rules.md: owner requires target plus version; existing schema IDs and historical contracts are unchanged. Accepted ADR0051 follows observed accounting and named versions."
+premise BOUNDS:
+  "Change only three expected display strings in two existing tests; retain every behavior and browser step, no production edit. Further downstream failures remain unresolved and will not be bypassed. Existing verification heads are preserved until exact Cause revision review."
+premise ALTERNATIVES:
+  "Reverting UI to ambiguous standalone V3 contradicts owner rule. Removing browser assertions hides a current presentation obligation."
+decision D1 based_on FAILURE, AUTHORITY, BOUNDS, ALTERNATIVES:
+  "Audit then update expected labels and rerun both affected specifications using disposable local configuration."

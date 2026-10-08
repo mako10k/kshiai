@@ -1,0 +1,14 @@
+domain ADR0039WriterOrder:
+  description "Correct an intermediate candidate transition while preserving published progress"
+problem P1:
+  "Writer published three reviewed refs, then unlink on design/v3-battle-lifecycle-v2 returned exit1 before publication."
+evidence E1:
+  "Candidate inspection shows non-root false-root mode, exactly one original old-root Cause, and unchanged source material. The writer calls unlink old before link new. Completed progress3 is persisted."
+evidence E2:
+  "Public add/seal contract requires a non-root record to have a Cause. Removing the sole Cause creates an invalid intermediate state even when the desired final record has a replacement Cause."
+premise C1:
+  "The operation ordering is a changeable implementation condition matching the rejected transition. Exact hidden CLI stderr from the ended subprocess was not retained; the specific internal rejection text is unknown. The final reviewed target/body plan itself is unchanged."
+decision D1 based_on P1, E1, E2, C1:
+  "Link the new target with reviewed previous assertion first, then unlink the old target. Preserve at least one Cause throughout. Resume only after revalidating the three published heads and the fourth candidate against original exact bytes/causes; do not recreate published work or weaken non-root validation."
+decision D2 based_on D1, E1, E2, C1:
+  "Verify the final exact candidate and sealed targets, messages, previous assertions and source bytes. Persist the failed-order observation and resumed elapsed time; preserve eight held refs. No test/source body or acceptance change."

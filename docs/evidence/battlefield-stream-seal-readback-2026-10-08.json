@@ -1,0 +1,20 @@
+{
+  "priorRefs": 1097,
+  "currentRefs": 1103,
+  "newRefs": 6,
+  "refreshedRefs": [
+    "all-tests-20261007/implementation-image-prompt-and-failure",
+    "all-tests-20261008/implementation-local-media-store",
+    "all-tests-20261008/implementation-sqlite-source-inspection",
+    "verification/image-prompt-failure-bounded-20261008",
+    "verification/local-media-archive-connected-20261008",
+    "verification/sqlite-source-inspection-bounded-20261008"
+  ],
+  "untouchedHeadsPreserved": 1091,
+  "oldChangedBodiesRetained": true,
+  "exactCausesReadback": true,
+  "exactHeadSourcesReadback": true,
+  "currentStatusesClean": true,
+  "fsck": "ok",
+  "elapsedSeconds": 139.164
+}

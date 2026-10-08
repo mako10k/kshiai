@@ -1,0 +1,190 @@
+{
+  "thought_id": "docs-evidence-image-response-contract-rca-2026-10-07",
+  "id_source": "file",
+  "report": {
+    "engine_version": "0.1.0",
+    "document_id": "docs-evidence-image-response-contract-rca-2026-10-07",
+    "generated_at": "2026-10-07T11:47:08.069Z",
+    "summary": {
+      "fatal_count": 0,
+      "error_count": 0,
+      "warning_count": 0,
+      "info_count": 0,
+      "hint_count": 7
+    },
+    "results": [
+      {
+        "issue_id": "ISSUE-001",
+        "category": "contradiction_candidate",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "D1",
+            "role": "decision",
+            "step_id": "S-D1"
+          },
+          {
+            "ref_id": "D2",
+            "role": "decision",
+            "step_id": "S-D2"
+          }
+        ],
+        "message": "D1 と D2 は同一根拠 E1, E2, E3 を共有しており、緊張関係にある可能性がある。",
+        "rationale": "複数の decision が同じ based_on 参照を共有しているため、観点と結論の整合性を再確認するべきである。",
+        "metadata": {
+          "shared_refs": [
+            "E1",
+            "E2",
+            "E3"
+          ],
+          "line": 11,
+          "column": 10,
+          "end_column": 12
+        }
+      },
+      {
+        "issue_id": "ISSUE-002",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "E1",
+            "role": "evidence",
+            "step_id": "S-E1"
+          }
+        ],
+        "message": "evidence E1 は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 6,
+          "column": 3,
+          "text": "Local injected fetch returned data[0].url=123; actual adapter output sourceUrl is a number, violating the existing ImageGenerationResult string contract. No endpoint was contacted.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-003",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "E2",
+            "role": "evidence",
+            "step_id": "S-E2"
+          }
+        ],
+        "message": "evidence E2 は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 8,
+          "column": 3,
+          "text": "The producing condition is JSON.parse(text) as typeof parsed followed by a truthiness branch. The assertion accepts unvalidated url/b64_json values as strings. Original two cases supply valid strings and ordinary fallback, so they do not detect this condition.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-004",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "E3",
+            "role": "evidence",
+            "step_id": "S-E3"
+          }
+        ],
+        "message": "evidence E3 は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 10,
+          "column": 3,
+          "text": "Independent read-only review found the same reachable success-path contract violation. F-CFG-07 and the existing ImageProvider architecture govern image response handling; no new provider selection or quota rule is authorized.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-005",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "D1",
+            "role": "decision",
+            "step_id": "S-D1"
+          }
+        ],
+        "message": "decision D1 は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 12,
+          "column": 3,
+          "text": "Decode provider JSON as unknown in a pure image-response module. Validate record/array/field types before constructing a string result; preserve existing error names, moderation rejection, valid URL/base64 branches and ordinary fallback. Remove both response assertions from the repaired adapter boundary.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-006",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "D2",
+            "role": "decision",
+            "step_id": "S-D2"
+          }
+        ],
+        "message": "decision D2 は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 14,
+          "column": 3,
+          "text": "Preserve original two cases/assertions and add meaningful malformed-field plus valid-base64 regression cases. Run local diagnosis and strict workspace typecheck, obtain independent repaired-boundary review, then Seal exact normative/design/implementation/test scope. Do not claim paid/live compatibility or whole251 completion.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-007",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "D1",
+            "role": "decision",
+            "step_id": "S-D1"
+          },
+          {
+            "ref_id": "D2",
+            "role": "decision",
+            "step_id": "S-D2"
+          }
+        ],
+        "message": "D1 と D2 は意味的に近接している可能性がある。",
+        "metadata": {
+          "line": 11,
+          "column": 10,
+          "end_column": 12,
+          "similarity": 0.65,
+          "semantic_distance": 0.35,
+          "embedding_provider": "ollama",
+          "embedding_model": "nomic-embed-text"
+        }
+      }
+    ],
+    "query_results": []
+  }
+}

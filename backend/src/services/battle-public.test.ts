@@ -6,6 +6,7 @@ import {
   defaultBasicAttack,
   BattlefieldDefinitionV2Schema,
   compileBattlefieldInstanceV2,
+  prepareStructuredBattlefieldCreationV2,
   legacyBattlefieldPresetToDefinitionV2,
   normalizeSupervisor,
   type BattlefieldInstance,
@@ -183,7 +184,7 @@ describe("public battle semantic projection", () => {
     assert.equal(json.includes("a".repeat(64)), false);
   });
 
-  it("centers settled ratings independently for each visible track", () => {
+  it("preserves contemporaneous settled rating snapshots despite current population changes", () => {
     const sideA = sheet("a", "A");
     const sideB = sheet("b", "B");
     const state = createBattleState({
@@ -237,10 +238,13 @@ describe("public battle semantic projection", () => {
         overall: { ratingTotal: 3200, characterCount: 2 },
       },
     );
-    assert.equal(publicState.ratingSettlement?.public?.sideA.before, 1500);
-    assert.equal(publicState.ratingSettlement?.public?.sideA.after, 1510);
-    assert.equal(publicState.ratingSettlement?.overall?.sideA.before, 1400);
-    assert.equal(publicState.ratingSettlement?.overall?.sideA.after, 1410);
+    assert.equal(publicState.ratingSettlement?.public?.sideA.before, 1400);
+    assert.equal(publicState.ratingSettlement?.public?.sideA.after, 1410);
+    assert.equal(publicState.ratingSettlement?.overall?.sideA.before, 1500);
+    assert.equal(publicState.ratingSettlement?.overall?.sideA.after, 1510);
+    assert.equal(snapA.before, 1400);
+    assert.equal(snapA.after, 1410);
+    assert.equal(publicState.ratingSettlement?.public?.sideA.delta, 10);
   });
 
   it("keeps the committed state when a provider patch is invalid", async () => {
@@ -637,7 +641,7 @@ describe("public battle semantic projection", () => {
       sideB,
       turnLimit: 20,
       prologuePending: false,
-      battlefield,
+      battlefield: prepareStructuredBattlefieldCreationV2(definition, preset.id),
     });
     const proposal = {
       id: "hap_llm_3",
@@ -694,39 +698,33 @@ describe("public battle semantic projection", () => {
   it("gives the happening provider one deterministic authored affordance", async () => {
     const sideA = sheet("gate-a", "A");
     const sideB = sheet("gate-b", "B");
-    const battlefield: BattlefieldInstance = {
-      sourcePresetId: "gate-field",
-      displayName: "霧の広場",
-      category: "ruins",
-      scene: "霧の広場",
-      terrain: "石床",
-      obstacles: ["石柱"],
-      conditions: ["霧"],
-      coefficients: {},
-      narrativeSetup: "霧に包まれている。",
-      compilerContract: "battlefield-instance-v2",
-      areas: [{ id: "area.plaza", name: "中央広場" }],
-      entryAreas: { a: "area.plaza", b: "area.plaza" },
-      topology: [],
+    const base = legacyBattlefieldPresetToDefinitionV2({
+      id: "gate-field", ownerUserId: "owner", isSystem: false, displayName: "霧の広場", category: "ruins",
+      tags: [], createdAt: "2026-08-14T00:00:00.000Z", updatedAt: "2026-08-14T00:00:00.000Z",
+      appearance: { summary: "霧の広場", visualPrompt: "misty plaza", imageUrl: null },
+      terrainHints: ["中央広場"], obstacleHints: ["石柱"], conditionHints: ["霧"], baseCoefficients: {},
+      narrativeBlurb: "霧に包まれている。",
+    });
+    const definition = BattlefieldDefinitionV2Schema.parse({
+      ...base,
+      areas: [{ ...base.areas[0]!, id: "area.plaza" }],
+      entryAreas: { a: "area.plaza", b: "area.plaza" }, topology: [],
+      objects: base.objects.map((object) => ({ ...object, areaId: "area.plaza" })),
       evolutionAffordances: [{
-        id: "evolution.fog",
-        pressure: "visibility_shift",
-        areaRefs: ["area.plaza"],
-        objectRefs: [],
-        description: {
-          text: "中央広場の霧だけが濃くなれる",
-          sourceSupportRefs: ["fixture.fog"],
-        },
+        id: "evolution.fog", pressure: "visibility_shift", areaRefs: ["area.plaza"], objectRefs: [],
+        description: { text: "中央広場の霧だけが濃くなれる", sourceSupportRefs: ["fixture.fog"] },
       }],
       forbiddenDiscontinuities: ["unregistered_object"],
-    };
+    });
+    const creation = prepareStructuredBattlefieldCreationV2(definition, "gate-field");
+    const battlefield = creation.instance;
     const state = createBattleState({
       id: "structured-evolution-gate",
       sideA,
       sideB,
       turnLimit: 20,
       prologuePending: false,
-      battlefield,
+      battlefield: creation,
     });
     const llm = new MockLlmProvider();
     const received: Array<Parameters<typeof llm.proposeHappening>[0]> = [];

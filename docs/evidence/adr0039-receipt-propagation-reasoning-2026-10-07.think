@@ -1,0 +1,12 @@
+domain ADR0039ReceiptPropagation:
+  description "Revalidate unchanged current observers after a same-decision formal acceptance receipt repair"
+evidence E1:
+  "CLI graph and current-head BFS both identify123 current observers. Fresh CLI status plus exact cached current head identities classify115 source-matched non-draft non-stale refs; eight original diverged or missing verification leaves are held."
+evidence E2:
+  "Old root raw CLI bytes equal the accepted pre-repair file. Its existing body remains an exact prefix; only the formal ACCEPTANCE receipt was appended from existing owner evidence. Root/source DSL audits fatal/error/warning0 and whole ADR check exit0; pinned historical exceptions remain outside this repair."
+premise C1:
+  "Advancing an authority head makes old target references historical; mechanically treating all descendants as newly reviewed would hide pre-existing defects or imply new acceptance. This receipt-only revision changes no normative decision, rule, action, policy or test body."
+decision D1 based_on E1, E2, C1:
+  "Update the root and only the115 individually guarded current-source observers in parent-first order. Every unchanged downstream body must match its current source/head baseline and recorded hash, with no existing candidate, stale or draft. Preserve every unaffected Cause and original message/previous assertion; changed targets gain an explicit old-target previous assertion and scoped receipt note. Preserve eight held heads and all immutable old material."
+decision D2 based_on D1, E1, E2, C1:
+  "Verify exact new sources/targets, all unchanged and held heads, graph integrity, original251 coverage and official unsealed pre-execution stop. Original comments describing the formerly missing receipt remain historical observations, not present blockers. Do not revive discarded trials or grant cloud/data/provider authority; no test pass is newly claimed from resealing."

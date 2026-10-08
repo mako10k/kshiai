@@ -20,10 +20,10 @@ function fakeProvider(
 }
 
 describe("LLM provider fallback", () => {
-  it("recognizes only DNS and billing as provider unavailable", () => {
+  it("recognizes DNS billing and rate limits as provider unavailable", () => {
     assert.equal(
       isProviderUnavailableError(Object.assign(new Error("rate limit"), { status: 429 })),
-      false,
+      true,
     );
     assert.equal(
       isProviderUnavailableError(Object.assign(new Error("monthly spending limit"), { status: 403 })),
@@ -88,10 +88,9 @@ describe("LLM provider fallback", () => {
     assert.equal(primaryCalls, 1);
   });
 
-  it("does not provider-fallback on timeout 429 503 or operation errors", async () => {
+  it("does not provider-fallback on timeout 503 or operation errors", async () => {
     const failures = [
       new Error("Request was aborted."),
-      Object.assign(new Error("rate limit"), { status: 429 }),
       Object.assign(new Error("unavailable"), { status: 503 }),
       new SyntaxError("invalid JSON"),
     ];
@@ -197,4 +196,33 @@ describe("LLM provider fallback", () => {
       ],
     );
   });
+
+  it("suspends rate-limited providers for one hour and records the actual reason", async () => {
+    let time = 1_000;
+    let primaryCalls = 0;
+    const primary = fakeProvider("primary", async () => {
+      primaryCalls += 1;
+      throw Object.assign(new Error("rate limit"), { status: 429 });
+    });
+    const secondaryBase = new MockLlmProvider();
+    const secondary = fakeProvider("secondary", (input) =>
+      secondaryBase.generateNarrationStyle(input));
+    const router = createFallbackLlmProvider([primary, secondary], 60_000, () => time);
+    const receipts: LlmProviderRouteReceipt[] = [];
+    await withLlmProviderRouteReceiptCapture(receipts, () => router.generateNarrationStyle!("a"));
+    assert.equal(primaryCalls, 1);
+    assert.deepEqual(receipts[0]?.failures, [{
+      provider: "primary", reason: "rate_limit", disposition: "failed", cooldownMs: 3_600_000,
+    }]);
+    time += 3_599_999;
+    await withLlmProviderRouteReceiptCapture(receipts, () => router.generateNarrationStyle!("b"));
+    assert.equal(primaryCalls, 1);
+    assert.equal(receipts[1]?.failures[0]?.disposition, "cooldown_active");
+    assert.equal(receipts[1]?.failures[0]?.cooldownMs, 1);
+    assert.equal(receipts[1]?.selectedProvider, "secondary");
+    time += 1;
+    await router.generateNarrationStyle!("c");
+    assert.equal(primaryCalls, 2);
+  });
+
 });

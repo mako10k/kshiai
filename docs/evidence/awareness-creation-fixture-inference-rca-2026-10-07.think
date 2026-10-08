@@ -1,0 +1,16 @@
+domain AwarenessCreationFixtureInference:
+  description "Resolve a local strict inference error while preserving all six-file creation tests"
+problem P1:
+  "Standalone TypeScript strict reports TS7022 at awareness-battle-service.test.ts line144: inferred subjective has implicit any with a reported initializer dependency cycle."
+evidence E1:
+  "All six original test files execute29cases with zero failures/skips. Only this inferred declaration fails standalone strict. Repository backend config retains noImplicitAny:false, while the targeted standalone compiler enables the check."
+evidence E2:
+  "The declaration is const subjective = runtime.runtime.sides[side] in an A/B literal loop. The following assertions check cancelled job status and increased generation. getAwarenessRuntime explicitly returns AwarenessRuntimeSnapshot or null; the prior assert.ok narrows null away; the snapshot runtime is schema-derived AwarenessPipelineState. Both sides are declared AwarenessCharacterState."
+evidence E3:
+  "There is no direct source self-reference in the initializer. The compiler diagnostic is observed, but the exact compiler internal dependency cycle and historical introduction are unknown. No production runtime, stored state or source types fail this check."
+premise U1:
+  "The implicit local inference failure is not evidence of invalid runtime contents or production information loss. Replacing runtime fixtures or assertions would change the exercised contract. A declaration annotation using the existing shared side-state type can supply the exact already-required boundary without a cast or invented fields."
+decision D1 based_on P1, E1, E2, E3, U1:
+  "Close the demonstrated local inference gap by importing the shared AwarenessCharacterState type and annotating only the subjective declaration. Keep the indexed initializer and both assertions unchanged. Do not attribute an exact compiler cycle root cause, widen the schema, add defaults, alter runtime logic or relax strict checks."
+decision D2 based_on D1, E1, E2, E3, U1:
+  "Re-run all29original cases, targeted strict imports and workspace checks; compare all original assertions/test titles and exact source change. Scope proof-refusal tests to their explicitly retained certified policy; new ordinary usage-v2 remains observed without required proof. Readback exact cause/source and preserve unsealed fail-closed."

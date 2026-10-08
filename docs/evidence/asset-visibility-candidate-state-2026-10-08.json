@@ -1,0 +1,16 @@
+{
+  "stage": "superseded_by_direct_owner_decision",
+  "path": "docs/asset-visibility-requirement-candidate-r1-2026-10-08.md",
+  "sha256": "7212806bce83ed53ac4b4a2637fceb91671dd9e7396814548ee737ccd5627127",
+  "accepted": false,
+  "independentReviewAuthorized": false,
+  "firstOwnerRoute": null,
+  "ownerQuestionPresented": true,
+  "laterEffectsAuthorized": false,
+  "originalCases": 4,
+  "wholeFiles": 2,
+  "selfReview": "Shared enum/default/owner-system predicates and backend owner->viewer friendship verified; preserved ready/disclosure/realm contracts; no approval inferred.",
+  "originalCandidateAccepted": false,
+  "governingDecision": "docs/battle-test-contract-owner-decisions-2026-10-08.md",
+  "directOwnerDecisionReceived": true
+}

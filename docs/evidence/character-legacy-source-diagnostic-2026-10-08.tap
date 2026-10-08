@@ -1,0 +1,167 @@
+TAP version 13
+# Subtest: focused authoring through the real owner command and worker
+    # Subtest: generates a complete owner candidate through HTTP and activates only the explicitly confirmed digest
+    ok 1 - generates a complete owner candidate through HTTP and activates only the explicitly confirmed digest
+      ---
+      duration_ms: 467.135645
+      type: 'test'
+      ...
+    # Subtest: routes a create HTTP command through bounded focused recovery and persists failure without legacy calls
+    ok 2 - routes a create HTTP command through bounded focused recovery and persists failure without legacy calls
+      ---
+      duration_ms: 125.100993
+      type: 'test'
+      ...
+    # Subtest: resumes a previously registered eight-call create without upgrading its frozen allowance
+    ok 3 - resumes a previously registered eight-call create without upgrading its frozen allowance
+      ---
+      duration_ms: 107.074836
+      type: 'test'
+      ...
+    # Subtest: routes an appearance revision from the real owner HTTP command to a non-current review candidate
+    ok 4 - routes an appearance revision from the real owner HTTP command to a non-current review candidate
+      ---
+      duration_ms: 258.368245
+      type: 'test'
+      ...
+    # Subtest: does not generate a candidate for ambiguous, multi-area, or invalid scope
+    ok 5 - does not generate a candidate for ambiguous, multi-area, or invalid scope
+      ---
+      duration_ms: 168.41226
+      type: 'test'
+      ...
+    # Subtest: carries changed-role migration meaning through the real worker into a review candidate
+    ok 6 - carries changed-role migration meaning through the real worker into a review candidate
+      ---
+      duration_ms: 92.844853
+      type: 'test'
+      ...
+    # Subtest: routes an exact ready V2 upgrade command into focused migration without activating it
+    ok 7 - routes an exact ready V2 upgrade command into focused migration without activating it
+      ---
+      duration_ms: 195.207458
+      type: 'test'
+      ...
+    # Subtest: lets the owner accept the exact focused migration candidate for Stage-scoped V3 selection
+    ok 8 - lets the owner accept the exact focused migration candidate for Stage-scoped V3 selection
+      ---
+      duration_ms: 269.626806
+      type: 'test'
+      ...
+    # Subtest: rolls back V3 append when the frozen source pointer drifts before owner acceptance
+    ok 9 - rolls back V3 append when the frozen source pointer drifts before owner acceptance
+      ---
+      duration_ms: 326.529067
+      type: 'test'
+      ...
+    # Subtest: carries an optional legacy meaning deferral through the real upgrade route
+    ok 10 - carries an optional legacy meaning deferral through the real upgrade route
+      ---
+      duration_ms: 264.408281
+      type: 'test'
+      ...
+    # Subtest: retries a failed owner command from the same source with a new attempt and idempotent replay
+    ok 11 - retries a failed owner command from the same source with a new attempt and idempotent replay
+      ---
+      duration_ms: 428.497931
+      type: 'test'
+      ...
+    # Subtest: retries a failed correction from its frozen reviewed candidate without editing the predecessor
+    ok 12 - retries a failed correction from its frozen reviewed candidate without editing the predecessor
+      ---
+      duration_ms: 503.01306
+      type: 'test'
+      ...
+    # Subtest: persists source-drift failure in both lifecycles before any dispatch
+    ok 13 - persists source-drift failure in both lifecycles before any dispatch
+      ---
+      duration_ms: 47.645011
+      type: 'test'
+      ...
+    1..13
+ok 1 - focused authoring through the real owner command and worker
+  ---
+  duration_ms: 3270.986374
+  type: 'suite'
+  ...
+# Subtest: compacts schema constraints without changing bounds or confusing enum strings with JSON literals
+ok 2 - compacts schema constraints without changing bounds or confusing enum strings with JSON literals
+  ---
+  duration_ms: 2.852061
+  type: 'test'
+  ...
+# Subtest: preserves restrictive and preference norm values through the V3 profile adapter
+ok 3 - preserves restrictive and preference norm values through the V3 profile adapter
+  ---
+  duration_ms: 25.359405
+  type: 'test'
+  ...
+# Subtest: keeps previous profile facts exact when guidance has no explicit public permission
+ok 4 - keeps previous profile facts exact when guidance has no explicit public permission
+  ---
+  duration_ms: 9.473065
+  type: 'test'
+  ...
+# Subtest: projects only explicitly public unconditional guidance statements
+ok 5 - projects only explicitly public unconditional guidance statements
+  ---
+  duration_ms: 15.854225
+  type: 'test'
+  ...
+# Subtest: accepts a real V3 candidate with a guidance-backed unchanged public statement
+ok 6 - accepts a real V3 candidate with a guidance-backed unchanged public statement
+  ---
+  duration_ms: 20.757881
+  type: 'test'
+  ...
+# Subtest: requires generated profile and independent claim receipt before a complete focused result
+ok 7 - requires generated profile and independent claim receipt before a complete focused result
+  ---
+  duration_ms: 45.990556
+  type: 'test'
+  ...
+# Subtest: invalidates both profile products when definition or disclosure changes and preserves unchanged state
+ok 8 - invalidates both profile products when definition or disclosure changes and preserves unchanged state
+  ---
+  duration_ms: 26.151547
+  type: 'test'
+  ...
+# Subtest: rejects generated facts without public support and description outside its segments
+ok 9 - rejects generated facts without public support and description outside its segments
+  ---
+  duration_ms: 15.349587
+  type: 'test'
+  ...
+# Subtest: requires exactly one clean independent assessment of every segment
+ok 10 - requires exactly one clean independent assessment of every segment
+  ---
+  duration_ms: 39.910067
+  type: 'test'
+  ...
+# Subtest: gives profile work only approved public facts, with no raw owner source
+ok 11 - gives profile work only approved public facts, with no raw owner source
+  ---
+  duration_ms: 8.011318
+  type: 'test'
+  ...
+# Subtest: rejects restored progress whose digest or claim validation no longer matches its inputs
+ok 12 - rejects restored progress whose digest or claim validation no longer matches its inputs
+  ---
+  duration_ms: 11.434524
+  type: 'test'
+  ...
+# Subtest: preserves structural-only correction sources without inventing profile receipts
+ok 13 - preserves structural-only correction sources without inventing profile receipts
+  ---
+  duration_ms: 105.202488
+  type: 'test'
+  ...
+1..13
+# tests 25
+# suites 1
+# pass 25
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 4686.780522

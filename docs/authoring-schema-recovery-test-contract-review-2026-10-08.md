@@ -1,0 +1,11 @@
+# キャラ定義スキーマ・旧形式helperのSeal復旧
+
+独立レビュー battle_helper_contract_review は3元wholefile・32ケースをINSIDEと確認。診断32pass/0fail/0skip。テスト・実装の追加変更なし。既存source_divergedな3検証refは歴史として保持し、現在のbytesと狭い契約を持つ検証refへ同じ3pathのinventory接続を更新する。ファイル・ケース削除やsubset化はしない。広いimplementation/llm-adapterのHEADを更新して他のSealを波及させず、今回対象の現在実装bytesを別のbounded producerで固定する。
+
+Accepted ADR0030の厳密migration・immutable source・schema/full再検証・bounded repair・physical receipt・drift失敗境界、ADR0043の歴史V2 reader/migration source保持と普通のV2 authoring禁止、ADR0010のimmutable generation契約をCauseとする。Proposed ADR0059をCauseにしない。
+
+スキーマ2ケースはSDK5由来の既知5constraint aliasだけを補正、default維持、input不変、無関係な再帰を拒否。SDK6に現在この欠陥があるとは主張しない。
+
+SDK25ケースは旧V2/migration helperの実HTTP decodingと1回のdomain repair、auth/構文/構造の棄却、private rejected textのbounded非公開、base/owner-source維持、response formatとbattlefield fillを確認。直接generateCharacterDefinitionV2のcreate/revisionテストはhelper挙動であり、普通のV2 authoring許可・現行focused V3 ready・profile/claim receipt全pipeline成立の証明ではない。
+
+Ollama5ケースはlocal-check adapterの固定loopback/model、境界でのgeneric再帰JSON復元、token receipt、invalid JSON停止・再送なし、transport前drift拒否。実model呼出し・品質・本番provider採用を証明しない。

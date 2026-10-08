@@ -1,0 +1,14 @@
+domain ImageStorageHelperSeal:
+  description "Bind image prompt and object-writer helper tests to accepted scope"
+problem P1:
+  "Seven original image storage/helper cases are unsealed; mock/local checks must not be promoted to live shared-storage or V2 writer authority."
+evidence E1:
+  "NFR-11/F-BF-08 govern shared media intent and battlefield visual input. R2 tests observe key/URL generation, ID guard and injected PutObject Bucket/ContentType/URL only. The unsupported private S3 object title is corrected without changing any original assertion."
+evidence E2:
+  "F-CHR-10/Accepted0011 govern appearance-only image brief. Accepted0010 governs immutable selectable media. Accepted0043 excludes ordinary V2 image writers. Image service tests exercise visual prompts, private-field omission, local revision URL/ID guard and injected provider failure, not persistence activation or a V2 successful route."
+evidence E3:
+  "Independent read-only review permits both whole files at those scopes. Seven local cases passed; all original cases/assertions are preserved. No new normative policy or external execution is authorized."
+decision D1 based_on P1, E1, E2, E3:
+  "Bind separate scoped design nodes to current requirements and existing Accepted authority, implementation nodes to each design, and whole original test files to those implementations. Use original compiler/policy meaning; do not imply shared-read/access-control/live success."
+decision D2 based_on D1, E1, E2, E3:
+  "Read back hashes, exact Cause targets/messages and current heads through public CLI; preserve all prior heads and full251 scope. Formal aggregate must still stop before execution while any test is unsealed."

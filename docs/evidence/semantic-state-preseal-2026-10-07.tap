@@ -1,0 +1,161 @@
+TAP version 13
+# Subtest: battle semantic state
+    # Subtest: moves a field entity to a holder with an auditable revision
+    ok 1 - moves a field entity to a holder with an auditable revision
+      ---
+      duration_ms: 12.700443
+      type: 'test'
+      ...
+    # Subtest: applies pickup and drop symmetrically for both character sides
+    ok 2 - applies pickup and drop symmetrically for both character sides
+      ---
+      duration_ms: 7.066601
+      type: 'test'
+      ...
+    # Subtest: persists breakage and creates debris atomically
+    ok 3 - persists breakage and creates debris atomically
+      ---
+      duration_ms: 1.202001
+      type: 'test'
+      ...
+    # Subtest: does not resurrect an inactive entity tombstone
+    ok 4 - does not resurrect an inactive entity tombstone
+      ---
+      duration_ms: 0.388824
+      type: 'test'
+      ...
+    # Subtest: rejects stale revisions without partially applying earlier operations
+    ok 5 - rejects stale revisions without partially applying earlier operations
+      ---
+      duration_ms: 0.29553
+      type: 'test'
+      ...
+    # Subtest: rejects causal references outside the resolved turn
+    ok 6 - rejects causal references outside the resolved turn
+      ---
+      duration_ms: 0.39702
+      type: 'test'
+      ...
+    # Subtest: rejects a later invalid operation without committing an earlier change
+    ok 7 - rejects a later invalid operation without committing an earlier change
+      ---
+      duration_ms: 0.451207
+      type: 'test'
+      ...
+    # Subtest: protects character identity and entity lifecycle fields
+    ok 8 - protects character identity and entity lifecycle fields
+      ---
+      duration_ms: 0.802872
+      type: 'test'
+      ...
+    # Subtest: allows leaf fact removal but rejects array-index mutation
+    ok 9 - allows leaf fact removal but rejects array-index mutation
+      ---
+      duration_ms: 3.55089
+      type: 'test'
+      ...
+    # Subtest: validates required symmetric character entities and bounded depth
+    ok 10 - validates required symmetric character entities and bounded depth
+      ---
+      duration_ms: 2.689172
+      type: 'test'
+      ...
+    # Subtest: rejects semantic snapshots beyond the prompt and persistence budget
+    ok 11 - rejects semantic snapshots beyond the prompt and persistence budget
+      ---
+      duration_ms: 3.234204
+      type: 'test'
+      ...
+    # Subtest: reads JSON Pointer values and produces compact diffs
+    ok 12 - reads JSON Pointer values and produces compact diffs
+      ---
+      duration_ms: 0.779962
+      type: 'test'
+      ...
+    # Subtest: creates a structured initial world from a battlefield seed
+    ok 13 - creates a structured initial world from a battlefield seed
+      ---
+      duration_ms: 2.602082
+      type: 'test'
+      ...
+    # Subtest: deterministically seeds legacy obstacle strings without an LLM
+    ok 14 - deterministically seeds legacy obstacle strings without an LLM
+      ---
+      duration_ms: 0.833487
+      type: 'test'
+      ...
+    # Subtest: preserves an intentionally empty structured seed
+    ok 15 - preserves an intentionally empty structured seed
+      ---
+      duration_ms: 0.544172
+      type: 'test'
+      ...
+    # Subtest: rejects a present invalid structured seed
+    ok 16 - rejects a present invalid structured seed
+      ---
+      duration_ms: 0.671624
+      type: 'test'
+      ...
+    # Subtest: rejects an invalid assembled state instead of returning a minimal state
+    ok 17 - rejects an invalid assembled state instead of returning a minimal state
+      ---
+      duration_ms: 2.112494
+      type: 'test'
+      ...
+    # Subtest: projects side-specific current observations and only their latest diff
+    ok 18 - projects side-specific current observations and only their latest diff
+      ---
+      duration_ms: 9.43067
+      type: 'test'
+      ...
+    # Subtest: bounds observations while retaining the latest changed entity
+    ok 19 - bounds observations while retaining the latest changed entity
+      ---
+      duration_ms: 6.756034
+      type: 'test'
+      ...
+    # Subtest: diffs against the actually retained previous observation
+    ok 20 - diffs against the actually retained previous observation
+      ---
+      duration_ms: 9.47831
+      type: 'test'
+      ...
+    # Subtest: keeps an unchanged retained snapshot stable on a rejected transition
+    ok 21 - keeps an unchanged retained snapshot stable on a rejected transition
+      ---
+      duration_ms: 1.47297
+      type: 'test'
+      ...
+    # Subtest: preserves attachment references without leaking a hidden parent
+    ok 22 - preserves attachment references without leaking a hidden parent
+      ---
+      duration_ms: 3.394373
+      type: 'test'
+      ...
+    # Subtest: rejects cyclic attachment chains
+    ok 23 - rejects cyclic attachment chains
+      ---
+      duration_ms: 1.011696
+      type: 'test'
+      ...
+    # Subtest: keeps both character roots at symmetric scene locations
+    ok 24 - keeps both character roots at symmetric scene locations
+      ---
+      duration_ms: 1.283498
+      type: 'test'
+      ...
+    1..24
+ok 1 - battle semantic state
+  ---
+  duration_ms: 76.057194
+  type: 'suite'
+  ...
+1..1
+# tests 24
+# suites 1
+# pass 24
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 358.139654

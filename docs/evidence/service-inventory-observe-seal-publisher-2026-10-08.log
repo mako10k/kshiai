@@ -1,0 +1,10 @@
+sealed all-tests-20261008/authority-retained-observation-accounting
+sealed all-tests-20261008/design-internal-observation-private
+sealed all-tests-20261008/implementation-internal-observation-private
+sealed verification/internal-observation-private-bounded-20261008
+sealed all-tests-20261008/design-historical-agency-inventory
+sealed all-tests-20261008/fixture-historical-agency-inventory
+sealed all-tests-20261008/implementation-historical-agency-inventory
+sealed all-tests-20261008/implementation-historical-agency-inventory-storage
+sealed verification/historical-agency-inventory-bounded-20261008
+readback complete

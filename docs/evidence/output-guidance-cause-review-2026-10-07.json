@@ -1,0 +1,120 @@
+{
+  "schema": "kshiai/output-guidance-cause-review/v1",
+  "upstream": [
+    {
+      "ref": "all-tests-20261007/implementation-awareness-state",
+      "sealId": "cea338023663fcb0df2f08b3e889a61b0033e7d60008a6301090ccac8a3fe50a"
+    },
+    {
+      "ref": "all-tests-20261007/implementation-intent",
+      "sealId": "7dbc6d9ea7ddfcfeb7f7659c1a8fd47c5a39b48988ba64b5de04048140c9098f"
+    }
+  ],
+  "nodes": [
+    {
+      "key": "authority-current-output-guidance",
+      "path": "docs/adr/0056-latest-prompt-contract-until-completion.md",
+      "parents": [],
+      "scope": "Latest strict output instructions for latent/conscious roles, schema conformance and inherited ADR0053 guidance correction. Does not establish live completion or current freeze condition.",
+      "test": false,
+      "ref": "all-tests-20261007/authority-current-output-guidance",
+      "sha256": "02cf47331d22417cfa7146864034aa2c0e476ca6d57f1ec98007f95933450e26"
+    },
+    {
+      "key": "design-action-output-guidance",
+      "path": "docs/battle-awareness-response-repair-2026-10-05.md",
+      "parents": [
+        "authority-current-output-guidance",
+        "intent"
+      ],
+      "scope": "Pure prose strict intent renderer and schema-validated examples only. Old version-pinned prompt execution superseded by ADR0056; physical observer/lifecycle separately sealed, not included here.",
+      "test": false,
+      "ref": "all-tests-20261007/design-action-output-guidance",
+      "sha256": "bf9c15c27f1ebe70006a8bda5f00f16b23bd7ba3556f402cb0873f3b700a347a"
+    },
+    {
+      "key": "design-latent-output-brevity",
+      "path": "docs/evidence/awareness-latent-output-truncation-2026-10-06.md",
+      "parents": [
+        "authority-current-output-guidance",
+        "state"
+      ],
+      "scope": "Authorized bounded correction section and local shape verification only: retain schema/state/source semantics and policy cap, compact full example, no item-count cap or copied example world facts. Historical stage/root-cause/public facts are observations, not refreshed live proof.",
+      "test": false,
+      "ref": "all-tests-20261007/design-latent-output-brevity",
+      "sha256": "0f2be3d05549fd577c9bdc041151e9c178d424ac0f812931817bac19ed7228fc"
+    },
+    {
+      "key": "implementation-action-output-guidance",
+      "path": "backend/src/llm/awareness-output-contract.ts",
+      "parents": [
+        "authority-current-output-guidance",
+        "design-action-output-guidance",
+        "intent",
+        "state"
+      ],
+      "scope": "Schema-validated examples and role-specific strict object/source instructions, distinctions between legal option data and returned intents. No input compression or final assembled prompt claim.",
+      "test": false,
+      "ref": "all-tests-20261007/implementation-action-output-guidance",
+      "sha256": "2b956aa7592f6c48cf911e75b66e39bc450982f195ada5b84bdc93035a46e772"
+    },
+    {
+      "key": "implementation-latent-output-brevity",
+      "path": "backend/src/llm/awareness-latent-output-guidance.ts",
+      "parents": [
+        "authority-current-output-guidance",
+        "design-latent-output-brevity",
+        "state"
+      ],
+      "scope": "Compact whole-output examples retain feelings/tendencies/reflex/affective sources and side/tick identity; prose requests brevity within supplied budget without new state item cap. No guaranteed real output size claim.",
+      "test": false,
+      "ref": "all-tests-20261007/implementation-latent-output-brevity",
+      "sha256": "28f84d9024356aef649f204134b02c4e312824330aa8aebce0d39a1b6f345544"
+    },
+    {
+      "key": "action-output-guidance",
+      "path": "backend/src/llm/awareness-output-contract.test.ts",
+      "parents": [
+        "authority-current-output-guidance",
+        "design-action-output-guidance",
+        "intent",
+        "state",
+        "implementation-action-output-guidance"
+      ],
+      "scope": "Three local tests: every supported action kind schema-valid, string/copied-option intents rejected, latent ambiguity and conscious thought/source separation explained. No final request transmission or model adherence claim.",
+      "test": true,
+      "ref": "verification/action-output-guidance-20261007",
+      "sha256": "0d2efd8b046f7cab91edbdcca7ac466502846d247cafa8f03257bcb118899c18"
+    },
+    {
+      "key": "latent-output-brevity",
+      "path": "backend/src/llm/awareness-latent-output-guidance.test.ts",
+      "parents": [
+        "authority-current-output-guidance",
+        "design-latent-output-brevity",
+        "state",
+        "implementation-latent-output-brevity"
+      ],
+      "scope": "Two local tests: complete compact example accepted over successive ticks with both sources/current identity; rendered budget carries intact schema-valid JSON without state item-count cap. No real token reduction/model adherence claim.",
+      "test": true,
+      "ref": "verification/latent-output-brevity-20261007",
+      "sha256": "b15f5270a5704ca436a7abddb617f3dc42dc868cc853fac9f58d8f5eb0572d3b"
+    }
+  ],
+  "diagnostic": {
+    "pass": 5,
+    "fail": 0,
+    "skipped": 0,
+    "strictTypecheckExit": 0
+  },
+  "clauses": [
+    "ADR0056: latest latent/conscious output instructions and strict schema",
+    "Inherited response repair: option data differs from action intent",
+    "Bounded latent truncation correction: compact full output example without losing meanings or item-count cap"
+  ],
+  "limitations": [
+    "No live provider or guaranteed output size",
+    "Helper renderers only; assembled request tests remain required",
+    "Compression policy successor is not implemented or certified by these helper tests"
+  ]
+}

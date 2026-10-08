@@ -1,0 +1,20 @@
+{
+  "reviewer": "battle_helper_contract_review",
+  "classification": "INSIDE",
+  "wholeFiles": 2,
+  "originalCases": 15,
+  "pass": 15,
+  "fail": 0,
+  "skip": 0,
+  "files": {
+    "backend/src/services/semantic-authoring/revision-scope-evaluation.test.ts": "0c65e651a1ed72151d6c570f5caf0befabf26bb182305a9eca1c7958a2742d6f",
+    "backend/src/services/semantic-authoring/revision-scope-ollama.test.ts": "58f843892d35eed50dfcb11c925d229afc60977f420c333767d378631f0ad1c7"
+  },
+  "authority": [
+    "Accepted ADR0035 D1-D3",
+    "Accepted character requirements v5 R2/R3/R20",
+    "Accepted foundation v3 F1/F2/F5/F10/F14"
+  ],
+  "boundary": "Controlled corpus evaluation and injected-fetch local replay only; not production model choice, live quality, representative corpus acceptance, multi-cluster product progression, public owner Q&A or ProposedADR0059",
+  "typeEscapes": []
+}

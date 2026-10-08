@@ -1,0 +1,67 @@
+TAP version 13
+# [llm] xai ready engine=grok-4.5 fast=grok-4.3
+# [llm] xai/fast model=grok-4.3 ok 70ms
+# [llm] openai ready engine=gpt-4.1 fast=gpt-4.1-mini
+# [llm] openai/fast model=gpt-4.1-mini ok 2ms
+# [llm] primary ready engine=engine-model fast=fast-model
+# [llm] primary ready engine=engine-model fast=fast-model
+# [llm] primary/test429 retry=1 reason=rate_limit delay=0ms same-provider
+# Subtest: OpenAI-compatible provider routing policy
+    # Subtest: requests xAI grok-4.3 directly with reasoning effort none
+    ok 1 - requests xAI grok-4.3 directly with reasoning effort none
+      ---
+      duration_ms: 73.973231
+      type: 'test'
+      ...
+    # Subtest: does not send xAI-only reasoning effort to another provider
+    ok 2 - does not send xAI-only reasoning effort to another provider
+      ---
+      duration_ms: 2.645752
+      type: 'test'
+      ...
+    # Subtest: routes turn-limit referee rationale through the fast tier
+    ok 3 - routes turn-limit referee rationale through the fast tier
+      ---
+      duration_ms: 0.810589
+      type: 'test'
+      ...
+# [llm] primary/test429 retry=2 reason=rate_limit delay=0ms same-provider
+# [llm] primary/test429 model=fast-model ok 11ms
+# [llm] primary ready engine=engine-model fast=fast-model
+# [llm] primary/test503 retry=1 reason=service_unavailable delay=0ms same-provider
+    # Subtest: uses the extended fast timeout and retries 429 in the same client
+    ok 4 - uses the extended fast timeout and retries 429 in the same client
+      ---
+      duration_ms: 11.765643
+      type: 'test'
+      ...
+# [llm] primary/test503 model=fast-model fail 3ms: unavailable
+# [llm] primary ready engine=engine-model fast=fast-model
+# [llm] primary/timeout model=fast-model fail 2ms: Request was aborted.
+    # Subtest: limits 503 to one same-provider retry
+    ok 5 - limits 503 to one same-provider retry
+      ---
+      duration_ms: 3.983587
+      type: 'test'
+      ...
+    # Subtest: does not retry an aborted timeout
+    ok 6 - does not retry an aborted timeout
+      ---
+      duration_ms: 1.861149
+      type: 'test'
+      ...
+    1..6
+ok 1 - OpenAI-compatible provider routing policy
+  ---
+  duration_ms: 96.195264
+  type: 'suite'
+  ...
+1..1
+# tests 6
+# suites 1
+# pass 6
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 689.564192

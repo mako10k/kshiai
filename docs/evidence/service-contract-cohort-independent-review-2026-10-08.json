@@ -1,0 +1,51 @@
+{
+  "scope": "service cohort original4files29cases, no source/test edits",
+  "diagnostic": {
+    "pass": 29,
+    "fail": 0,
+    "skip": 0
+  },
+  "portrait": {
+    "verdict": "PASS",
+    "causes": [
+      "Accepted ADR0010",
+      "F-CHR09/10"
+    ],
+    "sealed": true
+  },
+  "freeAction": {
+    "verdict": "PASS",
+    "causes": [
+      "Accepted ADR0022",
+      "F-BTL60-68"
+    ],
+    "sealed": true
+  },
+  "internalObservability": {
+    "verdict": "PASS for private sanitized read-model only",
+    "causes": [
+      "Accepted ADR0007",
+      "F-CFG08",
+      "F-BTL13/14/25"
+    ],
+    "sealed": false,
+    "routeAuthProved": false,
+    "correction": "Earlier DTO-field exhaustive approval blocker retracted; actual sanitized private read-model violates no cited disclosure clause; ADR0003superseded not Cause"
+  },
+  "agencyInventory": {
+    "verdict": "PASS historical schema2 compatibility/inventory only",
+    "sealed": false,
+    "retainedCases": 16,
+    "fixtureManifestVersion": 2,
+    "newPipelineAdoption": false,
+    "causes": [
+      "AcceptedADR0010 immutable historicalbinding",
+      "AcceptedADR0027 oldgeneration compatibility",
+      "AcceptedADR0047 oldrecord/decoder continuation"
+    ],
+    "correction": "Prior modern FBTL59 blocker retracted: no bulk migration required for frozen schema2. Deficiency observations do not adopt goal omission/repetition for V3/V5.",
+    "reviewPending": false
+  },
+  "reviewer": "/root/battle_helper_contract_review",
+  "authorityCorrection": "ADR0003 is Superseded; do not cite currentAccepted. Portrait successor0010 confirmed."
+}

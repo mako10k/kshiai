@@ -1,0 +1,2271 @@
+{
+  "totalRefs": 1079,
+  "overlappingCategories": {
+    "stale": 251,
+    "draft": 166,
+    "sourceMismatch": 41
+  },
+  "relations": {
+    "NO_SOURCE": 435,
+    "WORKFILE_MATCHES_HEAD": 603,
+    "WORKFILE_DIFFERS_FROM_HEAD": 39,
+    "SOURCE_MISSING": 2
+  },
+  "distinctDirtyRefs": 322,
+  "refs": [
+    {
+      "ref": "acceptance/adr-0031",
+      "stale": true,
+      "draft": true,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "acceptance/adr-0032",
+      "stale": true,
+      "draft": true,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "acceptance/adr-0033",
+      "stale": true,
+      "draft": true,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "acceptance/adr-0035",
+      "stale": true,
+      "draft": true,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "acceptance/character-v3-authoring-v5",
+      "stale": true,
+      "draft": true,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "acceptance/semantic-probe-v1-execution",
+      "stale": true,
+      "draft": false,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "acceptance/semantic-probe-v2-execution",
+      "stale": true,
+      "draft": false,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "acceptance/semantic-probe-v3-execution",
+      "stale": true,
+      "draft": false,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "acceptance/structured-semantic-authoring-kernel-design-v1",
+      "stale": true,
+      "draft": true,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "acceptance/structured-semantic-foundation-v2",
+      "stale": true,
+      "draft": true,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "acceptance/structured-semantic-foundation-v3",
+      "stale": true,
+      "draft": true,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "all-tests-20261007/implementation-battlefield-battle-binding",
+      "stale": false,
+      "draft": false,
+      "candidate": "NO_CANDIDATE",
+      "relation": "WORKFILE_DIFFERS_FROM_HEAD"
+    },
+    {
+      "ref": "all-tests-20261007/implementation-battlefield-entry-world",
+      "stale": false,
+      "draft": false,
+      "candidate": "NO_CANDIDATE",
+      "relation": "WORKFILE_DIFFERS_FROM_HEAD"
+    },
+    {
+      "ref": "all-tests-20261007/implementation-battlefield-http",
+      "stale": false,
+      "draft": false,
+      "candidate": "NO_CANDIDATE",
+      "relation": "WORKFILE_DIFFERS_FROM_HEAD"
+    },
+    {
+      "ref": "all-tests-20261007/implementation-draft-read-routes",
+      "stale": false,
+      "draft": false,
+      "candidate": "NO_CANDIDATE",
+      "relation": "WORKFILE_DIFFERS_FROM_HEAD"
+    },
+    {
+      "ref": "all-tests-20261007/implementation-focused-character-review-reads",
+      "stale": false,
+      "draft": false,
+      "candidate": "NO_CANDIDATE",
+      "relation": "WORKFILE_DIFFERS_FROM_HEAD"
+    },
+    {
+      "ref": "all-tests-20261007/implementation-narration-attempt-reads",
+      "stale": false,
+      "draft": false,
+      "candidate": "NO_CANDIDATE",
+      "relation": "WORKFILE_DIFFERS_FROM_HEAD"
+    },
+    {
+      "ref": "all-tests-20261007/implementation-narration-battle-binding",
+      "stale": false,
+      "draft": false,
+      "candidate": "NO_CANDIDATE",
+      "relation": "WORKFILE_DIFFERS_FROM_HEAD"
+    },
+    {
+      "ref": "all-tests-20261007/implementation-stable-initial-world-layout",
+      "stale": false,
+      "draft": false,
+      "candidate": "NO_CANDIDATE",
+      "relation": "WORKFILE_DIFFERS_FROM_HEAD"
+    },
+    {
+      "ref": "all-tests-20261007/implementation-typed-battlefield-creation",
+      "stale": false,
+      "draft": false,
+      "candidate": "NO_CANDIDATE",
+      "relation": "WORKFILE_DIFFERS_FROM_HEAD"
+    },
+    {
+      "ref": "all-tests-20261007/implementation-world-profile-fixture-projection",
+      "stale": false,
+      "draft": false,
+      "candidate": "NO_CANDIDATE",
+      "relation": "WORKFILE_DIFFERS_FROM_HEAD"
+    },
+    {
+      "ref": "awareness-guidance-20261007/battle-frame",
+      "stale": false,
+      "draft": false,
+      "candidate": "NO_CANDIDATE",
+      "relation": "WORKFILE_DIFFERS_FROM_HEAD"
+    },
+    {
+      "ref": "awareness-guidance-20261007/shared-exports",
+      "stale": false,
+      "draft": false,
+      "candidate": "NO_CANDIDATE",
+      "relation": "WORKFILE_DIFFERS_FROM_HEAD"
+    },
+    {
+      "ref": "backlog/character-agency",
+      "stale": true,
+      "draft": false,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "design/agency-responsibility",
+      "stale": true,
+      "draft": false,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "design/structured-semantic-authoring-kernel-v1",
+      "stale": true,
+      "draft": true,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "evidence/adr-0030-b3-local-verification",
+      "stale": true,
+      "draft": false,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "evidence/adr-0030-b4-local-verification",
+      "stale": true,
+      "draft": false,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "evidence/adr-0030-b5-local-verification",
+      "stale": true,
+      "draft": false,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "evidence/adr-0031-acceptance",
+      "stale": true,
+      "draft": true,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "evidence/adr-0032-acceptance-ja",
+      "stale": true,
+      "draft": true,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "evidence/adr-0033-acceptance-ja",
+      "stale": true,
+      "draft": true,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "evidence/agency-v3-local",
+      "stale": true,
+      "draft": false,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "evidence/semantic-migration-continuation",
+      "stale": true,
+      "draft": true,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "evidence/semantic-migration-ollama-result",
+      "stale": false,
+      "draft": true,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "evidence/semantic-migration-ollama-v1-failure",
+      "stale": false,
+      "draft": true,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "evidence/semantic-migration-ollama-v1-request",
+      "stale": false,
+      "draft": true,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "evidence/semantic-migration-ollama-v1-response",
+      "stale": false,
+      "draft": true,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "evidence/semantic-migration-ollama-v1-start",
+      "stale": false,
+      "draft": true,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "evidence/semantic-migration-ollama-v2-failure",
+      "stale": false,
+      "draft": true,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "evidence/semantic-migration-ollama-v2-request",
+      "stale": false,
+      "draft": true,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "evidence/semantic-migration-ollama-v2-start",
+      "stale": false,
+      "draft": true,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "evidence/semantic-migration-ollama-v3-receipt",
+      "stale": false,
+      "draft": true,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "evidence/semantic-migration-ollama-v3-request",
+      "stale": false,
+      "draft": true,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "evidence/semantic-migration-ollama-v3-response",
+      "stale": false,
+      "draft": true,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "evidence/semantic-migration-ollama-v3-result",
+      "stale": false,
+      "draft": true,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "evidence/semantic-migration-ollama-v3-start",
+      "stale": false,
+      "draft": true,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "evidence/semantic-migration-v4-fragment-guard-result-ja",
+      "stale": true,
+      "draft": false,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "evidence/semantic-migration-v4-grounding-result-ja",
+      "stale": true,
+      "draft": false,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "evidence/semantic-probe-call-1-request",
+      "stale": true,
+      "draft": false,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "evidence/semantic-probe-call-1-response",
+      "stale": true,
+      "draft": false,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "evidence/semantic-probe-live-result",
+      "stale": true,
+      "draft": false,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "evidence/semantic-probe-live-start",
+      "stale": true,
+      "draft": false,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "evidence/semantic-probe-offline-result",
+      "stale": true,
+      "draft": false,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "evidence/semantic-probe-owner-acceptance",
+      "stale": true,
+      "draft": false,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "evidence/semantic-probe-proof",
+      "stale": true,
+      "draft": false,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "evidence/semantic-probe-result-ja",
+      "stale": true,
+      "draft": false,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "evidence/semantic-probe-v2-call-1-receipt",
+      "stale": true,
+      "draft": false,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "evidence/semantic-probe-v2-call-1-request",
+      "stale": true,
+      "draft": false,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "evidence/semantic-probe-v2-call-1-response",
+      "stale": true,
+      "draft": false,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "evidence/semantic-probe-v2-call-2-receipt",
+      "stale": true,
+      "draft": false,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "evidence/semantic-probe-v2-call-2-request",
+      "stale": true,
+      "draft": false,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "evidence/semantic-probe-v2-call-2-response",
+      "stale": true,
+      "draft": false,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "evidence/semantic-probe-v2-call-3-receipt",
+      "stale": true,
+      "draft": false,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "evidence/semantic-probe-v2-call-3-request",
+      "stale": true,
+      "draft": false,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "evidence/semantic-probe-v2-call-3-response",
+      "stale": true,
+      "draft": false,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "evidence/semantic-probe-v2-call-4-receipt",
+      "stale": true,
+      "draft": false,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "evidence/semantic-probe-v2-call-4-request",
+      "stale": true,
+      "draft": false,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "evidence/semantic-probe-v2-call-4-response",
+      "stale": true,
+      "draft": false,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "evidence/semantic-probe-v2-call-5-receipt",
+      "stale": true,
+      "draft": false,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "evidence/semantic-probe-v2-call-5-request",
+      "stale": true,
+      "draft": false,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "evidence/semantic-probe-v2-call-5-response",
+      "stale": true,
+      "draft": false,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "evidence/semantic-probe-v2-call-6-receipt",
+      "stale": true,
+      "draft": false,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "evidence/semantic-probe-v2-call-6-request",
+      "stale": true,
+      "draft": false,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "evidence/semantic-probe-v2-call-6-response",
+      "stale": true,
+      "draft": false,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "evidence/semantic-probe-v2-live-result",
+      "stale": true,
+      "draft": false,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "evidence/semantic-probe-v2-live-start",
+      "stale": true,
+      "draft": false,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "evidence/semantic-probe-v2-offline-result",
+      "stale": true,
+      "draft": false,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "evidence/semantic-probe-v2-owner-acceptance",
+      "stale": true,
+      "draft": false,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "evidence/semantic-probe-v2-proof",
+      "stale": true,
+      "draft": false,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "evidence/semantic-probe-v2-result-ja",
+      "stale": true,
+      "draft": false,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "evidence/semantic-probe-v3-call-1-receipt",
+      "stale": true,
+      "draft": false,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "evidence/semantic-probe-v3-call-1-request",
+      "stale": true,
+      "draft": false,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "evidence/semantic-probe-v3-call-1-response",
+      "stale": true,
+      "draft": false,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "evidence/semantic-probe-v3-call-2-receipt",
+      "stale": true,
+      "draft": false,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "evidence/semantic-probe-v3-call-2-request",
+      "stale": true,
+      "draft": false,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "evidence/semantic-probe-v3-call-2-response",
+      "stale": true,
+      "draft": false,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "evidence/semantic-probe-v3-call-3-receipt",
+      "stale": true,
+      "draft": false,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "evidence/semantic-probe-v3-call-3-request",
+      "stale": true,
+      "draft": false,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "evidence/semantic-probe-v3-call-3-response",
+      "stale": true,
+      "draft": false,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "evidence/semantic-probe-v3-call-4-receipt",
+      "stale": true,
+      "draft": false,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "evidence/semantic-probe-v3-call-4-request",
+      "stale": true,
+      "draft": false,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "evidence/semantic-probe-v3-call-4-response",
+      "stale": true,
+      "draft": false,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "evidence/semantic-probe-v3-call-5-receipt",
+      "stale": true,
+      "draft": false,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "evidence/semantic-probe-v3-call-5-request",
+      "stale": true,
+      "draft": false,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "evidence/semantic-probe-v3-call-5-response",
+      "stale": true,
+      "draft": false,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "evidence/semantic-probe-v3-call-6-receipt",
+      "stale": true,
+      "draft": false,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "evidence/semantic-probe-v3-call-6-request",
+      "stale": true,
+      "draft": false,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "evidence/semantic-probe-v3-call-6-response",
+      "stale": true,
+      "draft": false,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "evidence/semantic-probe-v3-failure-harvest",
+      "stale": true,
+      "draft": true,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "evidence/semantic-probe-v3-impact-review",
+      "stale": true,
+      "draft": false,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "evidence/semantic-probe-v3-live-result",
+      "stale": true,
+      "draft": false,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "evidence/semantic-probe-v3-live-start",
+      "stale": true,
+      "draft": false,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "evidence/semantic-probe-v3-offline-result",
+      "stale": true,
+      "draft": false,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "evidence/semantic-probe-v3-proof",
+      "stale": true,
+      "draft": false,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "evidence/semantic-probe-v3-result-ja",
+      "stale": true,
+      "draft": false,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "evidence/semantic-repair-result-ja",
+      "stale": true,
+      "draft": false,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "evidence/semantic-repair-seal-impact",
+      "stale": true,
+      "draft": false,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "evidence/semantic-schema-root-correction",
+      "stale": true,
+      "draft": false,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "evidence/test-authority-inventory-2026-09-15",
+      "stale": true,
+      "draft": true,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "implementation/cc304-focused-revise-route-current-20260925",
+      "stale": false,
+      "draft": false,
+      "candidate": "NO_CANDIDATE",
+      "relation": "WORKFILE_DIFFERS_FROM_HEAD"
+    },
+    {
+      "ref": "implementation/cc304-focused-revise-route-v1",
+      "stale": true,
+      "draft": true,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "implementation/cc311-focused-create-route-current-20260925",
+      "stale": false,
+      "draft": false,
+      "candidate": "NO_CANDIDATE",
+      "relation": "WORKFILE_DIFFERS_FROM_HEAD"
+    },
+    {
+      "ref": "implementation/character-focused-migration-candidate-adapter-wip-20260918",
+      "stale": false,
+      "draft": true,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "implementation/character-focused-migration-candidate-deferral-wip-20260918",
+      "stale": false,
+      "draft": true,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "implementation/character-focused-migration-candidate-ledger-wip-20260918",
+      "stale": false,
+      "draft": true,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "implementation/character-focused-migration-review-dto-wip-20260918",
+      "stale": false,
+      "draft": true,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "implementation/character-focused-migration-review-service-wip-20260918",
+      "stale": false,
+      "draft": true,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "implementation/character-focused-migration-review-ui-redaction-20260925",
+      "stale": false,
+      "draft": true,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "implementation/character-focused-migration-review-ui-wip-20260918",
+      "stale": false,
+      "draft": true,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "implementation/character-migration-context",
+      "stale": true,
+      "draft": false,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "implementation/character-migration-deferred",
+      "stale": true,
+      "draft": false,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "implementation/character-migration-diagnostics",
+      "stale": true,
+      "draft": false,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "implementation/character-migration-merge",
+      "stale": true,
+      "draft": false,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "implementation/character-migration-ollama-adapter",
+      "stale": false,
+      "draft": true,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "implementation/character-migration-prompts",
+      "stale": true,
+      "draft": false,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "implementation/character-migration-references",
+      "stale": true,
+      "draft": false,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "implementation/character-migration-requests",
+      "stale": true,
+      "draft": false,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "implementation/character-migration-response",
+      "stale": true,
+      "draft": false,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "implementation/character-migration-validation",
+      "stale": true,
+      "draft": false,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "implementation/character-semantic-migration",
+      "stale": true,
+      "draft": false,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "implementation/character-unregistered-deferral-rejection-20260918",
+      "stale": false,
+      "draft": true,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "implementation/semantic-authoring-accounting-v1",
+      "stale": true,
+      "draft": true,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "implementation/semantic-authoring-battlefield-conformance-test-adapter-20260918",
+      "stale": false,
+      "draft": true,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "implementation/semantic-authoring-battlefield-conformance-v1",
+      "stale": true,
+      "draft": true,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "implementation/semantic-authoring-capability-session-v1",
+      "stale": true,
+      "draft": true,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "implementation/semantic-authoring-character-adapter-v1",
+      "stale": true,
+      "draft": true,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "implementation/semantic-authoring-character-contracts-v1",
+      "stale": true,
+      "draft": true,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "implementation/semantic-authoring-contracts-v1",
+      "stale": true,
+      "draft": true,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "implementation/semantic-authoring-family-conformance-test-adapter-20260918",
+      "stale": false,
+      "draft": true,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "implementation/semantic-authoring-family-conformance-v1",
+      "stale": true,
+      "draft": true,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "implementation/semantic-authoring-kernel-v1",
+      "stale": true,
+      "draft": true,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "implementation/semantic-authoring-narration-conformance-test-adapter-20260918",
+      "stale": false,
+      "draft": true,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "implementation/semantic-authoring-narration-conformance-v1",
+      "stale": true,
+      "draft": true,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "implementation/semantic-authoring-orchestration-v1",
+      "stale": true,
+      "draft": true,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "implementation/semantic-authoring-ports-v1",
+      "stale": true,
+      "draft": true,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "implementation/semantic-authoring-progress-monitor-v1",
+      "stale": true,
+      "draft": true,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "implementation/semantic-authoring-proposal-decoder-v1",
+      "stale": true,
+      "draft": true,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "implementation/semantic-authoring-public-contracts-v1",
+      "stale": true,
+      "draft": true,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "implementation/semantic-authoring-public-mapping-current-provisional-20260918",
+      "stale": false,
+      "draft": true,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "implementation/semantic-authoring-public-mapping-v1",
+      "stale": true,
+      "draft": true,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "implementation/semantic-authoring-repository-v1",
+      "stale": true,
+      "draft": true,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "implementation/semantic-authoring-run-state-v1",
+      "stale": true,
+      "draft": true,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "implementation/semantic-authoring-scripted-ports-v1",
+      "stale": true,
+      "draft": true,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "implementation/semantic-authoring-shared-export-v1",
+      "stale": true,
+      "draft": true,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "implementation/semantic-authoring-sqlite-migration-v1",
+      "stale": true,
+      "draft": true,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "implementation/semantic-migration-ollama-contract-smoke",
+      "stale": false,
+      "draft": true,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "implementation/semantic-probe-fixture",
+      "stale": true,
+      "draft": false,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "implementation/semantic-probe-provider",
+      "stale": true,
+      "draft": false,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "implementation/semantic-probe-runner",
+      "stale": true,
+      "draft": false,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "implementation/semantic-probe-runner-v3",
+      "stale": true,
+      "draft": false,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "implementation/semantic-probe-snapshot",
+      "stale": true,
+      "draft": false,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "implementation/shared-exports",
+      "stale": true,
+      "draft": false,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "implementation/test-authority-inventory-v2",
+      "stale": false,
+      "draft": false,
+      "candidate": "NO_CANDIDATE",
+      "relation": "WORKFILE_DIFFERS_FROM_HEAD"
+    },
+    {
+      "ref": "index/adr",
+      "stale": true,
+      "draft": true,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "plan/agency-implementation",
+      "stale": true,
+      "draft": false,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "plan/character-semantic-migration",
+      "stale": true,
+      "draft": true,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "plan/dialogue-expression",
+      "stale": true,
+      "draft": false,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "projection/adr-0031",
+      "stale": true,
+      "draft": true,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "projection/adr-0031-accepted",
+      "stale": true,
+      "draft": true,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "projection/adr-0031-ja-accepted",
+      "stale": true,
+      "draft": true,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "projection/adr-0032",
+      "stale": true,
+      "draft": true,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "projection/adr-0032-design-consistency-ja",
+      "stale": true,
+      "draft": true,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "projection/adr-0033",
+      "stale": true,
+      "draft": true,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "projection/adr-0033-ja",
+      "stale": true,
+      "draft": true,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "projection/adr-0033-review-ja",
+      "stale": true,
+      "draft": true,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "projection/structured-semantic-authoring-kernel-design-v1-acceptance-ja",
+      "stale": true,
+      "draft": true,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "projection/structured-semantic-authoring-kernel-design-v1-ja",
+      "stale": true,
+      "draft": true,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "projection/structured-semantic-authoring-kernel-design-v1-review-ja",
+      "stale": true,
+      "draft": true,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "projection/structured-semantic-authoring-kernel-design-v1-revision3-review",
+      "stale": true,
+      "draft": true,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "projection/structured-semantic-authoring-kernel-design-v1-revision3-review-ja",
+      "stale": true,
+      "draft": true,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "projection/structured-semantic-authoring-kernel-design-v1-revision3-self-check-ja",
+      "stale": true,
+      "draft": true,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "projection/structured-semantic-authoring-kernel-design-v1-revision4-review",
+      "stale": true,
+      "draft": true,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "projection/structured-semantic-authoring-kernel-design-v1-revision4-review-ja",
+      "stale": true,
+      "draft": true,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "projection/structured-semantic-authoring-kernel-design-v1-revision4-self-check-ja",
+      "stale": true,
+      "draft": true,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "projection/structured-semantic-authoring-kernel-design-v1-revision5-review",
+      "stale": true,
+      "draft": true,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "projection/structured-semantic-authoring-kernel-design-v1-revision5-review-ja",
+      "stale": true,
+      "draft": true,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "projection/structured-semantic-authoring-kernel-design-v1-revision5-self-check-ja",
+      "stale": true,
+      "draft": true,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "proposal/adr-0031",
+      "stale": true,
+      "draft": true,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "proposal/character-v3-authoring-requirement-v1",
+      "stale": false,
+      "draft": true,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "proposal/character-v3-authoring-requirement-v2",
+      "stale": false,
+      "draft": true,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "proposal/character-v3-authoring-requirement-v3",
+      "stale": false,
+      "draft": true,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "proposal/character-v3-authoring-requirement-v4",
+      "stale": true,
+      "draft": true,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "proposal/character-v3-authoring-requirement-v5",
+      "stale": true,
+      "draft": true,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "proposal/structured-semantic-authoring-foundation-requirement-v1",
+      "stale": true,
+      "draft": true,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "proposal/structured-semantic-authoring-foundation-requirement-v2",
+      "stale": true,
+      "draft": true,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "proposal/structured-semantic-authoring-foundation-requirement-v3",
+      "stale": true,
+      "draft": true,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "reasoning/adr-0030-b4-local-verification",
+      "stale": true,
+      "draft": false,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "reasoning/adr-0030-b5-action-plan",
+      "stale": true,
+      "draft": false,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "reasoning/adr-0030-b5-local-compatibility",
+      "stale": true,
+      "draft": false,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "reasoning/adr-0030-b5-local-verification",
+      "stale": true,
+      "draft": false,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "reasoning/adr-0030-b5-replay-ordering-rca",
+      "stale": true,
+      "draft": false,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "reasoning/adr-0030-b5-synthesis-disclosure",
+      "stale": true,
+      "draft": false,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "reasoning/adr-0030-b5-validation-refinement",
+      "stale": true,
+      "draft": false,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "reasoning/adr-0031-acceptance",
+      "stale": true,
+      "draft": true,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "reasoning/adr-0031-independent-review",
+      "stale": true,
+      "draft": true,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "reasoning/character-v3-authoring-requirement-v1",
+      "stale": false,
+      "draft": true,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "reasoning/character-v3-authoring-requirement-v2",
+      "stale": false,
+      "draft": true,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "reasoning/character-v3-authoring-requirement-v3",
+      "stale": false,
+      "draft": true,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "reasoning/character-v3-authoring-requirement-v4",
+      "stale": true,
+      "draft": true,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "reasoning/character-v3-authoring-requirement-v5",
+      "stale": true,
+      "draft": true,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "reasoning/semantic-migration-closeout",
+      "stale": true,
+      "draft": false,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "reasoning/semantic-migration-ollama-check-plan",
+      "stale": false,
+      "draft": true,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "reasoning/semantic-migration-ollama-contract-smoke-plan",
+      "stale": false,
+      "draft": true,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "reasoning/semantic-migration-ollama-schema-rca",
+      "stale": false,
+      "draft": true,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "reasoning/semantic-migration-ollama-verification",
+      "stale": false,
+      "draft": true,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "reasoning/semantic-migration-v3-fragment-guard-plan",
+      "stale": true,
+      "draft": true,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "reasoning/semantic-migration-v4-fragment-guard-verification",
+      "stale": true,
+      "draft": false,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "reasoning/semantic-migration-v4-grounding-verification",
+      "stale": true,
+      "draft": false,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "reasoning/semantic-migration-v4-unresolved-corrections-plan",
+      "stale": true,
+      "draft": true,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "reasoning/semantic-probe-fixture-rca",
+      "stale": true,
+      "draft": false,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "reasoning/semantic-probe-preparation",
+      "stale": true,
+      "draft": false,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "reasoning/semantic-probe-readiness",
+      "stale": true,
+      "draft": false,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "reasoning/semantic-probe-reservation-sizing",
+      "stale": true,
+      "draft": false,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "reasoning/semantic-probe-result-rca",
+      "stale": true,
+      "draft": false,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "reasoning/semantic-probe-v2-readiness",
+      "stale": true,
+      "draft": false,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "reasoning/semantic-probe-v2-result-rca",
+      "stale": true,
+      "draft": false,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "reasoning/semantic-probe-v3-failure-harvest-plan",
+      "stale": true,
+      "draft": true,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "reasoning/semantic-probe-v3-failure-harvest-verification",
+      "stale": true,
+      "draft": true,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "reasoning/semantic-probe-v3-preparation",
+      "stale": true,
+      "draft": false,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "reasoning/semantic-probe-v3-readiness",
+      "stale": true,
+      "draft": false,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "reasoning/semantic-probe-v3-result-rca",
+      "stale": true,
+      "draft": false,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "reasoning/semantic-repair-verification",
+      "stale": true,
+      "draft": false,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "reasoning/semantic-schema-local-verification",
+      "stale": true,
+      "draft": false,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "reasoning/structured-semantic-authoring-foundation-requirement-v1",
+      "stale": true,
+      "draft": true,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "reasoning/structured-semantic-authoring-foundation-requirement-v2",
+      "stale": true,
+      "draft": true,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "reasoning/structured-semantic-authoring-foundation-requirement-v3",
+      "stale": true,
+      "draft": true,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "reasoning/structured-semantic-authoring-kernel-design-v1",
+      "stale": true,
+      "draft": true,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "reasoning/structured-semantic-authoring-kernel-design-v1-review",
+      "stale": true,
+      "draft": true,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "reasoning/structured-semantic-foundation-v1-review",
+      "stale": true,
+      "draft": true,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "reasoning/structured-semantic-foundation-v2-acceptance",
+      "stale": true,
+      "draft": true,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "reasoning/structured-semantic-foundation-v2-review",
+      "stale": true,
+      "draft": true,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "review/adr-0031",
+      "stale": true,
+      "draft": true,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "review/adr-0031-input",
+      "stale": true,
+      "draft": true,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "review/adr-0032",
+      "stale": true,
+      "draft": true,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "review/adr-0033",
+      "stale": true,
+      "draft": true,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "review/character-v3-authoring-requirement-v1-input",
+      "stale": false,
+      "draft": true,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "review/character-v3-authoring-requirement-v2-input",
+      "stale": false,
+      "draft": true,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "review/character-v3-authoring-requirement-v3-input",
+      "stale": false,
+      "draft": true,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "review/character-v3-authoring-requirement-v4-input",
+      "stale": true,
+      "draft": true,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "review/character-v3-authoring-requirement-v5-input",
+      "stale": true,
+      "draft": true,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "review/semantic-probe-v1",
+      "stale": true,
+      "draft": false,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "review/semantic-probe-v2",
+      "stale": true,
+      "draft": false,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "review/semantic-probe-v3",
+      "stale": true,
+      "draft": false,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "review/structured-semantic-authoring-foundation-requirement-v1-input",
+      "stale": true,
+      "draft": true,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "review/structured-semantic-authoring-foundation-requirement-v2-input",
+      "stale": true,
+      "draft": true,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "review/structured-semantic-authoring-foundation-requirement-v3-input",
+      "stale": true,
+      "draft": true,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "review/structured-semantic-authoring-kernel-design-v1",
+      "stale": true,
+      "draft": true,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "review/structured-semantic-authoring-kernel-design-v1-revision3",
+      "stale": true,
+      "draft": true,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "review/structured-semantic-authoring-kernel-design-v1-revision4",
+      "stale": true,
+      "draft": true,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "review/structured-semantic-authoring-kernel-design-v1-revision5",
+      "stale": true,
+      "draft": true,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "review/structured-semantic-foundation-v1",
+      "stale": true,
+      "draft": true,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "review/structured-semantic-foundation-v2",
+      "stale": true,
+      "draft": true,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "verification/adr-0031",
+      "stale": true,
+      "draft": true,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "verification/adr-0032-design-consistency",
+      "stale": true,
+      "draft": true,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "verification/character-authoring-response-schema",
+      "stale": false,
+      "draft": false,
+      "candidate": "NO_CANDIDATE",
+      "relation": "WORKFILE_DIFFERS_FROM_HEAD"
+    },
+    {
+      "ref": "verification/character-definition-response-schema",
+      "stale": false,
+      "draft": false,
+      "candidate": "NO_CANDIDATE",
+      "relation": "WORKFILE_DIFFERS_FROM_HEAD"
+    },
+    {
+      "ref": "verification/character-definition-v3",
+      "stale": true,
+      "draft": false,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "verification/character-focused-authoring-request-scope-v1",
+      "stale": true,
+      "draft": true,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "verification/character-focused-authoring-v1",
+      "stale": true,
+      "draft": true,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "verification/character-focused-migration-candidate-adapter-wip-20260918",
+      "stale": false,
+      "draft": true,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "verification/character-focused-migration-route-current-20260925",
+      "stale": false,
+      "draft": false,
+      "candidate": "NO_CANDIDATE",
+      "relation": "WORKFILE_DIFFERS_FROM_HEAD"
+    },
+    {
+      "ref": "verification/character-focused-review-e2e-v1",
+      "stale": true,
+      "draft": true,
+      "candidate": "NO_CANDIDATE",
+      "relation": "WORKFILE_DIFFERS_FROM_HEAD"
+    },
+    {
+      "ref": "verification/character-migration-diagnostics",
+      "stale": true,
+      "draft": false,
+      "candidate": "NO_CANDIDATE",
+      "relation": "WORKFILE_DIFFERS_FROM_HEAD"
+    },
+    {
+      "ref": "verification/character-migration-ollama-adapter",
+      "stale": false,
+      "draft": true,
+      "candidate": "NO_CANDIDATE",
+      "relation": "WORKFILE_DIFFERS_FROM_HEAD"
+    },
+    {
+      "ref": "verification/character-migration-response-schema",
+      "stale": true,
+      "draft": false,
+      "candidate": "NO_CANDIDATE",
+      "relation": "WORKFILE_DIFFERS_FROM_HEAD"
+    },
+    {
+      "ref": "verification/character-semantic-change-set",
+      "stale": true,
+      "draft": false,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "verification/character-semantic-change-set-current-20260918",
+      "stale": false,
+      "draft": false,
+      "candidate": "NO_CANDIDATE",
+      "relation": "WORKFILE_DIFFERS_FROM_HEAD"
+    },
+    {
+      "ref": "verification/character-semantic-migration-generation",
+      "stale": true,
+      "draft": true,
+      "candidate": "NO_CANDIDATE",
+      "relation": "WORKFILE_DIFFERS_FROM_HEAD"
+    },
+    {
+      "ref": "verification/character-semantic-migration-persistence",
+      "stale": false,
+      "draft": false,
+      "candidate": "NO_CANDIDATE",
+      "relation": "WORKFILE_DIFFERS_FROM_HEAD"
+    },
+    {
+      "ref": "verification/character-v2-write-retirement-20261002",
+      "stale": false,
+      "draft": false,
+      "candidate": "NO_CANDIDATE",
+      "relation": "WORKFILE_DIFFERS_FROM_HEAD"
+    },
+    {
+      "ref": "verification/character-v3-adapter-current-provisional-20260918",
+      "stale": false,
+      "draft": true,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "verification/character-v3-authoring-requirement-v5",
+      "stale": true,
+      "draft": true,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "verification/character-v3-migrate-preservation-bound-current-20260925",
+      "stale": false,
+      "draft": false,
+      "candidate": "NO_CANDIDATE",
+      "relation": "WORKFILE_DIFFERS_FROM_HEAD"
+    },
+    {
+      "ref": "verification/provider-json-v1",
+      "stale": true,
+      "draft": true,
+      "candidate": "NO_CANDIDATE",
+      "relation": "WORKFILE_DIFFERS_FROM_HEAD"
+    },
+    {
+      "ref": "verification/semantic-authoring-character-adapter-v1",
+      "stale": true,
+      "draft": true,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "verification/semantic-authoring-character-contracts-v1",
+      "stale": true,
+      "draft": true,
+      "candidate": "NO_CANDIDATE",
+      "relation": "WORKFILE_MATCHES_HEAD"
+    },
+    {
+      "ref": "verification/semantic-authoring-conformance-current-provisional-20260918",
+      "stale": false,
+      "draft": true,
+      "candidate": "NO_CANDIDATE",
+      "relation": "WORKFILE_MATCHES_HEAD"
+    },
+    {
+      "ref": "verification/semantic-authoring-conformance-v1",
+      "stale": true,
+      "draft": true,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "verification/semantic-authoring-kernel-foundation-v1",
+      "stale": true,
+      "draft": true,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "verification/semantic-authoring-kernel-slice1-independent-review-2026-09-12",
+      "stale": true,
+      "draft": true,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "verification/semantic-authoring-kernel-slice2-independent-review-2026-09-12",
+      "stale": true,
+      "draft": true,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "verification/semantic-authoring-kernel-slice3-independent-review-2026-09-12",
+      "stale": true,
+      "draft": true,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "verification/semantic-authoring-kernel-slice4-independent-review-2026-09-12",
+      "stale": true,
+      "draft": true,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "verification/semantic-authoring-kernel-slice5-integration-review-2026-09-12",
+      "stale": true,
+      "draft": true,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "verification/semantic-authoring-kernel-wip-handoff-2026-09-11",
+      "stale": true,
+      "draft": true,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "verification/semantic-authoring-provider-v1",
+      "stale": true,
+      "draft": true,
+      "candidate": "NO_CANDIDATE",
+      "relation": "WORKFILE_MATCHES_HEAD"
+    },
+    {
+      "ref": "verification/semantic-authoring-public-mapping-v1",
+      "stale": true,
+      "draft": true,
+      "candidate": "NO_CANDIDATE",
+      "relation": "WORKFILE_MATCHES_HEAD"
+    },
+    {
+      "ref": "verification/semantic-authoring-repository-v1",
+      "stale": true,
+      "draft": true,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "verification/semantic-authoring-scripted-ports-v1",
+      "stale": true,
+      "draft": true,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "verification/semantic-authoring-shared-contracts-v1",
+      "stale": true,
+      "draft": true,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "verification/semantic-probe-fixture",
+      "stale": true,
+      "draft": false,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "verification/semantic-probe-provider",
+      "stale": true,
+      "draft": false,
+      "candidate": "NO_CANDIDATE",
+      "relation": "WORKFILE_MATCHES_HEAD"
+    },
+    {
+      "ref": "verification/semantic-probe-run-v2",
+      "stale": true,
+      "draft": false,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "verification/stable-area-reposition-transition-20261007",
+      "stale": false,
+      "draft": false,
+      "candidate": "NO_CANDIDATE",
+      "relation": "WORKFILE_DIFFERS_FROM_HEAD"
+    },
+    {
+      "ref": "verification/stable-area-structured-battlefield-20261007",
+      "stale": false,
+      "draft": false,
+      "candidate": "NO_CANDIDATE",
+      "relation": "WORKFILE_DIFFERS_FROM_HEAD"
+    },
+    {
+      "ref": "verification/stable-area-world-state-20261007",
+      "stale": false,
+      "draft": false,
+      "candidate": "NO_CANDIDATE",
+      "relation": "WORKFILE_DIFFERS_FROM_HEAD"
+    },
+    {
+      "ref": "verification/structured-battlefield-20261007",
+      "stale": false,
+      "draft": false,
+      "candidate": "NO_CANDIDATE",
+      "relation": "WORKFILE_DIFFERS_FROM_HEAD"
+    },
+    {
+      "ref": "verification/structured-semantic-authoring-foundation-requirement-v3",
+      "stale": true,
+      "draft": true,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "verification/structured-semantic-authoring-kernel-design-v1-revision3-self-check",
+      "stale": true,
+      "draft": true,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "verification/structured-semantic-authoring-kernel-design-v1-revision4-self-check",
+      "stale": true,
+      "draft": true,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "verification/structured-semantic-authoring-kernel-design-v1-revision5-self-check",
+      "stale": true,
+      "draft": true,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "verification/test-authority-selector-v2",
+      "stale": true,
+      "draft": false,
+      "candidate": "NO_CANDIDATE",
+      "relation": "NO_SOURCE"
+    },
+    {
+      "ref": "verification/vt102-v3-battle-paths-20260930",
+      "stale": true,
+      "draft": false,
+      "candidate": "NO_CANDIDATE",
+      "relation": "WORKFILE_DIFFERS_FROM_HEAD"
+    },
+    {
+      "ref": "verification/vt103-local-integration-20260930",
+      "stale": true,
+      "draft": false,
+      "candidate": "NO_CANDIDATE",
+      "relation": "WORKFILE_DIFFERS_FROM_HEAD"
+    },
+    {
+      "ref": "verification/vt104-character-focused-review-20260930",
+      "stale": true,
+      "draft": false,
+      "candidate": "NO_CANDIDATE",
+      "relation": "WORKFILE_DIFFERS_FROM_HEAD"
+    },
+    {
+      "ref": "verification/vt104-cutover-trial-dispatch-20260930",
+      "stale": true,
+      "draft": false,
+      "candidate": "NO_CANDIDATE",
+      "relation": "SOURCE_MISSING"
+    },
+    {
+      "ref": "verification/vt104-provider-accounting-20260930",
+      "stale": true,
+      "draft": false,
+      "candidate": "NO_CANDIDATE",
+      "relation": "WORKFILE_DIFFERS_FROM_HEAD"
+    },
+    {
+      "ref": "verification/vt104-routes-cutover-confirm-20260930",
+      "stale": true,
+      "draft": false,
+      "candidate": "NO_CANDIDATE",
+      "relation": "SOURCE_MISSING"
+    },
+    {
+      "ref": "verification/vt104-routes-cutover-http-20260930",
+      "stale": true,
+      "draft": false,
+      "candidate": "NO_CANDIDATE",
+      "relation": "WORKFILE_DIFFERS_FROM_HEAD"
+    },
+    {
+      "ref": "verification/vt104-supabase-identity-20260930",
+      "stale": true,
+      "draft": false,
+      "candidate": "NO_CANDIDATE",
+      "relation": "WORKFILE_DIFFERS_FROM_HEAD"
+    },
+    {
+      "ref": "verification/vt109-fixed-v3-registration-ui-20260929",
+      "stale": false,
+      "draft": false,
+      "candidate": "NO_CANDIDATE",
+      "relation": "WORKFILE_DIFFERS_FROM_HEAD"
+    }
+  ]
+}

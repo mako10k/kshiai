@@ -1,0 +1,14 @@
+{
+  "newRefs": 10,
+  "previousHeadsUnchanged": true,
+  "previousHeadCount": 894,
+  "totalRefs": 904,
+  "sourceBytesMatch": true,
+  "stale": 0,
+  "fsck": "ok",
+  "limitations": [
+    "Original three files five cases retained; no code/test changes",
+    "Injected rotation/identity and isolatedSQLite proof only; no actual Supabase password invalidation, registered endpoint, production or GUI acceptance",
+    "Separate visibility-tier policy test remains unsealed pending precise authority scope review; no tests removed"
+  ]
+}

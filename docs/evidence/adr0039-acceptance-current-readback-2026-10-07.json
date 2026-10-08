@@ -1,0 +1,12 @@
+{
+  "acceptedIdentityMatches": {
+    "docs/adr/0039-v3-battle-lifecycle-and-cutover.think": true,
+    "docs/adr/0039-v3-battle-lifecycle-and-cutover.md": true,
+    "docs/battle-lifecycle-boundary-design-v2.md": true,
+    "docs/character-v3-battle-cutover-requirements-v2.md": true
+  },
+  "ownerRecord": "docs/evidence/cc319-owner-acceptance-2026-09-29.md",
+  "observedFormalGap": "OWNER_ACCEPTANCE exists; decision ACCEPTANCE is absent",
+  "noEdits": true,
+  "remainingReview": "Determine whether same-decision receipt projection closes checker gap without changing accepted body or acceptance meaning"
+}

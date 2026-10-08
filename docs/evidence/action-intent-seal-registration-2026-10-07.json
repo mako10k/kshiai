@@ -1,0 +1,40 @@
+{
+  "scope": "ADR-0045 structural intent and value-preserving projection, not all battle.ts obligations",
+  "entries": [
+    {
+      "ref": "all-tests-20261007/authority-intent-adoption",
+      "path": "docs/adr/0045-preserve-action-intent-producer-values.think",
+      "sealId": "ab8f65b4b5ef87ffa12a3ad16c7c30ae920717ec65c799bfa82524177750f8eb",
+      "sha256": "cfd9ed61e083e0db51920fd07ffcd1e3970bdf5b9b25431133cbfaeb4e92f7ab",
+      "causeSealIds": []
+    },
+    {
+      "ref": "all-tests-20261007/authority-intent",
+      "path": "docs/adr/0045-preserve-action-intent-producer-values.md",
+      "sealId": "ba3333b9f05bf5cfdb70a40dfb2ced8db112164cefb13ccfd80e0f4dc42afe8b",
+      "sha256": "305e875c35ce2820c52ab1eb1ab9094dfef31112dec9f54bd0b2aac9bd841992",
+      "causeSealIds": [
+        "ab8f65b4b5ef87ffa12a3ad16c7c30ae920717ec65c799bfa82524177750f8eb"
+      ]
+    },
+    {
+      "ref": "all-tests-20261007/implementation-intent",
+      "path": "packages/shared/src/battle.ts",
+      "sealId": "7dbc6d9ea7ddfcfeb7f7659c1a8fd47c5a39b48988ba64b5de04048140c9098f",
+      "sha256": "fc5d492df5fd5252b66e12017b265a4697cc3f798acc2811434b3c33d23b0752",
+      "causeSealIds": [
+        "ba3333b9f05bf5cfdb70a40dfb2ced8db112164cefb13ccfd80e0f4dc42afe8b"
+      ]
+    },
+    {
+      "ref": "verification/action-intent-contract-20261007",
+      "path": "packages/shared/src/action-intent-contract.test.ts",
+      "sealId": "622ca79d5d7d7a59143d3dc436ce9bbbfc1ac0feed94270864193a0e5bea661c",
+      "sha256": "d815773f34cfe9781a254cd493ba29e34eb2ed635b4dc3cc1a481b3b808dea3a",
+      "causeSealIds": [
+        "7dbc6d9ea7ddfcfeb7f7659c1a8fd47c5a39b48988ba64b5de04048140c9098f",
+        "ba3333b9f05bf5cfdb70a40dfb2ced8db112164cefb13ccfd80e0f4dc42afe8b"
+      ]
+    }
+  ]
+}

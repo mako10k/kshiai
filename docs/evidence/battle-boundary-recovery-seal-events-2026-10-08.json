@@ -1,0 +1,526 @@
+[
+  {
+    "key": "design-battle-boundary-recovery",
+    "path": "docs/battle-boundary-recovery-test-contract-review-2026-10-08.md",
+    "parents": [
+      "lifecycle",
+      "control",
+      "retirement",
+      "awareness",
+      "narration"
+    ],
+    "scope": "Local negative cutover admission, V2 read/V3 write retirement and immutable historical/awareness battle continuation only. Not old trial success, paid execution, production acceptance or new numeric mechanics adoption.",
+    "ref": "all-tests-20261008/design-battle-boundary-recovery",
+    "test": false,
+    "sha256": "67fd3b771806609040d64eef9c52dfa13efc6b1d35d0d497631ab073e442c5ed",
+    "sealId": "90676e41a7e0dd5ff58d7960703f8a2c37c787ba87c9f58ce9e9fc6b1b2e42ef",
+    "causeSealIds": [
+      "f49312f0b4c786dd41b4c2092a992dfebd04bfff33396a4891a199add8f5f17e",
+      "315056fe3639d20338cb28fbf0c655283d9a0d852de5896e7e434faf36647b86",
+      "480c02403f61dc6a9cd7d54861639b962dbc3bde86673481e02e0defc8415e17",
+      "4a236b55e9ad9e4aa54eb2c6bbe9d77e0a318881ba8328363505153d16e151dd",
+      "9aae6f378e9b227f6909912129368e8317bdc4d773933342da1ca3914be6dae0"
+    ]
+  },
+  {
+    "key": "implementation-boundary-routes",
+    "path": "backend/src/routes.ts",
+    "parents": [
+      "design-battle-boundary-recovery"
+    ],
+    "scope": "Local negative cutover admission, V2 read/V3 write retirement and immutable historical/awareness battle continuation only. Not old trial success, paid execution, production acceptance or new numeric mechanics adoption.",
+    "ref": "all-tests-20261008/implementation-boundary-routes",
+    "test": false,
+    "sha256": "c62c1c59bfbd373480e43fd60b4f32c0a3ea73a051329bee3aa048da98ab209f",
+    "sealId": "fcf165143e528ea548c1e9c8313a465199e185c9f066ef7a60e1996a9e09856f",
+    "causeSealIds": [
+      "90676e41a7e0dd5ff58d7960703f8a2c37c787ba87c9f58ce9e9fc6b1b2e42ef"
+    ]
+  },
+  {
+    "key": "implementation-boundary-auth",
+    "path": "backend/src/auth.ts",
+    "parents": [
+      "design-battle-boundary-recovery"
+    ],
+    "scope": "Local negative cutover admission, V2 read/V3 write retirement and immutable historical/awareness battle continuation only. Not old trial success, paid execution, production acceptance or new numeric mechanics adoption.",
+    "ref": "all-tests-20261008/implementation-boundary-auth",
+    "test": false,
+    "sha256": "497c87571118b8d64709a90f9fbca77eca6c931402ab7115cbf983f0ec510256",
+    "sealId": "31a499023d115fb49f5762170be780e1570417cff3a1e9d049a96d78e550b515",
+    "causeSealIds": [
+      "90676e41a7e0dd5ff58d7960703f8a2c37c787ba87c9f58ce9e9fc6b1b2e42ef"
+    ]
+  },
+  {
+    "key": "implementation-boundary-db",
+    "path": "backend/src/db.ts",
+    "parents": [
+      "design-battle-boundary-recovery"
+    ],
+    "scope": "Local negative cutover admission, V2 read/V3 write retirement and immutable historical/awareness battle continuation only. Not old trial success, paid execution, production acceptance or new numeric mechanics adoption.",
+    "ref": "all-tests-20261008/implementation-boundary-db",
+    "test": false,
+    "sha256": "0f0c255dd8665debcbb37261f9edf9878f81352d6e5ce0ec77676f66a373d33f",
+    "sealId": "29388522fd326751bb29a58fc9145bbf64bc1f96d80e2f54420065b80363d535",
+    "causeSealIds": [
+      "90676e41a7e0dd5ff58d7960703f8a2c37c787ba87c9f58ce9e9fc6b1b2e42ef"
+    ]
+  },
+  {
+    "key": "implementation-boundary-control-store",
+    "path": "backend/src/repositories/cutover-control.ts",
+    "parents": [
+      "design-battle-boundary-recovery"
+    ],
+    "scope": "Local negative cutover admission, V2 read/V3 write retirement and immutable historical/awareness battle continuation only. Not old trial success, paid execution, production acceptance or new numeric mechanics adoption.",
+    "ref": "all-tests-20261008/implementation-boundary-control-store",
+    "test": false,
+    "sha256": "74a4f851bbcd72e19cec6e894529ea12262f040d260c8d7c5ce9ca062b14d30c",
+    "sealId": "3e45d9574813c028926624008680f121d96287551fea0235de73ceddac6de316",
+    "causeSealIds": [
+      "90676e41a7e0dd5ff58d7960703f8a2c37c787ba87c9f58ce9e9fc6b1b2e42ef"
+    ]
+  },
+  {
+    "key": "implementation-boundary-admission",
+    "path": "backend/src/services/cutover-admission.ts",
+    "parents": [
+      "design-battle-boundary-recovery"
+    ],
+    "scope": "Local negative cutover admission, V2 read/V3 write retirement and immutable historical/awareness battle continuation only. Not old trial success, paid execution, production acceptance or new numeric mechanics adoption.",
+    "ref": "all-tests-20261008/implementation-boundary-admission",
+    "test": false,
+    "sha256": "d716a314bdf0f8072aa7ca1ee6ad99fbfe6b31b2cdddfe639713a889a4ab7701",
+    "sealId": "4d87714b6f60516cc614c44ef4591f876d907cd38b21c3dbbb5287209cc19cab",
+    "causeSealIds": [
+      "90676e41a7e0dd5ff58d7960703f8a2c37c787ba87c9f58ce9e9fc6b1b2e42ef"
+    ]
+  },
+  {
+    "key": "implementation-boundary-http-admission",
+    "path": "backend/src/services/cutover-http-admission.ts",
+    "parents": [
+      "design-battle-boundary-recovery"
+    ],
+    "scope": "Local negative cutover admission, V2 read/V3 write retirement and immutable historical/awareness battle continuation only. Not old trial success, paid execution, production acceptance or new numeric mechanics adoption.",
+    "ref": "all-tests-20261008/implementation-boundary-http-admission",
+    "test": false,
+    "sha256": "f0ff4972171fa2243486c3b8579c72ad98a20d9700c997845fd1f618b0e93678",
+    "sealId": "b11e4e7756b9656e41d26a36bceca9140e04cc5dce2218cfe85cffd972d4f27e",
+    "causeSealIds": [
+      "90676e41a7e0dd5ff58d7960703f8a2c37c787ba87c9f58ce9e9fc6b1b2e42ef"
+    ]
+  },
+  {
+    "key": "implementation-boundary-characters",
+    "path": "backend/src/repositories/characters.ts",
+    "parents": [
+      "design-battle-boundary-recovery"
+    ],
+    "scope": "Local negative cutover admission, V2 read/V3 write retirement and immutable historical/awareness battle continuation only. Not old trial success, paid execution, production acceptance or new numeric mechanics adoption.",
+    "ref": "all-tests-20261008/implementation-boundary-characters",
+    "test": false,
+    "sha256": "3ea23344eefe964550f2a775beda786cff5bb03512444c14d38ce6d9839335ce",
+    "sealId": "6c315ff831dd9d2818e56a98727fc72bdd703c5cab6552bc28baec03c45c734c",
+    "causeSealIds": [
+      "90676e41a7e0dd5ff58d7960703f8a2c37c787ba87c9f58ce9e9fc6b1b2e42ef"
+    ]
+  },
+  {
+    "key": "implementation-boundary-character-assets",
+    "path": "backend/src/repositories/character-assets-v2.ts",
+    "parents": [
+      "design-battle-boundary-recovery"
+    ],
+    "scope": "Local negative cutover admission, V2 read/V3 write retirement and immutable historical/awareness battle continuation only. Not old trial success, paid execution, production acceptance or new numeric mechanics adoption.",
+    "ref": "all-tests-20261008/implementation-boundary-character-assets",
+    "test": false,
+    "sha256": "4a9f1360a3197fb2971acc6612a2328d33f41fe23d832927ac445ba0992c27a1",
+    "sealId": "8d6bf70266a8a48bc0227bb6c69995a951948a704c1fee95f6e1fdd08d188075",
+    "causeSealIds": [
+      "90676e41a7e0dd5ff58d7960703f8a2c37c787ba87c9f58ce9e9fc6b1b2e42ef"
+    ]
+  },
+  {
+    "key": "implementation-boundary-generations",
+    "path": "backend/src/repositories/asset-generations.ts",
+    "parents": [
+      "design-battle-boundary-recovery"
+    ],
+    "scope": "Local negative cutover admission, V2 read/V3 write retirement and immutable historical/awareness battle continuation only. Not old trial success, paid execution, production acceptance or new numeric mechanics adoption.",
+    "ref": "all-tests-20261008/implementation-boundary-generations",
+    "test": false,
+    "sha256": "09e98c31f676bc8f30ae5bc53d70a0126b728d3990862bd6d28f2b48a74c4a34",
+    "sealId": "869129df4d654527d085c525a8fba685dce132eaac26280ee3e12afe243162f7",
+    "causeSealIds": [
+      "90676e41a7e0dd5ff58d7960703f8a2c37c787ba87c9f58ce9e9fc6b1b2e42ef"
+    ]
+  },
+  {
+    "key": "implementation-boundary-accounting",
+    "path": "backend/src/repositories/character-battle-accounting.ts",
+    "parents": [
+      "design-battle-boundary-recovery"
+    ],
+    "scope": "Local negative cutover admission, V2 read/V3 write retirement and immutable historical/awareness battle continuation only. Not old trial success, paid execution, production acceptance or new numeric mechanics adoption.",
+    "ref": "all-tests-20261008/implementation-boundary-accounting",
+    "test": false,
+    "sha256": "a2b493fac7a9b158fcf849fe309eec50a53f59fc6b76f25671fa1e28ba924570",
+    "sealId": "cb577967d632ef4c96ec047453411792d7c31160bf2bfcf4cadff90869d507f7",
+    "causeSealIds": [
+      "90676e41a7e0dd5ff58d7960703f8a2c37c787ba87c9f58ce9e9fc6b1b2e42ef"
+    ]
+  },
+  {
+    "key": "implementation-boundary-import",
+    "path": "backend/src/services/character-authoring-service.ts",
+    "parents": [
+      "design-battle-boundary-recovery"
+    ],
+    "scope": "Local negative cutover admission, V2 read/V3 write retirement and immutable historical/awareness battle continuation only. Not old trial success, paid execution, production acceptance or new numeric mechanics adoption.",
+    "ref": "all-tests-20261008/implementation-boundary-import",
+    "test": false,
+    "sha256": "6b5cc4aa7cfb26064de0439883da515d0172cf95cc4a631ab9709db8577cdfd0",
+    "sealId": "6a8d0c70d178a47c529d0e8bc6bf13897ea9863b64e8ae7bb5c4b00cda6e8818",
+    "causeSealIds": [
+      "90676e41a7e0dd5ff58d7960703f8a2c37c787ba87c9f58ce9e9fc6b1b2e42ef"
+    ]
+  },
+  {
+    "key": "implementation-boundary-controlled-preparation",
+    "path": "backend/src/repositories/local-v3-trial-characters.ts",
+    "parents": [
+      "design-battle-boundary-recovery"
+    ],
+    "scope": "Local negative cutover admission, V2 read/V3 write retirement and immutable historical/awareness battle continuation only. Not old trial success, paid execution, production acceptance or new numeric mechanics adoption.",
+    "ref": "all-tests-20261008/implementation-boundary-controlled-preparation",
+    "test": false,
+    "sha256": "fb3900e27e97f9ce9f7631bedb6dfaef3924730dfe3a456285e1956085fb8ad2",
+    "sealId": "ccf97654c093b99cd30adcec5b1a72c8a4fab6d78e3e38c2258df52121a992ed",
+    "causeSealIds": [
+      "90676e41a7e0dd5ff58d7960703f8a2c37c787ba87c9f58ce9e9fc6b1b2e42ef"
+    ]
+  },
+  {
+    "key": "implementation-boundary-neva-fixture",
+    "path": "backend/src/fixtures/neva-v3.ts",
+    "parents": [
+      "design-battle-boundary-recovery"
+    ],
+    "scope": "Local negative cutover admission, V2 read/V3 write retirement and immutable historical/awareness battle continuation only. Not old trial success, paid execution, production acceptance or new numeric mechanics adoption.",
+    "ref": "all-tests-20261008/implementation-boundary-neva-fixture",
+    "test": false,
+    "sha256": "24858ab3dc4812fe09d62452373e782bfd76404f5edbf72aac1addbdc93d9de3",
+    "sealId": "86ef8457d8b8fc47cf67a1df8a2d292628c807fc335eb8706be9f4b41d4c520d",
+    "causeSealIds": [
+      "90676e41a7e0dd5ff58d7960703f8a2c37c787ba87c9f58ce9e9fc6b1b2e42ef"
+    ]
+  },
+  {
+    "key": "implementation-boundary-battle",
+    "path": "backend/src/services/battle-service.ts",
+    "parents": [
+      "design-battle-boundary-recovery"
+    ],
+    "scope": "Local negative cutover admission, V2 read/V3 write retirement and immutable historical/awareness battle continuation only. Not old trial success, paid execution, production acceptance or new numeric mechanics adoption.",
+    "ref": "all-tests-20261008/implementation-boundary-battle",
+    "test": false,
+    "sha256": "80eda28c060f4f789dfb64a13a3babf2e4d82db77a8b34cebeb938cba040bce8",
+    "sealId": "2eae8cc721eb57bccdb6600c1bcdf5c9c9cf72d1d2dc4feb7fb0f0d1b715b3bb",
+    "causeSealIds": [
+      "90676e41a7e0dd5ff58d7960703f8a2c37c787ba87c9f58ce9e9fc6b1b2e42ef"
+    ]
+  },
+  {
+    "key": "implementation-boundary-battles",
+    "path": "backend/src/repositories/battles.ts",
+    "parents": [
+      "design-battle-boundary-recovery"
+    ],
+    "scope": "Local negative cutover admission, V2 read/V3 write retirement and immutable historical/awareness battle continuation only. Not old trial success, paid execution, production acceptance or new numeric mechanics adoption.",
+    "ref": "all-tests-20261008/implementation-boundary-battles",
+    "test": false,
+    "sha256": "e0f5d0977e5a103249a382bbd5ac318f0a7a7b2abcde95ad2f4491ead5ca892f",
+    "sealId": "c13f788ff9274a1abf7cc32574a4882693f2a5eed8082bdec37afdf9216023e3",
+    "causeSealIds": [
+      "90676e41a7e0dd5ff58d7960703f8a2c37c787ba87c9f58ce9e9fc6b1b2e42ef"
+    ]
+  },
+  {
+    "key": "implementation-boundary-narration-worker",
+    "path": "backend/src/services/narration-worker.ts",
+    "parents": [
+      "design-battle-boundary-recovery"
+    ],
+    "scope": "Local negative cutover admission, V2 read/V3 write retirement and immutable historical/awareness battle continuation only. Not old trial success, paid execution, production acceptance or new numeric mechanics adoption.",
+    "ref": "all-tests-20261008/implementation-boundary-narration-worker",
+    "test": false,
+    "sha256": "c974acbc5a95035d2d6ae0a25a3d6954f60779cad8c7ff45eab1e2b5cca55c9d",
+    "sealId": "18b5c01c9ddeacc5e5bd9e82d5e9e1924024b31853817bcb323caaa230677d72",
+    "causeSealIds": [
+      "90676e41a7e0dd5ff58d7960703f8a2c37c787ba87c9f58ce9e9fc6b1b2e42ef"
+    ]
+  },
+  {
+    "key": "implementation-boundary-dynamic",
+    "path": "backend/src/llm/conscious-dynamic.ts",
+    "parents": [
+      "design-battle-boundary-recovery"
+    ],
+    "scope": "Local negative cutover admission, V2 read/V3 write retirement and immutable historical/awareness battle continuation only. Not old trial success, paid execution, production acceptance or new numeric mechanics adoption.",
+    "ref": "all-tests-20261008/implementation-boundary-dynamic",
+    "test": false,
+    "sha256": "7d1a92d3384ac63bac7e12ad3ead79aa59ffd64c7188a81927cf526352ca012d",
+    "sealId": "8b26ad20a52fdb31571b53df86b078ab8345fb5bf293597196be6e1c85683c5c",
+    "causeSealIds": [
+      "90676e41a7e0dd5ff58d7960703f8a2c37c787ba87c9f58ce9e9fc6b1b2e42ef"
+    ]
+  },
+  {
+    "key": "implementation-boundary-agency",
+    "path": "backend/src/llm/conscious-agency.ts",
+    "parents": [
+      "design-battle-boundary-recovery"
+    ],
+    "scope": "Local negative cutover admission, V2 read/V3 write retirement and immutable historical/awareness battle continuation only. Not old trial success, paid execution, production acceptance or new numeric mechanics adoption.",
+    "ref": "all-tests-20261008/implementation-boundary-agency",
+    "test": false,
+    "sha256": "7f8d227dbebe1a6542a4764520014baa08022220052d3e06bc0afc71af922136",
+    "sealId": "ce808905d2ecd092ffda721733ec3f111682bff9cefe7f54574bb6a15a3f0343",
+    "causeSealIds": [
+      "90676e41a7e0dd5ff58d7960703f8a2c37c787ba87c9f58ce9e9fc6b1b2e42ef"
+    ]
+  },
+  {
+    "key": "implementation-boundary-guard",
+    "path": "backend/src/services/distributed-guard.ts",
+    "parents": [
+      "design-battle-boundary-recovery"
+    ],
+    "scope": "Local negative cutover admission, V2 read/V3 write retirement and immutable historical/awareness battle continuation only. Not old trial success, paid execution, production acceptance or new numeric mechanics adoption.",
+    "ref": "all-tests-20261008/implementation-boundary-guard",
+    "test": false,
+    "sha256": "e0a248101fd14555a3aca0dd371c9d6ab2965290064358f88b23aa48aac8ac3c",
+    "sealId": "6565d6dac8180fd57f7c82c61c4486ae4ea30b6315cb6acc45fadd09208998af",
+    "causeSealIds": [
+      "90676e41a7e0dd5ff58d7960703f8a2c37c787ba87c9f58ce9e9fc6b1b2e42ef"
+    ]
+  },
+  {
+    "key": "implementation-boundary-historical-character",
+    "path": "backend/src/testing/historical-character-fixtures.ts",
+    "parents": [
+      "design-battle-boundary-recovery"
+    ],
+    "scope": "Local negative cutover admission, V2 read/V3 write retirement and immutable historical/awareness battle continuation only. Not old trial success, paid execution, production acceptance or new numeric mechanics adoption.",
+    "ref": "all-tests-20261008/implementation-boundary-historical-character",
+    "test": false,
+    "sha256": "c29d82b0b3d86b882e4670829d6fb365f80c6dbe5a363b73e008263495fed165",
+    "sealId": "7ded913cf0afb3625fa20d843b6b61ad27be823815dcb89ad384380de9306eb0",
+    "causeSealIds": [
+      "90676e41a7e0dd5ff58d7960703f8a2c37c787ba87c9f58ce9e9fc6b1b2e42ef"
+    ]
+  },
+  {
+    "key": "implementation-boundary-historical-generations",
+    "path": "backend/src/testing/historical-asset-generations.ts",
+    "parents": [
+      "design-battle-boundary-recovery"
+    ],
+    "scope": "Local negative cutover admission, V2 read/V3 write retirement and immutable historical/awareness battle continuation only. Not old trial success, paid execution, production acceptance or new numeric mechanics adoption.",
+    "ref": "all-tests-20261008/implementation-boundary-historical-generations",
+    "test": false,
+    "sha256": "1f853f953dbd5c2a9aa3c5628652b72d251b4e7d1b1f2e91afbc8334c2cced5a",
+    "sealId": "c3e33346f9aa6f552e4a935706d8f9cc5a4dcfbf4e01fc6d5567b2773525c026",
+    "causeSealIds": [
+      "90676e41a7e0dd5ff58d7960703f8a2c37c787ba87c9f58ce9e9fc6b1b2e42ef"
+    ]
+  },
+  {
+    "key": "implementation-boundary-historical-battle",
+    "path": "backend/src/testing/historical-v4-battle-fixture.ts",
+    "parents": [
+      "design-battle-boundary-recovery"
+    ],
+    "scope": "Local negative cutover admission, V2 read/V3 write retirement and immutable historical/awareness battle continuation only. Not old trial success, paid execution, production acceptance or new numeric mechanics adoption.",
+    "ref": "all-tests-20261008/implementation-boundary-historical-battle",
+    "test": false,
+    "sha256": "8faaa6e6140db2a33037a2e6189aa3d27396b568b90a56ae1806cc1fd046a650",
+    "sealId": "c0a6256440d65d2029ef126530f8f31e8a6acb9f38af138fcf5d0d17847f44cf",
+    "causeSealIds": [
+      "90676e41a7e0dd5ff58d7960703f8a2c37c787ba87c9f58ce9e9fc6b1b2e42ef"
+    ]
+  },
+  {
+    "key": "implementation-boundary-offline-provider",
+    "path": "backend/src/testing/offline-awareness-provider.ts",
+    "parents": [
+      "design-battle-boundary-recovery"
+    ],
+    "scope": "Local negative cutover admission, V2 read/V3 write retirement and immutable historical/awareness battle continuation only. Not old trial success, paid execution, production acceptance or new numeric mechanics adoption.",
+    "ref": "all-tests-20261008/implementation-boundary-offline-provider",
+    "test": false,
+    "sha256": "1eca62e07410c63ad3b89a02cde87b5c45694a719d99470fa0cf4e7e3494147e",
+    "sealId": "c91b093d735b162729efe8cfaf1944a716ad32955b4d15c5273a53833f210493",
+    "causeSealIds": [
+      "90676e41a7e0dd5ff58d7960703f8a2c37c787ba87c9f58ce9e9fc6b1b2e42ef"
+    ]
+  },
+  {
+    "key": "implementation-boundary-conscious-fixture",
+    "path": "backend/src/services/conscious-agency.fixtures.ts",
+    "parents": [
+      "design-battle-boundary-recovery"
+    ],
+    "scope": "Local negative cutover admission, V2 read/V3 write retirement and immutable historical/awareness battle continuation only. Not old trial success, paid execution, production acceptance or new numeric mechanics adoption.",
+    "ref": "all-tests-20261008/implementation-boundary-conscious-fixture",
+    "test": false,
+    "sha256": "46c307d406e47a414372b8033c9b0a9df27524854810befe1252d0f49521900b",
+    "sealId": "daca8dadb8a85073ca868c61f6423974fff038c9548cee89ead8f7ae58348deb",
+    "causeSealIds": [
+      "90676e41a7e0dd5ff58d7960703f8a2c37c787ba87c9f58ce9e9fc6b1b2e42ef"
+    ]
+  },
+  {
+    "key": "implementation-boundary-probe-launcher",
+    "path": "backend/src/testing/replay-semantic-migration.ts",
+    "parents": [
+      "design-battle-boundary-recovery",
+      "probe-fixture"
+    ],
+    "scope": "Local negative cutover admission, V2 read/V3 write retirement and immutable historical/awareness battle continuation only. Not old trial success, paid execution, production acceptance or new numeric mechanics adoption.",
+    "ref": "all-tests-20261008/implementation-boundary-probe-launcher",
+    "test": false,
+    "sha256": "860dcecc7312f4e5352238182e518ef7c4650074dfbe2f8a92201f425afc4d79",
+    "sealId": "73fb22d5bbbe5c6d5633e57b7ba31e1d7207b6f9e0e95fae8c0fc1455a23caa4",
+    "causeSealIds": [
+      "90676e41a7e0dd5ff58d7960703f8a2c37c787ba87c9f58ce9e9fc6b1b2e42ef",
+      "69315aaf0137fd62cdecd0d85ae79e90cf61eeca43bb86b73ad34ecf00a1bd03"
+    ]
+  },
+  {
+    "key": "implementation-boundary-probe-launcher-v3",
+    "path": "backend/src/testing/replay-semantic-migration-v3.ts",
+    "parents": [
+      "design-battle-boundary-recovery",
+      "probe-fixture"
+    ],
+    "scope": "Local negative cutover admission, V2 read/V3 write retirement and immutable historical/awareness battle continuation only. Not old trial success, paid execution, production acceptance or new numeric mechanics adoption.",
+    "ref": "all-tests-20261008/implementation-boundary-probe-launcher-v3",
+    "test": false,
+    "sha256": "8e20ff26b82863316b48de0fd460b940d854ee92a123fb129f2c16e396087b2e",
+    "sealId": "0c60ead1611a0aadf2a3e504245276785eac5c27a7a2d987d9f0d558c73e1e85",
+    "causeSealIds": [
+      "90676e41a7e0dd5ff58d7960703f8a2c37c787ba87c9f58ce9e9fc6b1b2e42ef",
+      "69315aaf0137fd62cdecd0d85ae79e90cf61eeca43bb86b73ad34ecf00a1bd03"
+    ]
+  },
+  {
+    "key": "routes-cutover-http-recovery-bounded-20261008",
+    "path": "backend/src/routes-cutover-http.test.ts",
+    "parents": [
+      "implementation-boundary-routes",
+      "implementation-boundary-auth",
+      "implementation-boundary-db",
+      "implementation-boundary-control-store",
+      "implementation-boundary-admission",
+      "implementation-boundary-http-admission"
+    ],
+    "scope": "Local negative cutover admission, V2 read/V3 write retirement and immutable historical/awareness battle continuation only. Not old trial success, paid execution, production acceptance or new numeric mechanics adoption.",
+    "ref": "verification/routes-cutover-http-recovery-bounded-20261008",
+    "test": true,
+    "sha256": "0aacaf9328b0a0db435cf9c97d7990bd3b79666c627f368d4286d96fe4d51486",
+    "sealId": "efd44c44fc085431cb40e257a8432071d81a2326616640b36ae73eae697c91b7",
+    "causeSealIds": [
+      "fcf165143e528ea548c1e9c8313a465199e185c9f066ef7a60e1996a9e09856f",
+      "31a499023d115fb49f5762170be780e1570417cff3a1e9d049a96d78e550b515",
+      "29388522fd326751bb29a58fc9145bbf64bc1f96d80e2f54420065b80363d535",
+      "3e45d9574813c028926624008680f121d96287551fea0235de73ceddac6de316",
+      "4d87714b6f60516cc614c44ef4591f876d907cd38b21c3dbbb5287209cc19cab",
+      "b11e4e7756b9656e41d26a36bceca9140e04cc5dce2218cfe85cffd972d4f27e"
+    ]
+  },
+  {
+    "key": "character-v2-update-boundary-recovery-bounded-20261008",
+    "path": "backend/src/services/character-v2-update-boundary.test.ts",
+    "parents": [
+      "implementation-boundary-routes",
+      "implementation-boundary-auth",
+      "implementation-boundary-db",
+      "implementation-boundary-characters",
+      "implementation-boundary-character-assets",
+      "implementation-boundary-generations",
+      "implementation-boundary-accounting",
+      "implementation-boundary-import",
+      "implementation-boundary-controlled-preparation",
+      "implementation-boundary-neva-fixture",
+      "implementation-boundary-historical-character",
+      "implementation-boundary-historical-generations",
+      "implementation-boundary-probe-launcher",
+      "implementation-boundary-probe-launcher-v3"
+    ],
+    "scope": "Local negative cutover admission, V2 read/V3 write retirement and immutable historical/awareness battle continuation only. Not old trial success, paid execution, production acceptance or new numeric mechanics adoption.",
+    "ref": "verification/character-v2-update-boundary-recovery-bounded-20261008",
+    "test": true,
+    "sha256": "856bb4a622c8d0d2e55bf5647ec58a97571a9e34d9d5a1829dba95b0bd257702",
+    "sealId": "9c44026e7f6192152cba87a4c37a8c893e17e2e0a9be7516ac318685d6586439",
+    "causeSealIds": [
+      "fcf165143e528ea548c1e9c8313a465199e185c9f066ef7a60e1996a9e09856f",
+      "31a499023d115fb49f5762170be780e1570417cff3a1e9d049a96d78e550b515",
+      "29388522fd326751bb29a58fc9145bbf64bc1f96d80e2f54420065b80363d535",
+      "6c315ff831dd9d2818e56a98727fc72bdd703c5cab6552bc28baec03c45c734c",
+      "8d6bf70266a8a48bc0227bb6c69995a951948a704c1fee95f6e1fdd08d188075",
+      "869129df4d654527d085c525a8fba685dce132eaac26280ee3e12afe243162f7",
+      "cb577967d632ef4c96ec047453411792d7c31160bf2bfcf4cadff90869d507f7",
+      "6a8d0c70d178a47c529d0e8bc6bf13897ea9863b64e8ae7bb5c4b00cda6e8818",
+      "ccf97654c093b99cd30adcec5b1a72c8a4fab6d78e3e38c2258df52121a992ed",
+      "86ef8457d8b8fc47cf67a1df8a2d292628c807fc335eb8706be9f4b41d4c520d",
+      "7ded913cf0afb3625fa20d843b6b61ad27be823815dcb89ad384380de9306eb0",
+      "c3e33346f9aa6f552e4a935706d8f9cc5a4dcfbf4e01fc6d5567b2773525c026",
+      "73fb22d5bbbe5c6d5633e57b7ba31e1d7207b6f9e0e95fae8c0fc1455a23caa4",
+      "0c60ead1611a0aadf2a3e504245276785eac5c27a7a2d987d9f0d558c73e1e85"
+    ]
+  },
+  {
+    "key": "v3-battle-creation-recovery-bounded-20261008",
+    "path": "backend/src/services/v3-battle-creation.test.ts",
+    "parents": [
+      "implementation-boundary-routes",
+      "implementation-boundary-db",
+      "implementation-boundary-battle",
+      "implementation-boundary-battles",
+      "implementation-boundary-narration-worker",
+      "implementation-boundary-dynamic",
+      "implementation-boundary-agency",
+      "implementation-boundary-guard",
+      "implementation-boundary-import",
+      "implementation-boundary-historical-character",
+      "implementation-boundary-historical-generations",
+      "implementation-boundary-historical-battle",
+      "implementation-boundary-offline-provider",
+      "implementation-boundary-conscious-fixture"
+    ],
+    "scope": "Local negative cutover admission, V2 read/V3 write retirement and immutable historical/awareness battle continuation only. Not old trial success, paid execution, production acceptance or new numeric mechanics adoption.",
+    "ref": "verification/v3-battle-creation-recovery-bounded-20261008",
+    "test": true,
+    "sha256": "5f6254f5f888c785a836feb3fcfcdcb635b0bb04ca9cbed28c05f9fc520a3e6c",
+    "sealId": "58a7034ae30a4e8660db9c01161ea05ee28dbc0eb539d8e661559169945910de",
+    "causeSealIds": [
+      "fcf165143e528ea548c1e9c8313a465199e185c9f066ef7a60e1996a9e09856f",
+      "29388522fd326751bb29a58fc9145bbf64bc1f96d80e2f54420065b80363d535",
+      "2eae8cc721eb57bccdb6600c1bcdf5c9c9cf72d1d2dc4feb7fb0f0d1b715b3bb",
+      "c13f788ff9274a1abf7cc32574a4882693f2a5eed8082bdec37afdf9216023e3",
+      "18b5c01c9ddeacc5e5bd9e82d5e9e1924024b31853817bcb323caaa230677d72",
+      "8b26ad20a52fdb31571b53df86b078ab8345fb5bf293597196be6e1c85683c5c",
+      "ce808905d2ecd092ffda721733ec3f111682bff9cefe7f54574bb6a15a3f0343",
+      "6565d6dac8180fd57f7c82c61c4486ae4ea30b6315cb6acc45fadd09208998af",
+      "6a8d0c70d178a47c529d0e8bc6bf13897ea9863b64e8ae7bb5c4b00cda6e8818",
+      "7ded913cf0afb3625fa20d843b6b61ad27be823815dcb89ad384380de9306eb0",
+      "c3e33346f9aa6f552e4a935706d8f9cc5a4dcfbf4e01fc6d5567b2773525c026",
+      "c0a6256440d65d2029ef126530f8f31e8a6acb9f38af138fcf5d0d17847f44cf",
+      "c91b093d735b162729efe8cfaf1944a716ad32955b4d15c5273a53833f210493",
+      "daca8dadb8a85073ca868c61f6423974fff038c9548cee89ead8f7ae58348deb"
+    ]
+  }
+]

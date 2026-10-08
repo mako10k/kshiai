@@ -2,7 +2,7 @@
 import {
   AwarenessInitialize, AwarenessCancelGeneration, AwarenessSelectDesires,
   buildUtterancePerceptionEvidence, observerPerceptId,
-  type BattleState, type CharacterActionIntent, type ObserverSafeAvailableAction,
+  type BattleState, type CharacterActionIntent, type ObserverSafeAvailableAction, type AwarenessConsciousGuidance,
 } from "@kshiai/shared";
 import type { LlmProvider } from "../llm/types.js";
 import { getAssetGeneration } from "../repositories/asset-generations.js";
@@ -13,10 +13,19 @@ import type { AwarenessPreparedTick } from "./awareness-execution.js";
 import type { BattleLeaseFence } from "./distributed-guard.js";
 
 export type AwarenessActionFrame = {
+  consciousGuidance: AwarenessConsciousGuidance;
   availableActions: readonly ObserverSafeAvailableAction[];
   facts: readonly { ref: string; content: string }[];
   accepts(action: CharacterActionIntent): boolean;
 };
+
+/** The production transfer seam is also exercised by source-to-prompt delivery tests. */
+export function buildAwarenessBoundaryContext(input: Omit<Parameters<typeof buildAwarenessExecutionContext>[0],
+  "availableActions" | "actionFacts" | "consciousGuidance"> & { frame: AwarenessActionFrame }) {
+  const { frame, ...current } = input;
+  return buildAwarenessExecutionContext({ ...current, availableActions: frame.availableActions,
+    actionFacts: frame.facts, consciousGuidance: frame.consciousGuidance });
+}
 
 export async function stopAwarenessBattleRuntime(input: {
   battleId: string; fence: BattleLeaseFence; reason: string;
@@ -78,8 +87,8 @@ export async function prepareAwarenessBattleBoundary(input: {
     const changed = new Set(frame?.latestDiff.addedOrUpdatedPerceptIds ?? []);
     const receivedSpeech = speechEvidence.some((evidence) => evidence.source.kind === "entity" &&
       evidence.source.entityId !== `character.${side}` && changed.has(observerPerceptId(side, evidence.evidenceId)));
-    return buildAwarenessExecutionContext({ state: input.state, side, generation: generation.value,
-      availableActions: input.frames[side].availableActions, actionFacts: input.frames[side].facts,
+    return buildAwarenessBoundaryContext({ state: input.state, side, generation: generation.value,
+      frame: input.frames[side],
       receivedSpeech,
       intentCompleted: Boolean(latestRecord?.actions.some((action) => action.actorSide === side)),
       intentInvalid: Boolean(selected.body && !input.frames[side].accepts(selected.body.action)),

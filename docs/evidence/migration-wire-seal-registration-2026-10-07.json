@@ -1,0 +1,121 @@
+{
+  "entries": [
+    {
+      "key": "authority-migration-operation-wire",
+      "path": "docs/adr/0030-llm-assisted-character-semantic-migration.think",
+      "parents": [],
+      "scope": "Accepted ADR0030 D7 bounded six operation vocabulary/source/provenance and D8 independent consistency review, D13/ACCEPTANCE local implementation only. No paid/provider execution, deployment, owner candidate acceptance, activation, or complete migration acceptance certified.",
+      "ref": "all-tests-20261007/authority-migration-operation-wire",
+      "test": false,
+      "sha256": "80da2d64cf9436d178815fe44ed7ec58592e5d7923dc62f31a59f540bc3cc9e4",
+      "sealId": "2fb9650ddebe867a978634fea432e65d0611085c8cb823c36a6d6f3f5eaa2962",
+      "causeSealIds": []
+    },
+    {
+      "key": "implementation-migration-wire-authoritative-schema",
+      "path": "packages/shared/src/character-semantic-change-set.ts",
+      "parents": [
+        "authority-migration-operation-wire",
+        "finite",
+        "capability"
+      ],
+      "scope": "Received change-set JSON domain recursive finite JSON values, registered path syntax/no prototype traversal, finite operation/provenance/payload branches, copy source-owned null value, defer metadata, operation/uncertainty limits, strict consistency verdict. Provider grammar is a separate representation, authoritative received-value validation retained. Only exercised eight-case schema boundaries certified.",
+      "ref": "all-tests-20261007/implementation-migration-wire-authoritative-schema",
+      "test": false,
+      "sha256": "76d521a6f7a6ce9e0bfbae873d37a3e87aec567bbacf600527f421b0534bcee6",
+      "sealId": "2739cb30b70b34439e139c55e7a4bc9f1db254667ca72c17d1c8cb2c14f71024",
+      "causeSealIds": [
+        "2fb9650ddebe867a978634fea432e65d0611085c8cb823c36a6d6f3f5eaa2962",
+        "df1074f8d520f877ab0f1fb62633520c31da784118e1933cfaa5a1b3d409d577",
+        "22c7a9fb36f968cfada1ce5432d74a49fadedd11906e9c035029e093f7b2733e"
+      ]
+    },
+    {
+      "key": "evidence-migration-retained-recursive-grammar",
+      "path": "docs/evidence/semantic-migration-grok-2026-09-10-v1/call-1-before.json",
+      "parents": [
+        "authority-migration-operation-wire"
+      ],
+      "scope": "Immutable retained first-call response grammar fixture used to reproduce recursive local-reference rejection. Retained observation is not proof of present provider behavior or current execution permission; no request is issued.",
+      "ref": "all-tests-20261007/evidence-migration-retained-recursive-grammar",
+      "test": false,
+      "sha256": "a8b5e68e99592c046b8b58a27316550ed76ff7a38e89f10a220ab5291e198447",
+      "sealId": "d794d17fdb3c085e94a0300e0ba9b5b56e0c0e0af99970e560d7065e5dacf90e",
+      "causeSealIds": [
+        "2fb9650ddebe867a978634fea432e65d0611085c8cb823c36a6d6f3f5eaa2962"
+      ]
+    },
+    {
+      "key": "implementation-migration-generic-json-wire-projection",
+      "path": "backend/src/llm/character-migration-response-schema.ts",
+      "parents": [
+        "implementation-migration-wire-authoritative-schema",
+        "graph",
+        "evidence-migration-retained-recursive-grammar"
+      ],
+      "scope": "Assert the exact generic recursive JSON definition before replacing only its representation with unrestricted JSON Schema additionalProperties:true; other required fields, limits, strictness and six operations remain exact. Authoritative recursive received-value validator remains unchanged. Pure local graph representation test, no live xAI acceptance claim.",
+      "ref": "all-tests-20261007/implementation-migration-generic-json-wire-projection",
+      "test": false,
+      "sha256": "8674f0b1faac36b2f5b2f6a481999a95fa0c09f2b6f948d7a15722e8cc49e2fc",
+      "sealId": "9fbb20104c9c55a7ac4f0cecde7bd3d4a4ff897e37398abd404eee6b5e5472cc",
+      "causeSealIds": [
+        "2739cb30b70b34439e139c55e7a4bc9f1db254667ca72c17d1c8cb2c14f71024",
+        "7d3553c4450352d27ccca8b36ff087b703bb00896b0369e283494116cd5b094e",
+        "d794d17fdb3c085e94a0300e0ba9b5b56e0c0e0af99970e560d7065e5dacf90e"
+      ]
+    },
+    {
+      "key": "migration-change-set-wire-current",
+      "path": "packages/shared/src/character-semantic-change-set.test.ts",
+      "parents": [
+        "authority-migration-operation-wire",
+        "finite",
+        "implementation-migration-wire-authoritative-schema"
+      ],
+      "scope": "Entire six-case file: provenance/control operation rejection, prototype/path rejection, source-owned copy payload, source-free optional defer, bounds and consistent verdict honesty, static incompatible provenance/payload combinations and exact transform payload preservation. No whole server merge, source existence or semantic correctness proof.",
+      "ref": "verification/migration-change-set-wire-current-20261007",
+      "test": true,
+      "sha256": "ebbed6b96fe979aec00bf8eca3f181a2884ba832979447a029f193ab4f58d1e2",
+      "sealId": "84e59f2d467a58b1804404687f8b6590be3ed830b3389f024fb4816103672dd7",
+      "causeSealIds": [
+        "2fb9650ddebe867a978634fea432e65d0611085c8cb823c36a6d6f3f5eaa2962",
+        "df1074f8d520f877ab0f1fb62633520c31da784118e1933cfaa5a1b3d409d577",
+        "2739cb30b70b34439e139c55e7a4bc9f1db254667ca72c17d1c8cb2c14f71024"
+      ]
+    },
+    {
+      "key": "migration-response-projection-current",
+      "path": "backend/src/llm/character-migration-response-schema.test.ts",
+      "parents": [
+        "implementation-migration-wire-authoritative-schema",
+        "implementation-migration-generic-json-wire-projection",
+        "evidence-migration-retained-recursive-grammar",
+        "graph",
+        "finite"
+      ],
+      "scope": "Entire two-case file: retained recursive schema matches except explicitly marked registered capability pair grammar; original graph rejects, projected graph accepts, restoring generic JSON definition reconstructs original schema exactly; 80-level JSON value preserved and undefined/nonfinite/function JSON rejected. No live provider invocation or arbitrary depth performance guarantee.",
+      "ref": "verification/migration-response-projection-current-20261007",
+      "test": true,
+      "sha256": "862f6ff90435afb66e3d66b5f8151f463ba7d96fec57b311414be851b3d8b3b4",
+      "sealId": "ab615ddec3258a1abc3f9331aefa7f3e35c7525ca940db6afbb37c6b3d8993f3",
+      "causeSealIds": [
+        "2739cb30b70b34439e139c55e7a4bc9f1db254667ca72c17d1c8cb2c14f71024",
+        "9fbb20104c9c55a7ac4f0cecde7bd3d4a4ff897e37398abd404eee6b5e5472cc",
+        "d794d17fdb3c085e94a0300e0ba9b5b56e0c0e0af99970e560d7065e5dacf90e",
+        "7d3553c4450352d27ccca8b36ff087b703bb00896b0369e283494116cd5b094e",
+        "df1074f8d520f877ab0f1fb62633520c31da784118e1933cfaa5a1b3d409d577"
+      ]
+    }
+  ],
+  "diagnostic": {
+    "pass": 8,
+    "fail": 0,
+    "skipped": 0,
+    "strictTypecheckExit": 0
+  },
+  "limitations": [
+    "Two local schema files only",
+    "No live provider acceptance or full migration engine certification",
+    "Historical fixture comparison masks requiringCapability only; actual registered pair consistency has separate ADR0046 tests"
+  ]
+}

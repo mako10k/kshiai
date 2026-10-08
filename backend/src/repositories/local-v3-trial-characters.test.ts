@@ -80,7 +80,11 @@ describe("local V3 trial registration", () => {
       const wrongReceipt = await app.request(`/api/characters/${first.attemptId}/confirm`, { method: "POST", headers, body: JSON.stringify({candidateDigest: "wrong"}) });
       assert.equal(wrongReceipt.status, 409);
       assert.equal(await getCurrentAssetGeneration("character", input.characterId), null);
-      const edits = await app.request(`/api/character-drafts/${first.attemptId}/chat`, { method: "POST", headers, body: JSON.stringify({ message: "change it" }) });
+      const edits = await app.request(`/api/character-drafts/${first.attemptId}/chat`, {
+        method: "POST",
+        headers: { ...headers, "Idempotency-Key": `fixed-trial-edit-${first.attemptId}` },
+        body: JSON.stringify({ message: "change it", candidateDigest: review.candidateDigest }),
+      });
       assert.equal(edits.status, 409);
       const request = { method: "POST", headers, body: JSON.stringify({ candidateDigest: review.candidateDigest }) };
       const responses = await Promise.all([app.request(`/api/characters/${first.attemptId}/confirm`, request), app.request(`/api/characters/${first.attemptId}/confirm`, request)]);

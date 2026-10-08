@@ -1,0 +1,14 @@
+{
+  "newRefs": 5,
+  "previousHeadsUnchanged": true,
+  "previousHeadCount": 848,
+  "totalRefs": 853,
+  "sourceBytesMatch": true,
+  "stale": 0,
+  "fsck": "ok",
+  "limitations": [
+    "Original cases retained; two test fixtures repaired without runtime/schema/algorithm changes",
+    "Runtime refinement tests are not blanket static typing guarantees",
+    "Synthetic evidence/current shared helper behavior, not provider, persistence or full awareness-v5 integration acceptance"
+  ]
+}

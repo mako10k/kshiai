@@ -1,0 +1,56 @@
+{
+  "schema": "kshiai/historical-v4-and-awareness-repair/v1",
+  "authority": [
+    {
+      "path": "docs/battle-consciousness-implementation-decisions-2026-10-05.md",
+      "clause": "Q06 new awareness-v5 battles; existing dynamic-v4 and earlier continue without migration"
+    },
+    {
+      "path": "docs/adr/0039-v3-battle-lifecycle-and-cutover.md",
+      "clause": "Exact V3 generation and frozen compiler tuple binding; full clause review pending before Seal"
+    },
+    {
+      "path": "docs/adr/0045-preserve-action-intent-producer-values.md",
+      "clause": "Keep full supplied free_action description, target references and desired outcome"
+    },
+    {
+      "path": "docs/adr/0028-versioned-conscious-agency-contract.md",
+      "clause": "Durable bounded repair reservation and preserved phase state"
+    }
+  ],
+  "changes": [
+    "Persist a complete schema-validated historical V4 fixture before any continuation; do not invoke current creation for historical V4 and do not rewrite existing manifests.",
+    "Freeze actual V3 character generations and dialogue activation; field/style are immutable synthetic snapshots from the existing conscious fixture, not a live historical recovery claim.",
+    "Retain historical completion, replay, HTTP/SSE, narration frozen input, field rule conflict, free action value and cutover assertions.",
+    "Add a separate new awareness-v5 character-generation immutability case so current new creation remains verified.",
+    "Read prompt input as natural prose and detect repair using its explicit invocation label; runtime-validate the output JSON schema instead of treating prose input as JSON."
+  ],
+  "files": [
+    {
+      "path": "backend/src/services/v3-battle-creation.test.ts",
+      "sha256": "5f6254f5f888c785a836feb3fcfcdcb635b0bb04ca9cbed28c05f9fc520a3e6c"
+    },
+    {
+      "path": "backend/src/testing/historical-v4-battle-fixture.ts",
+      "sha256": "ce21591aa46cb7c6334aa385dd21ec256bb96494fea9fcf4ff3fe9989ad45242"
+    }
+  ],
+  "results": {
+    "passed": 4,
+    "failed": 0,
+    "skipped": 0,
+    "strictImportedPathExitCode": 0,
+    "allWorkspaceAndDeploymentTypecheckExitCode": 0,
+    "allWorkspaceTypecheckLog": "docs/evidence/historical-v4-typecheck-2026-10-07.log"
+  },
+  "formalSeal": "pending multi-contract review",
+  "productionImplementationChanged": false,
+  "paidCalls": 0,
+  "scope": {
+    "unitFiles": 247,
+    "e2eFiles": 4,
+    "removedFiles": 0,
+    "newCases": 1
+  },
+  "testLog": "docs/evidence/historical-v4-and-awareness-tests-2026-10-07.tap"
+}

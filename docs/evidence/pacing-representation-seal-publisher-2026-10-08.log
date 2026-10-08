@@ -1,0 +1,7 @@
+sealed all-tests-20261008/design-pacing-representation-bounded
+sealed all-tests-20261008/evidence-pacing-candidate-unaccepted
+sealed all-tests-20261008/evidence-pacing-local-measurement
+sealed all-tests-20261008/implementation-pacing-policy-representation
+sealed all-tests-20261008/implementation-pacing-private-observation
+sealed verification/pacing-representation-bounded-20261008
+readback complete

@@ -1,0 +1,129 @@
+{
+  "schema": "kshiai/e2e-current-pipeline-repair-review/v1",
+  "readOnly": true,
+  "workspace": "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai",
+  "testPath": "e2e/v3-local-integration.spec.ts",
+  "scope": "Review only; no repository, Seal, browser, API, paid, remote, or test-run changes.",
+  "audit": {
+    "tool": "llmthink dsl audit --text",
+    "status": "passed",
+    "fatal": 0,
+    "error": 0,
+    "warnings": 0,
+    "notes": ["Pending implementation placement is explicitly left to the owner."]
+  },
+  "observedFailure": {
+    "reported": "After the heading repair, creation fails with AWARENESS_REQUIRED_MODEL_ROUTE_MISSING.",
+    "producing_boundary": "backend/src/services/awareness-creation-encounter.ts:30-53 requires llm.awareness roles and an adjudicationProvider before invoking prepareBattleEncounter.",
+    "fixture_fact": "e2e/v3-local-integration.spec.ts:61-62 creates MockLlmProvider and passes it to buildRoutes; MockLlmProvider alone has no awareness roles.",
+    "classification": "offline fixture route omission at the awareness-v5 boundary; not evidence to restore old production creation or remove the E2E",
+    "stale_log_note": "The current spec already uses the repaired heading 保存済みの構造化候補（キャラクター定義 v3） at line 108; an older log mentioning 保存済みの構造化候補（V3） describes prior source state."
+  },
+  "governingSources": [
+    {
+      "path": "docs/adr/0051-observed-llm-usage-accounting.md",
+      "clause": "26-32, 52",
+      "status": "Accepted",
+      "why": "New awareness battles bind immutable policy and record real attempts/unknown usage; no automatic transport retry/fallback and no paid run or deployment are authorized. Stored version dimensions include battle binding format v5 and awareness-v5."
+    },
+    {
+      "path": "docs/adr/0054-normal-awareness-waiting-deadlines.md",
+      "clause": "26-28, 44-48",
+      "status": "Accepted",
+      "why": "New ordinary battles bind awareness-v5-usage-v2 and one policy through creation, manifest/runtime, dispatch, and provider request; old explicit policies remain unchanged, with no migration or paid call."
+    },
+    {
+      "path": "docs/battle-consciousness-implementation-decisions-2026-10-05.md",
+      "clause": "5, 12-16, 18, 22",
+      "status": "Owner adopted candidate v1",
+      "why": "awareness-v5 applies only to new battles with immutable policy/prompt/output/asset snapshots; finite failure semantics, narration source coverage, and role ports are required; the orchestrator depends on ports rather than SDK/DB implementations."
+    },
+    {
+      "path": "backend/src/services/battle-service.ts",
+      "clause": "638-640, 707-710, 788-845",
+      "status": "Actual implementation",
+      "why": "startBattle defaults new creation to AwarenessNormalPolicy, routes creation through prepareAwarenessCreationEncounter, and binds BattleAssetManifestV5 with consciousOutputContract awareness-v5 and immutable character generations."
+    },
+    {
+      "path": "backend/src/services/awareness-narration-worker.ts",
+      "clause": "18-31",
+      "status": "Actual implementation",
+      "why": "The V5 narration worker requires manifest schema 5 and a runtime, then claims and dispatches ordered frozen narration batches."
+    }
+  ],
+  "actualImplementationPaths": [
+    "backend/src/services/awareness-creation-encounter.ts",
+    "backend/src/services/awareness-battle-boundary.ts",
+    "backend/src/services/awareness-execution-factory.ts",
+    "backend/src/services/awareness-narration-worker.ts",
+    "backend/src/services/awareness-narration-worker-dispatch.ts",
+    "backend/src/services/narration-worker.ts",
+    "backend/src/llm/awareness-provider-contract.ts",
+    "backend/src/llm/awareness-provider.ts",
+    "backend/src/llm/awareness-narration.ts",
+    "backend/src/llm/awareness-frozen-narration.ts",
+    "backend/src/llm/mock.ts"
+  ],
+  "currentSpecContractsToRetain": [
+    "Real browser plus loopback API/UI servers and normal authenticated user path.",
+    "V3 authoring confirmation creates immutable generation IDs/digests; later edits must not change bound battle assets.",
+    "All three replay entries (advance, advance/stream, action) use idempotency and preserve revision/asset manifest.",
+    "Battle reaches finished with aftermath drained, frozen narration inputs match stored receipt digests, and result survives reload.",
+    "V2 saveSheet fixtures remain management-only and mixed/V2 creation stays rejected; do not revive the old normal V2/V3 creation path.",
+    "Cutover deletion keeps finished history and returns 404 for deleted battle reads/writes; late worker is acknowledged."
+  ],
+  "minimalOfflineFixtureProposal": {
+    "preferred": "E2E-local typed domain role double attached to the existing MockLlmProvider instance; keep production provider selection and routes unchanged.",
+    "connection": [
+      "Create AwarenessProviderRoles in the spec (or a test-local helper) and Object.assign them onto the MockLlmProvider as awareness plus awarenessBillingContracts.",
+      "Use MockLlmProvider as adjudicationProvider because its deterministic prepareBattleEncounter and legacy-compatible methods already satisfy the domain provider interface; make unexpected legacy calls fail if the fixture wants to prove V5 routing.",
+      "Implement models.subconscious and models.conscious with direct schema-valid deterministic outputs using the typed AwarenessLatentInput/AwarenessConsciousInput contracts; no SDK, network, or fabricated transport payload is needed.",
+      "Implement narration.narrateFrozenBatch and narrateBatch with schema-valid receipt-scoped deterministic outputs. Preserve source speeches and receipt/battle/phase/turn identity, and return recognitionUpdates only for references present in each frozen material.",
+      "Give adjudication and narration transport identities the accepted route shape (xai/grok-test for conscious/narration and the matching typed test contract); observed accounting means no paid quote is needed, but the test must retain real reservation/attempt ledger behavior.",
+      "Continue to call createLlmNarrationGenerator(llm); its current implementation attaches llm.awareness.narration and processNextNarration then selects processAwarenessNarrationWorker for V5. Do not substitute the legacy generator as the V5 implementation."
+    ],
+    "manifestAndAssertions": [
+      "Change the stale local assertion at e2e/v3-local-integration.spec.ts:144 from schemaVersion 4 to schemaVersion 5 and assert the bound awareness-v5 policy/prompt/output identity rather than weakening the test.",
+      "Retain compilerInputsV4 as the character compiler projection inside the V5 manifest; this is a nested input format and does not make the battle V4.",
+      "Retain all existing immutable generation, replay, completion, narration, reload, cutover, 404, and late-ack assertions."
+    ],
+    "why_preferred": "It exercises the real app/browser/API, battle creation, V5 boundary, runtime fence, provider accounting, frozen narration worker, and deletion behavior while satisfying the owner design rule that the orchestrator consumes typed ports and has no SDK dependency.",
+    "alternative": {
+      "name": "loopback-only wire transport",
+      "fit": "Possible if the owner specifically wants transport serialization coverage.",
+      "tradeoff": "Adds a local transport adapter and response-format surface without adding remote/provider acceptance value to this E2E; keep it secondary to the typed role double."
+    }
+  },
+  "issues": [
+    {
+      "severity": "blocker_for_current_run",
+      "path": "e2e/v3-local-integration.spec.ts:61-62",
+      "finding": "MockLlmProvider is missing awareness roles required at creation.",
+      "repair_boundary": "E2E fixture only; attach typed roles, do not change production fallback behavior."
+    },
+    {
+      "severity": "current_assertion_mismatch",
+      "path": "e2e/v3-local-integration.spec.ts:144",
+      "finding": "Expected schemaVersion 4 conflicts with actual startBattle BattleAssetManifestV5.",
+      "repair_boundary": "Update the test's expected current V5 contract and add exact policy/output identity checks."
+    },
+    {
+      "severity": "current_path_mismatch",
+      "path": "e2e/v3-local-integration.spec.ts:229-242",
+      "finding": "The spec invokes legacy narration generation while V5 worker dispatch is awareness-aware and requires a typed narration provider.",
+      "repair_boundary": "Keep the generator entrypoint only as the existing dispatcher, but provide llm.awareness.narration and valid frozen results; do not route V5 through legacy narration calls."
+    },
+    {
+      "severity": "historical_fixture_boundary",
+      "path": "e2e/v3-local-integration.spec.ts:258-263",
+      "finding": "legacy saveSheet is deliberately a V2 management fixture for rejection checks.",
+      "repair_boundary": "Retain it for 409 assertions; it must not be used to make the ordinary creation test pass."
+    }
+  ],
+  "unresolved_external_or_future_detail": [
+    "Whether the role double belongs inline in this spec or in an E2E-only helper is an owner implementation choice.",
+    "Exact deterministic narration wording is not an accepted product requirement; only typed receipt coverage, source speech preservation, and ordered publication are current contracts.",
+    "SDK/provider realism, remote model behavior, paid cost ceilings, public deployment acceptance, and future provider route identities remain outside this offline E2E."
+  ],
+  "confidence": "high"
+}

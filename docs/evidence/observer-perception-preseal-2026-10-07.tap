@@ -1,0 +1,150 @@
+TAP version 13
+# Subtest: observer perception projection
+    # Subtest: starts with visible counterpart presence and retains it without new evidence
+    ok 1 - starts with visible counterpart presence and retains it without new evidence
+      ---
+      duration_ms: 119.284555
+      type: 'test'
+      ...
+    # Subtest: separates canonical identity from witnessed and unwitnessed apparent forms
+    ok 2 - separates canonical identity from witnessed and unwitnessed apparent forms
+      ---
+      duration_ms: 34.049246
+      type: 'test'
+      ...
+    # Subtest: keeps hallucinated identity observer-local without creating a canonical entity
+    ok 3 - keeps hallucinated identity observer-local without creating a canonical entity
+      ---
+      duration_ms: 8.888274
+      type: 'test'
+      ...
+    # Subtest: lowers access from structured hiding occlusion absence and observer impairment
+    ok 4 - lowers access from structured hiding occlusion absence and observer impairment
+      ---
+      duration_ms: 97.281265
+      type: 'test'
+      ...
+    # Subtest: accepts only committed explicit loss evidence as a non-world access drop
+    ok 5 - accepts only committed explicit loss evidence as a non-world access drop
+      ---
+      duration_ms: 76.455431
+      type: 'test'
+      ...
+    # Subtest: separates self, an unknown counterpart contact, ambient cues, and raw-free mechanics
+    ok 6 - separates self, an unknown counterpart contact, ambient cues, and raw-free mechanics
+      ---
+      duration_ms: 38.072325
+      type: 'test'
+      ...
+    # Subtest: reuses contacts, preserves lost identity, and promotes a later identification prospectively
+    ok 7 - reuses contacts, preserves lost identity, and promotes a later identification prospectively
+      ---
+      duration_ms: 29.44645
+      type: 'test'
+      ...
+    # Subtest: splits an ambiguous group only into newly numbered future contacts
+    ok 8 - splits an ambiguous group only into newly numbered future contacts
+      ---
+      duration_ms: 9.489656
+      type: 'test'
+      ...
+    # Subtest: evicts the oldest low-salience lost unknown contact without reusing ids
+    ok 9 - evicts the oldest low-salience lost unknown contact without reusing ids
+      ---
+      duration_ms: 43.111453
+      type: 'test'
+      ...
+    # Subtest: keeps an untracked cue ambient when no lost unknown contact can be evicted
+    ok 10 - keeps an untracked cue ambient when no lost unknown contact can be evicted
+      ---
+      duration_ms: 45.249937
+      type: 'test'
+      ...
+    # Subtest: is symmetric when A and B roles are swapped
+    ok 11 - is symmetric when A and B roles are swapped
+      ---
+      duration_ms: 10.118236
+      type: 'test'
+      ...
+    # Subtest: retains the registry in the engine-only fallback and seeds legacy identity without access
+    ok 12 - retains the registry in the engine-only fallback and seeds legacy identity without access
+      ---
+      duration_ms: 17.020193
+      type: 'test'
+      ...
+    1..12
+ok 1 - observer perception projection
+  ---
+  duration_ms: 550.413723
+  type: 'suite'
+  ...
+# Subtest: observer-relative perception schemas
+    # Subtest: accepts explicit self and an inaccessible unidentified counterpart
+    ok 1 - accepts explicit self and an inaccessible unidentified counterpart
+      ---
+      duration_ms: 34.010742
+      type: 'test'
+      ...
+    # Subtest: rejects hidden canonical source mappings in character-facing percepts
+    ok 2 - rejects hidden canonical source mappings in character-facing percepts
+      ---
+      duration_ms: 20.567177
+      type: 'test'
+      ...
+    # Subtest: requires the self and counterpart subject roles
+    ok 3 - requires the self and counterpart subject roles
+      ---
+      duration_ms: 11.473954
+      type: 'test'
+      ...
+    # Subtest: bounds percepts across all frame slots rather than per slot only
+    ok 4 - bounds percepts across all frame slots rather than per slot only
+      ---
+      duration_ms: 24.212088
+      type: 'test'
+      ...
+    # Subtest: keeps observer-local contact ids side scoped
+    ok 5 - keeps observer-local contact ids side scoped
+      ---
+      duration_ms: 36.128796
+      type: 'test'
+      ...
+    # Subtest: separates unchanged and effective qualitative outcomes
+    ok 6 - separates unchanged and effective qualitative outcomes
+      ---
+      duration_ms: 1.14563
+      type: 'test'
+      ...
+    # Subtest: keeps canonical evidence sources in the server-only contract
+    ok 7 - keeps canonical evidence sources in the server-only contract
+      ---
+      duration_ms: 1.316783
+      type: 'test'
+      ...
+    # Subtest: bounds contact continuity and requires a strictly increasing sequence
+    ok 8 - bounds contact continuity and requires a strictly increasing sequence
+      ---
+      duration_ms: 28.720593
+      type: 'test'
+      ...
+    # Subtest: allows control ids for omniscient narration but forbids them externally
+    ok 9 - allows control ids for omniscient narration but forbids them externally
+      ---
+      duration_ms: 3.023675
+      type: 'test'
+      ...
+    1..9
+ok 2 - observer-relative perception schemas
+  ---
+  duration_ms: 190.961518
+  type: 'suite'
+  ...
+1..2
+# tests 21
+# suites 2
+# pass 21
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 2625.60905

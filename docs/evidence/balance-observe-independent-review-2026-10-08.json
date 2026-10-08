@@ -1,0 +1,14 @@
+{
+  "reviewer": "battle_helper_contract_review",
+  "classification": "INSIDE",
+  "originalCases": 2,
+  "pass": 2,
+  "fail": 0,
+  "skip": 0,
+  "files": {
+    "packages/shared/src/balance-observe.test.ts": "9a494d9f37eef76631bffbc72718815df20bfafd475a695fb51b219c5c3da19d"
+  },
+  "boundary": "Pure diagnostic metrics, not a game/admission balance gate",
+  "authority": "Accepted requirements F-CFG-08 operational/balance observation boundary",
+  "historicalFitRecord": "Non-normative audit/observed result only"
+}

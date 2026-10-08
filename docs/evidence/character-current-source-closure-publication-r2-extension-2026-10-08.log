@@ -1,0 +1,47 @@
+preflight valid; logical nodes=244; preserved published history=137
+135/244 verified; 1 new or repaired this run; all-tests-20261008/current-source-closure/all-tests-20261008/implementation-historical-adr-classifier-bounded
+136/244 verified; 2 new or repaired this run; all-tests-20261008/current-source-closure/all-tests-20261008/implementation-historical-adr-consumer-bounded
+137/244 verified; 3 new or repaired this run; all-tests-20261008/current-source-closure/verification/stable-area-awareness-battle-contract-20261007
+138/244 verified; 4 new or repaired this run; all-tests-20261008/current-source-closure/all-tests-20261007/implementation-native-pg-reservation
+139/244 verified; 5 new or repaired this run; all-tests-20261008/current-source-closure/verification/semantic-migration-probe-run-recovery-bounded-20261008
+140/244 verified; 6 new or repaired this run; all-tests-20261008/current-source-closure/all-tests-20261007/evidence-native-pg-private-run
+141/244 verified; 7 new or repaired this run; all-tests-20261008/current-source-closure/verification/battle-awareness-narration-reservation-postgres-bounded-native-pg-20261007
+142/244 verified; 8 new or repaired this run; all-tests-20261008/current-source-closure/verification/utterance-perception-20261007
+143/244 verified; 9 new or repaired this run; all-tests-20261008/current-source-closure/all-tests-20261007/implementation-character-repository-activation
+144/244 verified; 10 new or repaired this run; all-tests-20261008/current-source-closure/all-tests-20261007/implementation-character-repository-management
+145/244 verified; 11 new or repaired this run; all-tests-20261008/current-source-closure/verification/character-assets-repository-20261007
+146/244 verified; 12 new or repaired this run; all-tests-20261008/current-source-closure/all-tests-20261007/implementation-local-user-public-projection
+147/244 verified; 13 new or repaired this run; all-tests-20261008/current-source-closure/all-tests-20261008/fixture-historical-adr-0017-think
+148/244 verified; 14 new or repaired this run; all-tests-20261008/current-source-closure/all-tests-20261007/implementation-canonical-narration-expression-commit
+149/244 verified; 15 new or repaired this run; all-tests-20261008/current-source-closure/verification/awareness-expression-commit-bounded-current-20261007
+150/244 verified; 16 new or repaired this run; all-tests-20261008/current-source-closure/all-tests-20261008/implementation-perception-typed-seam
+151/244 verified; 17 new or repaired this run; all-tests-20261008/current-source-closure/verification/perception-typed-seam-bounded-20261008
+152/244 verified; 18 new or repaired this run; all-tests-20261008/current-source-closure/verification/awareness-battle-creation-bounded-awareness-creation-20261007
+153/244 verified; 19 new or repaired this run; all-tests-20261008/current-source-closure/verification/awareness-provider-factory-20261007
+154/244 verified; 20 new or repaired this run; all-tests-20261008/current-source-closure/all-tests-20261008/fixture-historical-adr-0015-md
+155/244 verified; 21 new or repaired this run; all-tests-20261008/current-source-closure/verification/battle-awareness-postgres-bounded-native-pg-20261007
+156/244 verified; 22 new or repaired this run; all-tests-20261008/current-source-closure/all-tests-20261008/fixture-historical-adr-0015-think
+157/244 verified; 23 new or repaired this run; all-tests-20261008/current-source-closure/all-tests-20261008/implementation-boundary-routes
+158/244 verified; 24 new or repaired this run; all-tests-20261008/current-source-closure/verification/v3-battle-creation-recovery-bounded-20261008
+159/244 verified; 25 new or repaired this run; all-tests-20261008/current-source-closure/all-tests-20261007/implementation-sdk-response-schema-ordinary-gate
+160/244 verified; 26 new or repaired this run; all-tests-20261008/current-source-closure/all-tests-20261008/implementation-semantic-recovery-family-adapter
+161/244 verified; 27 new or repaired this run; all-tests-20261008/current-source-closure/all-tests-20261008/implementation-semantic-recovery-narration-adapter
+162/244 verified; 28 new or repaired this run; all-tests-20261008/current-source-closure/all-tests-20261008/implementation-semantic-recovery-battlefield-adapter
+163/244 verified; 29 new or repaired this run; all-tests-20261008/current-source-closure/all-tests-20261008/implementation-semantic-recovery-scripted-ports
+164/244 verified; 30 new or repaired this run; all-tests-20261008/current-source-closure/all-tests-20261008/implementation-semantic-recovery-execution
+165/244 verified; 31 new or repaired this run; all-tests-20261008/current-source-closure/verification/semantic-recovery-conformance-bounded-20261008
+166/244 verified; 32 new or repaired this run; all-tests-20261008/current-source-closure/verification/pacing-representation-bounded-20261008
+167/244 verified; 33 new or repaired this run; all-tests-20261008/current-source-closure/all-tests-20261007/implementation-local-authentication-persistence
+168/244 verified; 34 new or repaired this run; all-tests-20261008/current-source-closure/verification/authentication-persistence-current-20261007
+169/244 verified; 35 new or repaired this run; all-tests-20261008/current-source-closure/verification/provider-json-accounting-20261007
+170/244 verified; 36 new or repaired this run; all-tests-20261008/current-source-closure/all-tests-20261007/implementation-stable-area-ready-binding
+171/244 verified; 37 new or repaired this run; all-tests-20261008/current-source-closure/all-tests-20261007/implementation-stable-area-authoring-http
+172/244 verified; 38 new or repaired this run; all-tests-20261008/current-source-closure/verification/stable-area-narration-http-acceptance-20261007
+173/244 verified; 39 new or repaired this run; all-tests-20261008/current-source-closure/verification/character-authoring-a2-freeze-bounded-20261008
+174/244 verified; 40 new or repaired this run; all-tests-20261008/current-source-closure/all-tests-20261007/implementation-sdk-awareness-adjudication-result
+175/244 verified; 41 new or repaired this run; all-tests-20261008/current-source-closure/verification/awareness-adjudication-result-20261007
+176/244 verified; 42 new or repaired this run; all-tests-20261008/current-source-closure/implementation/cc304-focused-revise-route-current-20260925
+177/244 verified; 43 new or repaired this run; all-tests-20261008/current-source-closure/all-tests-20261008/implementation-boundary-probe-launcher
+178/244 verified; 44 new or repaired this run; all-tests-20261008/current-source-closure/all-tests-20261007/implementation-current-narration-builder-contracts
+bounded stop before all-tests-20261008/current-source-closure/verification/narration-prompt-contract-20261007
+{"schema": "kshiai/repaired-source-closure-run/v1", "reused": 134, "newOrRepaired": 44, "verifiedLogicalNodes": 178, "plannedNodes": 244, "publishedHistoryEvents": 181, "priorHeadsUnchanged": true, "seconds": 934.709, "complete": false, "inventorySwitched": false, "deadline": "2026-10-08T20:55:00+09:00"}

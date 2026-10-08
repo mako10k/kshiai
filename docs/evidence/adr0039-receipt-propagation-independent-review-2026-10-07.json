@@ -1,0 +1,17 @@
+{
+  "reviewer": "/root/llm_boundary_seal_audit",
+  "closureGraphBfsRefsMatch": 123,
+  "eligible": 115,
+  "held": 8,
+  "heldDescendants": 0,
+  "reviewedCauseLinks": 424,
+  "parentOrderViolations": 0,
+  "decision": "proceed receipt-only guarded propagation",
+  "scope": "Existing accepted decision projection, no change to body/rules/tests/permissions",
+  "conditions": [
+    "preserve old messages and previous assertions",
+    "runtime head/source/hash/candidate/cause guards",
+    "hold original eight divergent/missing leaves",
+    "do not claim new test execution or trial permission"
+  ]
+}

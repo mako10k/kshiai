@@ -1,0 +1,13 @@
+{
+  "verdict": "PASS",
+  "files": {
+    "backend/src/services/character-portrait-v3.test.ts": "d4ce4330bc1de1c11f913a9d6050f496d8f5cc5fd4bec7c67241281f91383c14",
+    "backend/src/services/free-action-service.test.ts": "a3748c34fd42c98356f329d9c4aef9960993442c3cc410defdb402bf4c8ae02f",
+    "backend/src/repositories/character-assets-v2.ts": "4a9f1360a3197fb2971acc6612a2328d33f41fe23d832927ac445ba0992c27a1",
+    "backend/src/routes.ts": "c62c1c59bfbd373480e43fd60b4f32c0a3ea73a051329bee3aa048da98ab209f",
+    "backend/src/services/free-action-service.ts": "fc05378dee90dcb8c3b79443231a7db86d861a869ff085c41bd98a6889f47248"
+  },
+  "reviewer": "/root/battle_helper_contract_review",
+  "scope": "portrait3 and free-action9 originalcases",
+  "authorityCorrection": "ADR0003 is superseded; current Accepted ADR0010 authoring/activation/CAS is governing successor, requirements FCHR09/10. Freeaction FBTL60-68 and ADR22. No superseded ADR0003 normative Cause."
+}

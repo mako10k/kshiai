@@ -1,0 +1,530 @@
+{
+  "schema": "kshiai/test-cause-awareness-refined/v1",
+  "scope": "four shared awareness tests",
+  "readOnly": true,
+  "audit": {
+    "tool": "llmthink dsl audit",
+    "status": "passed; no fatal or error findings; warnings limited to readability hints and pending live/provider evidence",
+    "fatal": 0,
+    "error": 0
+  },
+  "entries": [
+    {
+      "testPath": "packages/shared/src/awareness-state.test.ts",
+      "implementationPaths": [
+        "packages/shared/src/awareness-state.ts",
+        "packages/shared/src/awareness-pipeline.ts",
+        "packages/shared/src/character.ts"
+      ],
+      "fixturePaths": [
+        "inline snapshot()/voice()/output() fixtures"
+      ],
+      "revisionScope": "New awareness-v5 battles; prior dynamic-v4/V3 state remains recorded/readable.",
+      "assertions": [
+        {
+          "assertion": "current observer-safe latent input rejects history/other observer",
+          "directEvidence": "test:28-34",
+          "governingSources": [
+            {
+              "path": "docs/battle-consciousness-requirements-2026-10-05.md",
+              "clause": "U01-U02,U09,U11 lines 23-34",
+              "status": "Current owner-adopted requirements",
+              "why": "Separate canonical/perception/latent state; no hidden causes/history."
+            },
+            {
+              "path": "docs/battle-consciousness-basic-design-2026-10-05.md",
+              "clause": "§2 lines 24-29; §4 lines 54-66",
+              "status": "Current owner-adopted basic design",
+              "why": "Latent input is current observer-scoped state without event/history replay."
+            },
+            {
+              "path": "docs/battle-consciousness-implementation-decisions-2026-10-05.md",
+              "clause": "item 3 lines 13-14",
+              "status": "Accepted owner-adopted contract",
+              "why": "No server-created hidden cause; projection remains observer bounded."
+            }
+          ],
+          "revision": "awareness-v5 only"
+        },
+        {
+          "assertion": "desire selection uses strength, accepted identity, lexical id, then expires",
+          "directEvidence": "test:35-42",
+          "governingSources": [
+            {
+              "path": "docs/battle-consciousness-requirements-2026-10-05.md",
+              "clause": "U06 lines 27-29",
+              "status": "Current owner-adopted requirements",
+              "why": "Strength is conflict basis without source priority."
+            },
+            {
+              "path": "docs/battle-consciousness-implementation-decisions-2026-10-05.md",
+              "clause": "item 4 line 14",
+              "status": "Accepted owner-adopted contract",
+              "why": "No source precedence; accepted-id then stable-id tie breaks; 1-3 tick lifetime."
+            }
+          ],
+          "revision": "awareness-v5 action-desire selection"
+        },
+        {
+          "assertion": "snapshot freeze, late completion, one application and mailbox consumption",
+          "directEvidence": "test:43-59",
+          "governingSources": [
+            {
+              "path": "docs/adr/0050-asynchronous-awareness-projected-character-pipeline.md",
+              "clause": "D02,D05,D07,D10 lines 39-57",
+              "status": "Superseded; inherited pipeline principles",
+              "why": "Frozen input, generation, late merge and no stale overwrite; accounting proof was replaced by ADR0051."
+            },
+            {
+              "path": "docs/battle-consciousness-implementation-decisions-2026-10-05.md",
+              "clause": "items 1,3 lines 11-14",
+              "status": "Accepted owner-adopted contract",
+              "why": "Frozen conscious input, next-boundary merge and one-delivery intervention."
+            }
+          ],
+          "revision": "awareness-v5; invalidated physical results cannot apply"
+        },
+        {
+          "assertion": "logical cancellation retains physical slot and generation/fence blocks stale merge",
+          "directEvidence": "test:60-68",
+          "governingSources": [
+            {
+              "path": "docs/battle-consciousness-basic-design-2026-10-05.md",
+              "clause": "§12 lines 152-169",
+              "status": "Current owner-adopted basic design",
+              "why": "Logical invalidation differs from physical completion; generation/fence owns writers."
+            },
+            {
+              "path": "docs/battle-consciousness-implementation-decisions-2026-10-05.md",
+              "clause": "item 1 lines 11-12",
+              "status": "Accepted owner-adopted contract",
+              "why": "No resend while old physical work is unresolved."
+            }
+          ],
+          "revision": "awareness-v5 only"
+        },
+        {
+          "assertion": "deadline/fence mismatch and invalid deadline are rejected",
+          "directEvidence": "test:69-73",
+          "governingSources": [
+            {
+              "path": "docs/adr/0054-normal-awareness-waiting-deadlines.md",
+              "clause": "Decision lines 24-28",
+              "status": "Accepted",
+              "why": "Normal awareness-v5 binds role deadlines, no auto retry/fallback."
+            },
+            {
+              "path": "docs/battle-consciousness-basic-design-2026-10-05.md",
+              "clause": "§12 lines 152-169",
+              "status": "Current owner-adopted basic design",
+              "why": "Persisted deadline/fence prevents stale application."
+            }
+          ],
+          "revision": "normal awareness-v5-usage-v2; measurement policy separate"
+        },
+        {
+          "assertion": "stale latent updates and desire-id reuse are rejected",
+          "directEvidence": "test:75-82",
+          "governingSources": [
+            {
+              "path": "docs/battle-consciousness-implementation-decisions-2026-10-05.md",
+              "clause": "items 1,3,4 lines 11-14",
+              "status": "Accepted owner-adopted contract",
+              "why": "Freshness, bounded lifetime and once-only identity."
+            },
+            {
+              "path": "docs/battle-consciousness-basic-design-2026-10-05.md",
+              "clause": "§12 lines 154-165",
+              "status": "Current owner-adopted basic design",
+              "why": "Per-state revision/CAS and one-time application."
+            }
+          ],
+          "revision": "awareness-v5 reducer"
+        }
+      ],
+      "issues": [
+        "Inventory: disabled/unsealed; no current sealed evidence.",
+        "ADR0050 is superseded for accounting admission by ADR0051; do not use its retired certified-cost proof.",
+        "Historical Draft text is not applied beyond owner-adopted U/contract clauses."
+      ]
+    },
+    {
+      "testPath": "packages/shared/src/awareness-pipeline.test.ts",
+      "implementationPaths": [
+        "packages/shared/src/awareness-pipeline.ts",
+        "packages/shared/src/awareness-state.ts",
+        "packages/shared/src/awareness-narration-contract.ts"
+      ],
+      "fixturePaths": [
+        "inline budget/receipt/desire/state fixtures"
+      ],
+      "revisionScope": "awareness-v5 schemas; normal usage-v2 only where explicitly selected; measured and historical policies remain distinct.",
+      "assertions": [
+        {
+          "assertion": "unknown fees remain explicit and reservation scalars agree",
+          "directEvidence": "test:9-16",
+          "governingSources": [
+            {
+              "path": "docs/adr/0051-observed-llm-usage-accounting.md",
+              "clause": "Decision lines 24-30",
+              "status": "Accepted",
+              "why": "Unknown usage/price stays null; no zero-cost inference."
+            },
+            {
+              "path": "docs/battle-consciousness-usage-measurement-2026-10-05.md",
+              "clause": "Detailed design lines 13-17",
+              "status": "Current owner-adopted detailed design",
+              "why": "Nullable usage, unknown IDs and partial costs are distinct."
+            }
+          ],
+          "revision": "usage-v1 observed accounting and successors"
+        },
+        {
+          "assertion": "narration batch max coverage and receipt identity uniqueness",
+          "directEvidence": "test:17-21",
+          "governingSources": [
+            {
+              "path": "docs/battle-consciousness-implementation-decisions-2026-10-05.md",
+              "clause": "item 8 line 18",
+              "status": "Accepted owner-adopted contract",
+              "why": "Max three receipts, existing battleId/turnReceiptId and source coverage."
+            },
+            {
+              "path": "docs/adr/0057-awareness-public-observation-accounting.md",
+              "clause": "Decision lines 21-27",
+              "status": "Accepted",
+              "why": "Public completion and usage readback preserve receipt controls."
+            },
+            {
+              "path": "docs/adr/0056-latest-prompt-contract-until-completion.md",
+              "clause": "Decision lines 23-29",
+              "status": "Accepted",
+              "why": "One current receipts contract; old material retained."
+            }
+          ],
+          "revision": "current awareness-v5 narration batch; ADR0038 Proposed Fragment is excluded"
+        },
+        {
+          "assertion": "adopted bounds and independent character states",
+          "directEvidence": "test:23-30",
+          "governingSources": [
+            {
+              "path": "docs/battle-consciousness-implementation-decisions-2026-10-05.md",
+              "clause": "items 1-2 lines 11-12",
+              "status": "Accepted owner-adopted contract",
+              "why": "36 ticks, 180 seconds, 200 attempts, concurrency six and finite incomplete behavior."
+            },
+            {
+              "path": "docs/adr/0054-normal-awareness-waiting-deadlines.md",
+              "clause": "Decision lines 24-28",
+              "status": "Accepted",
+              "why": "maxTicks36 and normal-v5 timing remain bounded."
+            },
+            {
+              "path": "docs/adr/0051-observed-llm-usage-accounting.md",
+              "clause": "Decision lines 24-28",
+              "status": "Accepted",
+              "why": "Attempt/concurrency ceilings and canonical failure handling remain."
+            }
+          ],
+          "revision": "new normal awareness-v5; not live completion acceptance"
+        },
+        {
+          "assertion": "strength/lifetime/resource validation",
+          "directEvidence": "test:32-37",
+          "governingSources": [
+            {
+              "path": "docs/battle-consciousness-implementation-decisions-2026-10-05.md",
+              "clause": "item 4 line 14",
+              "status": "Accepted owner-adopted contract",
+              "why": "Strength 0-1, lifetime 1-3 ticks, separate resources."
+            },
+            {
+              "path": "docs/battle-consciousness-basic-design-2026-10-05.md",
+              "clause": "§4 lines 64-66; §10 lines 132-140",
+              "status": "Current owner-adopted basic design",
+              "why": "Machine fields remain separate from meaning."
+            }
+          ],
+          "revision": "awareness-v5 schema"
+        },
+        {
+          "assertion": "reflex and affective outputs remain separately sourced",
+          "directEvidence": "test:39-43",
+          "governingSources": [
+            {
+              "path": "docs/battle-consciousness-requirements-2026-10-05.md",
+              "clause": "U03-U04,U09 lines 25-33",
+              "status": "Current owner-adopted requirements",
+              "why": "Separate reflex/affective roles without demanded logical consistency."
+            },
+            {
+              "path": "docs/battle-consciousness-basic-design-2026-10-05.md",
+              "clause": "§4 lines 60-66",
+              "status": "Current owner-adopted basic design",
+              "why": "Separate output items."
+            }
+          ],
+          "revision": "awareness-v5 latent output"
+        },
+        {
+          "assertion": "latent input has no event/utterance history contract",
+          "directEvidence": "test:44-46",
+          "governingSources": [
+            {
+              "path": "docs/battle-consciousness-requirements-2026-10-05.md",
+              "clause": "U09-U11 lines 31-34",
+              "status": "Current owner-adopted requirements",
+              "why": "Current state, no latent history."
+            },
+            {
+              "path": "docs/battle-consciousness-basic-design-2026-10-05.md",
+              "clause": "§4 lines 54-66",
+              "status": "Current owner-adopted basic design",
+              "why": "Event/response/history replay excluded from model input."
+            }
+          ],
+          "revision": "awareness-v5 latent input; audit history remains external"
+        }
+      ],
+      "issues": [
+        "Inventory: disabled/unsealed; no sealed current result.",
+        "Retired certified maximum-charge admission from older policy is not authority under ADR0051.",
+        "Bounds are local owner-adopted contract settings, not paid/provider authorization."
+      ]
+    },
+    {
+      "testPath": "packages/shared/src/awareness-policy.test.ts",
+      "implementationPaths": [
+        "packages/shared/src/awareness-policy.ts",
+        "packages/shared/src/awareness-state.ts",
+        "packages/shared/src/awareness-pipeline.ts"
+      ],
+      "fixturePaths": [
+        "inline policy/state fixtures"
+      ],
+      "revisionScope": "Immutable creation policy revisions: normal usage-v2, isolated measurement, and historical certified/observed policies.",
+      "assertions": [
+        {
+          "assertion": "normal usage-v2 timing does not rewrite old policies",
+          "directEvidence": "test:9-24",
+          "governingSources": [
+            {
+              "path": "docs/adr/0054-normal-awareness-waiting-deadlines.md",
+              "clause": "Decision/compatibility lines 24-28,42-48",
+              "status": "Accepted",
+              "why": "New normal awareness-v5 binds usage-v2; existing policies retain exact values."
+            },
+            {
+              "path": "docs/adr/0051-observed-llm-usage-accounting.md",
+              "clause": "Decision/compatibility lines 24-30,46-52",
+              "status": "Accepted",
+              "why": "Observed usage-v1 and old certified policies remain distinct."
+            }
+          ],
+          "revision": "normal new-battle default only"
+        },
+        {
+          "assertion": "isolated measurement tuple correlates to immutable revision",
+          "directEvidence": "test:25-32",
+          "governingSources": [
+            {
+              "path": "docs/adr/0052-isolated-long-timeout-measurement.md",
+              "clause": "Decision/compatibility lines 26-32,44-50",
+              "status": "Accepted",
+              "why": "measurement-v1 requires explicit opt-in; ordinary defaults unchanged."
+            },
+            {
+              "path": "docs/adr/0054-normal-awareness-waiting-deadlines.md",
+              "clause": "Compatibility lines 42-48",
+              "status": "Accepted",
+              "why": "Historical policies unchanged; measurement remains separate."
+            }
+          ],
+          "revision": "measurement-v1 explicit opt-in only"
+        },
+        {
+          "assertion": "historical certified and measured policies stay distinct",
+          "directEvidence": "test:33-38",
+          "governingSources": [
+            {
+              "path": "docs/adr/0051-observed-llm-usage-accounting.md",
+              "clause": "Decision/compatibility lines 24-30,46-48",
+              "status": "Accepted",
+              "why": "New immutable observed policy does not migrate certified contracts."
+            },
+            {
+              "path": "docs/adr/0054-normal-awareness-waiting-deadlines.md",
+              "clause": "Compatibility lines 42-48",
+              "status": "Accepted",
+              "why": "Old policies read unchanged."
+            }
+          ],
+          "revision": "cross-revision compatibility"
+        },
+        {
+          "assertion": "unknown monetary reservations allowed only for measured accounting",
+          "directEvidence": "test:39-47",
+          "governingSources": [
+            {
+              "path": "docs/adr/0051-observed-llm-usage-accounting.md",
+              "clause": "Decision lines 24-30",
+              "status": "Accepted",
+              "why": "Observed policy represents absent price/usage as unknown/null; certified proof remains required."
+            },
+            {
+              "path": "docs/battle-consciousness-usage-measurement-2026-10-05.md",
+              "clause": "Detailed design lines 13-17",
+              "status": "Current owner-adopted detailed design",
+              "why": "Certified/observed union and unknown reservation IDs."
+            }
+          ],
+          "revision": "observed usage-v1 and successors"
+        }
+      ],
+      "issues": [
+        "Inventory: disabled/unsealed; no sealed current result.",
+        "Although title says trial accounting, normal current default is usage-v2 under ADR0054, not retired usage-v1 or measurement-v1.",
+        "Schema tests establish no provider call, deployment, price assertion or full-battle completion."
+      ]
+    },
+    {
+      "testPath": "packages/shared/src/awareness-battle.test.ts",
+      "implementationPaths": [
+        "packages/shared/src/battle.ts",
+        "packages/shared/src/battle-engine.ts",
+        "packages/shared/src/character.ts",
+        "packages/shared/src/structured-character.ts",
+        "packages/shared/src/character-definition-v3.ts",
+        "packages/shared/src/conscious-dynamic.ts",
+        "packages/shared/src/dialogue-pipeline.ts",
+        "packages/shared/src/battlefield.ts",
+        "packages/shared/src/awareness-policy.ts"
+      ],
+      "fixturePaths": [
+        "inline sheet()/fixture()/v5Fixture()"
+      ],
+      "revisionScope": "V4 remains historical/readable; awareness-v5 is a new-battle binding with frozen policy/revisions and V3 compiler inputs.",
+      "assertions": [
+        {
+          "assertion": "preserves V4 tuple and dynamic semantics",
+          "directEvidence": "test:55-60",
+          "governingSources": [
+            {
+              "path": "docs/adr/0039-v3-battle-lifecycle-and-cutover.md",
+              "clause": "D1,D4 lines 39-43,63-70",
+              "status": "Accepted",
+              "why": "Recorded bindings/meaning remain; only bounded unfinished cutover set was discarded."
+            },
+            {
+              "path": "docs/adr/0047-phase-scoped-conscious-output-and-mechanical-completion.md",
+              "clause": "Scope/compatibility lines 6-9,54-60",
+              "status": "Accepted",
+              "why": "New dynamic contract does not rewrite historical state."
+            }
+          ],
+          "revision": "V4 historical contract only"
+        },
+        {
+          "assertion": "V5 requires frozen policy/prompt/output revisions and both V3 compilers",
+          "directEvidence": "test:62-70",
+          "governingSources": [
+            {
+              "path": "docs/battle-consciousness-implementation-decisions-2026-10-05.md",
+              "clause": "item 6 line 16",
+              "status": "Accepted owner-adopted contract",
+              "why": "awareness-v5 binds policy/prompt/output/asset snapshot only for new battles."
+            },
+            {
+              "path": "docs/adr/0054-normal-awareness-waiting-deadlines.md",
+              "clause": "Decision lines 24-28",
+              "status": "Accepted",
+              "why": "Creation/manifest/runtime/request share policy."
+            },
+            {
+              "path": "docs/adr/0056-latest-prompt-contract-until-completion.md",
+              "clause": "Decision lines 23-29,35-41",
+              "status": "Accepted",
+              "why": "Current revision-aware output contract."
+            },
+            {
+              "path": "docs/adr/0039-v3-battle-lifecycle-and-cutover.md",
+              "clause": "D1 lines 39-43",
+              "status": "Accepted",
+              "why": "Exact generation/compiler inputs are immutable bindings."
+            }
+          ],
+          "revision": "awareness-v5 new battles only"
+        },
+        {
+          "assertion": "technical incomplete keeps last world and no winner",
+          "directEvidence": "test:72-85",
+          "governingSources": [
+            {
+              "path": "docs/adr/0051-observed-llm-usage-accounting.md",
+              "clause": "Decision lines 24-30",
+              "status": "Accepted",
+              "why": "Canonical failure handling; accounting is not gameplay outcome."
+            },
+            {
+              "path": "docs/battle-consciousness-implementation-decisions-2026-10-05.md",
+              "clause": "item 1 lines 11-12",
+              "status": "Accepted owner-adopted contract",
+              "why": "Required failures end incomplete without current-tick commit."
+            },
+            {
+              "path": "docs/battle-consciousness-basic-design-2026-10-05.md",
+              "clause": "§6 lines 101-114",
+              "status": "Current owner-adopted basic design",
+              "why": "Last canonical state retained; no invented winner."
+            }
+          ],
+          "revision": "awareness-v5 only"
+        },
+        {
+          "assertion": "older V4 cannot gain technical incomplete",
+          "directEvidence": "test:87-88",
+          "governingSources": [
+            {
+              "path": "docs/adr/0039-v3-battle-lifecycle-and-cutover.md",
+              "clause": "D1,D4 lines 41-43,63-70",
+              "status": "Accepted",
+              "why": "Historical meaning remains recorded."
+            },
+            {
+              "path": "docs/battle-consciousness-implementation-decisions-2026-10-05.md",
+              "clause": "item 6 line 16",
+              "status": "Accepted owner-adopted contract",
+              "why": "awareness-v5 applies only to new battles."
+            }
+          ],
+          "revision": "V4 historical only"
+        },
+        {
+          "assertion": "technical incomplete does not settle ratings",
+          "directEvidence": "test:90-95",
+          "governingSources": [
+            {
+              "path": "docs/battle-consciousness-implementation-decisions-2026-10-05.md",
+              "clause": "item 1 lines 11-12",
+              "status": "Accepted owner-adopted contract",
+              "why": "No fabricated winner/current-tick result on incomplete."
+            },
+            {
+              "path": "docs/adr/0051-observed-llm-usage-accounting.md",
+              "clause": "Decision lines 24-30",
+              "status": "Accepted",
+              "why": "Canonical failure handling remains separate from accounting."
+            }
+          ],
+          "revision": "awareness-v5 incomplete path"
+        }
+      ],
+      "issues": [
+        "Inventory: disabled/unsealed; no sealed current result.",
+        "V4 preservation and V5 binding are separate revisions, not one merged contract.",
+        "No local schema test proves live/provider completion; ADR0057 still requires public real-use readback."
+      ]
+    }
+  ]
+}

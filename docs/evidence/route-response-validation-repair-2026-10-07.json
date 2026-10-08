@@ -1,0 +1,57 @@
+{
+  "scope": "Local fixture correction and response validation on three route tests; no production or external changes",
+  "authority": {
+    "readPurity": "ADR-0024 D1, repeated six GETs without authoring side effects",
+    "currentCharacterFixture": "ADR-0043",
+    "battlefield": "ADR-0010/0012 immutable ready generations"
+  },
+  "readPurity": {
+    "reads": 18,
+    "snapshotTables": 18,
+    "countedProviderPorts": 9,
+    "pass": 1,
+    "fail": 0,
+    "seal": "verification/authoring-read-purity-20261007"
+  },
+  "projections": {
+    "removedUncheckedAssertions": 23,
+    "canonicalEnvelope": "BattlefieldGenerationEnvelopeV2Schema",
+    "publicBattle": "BattlePublicSchema validates both responses; raw wire payload equality is asserted separately to preserve omitted/default field detection",
+    "privacy": "raw creation JSON retained, not a stripped schema projection",
+    "initial": {
+      "pass": 9,
+      "fail": 1,
+      "reason": "partial response parsing stripped fields needed by immutable payload parity; corrected before acceptance"
+    },
+    "finalFiles": {
+      "structuredAsset": {
+        "pass": 2,
+        "fail": 0
+      },
+      "battlefield": {
+        "pass": 8,
+        "fail": 0
+      }
+    },
+    "seal": "pending exact full case-to-authority review"
+  },
+  "goalComplete": false,
+  "strictTypecheck": {
+    "result": "passed",
+    "flags": "--strict --module NodeNext --moduleResolution NodeNext",
+    "files": [
+      {
+        "path": "backend/src/routes-authoring-read-purity.test.ts",
+        "sha256": "9b6a4162be627690488c80299eb1d4877ef98fc55b4f7a978d8d5e9314346be0"
+      },
+      {
+        "path": "backend/src/routes-structured-asset-integration.test.ts",
+        "sha256": "4278c5e9881d4568f7ae31f9e40826498ec9d2e5de6b96dc69ea69e2126edd7f"
+      },
+      {
+        "path": "backend/src/routes-structured-battlefield-acceptance.test.ts",
+        "sha256": "c5ed65efc024fe12051ba4e52bbbacd07b857eee4215a3931b46c26967587558"
+      }
+    ]
+  }
+}

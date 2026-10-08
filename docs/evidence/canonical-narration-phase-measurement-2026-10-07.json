@@ -1,0 +1,23 @@
+{
+  "scope": "12-file phase from recorded diagnostic start through review, fixture repair, registration and final readback; earlier exploratory preparation excluded",
+  "startedUnix": 1791363947.3685524,
+  "finishedUnix": 1791366314.34277,
+  "elapsedSeconds": 2366.9742181301117,
+  "wholeFiles": 12,
+  "cases": 77,
+  "registrationWriter": {
+    "scope": "registration writer only, excludes prior review and verification",
+    "elapsedSeconds": 1017.8405129909515,
+    "wholeFiles": 12,
+    "newRefs": 44,
+    "causeEdges": 135
+  },
+  "method": "one cohesive shared contract review, independent narration review while root examines canonical commit; batched diagnostic/strict; direct component cause edges",
+  "comparison": {
+    "previousRegistrationOnlySeconds": 411.352488,
+    "previousWholeFiles": 4,
+    "currentRegistrationSecondsPerFile": 84.82004274924596,
+    "previousRegistrationSecondsPerFile": 102.838122,
+    "limitations": "Writer-only samples have different source sizes and cause-edge counts; do not compare previous writer time against current whole-phase time or infer general performance."
+  }
+}

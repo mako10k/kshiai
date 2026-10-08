@@ -1,0 +1,146 @@
+{
+  "review": "docs/evidence/output-guidance-cause-review-2026-10-07.json",
+  "entries": [
+    {
+      "key": "authority-current-output-guidance",
+      "path": "docs/adr/0056-latest-prompt-contract-until-completion.md",
+      "parents": [],
+      "scope": "Latest strict output instructions for latent/conscious roles, schema conformance and inherited ADR0053 guidance correction. Does not establish live completion or current freeze condition.",
+      "test": false,
+      "ref": "all-tests-20261007/authority-current-output-guidance",
+      "sha256": "02cf47331d22417cfa7146864034aa2c0e476ca6d57f1ec98007f95933450e26",
+      "sealId": "2c6888e9d07a676d4b429b041b241e1631845b18fac4fb4cda280a4a29670d50",
+      "causeSealIds": []
+    },
+    {
+      "key": "design-action-output-guidance",
+      "path": "docs/battle-awareness-response-repair-2026-10-05.md",
+      "parents": [
+        "authority-current-output-guidance",
+        "intent"
+      ],
+      "scope": "Pure prose strict intent renderer and schema-validated examples only. Old version-pinned prompt execution superseded by ADR0056; physical observer/lifecycle separately sealed, not included here.",
+      "test": false,
+      "ref": "all-tests-20261007/design-action-output-guidance",
+      "sha256": "bf9c15c27f1ebe70006a8bda5f00f16b23bd7ba3556f402cb0873f3b700a347a",
+      "sealId": "6307e70060c3fe7460f155c7a6530b79fc0202aa8a6530c7d2161dd9e9bcc8ee",
+      "causeSealIds": [
+        "2c6888e9d07a676d4b429b041b241e1631845b18fac4fb4cda280a4a29670d50",
+        "7dbc6d9ea7ddfcfeb7f7659c1a8fd47c5a39b48988ba64b5de04048140c9098f"
+      ]
+    },
+    {
+      "key": "design-latent-output-brevity",
+      "path": "docs/evidence/awareness-latent-output-truncation-2026-10-06.md",
+      "parents": [
+        "authority-current-output-guidance",
+        "state"
+      ],
+      "scope": "Authorized bounded correction section and local shape verification only: retain schema/state/source semantics and policy cap, compact full example, no item-count cap or copied example world facts. Historical stage/root-cause/public facts are observations, not refreshed live proof.",
+      "test": false,
+      "ref": "all-tests-20261007/design-latent-output-brevity",
+      "sha256": "0f2be3d05549fd577c9bdc041151e9c178d424ac0f812931817bac19ed7228fc",
+      "sealId": "f75dad235ccfd2dff70adb0abcb98e7a1c4445208b8b4867fd8fdd241d206af7",
+      "causeSealIds": [
+        "2c6888e9d07a676d4b429b041b241e1631845b18fac4fb4cda280a4a29670d50",
+        "cea338023663fcb0df2f08b3e889a61b0033e7d60008a6301090ccac8a3fe50a"
+      ]
+    },
+    {
+      "key": "implementation-action-output-guidance",
+      "path": "backend/src/llm/awareness-output-contract.ts",
+      "parents": [
+        "authority-current-output-guidance",
+        "design-action-output-guidance",
+        "intent",
+        "state"
+      ],
+      "scope": "Schema-validated examples and role-specific strict object/source instructions, distinctions between legal option data and returned intents. No input compression or final assembled prompt claim.",
+      "test": false,
+      "ref": "all-tests-20261007/implementation-action-output-guidance",
+      "sha256": "2b956aa7592f6c48cf911e75b66e39bc450982f195ada5b84bdc93035a46e772",
+      "sealId": "d833631e02d60d0471e0891a70581b12ea9b9afa7ff0b1a453f3121191d4cf7f",
+      "causeSealIds": [
+        "2c6888e9d07a676d4b429b041b241e1631845b18fac4fb4cda280a4a29670d50",
+        "6307e70060c3fe7460f155c7a6530b79fc0202aa8a6530c7d2161dd9e9bcc8ee",
+        "7dbc6d9ea7ddfcfeb7f7659c1a8fd47c5a39b48988ba64b5de04048140c9098f",
+        "cea338023663fcb0df2f08b3e889a61b0033e7d60008a6301090ccac8a3fe50a"
+      ]
+    },
+    {
+      "key": "implementation-latent-output-brevity",
+      "path": "backend/src/llm/awareness-latent-output-guidance.ts",
+      "parents": [
+        "authority-current-output-guidance",
+        "design-latent-output-brevity",
+        "state"
+      ],
+      "scope": "Compact whole-output examples retain feelings/tendencies/reflex/affective sources and side/tick identity; prose requests brevity within supplied budget without new state item cap. No guaranteed real output size claim.",
+      "test": false,
+      "ref": "all-tests-20261007/implementation-latent-output-brevity",
+      "sha256": "28f84d9024356aef649f204134b02c4e312824330aa8aebce0d39a1b6f345544",
+      "sealId": "211f430ae024c70fa3bd8aed992bad5865c048b9016c182f95b7c828db709d17",
+      "causeSealIds": [
+        "2c6888e9d07a676d4b429b041b241e1631845b18fac4fb4cda280a4a29670d50",
+        "f75dad235ccfd2dff70adb0abcb98e7a1c4445208b8b4867fd8fdd241d206af7",
+        "cea338023663fcb0df2f08b3e889a61b0033e7d60008a6301090ccac8a3fe50a"
+      ]
+    },
+    {
+      "key": "action-output-guidance",
+      "path": "backend/src/llm/awareness-output-contract.test.ts",
+      "parents": [
+        "authority-current-output-guidance",
+        "design-action-output-guidance",
+        "intent",
+        "state",
+        "implementation-action-output-guidance"
+      ],
+      "scope": "Three local tests: every supported action kind schema-valid, string/copied-option intents rejected, latent ambiguity and conscious thought/source separation explained. No final request transmission or model adherence claim.",
+      "test": true,
+      "ref": "verification/action-output-guidance-20261007",
+      "sha256": "0d2efd8b046f7cab91edbdcca7ac466502846d247cafa8f03257bcb118899c18",
+      "sealId": "8099b1d6ab742c05b159452594d9f174f32c99dbb5665cbf6c9f37749da00355",
+      "causeSealIds": [
+        "2c6888e9d07a676d4b429b041b241e1631845b18fac4fb4cda280a4a29670d50",
+        "6307e70060c3fe7460f155c7a6530b79fc0202aa8a6530c7d2161dd9e9bcc8ee",
+        "7dbc6d9ea7ddfcfeb7f7659c1a8fd47c5a39b48988ba64b5de04048140c9098f",
+        "cea338023663fcb0df2f08b3e889a61b0033e7d60008a6301090ccac8a3fe50a",
+        "d833631e02d60d0471e0891a70581b12ea9b9afa7ff0b1a453f3121191d4cf7f"
+      ]
+    },
+    {
+      "key": "latent-output-brevity",
+      "path": "backend/src/llm/awareness-latent-output-guidance.test.ts",
+      "parents": [
+        "authority-current-output-guidance",
+        "design-latent-output-brevity",
+        "state",
+        "implementation-latent-output-brevity"
+      ],
+      "scope": "Two local tests: complete compact example accepted over successive ticks with both sources/current identity; rendered budget carries intact schema-valid JSON without state item-count cap. No real token reduction/model adherence claim.",
+      "test": true,
+      "ref": "verification/latent-output-brevity-20261007",
+      "sha256": "b15f5270a5704ca436a7abddb617f3dc42dc868cc853fac9f58d8f5eb0572d3b",
+      "sealId": "737022613bf6e08186b036d06a19138c9c7bda42088e91b5a3287108270d6a8c",
+      "causeSealIds": [
+        "2c6888e9d07a676d4b429b041b241e1631845b18fac4fb4cda280a4a29670d50",
+        "f75dad235ccfd2dff70adb0abcb98e7a1c4445208b8b4867fd8fdd241d206af7",
+        "cea338023663fcb0df2f08b3e889a61b0033e7d60008a6301090ccac8a3fe50a",
+        "211f430ae024c70fa3bd8aed992bad5865c048b9016c182f95b7c828db709d17"
+      ]
+    }
+  ],
+  "diagnostic": {
+    "pass": 5,
+    "fail": 0,
+    "skipped": 0,
+    "strictTypecheckExit": 0
+  },
+  "readback": {
+    "sourceMatches": 7,
+    "stale": 0,
+    "previousHeadsUnchanged": 639,
+    "fsck": "ok"
+  }
+}

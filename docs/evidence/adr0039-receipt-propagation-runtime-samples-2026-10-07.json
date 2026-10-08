@@ -1,0 +1,26 @@
+[
+  {
+    "observedAt": "2026-10-07T11:04:27.498757+00:00",
+    "publishedRefs": 32,
+    "targetRefs": 115,
+    "writerSession": 73444,
+    "initialAttemptPublishedRefs": 3,
+    "initialAttemptExit": 1,
+    "firstResumePreMutationGuardExit": 1,
+    "finalVerificationPending": true
+  },
+  {
+    "observedAt": "2026-10-07T11:09:38.307328+00:00",
+    "publishedRefs": 45,
+    "targetRefs": 115,
+    "writerSession": 73444,
+    "finalVerificationPending": true
+  },
+  {
+    "observedAt": "2026-10-07T11:22:40.145362+00:00",
+    "publishedRefs": 82,
+    "targetRefs": 115,
+    "writerSession": 73444,
+    "finalVerificationPending": true
+  }
+]

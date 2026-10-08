@@ -1,0 +1,7 @@
+# 観測clientと履歴request capture
+
+元2wholefile18ケースを保持。独立INSIDE、診断18pass/fail0/skip0。観測17ケースはAccepted ADR0057のtaxonomy/token台帳/terminal physical ledger、ADR0054の36tick通常policy/deadline、ADR0006のterminal narration/SSE、ADR0015の持続operator identityとsanitized private observationに基づく。
+
+実際のclientとadvance helper、normal advance bound、policy、DBを結ぶ。旧12回89操作は履歴用projection arithmetic・exactapprovalguardのfixtureで、現在policyや完走証明には使わない。BATTLE_BUSYの再要求は同じkeyで明確なsole-eventだけ、進捗・曖昧・nonbusyは即停止し絶対期限で制限する。provider retryではない。実環境観測、配備、provider認証、36tick完走、価格証明、sanitized observation全schema網羅を主張しない。
+
+履歴A2の1ケースはAccepted ADR0043の歴史V2schema保持に従うcapture-only request再現。typed CaptureProviderはchatJsonでA2_CAPTURE_ONLYを投げ、transport/DB/通常route/activationへ進まない。固定model/rate/output等は当時artifactのidentity/reservation arithmeticで現在価格やモデル選択ではない。execute scriptや古いpaidapprovalは対象外。schema/helper実producerとwholefile現在bytesをCauseへ固定する。

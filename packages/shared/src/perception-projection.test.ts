@@ -118,10 +118,10 @@ function mechanical(input: {
 }
 
 function reserves(side: BattleSide): ServerOnlyReserveCue[] {
-  return ["hp", "mp", "stamina", "focus"].map((parameterKey) => ({
+  return (["hp", "mp", "stamina", "focus"] as const).map((parameterKey) => ({
     side,
     targetEntityId: `character.${side}`,
-    parameterKey: parameterKey as ServerOnlyReserveCue["parameterKey"],
+    parameterKey,
     absoluteBand: "taxed" as const,
     relativeBand: "low" as const,
   }));
@@ -136,6 +136,7 @@ function emptyRegistry(side: BattleSide): ObserverContactRegistry {
   };
 }
 
+// R: Verify observer-safe projection and bounded contact continuity from supplied committed facts.
 describe("observer perception projection", () => {
   it("starts with visible counterpart presence and retains it without new evidence", () => {
     const state = semanticState();

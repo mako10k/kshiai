@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
-import { createBattleState } from "./battle-engine.js";
+import { createBattleState, ensureBattleWorldState } from "./battle-engine.js";
 import { applyBattleWorldTransition } from "./battle-world.js";
 import {
   planRepositionTransition,
@@ -39,7 +39,7 @@ describe("reposition transition", () => {
       sideB: sheet("b", "ベータ"),
       turnLimit: 12,
       prologuePending: false,
-      battlefield: {
+      battlefield: { kind: "legacy", instance: {
         sourcePresetId: null,
         category: "arena",
         displayName: "三場",
@@ -73,7 +73,7 @@ describe("reposition transition", () => {
             sound: "clear",
           },
         ],
-      },
+      } },
     });
     assert.equal(state.pacingPolicy?.spacingSchemaVersion, 1);
     const world = state.worldState!;
@@ -81,6 +81,9 @@ describe("reposition transition", () => {
     const targetArea = world.entities["character.b"]!.placement;
     assert.equal(actorArea.type, "scene");
     assert.equal(targetArea.type, "scene");
+    assert.deepEqual(Object.keys(world.areas).sort(), ["area.1", "area.2", "area.3"]);
+    assert.deepEqual(actorArea, { type: "scene", areaId: "area.1" });
+    assert.deepEqual(targetArea, { type: "scene", areaId: "area.3" });
     const planned = planRepositionTransition({
       worldState: world,
       actorSide: "a",
@@ -111,8 +114,23 @@ describe("reposition transition", () => {
         next.areaId,
         actorArea.type === "scene" ? actorArea.areaId : "",
       );
-      assert.equal(next.areaId, targetArea.areaId);
+      assert.equal(next.areaId, "area.2");
+      assert.notEqual(next.areaId, targetArea.areaId);
     }
+    const secondPlan = planRepositionTransition({
+      worldState: applied.state, actorSide: "a", actorName: "アルファ", turn: 2,
+      correction: "close", desired: { reach: "same_area" }, topology: state.battlefield?.topology,
+    });
+    const second = applyBattleWorldTransition({
+      state: applied.state, turn: 2,
+      transition: { baseRevision: applied.state.revision, turn: 2, sourceEventIds: [], operations: secondPlan.operations },
+    });
+    assert.equal(second.ok, true);
+    if (!second.ok) return;
+    assert.deepEqual(second.state.entities["character.a"]?.placement, { type: "scene", areaId: "area.3" });
+    const saved = { ...state, worldState: second.state };
+    assert.equal(ensureBattleWorldState(saved), saved);
+    assert.deepEqual(ensureBattleWorldState(saved).worldState, second.state);
   });
 
   it("opens an in-area rank when too close", () => {
@@ -162,4 +180,19 @@ describe("reposition transition", () => {
     missing.pairRelations[0]!.sound = "blocked";
     assert.equal(worldCounterpartUnlocalized(missing, "a"), true);
   });
+});
+
+it("preserves a declared area ID that is also an inherited object property", () => {
+  const state = createBattleState({
+    id: "own-constructor-area", sideA: sheet("own-a", "A"), sideB: sheet("own-b", "B"), turnLimit: 12,
+    battlefield: { kind: "legacy", instance: {
+      sourcePresetId: null, displayName: "単一の場", category: "arena", scene: "単一の場", terrain: "石床",
+      obstacles: [], conditions: [], coefficients: {}, narrativeSetup: "開始",
+      areas: [{ id: "constructor", name: "単一の場" }],
+      entryAreas: { a: "constructor", b: "constructor" }, topology: [],
+    } },
+  });
+  assert.deepEqual(Object.keys(state.worldState!.areas), ["constructor"]);
+  assert.deepEqual(state.worldState?.entities["character.a"]?.placement, { type: "scene", areaId: "constructor" });
+  assert.deepEqual(state.worldState?.entities["character.b"]?.placement, { type: "scene", areaId: "constructor" });
 });

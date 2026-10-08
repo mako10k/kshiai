@@ -1,3 +1,7 @@
+import {
+  prepareLegacyBattlefieldWorldLayout,
+  type BattlefieldCreation,
+} from "./battlefield-creation.js";
 import { gateBattleActionByNorms, type BattleActionNormConstraint } from "./battle-action-norm-gate.js";
 // R: Resolve deterministic battle mechanics and durable temporal continuations.
 import type {
@@ -700,7 +704,7 @@ export function createBattleState(input: {
   turnLimit: number;
   pacingPolicy?: BattlePacingPolicy;
   scene?: string;
-  battlefield?: BattlefieldInstance;
+  battlefield?: BattlefieldCreation;
   stanceA?: BattleStance;
   stanceB?: BattleStance;
   policiesA?: BattlePolicyOption[];
@@ -716,7 +720,7 @@ export function createBattleState(input: {
   const t = nowIso();
   const pacingPolicy = input.pacingPolicy ??
     currentBattlePacingPolicy(input.turnLimit);
-  const bf = input.battlefield;
+  const bf = input.battlefield?.instance;
   const baseCoeffs = clampCoefficientMap(bf?.coefficients ?? {});
   const tags = [
     ...(bf?.obstacles ?? []),
@@ -767,7 +771,10 @@ export function createBattleState(input: {
     sideB: input.sideB,
     priorMatchSummary: input.priorMatchSummary,
   });
-  const worldState = createBattleWorldState({ semanticState });
+  const initialLayout = input.battlefield?.kind === "structured"
+    ? input.battlefield.worldLayout
+    : bf ? prepareLegacyBattlefieldWorldLayout(bf, semanticState) : undefined;
+  const worldState = createBattleWorldState({ semanticState, initialLayout });
   const perceptionRegistryA = {
     schemaVersion: 1 as const,
     observerSide: "a" as const,

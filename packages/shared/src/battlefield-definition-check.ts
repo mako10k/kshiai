@@ -1,3 +1,4 @@
+// R: Validate and enrich battlefield definition candidates while preserving authoritative fields.
 import { z } from "zod";
 import {
   BattlefieldDefinitionV2Schema,
@@ -103,13 +104,17 @@ export type BattlefieldDefinitionLlmFillV2 = z.infer<
   typeof BattlefieldDefinitionLlmFillV2Schema
 >;
 
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return value !== null && typeof value === "object" && !Array.isArray(value);
+}
+
 function trimText(value: unknown, max: number): string | null {
   if (typeof value === "string") {
     const text = value.trim();
     return text ? text.slice(0, max) : null;
   }
-  if (!value || typeof value !== "object") return null;
-  const text = (value as { text?: unknown }).text;
+  if (!value || typeof value !== "object" || !("text" in value)) return null;
+  const text = value.text;
   return typeof text === "string" ? trimText(text, max) : null;
 }
 
@@ -267,9 +272,9 @@ export function parseBattlefieldDefinitionGapFillV2(
 ): BattlefieldDefinitionLlmFillV2 {
   const direct = BattlefieldDefinitionLlmFillV2Schema.safeParse(raw);
   if (direct.success) return direct.data;
-  if (raw && typeof raw === "object" && !Array.isArray(raw)) {
+  if (isRecord(raw)) {
     return BattlefieldDefinitionLlmFillV2Schema.parse(
-      normalizeLlmFillInput(raw as Record<string, unknown>),
+      normalizeLlmFillInput(raw),
     );
   }
   return BattlefieldDefinitionLlmFillV2Schema.parse(raw);

@@ -1,0 +1,11 @@
+# Causal execution receipt completeness repair
+
+This is a repair of the existing Accepted ADR0001 ordering and completion contract, under the owner's all-test sealing goal. It adds no ruleset, serialized field, migration, route, provider call or deployment. Canonical related work remains the Issue98 causal checkpoint boundary described in docs/issue-98-causal-contract.md; this evidence repair does not declare that delivery plan complete.
+
+The causal execution decoder must retain its existing array-size checks and verify distinct actor coverage before accepting awaiting_bucket_commit. Before accepting awaiting_finalize or finished, every index in the supplied temporal plan must occur in committedBucketIndices. Deduplication/sorting remains unchanged after validation. Valid initiative-window-v1 and initiative-sequential-v2 inputs retain their meaning; malformed receipts cannot be normalized into apparently completed state. No saved ordering facts are invented.
+
+Two regression cases supply a duplicate actor, duplicate committed bucket and out-of-plan committed bucket. Their before-repair result is four existing cases passing and two added cases failing. Existing positive transition cases stay intact. A further positive regression serializes and decodes a valid initiative-sequential-v2 checkpoint, preserves its previous-order receipt, then completes both planned buckets without rerolling. The resulting focused suite has twenty cases across both complete test files. Source repair and detection improvement are verified separately through the focused suite, full shared suite and strict/workspace type checks.
+
+The pure state machine represents a serializable checkpoint and gates its transitions. These unit tests do not prove a database transaction occurred, an observer received all permitted earlier facts, a real model followed its prompt, or the current consciousness pipeline awareness-v5 used this historical path. Such integration and live acceptance remain separate.
+
+RCA: docs/evidence/causal-execution-completion-rca-2026-10-07.think (CLI audit required before source repair). Authority: docs/adr/0001-turn-initiative-and-simultaneous-resolution.md, Decision and Compatibility clauses.

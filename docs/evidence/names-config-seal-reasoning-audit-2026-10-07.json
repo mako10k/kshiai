@@ -1,0 +1,212 @@
+{
+  "thought_id": "docs-evidence-names-config-seal-reasoning-2026-10-07",
+  "id_source": "file",
+  "report": {
+    "engine_version": "0.1.0",
+    "document_id": "docs-evidence-names-config-seal-reasoning-2026-10-07",
+    "generated_at": "2026-10-07T11:18:20.838Z",
+    "summary": {
+      "fatal_count": 0,
+      "error_count": 0,
+      "warning_count": 0,
+      "info_count": 0,
+      "hint_count": 8
+    },
+    "results": [
+      {
+        "issue_id": "ISSUE-001",
+        "category": "contradiction_candidate",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "D1",
+            "role": "decision",
+            "step_id": "S-D1"
+          },
+          {
+            "ref_id": "D2",
+            "role": "decision",
+            "step_id": "S-D2"
+          }
+        ],
+        "message": "D1 と D2 は同一根拠 E1, E2, E3 を共有しており、緊張関係にある可能性がある。",
+        "rationale": "複数の decision が同じ based_on 参照を共有しているため、観点と結論の整合性を再確認するべきである。",
+        "metadata": {
+          "shared_refs": [
+            "E1",
+            "E2",
+            "E3"
+          ],
+          "line": 11,
+          "column": 10,
+          "end_column": 12
+        }
+      },
+      {
+        "issue_id": "ISSUE-002",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "P1",
+            "role": "problem"
+          }
+        ],
+        "message": "problem P1 は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 4,
+          "column": 3,
+          "text": "Two original test files remain unsealed; passing them does not establish upstream authority.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-003",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "E1",
+            "role": "evidence",
+            "step_id": "S-E1"
+          }
+        ],
+        "message": "evidence E1 は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 6,
+          "column": 3,
+          "text": "F-CHR-03c requires normalized display/real-name collision checks. Three original cases exercise normalization, collision/non-collision and internal mock suffix allocation, not complete saving or regeneration.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-004",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "E2",
+            "role": "evidence",
+            "step_id": "S-E2"
+          }
+        ],
+        "message": "evidence E2 は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 8,
+          "column": 3,
+          "text": "ADR0008 bounds shadow side effects. ADR0018 governs ordinary persisted settings and isolated immutable override identities. Four original cases only parse names and deployment identity syntax; they do not activate a policy or grant Stage authority.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-005",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "E3",
+            "role": "evidence",
+            "step_id": "S-E3"
+          }
+        ],
+        "message": "evidence E3 は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 10,
+          "column": 3,
+          "text": "Independent read-only review permits both whole files within helper/parser regression scope. Original seven-case local diagnosis passed with no skipped cases; test and implementation bytes were unchanged.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-006",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "D1",
+            "role": "decision",
+            "step_id": "S-D1"
+          }
+        ],
+        "message": "decision D1 は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 12,
+          "column": 3,
+          "text": "Bind a scoped design to existing normative sources, two implementations to their scoped design, and each entire unchanged test file to its implementation. Preserve all original cases, assertions and limitations. No new policy adoption or external execution authority follows.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-007",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "D2",
+            "role": "decision",
+            "step_id": "S-D2"
+          }
+        ],
+        "message": "decision D2 は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 14,
+          "column": 3,
+          "text": "Read back exact source hashes and Cause links after normal Seal; retain all existing heads except explicitly registered new refs. Keep full251 goal incomplete and require the formal aggregate to stop while any unit remains unsealed.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-008",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "D1",
+            "role": "decision",
+            "step_id": "S-D1"
+          },
+          {
+            "ref_id": "D2",
+            "role": "decision",
+            "step_id": "S-D2"
+          }
+        ],
+        "message": "D1 と D2 は意味的に近接している可能性がある。",
+        "metadata": {
+          "line": 11,
+          "column": 10,
+          "end_column": 12,
+          "similarity": 0.6119,
+          "semantic_distance": 0.3881,
+          "embedding_provider": "ollama",
+          "embedding_model": "nomic-embed-text"
+        }
+      }
+    ],
+    "query_results": []
+  }
+}

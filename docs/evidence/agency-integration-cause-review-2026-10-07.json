@@ -1,0 +1,302 @@
+{
+  "nodes": [
+    {
+      "key": "design-agency-state-presence-type-correction",
+      "path": "docs/evidence/agency-state-presence-types-rca-2026-10-07.think",
+      "parents": [
+        "requirements",
+        "current",
+        "dynamic"
+      ],
+      "scope": "CLI audited fatal/error/warning0 static type presence loss only. Required local A/B fields remove2canonical assembly casts with no runtime behavior change; no production missing-state incident inferred.",
+      "ref": "all-tests-20261007/design-agency-state-presence-type-correction",
+      "test": false,
+      "sha256": "9b41b5705930fd387f13f8cd1ea88aad3d036cd048d2aa83c960e6074a40b9ac"
+    },
+    {
+      "key": "design-retained-agency-integration-test-contract",
+      "path": "docs/agency-integration-test-contract-review-2026-10-07.md",
+      "parents": [
+        "requirements",
+        "current",
+        "activation",
+        "expression",
+        "dynamic",
+        "cutoverOwner",
+        "cutoverReq",
+        "cutoverAdr",
+        "design-agency-state-presence-type-correction"
+      ],
+      "scope": "Whole17original cases; historical V3 fixture schema/service/private state/isolatedSQLite/CAS plus legacy creation rejection only. Current0039 exact accepted hashes verified, formalACCEPTANCE-node gap not repaired. No discarded trial revival, publiccreation success, awareness-v5 or networkquality.",
+      "ref": "all-tests-20261007/design-retained-agency-integration-test-contract",
+      "test": false,
+      "sha256": "e717494d8fe4326a73e5911e213a25897dc86d70275d5f769ce6fa0c12d9f9b8"
+    },
+    {
+      "key": "design-retained-agency-v3-contract",
+      "path": "docs/adr/0028-versioned-conscious-agency-contract.think",
+      "parents": [
+        "dynamic",
+        "current",
+        "activation",
+        "design-retained-agency-integration-test-contract"
+      ],
+      "scope": "Superseded0028 retained D2-D6 tuple/state/no-psyche/current observation/goal/later rules only through current0047/0051. Never standaloneAccepted or override dynamic-v4 repairs or current awareness-v5 pipeline.",
+      "ref": "all-tests-20261007/design-retained-agency-v3-contract",
+      "test": false,
+      "sha256": "b5ee7ff73adb102c2cefcc015ead40bf9afe6fa11993cb65234132146290d9ba"
+    },
+    {
+      "key": "fixture-retained-conscious-agency-v3",
+      "path": "backend/src/services/conscious-agency.fixtures.ts",
+      "parents": [
+        "inventory",
+        "battle",
+        "design-retained-agency-v3-contract",
+        "design-retained-agency-integration-test-contract"
+      ],
+      "scope": "Schema-validated synthetic V3 conversion of frozen inventory fixture and initial private agent/reaction states. Internal fixture only; not product authoring/activation or existing public oldbattle restoration.",
+      "ref": "all-tests-20261007/fixture-retained-conscious-agency-v3",
+      "test": false,
+      "sha256": "46c307d406e47a414372b8033c9b0a9df27524854810befe1252d0f49521900b"
+    },
+    {
+      "key": "implementation-retained-agency-v3-acceptance",
+      "path": "packages/shared/src/conscious-agency.ts",
+      "parents": [
+        "battle",
+        "design-retained-agency-v3-contract",
+        "design-retained-agency-integration-test-contract"
+      ],
+      "scope": "Strict V3 decoder/acceptConsciousDecisionV3 supplied-goal/ref/phase/state behavior reached by service and directSQLite fixtures. No synthetic producer meaning in production or tactical quality acceptance.",
+      "ref": "all-tests-20261007/implementation-retained-agency-v3-acceptance",
+      "test": false,
+      "sha256": "6dff7d4af9f07460536001771168d3115ed1fa6e38630d630f8f143ee0b2c870"
+    },
+    {
+      "key": "implementation-retained-agency-v3-request-boundary",
+      "path": "backend/src/llm/conscious-agency.ts",
+      "parents": [
+        "battle",
+        "design-retained-agency-v3-contract",
+        "design-retained-agency-integration-test-contract",
+        "implementation-retained-agency-v3-acceptance"
+      ],
+      "scope": "Exercised immutable compiler/tuple assertion, closed consciousRequest, current facts/reaction/result decoding/private goal accessor. State drift refused before chat; no whole V4/V5 binding acceptance.",
+      "ref": "all-tests-20261007/implementation-retained-agency-v3-request-boundary",
+      "test": false,
+      "sha256": "7f8d227dbebe1a6542a4764520014baa08022220052d3e06bc0afc71af922136"
+    },
+    {
+      "key": "implementation-sdk-retained-agency-v3-dispatch",
+      "path": "backend/src/llm/openai-compatible.ts",
+      "parents": [
+        "implementation-retained-agency-v3-request-boundary",
+        "design-retained-agency-v3-contract",
+        "design-retained-agency-integration-test-contract"
+      ],
+      "scope": "V3 normal/later dispatch and strict response processing through overriddenchatJson, noactualtransport. Requests/state markers checked, not live HTTP/modelquality/physicalaccounting or everyadapter branch.",
+      "ref": "all-tests-20261007/implementation-sdk-retained-agency-v3-dispatch",
+      "test": false,
+      "sha256": "8d4be097ddbfcb0da515dd0db402c7dc6dddccb763d625fce16165e7c524d2a5"
+    },
+    {
+      "key": "implementation-retained-agency-v3-activation",
+      "path": "backend/src/services/dialogue-pipeline-activation.ts",
+      "parents": [
+        "activation",
+        "settings",
+        "design-retained-agency-v3-contract",
+        "design-retained-agency-integration-test-contract"
+      ],
+      "scope": "Supplied storedV3 plus legacy override rejects before activation. Only this pure overrideguard exercised, not configuredenv/Stage deployment or receiptcreation flow.",
+      "ref": "all-tests-20261007/implementation-retained-agency-v3-activation",
+      "test": false,
+      "sha256": "37cae40cbe581864bf06203153a45c6aa2c7bae1f635f77712e1b8bef337573b"
+    },
+    {
+      "key": "implementation-retained-agency-v3-public-private-boundary",
+      "path": "backend/src/services/battle-public-projection.ts",
+      "parents": [
+        "requirements",
+        "expression",
+        "battle",
+        "design-retained-agency-integration-test-contract"
+      ],
+      "scope": "Public DTO explicit projection excludes tested private goal/intent/rationale markers; no claim of every secret field absence, rating policy or all publicprojection behavior.",
+      "ref": "all-tests-20261007/implementation-retained-agency-v3-public-private-boundary",
+      "test": false,
+      "sha256": "af717fea44e68f8324bbc50fb4a2dd4c91df75002d061c7817b7feb67523d6e0"
+    },
+    {
+      "key": "implementation-retained-agency-v3-storage",
+      "path": "backend/src/repositories/battles.ts",
+      "parents": [
+        "cutoverAdr",
+        "cutoverReq",
+        "db",
+        "battle",
+        "design-retained-agency-integration-test-contract"
+      ],
+      "scope": "Real isolatedSQLite insertNewBattle/getBattle/saveBattle closed-schema roundtrip and stale revision rejection. Raw compatibility inspection revalidates finalBattleState; no deletion receipt/lease/Postgres or realhistorical migration acceptance.",
+      "ref": "all-tests-20261007/implementation-retained-agency-v3-storage",
+      "test": false,
+      "sha256": "e0f5d0977e5a103249a382bbd5ac318f0a7a7b2abcde95ad2f4491ead5ca892f"
+    },
+    {
+      "key": "fixture-retained-legacy-character-storage",
+      "path": "backend/src/testing/historical-character-fixtures.ts",
+      "parents": [
+        "inventory",
+        "db",
+        "cutoverReq",
+        "design-retained-agency-integration-test-contract"
+      ],
+      "scope": "Internal historical V2 fixture population used only to prove currentpublic startBattle rejection. Not a delivered V2 writer or actual newV3 successful authoring/activation.",
+      "ref": "all-tests-20261007/fixture-retained-legacy-character-storage",
+      "test": false,
+      "sha256": "c29d82b0b3d86b882e4670829d6fb365f80c6dbe5a363b73e008263495fed165"
+    },
+    {
+      "key": "implementation-retained-agency-participant-gate",
+      "path": "backend/src/services/battle-participation-eligibility.ts",
+      "parents": [
+        "cutoverOwner",
+        "cutoverReq",
+        "cutoverAdr",
+        "design-retained-agency-integration-test-contract"
+      ],
+      "scope": "Currentgeneration must beV3 and battle-mechanics@3; legacyfixture rejected. Only blocked legacy case proven here, not allpositive capability/generation/access selectors.",
+      "ref": "all-tests-20261007/implementation-retained-agency-participant-gate",
+      "test": false,
+      "sha256": "9cd7beb95d5ce9f2e9ee5069941be5ee183cd578a64db229aa6e7ed2a227f417"
+    },
+    {
+      "key": "fixture-retained-agency-v3-mock-producer",
+      "path": "backend/src/llm/mock.ts",
+      "parents": [
+        "fixture-retained-conscious-agency-v3",
+        "implementation-retained-agency-v3-acceptance",
+        "design-retained-agency-integration-test-contract"
+      ],
+      "scope": "Only mockConsciousResult routed by advanceCharacterAgent(contract3) for internal service persistence fixtures. This is a testdouble, never real producer tactical/semantic/modelquality acceptance.",
+      "ref": "all-tests-20261007/fixture-retained-agency-v3-mock-producer",
+      "test": false,
+      "sha256": "df9fa66abdcd601351516c3903a09030690717b493454e8b5d141f0506cf385c"
+    },
+    {
+      "key": "implementation-retained-agency-v3-service-flow",
+      "path": "backend/src/services/battle-service.ts",
+      "parents": [
+        "battle",
+        "requirements",
+        "fixture-retained-conscious-agency-v3",
+        "implementation-retained-agency-v3-request-boundary",
+        "implementation-sdk-retained-agency-v3-dispatch",
+        "implementation-retained-agency-v3-activation",
+        "implementation-retained-agency-v3-public-private-boundary",
+        "implementation-retained-agency-v3-storage",
+        "implementation-retained-agency-participant-gate",
+        "design-agency-state-presence-type-correction",
+        "design-retained-agency-integration-test-contract"
+      ],
+      "scope": "Exercised advanceCharacterAgents/later build/public facade/startBattle refusal; strict required local canonical A/B state avoids casts. Synthetic historical contract, not all service/runtime transitions, newcreation success or legacytrial revival; sourcecurrent preexistingWIP retained.",
+      "ref": "all-tests-20261007/implementation-retained-agency-v3-service-flow",
+      "test": false,
+      "sha256": "80eda28c060f4f789dfb64a13a3babf2e4d82db77a8b34cebeb938cba040bce8"
+    },
+    {
+      "key": "retained-agency-v3-binding-current",
+      "path": "backend/src/services/conscious-agency-binding.test.ts",
+      "parents": [
+        "battle",
+        "activation",
+        "design-retained-agency-v3-contract",
+        "fixture-retained-conscious-agency-v3",
+        "inventory",
+        "design-retained-agency-integration-test-contract"
+      ],
+      "scope": "Entire unchanged5case file; schema/compiler/gen/policy/dialogue/override/default fixture constraints. Not actual successful battlecreation or allconsumer immutable binding proof.",
+      "ref": "verification/retained-agency-v3-binding-current-20261007",
+      "test": true,
+      "sha256": "4b0af7bbfe5cb5a24f7dac2974dee11bbe9b42a4a69fd4aa778e46d9a4be9c08"
+    },
+    {
+      "key": "retained-agency-v3-runtime-current",
+      "path": "backend/src/services/conscious-agency-runtime.test.ts",
+      "parents": [
+        "requirements",
+        "design-retained-agency-v3-contract",
+        "implementation-retained-agency-v3-service-flow",
+        "implementation-sdk-retained-agency-v3-dispatch",
+        "implementation-retained-agency-v3-activation",
+        "implementation-retained-agency-v3-public-private-boundary",
+        "fixture-retained-conscious-agency-v3",
+        "design-retained-agency-integration-test-contract"
+      ],
+      "scope": "Entire unchanged9cases including3phases: no psyche/current-privateinput/priorstate/repeatedspeech/independentexpression/tupleguard/disabled missingobservation hold/later no tick/overrideguard. OverriddenchatJson, no network/modelquality/current awareness-v5 proof.",
+      "ref": "verification/retained-agency-v3-runtime-current-20261007",
+      "test": true,
+      "sha256": "5e67fe87518c6699ded7dd5f4f799f4ca8a1c4ab8dbb7dccb64a5b6c23f93198"
+    },
+    {
+      "key": "retained-agency-v3-persistence-current",
+      "path": "backend/src/services/conscious-agency-persistence.test.ts",
+      "parents": [
+        "requirements",
+        "cutoverOwner",
+        "cutoverReq",
+        "cutoverAdr",
+        "db",
+        "implementation-retained-agency-v3-service-flow",
+        "implementation-retained-agency-v3-storage",
+        "implementation-retained-agency-v3-public-private-boundary",
+        "implementation-retained-agency-participant-gate",
+        "fixture-retained-legacy-character-storage",
+        "fixture-retained-agency-v3-mock-producer",
+        "implementation-retained-agency-v3-acceptance",
+        "settings",
+        "design-retained-agency-integration-test-contract"
+      ],
+      "scope": "Entire unchanged3case file: actual blocked legacy startBattle plus syntheticV3 service/reload/secondjudgment/staleCAS and direct state/publicmarker roundtrip. Directinsert bypasses publiccreation; lastSpeech assertion not entire service semantics. No discardedcutover trial or live DB/provider.",
+      "ref": "verification/retained-agency-v3-persistence-current-20261007",
+      "test": true,
+      "sha256": "2ca92b44d0b2abedd6c521f4319f4242abfc917021546a7b61ded1299fcf0ec6"
+    }
+  ],
+  "seeds": {
+    "requirements": "all-tests-20261007/authority-semantic-observation-requirements",
+    "current": "awareness-guidance-20261007/authority-current",
+    "battle": "all-tests-20261007/implementation-closed-battle-contract",
+    "activation": "all-tests-20261007/authority-dialogue-activation",
+    "expression": "all-tests-20261007/authority-separated-compact-expression",
+    "dynamic": "all-tests-20261007/authority-dynamic-historical-continuation",
+    "inventory": "all-tests-20261007/fixture-current-legacy-inventory-creation",
+    "cutoverOwner": "acceptance/v3-battle-cutover-owner-20260929",
+    "cutoverReq": "acceptance/v3-battle-cutover-requirements-v2",
+    "cutoverAdr": "acceptance/adr-0039-v3-battle-lifecycle",
+    "db": "all-tests-20261007/implementation-provider-control-sqlite-schema",
+    "settings": "all-tests-20261007/implementation-retained-dialogue-settings-storage"
+  },
+  "authority": [
+    "Current Accepted0047/0051 inherit old0028 only",
+    "Accepted0018",
+    "Exact0039 ownerpackage/currentreadback R1; missingformalacceptance node remains"
+  ],
+  "diagnostic": {
+    "focusedPass": 17,
+    "postRepairPass": 31,
+    "relatedHttpPass": 14,
+    "relatedWiringPass": 45,
+    "fail": 0,
+    "skipped": 0,
+    "strictTypecheckExit": 0,
+    "workspaceTypecheckExit": 0
+  },
+  "limitations": [
+    "All17original cases retained; local type annotation plus2cast removals only, no runtimechange",
+    "Synthetic historicalV3 helpers/service/SQLite, not publiccreation success or discardedtrial revival",
+    "Mocked chat; not current awareness-v5/live provider/completeprivacy acceptance",
+    "Four existing scoped area refs refreshed with exactpreviouscauses after14HTTPpass, other928existingheads unchanged"
+  ]
+}

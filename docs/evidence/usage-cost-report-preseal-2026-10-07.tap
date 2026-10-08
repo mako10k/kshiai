@@ -1,0 +1,41 @@
+TAP version 13
+# Subtest: estimated usage cost report
+    # Subtest: splits cached input and does not add reasoning twice
+    ok 1 - splits cached input and does not add reasoning twice
+      ---
+      duration_ms: 5.046632
+      type: 'test'
+      ...
+    # Subtest: retains known output subtotal while identifying unknown usage and missing prices
+    ok 2 - retains known output subtotal while identifying unknown usage and missing prices
+      ---
+      duration_ms: 0.810613
+      type: 'test'
+      ...
+    # Subtest: reports known token subtotals and unknown counts without requiring a price file
+    ok 3 - reports known token subtotals and unknown counts without requiring a price file
+      ---
+      duration_ms: 0.613409
+      type: 'test'
+      ...
+    # Subtest: rejects impossible overlapping categories and reprices without mutating observations
+    ok 4 - rejects impossible overlapping categories and reprices without mutating observations
+      ---
+      duration_ms: 3.159778
+      type: 'test'
+      ...
+    1..4
+ok 1 - estimated usage cost report
+  ---
+  duration_ms: 11.151194
+  type: 'suite'
+  ...
+1..1
+# tests 4
+# suites 1
+# pass 4
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 240.528697

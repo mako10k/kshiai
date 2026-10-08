@@ -1,6 +1,7 @@
 // R: Verify physical provider attempt accounting and cutover permit outcomes.
 import assert from "node:assert/strict";
 import { after, describe, it } from "node:test";
+import { z } from "zod";
 import { mkdtempSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
@@ -111,10 +112,11 @@ async function withOpenCutover<T>(
 }
 
 function permitState(bindingOperationId: string): string | undefined {
-  return (getDb().prepare(
+  const row = z.object({ state: z.string() }).passthrough().optional().parse(getDb().prepare(
     `SELECT state FROM cutover_operation_permits
       WHERE binding_operation_id = ? ORDER BY created_at DESC LIMIT 1`,
-  ).get(bindingOperationId) as { state?: string } | undefined)?.state;
+  ).get(bindingOperationId));
+  return row?.state;
 }
 
 describe("provider operation accounting", () => {
@@ -264,56 +266,35 @@ describe("provider operation accounting", () => {
     });
   });
 
-  it("accounts for each retry at the OpenAI-compatible transport boundary", async () => {
+  it("accounts for each retry at the OpenAI-compatible transport boundary", async (t) => {
     const context = await createRun("adapter-retry", 3);
-    const provider = new OpenAiCompatibleProvider({
+    class RetryProbeProvider extends OpenAiCompatibleProvider {
+      request() {
+        return this.chatJson("system", "user", { tier: "fast", label: "narrateTurn" });
+      }
+    }
+    let outboundCalls = 0;
+    t.mock.method(globalThis, "fetch", async () => {
+      outboundCalls += 1;
+      if (outboundCalls === 1) {
+        return Response.json({ error: { message: "rate limited" } }, {
+          status: 429, headers: { "retry-after-ms": "0" },
+        });
+      }
+      return Response.json({
+        choices: [{ message: { content: '{"ok":true}' } }],
+        usage: { total_tokens: 23 },
+      });
+    });
+    const provider = new RetryProbeProvider({
       name: "fake-provider",
       apiKey: "test-only",
       baseUrl: "https://example.invalid/v1",
       modelEngine: "fake-engine",
       modelFast: "fake-fast",
-    }) as unknown as {
-      client: {
-        chat: {
-          completions: {
-            create(body: unknown, options: unknown): Promise<unknown>;
-          };
-        };
-      };
-      chatJson(
-        system: string,
-        user: string,
-        opts: { tier: "fast"; label: string },
-      ): Promise<unknown>;
-    };
-    let outboundCalls = 0;
-    provider.client = {
-      chat: {
-        completions: {
-          create: async () => {
-            outboundCalls += 1;
-            if (outboundCalls === 1) {
-              throw Object.assign(new Error("rate limited"), {
-                name: "RateLimitError",
-                status: 429,
-                headers: { "retry-after-ms": "0" },
-              });
-            }
-            return {
-              choices: [{ message: { content: "{\"ok\":true}" } }],
-              usage: { total_tokens: 23 },
-            };
-          },
-        },
-      },
-    };
-
+    });
     const result = await accounting.withBattleProviderOperationContext(
-      context.battleId,
-      () => provider.chatJson("system", "user", {
-        tier: "fast",
-        label: "narrateTurn",
-      }),
+      context.battleId, () => provider.request(),
     );
     assert.deepEqual(result, { ok: true });
     assert.equal(outboundCalls, 2);
@@ -566,8 +547,9 @@ describe("provider operation accounting", () => {
   });
 
   it("stores only bounded accounting metadata", () => {
-    const columns = getDb().prepare("PRAGMA table_info(provider_operation_attempts)")
-      .all() as Array<{ name: string }>;
+    const columns = z.array(z.object({ name: z.string() }).passthrough()).parse(
+      getDb().prepare("PRAGMA table_info(provider_operation_attempts)").all(),
+    );
     const names = columns.map((column) => column.name);
     assert.deepEqual(names, [
       "run_id",

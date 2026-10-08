@@ -1,0 +1,15 @@
+{
+  "schema": "kshiai/type-only-source-equivalence/v1",
+  "source": "backend/src/services/battle-service.ts",
+  "oldSeal": "b98f66956fd4cdcf715e44ebd26c18d43b9ac81bf2f4ed77bb0a7964b87f0e78",
+  "onlyDiff": "Explicit settled-result tuple for nullable character agent output",
+  "emittedJavaScriptIdentical": true,
+  "emittedSha256": "0188474020a508c3163fb4995e0cf2e175fb40ee5a90e6a930e633ac2a3b78a0",
+  "strictE2ESpecTypecheckExit": 0,
+  "guidanceDiagnostic": {
+    "passed": 23,
+    "failed": 0,
+    "skipped": 0
+  },
+  "historicalReceiptScope": "Original omission and runtime observations retained as history; counters and prior mutation timestamps are not rewritten as new measurements."
+}

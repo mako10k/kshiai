@@ -1,0 +1,47 @@
+TAP version 13
+# Subtest: structured narration route acceptance
+    # Subtest: records structure failure without exposing a partial style
+    ok 1 - records structure failure without exposing a partial style
+      ---
+      duration_ms: 82.388719
+      type: 'test'
+      ...
+    # Subtest: keeps legacy styles manageable but outside selectors and direct binding
+    ok 2 - keeps legacy styles manageable but outside selectors and direct binding
+      ---
+      duration_ms: 151.223165
+      type: 'test'
+      ...
+    # Subtest: creates and upgrades only after owner confirmation with idempotent readback
+    ok 3 - creates and upgrades only after owner confirmation with idempotent readback
+      ---
+      duration_ms: 88.139965
+      type: 'test'
+      ...
+    # Subtest: binds the exact ready generation and never appends one at battle start
+    ok 4 - binds the exact ready generation and never appends one at battle start
+      ---
+      duration_ms: 197.109057
+      type: 'test'
+      ...
+    # Subtest: persists expiry and rejects a candidate after current-pointer drift
+    ok 5 - persists expiry and rejects a candidate after current-pointer drift
+      ---
+      duration_ms: 19.926508
+      type: 'test'
+      ...
+    1..5
+ok 1 - structured narration route acceptance
+  ---
+  duration_ms: 653.786811
+  type: 'suite'
+  ...
+1..1
+# tests 5
+# suites 1
+# pass 5
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 2761.586008

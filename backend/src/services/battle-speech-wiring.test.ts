@@ -1,6 +1,15 @@
+// R: Verify committed speech and narrator projections with complete historical bindings.
 import assert from "node:assert/strict";
+import { createHash } from "node:crypto";
+import { z } from "zod";
 import { describe, it } from "node:test";
 import {
+  BattleAssetManifestSchema,
+  BattlefieldInstanceSchema,
+  CombatReadyCharacterSheetSchema,
+  defaultNarrationSnapshot,
+  snapshotDialoguePipelineSettings,
+  type BattleAssetManifest,
   buildCharacterSelfProfileAnchor,
   buildBattleTurnRecord,
   buildNarrationPerceptionView,
@@ -50,15 +59,37 @@ import {
   type ChatOpts,
 } from "../llm/openai-compatible.js";
 
-function enableDeterministicPsyche(state: BattleState): void {
-  state.assetManifest = {
-    rules: {
-      battleEngine: "battle-engine-v1",
-      temporalRules: "initiative-window-v2",
-      psycheReaction: PSYCHE_REACTION_POLICY_V1,
-      characterFocus: CHARACTER_FOCUS_POLICY_V1,
-    },
-  } as BattleState["assetManifest"];
+// Complete historical manifest: fixture rules cannot bypass binding validation.
+function speechManifest(state: BattleState, sideA: CharacterSheet, sideB: CharacterSheet): BattleAssetManifest {
+  const digest = (value: unknown) => createHash("sha256").update(JSON.stringify(value)).digest("hex");
+  const binding = (value: CharacterSheet) => {
+    const generationId = `speech-${value.id}`;
+    return { assetId: value.id, generationId, contentDigest: digest(value),
+      snapshot: CombatReadyCharacterSheetSchema.parse(value),
+      basicAttackSource: { kind: "character_generation_v2", generationId,
+        definitionPath: "capabilities.basicAction" } };
+  };
+  const narration = state.narrationStyle ?? defaultNarrationSnapshot();
+  const battlefield = state.battlefield ?? BattlefieldInstanceSchema.parse({
+    displayName: "検証広場", scene: "二人が対峙する", terrain: "平地", narrativeSetup: "発声検査",
+  });
+  const pipeline = snapshotDialoguePipelineSettings(defaultDialoguePipelineSettings());
+  return BattleAssetManifestSchema.parse({
+    schemaVersion: 2, boundAt: state.createdAt,
+    characters: { a: binding(sideA), b: binding(sideB) },
+    narrationStyle: { assetId: narration.id, generationId: "speech-style", contentDigest: digest(narration), snapshot: narration },
+    battlefield: { assetId: null, generationId: "speech-field", contentDigest: digest(battlefield), snapshot: battlefield },
+    dialoguePipeline: { generationId: "speech-pipeline", contentDigest: digest(pipeline), snapshot: pipeline, activationSource: "default" },
+    rules: { battleEngine: "battle-engine-v1", temporalRules: "initiative-window-v2", psycheReaction: PSYCHE_REACTION_POLICY_V1, characterFocus: CHARACTER_FOCUS_POLICY_V1 },
+  });
+}
+
+function enableDeterministicPsyche(state: BattleState, sideA: CharacterSheet, sideB: CharacterSheet): void {
+  state.assetManifest = speechManifest(state, sideA, sideB);
+}
+
+function traceObject(value: unknown): Record<string, unknown> {
+  return z.record(z.string(), z.unknown()).parse(value ?? {});
 }
 
 function sheet(
@@ -146,26 +177,18 @@ describe("character-authored public speech", () => {
       turnLimit: 20,
       prologuePending: false,
     });
-    state.assetManifest = {
-      rules: {
-        battleEngine: "battle-engine-v1",
-        temporalRules: "initiative-window-v2",
-        psycheReaction: PSYCHE_REACTION_POLICY_V1,
-        characterDefinitionRules: "character-definition-rules-v2",
+    const manifest = speechManifest(state, sideA, sideB);
+    state.assetManifest = { ...manifest,
+      rules: { ...manifest.rules, characterDefinitionRules: "character-definition-rules-v2" },
+      characters: { ...manifest.characters,
+        a: { ...manifest.characters.a, compilerInputsV2: {
+          psycheTraits: compileCharacterPsycheTraitsV1(definition),
+          deepPsyche: projectCharacterDeepPsycheV2(definition),
+          consciousSelf: projectCharacterConsciousSelfV2(definition),
+          actionNorms: compileCharacterActionNormProgramV2(definition), relationship,
+        } },
       },
-      characters: {
-        a: {
-          compilerInputsV2: {
-            psycheTraits: compileCharacterPsycheTraitsV1(definition),
-            deepPsyche: projectCharacterDeepPsycheV2(definition),
-            consciousSelf: projectCharacterConsciousSelfV2(definition),
-            actionNorms: compileCharacterActionNormProgramV2(definition),
-            relationship,
-          },
-        },
-        b: {},
-      },
-    } as BattleState["assetManifest"];
+    };
 
     const result = await advanceCharacterAgents({
       llm: new MockLlmProvider(),
@@ -205,7 +228,7 @@ describe("character-authored public speech", () => {
       turnLimit: 20,
       prologuePending: false,
     });
-    enableDeterministicPsyche(before);
+    enableDeterministicPsyche(before, sideA, sideB);
     before.plannedActionA = { kind: "wait" };
     before.plannedActionB = { kind: "basic_attack" };
     const provider = new MockLlmProvider();
@@ -362,7 +385,7 @@ describe("character-authored public speech", () => {
       turnLimit: 20,
       prologuePending: false,
     });
-    enableDeterministicPsyche(before);
+    enableDeterministicPsyche(before, sideA, sideB);
     const environmentEvent = {
       id: "hap_llm_1",
       type: "situation" as const,
@@ -435,21 +458,20 @@ describe("character-authored public speech", () => {
     assert.equal(pipelineTrace?.deepPsyche?.a.providerStatus, "skipped");
     assert.equal(pipelineTrace?.deepPsyche?.b.providerStatus, "skipped");
     assert.equal(
-      (pipelineTrace?.deepPsyche?.a.acceptedOutput as {
-        reactionReceiptV1?: { route?: string };
-      } | null)?.reactionReceiptV1?.route,
+      z.object({ reactionReceiptV1: z.object({ route: z.string() }) })
+        .parse(pipelineTrace?.deepPsyche?.a.acceptedOutput).reactionReceiptV1.route,
       "deterministic_no_call",
     );
     assert.equal(
-      "dialoguePipeline" in ((pipelineTrace?.deepPsyche?.a.input as object | null) ?? {}),
+      "dialoguePipeline" in traceObject(pipelineTrace?.deepPsyche?.a.input),
       false,
     );
     assert.equal(
-      "turnObservation" in ((pipelineTrace?.deepPsyche?.a.input as object | null) ?? {}),
+      "turnObservation" in traceObject(pipelineTrace?.deepPsyche?.a.input),
       false,
     );
     assert.equal(
-      "dialoguePipeline" in ((pipelineTrace?.characterAgents?.a.input as object | null) ?? {}),
+      "dialoguePipeline" in traceObject(pipelineTrace?.characterAgents?.a.input),
       false,
     );
     assert.equal(pipelineTrace?.characterAgents?.phase, "turn");
@@ -461,7 +483,7 @@ describe("character-authored public speech", () => {
       detail: null,
     });
     assert.equal(
-      (pipelineTrace?.characterAgents?.a.input as { phase?: string } | null)?.phase,
+      traceObject(pipelineTrace?.characterAgents?.a.input).phase,
       "turn",
     );
     assert.ok(pipelineTrace?.characterAgents?.a.providerOutput);
@@ -636,7 +658,7 @@ describe("character-authored public speech", () => {
       turnLimit: 20,
       prologuePending: false,
     });
-    enableDeterministicPsyche(before);
+    enableDeterministicPsyche(before, sideA, sideB);
     const controlBefore = structuredClone(before);
     delete controlBefore.assetManifest!.rules.characterFocus;
     const after = {
@@ -875,8 +897,8 @@ describe("character-authored public speech", () => {
       },
     });
 
-    const psycheInput = result.state.turnRecords.at(-1)?.pipelineTrace?.deepPsyche?.a.input as
-      { previous?: { privateMemory?: string }; matchupMemory?: unknown };
+    const psycheInput = z.object({ previous: z.object({ privateMemory: z.string() }), matchupMemory: z.unknown() })
+      .parse(result.state.turnRecords.at(-1)?.pipelineTrace?.deepPsyche?.a.input);
     assert.equal(psycheInput.previous?.privateMemory, "");
     assert.deepEqual(psycheInput.matchupMemory, {
       preBattlePlan: "足を止めず、間合いの変化を測る。",

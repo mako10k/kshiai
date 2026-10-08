@@ -1,0 +1,14 @@
+{
+  "reviewer": "battle_helper_contract_review",
+  "classification": "INSIDE",
+  "originalCases": 5,
+  "pass": 5,
+  "fail": 0,
+  "skip": 0,
+  "files": {
+    "scripts/adr-historical-exceptions.test.mjs": "2b49360fdd6744fcc92be4fc51bd547fb17fac911531fb0f9d4ec7191f28bb98"
+  },
+  "policy": "docs/adr/README.md:34-48",
+  "policyAlreadyPresentAtHEAD": true,
+  "excluded": "Newexceptions, acceptingProposed0019 or reapprovinghistoricalsemantics"
+}

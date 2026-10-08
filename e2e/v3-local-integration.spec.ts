@@ -7,6 +7,7 @@ import { once } from "node:events";
 import { expect, test } from "@playwright/test";
 import { serve } from "@hono/node-server";
 import { z } from "zod";
+import type { BattleState } from "@kshiai/shared";
 
 test("formal Neva/Rio remain immutable through browser review, completion, replay and cutover", async ({ page, context }, testInfo) => {
   test.setTimeout(180_000);
@@ -26,12 +27,12 @@ test("formal Neva/Rio remain immutable through browser review, completion, repla
   process.env.AUTHORING_TASK_QUEUE = "";
 
   const { closeDatabase, query } = await import("../backend/src/db.js");
-  const { MockLlmProvider } = await import("../backend/src/llm/mock.js");
+  const { createOfflineAwarenessProvider } = await import("../backend/src/testing/offline-awareness-provider.js");
+  const { saveHistoricalCharacterFixture } = await import("../backend/src/testing/historical-character-fixtures.js");
   const { buildRoutes } = await import("../backend/src/routes.js");
   const { prepareV3TrialCharacter } = await import("../backend/src/repositories/local-v3-trial-characters.js");
   const assets = await import("../backend/src/repositories/asset-generations.js");
   const authoring = await import("../backend/src/repositories/character-assets-v2.js");
-  const characters = await import("../backend/src/repositories/characters.js");
   const { getBattle } = await import("../backend/src/repositories/battles.js");
   const { advanceTurn } = await import("../backend/src/services/battle-service.js");
   const { requestDigest } = await import("../backend/src/services/distributed-guard.js");
@@ -58,7 +59,7 @@ test("formal Neva/Rio remain immutable through browser review, completion, repla
   };
 
   const ownerUserId = "vt103-local-owner";
-  const llm = new MockLlmProvider();
+  const llm = createOfflineAwarenessProvider();
   const app = buildRoutes({ llm });
   const apiServer = serve({ fetch: app.fetch, hostname: "127.0.0.1", port: 0 });
   if (!apiServer.listening) await once(apiServer, "listening");
@@ -105,7 +106,7 @@ test("formal Neva/Rio remain immutable through browser review, completion, repla
       const attempt = await prepareV3TrialCharacter(input);
       assert.equal(await assets.getCurrentAssetGeneration("character", input.characterId), null);
       await page.goto(`${origin}/reviews/${attempt.attemptId}`);
-      await expect(page.getByRole("heading", { name: "保存済みの構造化候補（V3）" })).toBeVisible();
+      await expect(page.getByRole("heading", { name: "保存済みの構造化候補（キャラクター定義 v3）" })).toBeVisible();
       await expect(page.getByRole("button", { name: "確定して保存" })).toBeEnabled();
       const confirmation = page.waitForResponse((response) => response.url().endsWith(`/api/characters/${attempt.attemptId}/confirm`));
       await page.getByRole("button", { name: "確定して保存" }).click();
@@ -141,7 +142,12 @@ test("formal Neva/Rio remain immutable through browser review, completion, repla
     await page.goto(`${origin}/battles/${battleId}?resume=1`);
     await expect(page.getByRole("button", { name: "再開する", exact: true })).toBeVisible();
     const bound = await getBattle(battleId);
-    assert.ok(bound?.assetManifest?.schemaVersion === 4);
+    assert.ok(bound?.assetManifest?.schemaVersion === 5);
+    const { AwarenessNormalPolicy, CurrentAwarenessPromptRevision } = await import("@kshiai/shared");
+    assert.deepEqual(bound.assetManifest.awarenessPolicy, AwarenessNormalPolicy);
+    assert.equal(bound.assetManifest.promptRevision, CurrentAwarenessPromptRevision);
+    assert.equal(bound.assetManifest.outputRevision, "awareness-output-v1");
+    assert.equal(llm.encounterDispatches, 1);
     for (const [index, side] of (["a", "b"] as const).entries()) {
       assert.equal(bound.assetManifest.characters[side].generationId, registrations[index]?.generationId);
       assert.equal(bound.assetManifest.characters[side].contentDigest, registrations[index]?.digest);
@@ -162,7 +168,7 @@ test("formal Neva/Rio remain immutable through browser review, completion, repla
       const sourceText = "ローカル結合試験: 意識上の指針の優先度を1上げる";
       const sourceDigest = assets.assetContentDigest(sourceText);
       const { attempt } = await authoring.beginCharacterAuthoringAttempt({
-        characterId: input.characterId, ownerUserId, kind: "revision",
+        characterId: input.characterId, ownerUserId, kind: "revision", targetSchemaVersion: 3,
         idempotencyKey: `vt103-edit-${input.characterId}`, requestDigest: assets.assetContentDigest({ sourceText, characterId: input.characterId }), sourceText, sourceDigest,
       });
       envelope.provenance = { ...envelope.provenance, sourceKind: "revision_instruction", sourceDigest, attemptId: attempt.attemptId };
@@ -191,6 +197,15 @@ test("formal Neva/Rio remain immutable through browser review, completion, repla
     }
     await page.goto(`${origin}/battles/${battleId}?resume=1`);
     await expect(page.getByRole("button", { name: "再開する", exact: true })).toBeVisible();
+    const generator = createLlmNarrationGenerator(llm);
+    const drainReadyNarration = async () => {
+      for (let index = 0; index < 12; index += 1) {
+        const result = await processNextNarration({ battleId, ownerId: "vt103-local-worker", generator });
+        if (result === "idle" || result === "deferred") return;
+        assert.equal(result, "completed");
+      }
+      assert.fail("ready narration did not drain within the bound queue size");
+    };
     for (const endpoint of ["advance", "advance/stream", "action"]) {
       const key = `vt103-${endpoint.replaceAll("/", "-")}`;
       const request = () => page.request.post(`${origin}/api/battles/${battleId}/${endpoint}`, { headers: { "Idempotency-Key": key } });
@@ -209,6 +224,7 @@ test("formal Neva/Rio remain immutable through browser review, completion, repla
       const stateReplay = await getBattle(battleId);
       assert.equal(stateReplay?.battleRevision, state.battleRevision);
       assert.deepEqual(stateReplay?.assetManifest, bound.assetManifest);
+      await drainReadyNarration();
     }
     console.log("vt103: complete battle");
     let finalState = await getBattle(battleId);
@@ -220,29 +236,30 @@ test("formal Neva/Rio remain immutable through browser review, completion, repla
       const next = await getBattle(battleId);
       assert.ok(next);
       assert.deepEqual(next.assetManifest, bound.assetManifest);
+      assert.notEqual(next.status, "incomplete", next.incompleteReason ?? "unexpected incomplete battle");
       finalState = next;
       advances += 1;
+      await drainReadyNarration();
     }
     assert.equal(finalState.status, "finished");
     assert.equal(finalState.aftermathPending, false);
     console.log("vt103: drain narration", finalState.turn);
-    const generator = createLlmNarrationGenerator(llm);
-    const entries = await query<{ receipt_id: string; input_json: string; input_digest: string }>("SELECT receipt_id, input_json, input_digest FROM battle_narration_entries WHERE battle_id = $1 ORDER BY sequence", [battleId]);
+    await drainReadyNarration();
+    const entries = await query<{ receipt_id: string; input_json: string; input_digest: string; status: string }>("SELECT receipt_id, input_json, input_digest, status FROM battle_narration_entries WHERE battle_id = $1 ORDER BY sequence", [battleId]);
     assert.ok(entries.rowCount > 0);
     // The worker receives each exact committed frozen request, not a rebuilt current-character request.
     for (const row of entries.rows) {
-      const receipt = finalState.phaseReceipts?.find((value) => value.id === row.receipt_id);
+      const receipt: NonNullable<BattleState["phaseReceipts"]>[number] | undefined = finalState.phaseReceipts?.find((value) => value.id === row.receipt_id);
       assert.ok(receipt);
       const request: unknown = JSON.parse(row.input_json);
       assert.deepEqual(request, receipt.narrationInput);
       assert.equal(row.input_digest, receipt.narrationInputDigest);
+      assert.equal(row.status, "completed");
+      const dispatched = llm.frozenNarrationRequests.flat().filter((material) => material.turnReceiptId === row.receipt_id);
+      assert.equal(dispatched.length, 1, "each committed receipt reaches the typed narration port exactly once");
+      assert.deepEqual(dispatched[0], request);
     }
-    for (let index = 0; index < entries.rowCount; index += 1) {
-      assert.equal(await processNextNarration({ battleId, ownerId: "vt103-local-worker", generator: async (raw, workerContext) => {
-        assert.ok(entries.rows.some((row) => row.input_json === JSON.stringify(raw)));
-        return generator(raw, workerContext);
-      } }), "completed");
-    }
+    assert.equal(llm.frozenNarrationRequests.flat().length, entries.rowCount);
     await page.reload();
     await expect(page.getByRole("heading", { name: "結果", exact: true })).toBeVisible();
     const resultText = finalState.winnerSide === "draw" ? "引き分け"
@@ -256,8 +273,8 @@ test("formal Neva/Rio remain immutable through browser review, completion, repla
     console.log("vt103: finished visible; cutover readback");
     // V2 fixtures are management-only: both mixed directions and V2-by-V2 fail.
     const legacy = createConsciousFixture();
-    await characters.saveSheet({ ...legacy.mine, id: "vt103-v2-a", ownerUserId });
-    await characters.saveSheet({ ...legacy.opp, id: "vt103-v2-b", ownerUserId, visibility: "public" });
+    await saveHistoricalCharacterFixture({ ...legacy.mine, id: "vt103-v2-a", ownerUserId });
+    await saveHistoricalCharacterFixture({ ...legacy.opp, id: "vt103-v2-b", ownerUserId, visibility: "public" });
     for (const [mine, opponent] of [["vt103-v2-a", "vt103-v2-b"], ["vt103-neva", "vt103-v2-b"], ["vt103-v2-a", "vt103-rio"]]) {
       const response = await page.request.post(`${origin}/api/battles`, { headers: { "Idempotency-Key": `vt103-reject-${mine}-${opponent}` }, data: { myCharacterId: mine, opponentCharacterId: opponent } });
       assert.equal(response.status(), 409, await response.text());
@@ -298,7 +315,7 @@ test("formal Neva/Rio remain immutable through browser review, completion, repla
     await page.reload();
     await expect(page.getByText(resultText, { exact: true })).toBeVisible();
     assert.deepEqual(pageErrors, []);
-    const evidence = { schema: "kshiai/vt103-local-integration/v1", seed: 103, provider: "MockLlmProvider", database: "disposable SQLite", registrations, edits,
+    const evidence = { schema: "kshiai/vt103-local-integration/v1", seed: 103, provider: "offline typed awareness ports (usage unknown)", database: "disposable SQLite", registrations, edits,
       battleId, turn: finalState.turn, status: finalState.status, aftermathPending: finalState.aftermathPending,
       winnerSide: finalState.winnerSide, resultText, advances, narrationEntries: entries.rowCount,
       cutover: plan, discarded, finishedRetained: true, browserErrors: pageErrors };

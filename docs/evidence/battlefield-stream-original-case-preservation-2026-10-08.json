@@ -1,0 +1,25 @@
+{
+  "method": "TypeScript AST title/call text ignoring whitespace",
+  "entries": [
+    {
+      "path": "packages/shared/src/battlefield-definition-check.test.ts",
+      "beforeSha256": "3f4dc90ba420a7ffa0a7e3296683019e21f6cd8e0b7ba9cb472dd8534d3eb6d1",
+      "afterSha256": "251617d96d514e5d506bef37f872839bd2dd5c39566326e7273c2abeb0720e78",
+      "originalCases": 3,
+      "currentCases": 4,
+      "originalAssertions": 12,
+      "currentAssertions": 14,
+      "allOriginalCasesAndAssertionsRetained": true
+    },
+    {
+      "path": "packages/shared/src/battle-stream.test.ts",
+      "beforeSha256": "5e74f82170786194101a9567f136489c38f098a8924d865c2f00e6cdb6cd9b7c",
+      "afterSha256": "5e74f82170786194101a9567f136489c38f098a8924d865c2f00e6cdb6cd9b7c",
+      "originalCases": 3,
+      "currentCases": 3,
+      "originalAssertions": 6,
+      "currentAssertions": 6,
+      "allOriginalCasesAndAssertionsRetained": true
+    }
+  ]
+}

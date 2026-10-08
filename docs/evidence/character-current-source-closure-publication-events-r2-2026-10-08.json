@@ -1,0 +1,3144 @@
+[
+  {
+    "key": "new:authority",
+    "ref": "all-tests-20261008/character-complete-source/authority",
+    "sealId": "abdf8001ac5eec778f76d368074880c8275f1a6d6ea8d83f3ed27bf9bb19b280",
+    "path": "docs/adr/0059-complete-focused-character-review-payload.think",
+    "sourceSha256": "620156cf9db3c86ab200319414896c12ceb70373f38156d6bad4d4441e11fb5f",
+    "oldSealId": null,
+    "causeSealIds": [],
+    "test": null,
+    "secondsSinceStart": 7.789
+  },
+  {
+    "key": "new:design",
+    "ref": "all-tests-20261008/character-complete-source/design",
+    "sealId": "09428bbc862625313691ce80cf94a3411c6fa122e33c4a767cc15b47da145dd0",
+    "path": "docs/character-complete-final-payload-detailed-design-2026-10-08.md",
+    "sourceSha256": "349c36c87d406a870ef391f91f969008c453edcff656cd11f1c0cbad9bcb51bf",
+    "oldSealId": null,
+    "causeSealIds": [
+      "abdf8001ac5eec778f76d368074880c8275f1a6d6ea8d83f3ed27bf9bb19b280"
+    ],
+    "test": null,
+    "secondsSinceStart": 14.215
+  },
+  {
+    "key": "new:profile-prompts",
+    "ref": "all-tests-20261008/character-complete-source/profile-prompts",
+    "sealId": "e7e672e9013c6c48a2ab3116c0db1e53821221f4ca09ec5048e7cb781adf3945",
+    "path": "backend/src/llm/character-profile-prompts.ts",
+    "sourceSha256": "b301af617f104f8ecbf6d212b15053aaee77d6188b306be766e6738ec7316cc4",
+    "oldSealId": null,
+    "causeSealIds": [
+      "09428bbc862625313691ce80cf94a3411c6fa122e33c4a767cc15b47da145dd0",
+      "bfde8f080c876d8d85fac51d3a482e8fa36d0b925a0deef58b24403b21ee5f7d"
+    ],
+    "test": null,
+    "secondsSinceStart": 23.838
+  },
+  {
+    "key": "old:3f3dd4c5984778043e1a692b58d89c536c9af360c6a2b4881b76deb10c9e19a2",
+    "ref": "all-tests-20261008/current-source-closure/all-tests-20261007/implementation-sdk-json-accounting-boundary",
+    "sealId": "ba5fb9843c5fdd1bd37539f05885dd39fc2089e0b89d3333f166b77d6fbab302",
+    "path": "backend/src/llm/openai-compatible.ts",
+    "sourceSha256": "75fdc50d0ff5550712fc50e967f7880950aad035fbab87fa40f2b5d9d0d6daaa",
+    "oldSealId": "3f3dd4c5984778043e1a692b58d89c536c9af360c6a2b4881b76deb10c9e19a2",
+    "causeSealIds": [
+      "2c6888e9d07a676d4b429b041b241e1631845b18fac4fb4cda280a4a29670d50",
+      "4a236b55e9ad9e4aa54eb2c6bbe9d77e0a318881ba8328363505153d16e151dd",
+      "7cfd32e06c7f96617d0f1bad6b08e849074caab508917efd394b920e84577547",
+      "853199e46ca7c4a69af8b43b20dc9b72e36b20bd3dda7620eac482be6a3c716d",
+      "a1947c2099a22ca104da4ddba1a9c4ef660cee388accd7946e8511e3d7cf3f56",
+      "e7e672e9013c6c48a2ab3116c0db1e53821221f4ca09ec5048e7cb781adf3945"
+    ],
+    "test": null,
+    "secondsSinceStart": null,
+    "recoveredReadback": "Already published exact node; CLI sorts messages. Canonical sorted expected content/source/binding verified; no reseal."
+  },
+  {
+    "key": "old:7fafa0e59a17475925224cbda6d3d97f05930a271c05d81a2026404546024fb7",
+    "ref": "all-tests-20261008/current-source-closure/all-tests-20261007/implementation-sdk-model-options",
+    "sealId": "03d4100d9196fec3e6229ae272c209bf381be0090ae31b6ba792f4e6a31bc23d",
+    "path": "backend/src/llm/openai-compatible.ts",
+    "sourceSha256": "75fdc50d0ff5550712fc50e967f7880950aad035fbab87fa40f2b5d9d0d6daaa",
+    "oldSealId": "7fafa0e59a17475925224cbda6d3d97f05930a271c05d81a2026404546024fb7",
+    "causeSealIds": [
+      "55cd6ea44ebccfb4f9f0e3012c1edd96fcafa0f412c8eaeafeac922832b9a100",
+      "ca00579d72ce103d2da9fa943d7c907aefe27ed4f7668f9c476c2e076fcb44c2",
+      "e77510935f6f63c2a654eaef5e6e35aaf51114a494b60ada8267556d8a248130",
+      "e7e672e9013c6c48a2ab3116c0db1e53821221f4ca09ec5048e7cb781adf3945"
+    ],
+    "test": null,
+    "secondsSinceStart": 13.622
+  },
+  {
+    "key": "old:11ad190b10415f87aaf38a9598ec3ac3e05031fd2c03800aac12da69ae178d91",
+    "ref": "all-tests-20261008/current-source-closure/all-tests-20261007/implementation-sdk-awareness-dispatch",
+    "sealId": "645edd45396d6adfa94cbdc369cd999ebadf30fb6f22108e8e91dd9387c6503b",
+    "path": "backend/src/llm/openai-compatible.ts",
+    "sourceSha256": "75fdc50d0ff5550712fc50e967f7880950aad035fbab87fa40f2b5d9d0d6daaa",
+    "oldSealId": "11ad190b10415f87aaf38a9598ec3ac3e05031fd2c03800aac12da69ae178d91",
+    "causeSealIds": [
+      "18615b042fb44a5a2e1de6560cc29be0e544c11a501bd909f9a080b248097434",
+      "ba5fb9843c5fdd1bd37539f05885dd39fc2089e0b89d3333f166b77d6fbab302",
+      "471266c8f0c5f2461e79fb2f8375f9bb852e53d796282cc6c7bbd6ecb35c2323",
+      "4a236b55e9ad9e4aa54eb2c6bbe9d77e0a318881ba8328363505153d16e151dd",
+      "03d4100d9196fec3e6229ae272c209bf381be0090ae31b6ba792f4e6a31bc23d",
+      "8abba1a9c8979c938c12dd7bfb72af72c43496dbb487ff827477c7ff5951482f",
+      "c064db895ea9f010d2f6fb28360b243285cbe93156c19f8286e161ec2d0d731a",
+      "e7e672e9013c6c48a2ab3116c0db1e53821221f4ca09ec5048e7cb781adf3945"
+    ],
+    "test": null,
+    "secondsSinceStart": 39.269
+  },
+  {
+    "key": "old:95bdd9c1de74a466708f8647c1af88b40820ac06ed834fe450b7a011e24e70c3",
+    "ref": "all-tests-20261008/current-source-closure/all-tests-20261007/implementation-provider-control-sqlite-schema",
+    "sealId": "5631092bae316bdb959257d52a7574e37e698c5d4cce21accdf019c0cea315ea",
+    "path": "backend/src/db.ts",
+    "sourceSha256": "70bacc4e8b0e53f88fe25c15e45c0a1d9aa1c67d6a3925282d9fdec277b8f77e",
+    "oldSealId": "95bdd9c1de74a466708f8647c1af88b40820ac06ed834fe450b7a011e24e70c3",
+    "causeSealIds": [
+      "0568338124d5d4b63877a41b1d0b3ec47530d4bf9bf6b11b7a40c6bb022f49d8",
+      "315056fe3639d20338cb28fbf0c655283d9a0d852de5896e7e434faf36647b86",
+      "4a236b55e9ad9e4aa54eb2c6bbe9d77e0a318881ba8328363505153d16e151dd",
+      "f37d62dd130cf26f48ced720565c4fad035b93a3f3ad1c3e98943cdc9bf585d1"
+    ],
+    "test": null,
+    "secondsSinceStart": 55.073
+  },
+  {
+    "key": "old:874aa5c3070cd3f991950aaf916f9a1d5b8d8afd7c752b16e95993bb46079f4c",
+    "ref": "all-tests-20261008/current-source-closure/all-tests-20261007/implementation-provider-control-repository",
+    "sealId": "59d2423b9277dbd44ca50b3a9f992ed8d2f2080bfd886233f7b45f12d809e91c",
+    "path": "backend/src/repositories/cutover-control.ts",
+    "sourceSha256": "74a4f851bbcd72e19cec6e894529ea12262f040d260c8d7c5ce9ca062b14d30c",
+    "oldSealId": "874aa5c3070cd3f991950aaf916f9a1d5b8d8afd7c752b16e95993bb46079f4c",
+    "causeSealIds": [
+      "0568338124d5d4b63877a41b1d0b3ec47530d4bf9bf6b11b7a40c6bb022f49d8",
+      "315056fe3639d20338cb28fbf0c655283d9a0d852de5896e7e434faf36647b86",
+      "5631092bae316bdb959257d52a7574e37e698c5d4cce21accdf019c0cea315ea"
+    ],
+    "test": null,
+    "secondsSinceStart": 66.227
+  },
+  {
+    "key": "old:47170549e6addf05a3810fe9721c48f0384b4e3cfcb040ce0ad7d4c3bd7ecc44",
+    "ref": "all-tests-20261008/current-source-closure/all-tests-20261007/implementation-provider-control-admission",
+    "sealId": "9604bd851a39e6bc617ecf4597b76aafac50ebbfe99b23f0db8127f6a1cdd329",
+    "path": "backend/src/services/cutover-admission.ts",
+    "sourceSha256": "d716a314bdf0f8072aa7ca1ee6ad99fbfe6b31b2cdddfe639713a889a4ab7701",
+    "oldSealId": "47170549e6addf05a3810fe9721c48f0384b4e3cfcb040ce0ad7d4c3bd7ecc44",
+    "causeSealIds": [
+      "0568338124d5d4b63877a41b1d0b3ec47530d4bf9bf6b11b7a40c6bb022f49d8",
+      "315056fe3639d20338cb28fbf0c655283d9a0d852de5896e7e434faf36647b86",
+      "59d2423b9277dbd44ca50b3a9f992ed8d2f2080bfd886233f7b45f12d809e91c"
+    ],
+    "test": null,
+    "secondsSinceStart": 77.83
+  },
+  {
+    "key": "old:03de78e3dab706f09ba7d1797ef6de6a2b10932cc295f7197da6c23deb3622ae",
+    "ref": "all-tests-20261008/current-source-closure/all-tests-20261007/implementation-provider-accounting-current",
+    "sealId": "aee3cb96f6547a5d31c60265a2cc7e063f3d717fee9dae513d5abdf55772f8ef",
+    "path": "backend/src/llm/provider-accounting.ts",
+    "sourceSha256": "5c5465b99ed5c58b7dbbe92691c8dda51466bcd0b04a66d838e7fd52b2353181",
+    "oldSealId": "03de78e3dab706f09ba7d1797ef6de6a2b10932cc295f7197da6c23deb3622ae",
+    "causeSealIds": [
+      "0568338124d5d4b63877a41b1d0b3ec47530d4bf9bf6b11b7a40c6bb022f49d8",
+      "315056fe3639d20338cb28fbf0c655283d9a0d852de5896e7e434faf36647b86",
+      "9604bd851a39e6bc617ecf4597b76aafac50ebbfe99b23f0db8127f6a1cdd329",
+      "4a236b55e9ad9e4aa54eb2c6bbe9d77e0a318881ba8328363505153d16e151dd",
+      "8c5c86d6669841955ae7ddca134e76d66c91a983e6364535405f7546b73972c3",
+      "5631092bae316bdb959257d52a7574e37e698c5d4cce21accdf019c0cea315ea",
+      "f37d62dd130cf26f48ced720565c4fad035b93a3f3ad1c3e98943cdc9bf585d1"
+    ],
+    "test": null,
+    "secondsSinceStart": 100.791
+  },
+  {
+    "key": "old:f079c42acda11bd04157f07dd4a01c304c0ecbe3ef6b3df3b4d0cef0b8ae59f8",
+    "ref": "all-tests-20261008/current-source-closure/all-tests-20261007/implementation-canonical-narration-creation-adoption",
+    "sealId": "ccc4ef8df89d935804c5b2fe4d2f055b5cb6d082f63d1408b5042d339fbbdbff",
+    "path": "backend/src/repositories/battle-awareness-creation.ts",
+    "sourceSha256": "0fa81094da6da7c061318719a2651836d4ad1adc883bb21e2289e4e8c92ea378",
+    "oldSealId": "f079c42acda11bd04157f07dd4a01c304c0ecbe3ef6b3df3b4d0cef0b8ae59f8",
+    "causeSealIds": [
+      "5631092bae316bdb959257d52a7574e37e698c5d4cce21accdf019c0cea315ea",
+      "cea338023663fcb0df2f08b3e889a61b0033e7d60008a6301090ccac8a3fe50a",
+      "f32a6e8815e72a3186332393e8182c1fe1f096b30fc5cf3e9715593fafebaaba"
+    ],
+    "test": null,
+    "secondsSinceStart": 112.992
+  },
+  {
+    "key": "old:2653c86a8f1388ba5ef2118868e0ac895ab88777c4a26a669c6e64266878ca65",
+    "ref": "all-tests-20261008/current-source-closure/all-tests-20261007/implementation-canonical-narration-creation-encounter",
+    "sealId": "b18ad2dc273a46fa35c02014ed6ebe4ba71a5f40b81b524a1bfe082a66b18b69",
+    "path": "backend/src/services/awareness-creation-encounter.ts",
+    "sourceSha256": "84dd49b45795edf215bac5baf3114a847f421724a4f16b1b1c35c76d0dc399a0",
+    "oldSealId": "2653c86a8f1388ba5ef2118868e0ac895ab88777c4a26a669c6e64266878ca65",
+    "causeSealIds": [
+      "aee3cb96f6547a5d31c60265a2cc7e063f3d717fee9dae513d5abdf55772f8ef",
+      "8abba1a9c8979c938c12dd7bfb72af72c43496dbb487ff827477c7ff5951482f",
+      "a716bc3b8e2473ca01d2cf7408bdc93dc769f8556428f493d9ee803dd7859619",
+      "ccc4ef8df89d935804c5b2fe4d2f055b5cb6d082f63d1408b5042d339fbbdbff"
+    ],
+    "test": null,
+    "secondsSinceStart": 128.264
+  },
+  {
+    "key": "old:32bbf4004f18bf0ba3ca9055290441c1a241a108127d6379f0058efcd120650a",
+    "ref": "all-tests-20261008/current-source-closure/all-tests-20261007/implementation-awareness-creation-encounter",
+    "sealId": "011e419f7200fd6a275eff09dfb6f1a2ce9d1d76ee2a622f81271972e9022d02",
+    "path": "backend/src/services/awareness-creation-encounter.ts",
+    "sourceSha256": "84dd49b45795edf215bac5baf3114a847f421724a4f16b1b1c35c76d0dc399a0",
+    "oldSealId": "32bbf4004f18bf0ba3ca9055290441c1a241a108127d6379f0058efcd120650a",
+    "causeSealIds": [
+      "645edd45396d6adfa94cbdc369cd999ebadf30fb6f22108e8e91dd9387c6503b",
+      "b18ad2dc273a46fa35c02014ed6ebe4ba71a5f40b81b524a1bfe082a66b18b69",
+      "41ddc91bb49a0da92b977f084f6ae83d43db87a80a76d6395c10bdd14509dd7e",
+      "8abba1a9c8979c938c12dd7bfb72af72c43496dbb487ff827477c7ff5951482f",
+      "a716bc3b8e2473ca01d2cf7408bdc93dc769f8556428f493d9ee803dd7859619"
+    ],
+    "test": null,
+    "secondsSinceStart": 145.315
+  },
+  {
+    "key": "old:372748bb422b36201c9e6007cac1e49aea38d6971f0babe7f08490bd8b67bb99",
+    "ref": "all-tests-20261008/current-source-closure/all-tests-20261007/implementation-awareness-creation-ledger",
+    "sealId": "e3aa20237883ee4dd30c180898704751593c6e7203082a11db09d2a628703eff",
+    "path": "backend/src/repositories/battle-awareness-creation.ts",
+    "sourceSha256": "0fa81094da6da7c061318719a2651836d4ad1adc883bb21e2289e4e8c92ea378",
+    "oldSealId": "372748bb422b36201c9e6007cac1e49aea38d6971f0babe7f08490bd8b67bb99",
+    "causeSealIds": [
+      "41ddc91bb49a0da92b977f084f6ae83d43db87a80a76d6395c10bdd14509dd7e",
+      "5631092bae316bdb959257d52a7574e37e698c5d4cce21accdf019c0cea315ea",
+      "cea338023663fcb0df2f08b3e889a61b0033e7d60008a6301090ccac8a3fe50a",
+      "ccc4ef8df89d935804c5b2fe4d2f055b5cb6d082f63d1408b5042d339fbbdbff"
+    ],
+    "test": null,
+    "secondsSinceStart": 159.479
+  },
+  {
+    "key": "old:cf31a12bbe4fc3ebc5fd1689aeb7a5098fce0f606c98de4f80ea8851b4948cab",
+    "ref": "all-tests-20261008/current-source-closure/all-tests-20261007/implementation-narration-storage-runtime",
+    "sealId": "43edff8f437e6d157401ff80f278b8a729ac24be91fcbc16b30dca311e0ea324",
+    "path": "backend/src/repositories/battle-awareness.ts",
+    "sourceSha256": "7a1fb475a5b52153a4262f80a987bb0158988319a6cc0bf6f2b8df44beff2953",
+    "oldSealId": "cf31a12bbe4fc3ebc5fd1689aeb7a5098fce0f606c98de4f80ea8851b4948cab",
+    "causeSealIds": [
+      "5631092bae316bdb959257d52a7574e37e698c5d4cce21accdf019c0cea315ea",
+      "cea338023663fcb0df2f08b3e889a61b0033e7d60008a6301090ccac8a3fe50a",
+      "d1bf4b23433d3887849b98cd11b8fb7e622e23aead2ef665f7cb1f297a425e87"
+    ],
+    "test": null,
+    "secondsSinceStart": 170.961
+  },
+  {
+    "key": "old:3b837d74d17f9fab92b52b58222371978d14bb535f4031d15e334b19e6f25c9b",
+    "ref": "all-tests-20261008/current-source-closure/all-tests-20261007/implementation-awareness-creation-runtime",
+    "sealId": "d6a3af90bff1ed79537c939ad9a254681494ce44a73d8e636e4dbb361ac6f232",
+    "path": "backend/src/repositories/battle-awareness.ts",
+    "sourceSha256": "7a1fb475a5b52153a4262f80a987bb0158988319a6cc0bf6f2b8df44beff2953",
+    "oldSealId": "3b837d74d17f9fab92b52b58222371978d14bb535f4031d15e334b19e6f25c9b",
+    "causeSealIds": [
+      "41ddc91bb49a0da92b977f084f6ae83d43db87a80a76d6395c10bdd14509dd7e",
+      "5631092bae316bdb959257d52a7574e37e698c5d4cce21accdf019c0cea315ea",
+      "cea338023663fcb0df2f08b3e889a61b0033e7d60008a6301090ccac8a3fe50a",
+      "43edff8f437e6d157401ff80f278b8a729ac24be91fcbc16b30dca311e0ea324"
+    ],
+    "test": null,
+    "secondsSinceStart": 184.374
+  },
+  {
+    "key": "old:e54f08ad6e2c12e8bc0d606d127673f1f5d1c9338b0f2e499742538ad42ab527",
+    "ref": "all-tests-20261008/current-source-closure/all-tests-20261007/implementation-world-profile-fixture-projection",
+    "sealId": "a4ccd08c754514e1e8265d18680395d4f0bc1188eda86bdad69773b6104ce498",
+    "path": "packages/shared/src/battle-world.ts",
+    "sourceSha256": "bc85795bdeab266c5e8489b51c56c80e84c605b521e95c25a2482f248ab6249d",
+    "oldSealId": "e54f08ad6e2c12e8bc0d606d127673f1f5d1c9338b0f2e499742538ad42ab527",
+    "causeSealIds": [
+      "635dddb9346372392eefec016dc989a0bcf82d8dd14f049bb771d910c1a924ae",
+      "75f897826d1b70f498a72cf58487f5fef17c791201ca5eee7515f80f7e495111",
+      "dce107f59177be59fec704680461fb377ad1211e05fd35db9e654b94c0691b59"
+    ],
+    "test": null,
+    "secondsSinceStart": 194.791
+  },
+  {
+    "key": "old:92323f1ce7d639dc1cb97e7fac7f2335c01849c5cabcb1f0d9e0a7d870cf0352",
+    "ref": "all-tests-20261008/current-source-closure/all-tests-20261007/implementation-expression-causal-senses",
+    "sealId": "b8bcc8918e0618cd86448748b7e501279cb6faf83b781eb55754f4e63eddc357",
+    "path": "packages/shared/src/battle-causality.ts",
+    "sourceSha256": "a3748c02f1a2eef130300df51805eeca5a07c3f83e7e7670fc7c090b281a6bdd",
+    "oldSealId": "92323f1ce7d639dc1cb97e7fac7f2335c01849c5cabcb1f0d9e0a7d870cf0352",
+    "causeSealIds": [
+      "09e78a830856b823afef86d311752163722c1c37c3c6b7c9b17a1da63649af21",
+      "a4ccd08c754514e1e8265d18680395d4f0bc1188eda86bdad69773b6104ce498"
+    ],
+    "test": null,
+    "secondsSinceStart": 204.211
+  },
+  {
+    "key": "old:aab43121b4eedb246691f7ea5f6071496074e760649ea9330dc550494a6830f1",
+    "ref": "all-tests-20261008/current-source-closure/all-tests-20261007/implementation-expression-observer-projection",
+    "sealId": "a7aa7c8d7b55a90f4fade5f441f0b7a59ecc7bd7019b42c565c1435fc74113c7",
+    "path": "packages/shared/src/perception-projection.ts",
+    "sourceSha256": "0362190298b04f66ecd3cb2851705222c9f58998a15acfa6fe495c1e8f63a383",
+    "oldSealId": "aab43121b4eedb246691f7ea5f6071496074e760649ea9330dc550494a6830f1",
+    "causeSealIds": [
+      "09e78a830856b823afef86d311752163722c1c37c3c6b7c9b17a1da63649af21",
+      "635dddb9346372392eefec016dc989a0bcf82d8dd14f049bb771d910c1a924ae",
+      "b8bcc8918e0618cd86448748b7e501279cb6faf83b781eb55754f4e63eddc357",
+      "dce107f59177be59fec704680461fb377ad1211e05fd35db9e654b94c0691b59",
+      "a4ccd08c754514e1e8265d18680395d4f0bc1188eda86bdad69773b6104ce498"
+    ],
+    "test": null,
+    "secondsSinceStart": 221.897
+  },
+  {
+    "key": "old:a6bf11b8b7f44ce01470acc41b8b93ac2f8aa84b08c9461ea2016e6795dbc912",
+    "ref": "all-tests-20261008/current-source-closure/all-tests-20261007/implementation-committed-utterance-perception",
+    "sealId": "3b787ba784dcb9b2594f7d2dc82b8eb5b5a019c59711a0f3fb121e84a8fc19f8",
+    "path": "packages/shared/src/utterance-perception.ts",
+    "sourceSha256": "a13a8bcfda93fbfe2892d607539d6d2524fe57692d3f12a1003d238c54e2996b",
+    "oldSealId": "a6bf11b8b7f44ce01470acc41b8b93ac2f8aa84b08c9461ea2016e6795dbc912",
+    "causeSealIds": [
+      "09e78a830856b823afef86d311752163722c1c37c3c6b7c9b17a1da63649af21",
+      "4a236b55e9ad9e4aa54eb2c6bbe9d77e0a318881ba8328363505153d16e151dd",
+      "b8bcc8918e0618cd86448748b7e501279cb6faf83b781eb55754f4e63eddc357",
+      "a7aa7c8d7b55a90f4fade5f441f0b7a59ecc7bd7019b42c565c1435fc74113c7",
+      "c75f415a640db0d2d69d8455e5b8eff530cdf43f7dde97bcebdb98b56ae087ad"
+    ],
+    "test": null,
+    "secondsSinceStart": 237.556
+  },
+  {
+    "key": "old:f6cd3f76e5e1fd9e559e33dc09754baadd630a8bfb8de5387ba73f6aa8f7276c",
+    "ref": "all-tests-20261008/current-source-closure/all-tests-20261007/implementation-observer-contact-projection",
+    "sealId": "0bdac62e7b0fe13e7a3fa5c78268242aede0de8fc853882e6c2b1552eddc1b10",
+    "path": "packages/shared/src/perception-projection.ts",
+    "sourceSha256": "0362190298b04f66ecd3cb2851705222c9f58998a15acfa6fe495c1e8f63a383",
+    "oldSealId": "f6cd3f76e5e1fd9e559e33dc09754baadd630a8bfb8de5387ba73f6aa8f7276c",
+    "causeSealIds": [
+      "09e78a830856b823afef86d311752163722c1c37c3c6b7c9b17a1da63649af21",
+      "15fd4f634dd21a81daf7167b4e987daed49349b0cee4c61bd912e3a7d4f06575",
+      "8534c37b4da9615462035a1428ee6616200614e289efc11a875c91b6a9bca009",
+      "8fcf782dd2cc070b868cda0ce065d86440a4c38a7e8ce5dc6928eb2583733cdd",
+      "b8bcc8918e0618cd86448748b7e501279cb6faf83b781eb55754f4e63eddc357",
+      "9535443db3405d25086fe60873f7113ed0278b7e638e8e124015e231b7487064"
+    ],
+    "test": null,
+    "secondsSinceStart": 256.187
+  },
+  {
+    "key": "old:16be9b8a43befa369a76887d79cffa96b9d953994bb1f917056fe279b26401af",
+    "ref": "all-tests-20261008/current-source-closure/all-tests-20261007/implementation-canonical-narration-manifestation",
+    "sealId": "9d2db2c683ca893bf4ba6f135d31b5014b49a105cdf37fb072d6818ea855558d",
+    "path": "packages/shared/src/character-manifestation.ts",
+    "sourceSha256": "c2d8bdbe5b9ed78f87e8b04ee1d287e0590e905e871a4156237c6c7218234bab",
+    "oldSealId": "16be9b8a43befa369a76887d79cffa96b9d953994bb1f917056fe279b26401af",
+    "causeSealIds": [
+      "3b787ba784dcb9b2594f7d2dc82b8eb5b5a019c59711a0f3fb121e84a8fc19f8",
+      "f32a6e8815e72a3186332393e8182c1fe1f096b30fc5cf3e9715593fafebaaba",
+      "0bdac62e7b0fe13e7a3fa5c78268242aede0de8fc853882e6c2b1552eddc1b10"
+    ],
+    "test": null,
+    "secondsSinceStart": 267.491
+  },
+  {
+    "key": "old:959b1972626ffa29f460172eb73cbc339cb1d79b94f1e07961b3db3c06944c01",
+    "ref": "all-tests-20261008/current-source-closure/all-tests-20261007/implementation-canonical-narration-battle-boundary",
+    "sealId": "d528416432b573f95f549d5a522777735f57224c41b99764f6ce44ba77f20b9c",
+    "path": "backend/src/services/awareness-battle-boundary.ts",
+    "sourceSha256": "23b45fb9136ec0d28d3a300439c4a6ff340cf8c330a53e8f099ca45e5ef6c8b6",
+    "oldSealId": "959b1972626ffa29f460172eb73cbc339cb1d79b94f1e07961b3db3c06944c01",
+    "causeSealIds": [
+      "6eb5f3240dfbfcf076911bba3a4ae3c8f0289ea0411368d58e5098fcf5426d91",
+      "43edff8f437e6d157401ff80f278b8a729ac24be91fcbc16b30dca311e0ea324",
+      "f32a6e8815e72a3186332393e8182c1fe1f096b30fc5cf3e9715593fafebaaba"
+    ],
+    "test": null,
+    "secondsSinceStart": 277.604
+  },
+  {
+    "key": "old:98609625d668a2929cebd83722b31eb848a21ba9bfe836240e225906317833bb",
+    "ref": "all-tests-20261008/current-source-closure/all-tests-20261007/implementation-profile-grounding-snapshots",
+    "sealId": "059133c6c7522031519cc10e2d99e176e473967fbc458450fcd1f45d0a9f1365",
+    "path": "packages/shared/src/profile-grounding.ts",
+    "sourceSha256": "bd43652fde82d114b192131260e582991dbe1817336a6ad9404ef8e8a3b0f153",
+    "oldSealId": "98609625d668a2929cebd83722b31eb848a21ba9bfe836240e225906317833bb",
+    "causeSealIds": [
+      "0a644f4030dfc8699a17a56cc993e2b18443acd89adebf26a227ea4106ae9574",
+      "1adba1d06106cfcc7537dcd2d85aa94f745a4a79ff6b3f5ac4911a11efdf79a8",
+      "4a236b55e9ad9e4aa54eb2c6bbe9d77e0a318881ba8328363505153d16e151dd",
+      "be8466f21cd3a7edf8a89934c23f058a1eef0acbf03a4ffc2d9db195d43eb48c",
+      "a4ccd08c754514e1e8265d18680395d4f0bc1188eda86bdad69773b6104ce498"
+    ],
+    "test": null,
+    "secondsSinceStart": 292.381
+  },
+  {
+    "key": "old:9354043daf7bf0b1c50f4269fb423b390f2c11a58e3b040ce62c31401f644366",
+    "ref": "all-tests-20261008/current-source-closure/all-tests-20261007/implementation-canonical-narration-world-validation",
+    "sealId": "63d3f0d488b4873325df605938202d09febc3cd2c2f57a10ea43842dc147ee2e",
+    "path": "backend/src/services/awareness-world-validation.ts",
+    "sourceSha256": "e082f4d7f3e5d427b9b2a2e804a27a36fb5dea96ba67322111b30c009ad8afda",
+    "oldSealId": "9354043daf7bf0b1c50f4269fb423b390f2c11a58e3b040ce62c31401f644366",
+    "causeSealIds": [
+      "5631092bae316bdb959257d52a7574e37e698c5d4cce21accdf019c0cea315ea",
+      "f32a6e8815e72a3186332393e8182c1fe1f096b30fc5cf3e9715593fafebaaba",
+      "fd2692da29f2deaf81b6567e5499276f95ece18dfd67f0a669fd1a2077292209"
+    ],
+    "test": null,
+    "secondsSinceStart": 303.118
+  },
+  {
+    "key": "old:c729b7f1dd8239ebe7c644b5dcbc966fcd8a2dfe6c09a2906468e518e4805c97",
+    "ref": "all-tests-20261008/current-source-closure/all-tests-20261007/implementation-retained-agency-v3-storage",
+    "sealId": "a21cd6e3803c0e466f6ce723b6eb815cf68b0712b719766e12353ae1d3fa6fb9",
+    "path": "backend/src/repositories/battles.ts",
+    "sourceSha256": "e0f5d0977e5a103249a382bbd5ac318f0a7a7b2abcde95ad2f4491ead5ca892f",
+    "oldSealId": "c729b7f1dd8239ebe7c644b5dcbc966fcd8a2dfe6c09a2906468e518e4805c97",
+    "causeSealIds": [
+      "26916ae4693e54229a5216d76cc3238ed27649f3a678588e14f28ac9a975c515",
+      "5631092bae316bdb959257d52a7574e37e698c5d4cce21accdf019c0cea315ea",
+      "ee029be3724cc1282b70df3a9a1b81886565d3a9f223d024beaaf2bbabdcfca3",
+      "f49312f0b4c786dd41b4c2092a992dfebd04bfff33396a4891a199add8f5f17e",
+      "fd2692da29f2deaf81b6567e5499276f95ece18dfd67f0a669fd1a2077292209"
+    ],
+    "test": null,
+    "secondsSinceStart": 319.392
+  },
+  {
+    "key": "old:9b7fa43608547ad79b43bfa3e37e3525be072ca7c77f4239fd32032f3dd32aef",
+    "ref": "all-tests-20261008/current-source-closure/all-tests-20261007/implementation-canonical-narration-world-commit",
+    "sealId": "8824a17931e7e84884b38be72721b8864478ca0d06db11b9f9174451ef554eea",
+    "path": "backend/src/services/awareness-world-commit.ts",
+    "sourceSha256": "72ae18cc27dca377d1faaccb5e5bac18c1decd8f9d476ba620269dedc44dc9ac",
+    "oldSealId": "9b7fa43608547ad79b43bfa3e37e3525be072ca7c77f4239fd32032f3dd32aef",
+    "causeSealIds": [
+      "63d3f0d488b4873325df605938202d09febc3cd2c2f57a10ea43842dc147ee2e",
+      "a21cd6e3803c0e466f6ce723b6eb815cf68b0712b719766e12353ae1d3fa6fb9",
+      "cea338023663fcb0df2f08b3e889a61b0033e7d60008a6301090ccac8a3fe50a",
+      "43edff8f437e6d157401ff80f278b8a729ac24be91fcbc16b30dca311e0ea324"
+    ],
+    "test": null,
+    "secondsSinceStart": 337.716
+  },
+  {
+    "key": "old:7872163ad23ff4c6f179f120b45857d18c80cea88160afe880b8d733729d77aa",
+    "ref": "all-tests-20261008/current-source-closure/all-tests-20261007/implementation-canonical-narration-battle-service",
+    "sealId": "cc94e665ec0d2eea32b65787d9056977dda2b46a95cf82471db38c4b8302718d",
+    "path": "backend/src/services/battle-service.ts",
+    "sourceSha256": "b1cb72011a0b1c40872b4d56da313d4a01504a8e2a860dd96b087b2e7b712af1",
+    "oldSealId": "7872163ad23ff4c6f179f120b45857d18c80cea88160afe880b8d733729d77aa",
+    "causeSealIds": [
+      "9d2db2c683ca893bf4ba6f135d31b5014b49a105cdf37fb072d6818ea855558d",
+      "b18ad2dc273a46fa35c02014ed6ebe4ba71a5f40b81b524a1bfe082a66b18b69",
+      "380ac8824e9b71cb1f886088318ac2d539db126fe347c9a7467f3bcf9aec60b5",
+      "6ff4c29637092fa43f351ba55137fdcebfa272214c4f4c4e6ac34431aba47897",
+      "d528416432b573f95f549d5a522777735f57224c41b99764f6ce44ba77f20b9c",
+      "059133c6c7522031519cc10e2d99e176e473967fbc458450fcd1f45d0a9f1365",
+      "8824a17931e7e84884b38be72721b8864478ca0d06db11b9f9174451ef554eea",
+      "bfde8f080c876d8d85fac51d3a482e8fa36d0b925a0deef58b24403b21ee5f7d",
+      "f32a6e8815e72a3186332393e8182c1fe1f096b30fc5cf3e9715593fafebaaba"
+    ],
+    "test": null,
+    "secondsSinceStart": 367.287
+  },
+  {
+    "key": "old:a4b348e58291d2bf152ffb13a831408af7c9c8813600725f6a8815261391030a",
+    "ref": "all-tests-20261008/current-source-closure/all-tests-20261007/implementation-retained-dialogue-settings-storage",
+    "sealId": "1898c9e10171b336558fafba731ef4a6e8c2b81b71d99bb2f3c6f5e8f763a78c",
+    "path": "backend/src/repositories/dialogue-pipeline-settings.ts",
+    "sourceSha256": "5d3c3c3f418abe8969029e25a3c51a04738e8245140fe0d113ce90ac5679250b",
+    "oldSealId": "a4b348e58291d2bf152ffb13a831408af7c9c8813600725f6a8815261391030a",
+    "causeSealIds": [
+      "645e178be9a4b4662822f09d79c5977797a0830e072ee816510a4a62aa5b8e52",
+      "5631092bae316bdb959257d52a7574e37e698c5d4cce21accdf019c0cea315ea",
+      "c5d59684dfff6971230679ca47d4cfb13d5feea09daa91bd86f0fbf8787062d4",
+      "d593d2fc8a2f959aa2bc71a87f492d5e34a9390c1089bdaed1d843483755adcd",
+      "e50094ff1bdb2512626cd7a8c563ef14d24d5a3411838b15738ac0ee936b9390",
+      "edd5470e342cb4a99acba56c04e5cc6fcbd0f25dd04ebb26045b3b35c908db21"
+    ],
+    "test": null,
+    "secondsSinceStart": 389.647
+  },
+  {
+    "key": "old:0021883e808ae8bf7d59ead2180519d677c39d02b46ee485c358bb7fd19c27da",
+    "ref": "all-tests-20261008/current-source-closure/all-tests-20261007/implementation-awareness-creation-public-service",
+    "sealId": "19465e34757d8ad42d8ed1cb9c817fe8d7092392181f3c47ac886358c7f885f0",
+    "path": "backend/src/services/battle-service.ts",
+    "sourceSha256": "b1cb72011a0b1c40872b4d56da313d4a01504a8e2a860dd96b087b2e7b712af1",
+    "oldSealId": "0021883e808ae8bf7d59ead2180519d677c39d02b46ee485c358bb7fd19c27da",
+    "causeSealIds": [
+      "011e419f7200fd6a275eff09dfb6f1a2ce9d1d76ee2a622f81271972e9022d02",
+      "e3aa20237883ee4dd30c180898704751593c6e7203082a11db09d2a628703eff",
+      "d6a3af90bff1ed79537c939ad9a254681494ce44a73d8e636e4dbb361ac6f232",
+      "41ddc91bb49a0da92b977f084f6ae83d43db87a80a76d6395c10bdd14509dd7e",
+      "cc94e665ec0d2eea32b65787d9056977dda2b46a95cf82471db38c4b8302718d",
+      "1898c9e10171b336558fafba731ef4a6e8c2b81b71d99bb2f3c6f5e8f763a78c",
+      "a21cd6e3803c0e466f6ce723b6eb815cf68b0712b719766e12353ae1d3fa6fb9"
+    ],
+    "test": null,
+    "secondsSinceStart": 417.067
+  },
+  {
+    "key": "old:5b34d18fd701cf1ff6e739950e129ca0cf43a883d71a88795245a73ad34c1b5b",
+    "ref": "all-tests-20261008/current-source-closure/all-tests-20261007/implementation-provider-accounting-sdk-retries",
+    "sealId": "0ae968b2b88aea8dbf1584c933c4796d5d2ed8cda9fb510aebb6e8441b01d30d",
+    "path": "backend/src/llm/openai-compatible.ts",
+    "sourceSha256": "75fdc50d0ff5550712fc50e967f7880950aad035fbab87fa40f2b5d9d0d6daaa",
+    "oldSealId": "5b34d18fd701cf1ff6e739950e129ca0cf43a883d71a88795245a73ad34c1b5b",
+    "causeSealIds": [
+      "aee3cb96f6547a5d31c60265a2cc7e063f3d717fee9dae513d5abdf55772f8ef",
+      "4a236b55e9ad9e4aa54eb2c6bbe9d77e0a318881ba8328363505153d16e151dd",
+      "f37d62dd130cf26f48ced720565c4fad035b93a3f3ad1c3e98943cdc9bf585d1",
+      "e7e672e9013c6c48a2ab3116c0db1e53821221f4ca09ec5048e7cb781adf3945"
+    ],
+    "test": null,
+    "secondsSinceStart": 434.398
+  },
+  {
+    "key": "old:96811ac852f74ac0486ebe7e7ff135fcd029a1de0cbee588c60513620f87452e",
+    "ref": "all-tests-20261008/current-source-closure/all-tests-20261008/design-routing-typed-seam",
+    "sealId": "e18c97ffe4da672395f3f5dbd3b9bfbac430a612eed93ae3815d75d0813de6ff",
+    "path": "docs/llm-typed-seam-test-contract-review-2026-10-08.md",
+    "sourceSha256": "715b7d34cb0f9e6115636381fa9ec753b0fb0c935258d059e3f14447222c8d7c",
+    "oldSealId": "96811ac852f74ac0486ebe7e7ff135fcd029a1de0cbee588c60513620f87452e",
+    "causeSealIds": [
+      "0ae968b2b88aea8dbf1584c933c4796d5d2ed8cda9fb510aebb6e8441b01d30d",
+      "7f8ac50262580d0a94e13d82627be496f8e2e8fd059c194c4d93d84d2af28f43",
+      "03d4100d9196fec3e6229ae272c209bf381be0090ae31b6ba792f4e6a31bc23d"
+    ],
+    "test": null,
+    "secondsSinceStart": 445.829
+  },
+  {
+    "key": "old:02b6d59807b18e91e8cd3dc336900072e54507b2a4390bb5a4da0e2808cb536f",
+    "ref": "all-tests-20261008/current-source-closure/all-tests-20261008/implementation-routing-typed-seam",
+    "sealId": "f94336163083b2ba8e9faf1b5819ea51cfcc72fec86a708f6e488cd312bd594b",
+    "path": "backend/src/llm/openai-compatible.ts",
+    "sourceSha256": "75fdc50d0ff5550712fc50e967f7880950aad035fbab87fa40f2b5d9d0d6daaa",
+    "oldSealId": "02b6d59807b18e91e8cd3dc336900072e54507b2a4390bb5a4da0e2808cb536f",
+    "causeSealIds": [
+      "e18c97ffe4da672395f3f5dbd3b9bfbac430a612eed93ae3815d75d0813de6ff",
+      "e7e672e9013c6c48a2ab3116c0db1e53821221f4ca09ec5048e7cb781adf3945"
+    ],
+    "test": null,
+    "secondsSinceStart": 458.137
+  },
+  {
+    "key": "old:5fc4d62c89a90fdc6dfcae35711289ff9c139503a3e1cd31382d78d429d5cb6f",
+    "ref": "all-tests-20261008/current-source-closure/all-tests-20261007/implementation-character-profile-readiness",
+    "sealId": "a6be5c731849d6737103eed857b2e29ef8e8bbcc68f53c7cfcc77e33c4198924",
+    "path": "backend/src/services/character-authoring-candidate.ts",
+    "sourceSha256": "629c9f30ef065a808d4c1110012fc5e25d76f2a5be12c3ec8e23b0db95e7029a",
+    "oldSealId": "5fc4d62c89a90fdc6dfcae35711289ff9c139503a3e1cd31382d78d429d5cb6f",
+    "causeSealIds": [
+      "256c436664b69e1d7ddcc50f818d90173bbaf402b3b9bd322dd96c3d150771db",
+      "bfde8f080c876d8d85fac51d3a482e8fa36d0b925a0deef58b24403b21ee5f7d",
+      "c47b85aa22560642b178a6acb570148b84bcad2acf88c86a80a72105833ea836",
+      "09428bbc862625313691ce80cf94a3411c6fa122e33c4a767cc15b47da145dd0"
+    ],
+    "test": null,
+    "secondsSinceStart": 473.149
+  },
+  {
+    "key": "new:profile-work",
+    "ref": "all-tests-20261008/character-complete-source/profile-work",
+    "sealId": "6175fda9e00ba0e8a8299c2d3daa40d6fd30539211545d6f2053a1c403ecec2d",
+    "path": "backend/src/services/semantic-authoring/adapters/character-profile-work.ts",
+    "sourceSha256": "46a4a973405daccdcd45ba10818920fdeafe2074e520d20455ef9b3a07f53336",
+    "oldSealId": null,
+    "causeSealIds": [
+      "09428bbc862625313691ce80cf94a3411c6fa122e33c4a767cc15b47da145dd0",
+      "256c436664b69e1d7ddcc50f818d90173bbaf402b3b9bd322dd96c3d150771db",
+      "bfde8f080c876d8d85fac51d3a482e8fa36d0b925a0deef58b24403b21ee5f7d",
+      "a6be5c731849d6737103eed857b2e29ef8e8bbcc68f53c7cfcc77e33c4198924"
+    ],
+    "test": null,
+    "secondsSinceStart": 487.341
+  },
+  {
+    "key": "new:correction-source",
+    "ref": "all-tests-20261008/character-complete-source/correction-source",
+    "sealId": "06f3c50c84e38c5a86623b399a7b064f7e4ff0a0bdfab246fdf26ed44b66f1a9",
+    "path": "backend/src/services/semantic-authoring/character-review-correction-source.ts",
+    "sourceSha256": "c7259a7e91b8cc7ddf25976188dc62e267d00a43c912627cb041457301bc35aa",
+    "oldSealId": null,
+    "causeSealIds": [
+      "6175fda9e00ba0e8a8299c2d3daa40d6fd30539211545d6f2053a1c403ecec2d",
+      "3876d51b894a8abba151da704d76efb5c092c1dddb2e609b5ef9d4a45bbd9986"
+    ],
+    "test": null,
+    "secondsSinceStart": 496.077
+  },
+  {
+    "key": "new:candidate-repository",
+    "ref": "all-tests-20261008/character-complete-source/candidate-repository",
+    "sealId": "911161c0cfda1614e3cf7f2dab13417a37c2b4e37657c8bb5b2161f92113bfeb",
+    "path": "backend/src/repositories/character-focused-candidate.ts",
+    "sourceSha256": "b34a819f680e19b32cecb7351b5154d2f57a7dac73a936709c5dca827b79304a",
+    "oldSealId": null,
+    "causeSealIds": [
+      "6175fda9e00ba0e8a8299c2d3daa40d6fd30539211545d6f2053a1c403ecec2d",
+      "06f3c50c84e38c5a86623b399a7b064f7e4ff0a0bdfab246fdf26ed44b66f1a9",
+      "edd5470e342cb4a99acba56c04e5cc6fcbd0f25dd04ebb26045b3b35c908db21"
+    ],
+    "test": null,
+    "secondsSinceStart": 507.204
+  },
+  {
+    "key": "old:71a3806f51ddb38886b2de44719b17f973c4d263a4257613274dfa1862a50ef4",
+    "ref": "all-tests-20261008/current-source-closure/all-tests-20261007/implementation-character-attempt-reads",
+    "sealId": "5d5fc3c7e628b857a6e1b5624603a3457750a09c8545ffb5b64f7c4dce2410e5",
+    "path": "backend/src/repositories/character-assets-v2.ts",
+    "sourceSha256": "4dc5580a4eefcbfd5ebba9b373f0e16aa960300d9f1de4293820dbb433aac318",
+    "oldSealId": "71a3806f51ddb38886b2de44719b17f973c4d263a4257613274dfa1862a50ef4",
+    "causeSealIds": [
+      "3370270f447018a919b99948b0e1d5f7525ff601f076c92ba39a19eee664a5f0",
+      "480c02403f61dc6a9cd7d54861639b962dbc3bde86673481e02e0defc8415e17",
+      "911161c0cfda1614e3cf7f2dab13417a37c2b4e37657c8bb5b2161f92113bfeb",
+      "06f3c50c84e38c5a86623b399a7b064f7e4ff0a0bdfab246fdf26ed44b66f1a9"
+    ],
+    "test": null,
+    "secondsSinceStart": 521.391
+  },
+  {
+    "key": "new:schema-notation",
+    "ref": "all-tests-20261008/character-complete-source/schema-notation",
+    "sealId": "63b9b7e3b46168a92fa51785fb51013826613107329d9dc2028b471e148826db",
+    "path": "backend/src/services/semantic-authoring/adapters/schema-notation.ts",
+    "sourceSha256": "d5c422cdb9994b00cf9f2135fcdbb66beca3feed53b9a50bf427667f928191a9",
+    "oldSealId": null,
+    "causeSealIds": [
+      "09428bbc862625313691ce80cf94a3411c6fa122e33c4a767cc15b47da145dd0"
+    ],
+    "test": null,
+    "secondsSinceStart": 527.465
+  },
+  {
+    "key": "old:90df3c2c74cfedc2d5f0de6187786bb4d9470d7b5e49d789721378ad11df8240",
+    "ref": "all-tests-20261008/current-source-closure/all-tests-20261008/implementation-semantic-recovery-contracts",
+    "sealId": "7e0e9921369cee23cb342b8957e8f21dd2edecd82a21b7665ec4d5b48bc6b862",
+    "path": "packages/shared/src/semantic-authoring.ts",
+    "sourceSha256": "2071026700dd927f17f7d81d055db6e29a040e8e9cbbdc4a938dc50cc4000bc1",
+    "oldSealId": "90df3c2c74cfedc2d5f0de6187786bb4d9470d7b5e49d789721378ad11df8240",
+    "causeSealIds": [
+      "4416175bcd92f66ba15aa699a95fec17b52382482d49d816f6e6c3daa81986aa",
+      "09428bbc862625313691ce80cf94a3411c6fa122e33c4a767cc15b47da145dd0"
+    ],
+    "test": null,
+    "secondsSinceStart": 537.054
+  },
+  {
+    "key": "old:afda05765c014a51e5bdccde6533d3345268857b7f80caa03848738226b838a7",
+    "ref": "all-tests-20261008/current-source-closure/all-tests-20261008/implementation-semantic-recovery-character-adapter",
+    "sealId": "5c9efca573ad89757ac9d5dfe32716a8ba23a43429d778e9d16554fc5ac0316e",
+    "path": "backend/src/services/semantic-authoring/adapters/character-v3.ts",
+    "sourceSha256": "988dd3ea8184d3bd9b36ada67be0ada1a76e144d5bbf26b7806d09f0ca204231",
+    "oldSealId": "afda05765c014a51e5bdccde6533d3345268857b7f80caa03848738226b838a7",
+    "causeSealIds": [
+      "59d0e8b8fded5c930a7a0a8b04b53efe380dfafd78573eae6edbb788abcc004a",
+      "76a338c00973d0a9bcd270f6277959943e519fbd520b1b57b97a59c735e0bad8",
+      "8bd68d8372633c5e4c43928cee472181a251f86982d9e3ae258b2212c87c0e25",
+      "7e0e9921369cee23cb342b8957e8f21dd2edecd82a21b7665ec4d5b48bc6b862",
+      "b37208541abb65f5eace588f1f6537a2f13b1a2431d7b65433a4854bee28e377"
+    ],
+    "test": null,
+    "secondsSinceStart": 562.121
+  },
+  {
+    "key": "new:context",
+    "ref": "all-tests-20261008/character-complete-source/context",
+    "sealId": "88ef4c91572d6b606d99c642a870d370fcd921d9ba16b99ac526e21e7a96f54b",
+    "path": "backend/src/services/semantic-authoring/adapters/character-context.ts",
+    "sourceSha256": "09b805192da9243d88bf7619feaa598c50750e6733c3ab5bef532ffd4e8b8d77",
+    "oldSealId": null,
+    "causeSealIds": [
+      "63b9b7e3b46168a92fa51785fb51013826613107329d9dc2028b471e148826db",
+      "5c9efca573ad89757ac9d5dfe32716a8ba23a43429d778e9d16554fc5ac0316e"
+    ],
+    "test": null,
+    "secondsSinceStart": 572.003
+  },
+  {
+    "key": "new:complete-adapter",
+    "ref": "all-tests-20261008/character-complete-source/complete-adapter",
+    "sealId": "22c4ff2fe41d0f471a7209714ced52f054f5d366197b65a21d8f9ac4528934d5",
+    "path": "backend/src/services/semantic-authoring/adapters/character-complete.ts",
+    "sourceSha256": "c53611da3400887c439b3dc4d032b6bc520b2016bdcc49784bb9b7dd036d35e2",
+    "oldSealId": null,
+    "causeSealIds": [
+      "6175fda9e00ba0e8a8299c2d3daa40d6fd30539211545d6f2053a1c403ecec2d",
+      "06f3c50c84e38c5a86623b399a7b064f7e4ff0a0bdfab246fdf26ed44b66f1a9",
+      "88ef4c91572d6b606d99c642a870d370fcd921d9ba16b99ac526e21e7a96f54b",
+      "e7e672e9013c6c48a2ab3116c0db1e53821221f4ca09ec5048e7cb781adf3945",
+      "5c9efca573ad89757ac9d5dfe32716a8ba23a43429d778e9d16554fc5ac0316e"
+    ],
+    "test": null,
+    "secondsSinceStart": 591.344
+  },
+  {
+    "key": "old:18a1252ed2bfa2773aa446b80e9779cab123dd9f7ea1088ead63714d92e3aa1c",
+    "ref": "all-tests-20261008/current-source-closure/all-tests-20261007/implementation-current-focused-pending-read",
+    "sealId": "d367a6d9a6429c1e09a6405bc5442cdacf51bb6325919da7ef9d950474157518",
+    "path": "backend/src/services/character-focused-authoring.ts",
+    "sourceSha256": "d97aa8c0f89bb6664567c775178ee56d3b20318d116b3328c7c772796c55e7e0",
+    "oldSealId": "18a1252ed2bfa2773aa446b80e9779cab123dd9f7ea1088ead63714d92e3aa1c",
+    "causeSealIds": [
+      "3d5d1e8e4ec99ffe6fdef1851bbe1ba54593c86e365b620af601c1d97747fe8c",
+      "480c02403f61dc6a9cd7d54861639b962dbc3bde86673481e02e0defc8415e17",
+      "5d5fc3c7e628b857a6e1b5624603a3457750a09c8545ffb5b64f7c4dce2410e5",
+      "22c4ff2fe41d0f471a7209714ced52f054f5d366197b65a21d8f9ac4528934d5",
+      "911161c0cfda1614e3cf7f2dab13417a37c2b4e37657c8bb5b2161f92113bfeb",
+      "06f3c50c84e38c5a86623b399a7b064f7e4ff0a0bdfab246fdf26ed44b66f1a9"
+    ],
+    "test": null,
+    "secondsSinceStart": 621.133
+  },
+  {
+    "key": "new:shared-api",
+    "ref": "all-tests-20261008/character-complete-source/shared-api",
+    "sealId": "b0b10edb4decc344c95818f528118116814e1d978393829ab0e6dcb284582695",
+    "path": "packages/shared/src/api.ts",
+    "sourceSha256": "a49ecbc152c827582ee244a86ee7b40c9c3be5962c6f30465191651be67637dd",
+    "oldSealId": null,
+    "causeSealIds": [
+      "09428bbc862625313691ce80cf94a3411c6fa122e33c4a767cc15b47da145dd0",
+      "256c436664b69e1d7ddcc50f818d90173bbaf402b3b9bd322dd96c3d150771db",
+      "7e0e9921369cee23cb342b8957e8f21dd2edecd82a21b7665ec4d5b48bc6b862"
+    ],
+    "test": null,
+    "secondsSinceStart": 650.155
+  },
+  {
+    "key": "old:0374262c05d28dee5d6b67d599280434b2fe91e7c416c66cda9c7ef975114e9c",
+    "ref": "all-tests-20261008/current-source-closure/all-tests-20261007/implementation-current-six-draft-read-routes",
+    "sealId": "37de8d3fbbbaafb40baa4e0ac209a2e4b4357622ffb6953a09fb435dad47153b",
+    "path": "backend/src/routes.ts",
+    "sourceSha256": "e3933522bcf92ccf011290105b71febb5f3a48ba0ebbfd4e09268b6b43da20be",
+    "oldSealId": "0374262c05d28dee5d6b67d599280434b2fe91e7c416c66cda9c7ef975114e9c",
+    "causeSealIds": [
+      "d367a6d9a6429c1e09a6405bc5442cdacf51bb6325919da7ef9d950474157518",
+      "3d5d1e8e4ec99ffe6fdef1851bbe1ba54593c86e365b620af601c1d97747fe8c",
+      "480c02403f61dc6a9cd7d54861639b962dbc3bde86673481e02e0defc8415e17",
+      "480fa57d97ccda60a0e2406cbdadcba33373238a0e2ba935fe3544b19374f4bd",
+      "5d5fc3c7e628b857a6e1b5624603a3457750a09c8545ffb5b64f7c4dce2410e5",
+      "8fbfa4e7ad1ba73da9443dd233cc2e5fcb470e1a1390f212694b9cdd21f73997",
+      "b0b10edb4decc344c95818f528118116814e1d978393829ab0e6dcb284582695",
+      "911161c0cfda1614e3cf7f2dab13417a37c2b4e37657c8bb5b2161f92113bfeb"
+    ],
+    "test": null,
+    "secondsSinceStart": 684.498
+  },
+  {
+    "key": "old:05233c7518e3340dcc31e80fc2d881de448923588870bd7de982bec009454fc9",
+    "ref": "all-tests-20261008/current-source-closure/all-tests-20261007/implementation-native-pg-initialization",
+    "sealId": "b8fd37281f2f7da5997dbb7532d819290a9c848f70e4b6e12deb6f6bceb5255b",
+    "path": "backend/src/repositories/battle-awareness-initialization-query.ts",
+    "sourceSha256": "e83016454a4db541f0ac6aebf6b1eb61f01a25796504a96be41b4409dfb698e5",
+    "oldSealId": "05233c7518e3340dcc31e80fc2d881de448923588870bd7de982bec009454fc9",
+    "causeSealIds": [
+      "c5abcc709b2e26188df0dddf928010d2ff1c0156b4a796c72d8c9224fbb9ced8",
+      "43edff8f437e6d157401ff80f278b8a729ac24be91fcbc16b30dca311e0ea324"
+    ],
+    "test": null,
+    "secondsSinceStart": 693.364
+  },
+  {
+    "key": "old:8c2a2e735262c7fb2b62c6bff2139d0eb33ba3e75d2a65eaf4e896483e5d0509",
+    "ref": "all-tests-20261008/current-source-closure/all-tests-20261008/implementation-semantic-recovery-progress-monitor",
+    "sealId": "ac2ae9273bd7cffcc8e602bfbe7f6ca3cb7d94cf5916a4b1f6bff1b8b02301c0",
+    "path": "backend/src/services/semantic-authoring/progress-monitor.ts",
+    "sourceSha256": "99b113848b12a69b90513e1ae31eb815b3b088cda3bd4d4f5cfdda7b3c470653",
+    "oldSealId": "8c2a2e735262c7fb2b62c6bff2139d0eb33ba3e75d2a65eaf4e896483e5d0509",
+    "causeSealIds": [
+      "7e0e9921369cee23cb342b8957e8f21dd2edecd82a21b7665ec4d5b48bc6b862"
+    ],
+    "test": null,
+    "secondsSinceStart": 699.208
+  },
+  {
+    "key": "old:c4122415e22ef3f8870f6185da05928005a087d36374273b67b9019b13ab1315",
+    "ref": "all-tests-20261008/current-source-closure/all-tests-20261008/implementation-semantic-recovery-capability-session",
+    "sealId": "2f8e4321951aac6c5c6ed952cfab54eea50f3fcc4b79cd80ce3d8c24fe855163",
+    "path": "backend/src/services/semantic-authoring/capability-session.ts",
+    "sourceSha256": "16786f35f5e7a558bd6116f07f0214e99e5320e7f186e7308202190501ec3195",
+    "oldSealId": "c4122415e22ef3f8870f6185da05928005a087d36374273b67b9019b13ab1315",
+    "causeSealIds": [
+      "7e0e9921369cee23cb342b8957e8f21dd2edecd82a21b7665ec4d5b48bc6b862"
+    ],
+    "test": null,
+    "secondsSinceStart": 705.005
+  },
+  {
+    "key": "old:ded2bccd7b09310c4b37830d5e676c1a85972cbe23daf8e89b29982366a6ad7c",
+    "ref": "all-tests-20261008/current-source-closure/all-tests-20261008/implementation-semantic-recovery-accounting",
+    "sealId": "9c5118358b9d3533aec8c315861ba503ef5cf1919b4dd9cea5ca4392049f2868",
+    "path": "backend/src/services/semantic-authoring/accounting.ts",
+    "sourceSha256": "85c6dd9fd36317ee61f73e9a7c839ae21fdc89675cc9ffb8c9847951832c39bb",
+    "oldSealId": "ded2bccd7b09310c4b37830d5e676c1a85972cbe23daf8e89b29982366a6ad7c",
+    "causeSealIds": [
+      "7e0e9921369cee23cb342b8957e8f21dd2edecd82a21b7665ec4d5b48bc6b862"
+    ],
+    "test": null,
+    "secondsSinceStart": 710.847
+  },
+  {
+    "key": "old:11aa98609796b3fb676c1baefb648556aa90ebf6cab150f56590aa01b61ee91f",
+    "ref": "all-tests-20261008/current-source-closure/all-tests-20261008/implementation-semantic-recovery-orchestration",
+    "sealId": "ba078db630b87ce7472ce546029030397b04197ab64f4c4508f1276a7af22418",
+    "path": "backend/src/services/semantic-authoring/orchestration.ts",
+    "sourceSha256": "a2d936cac5b11329ac050a4476a957cea6c4ff9f12d90d24b5a15c502550b29b",
+    "oldSealId": "11aa98609796b3fb676c1baefb648556aa90ebf6cab150f56590aa01b61ee91f",
+    "causeSealIds": [
+      "ac2ae9273bd7cffcc8e602bfbe7f6ca3cb7d94cf5916a4b1f6bff1b8b02301c0",
+      "7e0e9921369cee23cb342b8957e8f21dd2edecd82a21b7665ec4d5b48bc6b862",
+      "be5c9a3dadf48bf07040b7f56a23615f3ac535b7567039be56cf20cbe069b3fc",
+      "2f8e4321951aac6c5c6ed952cfab54eea50f3fcc4b79cd80ce3d8c24fe855163",
+      "9c5118358b9d3533aec8c315861ba503ef5cf1919b4dd9cea5ca4392049f2868"
+    ],
+    "test": null,
+    "secondsSinceStart": 742.793
+  },
+  {
+    "key": "old:058e6cfb7f73892647ac3dd22dfdb040c3ce088ac36422f99867080286203254",
+    "ref": "all-tests-20261008/current-source-closure/all-tests-20261008/implementation-semantic-recovery-ports",
+    "sealId": "b3c3bf9bc1df73c9c5f89173e362d361fe6bb555188e47168674f40bb8c685e1",
+    "path": "backend/src/services/semantic-authoring/ports.ts",
+    "sourceSha256": "850b811140cd5c7f036cef63b0f17ab3da92d1bb0839b06effaecd636c4e73aa",
+    "oldSealId": "058e6cfb7f73892647ac3dd22dfdb040c3ce088ac36422f99867080286203254",
+    "causeSealIds": [
+      "ba078db630b87ce7472ce546029030397b04197ab64f4c4508f1276a7af22418",
+      "7e0e9921369cee23cb342b8957e8f21dd2edecd82a21b7665ec4d5b48bc6b862",
+      "9c5118358b9d3533aec8c315861ba503ef5cf1919b4dd9cea5ca4392049f2868"
+    ],
+    "test": null,
+    "secondsSinceStart": 762.602
+  },
+  {
+    "key": "old:0595f010d8716e7fa14181a8e6065c93d1b863ea910acd970acd99a94137127e",
+    "ref": "all-tests-20261008/current-source-closure/verification/routing-typed-seam-bounded-20261008",
+    "sealId": "7a372d3dd70ed1e9349de71923a75fb2281e03e67674371296aeaec4d155d111",
+    "path": "backend/src/llm/openai-compatible-routing.test.ts",
+    "sourceSha256": "eeb519cdbacdfdab3f995c001825293896dcb7f31b5397a2ac8ffe9c8336caf8",
+    "oldSealId": "0595f010d8716e7fa14181a8e6065c93d1b863ea910acd970acd99a94137127e",
+    "causeSealIds": [
+      "f94336163083b2ba8e9faf1b5819ea51cfcc72fec86a708f6e488cd312bd594b"
+    ],
+    "test": {
+      "path": "backend/src/llm/openai-compatible-routing.test.ts",
+      "ref": "verification/routing-typed-seam-bounded-20261008"
+    },
+    "secondsSinceStart": 771.496
+  },
+  {
+    "key": "old:2c5b1cfe3cf17fa58ff39fb45e30eaccb0b91506a39e2c1349671d35bcb95270",
+    "ref": "all-tests-20261008/current-source-closure/all-tests-20261007/implementation-stable-initial-world-layout",
+    "sealId": "fccadf7229c410b3aaac30b474911c46b23bf2fd6a1b9add2541cbefc7499e4a",
+    "path": "packages/shared/src/battle-world.ts",
+    "sourceSha256": "bc85795bdeab266c5e8489b51c56c80e84c605b521e95c25a2482f248ab6249d",
+    "oldSealId": "2c5b1cfe3cf17fa58ff39fb45e30eaccb0b91506a39e2c1349671d35bcb95270",
+    "causeSealIds": [
+      "254f8a32c06a105ff1d2d6c8e8943d246ed2925e3856a52df862082725f6245a",
+      "8534c37b4da9615462035a1428ee6616200614e289efc11a875c91b6a9bca009",
+      "bbdf88f6e4a55ed11c978c75df29f590ddd1d99c7383eac1a9b26d54609c9031"
+    ],
+    "test": null,
+    "secondsSinceStart": 785.453
+  },
+  {
+    "key": "old:20c050a7fb0b19ccae7df3d80e3740fb5f235b4f5dd500cf706fbd8093392b91",
+    "ref": "all-tests-20261008/current-source-closure/all-tests-20261007/implementation-typed-battlefield-creation",
+    "sealId": "9972c0fc948d4865b9992bcc97a55f05cebcd209299fa8fe0f3a6cd1bd474776",
+    "path": "packages/shared/src/battlefield-creation.ts",
+    "sourceSha256": "156c5ff5bf9aacbfc0b3a652eff2f161bebd5537ddfd3df833b76fc59f81c7dc",
+    "oldSealId": "20c050a7fb0b19ccae7df3d80e3740fb5f235b4f5dd500cf706fbd8093392b91",
+    "causeSealIds": [
+      "254f8a32c06a105ff1d2d6c8e8943d246ed2925e3856a52df862082725f6245a",
+      "fccadf7229c410b3aaac30b474911c46b23bf2fd6a1b9add2541cbefc7499e4a",
+      "54f969c54c0489a5a5b7f3cb3fd3d97c4af5833c1d71d0e4d26649e4886db6d5"
+    ],
+    "test": null,
+    "secondsSinceStart": 797.506
+  },
+  {
+    "key": "old:f822672884d2c6fd2a54869cecc58c05f1bf3717947f6f2299302c615b102579",
+    "ref": "all-tests-20261008/current-source-closure/all-tests-20261007/implementation-stable-area-reposition-plans",
+    "sealId": "c5643dcde214fb8be1725421adfbae425a13f5ac92aab8af7bc16084621e9a73",
+    "path": "packages/shared/src/reposition-transition.ts",
+    "sourceSha256": "0f33f0e62363e7097478f3981e0db2d471424c039c3baf79754cd4bcfe7f3f17",
+    "oldSealId": "f822672884d2c6fd2a54869cecc58c05f1bf3717947f6f2299302c615b102579",
+    "causeSealIds": [
+      "fccadf7229c410b3aaac30b474911c46b23bf2fd6a1b9add2541cbefc7499e4a",
+      "6efb5be6e2ddbb719f97bc5438544aaec79e985db691ba80e22e9a69934e220c",
+      "bbdf88f6e4a55ed11c978c75df29f590ddd1d99c7383eac1a9b26d54609c9031"
+    ],
+    "test": null,
+    "secondsSinceStart": 811.8
+  },
+  {
+    "key": "old:bbac9d8f7324c9cc82705e42235739a129b0d0bd3d6b017b757e9ffffaa14508",
+    "ref": "all-tests-20261008/current-source-closure/all-tests-20261007/implementation-stable-area-battle-initialization",
+    "sealId": "02d3c712bda7158178b2a1a113fe6ec32112c8a7fa207c488c2ab40a1fe3f927",
+    "path": "packages/shared/src/battle-engine.ts",
+    "sourceSha256": "5d838d68b5a7832ef051670770ce117b5aec53d3eb650233a9b8ad0c0971f0ae",
+    "oldSealId": "bbac9d8f7324c9cc82705e42235739a129b0d0bd3d6b017b757e9ffffaa14508",
+    "causeSealIds": [
+      "9972c0fc948d4865b9992bcc97a55f05cebcd209299fa8fe0f3a6cd1bd474776",
+      "fccadf7229c410b3aaac30b474911c46b23bf2fd6a1b9add2541cbefc7499e4a",
+      "c5643dcde214fb8be1725421adfbae425a13f5ac92aab8af7bc16084621e9a73"
+    ],
+    "test": null,
+    "secondsSinceStart": 825.601
+  },
+  {
+    "key": "old:7ed5f6b59fb21bfee662c9b29ac29e7fe915d4576b3bdd5d735e90248124c3cc",
+    "ref": "all-tests-20261008/current-source-closure/all-tests-20261007/fixture-current-legacy-inventory-creation",
+    "sealId": "99d524e2b186eb8f55db50eeb1e088bd4191f094ab72f19cb337a8deb262c609",
+    "path": "backend/src/services/character-agency-inventory.fixtures.ts",
+    "sourceSha256": "997c8d115eef2caf8c609dc63c6b22dee03f8aaf1473559c1d05f9cb0fa8b90e",
+    "oldSealId": "7ed5f6b59fb21bfee662c9b29ac29e7fe915d4576b3bdd5d735e90248124c3cc",
+    "causeSealIds": [
+      "02d3c712bda7158178b2a1a113fe6ec32112c8a7fa207c488c2ab40a1fe3f927",
+      "d5695200a29531ed085f10c0d502effc2af325ee206874b1f32c61db6872fba4"
+    ],
+    "test": null,
+    "secondsSinceStart": 841.127
+  },
+  {
+    "key": "old:b6f2f1e30777b3e792c544c4b6c7eab1a13f06284e0e1a201a3f9e60fd8f26d4",
+    "ref": "all-tests-20261008/current-source-closure/all-tests-20261007/fixture-retained-conscious-agency-v3",
+    "sealId": "7614c8c70e56fbfaf8819c7eccd7ec75211cb06782f78c1e83859c0c52c32716",
+    "path": "backend/src/services/conscious-agency.fixtures.ts",
+    "sourceSha256": "46c307d406e47a414372b8033c9b0a9df27524854810befe1252d0f49521900b",
+    "oldSealId": "b6f2f1e30777b3e792c544c4b6c7eab1a13f06284e0e1a201a3f9e60fd8f26d4",
+    "causeSealIds": [
+      "26916ae4693e54229a5216d76cc3238ed27649f3a678588e14f28ac9a975c515",
+      "67823251903b9153ed114e82e3c148b25a4e0e1708f02d86e6d07f28d56409f6",
+      "99d524e2b186eb8f55db50eeb1e088bd4191f094ab72f19cb337a8deb262c609",
+      "fd2692da29f2deaf81b6567e5499276f95ece18dfd67f0a669fd1a2077292209"
+    ],
+    "test": null,
+    "secondsSinceStart": 856.934
+  },
+  {
+    "key": "old:07bfb1eb0ecc8da49c09cb11dac8514426124a47ed01e070bb4590d2654c425b",
+    "ref": "all-tests-20261008/current-source-closure/all-tests-20261007/fixture-retained-agency-v3-mock-producer",
+    "sealId": "5bd7913b61f41b028bb64e16eb39ff1ad95424cd1976b862d3bb525ee863bb28",
+    "path": "backend/src/llm/mock.ts",
+    "sourceSha256": "df9fa66abdcd601351516c3903a09030690717b493454e8b5d141f0506cf385c",
+    "oldSealId": "07bfb1eb0ecc8da49c09cb11dac8514426124a47ed01e070bb4590d2654c425b",
+    "causeSealIds": [
+      "26916ae4693e54229a5216d76cc3238ed27649f3a678588e14f28ac9a975c515",
+      "572cae28a0027c0a8d8c1f34866854d059dd8f40c6494453ec4c41e03f0bbad3",
+      "7614c8c70e56fbfaf8819c7eccd7ec75211cb06782f78c1e83859c0c52c32716"
+    ],
+    "test": null,
+    "secondsSinceStart": 868.327
+  },
+  {
+    "key": "old:3c919c7c047bddd5eeabad3f7c74e5416c147c4df4817b89c945178a90567a20",
+    "ref": "all-tests-20261008/current-source-closure/all-tests-20261008/implementation-psyche-repair-bounded",
+    "sealId": "1c8e5668b78de1f5340a3380224e6540af3c1448e14435dd189f89e80b390bae",
+    "path": "backend/src/llm/openai-compatible.ts",
+    "sourceSha256": "75fdc50d0ff5550712fc50e967f7880950aad035fbab87fa40f2b5d9d0d6daaa",
+    "oldSealId": "3c919c7c047bddd5eeabad3f7c74e5416c147c4df4817b89c945178a90567a20",
+    "causeSealIds": [
+      "437176d1f5efcc8353b39038ada727e6aa70296f0fa065b2448cfc76f3512139",
+      "e7e672e9013c6c48a2ab3116c0db1e53821221f4ca09ec5048e7cb781adf3945"
+    ],
+    "test": null,
+    "secondsSinceStart": 876.508
+  },
+  {
+    "key": "old:09d61c50f520e3a93618d90fd0f96b72f374a48cc14568715c488daae5d79ef6",
+    "ref": "all-tests-20261008/current-source-closure/verification/psyche-repair-bounded-20261008",
+    "sealId": "2655f9d3d90b61225e594c3aa0b1a14b86d819575e30868b72e09266587abe5e",
+    "path": "backend/src/llm/openai-compatible-psyche-repair.test.ts",
+    "sourceSha256": "4f142cca3295556e9c369f0522ae77701a00e60b8460b30dfab111f11c2143c0",
+    "oldSealId": "09d61c50f520e3a93618d90fd0f96b72f374a48cc14568715c488daae5d79ef6",
+    "causeSealIds": [
+      "1c8e5668b78de1f5340a3380224e6540af3c1448e14435dd189f89e80b390bae"
+    ],
+    "test": {
+      "path": "backend/src/llm/openai-compatible-psyche-repair.test.ts",
+      "ref": "verification/psyche-repair-bounded-20261008"
+    },
+    "secondsSinceStart": 882.554
+  },
+  {
+    "key": "old:a19d504723b074872d217b9c44248c6b0754ce72a384617e448845195ba64d70",
+    "ref": "all-tests-20261008/current-source-closure/all-tests-20261007/implementation-server-owned-account-access",
+    "sealId": "58c5393b721f25cdaa2f359a998d6f3029b796eeaac1b8dbf621791da64a600f",
+    "path": "backend/src/account-access.ts",
+    "sourceSha256": "9bebaf7d75b6c6a0e5e962fe827a7b21ee4b361586f46785fa15e2486b2226a6",
+    "oldSealId": "a19d504723b074872d217b9c44248c6b0754ce72a384617e448845195ba64d70",
+    "causeSealIds": [
+      "203e66fc4e30772adab026012c67f1b1ac4ca86ad2ada11b501c639a27a19eac",
+      "4ab3d24cbe88cf5312d76e7476ea441e974b6a28a67833eeb1491b7451262191",
+      "5631092bae316bdb959257d52a7574e37e698c5d4cce21accdf019c0cea315ea",
+      "9a193a751c31ca13af8d4258564fadf6bab164f38170c1fd72e8ee6f9d61f990",
+      "9e67de0be989263248c519ae8e5f32e6b59c6cdd11331447a10bee2515630b58",
+      "fd54b4d54a1d9ef5fb2cd6121eafaf925a5501ae5986b7745f29d5cc20635007"
+    ],
+    "test": null,
+    "secondsSinceStart": 907.028
+  },
+  {
+    "key": "old:3107542e2fc9024a85ec83384ea704e00ccb2fad1b6856cf7338445fb1dc8852",
+    "ref": "all-tests-20261008/current-source-closure/all-tests-20261007/implementation-injected-e2e-session-mint",
+    "sealId": "e3bce10763d64c6924bebc7c46567077d71bbaf67dbcf907f814151df42d4f50",
+    "path": "backend/src/services/e2e-session.ts",
+    "sourceSha256": "e0ce59de3bd0310c70a5e38b91f8dbc3995bcb105d4cfc7587b4323da8abfae3",
+    "oldSealId": "3107542e2fc9024a85ec83384ea704e00ccb2fad1b6856cf7338445fb1dc8852",
+    "causeSealIds": [
+      "2992d83ef799f6b170c4347d161625df9faae38975138323f7c200d0880e73b2",
+      "54c010fd692b4b8dc89d16772a127671ad8f4b54859e40d7e9b3781b3bb6281e",
+      "6699d0634ec0c5e9f6c3e61f677d5c55a99726f1d49d904166413297dc6daaef",
+      "5631092bae316bdb959257d52a7574e37e698c5d4cce21accdf019c0cea315ea",
+      "9a193a751c31ca13af8d4258564fadf6bab164f38170c1fd72e8ee6f9d61f990",
+      "58c5393b721f25cdaa2f359a998d6f3029b796eeaac1b8dbf621791da64a600f"
+    ],
+    "test": null,
+    "secondsSinceStart": 928.781
+  },
+  {
+    "key": "old:dc775c5520339cf0e1d0fbab3cbbe185e26a861592062b7e87c3488ee3e0d39b",
+    "ref": "all-tests-20261008/current-source-closure/all-tests-20261007/implementation-e2e-operator-route-guard",
+    "sealId": "c2bd6e1a10a0692dacdfedd6b96491e1c08ced47b327249520715f9e6c62400f",
+    "path": "backend/src/auth.ts",
+    "sourceSha256": "497c87571118b8d64709a90f9fbca77eca6c931402ab7115cbf983f0ec510256",
+    "oldSealId": "dc775c5520339cf0e1d0fbab3cbbe185e26a861592062b7e87c3488ee3e0d39b",
+    "causeSealIds": [
+      "2992d83ef799f6b170c4347d161625df9faae38975138323f7c200d0880e73b2",
+      "e3bce10763d64c6924bebc7c46567077d71bbaf67dbcf907f814151df42d4f50",
+      "9a193a751c31ca13af8d4258564fadf6bab164f38170c1fd72e8ee6f9d61f990",
+      "58c5393b721f25cdaa2f359a998d6f3029b796eeaac1b8dbf621791da64a600f"
+    ],
+    "test": null,
+    "secondsSinceStart": 944.422
+  },
+  {
+    "key": "old:0a56df300458c836c52402d3b8eba8406334eaa12fe39b1505e4fa0d6d61a2db",
+    "ref": "all-tests-20261008/current-source-closure/verification/e2e-session-middleware-current-20261007",
+    "sealId": "958b6eba8304e250e7104a27dad3dedf0651302575e47734c243d79ebd77e12a",
+    "path": "backend/src/routes-e2e-session.test.ts",
+    "sourceSha256": "6b0e0e9cce9a80c957598543e457958701b31a183f8b294a8df36dc8b1e5d440",
+    "oldSealId": "0a56df300458c836c52402d3b8eba8406334eaa12fe39b1505e4fa0d6d61a2db",
+    "causeSealIds": [
+      "2992d83ef799f6b170c4347d161625df9faae38975138323f7c200d0880e73b2",
+      "e3bce10763d64c6924bebc7c46567077d71bbaf67dbcf907f814151df42d4f50",
+      "9a193a751c31ca13af8d4258564fadf6bab164f38170c1fd72e8ee6f9d61f990",
+      "c2bd6e1a10a0692dacdfedd6b96491e1c08ced47b327249520715f9e6c62400f"
+    ],
+    "test": {
+      "path": "backend/src/routes-e2e-session.test.ts",
+      "ref": "verification/e2e-session-middleware-current-20261007"
+    },
+    "secondsSinceStart": 961.688
+  },
+  {
+    "key": "old:0abc37a6f16e417dd10049e7b4112e0fe42859a637f714eead5ee638bdd7e6ba",
+    "ref": "all-tests-20261008/current-source-closure/all-tests-20261007/implementation-retained-dialogue-observer-packets",
+    "sealId": "6b0eae4a6d7f0d835823b09b92ae3c0ede009cb61f3572bf4e9a13af11c87b05",
+    "path": "packages/shared/src/dialogue-context.ts",
+    "sourceSha256": "80de2212888716098c38b78e3a30ab66bfba43ec053254b62cbcaf6dfdbff56d",
+    "oldSealId": "0abc37a6f16e417dd10049e7b4112e0fe42859a637f714eead5ee638bdd7e6ba",
+    "causeSealIds": [
+      "09a9e39e35251341a381a9a72865c03100694d7154922d921576a161ba987bcc",
+      "203e66fc4e30772adab026012c67f1b1ac4ca86ad2ada11b501c639a27a19eac",
+      "81c85423654dba4a056b6ca9844f1bf5569fbaff36621c3b9e05efabd9dcdc36",
+      "8534c37b4da9615462035a1428ee6616200614e289efc11a875c91b6a9bca009",
+      "0bdac62e7b0fe13e7a3fa5c78268242aede0de8fc853882e6c2b1552eddc1b10",
+      "fd2692da29f2deaf81b6567e5499276f95ece18dfd67f0a669fd1a2077292209"
+    ],
+    "test": null,
+    "secondsSinceStart": 985.779
+  },
+  {
+    "key": "old:991a0bed1f9217e6978039cb39b7b217e3122a147cd91f22786df658d1917be7",
+    "ref": "all-tests-20261008/current-source-closure/all-tests-20261008/implementation-portrait-v3-activation",
+    "sealId": "2d36069cccd882502a0db0eb23920155bf456cc37c987436ec471683a626392e",
+    "path": "backend/src/repositories/character-assets-v2.ts",
+    "sourceSha256": "4dc5580a4eefcbfd5ebba9b373f0e16aa960300d9f1de4293820dbb433aac318",
+    "oldSealId": "991a0bed1f9217e6978039cb39b7b217e3122a147cd91f22786df658d1917be7",
+    "causeSealIds": [
+      "4b1d5ffdbdb194067123c2a7e761ea33514e5ffd6812b7c0f3c48f6d233d5196",
+      "911161c0cfda1614e3cf7f2dab13417a37c2b4e37657c8bb5b2161f92113bfeb",
+      "06f3c50c84e38c5a86623b399a7b064f7e4ff0a0bdfab246fdf26ed44b66f1a9"
+    ],
+    "test": null,
+    "secondsSinceStart": 1003.796
+  },
+  {
+    "key": "old:4a45c9459e2d46f7f2f91a881dc4ece3f4b6c6ce7843b9ad299930dde99b10d7",
+    "ref": "all-tests-20261008/current-source-closure/all-tests-20261008/implementation-portrait-v3-route",
+    "sealId": "bce8f38d5f89f33de951d3e41104c9249c0e9daf27c32d7fbed9964acf9345d6",
+    "path": "backend/src/routes.ts",
+    "sourceSha256": "e3933522bcf92ccf011290105b71febb5f3a48ba0ebbfd4e09268b6b43da20be",
+    "oldSealId": "4a45c9459e2d46f7f2f91a881dc4ece3f4b6c6ce7843b9ad299930dde99b10d7",
+    "causeSealIds": [
+      "2d36069cccd882502a0db0eb23920155bf456cc37c987436ec471683a626392e",
+      "b0b10edb4decc344c95818f528118116814e1d978393829ab0e6dcb284582695",
+      "911161c0cfda1614e3cf7f2dab13417a37c2b4e37657c8bb5b2161f92113bfeb"
+    ],
+    "test": null,
+    "secondsSinceStart": 1021.648
+  },
+  {
+    "key": "old:0b349d1dfb958a33e71c52e699789174ce68f30a89a19b6b763d617fc37253c1",
+    "ref": "all-tests-20261008/current-source-closure/verification/portrait-v3-bounded-20261008",
+    "sealId": "f26781aa68fc2b1fa56d185d9e6071fa3c6b53fbc673d4c7ae46ccf1fafd8a2a",
+    "path": "backend/src/services/character-portrait-v3.test.ts",
+    "sourceSha256": "d4ce4330bc1de1c11f913a9d6050f496d8f5cc5fd4bec7c67241281f91383c14",
+    "oldSealId": "0b349d1dfb958a33e71c52e699789174ce68f30a89a19b6b763d617fc37253c1",
+    "causeSealIds": [
+      "bce8f38d5f89f33de951d3e41104c9249c0e9daf27c32d7fbed9964acf9345d6"
+    ],
+    "test": {
+      "path": "backend/src/services/character-portrait-v3.test.ts",
+      "ref": "verification/portrait-v3-bounded-20261008"
+    },
+    "secondsSinceStart": 1030.41
+  },
+  {
+    "key": "old:69315aaf0137fd62cdecd0d85ae79e90cf61eeca43bb86b73ad34ecf00a1bd03",
+    "ref": "all-tests-20261008/current-source-closure/all-tests-20261008/implementation-migration-probe-fixture-current",
+    "sealId": "1e2cd86ec390bc138764694edb3c115c85c2922dccbd5d7e571350666f5757bc",
+    "path": "backend/src/testing/semantic-migration-probe-fixture.ts",
+    "sourceSha256": "3ec818b6e90fdaa2b190ea0ab7533d0ec283a5c1592ee55a0fcf0f156aa5c3c4",
+    "oldSealId": "69315aaf0137fd62cdecd0d85ae79e90cf61eeca43bb86b73ad34ecf00a1bd03",
+    "causeSealIds": [
+      "06ee97e7eab1a6aac60ec88d8f9de3abd0488a2331e5bca654aff9937eab38f6",
+      "23a5289774922f0a948b890d68e71a89accf5263599e8f4468f7d4d210634754",
+      "4e1f818486c40be8836cc745622d90621dbe9f1a3298ff3027e57a2bcab5d608",
+      "5631092bae316bdb959257d52a7574e37e698c5d4cce21accdf019c0cea315ea",
+      "9b3b176efd5f71b72166640ddc9b41af6f0b1a2786129ea8d10e43578fd6c297",
+      "c5996a4f29e4d619d903f62e75e408c7da7b0686f40d6be8885962baff27aa42",
+      "d0e91dd4315198c54b286721df42b55a1e2855395040c7d716914b6dbdb97ae3"
+    ],
+    "test": null,
+    "secondsSinceStart": 1058.143
+  },
+  {
+    "key": "old:0c60ead1611a0aadf2a3e504245276785eac5c27a7a2d987d9f0d558c73e1e85",
+    "ref": "all-tests-20261008/current-source-closure/all-tests-20261008/implementation-boundary-probe-launcher-v3",
+    "sealId": "f159cb6067ab2b48fe5eb47a0aa17ba4c25d40e4aaa9ddbe5815d0e33adff3cf",
+    "path": "backend/src/testing/replay-semantic-migration-v3.ts",
+    "sourceSha256": "8e20ff26b82863316b48de0fd460b940d854ee92a123fb129f2c16e396087b2e",
+    "oldSealId": "0c60ead1611a0aadf2a3e504245276785eac5c27a7a2d987d9f0d558c73e1e85",
+    "causeSealIds": [
+      "1e2cd86ec390bc138764694edb3c115c85c2922dccbd5d7e571350666f5757bc",
+      "90676e41a7e0dd5ff58d7960703f8a2c37c787ba87c9f58ce9e9fc6b1b2e42ef"
+    ],
+    "test": null,
+    "secondsSinceStart": 1069.383
+  },
+  {
+    "key": "old:8aad18fc84ec5efbc42d7d79b08364bf649d027990f8366fe970d399ace734d2",
+    "ref": "all-tests-20261008/current-source-closure/all-tests-20261007/implementation-retained-agency-v3-public-private-boundary",
+    "sealId": "f7b14ba4a17187057b3c72667c2653e2bc7d16db1e9808d612655bb2e3ef436b",
+    "path": "backend/src/services/battle-public-projection.ts",
+    "sourceSha256": "df6e8d86c696507428e05ce8eb370949b79726f58a6e266ae0ff0ecfa434dc56",
+    "oldSealId": "8aad18fc84ec5efbc42d7d79b08364bf649d027990f8366fe970d399ace734d2",
+    "causeSealIds": [
+      "203e66fc4e30772adab026012c67f1b1ac4ca86ad2ada11b501c639a27a19eac",
+      "26916ae4693e54229a5216d76cc3238ed27649f3a678588e14f28ac9a975c515",
+      "81c85423654dba4a056b6ca9844f1bf5569fbaff36621c3b9e05efabd9dcdc36",
+      "fd2692da29f2deaf81b6567e5499276f95ece18dfd67f0a669fd1a2077292209"
+    ],
+    "test": null,
+    "secondsSinceStart": 1084.478
+  },
+  {
+    "key": "old:5452852d0f1bf38ed89dca0b72e4eebb2db5b47bda137a1983f2e45e0bd14cc9",
+    "ref": "all-tests-20261008/current-source-closure/all-tests-20261007/implementation-sdk-retained-agency-v3-dispatch",
+    "sealId": "e3f0f7ff78e567dd89b8113f6ea7f88aa86d7472a55a7e83be71f676644fa7d3",
+    "path": "backend/src/llm/openai-compatible.ts",
+    "sourceSha256": "75fdc50d0ff5550712fc50e967f7880950aad035fbab87fa40f2b5d9d0d6daaa",
+    "oldSealId": "5452852d0f1bf38ed89dca0b72e4eebb2db5b47bda137a1983f2e45e0bd14cc9",
+    "causeSealIds": [
+      "26916ae4693e54229a5216d76cc3238ed27649f3a678588e14f28ac9a975c515",
+      "67823251903b9153ed114e82e3c148b25a4e0e1708f02d86e6d07f28d56409f6",
+      "c269fec69156793be784ccf206ff49130529531e01a5eafd91240336425dd9de",
+      "e7e672e9013c6c48a2ab3116c0db1e53821221f4ca09ec5048e7cb781adf3945"
+    ],
+    "test": null,
+    "secondsSinceStart": 1100.369
+  },
+  {
+    "key": "old:e966130abcf3866532407c9296999c40c724cd7bf693418cd2610155dbb36535",
+    "ref": "all-tests-20261008/current-source-closure/all-tests-20261007/implementation-retained-agency-v3-activation",
+    "sealId": "8bb89768cef3854c9331adf4e520cfce2e8d184aea4592581ca2cda5ffa04e2c",
+    "path": "backend/src/services/dialogue-pipeline-activation.ts",
+    "sourceSha256": "37cae40cbe581864bf06203153a45c6aa2c7bae1f635f77712e1b8bef337573b",
+    "oldSealId": "e966130abcf3866532407c9296999c40c724cd7bf693418cd2610155dbb36535",
+    "causeSealIds": [
+      "26916ae4693e54229a5216d76cc3238ed27649f3a678588e14f28ac9a975c515",
+      "645e178be9a4b4662822f09d79c5977797a0830e072ee816510a4a62aa5b8e52",
+      "67823251903b9153ed114e82e3c148b25a4e0e1708f02d86e6d07f28d56409f6",
+      "1898c9e10171b336558fafba731ef4a6e8c2b81b71d99bb2f3c6f5e8f763a78c"
+    ],
+    "test": null,
+    "secondsSinceStart": 1116.664
+  },
+  {
+    "key": "old:99daa2bed6e0d01bde12df6dffd1ce3478049c4602e6231b668ea98d165e8a10",
+    "ref": "all-tests-20261008/current-source-closure/all-tests-20261007/implementation-retained-agency-v3-service-flow",
+    "sealId": "7c0c8331fb7744bd72419497d6b8d5f50a18e6f035de1eed978f1ca78ab5ef3c",
+    "path": "backend/src/services/battle-service.ts",
+    "sourceSha256": "b1cb72011a0b1c40872b4d56da313d4a01504a8e2a860dd96b087b2e7b712af1",
+    "oldSealId": "99daa2bed6e0d01bde12df6dffd1ce3478049c4602e6231b668ea98d165e8a10",
+    "causeSealIds": [
+      "203e66fc4e30772adab026012c67f1b1ac4ca86ad2ada11b501c639a27a19eac",
+      "26916ae4693e54229a5216d76cc3238ed27649f3a678588e14f28ac9a975c515",
+      "e3f0f7ff78e567dd89b8113f6ea7f88aa86d7472a55a7e83be71f676644fa7d3",
+      "5d5df9aad9a052cdc9b5be00a3cf19058d652f2d055ebd03502277d34605d3cb",
+      "f7b14ba4a17187057b3c72667c2653e2bc7d16db1e9808d612655bb2e3ef436b",
+      "7614c8c70e56fbfaf8819c7eccd7ec75211cb06782f78c1e83859c0c52c32716",
+      "c269fec69156793be784ccf206ff49130529531e01a5eafd91240336425dd9de",
+      "a21cd6e3803c0e466f6ce723b6eb815cf68b0712b719766e12353ae1d3fa6fb9",
+      "ce2ad46a0df05a8789744ee1fd22860129787d4cc3ee13999047bab373cef009",
+      "8bb89768cef3854c9331adf4e520cfce2e8d184aea4592581ca2cda5ffa04e2c",
+      "fd2692da29f2deaf81b6567e5499276f95ece18dfd67f0a669fd1a2077292209"
+    ],
+    "test": null,
+    "secondsSinceStart": 1163.283
+  },
+  {
+    "key": "old:e2e5e734368fbffdec66817b5b0a7922efe55e4af51d8356dff3122e8af6c42e",
+    "ref": "all-tests-20261008/current-source-closure/all-tests-20261007/fixture-retained-legacy-character-storage",
+    "sealId": "5816c60484dea10f7166fd4940a6c18fd2b4d69099ba24bfae6a01139574af5e",
+    "path": "backend/src/testing/historical-character-fixtures.ts",
+    "sourceSha256": "c29d82b0b3d86b882e4670829d6fb365f80c6dbe5a363b73e008263495fed165",
+    "oldSealId": "e2e5e734368fbffdec66817b5b0a7922efe55e4af51d8356dff3122e8af6c42e",
+    "causeSealIds": [
+      "26916ae4693e54229a5216d76cc3238ed27649f3a678588e14f28ac9a975c515",
+      "99d524e2b186eb8f55db50eeb1e088bd4191f094ab72f19cb337a8deb262c609",
+      "5631092bae316bdb959257d52a7574e37e698c5d4cce21accdf019c0cea315ea",
+      "ee029be3724cc1282b70df3a9a1b81886565d3a9f223d024beaaf2bbabdcfca3"
+    ],
+    "test": null,
+    "secondsSinceStart": 1187.645
+  },
+  {
+    "key": "old:0df9cbe4abb949879c85eba500d7e80d742ffba5adfb2a80ed4b555e077eab45",
+    "ref": "all-tests-20261008/current-source-closure/verification/retained-agency-v3-persistence-current-20261007",
+    "sealId": "8aece17aeb74ef36136dc1c8fd30fd963ef95d83d9476277eb12c680794fc914",
+    "path": "backend/src/services/conscious-agency-persistence.test.ts",
+    "sourceSha256": "2ca92b44d0b2abedd6c521f4319f4242abfc917021546a7b61ded1299fcf0ec6",
+    "oldSealId": "0df9cbe4abb949879c85eba500d7e80d742ffba5adfb2a80ed4b555e077eab45",
+    "causeSealIds": [
+      "5bd7913b61f41b028bb64e16eb39ff1ad95424cd1976b862d3bb525ee863bb28",
+      "203e66fc4e30772adab026012c67f1b1ac4ca86ad2ada11b501c639a27a19eac",
+      "26916ae4693e54229a5216d76cc3238ed27649f3a678588e14f28ac9a975c515",
+      "572cae28a0027c0a8d8c1f34866854d059dd8f40c6494453ec4c41e03f0bbad3",
+      "f7b14ba4a17187057b3c72667c2653e2bc7d16db1e9808d612655bb2e3ef436b",
+      "5631092bae316bdb959257d52a7574e37e698c5d4cce21accdf019c0cea315ea",
+      "7c0c8331fb7744bd72419497d6b8d5f50a18e6f035de1eed978f1ca78ab5ef3c",
+      "1898c9e10171b336558fafba731ef4a6e8c2b81b71d99bb2f3c6f5e8f763a78c",
+      "c3f9ddc328fd22dca1b890122a77611353390c78e32ffecfe55f5ff59f21a7d4",
+      "a21cd6e3803c0e466f6ce723b6eb815cf68b0712b719766e12353ae1d3fa6fb9",
+      "ce2ad46a0df05a8789744ee1fd22860129787d4cc3ee13999047bab373cef009",
+      "5816c60484dea10f7166fd4940a6c18fd2b4d69099ba24bfae6a01139574af5e",
+      "ee029be3724cc1282b70df3a9a1b81886565d3a9f223d024beaaf2bbabdcfca3",
+      "f49312f0b4c786dd41b4c2092a992dfebd04bfff33396a4891a199add8f5f17e"
+    ],
+    "test": {
+      "path": "backend/src/services/conscious-agency-persistence.test.ts",
+      "ref": "verification/retained-agency-v3-persistence-current-20261007"
+    },
+    "secondsSinceStart": 1273.201
+  },
+  {
+    "key": "old:742c262b58a40d74f35596bd60f4bf787a4e58370a2480e7f67fa0b1e7eda52b",
+    "ref": "all-tests-20261008/current-source-closure/all-tests-20261008/authority-retained-adr-checker-policy",
+    "sealId": "7ef5fbf04e39771c1d47e1b45ac02c94293bfa5000d9f50da8c04b9c18035800",
+    "path": "docs/adr/README.md",
+    "sourceSha256": "28bd40a5ba5c451bfac7a6b481cf95e52815f04b0fb922b4b3885c498e6f7ee9",
+    "oldSealId": "742c262b58a40d74f35596bd60f4bf787a4e58370a2480e7f67fa0b1e7eda52b",
+    "causeSealIds": [],
+    "test": null,
+    "secondsSinceStart": 1287.055
+  },
+  {
+    "key": "old:0e21c502abad6a7b331130e9d641148787a58e5392168b76ec1dd8934253ec3b",
+    "ref": "all-tests-20261008/current-source-closure/all-tests-20261008/fixture-historical-adr-0019-md",
+    "sealId": "f7f69c6f7c44f9e4bb75068607d0da4e373a075fe927ba21dc1fc8edfcede7d0",
+    "path": "docs/adr/0019-observation-token-and-cost-admission.md",
+    "sourceSha256": "7aaea17cf1d4a227a591bb9c123e339c1bc8747cdfd84a59d30275689be0ec30",
+    "oldSealId": "0e21c502abad6a7b331130e9d641148787a58e5392168b76ec1dd8934253ec3b",
+    "causeSealIds": [
+      "7ef5fbf04e39771c1d47e1b45ac02c94293bfa5000d9f50da8c04b9c18035800"
+    ],
+    "test": null,
+    "secondsSinceStart": 1296.092
+  },
+  {
+    "key": "old:11195c24131e1d66289d5b5aebd457862a7ac82f700f1d814c78794024a3b049",
+    "ref": "all-tests-20261008/current-source-closure/all-tests-20261008/implementation-semantic-recovery-execution-policy",
+    "sealId": "b09d82d57323cf07e46a0f144f23a4588a7d49322ddd69a3eb144811986c1f9f",
+    "path": "backend/src/services/semantic-authoring/execution-policy.ts",
+    "sourceSha256": "9693736ed735375d7ffd6a9efb722a9bc729c8f3c584d6620456bf7fd31ebb6a",
+    "oldSealId": "11195c24131e1d66289d5b5aebd457862a7ac82f700f1d814c78794024a3b049",
+    "causeSealIds": [
+      "7e0e9921369cee23cb342b8957e8f21dd2edecd82a21b7665ec4d5b48bc6b862",
+      "09428bbc862625313691ce80cf94a3411c6fa122e33c4a767cc15b47da145dd0"
+    ],
+    "test": null,
+    "secondsSinceStart": 1308.239
+  },
+  {
+    "key": "old:ab889a4617f6f343aecbb1b47e503db56c41c7b4f19ca0cc32b4d60d1c0b3b93",
+    "ref": "all-tests-20261008/current-source-closure/all-tests-20261007/implementation-narration-phase-builders",
+    "sealId": "1d792f09e71d8b2412a1e73d132d5a3a9fd85d02194ccddfd4ad2195724b60a1",
+    "path": "backend/src/llm/openai-compatible.ts",
+    "sourceSha256": "75fdc50d0ff5550712fc50e967f7880950aad035fbab87fa40f2b5d9d0d6daaa",
+    "oldSealId": "ab889a4617f6f343aecbb1b47e503db56c41c7b4f19ca0cc32b4d60d1c0b3b93",
+    "causeSealIds": [
+      "1adba1d06106cfcc7537dcd2d85aa94f745a4a79ff6b3f5ac4911a11efdf79a8",
+      "2c6888e9d07a676d4b429b041b241e1631845b18fac4fb4cda280a4a29670d50",
+      "38dddd1b1aa02f0968cbe7284d8bd3507a5d34a5ef9cdbf9ba95cf230b1be8eb",
+      "4a236b55e9ad9e4aa54eb2c6bbe9d77e0a318881ba8328363505153d16e151dd",
+      "e7e672e9013c6c48a2ab3116c0db1e53821221f4ca09ec5048e7cb781adf3945"
+    ],
+    "test": null,
+    "secondsSinceStart": 1345.245
+  },
+  {
+    "key": "old:d5d48d5393896637d613372fe29f34732f1622208012a058f6cc344e6550e9d8",
+    "ref": "all-tests-20261008/current-source-closure/all-tests-20261007/implementation-freeze-narration-phase",
+    "sealId": "9120d5c7f563813a2b800e48f54eb6128037f416b3ebefbe79ba3108411e9361",
+    "path": "backend/src/llm/awareness-narration-phase.ts",
+    "sourceSha256": "794b013dae0943c1a9cbcd0ae738c42066169dd680bc4f18f713c6963d6e18bb",
+    "oldSealId": "d5d48d5393896637d613372fe29f34732f1622208012a058f6cc344e6550e9d8",
+    "causeSealIds": [
+      "6c1550f5ce880ec29498884bfe98e2cae3cd6f920679168be6f75c7a556e9eda",
+      "8231abff3c25b0deba5704570da088affd1efcde57f8afeb6b59407ccba74264",
+      "1d792f09e71d8b2412a1e73d132d5a3a9fd85d02194ccddfd4ad2195724b60a1",
+      "f457c669375c1681fdf7277a8abd6f7e05848f33abb595d21df018b75b78866d"
+    ],
+    "test": null,
+    "secondsSinceStart": 1375.833
+  },
+  {
+    "key": "old:e2947758c2d961f4547d77ef7e166ac4e4af9639a8d93de682ce5cede88a71bc",
+    "ref": "all-tests-20261008/current-source-closure/all-tests-20261007/implementation-narration-role-transport",
+    "sealId": "e9099e7643ea4a98eb45a99ec19224131e83b13cab0b8a2be529b190e374ed0a",
+    "path": "backend/src/llm/awareness-narration.ts",
+    "sourceSha256": "a32f94cb75d85fb34cf1f502061622ed606136cf99d2bcf29d48506437fd524f",
+    "oldSealId": "e2947758c2d961f4547d77ef7e166ac4e4af9639a8d93de682ce5cede88a71bc",
+    "causeSealIds": [
+      "1edf3239229665d39a55aee22af5148f4408f6c8dfea24ca200ae835af46e02d",
+      "3ce85102892804dcfeb7df194b5e93d477ab783cef102356d02ed300e993ea69",
+      "4a236b55e9ad9e4aa54eb2c6bbe9d77e0a318881ba8328363505153d16e151dd",
+      "55cd6ea44ebccfb4f9f0e3012c1edd96fcafa0f412c8eaeafeac922832b9a100",
+      "c064db895ea9f010d2f6fb28360b243285cbe93156c19f8286e161ec2d0d731a",
+      "9120d5c7f563813a2b800e48f54eb6128037f416b3ebefbe79ba3108411e9361"
+    ],
+    "test": null,
+    "secondsSinceStart": 1437.355
+  },
+  {
+    "key": "old:d6129681d343c9f44cbf0f39d047984b4897c01d0b2fef68f2169f50aa55204b",
+    "ref": "all-tests-20261008/current-source-closure/all-tests-20261007/implementation-canonical-narration-worker-contract",
+    "sealId": "3e7fe95daab8a3daecb99095c357cbf9dd032a9e9fdc75a91027a0b8cefc8096",
+    "path": "backend/src/services/awareness-narration-worker-contract.ts",
+    "sourceSha256": "072f7c1680a4724e01d70b2deb9f6c992a437a1991a9ec99d559111f659523ef",
+    "oldSealId": "d6129681d343c9f44cbf0f39d047984b4897c01d0b2fef68f2169f50aa55204b",
+    "causeSealIds": [
+      "e9099e7643ea4a98eb45a99ec19224131e83b13cab0b8a2be529b190e374ed0a",
+      "f32a6e8815e72a3186332393e8182c1fe1f096b30fc5cf3e9715593fafebaaba",
+      "fd2692da29f2deaf81b6567e5499276f95ece18dfd67f0a669fd1a2077292209"
+    ],
+    "test": null,
+    "secondsSinceStart": 1464.763
+  },
+  {
+    "key": "old:7004afaf7042b71899003cf822466529426e4846a5eba95b51105a20f76d0985",
+    "ref": "all-tests-20261008/current-source-closure/all-tests-20261007/implementation-canonical-narration-worker-lifecycle",
+    "sealId": "9b747f8b0ffd8f54f9aed5f114829cb4b706dbecc0d3ed1755d6910405a7a3a2",
+    "path": "backend/src/services/awareness-narration-worker-lifecycle.ts",
+    "sourceSha256": "4c0b879175780e4bda737e2efdd454a621884db69f3e4b83d35bf9553104dec3",
+    "oldSealId": "7004afaf7042b71899003cf822466529426e4846a5eba95b51105a20f76d0985",
+    "causeSealIds": [
+      "5631092bae316bdb959257d52a7574e37e698c5d4cce21accdf019c0cea315ea",
+      "43edff8f437e6d157401ff80f278b8a729ac24be91fcbc16b30dca311e0ea324",
+      "3e7fe95daab8a3daecb99095c357cbf9dd032a9e9fdc75a91027a0b8cefc8096"
+    ],
+    "test": null,
+    "secondsSinceStart": 1485.199
+  },
+  {
+    "key": "old:b44c2d32b9cc158e4c422084e3ecfbf07686351d0bdaff2a9f3a85e4a0c73d3e",
+    "ref": "all-tests-20261008/current-source-closure/all-tests-20261007/implementation-narration-storage-reservation",
+    "sealId": "57569d7a8e701a9e17e1f3af460818c81dda11fcdbefa3892e0e7f37d8d1b809",
+    "path": "backend/src/repositories/battle-awareness-narration-reservation.ts",
+    "sourceSha256": "9a0bdd97ddc7819a042f7a1bef06e052e6412c1a3a364040f26aec42630e2667",
+    "oldSealId": "b44c2d32b9cc158e4c422084e3ecfbf07686351d0bdaff2a9f3a85e4a0c73d3e",
+    "causeSealIds": [
+      "5631092bae316bdb959257d52a7574e37e698c5d4cce21accdf019c0cea315ea",
+      "b94c5cce82ce40391910a8dba02ab76cf9c320ed2354635a9bc37a31fcbe8fc7",
+      "43edff8f437e6d157401ff80f278b8a729ac24be91fcbc16b30dca311e0ea324",
+      "d1bf4b23433d3887849b98cd11b8fb7e622e23aead2ef665f7cb1f297a425e87"
+    ],
+    "test": null,
+    "secondsSinceStart": 1505.769
+  },
+  {
+    "key": "old:386b11e4e5a07400cb39b55967e40cb113e33afbe0d266ce8b85b13e96e979ec",
+    "ref": "all-tests-20261008/current-source-closure/all-tests-20261007/implementation-canonical-narration-worker-dispatch",
+    "sealId": "d63b2da55efb119841f2ea07301fd76945dc5110747fb5656c4ca587fd67220d",
+    "path": "backend/src/services/awareness-narration-worker-dispatch.ts",
+    "sourceSha256": "4c90158f18ad0e2c790677d22c0d088e018ad81f2ad3973acf77b0074cffd184",
+    "oldSealId": "386b11e4e5a07400cb39b55967e40cb113e33afbe0d266ce8b85b13e96e979ec",
+    "causeSealIds": [
+      "aee3cb96f6547a5d31c60265a2cc7e063f3d717fee9dae513d5abdf55772f8ef",
+      "104b75473d4236887e586474778688398b1ebe3f49681ba9d7c633e221b8ffc9",
+      "387482a8c005ec8729e50f5036a7773e0272deba439ef9bff2a9b23d5a5fe69e",
+      "3ce85102892804dcfeb7df194b5e93d477ab783cef102356d02ed300e993ea69",
+      "9b747f8b0ffd8f54f9aed5f114829cb4b706dbecc0d3ed1755d6910405a7a3a2",
+      "8abba1a9c8979c938c12dd7bfb72af72c43496dbb487ff827477c7ff5951482f",
+      "a716bc3b8e2473ca01d2cf7408bdc93dc769f8556428f493d9ee803dd7859619",
+      "57569d7a8e701a9e17e1f3af460818c81dda11fcdbefa3892e0e7f37d8d1b809"
+    ],
+    "test": null,
+    "secondsSinceStart": 1543.489
+  },
+  {
+    "key": "old:572556ec9c769def8322540f89566583947cf29ecc98b2caf0ad380475b3b68b",
+    "ref": "all-tests-20261008/current-source-closure/all-tests-20261007/implementation-narration-storage-continuity",
+    "sealId": "82db90f86276cdac7b241e544b74ce75b8b404985cd86c118e2e96f46a919ed4",
+    "path": "backend/src/repositories/battle-awareness-narrator.ts",
+    "sourceSha256": "65fa8352467a3d2bbe226e7815a57e41b11c4ec120017366e8f21638f87ed6ca",
+    "oldSealId": "572556ec9c769def8322540f89566583947cf29ecc98b2caf0ad380475b3b68b",
+    "causeSealIds": [
+      "604fe01d141d9532df38636e7168dcde40197a80f684141d5720661f8ed815ec",
+      "5631092bae316bdb959257d52a7574e37e698c5d4cce21accdf019c0cea315ea",
+      "d1bf4b23433d3887849b98cd11b8fb7e622e23aead2ef665f7cb1f297a425e87",
+      "d2519328e27669c5674a955184a902995c9daba1c8d8ef925404334a710f0fd3"
+    ],
+    "test": null,
+    "secondsSinceStart": 1578.115
+  },
+  {
+    "key": "old:821db870fb97dc423b6a54cfc9f5631e4d5a52c4526876621d332575c769b9f2",
+    "ref": "all-tests-20261008/current-source-closure/all-tests-20261007/implementation-canonical-narration-worker-publication",
+    "sealId": "313ed78857c8cc42ea4fb07b18c9fc74ec54292d38a723ed42522c0d0cc66480",
+    "path": "backend/src/services/awareness-narration-worker-publication.ts",
+    "sourceSha256": "b35c383c88966d7bb72e8d414303fef4047415ae93474e1af61267614df569cb",
+    "oldSealId": "821db870fb97dc423b6a54cfc9f5631e4d5a52c4526876621d332575c769b9f2",
+    "causeSealIds": [
+      "d63b2da55efb119841f2ea07301fd76945dc5110747fb5656c4ca587fd67220d",
+      "82db90f86276cdac7b241e544b74ce75b8b404985cd86c118e2e96f46a919ed4",
+      "9b747f8b0ffd8f54f9aed5f114829cb4b706dbecc0d3ed1755d6910405a7a3a2"
+    ],
+    "test": null,
+    "secondsSinceStart": 1596.046
+  },
+  {
+    "key": "old:9b26fe9241b8c420e7dbdae9e9c18bc4a8e79abd020eca35edc15a686b277d29",
+    "ref": "all-tests-20261008/current-source-closure/all-tests-20261007/implementation-narration-storage-claim",
+    "sealId": "7b83b279df276ad60182eabb37af92fa1d2fa951bd46ef9b723ecd3db561b8ea",
+    "path": "backend/src/services/awareness-narration-claim-snapshot.ts",
+    "sourceSha256": "fda5e8040ec1665a665725a7e11017d6b67c385cbc1159508c85541066d00a55",
+    "oldSealId": "9b26fe9241b8c420e7dbdae9e9c18bc4a8e79abd020eca35edc15a686b277d29",
+    "causeSealIds": [
+      "5631092bae316bdb959257d52a7574e37e698c5d4cce21accdf019c0cea315ea",
+      "43edff8f437e6d157401ff80f278b8a729ac24be91fcbc16b30dca311e0ea324",
+      "d1bf4b23433d3887849b98cd11b8fb7e622e23aead2ef665f7cb1f297a425e87"
+    ],
+    "test": null,
+    "secondsSinceStart": 1629.026
+  },
+  {
+    "key": "old:f6ca1fed9a2fc7984deb342141fecc05fc2bf4aedaaa48d61b062eba1bac7e6a",
+    "ref": "all-tests-20261008/current-source-closure/all-tests-20261007/implementation-canonical-narration-worker-claim",
+    "sealId": "4ed4f19f576fb7ddd4224f9cc304180f2c0d69b48b37f9db9d59a5ac010df316",
+    "path": "backend/src/services/awareness-narration-worker-claim.ts",
+    "sourceSha256": "4f722f32cf28b5f72302f42fe0ae0a5ea0a9bdc2f967d6efc3cb51caf9b34124",
+    "oldSealId": "f6ca1fed9a2fc7984deb342141fecc05fc2bf4aedaaa48d61b062eba1bac7e6a",
+    "causeSealIds": [
+      "387482a8c005ec8729e50f5036a7773e0272deba439ef9bff2a9b23d5a5fe69e",
+      "44cb0e5bd493d6fad7909158b30a73d652b61cdb046827eb868aba25aa7fe535",
+      "82db90f86276cdac7b241e544b74ce75b8b404985cd86c118e2e96f46a919ed4",
+      "9b747f8b0ffd8f54f9aed5f114829cb4b706dbecc0d3ed1755d6910405a7a3a2",
+      "7b83b279df276ad60182eabb37af92fa1d2fa951bd46ef9b723ecd3db561b8ea"
+    ],
+    "test": null,
+    "secondsSinceStart": 1662.361
+  },
+  {
+    "key": "old:1175226dd96945f365c94c9cf3bb9c938d76eb453579f1102a039eea3d0ef045",
+    "ref": "all-tests-20261008/current-source-closure/all-tests-20261007/implementation-canonical-narration-worker",
+    "sealId": "3fd4382d3979d278c3852e3d063f225f09d8539df8430f08b7b63d2ecc4684ab",
+    "path": "backend/src/services/awareness-narration-worker.ts",
+    "sourceSha256": "960b5b71712ae2a3a3d9d1e8ddb31c6729349db19994b4d3b3e6e4ca6b8be6be",
+    "oldSealId": "1175226dd96945f365c94c9cf3bb9c938d76eb453579f1102a039eea3d0ef045",
+    "causeSealIds": [
+      "d63b2da55efb119841f2ea07301fd76945dc5110747fb5656c4ca587fd67220d",
+      "313ed78857c8cc42ea4fb07b18c9fc74ec54292d38a723ed42522c0d0cc66480",
+      "4ed4f19f576fb7ddd4224f9cc304180f2c0d69b48b37f9db9d59a5ac010df316",
+      "fc54c4ffbc6bedd844b9e1e489fc436ca217a6e9abce6417de58c79b5ecc671b"
+    ],
+    "test": null,
+    "secondsSinceStart": 1690.952
+  },
+  {
+    "key": "old:29388522fd326751bb29a58fc9145bbf64bc1f96d80e2f54420065b80363d535",
+    "ref": "all-tests-20261008/current-source-closure/all-tests-20261008/implementation-boundary-db",
+    "sealId": "bea4be680e532ddb80f1a6376778ec0c64acbfaf5f4176e6029b6499d0b3d547",
+    "path": "backend/src/db.ts",
+    "sourceSha256": "70bacc4e8b0e53f88fe25c15e45c0a1d9aa1c67d6a3925282d9fdec277b8f77e",
+    "oldSealId": "29388522fd326751bb29a58fc9145bbf64bc1f96d80e2f54420065b80363d535",
+    "causeSealIds": [
+      "90676e41a7e0dd5ff58d7960703f8a2c37c787ba87c9f58ce9e9fc6b1b2e42ef"
+    ],
+    "test": null,
+    "secondsSinceStart": 1704.457
+  },
+  {
+    "key": "old:895e57e81b7f31fb092e3164c2ea4b7693964086078f15a0441fb16726337ce8",
+    "ref": "all-tests-20261008/current-source-closure/all-tests-20261008/implementation-owner-rating-accounting",
+    "sealId": "2636df75fde4b8fb181954aaa446811559557211b4d32050cb467bdb61a2ef60",
+    "path": "backend/src/services/rating-service.ts",
+    "sourceSha256": "17912afa98143f0d52cecf2119d9da8949598e95339839d744aba1b3975e8e7f",
+    "oldSealId": "895e57e81b7f31fb092e3164c2ea4b7693964086078f15a0441fb16726337ce8",
+    "causeSealIds": [
+      "bea4be680e532ddb80f1a6376778ec0c64acbfaf5f4176e6029b6499d0b3d547",
+      "38a9837ed2618776af00f3bd695b37fc7d329ecbb2e0c5bbd0d2b79ccb330b13",
+      "cb577967d632ef4c96ec047453411792d7c31160bf2bfcf4cadff90869d507f7"
+    ],
+    "test": null,
+    "secondsSinceStart": 1727.711
+  },
+  {
+    "key": "old:144b80e9fadb7d42fd9524fc28aa7e6b407ce70730a14c388db6a219dcdc4387",
+    "ref": "all-tests-20261008/current-source-closure/verification/owner-rating-transaction-20261008",
+    "sealId": "b5b8687168ada71468d994ea38ff85f2b3221351743f7fdce2cf4fd790f9a0e0",
+    "path": "backend/src/services/rating-service-transaction.test.ts",
+    "sourceSha256": "3e221c88bf7d3bb10e7787d2d17174cd59ed9b09f6fb1f1218175160354d5685",
+    "oldSealId": "144b80e9fadb7d42fd9524fc28aa7e6b407ce70730a14c388db6a219dcdc4387",
+    "causeSealIds": [
+      "6ac6f7936f62bf30134d2c26620c335f7b71357945f0713f35f4635a70754a31",
+      "2636df75fde4b8fb181954aaa446811559557211b4d32050cb467bdb61a2ef60",
+      "c13f788ff9274a1abf7cc32574a4882693f2a5eed8082bdec37afdf9216023e3"
+    ],
+    "test": {
+      "path": "backend/src/services/rating-service-transaction.test.ts",
+      "ref": "verification/owner-rating-transaction-20261008"
+    },
+    "secondsSinceStart": 1741.719
+  },
+  {
+    "key": "old:f1e75ecb6eff5e81e855cac205f50dd21795c346dcbd8bfd60a2974a37d2faf2",
+    "ref": "all-tests-20261008/current-source-closure/all-tests-20261007/implementation-test-realm-shared-asset-access",
+    "sealId": "9d20d7ad2f3c303651dc7af41b1db11aa0c4930b82d407c272bc79a8e17d6e56",
+    "path": "backend/src/account-access.ts",
+    "sourceSha256": "9bebaf7d75b6c6a0e5e962fe827a7b21ee4b361586f46785fa15e2486b2226a6",
+    "oldSealId": "f1e75ecb6eff5e81e855cac205f50dd21795c346dcbd8bfd60a2974a37d2faf2",
+    "causeSealIds": [
+      "2992d83ef799f6b170c4347d161625df9faae38975138323f7c200d0880e73b2",
+      "4ab3d24cbe88cf5312d76e7476ea441e974b6a28a67833eeb1491b7451262191",
+      "5631092bae316bdb959257d52a7574e37e698c5d4cce21accdf019c0cea315ea",
+      "58c5393b721f25cdaa2f359a998d6f3029b796eeaac1b8dbf621791da64a600f"
+    ],
+    "test": null,
+    "secondsSinceStart": 1760.472
+  },
+  {
+    "key": "old:16c112b9b92ceaf3b11efa7a3958680b3a8d8efa785bd1ce5d5a73148cdffc9c",
+    "ref": "all-tests-20261008/current-source-closure/all-tests-20261007/implementation-test-realm-narration-style-reads",
+    "sealId": "da8491a7fd6944db694e48ccb7b7e79e501b9af857d677b4259e5756f9763f18",
+    "path": "backend/src/repositories/narration-styles.ts",
+    "sourceSha256": "bf3c3ce3a652c630bd09b2c5716e23484e3aaaa85d81404f0869d38f0621c858",
+    "oldSealId": "16c112b9b92ceaf3b11efa7a3958680b3a8d8efa785bd1ce5d5a73148cdffc9c",
+    "causeSealIds": [
+      "2992d83ef799f6b170c4347d161625df9faae38975138323f7c200d0880e73b2",
+      "4ab3d24cbe88cf5312d76e7476ea441e974b6a28a67833eeb1491b7451262191",
+      "5631092bae316bdb959257d52a7574e37e698c5d4cce21accdf019c0cea315ea",
+      "9a63b5e031f3ca89944c74ec4b3034ca95fe12921f7c628b68beb9a9b4dcec76",
+      "b5d994be6d213058541cb20240ae3e13ae9db1d0bd44df1a4961c738f21077e8",
+      "9d20d7ad2f3c303651dc7af41b1db11aa0c4930b82d407c272bc79a8e17d6e56"
+    ],
+    "test": null,
+    "secondsSinceStart": 1784.623
+  },
+  {
+    "key": "old:c778f88206f59e2310caf7c95631468f6442f6d4437f122beb6319c4c8597ae1",
+    "ref": "all-tests-20261008/current-source-closure/awareness-guidance-20261007/battle-frame",
+    "sealId": "fe888aac5248515435105da53954fab7e26ee75824c678bd3486795e97ce1ae5",
+    "path": "backend/src/services/battle-service.ts",
+    "sourceSha256": "b1cb72011a0b1c40872b4d56da313d4a01504a8e2a860dd96b087b2e7b712af1",
+    "oldSealId": "c778f88206f59e2310caf7c95631468f6442f6d4437f122beb6319c4c8597ae1",
+    "causeSealIds": [
+      "3c21eecd043b8b60217a9bef09b3dd9d7a57bdd10bc143bace584e18f046d045",
+      "474d2d4458679df6cb71e6e8f049a3f051192620c36f9e3f9b18799d1bda5317",
+      "90e466f427cb1a6c1a6161c7ee913c177bff496bc6d363cd3109a585faeb6a95"
+    ],
+    "test": null,
+    "secondsSinceStart": 1796.659
+  },
+  {
+    "key": "old:17a20f68e997b1e7842132b754c02a8847d1234f319de677f7dd24fa6569fdff",
+    "ref": "all-tests-20261008/current-source-closure/awareness-guidance-20261007/verification-execution",
+    "sealId": "4698a6c7c59b78f295ed4546ab8c26b9ae41f46235c76a137379392e5bae9a57",
+    "path": "backend/src/services/awareness-execution.test.ts",
+    "sourceSha256": "8d5123e514cd605b4fdc933212c2eba0b5d42a3d50b8a1363a476bdf6c5009b6",
+    "oldSealId": "17a20f68e997b1e7842132b754c02a8847d1234f319de677f7dd24fa6569fdff",
+    "causeSealIds": [
+      "2fb338bc68a8b07de76319443b6204612712153361a12043832b89957828e0d9",
+      "352509199d80c1220249893bfa4167f305c6790b2529001ebf8933b354143d8f",
+      "474d2d4458679df6cb71e6e8f049a3f051192620c36f9e3f9b18799d1bda5317",
+      "51d31cd3aa7d1daa3b12d62186f663eae29e39d87a7571820b9fc17c8bd59ded",
+      "6eb5f3240dfbfcf076911bba3a4ae3c8f0289ea0411368d58e5098fcf5426d91",
+      "90e466f427cb1a6c1a6161c7ee913c177bff496bc6d363cd3109a585faeb6a95",
+      "fe888aac5248515435105da53954fab7e26ee75824c678bd3486795e97ce1ae5"
+    ],
+    "test": {
+      "path": "backend/src/services/awareness-execution.test.ts",
+      "ref": "awareness-guidance-20261007/verification-execution"
+    },
+    "secondsSinceStart": 1824.574
+  },
+  {
+    "key": "old:17bd50f2ae67cb6b09adff286d1164c9c01decdd605bfe78512f7a40494566b2",
+    "ref": "all-tests-20261008/current-source-closure/verification/test-realm-assets-current-20261007",
+    "sealId": "096527b8d49b6eddcbf4836f8ab56a7a850c51662560152d2dc7bae0d27eb757",
+    "path": "backend/src/repositories/test-realm-assets.test.ts",
+    "sourceSha256": "637c8b19bf868052729bda430702db78a3fd7e52fec52c42bf95df387c937c54",
+    "oldSealId": "17bd50f2ae67cb6b09adff286d1164c9c01decdd605bfe78512f7a40494566b2",
+    "causeSealIds": [
+      "da8491a7fd6944db694e48ccb7b7e79e501b9af857d677b4259e5756f9763f18",
+      "2992d83ef799f6b170c4347d161625df9faae38975138323f7c200d0880e73b2",
+      "4ab3d24cbe88cf5312d76e7476ea441e974b6a28a67833eeb1491b7451262191",
+      "9a63b5e031f3ca89944c74ec4b3034ca95fe12921f7c628b68beb9a9b4dcec76",
+      "b5d994be6d213058541cb20240ae3e13ae9db1d0bd44df1a4961c738f21077e8",
+      "c6ae9384dbe1557c3adb9d94530a4ce2e5f3e025c14cca05f418fd9879f1745c",
+      "9d20d7ad2f3c303651dc7af41b1db11aa0c4930b82d407c272bc79a8e17d6e56"
+    ],
+    "test": {
+      "path": "backend/src/repositories/test-realm-assets.test.ts",
+      "ref": "verification/test-realm-assets-current-20261007"
+    },
+    "secondsSinceStart": 1850.37
+  },
+  {
+    "key": "old:2eae8cc721eb57bccdb6600c1bcdf5c9c9cf72d1d2dc4feb7fb0f0d1b715b3bb",
+    "ref": "all-tests-20261008/current-source-closure/all-tests-20261008/implementation-boundary-battle",
+    "sealId": "ca9393a01bb9151dfd4a0544782bd33cad186196f459d4562e21299fb5ff4add",
+    "path": "backend/src/services/battle-service.ts",
+    "sourceSha256": "b1cb72011a0b1c40872b4d56da313d4a01504a8e2a860dd96b087b2e7b712af1",
+    "oldSealId": "2eae8cc721eb57bccdb6600c1bcdf5c9c9cf72d1d2dc4feb7fb0f0d1b715b3bb",
+    "causeSealIds": [
+      "90676e41a7e0dd5ff58d7960703f8a2c37c787ba87c9f58ce9e9fc6b1b2e42ef"
+    ],
+    "test": null,
+    "secondsSinceStart": 1857.24
+  },
+  {
+    "key": "old:1b7674b7d5986b4784a2e270db6bb4392fff4987559e0942d2bb7553743b086a",
+    "ref": "all-tests-20261008/current-source-closure/verification/scene-beat-wiring-bounded-20261008",
+    "sealId": "8c47a5db856f270057c723b7f23ed309de7a84a48981170e7ce82bed7d752cc1",
+    "path": "backend/src/services/scene-beat-wiring.test.ts",
+    "sourceSha256": "76e81f3717ecb271da902e629e6cc44cb21454f154b5599ca712dcf998616490",
+    "oldSealId": "1b7674b7d5986b4784a2e270db6bb4392fff4987559e0942d2bb7553743b086a",
+    "causeSealIds": [
+      "ca9393a01bb9151dfd4a0544782bd33cad186196f459d4562e21299fb5ff4add",
+      "c13f788ff9274a1abf7cc32574a4882693f2a5eed8082bdec37afdf9216023e3",
+      "c84a92509d1b10ff08ea94a32e112eb6182d901879465e12e2eaeff4dd1670ab",
+      "dea87dce601f04086669be004a795680aa84ccff0dfa3091dcdff9fe1338ee72",
+      "fc0912642cea1b6d5c26f1e87b0255f1a7078b17dd42021f437c4d99df920f73"
+    ],
+    "test": {
+      "path": "backend/src/services/scene-beat-wiring.test.ts",
+      "ref": "verification/scene-beat-wiring-bounded-20261008"
+    },
+    "secondsSinceStart": 1880.877
+  },
+  {
+    "key": "old:5b8cc9a2511965b1e75096daaf044bbea9dcd00c23556c8a8496324cf657571c",
+    "ref": "all-tests-20261008/current-source-closure/all-tests-20261007/implementation-canonical-narration-adjudication-guard",
+    "sealId": "44d903af2aa8825daeac6883772bc6369db2e741b917c577d4ac4c586f069aac",
+    "path": "backend/src/services/awareness-adjudication-guard.ts",
+    "sourceSha256": "d807ac499b21bddd093d44e823c059b3c3cbc162e6522ea0c226a35da98d9153",
+    "oldSealId": "5b8cc9a2511965b1e75096daaf044bbea9dcd00c23556c8a8496324cf657571c",
+    "causeSealIds": [
+      "8abba1a9c8979c938c12dd7bfb72af72c43496dbb487ff827477c7ff5951482f",
+      "a716bc3b8e2473ca01d2cf7408bdc93dc769f8556428f493d9ee803dd7859619",
+      "43edff8f437e6d157401ff80f278b8a729ac24be91fcbc16b30dca311e0ea324",
+      "f32a6e8815e72a3186332393e8182c1fe1f096b30fc5cf3e9715593fafebaaba"
+    ],
+    "test": null,
+    "secondsSinceStart": 1898.776
+  },
+  {
+    "key": "old:1f1843e02aeb635bb678c9f5b3f399bb5271cc9a34e25fe2f4ccf5f84488d66e",
+    "ref": "all-tests-20261008/current-source-closure/verification/awareness-adjudication-guard-bounded-current-20261007",
+    "sealId": "95ec2dd3e7e0d8b3357f41a56b5ebb10b4fa28681bfdd489c88dd652d8a91f91",
+    "path": "backend/src/services/awareness-adjudication-guard.test.ts",
+    "sourceSha256": "64324f627e1900fa9310042b91c243d6457cdbde113685e6888e9b4b93a5674b",
+    "oldSealId": "1f1843e02aeb635bb678c9f5b3f399bb5271cc9a34e25fe2f4ccf5f84488d66e",
+    "causeSealIds": [
+      "44d903af2aa8825daeac6883772bc6369db2e741b917c577d4ac4c586f069aac",
+      "6ac6f7936f62bf30134d2c26620c335f7b71357945f0713f35f4635a70754a31"
+    ],
+    "test": {
+      "path": "backend/src/services/awareness-adjudication-guard.test.ts",
+      "ref": "verification/awareness-adjudication-guard-bounded-current-20261007"
+    },
+    "secondsSinceStart": 1912.272
+  },
+  {
+    "key": "old:2155a828a7cb8d7d0d93506fa0dfbc78c85535b8773bd4ca3f825cd8af4c63d1",
+    "ref": "all-tests-20261008/current-source-closure/verification/awareness-world-commit-bounded-current-20261007",
+    "sealId": "13184e03d7a0fbaa31bbb8f2505041116b0f1a4765259ade144f535748957ad3",
+    "path": "backend/src/services/awareness-world-commit.test.ts",
+    "sourceSha256": "8a867e171939cacf798eb2b70e997ba5baa2709b77c3955df2e053d1f7617b45",
+    "oldSealId": "2155a828a7cb8d7d0d93506fa0dfbc78c85535b8773bd4ca3f825cd8af4c63d1",
+    "causeSealIds": [
+      "6ac6f7936f62bf30134d2c26620c335f7b71357945f0713f35f4635a70754a31",
+      "8824a17931e7e84884b38be72721b8864478ca0d06db11b9f9174451ef554eea"
+    ],
+    "test": {
+      "path": "backend/src/services/awareness-world-commit.test.ts",
+      "ref": "verification/awareness-world-commit-bounded-current-20261007"
+    },
+    "secondsSinceStart": 1925.437
+  },
+  {
+    "key": "old:24c9bcf77ec9d82ae97c4f57abe416d7f73db1910ba05b1d384b51e5f12607a3",
+    "ref": "all-tests-20261008/current-source-closure/verification/retained-agency-v3-binding-current-20261007",
+    "sealId": "8f67e4dc36fad008222ef76d5c4fd1d6e08e05237fc5de67f2edda5406f5d50f",
+    "path": "backend/src/services/conscious-agency-binding.test.ts",
+    "sourceSha256": "4b0af7bbfe5cb5a24f7dac2974dee11bbe9b42a4a69fd4aa778e46d9a4be9c08",
+    "oldSealId": "24c9bcf77ec9d82ae97c4f57abe416d7f73db1910ba05b1d384b51e5f12607a3",
+    "causeSealIds": [
+      "26916ae4693e54229a5216d76cc3238ed27649f3a678588e14f28ac9a975c515",
+      "645e178be9a4b4662822f09d79c5977797a0830e072ee816510a4a62aa5b8e52",
+      "67823251903b9153ed114e82e3c148b25a4e0e1708f02d86e6d07f28d56409f6",
+      "99d524e2b186eb8f55db50eeb1e088bd4191f094ab72f19cb337a8deb262c609",
+      "7614c8c70e56fbfaf8819c7eccd7ec75211cb06782f78c1e83859c0c52c32716",
+      "fd2692da29f2deaf81b6567e5499276f95ece18dfd67f0a669fd1a2077292209"
+    ],
+    "test": {
+      "path": "backend/src/services/conscious-agency-binding.test.ts",
+      "ref": "verification/retained-agency-v3-binding-current-20261007"
+    },
+    "secondsSinceStart": 1955.365
+  },
+  {
+    "key": "old:25369f07668eb66d119f5c1171118d10ded87e61f446f3849205851fcd89a290",
+    "ref": "all-tests-20261008/current-source-closure/all-tests-20261007/implementation-character-contract-manifestation",
+    "sealId": "bff26a6beb1162d8dca309bc89b981bfd0d7deff54127706095058abe958edc8",
+    "path": "packages/shared/src/character-manifestation.ts",
+    "sourceSha256": "c2d8bdbe5b9ed78f87e8b04ee1d287e0590e905e871a4156237c6c7218234bab",
+    "oldSealId": "25369f07668eb66d119f5c1171118d10ded87e61f446f3849205851fcd89a290",
+    "causeSealIds": [
+      "9d2db2c683ca893bf4ba6f135d31b5014b49a105cdf37fb072d6818ea855558d",
+      "5ccd79522b8f46791fa48104ffac5c1bdc0f821ebf3344cd60785ffd51749756",
+      "fd2692da29f2deaf81b6567e5499276f95ece18dfd67f0a669fd1a2077292209"
+    ],
+    "test": null,
+    "secondsSinceStart": 1973.338
+  },
+  {
+    "key": "new:frontend-api",
+    "ref": "all-tests-20261008/character-complete-source/frontend-api",
+    "sealId": "6569b1d2f1f74eda7f32b7917a5fe3eee8dfb0d6e2bfbbd07fd0ae50f70bf408",
+    "path": "frontend/src/api.ts",
+    "sourceSha256": "0e2862ce0e666cc6ba56ae63e091c3f2f7171b2eed8a2e5d18d668787d657f38",
+    "oldSealId": null,
+    "causeSealIds": [
+      "b0b10edb4decc344c95818f528118116814e1d978393829ab0e6dcb284582695"
+    ],
+    "test": null,
+    "secondsSinceStart": 1981.584
+  },
+  {
+    "key": "old:57d4a1a92c4d5344b598e42444c000c7014c6c46e1476c038dd8f55b79855b0e",
+    "ref": "all-tests-20261008/current-source-closure/all-tests-20261008/implementation-current-e2e-review-page",
+    "sealId": "bdcf896ff5601575d03d4920a14fc5e3f994fb1a83a59633ab68187d54ca7d15",
+    "path": "frontend/src/pages/CharacterReviewPage.tsx",
+    "sourceSha256": "dddcb952af6acc8714161ebc64e6bd9a73eda295128afb2d5ee2bd015bbd16b1",
+    "oldSealId": "57d4a1a92c4d5344b598e42444c000c7014c6c46e1476c038dd8f55b79855b0e",
+    "causeSealIds": [
+      "6721224ee16d33c1b70d8c909cc2d25dbf847028d3f34538f4782d823da0d793",
+      "6569b1d2f1f74eda7f32b7917a5fe3eee8dfb0d6e2bfbbd07fd0ae50f70bf408",
+      "b0b10edb4decc344c95818f528118116814e1d978393829ab0e6dcb284582695"
+    ],
+    "test": null,
+    "secondsSinceStart": 1995.366
+  },
+  {
+    "key": "old:25925950c9b59afcc12bddf738ae646f20ecf82385391eda20edd975597a9c1a",
+    "ref": "all-tests-20261008/current-source-closure/verification/character-focused-review-current-20261008",
+    "sealId": "c09f86f295beceb0a3e1a8c7adc58e5caa2eed1b1e578454f887ecfc727defcb",
+    "path": "e2e/character-focused-review.spec.ts",
+    "sourceSha256": "48bc0247aaddd380c29304d60403d37006caa3763e010d46f77a2530e2ce5d0c",
+    "oldSealId": "25925950c9b59afcc12bddf738ae646f20ecf82385391eda20edd975597a9c1a",
+    "causeSealIds": [
+      "1facb162839cdf38740865dedf60e068bee29a41b801fd50a895656f25f3e15e",
+      "4e0bc4d85fab55f47c747525b0288b0a887b2e756054b0d7aee1f18707dcc9cf",
+      "bdcf896ff5601575d03d4920a14fc5e3f994fb1a83a59633ab68187d54ca7d15"
+    ],
+    "test": {
+      "path": "e2e/character-focused-review.spec.ts",
+      "ref": "verification/character-focused-review-current-20261008"
+    },
+    "secondsSinceStart": 2024.342
+  },
+  {
+    "key": "old:b976cf61e0af34ee39d63f4bf5e274f29e08db10220b5c564fd6314e3f9db9f9",
+    "ref": "all-tests-20261008/current-source-closure/all-tests-20261007/implementation-sdk-usage-paths",
+    "sealId": "2f3b356042c417e9878635fe632778d07c35c303b2af31fa140d0d8111f33bd3",
+    "path": "backend/src/llm/openai-compatible.ts",
+    "sourceSha256": "75fdc50d0ff5550712fc50e967f7880950aad035fbab87fa40f2b5d9d0d6daaa",
+    "oldSealId": "b976cf61e0af34ee39d63f4bf5e274f29e08db10220b5c564fd6314e3f9db9f9",
+    "causeSealIds": [
+      "4a236b55e9ad9e4aa54eb2c6bbe9d77e0a318881ba8328363505153d16e151dd",
+      "e9b0f9866ed5986d79a20a2ce331ec6b1e835c94063bdef086bb346437623ba0",
+      "e7e672e9013c6c48a2ab3116c0db1e53821221f4ca09ec5048e7cb781adf3945"
+    ],
+    "test": null,
+    "secondsSinceStart": 2048.856
+  },
+  {
+    "key": "old:2671b62b0ee78b4d80c926b14b69a99df3cd15c358206e86dbd6cde4487dd9a2",
+    "ref": "all-tests-20261008/current-source-closure/verification/usage-ledger-sdk-20261007",
+    "sealId": "44e3014111c84f8447786b0306a28c0dbdd0d368b5a687714eb6f035bd50bed9",
+    "path": "backend/src/repositories/llm-usage.test.ts",
+    "sourceSha256": "75cb58bd3953224b133b85cf023c46e4696270760e5c1a29ea64a1f211955c60",
+    "oldSealId": "2671b62b0ee78b4d80c926b14b69a99df3cd15c358206e86dbd6cde4487dd9a2",
+    "causeSealIds": [
+      "104b75473d4236887e586474778688398b1ebe3f49681ba9d7c633e221b8ffc9",
+      "2b84fd45e0269892104e02798488f6f4d8e3baf49addaa93e3eba332078cee41",
+      "2c6888e9d07a676d4b429b041b241e1631845b18fac4fb4cda280a4a29670d50",
+      "4a236b55e9ad9e4aa54eb2c6bbe9d77e0a318881ba8328363505153d16e151dd",
+      "5c7e473fe4f6da136b9fa09cb5339da0c61210687630d4da4498d956139278b2",
+      "84c87b27c35d1e57f7444e54f100aface3df70ef988e22635b7839edecbe17a0",
+      "971e85b9853882f02499940759a9a9256d6eb0bb3725a9352dbbc166c7796b59",
+      "a716bc3b8e2473ca01d2cf7408bdc93dc769f8556428f493d9ee803dd7859619",
+      "ab59db27adebd0b646fc6f029df58286761a284efe7be08b4216d545f2486e57",
+      "b7e7b03401cf194148a6f94892117be05b9f95e5d8d2d632c675420949944853",
+      "2f3b356042c417e9878635fe632778d07c35c303b2af31fa140d0d8111f33bd3",
+      "e9b0f9866ed5986d79a20a2ce331ec6b1e835c94063bdef086bb346437623ba0"
+    ],
+    "test": {
+      "path": "backend/src/repositories/llm-usage.test.ts",
+      "ref": "verification/usage-ledger-sdk-20261007"
+    },
+    "secondsSinceStart": 2115.893
+  },
+  {
+    "key": "old:b077db61bb4341345b4d70a288f4de7cd8c1eff1b032ff42453cca1ab72c3e63",
+    "ref": "all-tests-20261008/current-source-closure/all-tests-20261007/fixture-causal-receipt-engine-adapter",
+    "sealId": "a57779fc6443060aee6060594b90f36a551a6fbc99c0f02f966ecfe51a305e48",
+    "path": "packages/shared/src/battle-engine-test-helper.ts",
+    "sourceSha256": "a6ae8e377e870a49152e9a10374ef997c114585c14ed20f9bd2f0999185917c0",
+    "oldSealId": "b077db61bb4341345b4d70a288f4de7cd8c1eff1b032ff42453cca1ab72c3e63",
+    "causeSealIds": [
+      "02d3c712bda7158178b2a1a113fe6ec32112c8a7fa207c488c2ab40a1fe3f927",
+      "fd2692da29f2deaf81b6567e5499276f95ece18dfd67f0a669fd1a2077292209"
+    ],
+    "test": null,
+    "secondsSinceStart": 2128.309
+  },
+  {
+    "key": "old:29f2834d20fca31147321bbc97bf5407bd90a0120839585d469398abe40ce1a8",
+    "ref": "all-tests-20261008/current-source-closure/verification/turn-causal-receipt-current-20261007",
+    "sealId": "dc4b8942e823f79eaaadc21b1746047b73f0238fd583aa88d6bc9f566efbace8",
+    "path": "packages/shared/src/battle-turn-causal-receipt.test.ts",
+    "sourceSha256": "2d58a6ac4e605bcdf2a900811af561db3416234a50395f3ff1c1131336871d98",
+    "oldSealId": "29f2834d20fca31147321bbc97bf5407bd90a0120839585d469398abe40ce1a8",
+    "causeSealIds": [
+      "1429b36aab4d03e9cb64acedfcf46329f345c0226b04f987449bad1875af2f42",
+      "380ac8824e9b71cb1f886088318ac2d539db126fe347c9a7467f3bcf9aec60b5",
+      "635dddb9346372392eefec016dc989a0bcf82d8dd14f049bb771d910c1a924ae",
+      "8534c37b4da9615462035a1428ee6616200614e289efc11a875c91b6a9bca009",
+      "a57779fc6443060aee6060594b90f36a551a6fbc99c0f02f966ecfe51a305e48"
+    ],
+    "test": {
+      "path": "packages/shared/src/battle-turn-causal-receipt.test.ts",
+      "ref": "verification/turn-causal-receipt-current-20261007"
+    },
+    "secondsSinceStart": 2153.151
+  },
+  {
+    "key": "old:2a2d54b3ccf45a78ee0d9111b6333e70de4c3a77d6b09897083d82e0284a61fe",
+    "ref": "all-tests-20261008/current-source-closure/verification/semantic-authoring-durable-repository-20260918",
+    "sealId": "d5dee6729c5971ed8ae6b6698c3d58c799bf2b08e24fa692f3047bf3f94e8f6c",
+    "path": "backend/src/repositories/semantic-authoring.test.ts",
+    "sourceSha256": "248a451fd87353f5a9ec435a11b9af1a77d8b3559d10735dcc394b6ea4da1c00",
+    "oldSealId": "2a2d54b3ccf45a78ee0d9111b6333e70de4c3a77d6b09897083d82e0284a61fe",
+    "causeSealIds": [
+      "22ad0edf30f5ce72fc8be6cc59c812764d067e455237c3d72a80e70c20e19db1",
+      "2c0273b04c042eebee3916431d0cb37c882e8b79f43680242217ddce5acb137c"
+    ],
+    "test": {
+      "path": "backend/src/repositories/semantic-authoring.test.ts",
+      "ref": "verification/semantic-authoring-durable-repository-20260918"
+    },
+    "secondsSinceStart": 2166.173
+  },
+  {
+    "key": "old:42b6ff80a71caa184ae9ccec1a087e025eb5e831d7e900d23bb08860ef918df4",
+    "ref": "all-tests-20261008/current-source-closure/all-tests-20261008/implementation-openai-compatible-character-definition-recovery-bounded",
+    "sealId": "c9ae0b269aac0eed9d35b1db4e95104a10c0a3b198bbb06651471e2269afa027",
+    "path": "backend/src/llm/openai-compatible.ts",
+    "sourceSha256": "75fdc50d0ff5550712fc50e967f7880950aad035fbab87fa40f2b5d9d0d6daaa",
+    "oldSealId": "42b6ff80a71caa184ae9ccec1a087e025eb5e831d7e900d23bb08860ef918df4",
+    "causeSealIds": [
+      "ee8924215e59d060f6b884e7963b0c544f4d5d1127a596f46c00c5734e61c27c",
+      "e7e672e9013c6c48a2ab3116c0db1e53821221f4ca09ec5048e7cb781adf3945"
+    ],
+    "test": null,
+    "secondsSinceStart": 2179.617
+  },
+  {
+    "key": "old:2b22a189f4d0208bbff9aedd3b2ae18c30263830fac3c6a2014a5752d67753b2",
+    "ref": "all-tests-20261008/current-source-closure/all-tests-20261008/implementation-historical-a2-capture-bounded",
+    "sealId": "71dfdfbda409fdf7a71786f919130d7d6ca502156f2fc05404d21b0b2a2dedaa",
+    "path": "backend/src/scripts/character-authoring-a2-freeze.ts",
+    "sourceSha256": "30f41943dbcfacd2ad0bb8247fd6f87dd5ba0feb8669b988d89253abe231559c",
+    "oldSealId": "2b22a189f4d0208bbff9aedd3b2ae18c30263830fac3c6a2014a5752d67753b2",
+    "causeSealIds": [
+      "c9ae0b269aac0eed9d35b1db4e95104a10c0a3b198bbb06651471e2269afa027",
+      "6819bb639e55b0bbdfdc200a870475172c90568df6f6146edf6d394369f9cde6",
+      "f44e1e324e4106c510863a8af563cce4a7a06bf76e61f271bd54fba33d067bd4"
+    ],
+    "test": null,
+    "secondsSinceStart": 2196.119
+  },
+  {
+    "key": "old:0374262c05d28dee5d6b67d599280434b2fe91e7c416c66cda9c7ef975114e9c",
+    "ref": "all-tests-20261008/current-source-closure/all-tests-20261007/implementation-current-six-draft-read-routes",
+    "sealId": "1dc4e0a7e5ebbce6e80a1e4bfe6eba7f83e798512ffcb031f2c657bfeab48d0d",
+    "path": "backend/src/routes.ts",
+    "sourceSha256": "ec2500cac883a552bc4527b1878c16029cfab3160b2402b34a4e10219fbeee71",
+    "oldSealId": "0374262c05d28dee5d6b67d599280434b2fe91e7c416c66cda9c7ef975114e9c",
+    "causeSealIds": [
+      "d367a6d9a6429c1e09a6405bc5442cdacf51bb6325919da7ef9d950474157518",
+      "3d5d1e8e4ec99ffe6fdef1851bbe1ba54593c86e365b620af601c1d97747fe8c",
+      "480c02403f61dc6a9cd7d54861639b962dbc3bde86673481e02e0defc8415e17",
+      "480fa57d97ccda60a0e2406cbdadcba33373238a0e2ba935fe3544b19374f4bd",
+      "5d5fc3c7e628b857a6e1b5624603a3457750a09c8545ffb5b64f7c4dce2410e5",
+      "8fbfa4e7ad1ba73da9443dd233cc2e5fcb470e1a1390f212694b9cdd21f73997",
+      "b0b10edb4decc344c95818f528118116814e1d978393829ab0e6dcb284582695",
+      "911161c0cfda1614e3cf7f2dab13417a37c2b4e37657c8bb5b2161f92113bfeb"
+    ],
+    "test": null,
+    "secondsSinceStart": 27.338,
+    "revision": 2,
+    "supersedesPublishedSeal": "37de8d3fbbbaafb40baa4e0ac209a2e4b4357622ffb6953a09fb435dad47153b"
+  },
+  {
+    "key": "old:4a45c9459e2d46f7f2f91a881dc4ece3f4b6c6ce7843b9ad299930dde99b10d7",
+    "ref": "all-tests-20261008/current-source-closure/all-tests-20261008/implementation-portrait-v3-route",
+    "sealId": "966762ed850576c0c9182136fa7f4d1812a8f7ab0bcf577ce9cecb83eaa27c09",
+    "path": "backend/src/routes.ts",
+    "sourceSha256": "ec2500cac883a552bc4527b1878c16029cfab3160b2402b34a4e10219fbeee71",
+    "oldSealId": "4a45c9459e2d46f7f2f91a881dc4ece3f4b6c6ce7843b9ad299930dde99b10d7",
+    "causeSealIds": [
+      "2d36069cccd882502a0db0eb23920155bf456cc37c987436ec471683a626392e",
+      "b0b10edb4decc344c95818f528118116814e1d978393829ab0e6dcb284582695",
+      "911161c0cfda1614e3cf7f2dab13417a37c2b4e37657c8bb5b2161f92113bfeb"
+    ],
+    "test": null,
+    "secondsSinceStart": 38.743,
+    "revision": 2,
+    "supersedesPublishedSeal": "bce8f38d5f89f33de951d3e41104c9249c0e9daf27c32d7fbed9964acf9345d6"
+  },
+  {
+    "key": "old:0b349d1dfb958a33e71c52e699789174ce68f30a89a19b6b763d617fc37253c1",
+    "ref": "all-tests-20261008/current-source-closure/verification/portrait-v3-bounded-20261008",
+    "sealId": "447e0d7177f53dc2b761930084a5401bbc560954a9f0763d4c47bd7e005e1865",
+    "path": "backend/src/services/character-portrait-v3.test.ts",
+    "sourceSha256": "d4ce4330bc1de1c11f913a9d6050f496d8f5cc5fd4bec7c67241281f91383c14",
+    "oldSealId": "0b349d1dfb958a33e71c52e699789174ce68f30a89a19b6b763d617fc37253c1",
+    "causeSealIds": [
+      "966762ed850576c0c9182136fa7f4d1812a8f7ab0bcf577ce9cecb83eaa27c09"
+    ],
+    "test": {
+      "path": "backend/src/services/character-portrait-v3.test.ts",
+      "ref": "verification/portrait-v3-bounded-20261008"
+    },
+    "secondsSinceStart": 47.088,
+    "revision": 2,
+    "supersedesPublishedSeal": "f26781aa68fc2b1fa56d185d9e6071fa3c6b53fbc673d4c7ae46ccf1fafd8a2a"
+  },
+  {
+    "key": "old:2bc627a64211c6af5311ee885f237fca60cc9e44bb556cf901826b28622e2941",
+    "ref": "all-tests-20261008/current-source-closure/verification/awareness-frozen-narration-20261007",
+    "sealId": "5cb947cbbfbe88eece3591be72ee7ef0e06b1bedf4159f8c130b24a6a245f25b",
+    "path": "backend/src/llm/awareness-frozen-narration.test.ts",
+    "sourceSha256": "169e8844021f414756bc65796b4de8a8dcc3b0c393fb49b67805e4494dba5f99",
+    "oldSealId": "2bc627a64211c6af5311ee885f237fca60cc9e44bb556cf901826b28622e2941",
+    "causeSealIds": [
+      "1edf3239229665d39a55aee22af5148f4408f6c8dfea24ca200ae835af46e02d",
+      "2c6888e9d07a676d4b429b041b241e1631845b18fac4fb4cda280a4a29670d50",
+      "3ce85102892804dcfeb7df194b5e93d477ab783cef102356d02ed300e993ea69",
+      "4a236b55e9ad9e4aa54eb2c6bbe9d77e0a318881ba8328363505153d16e151dd",
+      "55aa303f2303872014e7a3ca3cc84f03359eb61416528af5f62591a60a55baef",
+      "9120d5c7f563813a2b800e48f54eb6128037f416b3ebefbe79ba3108411e9361",
+      "e9099e7643ea4a98eb45a99ec19224131e83b13cab0b8a2be529b190e374ed0a"
+    ],
+    "test": {
+      "path": "backend/src/llm/awareness-frozen-narration.test.ts",
+      "ref": "verification/awareness-frozen-narration-20261007"
+    },
+    "secondsSinceStart": 68.335,
+    "revision": 2,
+    "supersedesPublishedSeal": null
+  },
+  {
+    "key": "old:2cb50f7f6a261d9605011de5ee688c5b2306cd9d8416679edc60bcf6fb8d7828",
+    "ref": "all-tests-20261008/current-source-closure/verification/battle-create-idempotency-bounded-awareness-creation-20261007",
+    "sealId": "b57d8fec4e1b3bd3756f97b0be394554735142dbf78dafbdbb908e4a95f760da",
+    "path": "backend/src/services/battle-create-idempotency.test.ts",
+    "sourceSha256": "77256250fdd27414968c91b923bbec81c8355de6b128cff1b8d32f9a6fac7855",
+    "oldSealId": "2cb50f7f6a261d9605011de5ee688c5b2306cd9d8416679edc60bcf6fb8d7828",
+    "causeSealIds": [
+      "19465e34757d8ad42d8ed1cb9c817fe8d7092392181f3c47ac886358c7f885f0",
+      "1c34e06ab8d2273a0eb86a3cc40d7c29d753199bfb121896fe6d455826c9eae0",
+      "645e178be9a4b4662822f09d79c5977797a0830e072ee816510a4a62aa5b8e52",
+      "7614c8c70e56fbfaf8819c7eccd7ec75211cb06782f78c1e83859c0c52c32716",
+      "c8b0ffded33bafbc8743d8b941fa6a3be202f7abf2f52f02b6ff8abd0bca9de1"
+    ],
+    "test": {
+      "path": "backend/src/services/battle-create-idempotency.test.ts",
+      "ref": "verification/battle-create-idempotency-bounded-awareness-creation-20261007"
+    },
+    "secondsSinceStart": 85.376,
+    "revision": 2,
+    "supersedesPublishedSeal": null
+  },
+  {
+    "key": "old:2d5c03f299e5ab8f4e4088010c51bafd8660b70fcb4580d936ae3e04cb88ba6b",
+    "ref": "all-tests-20261008/current-source-closure/verification/battle-speech-wiring-bounded-20261008",
+    "sealId": "bd795d0a399c6802c241933d0103fac8adcea1608c736f22fa7bfbf03d243517",
+    "path": "backend/src/services/battle-speech-wiring.test.ts",
+    "sourceSha256": "9546f063aaceec17aa7cd528bde0ad91431a3e0d803f65bf96b850656314ff48",
+    "oldSealId": "2d5c03f299e5ab8f4e4088010c51bafd8660b70fcb4580d936ae3e04cb88ba6b",
+    "causeSealIds": [
+      "ca9393a01bb9151dfd4a0544782bd33cad186196f459d4562e21299fb5ff4add",
+      "c9ae0b269aac0eed9d35b1db4e95104a10c0a3b198bbb06651471e2269afa027",
+      "60bc354087b631ce0e235a08657a38c55e5cb6ecc8036eebd4caa5dc9c8c9dec",
+      "76ac950c0ec5964f4e43521dbf4f42f8fb1b2c08d1f57ddcb8b1dd519da05655",
+      "3b787ba784dcb9b2594f7d2dc82b8eb5b5a019c59711a0f3fb121e84a8fc19f8",
+      "bd16bf609c83970863080df28633127aa3f7fcd9beff89c797adff15c38789fa",
+      "d593d2fc8a2f959aa2bc71a87f492d5e34a9390c1089bdaed1d843483755adcd",
+      "dea87dce601f04086669be004a795680aa84ccff0dfa3091dcdff9fe1338ee72",
+      "8bb89768cef3854c9331adf4e520cfce2e8d184aea4592581ca2cda5ffa04e2c"
+    ],
+    "test": {
+      "path": "backend/src/services/battle-speech-wiring.test.ts",
+      "ref": "verification/battle-speech-wiring-bounded-20261008"
+    },
+    "secondsSinceStart": 111.821,
+    "revision": 2,
+    "supersedesPublishedSeal": null
+  },
+  {
+    "key": "old:be6c5fd8e04b304d51b2023d34486a7e4028e69512cd6c6a9d54ae3fef337a3c",
+    "ref": "all-tests-20261008/current-source-closure/all-tests-20261007/implementation-retained-compact-expression-decoder",
+    "sealId": "5e91281713ff81b1ce2591f9c2d1b70ec0bf0ec75eaacdbe35f5c1778562a9ce",
+    "path": "backend/src/llm/openai-compatible.ts",
+    "sourceSha256": "75fdc50d0ff5550712fc50e967f7880950aad035fbab87fa40f2b5d9d0d6daaa",
+    "oldSealId": "be6c5fd8e04b304d51b2023d34486a7e4028e69512cd6c6a9d54ae3fef337a3c",
+    "causeSealIds": [
+      "203e66fc4e30772adab026012c67f1b1ac4ca86ad2ada11b501c639a27a19eac",
+      "983486b548722c15be423373dc73cf29a52ae3e585471679725221fd9608cb2c",
+      "fd2692da29f2deaf81b6567e5499276f95ece18dfd67f0a669fd1a2077292209",
+      "e7e672e9013c6c48a2ab3116c0db1e53821221f4ca09ec5048e7cb781adf3945"
+    ],
+    "test": null,
+    "secondsSinceStart": 125.253,
+    "revision": 2,
+    "supersedesPublishedSeal": null
+  },
+  {
+    "key": "old:334383eed7e6d311408df36b38964de0e82ed4eaaa0f5f59817c978006174dde",
+    "ref": "all-tests-20261008/current-source-closure/verification/retained-compact-expression-decoder-current-20261007",
+    "sealId": "8173881f99f96ef66e27e327b3e3374f02c043be6989f4b7ca93d3c7137492d7",
+    "path": "backend/src/llm/character-expression-contract.test.ts",
+    "sourceSha256": "a0332c070d14db9e679d6c7d64efc1e403be98204a808d919b328203ffb5f8c9",
+    "oldSealId": "334383eed7e6d311408df36b38964de0e82ed4eaaa0f5f59817c978006174dde",
+    "causeSealIds": [
+      "203e66fc4e30772adab026012c67f1b1ac4ca86ad2ada11b501c639a27a19eac",
+      "983486b548722c15be423373dc73cf29a52ae3e585471679725221fd9608cb2c",
+      "5e91281713ff81b1ce2591f9c2d1b70ec0bf0ec75eaacdbe35f5c1778562a9ce"
+    ],
+    "test": {
+      "path": "backend/src/llm/character-expression-contract.test.ts",
+      "ref": "verification/retained-compact-expression-decoder-current-20261007"
+    },
+    "secondsSinceStart": 136.407,
+    "revision": 2,
+    "supersedesPublishedSeal": null
+  },
+  {
+    "key": "old:33c3815b246bd1ad28daccc940c45e880d90e53913ee745a5a0b7463a05879f9",
+    "ref": "all-tests-20261008/current-source-closure/verification/authoring-read-purity-current-20261007",
+    "sealId": "a67b5ff6e138c1463ebcb8be0b467ff211f8456658b30eaf2ad52fcef52540ec",
+    "path": "backend/src/routes-authoring-read-purity.test.ts",
+    "sourceSha256": "9b6a4162be627690488c80299eb1d4877ef98fc55b4f7a978d8d5e9314346be0",
+    "oldSealId": "33c3815b246bd1ad28daccc940c45e880d90e53913ee745a5a0b7463a05879f9",
+    "causeSealIds": [
+      "1dc4e0a7e5ebbce6e80a1e4bfe6eba7f83e798512ffcb031f2c657bfeab48d0d",
+      "d367a6d9a6429c1e09a6405bc5442cdacf51bb6325919da7ef9d950474157518",
+      "3d5d1e8e4ec99ffe6fdef1851bbe1ba54593c86e365b620af601c1d97747fe8c",
+      "480fa57d97ccda60a0e2406cbdadcba33373238a0e2ba935fe3544b19374f4bd",
+      "5d5fc3c7e628b857a6e1b5624603a3457750a09c8545ffb5b64f7c4dce2410e5",
+      "8fbfa4e7ad1ba73da9443dd233cc2e5fcb470e1a1390f212694b9cdd21f73997"
+    ],
+    "test": {
+      "path": "backend/src/routes-authoring-read-purity.test.ts",
+      "ref": "verification/authoring-read-purity-current-20261007"
+    },
+    "secondsSinceStart": 156.193,
+    "revision": 2,
+    "supersedesPublishedSeal": null
+  },
+  {
+    "key": "old:7cdec0b7f5381f281a7c48b48b61b5df1d5eec35f3fd7230c1dc35426376990e",
+    "ref": "all-tests-20261008/current-source-closure/all-tests-20261007/implementation-narration-storage-events",
+    "sealId": "bae67eba1e62388e98f2d24e907be0df9dbf671141e82c069ba623aef6c71fd2",
+    "path": "backend/src/services/narration-event-storage.ts",
+    "sourceSha256": "6e9491bf319bdc73c964bcf08ecc6b71979f2db62d29288989e64c236c6176ef",
+    "oldSealId": "7cdec0b7f5381f281a7c48b48b61b5df1d5eec35f3fd7230c1dc35426376990e",
+    "causeSealIds": [
+      "5631092bae316bdb959257d52a7574e37e698c5d4cce21accdf019c0cea315ea",
+      "d1bf4b23433d3887849b98cd11b8fb7e622e23aead2ef665f7cb1f297a425e87"
+    ],
+    "test": null,
+    "secondsSinceStart": 164.915,
+    "revision": 2,
+    "supersedesPublishedSeal": null
+  },
+  {
+    "key": "old:35672262cb7558737a45b108b84b94e08e9c5927d23613fe3ca817ca30ed80bc",
+    "ref": "all-tests-20261008/current-source-closure/all-tests-20261007/implementation-native-pg-events",
+    "sealId": "08dc8c749143487c0b94c5ca0558bf7513bdb7179160933c02e4769a9dff1781",
+    "path": "backend/src/services/narration-event-storage.ts",
+    "sourceSha256": "6e9491bf319bdc73c964bcf08ecc6b71979f2db62d29288989e64c236c6176ef",
+    "oldSealId": "35672262cb7558737a45b108b84b94e08e9c5927d23613fe3ca817ca30ed80bc",
+    "causeSealIds": [
+      "bae67eba1e62388e98f2d24e907be0df9dbf671141e82c069ba623aef6c71fd2",
+      "c5abcc709b2e26188df0dddf928010d2ff1c0156b4a796c72d8c9224fbb9ced8"
+    ],
+    "test": null,
+    "secondsSinceStart": 173.396,
+    "revision": 2,
+    "supersedesPublishedSeal": null
+  },
+  {
+    "key": "old:9d37bcc598eff9e88cdfb50cd42a812bbfedb4db318d6473ed39f0f8c42b3c68",
+    "ref": "all-tests-20261008/current-source-closure/all-tests-20261008/implementation-historical-agency-inventory",
+    "sealId": "85d0d16fd2af782b5a9d628a3a74db6dce2bf883bbc9f02e0b192fd4891cfabf",
+    "path": "backend/src/services/battle-service.ts",
+    "sourceSha256": "b1cb72011a0b1c40872b4d56da313d4a01504a8e2a860dd96b087b2e7b712af1",
+    "oldSealId": "9d37bcc598eff9e88cdfb50cd42a812bbfedb4db318d6473ed39f0f8c42b3c68",
+    "causeSealIds": [
+      "705ded951c9f22476781d516d434c1e5da042427c7e9cea3b281bc3ec8803ddd"
+    ],
+    "test": null,
+    "secondsSinceStart": 179.2,
+    "revision": 2,
+    "supersedesPublishedSeal": null
+  },
+  {
+    "key": "old:35d9e9be33dc48d9258733a111baff83047d59cbd17633c82f12f5095df96789",
+    "ref": "all-tests-20261008/current-source-closure/verification/historical-agency-inventory-bounded-20261008",
+    "sealId": "76599274eebc6fb72d108d87a48069320658fbc135fcc4a76a3f06f73a21e42c",
+    "path": "backend/src/services/character-agency-inventory.test.ts",
+    "sourceSha256": "5526bd5b27046ddc7f47539542ec7e5811bbdae632dffc3c9c4ddee6029a7262",
+    "oldSealId": "35d9e9be33dc48d9258733a111baff83047d59cbd17633c82f12f5095df96789",
+    "causeSealIds": [
+      "594ea670d0e36a9ed213548eecad1acd80f2ad95da3c51744ee710768f23d8cf",
+      "85d0d16fd2af782b5a9d628a3a74db6dce2bf883bbc9f02e0b192fd4891cfabf"
+    ],
+    "test": {
+      "path": "backend/src/services/character-agency-inventory.test.ts",
+      "ref": "verification/historical-agency-inventory-bounded-20261008"
+    },
+    "secondsSinceStart": 188.404,
+    "revision": 2,
+    "supersedesPublishedSeal": null
+  },
+  {
+    "key": "old:4c52bb929156a693a0c40e94531ec4ca57137c397a8ed16fd8cb6acc7b3b3b62",
+    "ref": "all-tests-20261008/current-source-closure/all-tests-20261007/fixture-canonical-narration-candidate-seed",
+    "sealId": "798f7df67af51dad66ac592f4aa9731b47e766d9c9efdaa76d6f0163d1cc0e4f",
+    "path": "backend/src/services/awareness-trial-seed.ts",
+    "sourceSha256": "32947a08475ef8063e0f061e50a8d42e0ff0467f5b6622ea549bbba7be328974",
+    "oldSealId": "4c52bb929156a693a0c40e94531ec4ca57137c397a8ed16fd8cb6acc7b3b3b62",
+    "causeSealIds": [
+      "67ed96c062e3bf38aae7d1db0dd1da1c4f52d020ae129d82e131bab3f4ca0935",
+      "5631092bae316bdb959257d52a7574e37e698c5d4cce21accdf019c0cea315ea",
+      "d6303c0a439c85505e8ce4754165c44ccbf946749adb1e3094b94b49cd173e15"
+    ],
+    "test": null,
+    "secondsSinceStart": 200.685,
+    "revision": 2,
+    "supersedesPublishedSeal": null
+  },
+  {
+    "key": "old:646bb467ac7254071e722cbf78de03a051041bbe250f0435a738b11bac9ab3ca",
+    "ref": "all-tests-20261008/current-source-closure/all-tests-20261007/fixture-canonical-narration-offline-http",
+    "sealId": "0cdd76b082bfe65263e491383faff1c4d0353a9714f18b70beef0856eb18c9b6",
+    "path": "backend/src/testing/awareness-trial-http-fixture.ts",
+    "sourceSha256": "088fc7ab1a38dc5f22da317e2dd7af97804e8790360aa88c2a1f4367c4fafc91",
+    "oldSealId": "646bb467ac7254071e722cbf78de03a051041bbe250f0435a738b11bac9ab3ca",
+    "causeSealIds": [
+      "645edd45396d6adfa94cbdc369cd999ebadf30fb6f22108e8e91dd9387c6503b",
+      "f32a6e8815e72a3186332393e8182c1fe1f096b30fc5cf3e9715593fafebaaba"
+    ],
+    "test": null,
+    "secondsSinceStart": 209.691,
+    "revision": 2,
+    "supersedesPublishedSeal": null
+  },
+  {
+    "key": "old:938f2d59786fbd4d6929fcfa1411ab23d23fd0fccdfe75b25a7a20647117880b",
+    "ref": "all-tests-20261008/current-source-closure/all-tests-20261007/implementation-awareness-role-factory",
+    "sealId": "f6a3102867255d6cff3f03f09ee57c993a3df539ea6c37c279e8600088f10787",
+    "path": "backend/src/llm/awareness-provider-factory.ts",
+    "sourceSha256": "f4c116093a1499212e44c1175d891bb2a188c6c0f527b29bca9ad936ce1c1325",
+    "oldSealId": "938f2d59786fbd4d6929fcfa1411ab23d23fd0fccdfe75b25a7a20647117880b",
+    "causeSealIds": [
+      "1edf3239229665d39a55aee22af5148f4408f6c8dfea24ca200ae835af46e02d",
+      "3d0638621f237dba7c7d7e0df6892b7946d8f44210ccfecfed642a51c0d823f0",
+      "4a236b55e9ad9e4aa54eb2c6bbe9d77e0a318881ba8328363505153d16e151dd",
+      "55cd6ea44ebccfb4f9f0e3012c1edd96fcafa0f412c8eaeafeac922832b9a100",
+      "7f8ac50262580d0a94e13d82627be496f8e2e8fd059c194c4d93d84d2af28f43",
+      "03d4100d9196fec3e6229ae272c209bf381be0090ae31b6ba792f4e6a31bc23d",
+      "ca00579d72ce103d2da9fa943d7c907aefe27ed4f7668f9c476c2e076fcb44c2",
+      "e9099e7643ea4a98eb45a99ec19224131e83b13cab0b8a2be529b190e374ed0a"
+    ],
+    "test": null,
+    "secondsSinceStart": 236.759,
+    "revision": 2,
+    "supersedesPublishedSeal": null
+  },
+  {
+    "key": "old:ae27a3a0d74786dd4155d2ab94eaa17bea2c220e9ca916477e395189f00ae030",
+    "ref": "all-tests-20261008/current-source-closure/all-tests-20261007/implementation-canonical-narration-provider-assembly",
+    "sealId": "6489e5e1e6e41a6952fe477b25742ae53480cea5d1b6b7200715839399125265",
+    "path": "backend/src/llm/index.ts",
+    "sourceSha256": "f478870163f6c295f643c27c18d498780a1e55221020544bb79509cc11e50855",
+    "oldSealId": "ae27a3a0d74786dd4155d2ab94eaa17bea2c220e9ca916477e395189f00ae030",
+    "causeSealIds": [
+      "645edd45396d6adfa94cbdc369cd999ebadf30fb6f22108e8e91dd9387c6503b",
+      "f6a3102867255d6cff3f03f09ee57c993a3df539ea6c37c279e8600088f10787",
+      "f32a6e8815e72a3186332393e8182c1fe1f096b30fc5cf3e9715593fafebaaba"
+    ],
+    "test": null,
+    "secondsSinceStart": 249.499,
+    "revision": 2,
+    "supersedesPublishedSeal": null
+  },
+  {
+    "key": "old:3666451e428f32f71eb4eaf71effbff06515ee065cdd932ed8915c43b7de2259",
+    "ref": "all-tests-20261008/current-source-closure/verification/normal-awareness-policy-bounded-current-20261007",
+    "sealId": "aa71710741c2178ecaad3aaafa14057e1d465bef4a2b3a99345721d04484b916",
+    "path": "backend/src/services/normal-awareness-policy.test.ts",
+    "sourceSha256": "1087c1538e41f95ed62224e11a464e5d08d412a32d865bad04e07ea2d27a078c",
+    "oldSealId": "3666451e428f32f71eb4eaf71effbff06515ee065cdd932ed8915c43b7de2259",
+    "causeSealIds": [
+      "798f7df67af51dad66ac592f4aa9731b47e766d9c9efdaa76d6f0163d1cc0e4f",
+      "0cdd76b082bfe65263e491383faff1c4d0353a9714f18b70beef0856eb18c9b6",
+      "cc94e665ec0d2eea32b65787d9056977dda2b46a95cf82471db38c4b8302718d",
+      "6489e5e1e6e41a6952fe477b25742ae53480cea5d1b6b7200715839399125265"
+    ],
+    "test": {
+      "path": "backend/src/services/normal-awareness-policy.test.ts",
+      "ref": "verification/normal-awareness-policy-bounded-current-20261007"
+    },
+    "secondsSinceStart": 265.75,
+    "revision": 2,
+    "supersedesPublishedSeal": null
+  },
+  {
+    "key": "old:765e9c774bfbaba0e6f69165c775fe626f34f3d7508959fa5824acb01280af94",
+    "ref": "all-tests-20261008/current-source-closure/all-tests-20261008/design-historical-adr-classifier-bounded",
+    "sealId": "b52d734ad125df7e0a114eec6be0d14b6b2f67980b15f344c67fde9b8bd0b662",
+    "path": "docs/adr-historical-exceptions-test-contract-review-2026-10-08.md",
+    "sourceSha256": "ad5957d00a17abd77a4c2d71335a8216eda27850a6955fac57f397657a59d4fa",
+    "oldSealId": "765e9c774bfbaba0e6f69165c775fe626f34f3d7508959fa5824acb01280af94",
+    "causeSealIds": [
+      "7ef5fbf04e39771c1d47e1b45ac02c94293bfa5000d9f50da8c04b9c18035800",
+      "ac14858b7b48b7a0857eba65a94a7659b11752383804a6aea41efc934518186a"
+    ],
+    "test": null,
+    "secondsSinceStart": 284.317,
+    "revision": 2,
+    "supersedesPublishedSeal": null
+  },
+  {
+    "key": "old:3adeeb73189315cc7a0b24b871a4c424c6774310fb0fa448fc5496872569740c",
+    "ref": "all-tests-20261008/current-source-closure/all-tests-20261008/implementation-historical-adr-classifier-bounded",
+    "sealId": "ac71fbd4d5af51adae28f7f0170225866208fb55bc58972969bb0c8c45397098",
+    "path": "scripts/adr-historical-exceptions.mjs",
+    "sourceSha256": "b41c8054e0360758024f0f6a9aedcfcf53bb2ee0c78d60ae7b19752eea6dfb31",
+    "oldSealId": "3adeeb73189315cc7a0b24b871a4c424c6774310fb0fa448fc5496872569740c",
+    "causeSealIds": [
+      "b52d734ad125df7e0a114eec6be0d14b6b2f67980b15f344c67fde9b8bd0b662"
+    ],
+    "test": null,
+    "secondsSinceStart": 22.757,
+    "revision": 2,
+    "supersedesPublishedSeal": null
+  },
+  {
+    "key": "old:36b93c9c95b19b11e624b3f0fe78edf423a4149ebf618f00970b8fcdb4b973f6",
+    "ref": "all-tests-20261008/current-source-closure/all-tests-20261008/implementation-historical-adr-consumer-bounded",
+    "sealId": "2f87291a1e8f36d7e0f213413fcaa43165e1aabfd6e4cc347922286f94efe7dd",
+    "path": "scripts/check-adrs.mjs",
+    "sourceSha256": "bd959cc59d245e609904f6e6d75fcd340d1cbf0b3a63b20e2eb57a56a8691b6f",
+    "oldSealId": "36b93c9c95b19b11e624b3f0fe78edf423a4149ebf618f00970b8fcdb4b973f6",
+    "causeSealIds": [
+      "ac71fbd4d5af51adae28f7f0170225866208fb55bc58972969bb0c8c45397098",
+      "7ef5fbf04e39771c1d47e1b45ac02c94293bfa5000d9f50da8c04b9c18035800"
+    ],
+    "test": null,
+    "secondsSinceStart": 44.093,
+    "revision": 2,
+    "supersedesPublishedSeal": null
+  },
+  {
+    "key": "old:37626a8ad19dd76cc18de588d232be444fcc51da615d24fda745ce1c8d5200f8",
+    "ref": "all-tests-20261008/current-source-closure/verification/stable-area-awareness-battle-contract-20261007",
+    "sealId": "1ed45aa8c72d24147fbb20d60acd7da0dedee307294cb4d4bf1d37dcc933796b",
+    "path": "packages/shared/src/awareness-battle.test.ts",
+    "sourceSha256": "dbaf06b2576d6702f3892575bf3e26fe71011dd5ad503f1ab836e80e33cc3f84",
+    "oldSealId": "37626a8ad19dd76cc18de588d232be444fcc51da615d24fda745ce1c8d5200f8",
+    "causeSealIds": [
+      "4a236b55e9ad9e4aa54eb2c6bbe9d77e0a318881ba8328363505153d16e151dd",
+      "02d3c712bda7158178b2a1a113fe6ec32112c8a7fa207c488c2ab40a1fe3f927",
+      "d5695200a29531ed085f10c0d502effc2af325ee206874b1f32c61db6872fba4",
+      "fd2692da29f2deaf81b6567e5499276f95ece18dfd67f0a669fd1a2077292209"
+    ],
+    "test": {
+      "path": "packages/shared/src/awareness-battle.test.ts",
+      "ref": "verification/stable-area-awareness-battle-contract-20261007"
+    },
+    "secondsSinceStart": 90.452,
+    "revision": 2,
+    "supersedesPublishedSeal": null
+  },
+  {
+    "key": "old:3d36a9eb967904be5a9ad085fd8607b3daaea78a2258c04c7e954f43fd1fb22d",
+    "ref": "all-tests-20261008/current-source-closure/all-tests-20261007/implementation-native-pg-reservation",
+    "sealId": "5661f557ccd581207e529216193f6099b4fd58d0e51987499a411c7cd5d8bc9f",
+    "path": "backend/src/repositories/battle-awareness-narration-reservation.ts",
+    "sourceSha256": "9a0bdd97ddc7819a042f7a1bef06e052e6412c1a3a364040f26aec42630e2667",
+    "oldSealId": "3d36a9eb967904be5a9ad085fd8607b3daaea78a2258c04c7e954f43fd1fb22d",
+    "causeSealIds": [
+      "57569d7a8e701a9e17e1f3af460818c81dda11fcdbefa3892e0e7f37d8d1b809",
+      "c064db895ea9f010d2f6fb28360b243285cbe93156c19f8286e161ec2d0d731a",
+      "c5abcc709b2e26188df0dddf928010d2ff1c0156b4a796c72d8c9224fbb9ced8",
+      "cea338023663fcb0df2f08b3e889a61b0033e7d60008a6301090ccac8a3fe50a",
+      "43edff8f437e6d157401ff80f278b8a729ac24be91fcbc16b30dca311e0ea324"
+    ],
+    "test": null,
+    "secondsSinceStart": 111.406,
+    "revision": 2,
+    "supersedesPublishedSeal": null
+  },
+  {
+    "key": "old:3d91b548be11f0624b6a88847c127e54a69140495041d50a133ea1cca9708423",
+    "ref": "all-tests-20261008/current-source-closure/verification/semantic-migration-probe-run-recovery-bounded-20261008",
+    "sealId": "134d3dac093f8fdbc027f1b938b93a601d13e9494a2c066ca1a25c395c85a889",
+    "path": "backend/src/scripts/semantic-migration-probe-run.test.ts",
+    "sourceSha256": "59475275b3f3778669695c34438a6eb38a5edd0b77c89e81d32ddc348bd18edc",
+    "oldSealId": "3d91b548be11f0624b6a88847c127e54a69140495041d50a133ea1cca9708423",
+    "causeSealIds": [
+      "08529d586b5cd9aee651d49101df27b9f1686e1d7a526660ae3a6a918836e89f",
+      "1e2cd86ec390bc138764694edb3c115c85c2922dccbd5d7e571350666f5757bc",
+      "693949593441f24ad2ffc0db92a9bed5d545f6040396eca86beb8aa22fd7a7a6",
+      "5631092bae316bdb959257d52a7574e37e698c5d4cce21accdf019c0cea315ea",
+      "c5996a4f29e4d619d903f62e75e408c7da7b0686f40d6be8885962baff27aa42",
+      "d0e91dd4315198c54b286721df42b55a1e2855395040c7d716914b6dbdb97ae3",
+      "e8216c2b951ab77812727048cac5a7324dcf60ffa41c623432a58eae7ba5c281",
+      "f44e1e324e4106c510863a8af563cce4a7a06bf76e61f271bd54fba33d067bd4"
+    ],
+    "test": {
+      "path": "backend/src/scripts/semantic-migration-probe-run.test.ts",
+      "ref": "verification/semantic-migration-probe-run-recovery-bounded-20261008"
+    },
+    "secondsSinceStart": 140.292,
+    "revision": 2,
+    "supersedesPublishedSeal": null
+  },
+  {
+    "key": "old:cfbea376d97e54cacde4b6a906127ebd3f69058fd1e2f92edd2c367c99d379c9",
+    "ref": "all-tests-20261008/current-source-closure/all-tests-20261007/evidence-native-pg-private-run",
+    "sealId": "a970e733faf5757942332c1660db20cb2e66a01314e5e756595a2f508bcc64dd",
+    "path": "docs/evidence/native-pg-private-run-2026-10-07.json",
+    "sourceSha256": "3358fac0eda224e61f71833d33007ce328f1b89bc6d316c2a45f113326d6b8f1",
+    "oldSealId": "cfbea376d97e54cacde4b6a906127ebd3f69058fd1e2f92edd2c367c99d379c9",
+    "causeSealIds": [
+      "b8fd37281f2f7da5997dbb7532d819290a9c848f70e4b6e12deb6f6bceb5255b",
+      "08dc8c749143487c0b94c5ca0558bf7513bdb7179160933c02e4769a9dff1781",
+      "5661f557ccd581207e529216193f6099b4fd58d0e51987499a411c7cd5d8bc9f",
+      "c5abcc709b2e26188df0dddf928010d2ff1c0156b4a796c72d8c9224fbb9ced8"
+    ],
+    "test": null,
+    "secondsSinceStart": 155.671,
+    "revision": 2,
+    "supersedesPublishedSeal": null
+  },
+  {
+    "key": "old:3ef9dbacbd2573508abd0520de1b65c991fbbc8f453616021e81e2eafbcb6c82",
+    "ref": "all-tests-20261008/current-source-closure/verification/battle-awareness-narration-reservation-postgres-bounded-native-pg-20261007",
+    "sealId": "3a7207b7ef8b7fdd5b487bd29dfb1202f1353b6fb62af5a1aa7a435af58cf28b",
+    "path": "backend/src/repositories/battle-awareness-narration-reservation-postgres.test.ts",
+    "sourceSha256": "d8a956e1ca25037187bc99b7cd744320440ae80bb25c5ac5ab196b88a641b539",
+    "oldSealId": "3ef9dbacbd2573508abd0520de1b65c991fbbc8f453616021e81e2eafbcb6c82",
+    "causeSealIds": [
+      "5661f557ccd581207e529216193f6099b4fd58d0e51987499a411c7cd5d8bc9f",
+      "a970e733faf5757942332c1660db20cb2e66a01314e5e756595a2f508bcc64dd"
+    ],
+    "test": {
+      "path": "backend/src/repositories/battle-awareness-narration-reservation-postgres.test.ts",
+      "ref": "verification/battle-awareness-narration-reservation-postgres-bounded-native-pg-20261007"
+    },
+    "secondsSinceStart": 177.468,
+    "revision": 2,
+    "supersedesPublishedSeal": null
+  },
+  {
+    "key": "old:46682f88987e303b31ec67ec316f68ddbf2fa07a34bde181d4246e92c939155d",
+    "ref": "all-tests-20261008/current-source-closure/verification/utterance-perception-20261007",
+    "sealId": "a1445b5410ea5c4fde492fdbae31243bcca6016cdd562b065e1620dcbc705144",
+    "path": "packages/shared/src/utterance-perception.test.ts",
+    "sourceSha256": "2f13536d6083ca8e5bb065e4d184fce33c2dc182957579b2c1ca4c75b6c7a400",
+    "oldSealId": "46682f88987e303b31ec67ec316f68ddbf2fa07a34bde181d4246e92c939155d",
+    "causeSealIds": [
+      "b8bcc8918e0618cd86448748b7e501279cb6faf83b781eb55754f4e63eddc357",
+      "3b787ba784dcb9b2594f7d2dc82b8eb5b5a019c59711a0f3fb121e84a8fc19f8",
+      "a7aa7c8d7b55a90f4fade5f441f0b7a59ecc7bd7019b42c565c1435fc74113c7",
+      "c75f415a640db0d2d69d8455e5b8eff530cdf43f7dde97bcebdb98b56ae087ad"
+    ],
+    "test": {
+      "path": "packages/shared/src/utterance-perception.test.ts",
+      "ref": "verification/utterance-perception-20261007"
+    },
+    "secondsSinceStart": 231.712,
+    "revision": 2,
+    "supersedesPublishedSeal": null
+  },
+  {
+    "key": "old:6fc9de4333a04acce3cde69962c8e70cff20999112df9ef4959ad23d19164b2f",
+    "ref": "all-tests-20261008/current-source-closure/all-tests-20261007/implementation-character-repository-activation",
+    "sealId": "0a1024bb57cd92ac85dbb20ce8641252ab5fe2669c41ce969a49c456c427d635",
+    "path": "backend/src/repositories/character-assets-v2.ts",
+    "sourceSha256": "4dc5580a4eefcbfd5ebba9b373f0e16aa960300d9f1de4293820dbb433aac318",
+    "oldSealId": "6fc9de4333a04acce3cde69962c8e70cff20999112df9ef4959ad23d19164b2f",
+    "causeSealIds": [
+      "256c436664b69e1d7ddcc50f818d90173bbaf402b3b9bd322dd96c3d150771db",
+      "480c02403f61dc6a9cd7d54861639b962dbc3bde86673481e02e0defc8415e17",
+      "51b88502ce6cf07710e956c6d10f128b83233b93d97309ce392a37a631be3dba",
+      "d9e29249c9599e07cf250fafe549dba47f5601e94681bfee1d81d9e43dd0cd3f",
+      "edd5470e342cb4a99acba56c04e5cc6fcbd0f25dd04ebb26045b3b35c908db21",
+      "fdaeaeb9f3694421a8776649f58ec4e89962ae6f95fc3249b8ca4b6a93b6e3ed",
+      "911161c0cfda1614e3cf7f2dab13417a37c2b4e37657c8bb5b2161f92113bfeb",
+      "06f3c50c84e38c5a86623b399a7b064f7e4ff0a0bdfab246fdf26ed44b66f1a9"
+    ],
+    "test": null,
+    "secondsSinceStart": 275.31,
+    "revision": 2,
+    "supersedesPublishedSeal": null
+  },
+  {
+    "key": "old:71996ab40a982d193b1ee3b49152b47e53ac9175650065a896ac263107529471",
+    "ref": "all-tests-20261008/current-source-closure/all-tests-20261007/implementation-character-repository-management",
+    "sealId": "04d4b8e8cb164c87be2c11dbe208a6758ca32b119f3b5d8294b44c9b27ef1e2f",
+    "path": "backend/src/repositories/characters.ts",
+    "sourceSha256": "3ea23344eefe964550f2a775beda786cff5bb03512444c14d38ce6d9839335ce",
+    "oldSealId": "71996ab40a982d193b1ee3b49152b47e53ac9175650065a896ac263107529471",
+    "causeSealIds": [
+      "480c02403f61dc6a9cd7d54861639b962dbc3bde86673481e02e0defc8415e17",
+      "0a1024bb57cd92ac85dbb20ce8641252ab5fe2669c41ce969a49c456c427d635",
+      "fdaeaeb9f3694421a8776649f58ec4e89962ae6f95fc3249b8ca4b6a93b6e3ed"
+    ],
+    "test": null,
+    "secondsSinceStart": 287.931,
+    "revision": 2,
+    "supersedesPublishedSeal": null
+  },
+  {
+    "key": "old:4d33938f8494654cc3ec9f0fa0bff4e60bc242bc5961d348b381a5ca2c0cae42",
+    "ref": "all-tests-20261008/current-source-closure/verification/character-assets-repository-20261007",
+    "sealId": "672d335a055b3206b3d0d49193c813e36e7a4bfead57e411904f3ad95d7bcef2",
+    "path": "backend/src/repositories/character-assets-v2.test.ts",
+    "sourceSha256": "1f5b846b59218d4792907f01bec524ffcf54f5c80c614e2a74514219023d0c57",
+    "oldSealId": "4d33938f8494654cc3ec9f0fa0bff4e60bc242bc5961d348b381a5ca2c0cae42",
+    "causeSealIds": [
+      "256c436664b69e1d7ddcc50f818d90173bbaf402b3b9bd322dd96c3d150771db",
+      "480c02403f61dc6a9cd7d54861639b962dbc3bde86673481e02e0defc8415e17",
+      "51b88502ce6cf07710e956c6d10f128b83233b93d97309ce392a37a631be3dba",
+      "0a1024bb57cd92ac85dbb20ce8641252ab5fe2669c41ce969a49c456c427d635",
+      "04d4b8e8cb164c87be2c11dbe208a6758ca32b119f3b5d8294b44c9b27ef1e2f",
+      "c8b0ffded33bafbc8743d8b941fa6a3be202f7abf2f52f02b6ff8abd0bca9de1",
+      "d9e29249c9599e07cf250fafe549dba47f5601e94681bfee1d81d9e43dd0cd3f",
+      "fdaeaeb9f3694421a8776649f58ec4e89962ae6f95fc3249b8ca4b6a93b6e3ed"
+    ],
+    "test": {
+      "path": "backend/src/repositories/character-assets-v2.test.ts",
+      "ref": "verification/character-assets-repository-20261007"
+    },
+    "secondsSinceStart": 319.488,
+    "revision": 2,
+    "supersedesPublishedSeal": null
+  },
+  {
+    "key": "old:4d6c4797b9bd6eab93329c57fcc7ee8fcb38635e14067cf8123007a41b035d3c",
+    "ref": "all-tests-20261008/current-source-closure/all-tests-20261007/implementation-local-user-public-projection",
+    "sealId": "4a05101157f3a8fa9052798bad9cc7739deeb9e92d9e304c746d1d7e92d4bb4f",
+    "path": "backend/src/repositories/users.ts",
+    "sourceSha256": "4808aac3b07b7c66829707aaf017625a7bb7564d2cbc8915946b75048cf2fd67",
+    "oldSealId": "4d6c4797b9bd6eab93329c57fcc7ee8fcb38635e14067cf8123007a41b035d3c",
+    "causeSealIds": [
+      "203e66fc4e30772adab026012c67f1b1ac4ca86ad2ada11b501c639a27a19eac",
+      "5631092bae316bdb959257d52a7574e37e698c5d4cce21accdf019c0cea315ea"
+    ],
+    "test": null,
+    "secondsSinceStart": 328.697,
+    "revision": 2,
+    "supersedesPublishedSeal": null
+  },
+  {
+    "key": "old:4eace438f8f1bcf305e1bfbee11c994600aebdc6b4833059b53003e425074730",
+    "ref": "all-tests-20261008/current-source-closure/all-tests-20261008/fixture-historical-adr-0017-think",
+    "sealId": "16d561fa8153f39b461eaf55cdd32d62f4b2dcbe3370d1eddf521857b26659f5",
+    "path": "docs/adr/0017-public-turn-intra-turn-beats.think",
+    "sourceSha256": "81e742113703e82d48c863e6fe15a09827614e39fb526a62ae0f82dc1d599a7b",
+    "oldSealId": "4eace438f8f1bcf305e1bfbee11c994600aebdc6b4833059b53003e425074730",
+    "causeSealIds": [
+      "7ef5fbf04e39771c1d47e1b45ac02c94293bfa5000d9f50da8c04b9c18035800"
+    ],
+    "test": null,
+    "secondsSinceStart": 336.009,
+    "revision": 2,
+    "supersedesPublishedSeal": null
+  },
+  {
+    "key": "old:a7ebc3885929116751d1ca8b004bdefb37438a01bef62e5641d69c0bdf6a34ec",
+    "ref": "all-tests-20261008/current-source-closure/all-tests-20261007/implementation-canonical-narration-expression-commit",
+    "sealId": "151d8b04970f49a91d895edf577bfc34fae41dfd48995c196df8694011f6decf",
+    "path": "backend/src/services/awareness-expression-commit.ts",
+    "sourceSha256": "6decfaa44b13a095c5a2aac1c38409b9c272cd951aa41111f0fe42d0d356edd6",
+    "oldSealId": "a7ebc3885929116751d1ca8b004bdefb37438a01bef62e5641d69c0bdf6a34ec",
+    "causeSealIds": [
+      "6a27811e1eb660c9de4c5c7f4a1adf9f8561c4af42d15847c3e0f2f622787c1b",
+      "3b787ba784dcb9b2594f7d2dc82b8eb5b5a019c59711a0f3fb121e84a8fc19f8",
+      "f32a6e8815e72a3186332393e8182c1fe1f096b30fc5cf3e9715593fafebaaba",
+      "0bdac62e7b0fe13e7a3fa5c78268242aede0de8fc853882e6c2b1552eddc1b10"
+    ],
+    "test": null,
+    "secondsSinceStart": 351.372,
+    "revision": 2,
+    "supersedesPublishedSeal": null
+  },
+  {
+    "key": "old:52aff00439a13e0baefc7c3f23f1c35a29208ac967fa4a4b9401b55613c99a21",
+    "ref": "all-tests-20261008/current-source-closure/verification/awareness-expression-commit-bounded-current-20261007",
+    "sealId": "70b6c1bf650ab06eda2f1d2bec085d875c478afc6942e48193019474b2521664",
+    "path": "backend/src/services/awareness-expression-commit.test.ts",
+    "sourceSha256": "0d608e17db614eadd392d888901a1e0a88e24e3c237ae5cb1f9cc45d3d7e37ec",
+    "oldSealId": "52aff00439a13e0baefc7c3f23f1c35a29208ac967fa4a4b9401b55613c99a21",
+    "causeSealIds": [
+      "6ac6f7936f62bf30134d2c26620c335f7b71357945f0713f35f4635a70754a31",
+      "151d8b04970f49a91d895edf577bfc34fae41dfd48995c196df8694011f6decf"
+    ],
+    "test": {
+      "path": "backend/src/services/awareness-expression-commit.test.ts",
+      "ref": "verification/awareness-expression-commit-bounded-current-20261007"
+    },
+    "secondsSinceStart": 361.303,
+    "revision": 2,
+    "supersedesPublishedSeal": null
+  },
+  {
+    "key": "old:fd9582a733bd7a3698b053fb0db428f7d6ea59ce3f545ecc1429ce9ee0127c1d",
+    "ref": "all-tests-20261008/current-source-closure/all-tests-20261008/implementation-perception-typed-seam",
+    "sealId": "8d25b7b469874f9df0894650a5bdadc5a1ba595a7a8ca7eeaf77d4ecbe0a81b3",
+    "path": "backend/src/llm/openai-compatible.ts",
+    "sourceSha256": "75fdc50d0ff5550712fc50e967f7880950aad035fbab87fa40f2b5d9d0d6daaa",
+    "oldSealId": "fd9582a733bd7a3698b053fb0db428f7d6ea59ce3f545ecc1429ce9ee0127c1d",
+    "causeSealIds": [
+      "d78cc8ae7fcccb4ecece8a8c76f5621e0badc09b4cd5d1ca76b53936b9f6bc6e",
+      "e7e672e9013c6c48a2ab3116c0db1e53821221f4ca09ec5048e7cb781adf3945"
+    ],
+    "test": null,
+    "secondsSinceStart": 370.937,
+    "revision": 2,
+    "supersedesPublishedSeal": null
+  },
+  {
+    "key": "old:5383f46e17fbf709a60d07e1d3278ff95f638c28261239ac3d21077620eaf215",
+    "ref": "all-tests-20261008/current-source-closure/verification/perception-typed-seam-bounded-20261008",
+    "sealId": "effc4a5721da3af53d58ce94e6e97debf5e1c78e458141601c4d49dec7f5015e",
+    "path": "backend/src/llm/openai-compatible-perception.test.ts",
+    "sourceSha256": "b7ca04101d8e6943cf4fd2ea4f2ac5030286cde106f8d197b0babc99087e9c03",
+    "oldSealId": "5383f46e17fbf709a60d07e1d3278ff95f638c28261239ac3d21077620eaf215",
+    "causeSealIds": [
+      "8d25b7b469874f9df0894650a5bdadc5a1ba595a7a8ca7eeaf77d4ecbe0a81b3"
+    ],
+    "test": {
+      "path": "backend/src/llm/openai-compatible-perception.test.ts",
+      "ref": "verification/perception-typed-seam-bounded-20261008"
+    },
+    "secondsSinceStart": 377.098,
+    "revision": 2,
+    "supersedesPublishedSeal": null
+  },
+  {
+    "key": "old:53d5933f214fa6683fbf198a660a3ce47b929b85ccf2a18680e24a18028ca7ab",
+    "ref": "all-tests-20261008/current-source-closure/verification/awareness-battle-creation-bounded-awareness-creation-20261007",
+    "sealId": "8e6292cabfb98d5d92051659e4a0a137cac824281c1b70984cf66e83c2c043b0",
+    "path": "backend/src/services/awareness-battle-creation.test.ts",
+    "sourceSha256": "cbf4526395d59be0d4883808e2a77a3b74a5cf156c76a43601a000e1095bc564",
+    "oldSealId": "53d5933f214fa6683fbf198a660a3ce47b929b85ccf2a18680e24a18028ca7ab",
+    "causeSealIds": [
+      "19465e34757d8ad42d8ed1cb9c817fe8d7092392181f3c47ac886358c7f885f0",
+      "645edd45396d6adfa94cbdc369cd999ebadf30fb6f22108e8e91dd9387c6503b",
+      "a716bc3b8e2473ca01d2cf7408bdc93dc769f8556428f493d9ee803dd7859619",
+      "6489e5e1e6e41a6952fe477b25742ae53480cea5d1b6b7200715839399125265",
+      "c8b0ffded33bafbc8743d8b941fa6a3be202f7abf2f52f02b6ff8abd0bca9de1"
+    ],
+    "test": {
+      "path": "backend/src/services/awareness-battle-creation.test.ts",
+      "ref": "verification/awareness-battle-creation-bounded-awareness-creation-20261007"
+    },
+    "secondsSinceStart": 397.139,
+    "revision": 2,
+    "supersedesPublishedSeal": null
+  },
+  {
+    "key": "old:551ae7d8ea5734eee239f8d6fe9eb1d1ebc94bc2d291a8177e7ba58379d41237",
+    "ref": "all-tests-20261008/current-source-closure/verification/awareness-provider-factory-20261007",
+    "sealId": "c24e33d0097741b81cf37a5e725f7e77f930e41fa5a4c31c9347112e6bd9325a",
+    "path": "backend/src/llm/awareness-provider-factory.test.ts",
+    "sourceSha256": "8f81ea03ce3aac3bf277d368477c193b4a9f418ff2e146b4806e7e3645ba0b2f",
+    "oldSealId": "551ae7d8ea5734eee239f8d6fe9eb1d1ebc94bc2d291a8177e7ba58379d41237",
+    "causeSealIds": [
+      "1edf3239229665d39a55aee22af5148f4408f6c8dfea24ca200ae835af46e02d",
+      "3ce85102892804dcfeb7df194b5e93d477ab783cef102356d02ed300e993ea69",
+      "3d0638621f237dba7c7d7e0df6892b7946d8f44210ccfecfed642a51c0d823f0",
+      "4a236b55e9ad9e4aa54eb2c6bbe9d77e0a318881ba8328363505153d16e151dd",
+      "7f8ac50262580d0a94e13d82627be496f8e2e8fd059c194c4d93d84d2af28f43",
+      "03d4100d9196fec3e6229ae272c209bf381be0090ae31b6ba792f4e6a31bc23d",
+      "f6a3102867255d6cff3f03f09ee57c993a3df539ea6c37c279e8600088f10787",
+      "e9099e7643ea4a98eb45a99ec19224131e83b13cab0b8a2be529b190e374ed0a"
+    ],
+    "test": {
+      "path": "backend/src/llm/awareness-provider-factory.test.ts",
+      "ref": "verification/awareness-provider-factory-20261007"
+    },
+    "secondsSinceStart": 431.439,
+    "revision": 2,
+    "supersedesPublishedSeal": null
+  },
+  {
+    "key": "old:5585b1a0f4b782ac560c2478331e0b26e59e59de4c38a397153101c267571746",
+    "ref": "all-tests-20261008/current-source-closure/all-tests-20261008/fixture-historical-adr-0015-md",
+    "sealId": "a82a37271c5d52dcd3758d6f3154a237a9996b95336c00146b379254f81463da",
+    "path": "docs/adr/0015-e2e-operator-session-reentry.md",
+    "sourceSha256": "192f4b12763e91531fad86922a8609ae1d3dd306b5e24326875fa2e02fa7d8b3",
+    "oldSealId": "5585b1a0f4b782ac560c2478331e0b26e59e59de4c38a397153101c267571746",
+    "causeSealIds": [
+      "7ef5fbf04e39771c1d47e1b45ac02c94293bfa5000d9f50da8c04b9c18035800"
+    ],
+    "test": null,
+    "secondsSinceStart": 440.372,
+    "revision": 2,
+    "supersedesPublishedSeal": null
+  },
+  {
+    "key": "old:5694d174aa491d92cbd04dc3c6f997e2f453145c1de1cf2d7b7b1e6d7fa7f9c4",
+    "ref": "all-tests-20261008/current-source-closure/verification/battle-awareness-postgres-bounded-native-pg-20261007",
+    "sealId": "3c9fb682509aae2f5b632c9d44194c1404886a93af21500198d051ded31fae82",
+    "path": "backend/src/repositories/battle-awareness-postgres.test.ts",
+    "sourceSha256": "315fb6c0727d81631a5e9502984fcc1c12654b6324b83eeb7788bd498a0302d4",
+    "oldSealId": "5694d174aa491d92cbd04dc3c6f997e2f453145c1de1cf2d7b7b1e6d7fa7f9c4",
+    "causeSealIds": [
+      "b8fd37281f2f7da5997dbb7532d819290a9c848f70e4b6e12deb6f6bceb5255b",
+      "a970e733faf5757942332c1660db20cb2e66a01314e5e756595a2f508bcc64dd"
+    ],
+    "test": {
+      "path": "backend/src/repositories/battle-awareness-postgres.test.ts",
+      "ref": "verification/battle-awareness-postgres-bounded-native-pg-20261007"
+    },
+    "secondsSinceStart": 453.234,
+    "revision": 2,
+    "supersedesPublishedSeal": null
+  },
+  {
+    "key": "old:576163a219d398c2f1320bd5cc3534cc396f9c99a057db1948bd1ff93ae38151",
+    "ref": "all-tests-20261008/current-source-closure/all-tests-20261008/fixture-historical-adr-0015-think",
+    "sealId": "87914288bb1b419688fd70f11492dbaa92b59f1932212df3cbb053ffa4d376d8",
+    "path": "docs/adr/0015-e2e-operator-session-reentry.think",
+    "sourceSha256": "85470fd2ce9db4ec6b832d2c550c77ced689e5fbaa611f2aeaa06f21cbb8d9b5",
+    "oldSealId": "576163a219d398c2f1320bd5cc3534cc396f9c99a057db1948bd1ff93ae38151",
+    "causeSealIds": [
+      "7ef5fbf04e39771c1d47e1b45ac02c94293bfa5000d9f50da8c04b9c18035800"
+    ],
+    "test": null,
+    "secondsSinceStart": 460.478,
+    "revision": 2,
+    "supersedesPublishedSeal": null
+  },
+  {
+    "key": "old:fcf165143e528ea548c1e9c8313a465199e185c9f066ef7a60e1996a9e09856f",
+    "ref": "all-tests-20261008/current-source-closure/all-tests-20261008/implementation-boundary-routes",
+    "sealId": "78ea7bb9f28bff2c77adbcdd6188c12d2ff8e52a58464f074a5f48f8d68bea0c",
+    "path": "backend/src/routes.ts",
+    "sourceSha256": "ec2500cac883a552bc4527b1878c16029cfab3160b2402b34a4e10219fbeee71",
+    "oldSealId": "fcf165143e528ea548c1e9c8313a465199e185c9f066ef7a60e1996a9e09856f",
+    "causeSealIds": [
+      "90676e41a7e0dd5ff58d7960703f8a2c37c787ba87c9f58ce9e9fc6b1b2e42ef",
+      "b0b10edb4decc344c95818f528118116814e1d978393829ab0e6dcb284582695",
+      "911161c0cfda1614e3cf7f2dab13417a37c2b4e37657c8bb5b2161f92113bfeb"
+    ],
+    "test": null,
+    "secondsSinceStart": 474.026,
+    "revision": 2,
+    "supersedesPublishedSeal": null
+  },
+  {
+    "key": "old:58a7034ae30a4e8660db9c01161ea05ee28dbc0eb539d8e661559169945910de",
+    "ref": "all-tests-20261008/current-source-closure/verification/v3-battle-creation-recovery-bounded-20261008",
+    "sealId": "f9e46374d5f6c4ad94347a232f4d7a3a1d0c3f500b5d5eccd222fbf7ac31f761",
+    "path": "backend/src/services/v3-battle-creation.test.ts",
+    "sourceSha256": "5f6254f5f888c785a836feb3fcfcdcb635b0bb04ca9cbed28c05f9fc520a3e6c",
+    "oldSealId": "58a7034ae30a4e8660db9c01161ea05ee28dbc0eb539d8e661559169945910de",
+    "causeSealIds": [
+      "18b5c01c9ddeacc5e5bd9e82d5e9e1924024b31853817bcb323caaa230677d72",
+      "bea4be680e532ddb80f1a6376778ec0c64acbfaf5f4176e6029b6499d0b3d547",
+      "ca9393a01bb9151dfd4a0544782bd33cad186196f459d4562e21299fb5ff4add",
+      "6565d6dac8180fd57f7c82c61c4486ae4ea30b6315cb6acc45fadd09208998af",
+      "6a8d0c70d178a47c529d0e8bc6bf13897ea9863b64e8ae7bb5c4b00cda6e8818",
+      "7ded913cf0afb3625fa20d843b6b61ad27be823815dcb89ad384380de9306eb0",
+      "8b26ad20a52fdb31571b53df86b078ab8345fb5bf293597196be6e1c85683c5c",
+      "c0a6256440d65d2029ef126530f8f31e8a6acb9f38af138fcf5d0d17847f44cf",
+      "c13f788ff9274a1abf7cc32574a4882693f2a5eed8082bdec37afdf9216023e3",
+      "c3e33346f9aa6f552e4a935706d8f9cc5a4dcfbf4e01fc6d5567b2773525c026",
+      "c91b093d735b162729efe8cfaf1944a716ad32955b4d15c5273a53833f210493",
+      "ce808905d2ecd092ffda721733ec3f111682bff9cefe7f54574bb6a15a3f0343",
+      "daca8dadb8a85073ca868c61f6423974fff038c9548cee89ead8f7ae58348deb",
+      "78ea7bb9f28bff2c77adbcdd6188c12d2ff8e52a58464f074a5f48f8d68bea0c"
+    ],
+    "test": {
+      "path": "backend/src/services/v3-battle-creation.test.ts",
+      "ref": "verification/v3-battle-creation-recovery-bounded-20261008"
+    },
+    "secondsSinceStart": 523.978,
+    "revision": 2,
+    "supersedesPublishedSeal": null
+  },
+  {
+    "key": "old:5c06dcccd164d1e51610184f474296ee948c8fef2a4469c62453df2b33e244d2",
+    "ref": "all-tests-20261008/current-source-closure/all-tests-20261007/implementation-sdk-response-schema-ordinary-gate",
+    "sealId": "b92f965e5afa4c9e8898b1ff44166e98a3025e91f7dc3e70cd23707101c4151c",
+    "path": "backend/src/llm/openai-compatible.ts",
+    "sourceSha256": "75fdc50d0ff5550712fc50e967f7880950aad035fbab87fa40f2b5d9d0d6daaa",
+    "oldSealId": "5c06dcccd164d1e51610184f474296ee948c8fef2a4469c62453df2b33e244d2",
+    "causeSealIds": [
+      "4a236b55e9ad9e4aa54eb2c6bbe9d77e0a318881ba8328363505153d16e151dd",
+      "7d3553c4450352d27ccca8b36ff087b703bb00896b0369e283494116cd5b094e",
+      "e7e672e9013c6c48a2ab3116c0db1e53821221f4ca09ec5048e7cb781adf3945"
+    ],
+    "test": null,
+    "secondsSinceStart": 535.481,
+    "revision": 2,
+    "supersedesPublishedSeal": null
+  },
+  {
+    "key": "old:92128582fb5d99725dfcea755d43c7549468705c28ba73830fa3f6e0b04a9bff",
+    "ref": "all-tests-20261008/current-source-closure/all-tests-20261008/implementation-semantic-recovery-family-adapter",
+    "sealId": "e34a0c308503a982b6d2dae1be62d79b4b2eed71113b195fb3e4ce3c98649569",
+    "path": "backend/src/services/semantic-authoring/adapters/family-conformance.ts",
+    "sourceSha256": "dac65edb552b541dcacb6e68543f69a5beb6351e8838a7d802065d6ea4c6cc60",
+    "oldSealId": "92128582fb5d99725dfcea755d43c7549468705c28ba73830fa3f6e0b04a9bff",
+    "causeSealIds": [
+      "7e0e9921369cee23cb342b8957e8f21dd2edecd82a21b7665ec4d5b48bc6b862"
+    ],
+    "test": null,
+    "secondsSinceStart": 541.413,
+    "revision": 2,
+    "supersedesPublishedSeal": null
+  },
+  {
+    "key": "old:603632db17373c90f1abd2b832c67f6697b04ce21b1f9b9253ae6a480dcfcede",
+    "ref": "all-tests-20261008/current-source-closure/all-tests-20261008/implementation-semantic-recovery-narration-adapter",
+    "sealId": "30b166e504c0889ea93a7f2eca935b2f625ff6c749aa2c64e5b88839b3b6919b",
+    "path": "backend/src/services/semantic-authoring/adapters/narration-conformance.ts",
+    "sourceSha256": "9428ef31f2f3d83601e6fa2a316199169625207ae3be320336c07f2cf36351e0",
+    "oldSealId": "603632db17373c90f1abd2b832c67f6697b04ce21b1f9b9253ae6a480dcfcede",
+    "causeSealIds": [
+      "e34a0c308503a982b6d2dae1be62d79b4b2eed71113b195fb3e4ce3c98649569"
+    ],
+    "test": null,
+    "secondsSinceStart": 547.747,
+    "revision": 2,
+    "supersedesPublishedSeal": null
+  },
+  {
+    "key": "old:8531034c70ea9751330345dd99fb0d64e7817a9ecfa21fda37d2cd26b2bcbb15",
+    "ref": "all-tests-20261008/current-source-closure/all-tests-20261008/implementation-semantic-recovery-battlefield-adapter",
+    "sealId": "fd5fc2a6226eade3ac8bf0bc7128ddfe932334c1b112fe79714816064e44a202",
+    "path": "backend/src/services/semantic-authoring/adapters/battlefield-conformance.ts",
+    "sourceSha256": "d967296ee577eb33300458e4d2a5135a1e5fc34a19ac3c57a607b74408876ba6",
+    "oldSealId": "8531034c70ea9751330345dd99fb0d64e7817a9ecfa21fda37d2cd26b2bcbb15",
+    "causeSealIds": [
+      "e34a0c308503a982b6d2dae1be62d79b4b2eed71113b195fb3e4ce3c98649569"
+    ],
+    "test": null,
+    "secondsSinceStart": 553.844,
+    "revision": 2,
+    "supersedesPublishedSeal": null
+  },
+  {
+    "key": "old:a3058ee1e284b6eff25136b61aa3b828d47e1d3c15b26cc522802e37c1a91c52",
+    "ref": "all-tests-20261008/current-source-closure/all-tests-20261008/implementation-semantic-recovery-scripted-ports",
+    "sealId": "91e4ae9129dc87da12f5b8554085bbf80e3bc4df47fc1ddf8080a903b9d679d4",
+    "path": "backend/src/services/semantic-authoring/scripted-ports.ts",
+    "sourceSha256": "712e5edf90cb2b899e1188dba76b75e4e33bceb916097786251786680ba694a4",
+    "oldSealId": "a3058ee1e284b6eff25136b61aa3b828d47e1d3c15b26cc522802e37c1a91c52",
+    "causeSealIds": [
+      "b3c3bf9bc1df73c9c5f89173e362d361fe6bb555188e47168674f40bb8c685e1",
+      "7e0e9921369cee23cb342b8957e8f21dd2edecd82a21b7665ec4d5b48bc6b862",
+      "9c5118358b9d3533aec8c315861ba503ef5cf1919b4dd9cea5ca4392049f2868"
+    ],
+    "test": null,
+    "secondsSinceStart": 574.648,
+    "revision": 2,
+    "supersedesPublishedSeal": null
+  },
+  {
+    "key": "old:a5af3c2d06a7e3dd3912a744e0f8bced86a13f214caa2248bd1487894f635748",
+    "ref": "all-tests-20261008/current-source-closure/all-tests-20261008/implementation-semantic-recovery-execution",
+    "sealId": "cba7bd8c26b1667c00b0488abe59d91cfb857f711560ec3ec34fa10577877ac8",
+    "path": "backend/src/services/semantic-authoring/execution.ts",
+    "sourceSha256": "da4a87f102f4b0c957cb1f5b9a8f0c9e5a7072d3a98d56c5f787a6fa1ce1cca6",
+    "oldSealId": "a5af3c2d06a7e3dd3912a744e0f8bced86a13f214caa2248bd1487894f635748",
+    "causeSealIds": [
+      "b3c3bf9bc1df73c9c5f89173e362d361fe6bb555188e47168674f40bb8c685e1",
+      "ba078db630b87ce7472ce546029030397b04197ab64f4c4508f1276a7af22418",
+      "7e0e9921369cee23cb342b8957e8f21dd2edecd82a21b7665ec4d5b48bc6b862",
+      "9c5118358b9d3533aec8c315861ba503ef5cf1919b4dd9cea5ca4392049f2868"
+    ],
+    "test": null,
+    "secondsSinceStart": 590.917,
+    "revision": 2,
+    "supersedesPublishedSeal": null
+  },
+  {
+    "key": "old:5e80483ea3621c45eaf972acfc5b047d35bf82f8902ad6b731bd89b58d190332",
+    "ref": "all-tests-20261008/current-source-closure/verification/semantic-recovery-conformance-bounded-20261008",
+    "sealId": "08c8d877eb343055593f94d90ab3ccd9ed17a4c835b529bb7eff3065ee6f8daa",
+    "path": "backend/src/services/semantic-authoring/conformance.test.ts",
+    "sourceSha256": "0e9ababee0db7df3a18c365ae8fac859e518c0f4fa07d473296b27092479ee31",
+    "oldSealId": "5e80483ea3621c45eaf972acfc5b047d35bf82f8902ad6b731bd89b58d190332",
+    "causeSealIds": [
+      "b3c3bf9bc1df73c9c5f89173e362d361fe6bb555188e47168674f40bb8c685e1",
+      "ba078db630b87ce7472ce546029030397b04197ab64f4c4508f1276a7af22418",
+      "2e6f4497926f275f8b36245fa399489540da8f5a83df7b5f641229252999e0e3",
+      "30b166e504c0889ea93a7f2eca935b2f625ff6c749aa2c64e5b88839b3b6919b",
+      "fd5fc2a6226eade3ac8bf0bc7128ddfe932334c1b112fe79714816064e44a202",
+      "ac2ae9273bd7cffcc8e602bfbe7f6ca3cb7d94cf5916a4b1f6bff1b8b02301c0",
+      "7e0e9921369cee23cb342b8957e8f21dd2edecd82a21b7665ec4d5b48bc6b862",
+      "91e4ae9129dc87da12f5b8554085bbf80e3bc4df47fc1ddf8080a903b9d679d4",
+      "cba7bd8c26b1667c00b0488abe59d91cfb857f711560ec3ec34fa10577877ac8",
+      "5c9efca573ad89757ac9d5dfe32716a8ba23a43429d778e9d16554fc5ac0316e"
+    ],
+    "test": {
+      "path": "backend/src/services/semantic-authoring/conformance.test.ts",
+      "ref": "verification/semantic-recovery-conformance-bounded-20261008"
+    },
+    "secondsSinceStart": 633.968,
+    "revision": 2,
+    "supersedesPublishedSeal": null
+  },
+  {
+    "key": "old:5f18aade0fd2fff56038e1843a2a3bed6a65badb61a6ef9b81d233d58ad40f8a",
+    "ref": "all-tests-20261008/current-source-closure/verification/pacing-representation-bounded-20261008",
+    "sealId": "fdd4fe8dbb1eb6a6a2147a8f8ead922bec26c27cc9baa2d679073c118b90052e",
+    "path": "packages/shared/src/battle-pacing.test.ts",
+    "sourceSha256": "5b519c93b9ef326c4fd7bb06d2de8c81b393b50074c076a6183f205d1b979d4b",
+    "oldSealId": "5f18aade0fd2fff56038e1843a2a3bed6a65badb61a6ef9b81d233d58ad40f8a",
+    "causeSealIds": [
+      "45867c376e614f18be8600a5de958d96a558c004bdb0f6ab5e7a000f2108a3a6",
+      "a57779fc6443060aee6060594b90f36a551a6fbc99c0f02f966ecfe51a305e48",
+      "e311d707c12cfb215fe5cfa95146d3fac9348a3f41831b9fd8b45413c9179c71",
+      "e676ee381274b950bd749e3ca0f4fb88373406e27ac135c8d1063a724ee336ae"
+    ],
+    "test": {
+      "path": "packages/shared/src/battle-pacing.test.ts",
+      "ref": "verification/pacing-representation-bounded-20261008"
+    },
+    "secondsSinceStart": 653.984,
+    "revision": 2,
+    "supersedesPublishedSeal": null
+  },
+  {
+    "key": "old:7ab8e356ad69e65c8406fac4a705162de3bb61318659704a53587171dc79562f",
+    "ref": "all-tests-20261008/current-source-closure/all-tests-20261007/implementation-local-authentication-persistence",
+    "sealId": "fa3c1e3c5219c2c43d506b6cdd4d8894565b1dd68cc320c9884e6b6f2634d8a2",
+    "path": "backend/src/auth.ts",
+    "sourceSha256": "497c87571118b8d64709a90f9fbca77eca6c931402ab7115cbf983f0ec510256",
+    "oldSealId": "7ab8e356ad69e65c8406fac4a705162de3bb61318659704a53587171dc79562f",
+    "causeSealIds": [
+      "203e66fc4e30772adab026012c67f1b1ac4ca86ad2ada11b501c639a27a19eac",
+      "4a05101157f3a8fa9052798bad9cc7739deeb9e92d9e304c746d1d7e92d4bb4f",
+      "8c72d6d55a0336c244414d1226e7406bd88bdc8d4f698cb7978f7575ebd603f2",
+      "5631092bae316bdb959257d52a7574e37e698c5d4cce21accdf019c0cea315ea",
+      "9e67de0be989263248c519ae8e5f32e6b59c6cdd11331447a10bee2515630b58",
+      "58c5393b721f25cdaa2f359a998d6f3029b796eeaac1b8dbf621791da64a600f",
+      "fd54b4d54a1d9ef5fb2cd6121eafaf925a5501ae5986b7745f29d5cc20635007"
+    ],
+    "test": null,
+    "secondsSinceStart": 688.029,
+    "revision": 2,
+    "supersedesPublishedSeal": null
+  },
+  {
+    "key": "old:6297c6a43cc8a45dd261fc6b40bfb6cb909c0e6def9505e844b4f7da6ad6bf72",
+    "ref": "all-tests-20261008/current-source-closure/verification/authentication-persistence-current-20261007",
+    "sealId": "d93b78dcf717f58f5cbec8838231558d6ba45c7011f29ccbf3e193d97147e77b",
+    "path": "backend/src/auth.test.ts",
+    "sourceSha256": "12c0393c51f4af35c0abdcc1a0d6866982fabc8712a5a75ac22a553b12b87224",
+    "oldSealId": "6297c6a43cc8a45dd261fc6b40bfb6cb909c0e6def9505e844b4f7da6ad6bf72",
+    "causeSealIds": [
+      "203e66fc4e30772adab026012c67f1b1ac4ca86ad2ada11b501c639a27a19eac",
+      "4a05101157f3a8fa9052798bad9cc7739deeb9e92d9e304c746d1d7e92d4bb4f",
+      "fa3c1e3c5219c2c43d506b6cdd4d8894565b1dd68cc320c9884e6b6f2634d8a2",
+      "8c72d6d55a0336c244414d1226e7406bd88bdc8d4f698cb7978f7575ebd603f2",
+      "5631092bae316bdb959257d52a7574e37e698c5d4cce21accdf019c0cea315ea",
+      "58c5393b721f25cdaa2f359a998d6f3029b796eeaac1b8dbf621791da64a600f"
+    ],
+    "test": {
+      "path": "backend/src/auth.test.ts",
+      "ref": "verification/authentication-persistence-current-20261007"
+    },
+    "secondsSinceStart": 716.808,
+    "revision": 2,
+    "supersedesPublishedSeal": null
+  },
+  {
+    "key": "old:66ba4b137b0a653e02487d93b3afc2ed991d194839f6654de5f8df7dc2ef0032",
+    "ref": "all-tests-20261008/current-source-closure/verification/provider-json-accounting-20261007",
+    "sealId": "247e70549fbf78fbb98d4f6b932c6149c31e08d3bc17392049bb64b416abac82",
+    "path": "backend/src/llm/provider-json.test.ts",
+    "sourceSha256": "56eeca3caa87e99bdf8ed94ff9ecb90d9786e4b5835a7f570b01847831afecdf",
+    "oldSealId": "66ba4b137b0a653e02487d93b3afc2ed991d194839f6654de5f8df7dc2ef0032",
+    "causeSealIds": [
+      "2c6888e9d07a676d4b429b041b241e1631845b18fac4fb4cda280a4a29670d50",
+      "ba5fb9843c5fdd1bd37539f05885dd39fc2089e0b89d3333f166b77d6fbab302",
+      "4a236b55e9ad9e4aa54eb2c6bbe9d77e0a318881ba8328363505153d16e151dd",
+      "7cfd32e06c7f96617d0f1bad6b08e849074caab508917efd394b920e84577547",
+      "853199e46ca7c4a69af8b43b20dc9b72e36b20bd3dda7620eac482be6a3c716d",
+      "8c5c86d6669841955ae7ddca134e76d66c91a983e6364535405f7546b73972c3",
+      "a1947c2099a22ca104da4ddba1a9c4ef660cee388accd7946e8511e3d7cf3f56",
+      "f37d62dd130cf26f48ced720565c4fad035b93a3f3ad1c3e98943cdc9bf585d1"
+    ],
+    "test": {
+      "path": "backend/src/llm/provider-json.test.ts",
+      "ref": "verification/provider-json-accounting-20261007"
+    },
+    "secondsSinceStart": 755.395,
+    "revision": 2,
+    "supersedesPublishedSeal": null
+  },
+  {
+    "key": "old:e82f2436ea3107d7e9ea91589511117998ec8cf02078c043d1a172eb94e5f4b3",
+    "ref": "all-tests-20261008/current-source-closure/all-tests-20261007/implementation-stable-area-ready-binding",
+    "sealId": "0418ee86e56d7dda1caf1a7b9957c4c0b5f1800e2731ca5dc66bc674f5cfeafa",
+    "path": "backend/src/services/battle-service.ts",
+    "sourceSha256": "b1cb72011a0b1c40872b4d56da313d4a01504a8e2a860dd96b087b2e7b712af1",
+    "oldSealId": "e82f2436ea3107d7e9ea91589511117998ec8cf02078c043d1a172eb94e5f4b3",
+    "causeSealIds": [
+      "9972c0fc948d4865b9992bcc97a55f05cebcd209299fa8fe0f3a6cd1bd474776",
+      "26916ae4693e54229a5216d76cc3238ed27649f3a678588e14f28ac9a975c515",
+      "9a63b5e031f3ca89944c74ec4b3034ca95fe12921f7c628b68beb9a9b4dcec76",
+      "a65c9b0a1bf9589c18778e7cf7ca7985d7ccde11c3a36c7e0b5db5874f34c7b8",
+      "b4c3e3bc530e4707194dbdbebead357c1ba366ce7e24ab1f4a8b5440b6686459",
+      "02d3c712bda7158178b2a1a113fe6ec32112c8a7fa207c488c2ab40a1fe3f927"
+    ],
+    "test": null,
+    "secondsSinceStart": 783.055,
+    "revision": 2,
+    "supersedesPublishedSeal": null
+  },
+  {
+    "key": "old:b2e522e260e6fa48f6205c9facb8370981a6a95745318f207ef1d8ff4a61efb4",
+    "ref": "all-tests-20261008/current-source-closure/all-tests-20261007/implementation-stable-area-authoring-http",
+    "sealId": "2906c4437af858167b030ff78062bccb1d7b8726160ccb8c7fc52c85b34c918b",
+    "path": "backend/src/routes.ts",
+    "sourceSha256": "ec2500cac883a552bc4527b1878c16029cfab3160b2402b34a4e10219fbeee71",
+    "oldSealId": "b2e522e260e6fa48f6205c9facb8370981a6a95745318f207ef1d8ff4a61efb4",
+    "causeSealIds": [
+      "08e378322bfc5c7d21c1df48e50b51713fdf7cc429f0e2229de8ff2eba6bd8fb",
+      "7a8b93dcb2e8101713ce91646b5d4fd4221f80a15a43f69d70a800a764ae89fc",
+      "811d0305e67ce73b5902135bb8662e7ee31e6efaf98852b0ad5de8d1f0c15007",
+      "9a63b5e031f3ca89944c74ec4b3034ca95fe12921f7c628b68beb9a9b4dcec76",
+      "b4c3e3bc530e4707194dbdbebead357c1ba366ce7e24ab1f4a8b5440b6686459",
+      "b5d994be6d213058541cb20240ae3e13ae9db1d0bd44df1a4961c738f21077e8",
+      "b6f48bb19b9fc3a71a5c0dd0371df7841f1f4bf52f0c80fe63136be3966bcce5",
+      "c6ae9384dbe1557c3adb9d94530a4ce2e5f3e025c14cca05f418fd9879f1745c",
+      "0418ee86e56d7dda1caf1a7b9957c4c0b5f1800e2731ca5dc66bc674f5cfeafa",
+      "b0b10edb4decc344c95818f528118116814e1d978393829ab0e6dcb284582695",
+      "911161c0cfda1614e3cf7f2dab13417a37c2b4e37657c8bb5b2161f92113bfeb"
+    ],
+    "test": null,
+    "secondsSinceStart": 825.729,
+    "revision": 2,
+    "supersedesPublishedSeal": null
+  },
+  {
+    "key": "old:67fb7d4ddcae06450cbad5d2476ddf7ea178afca7b19e247eef6c8db19e36739",
+    "ref": "all-tests-20261008/current-source-closure/verification/stable-area-narration-http-acceptance-20261007",
+    "sealId": "8eb7717a043685f867c025ac36fb51dc2e5a0075b47663e4c9ae3cd205dd6f51",
+    "path": "backend/src/routes-structured-narration-acceptance.test.ts",
+    "sourceSha256": "6f29961ea9996842bf7b28421491c8b002efb56b40d44242c7316ff43707d385",
+    "oldSealId": "67fb7d4ddcae06450cbad5d2476ddf7ea178afca7b19e247eef6c8db19e36739",
+    "causeSealIds": [
+      "7a8b93dcb2e8101713ce91646b5d4fd4221f80a15a43f69d70a800a764ae89fc",
+      "99d524e2b186eb8f55db50eeb1e088bd4191f094ab72f19cb337a8deb262c609",
+      "9a63b5e031f3ca89944c74ec4b3034ca95fe12921f7c628b68beb9a9b4dcec76",
+      "2906c4437af858167b030ff78062bccb1d7b8726160ccb8c7fc52c85b34c918b",
+      "b5d994be6d213058541cb20240ae3e13ae9db1d0bd44df1a4961c738f21077e8",
+      "0418ee86e56d7dda1caf1a7b9957c4c0b5f1800e2731ca5dc66bc674f5cfeafa"
+    ],
+    "test": {
+      "path": "backend/src/routes-structured-narration-acceptance.test.ts",
+      "ref": "verification/stable-area-narration-http-acceptance-20261007"
+    },
+    "secondsSinceStart": 847.55,
+    "revision": 2,
+    "supersedesPublishedSeal": null
+  },
+  {
+    "key": "old:6d13151cbf3a36368cc65085413161fb2ca63a2a940ac2328c67471ccc4928bd",
+    "ref": "all-tests-20261008/current-source-closure/verification/character-authoring-a2-freeze-bounded-20261008",
+    "sealId": "a3b244b097bf99bf25189142f52f354141acfcd3311edb6d2796f2305949728d",
+    "path": "backend/src/scripts/character-authoring-a2-freeze.test.ts",
+    "sourceSha256": "0e4bdd3c7bb781b9b5d3a55dd5fd8cdc9efb90c8eff2ad557ce4e08f26402180",
+    "oldSealId": "6d13151cbf3a36368cc65085413161fb2ca63a2a940ac2328c67471ccc4928bd",
+    "causeSealIds": [
+      "71dfdfbda409fdf7a71786f919130d7d6ca502156f2fc05404d21b0b2a2dedaa",
+      "f44e1e324e4106c510863a8af563cce4a7a06bf76e61f271bd54fba33d067bd4"
+    ],
+    "test": {
+      "path": "backend/src/scripts/character-authoring-a2-freeze.test.ts",
+      "ref": "verification/character-authoring-a2-freeze-bounded-20261008"
+    },
+    "secondsSinceStart": 857.206,
+    "revision": 2,
+    "supersedesPublishedSeal": null
+  },
+  {
+    "key": "old:aa08f46a5ae70bccacc4b43e1621aaf341a26c873111dd15b6ee091836cdf3a2",
+    "ref": "all-tests-20261008/current-source-closure/all-tests-20261007/implementation-sdk-awareness-adjudication-result",
+    "sealId": "58a7d6c20b9045b8db37a79dd619b1999664b6024d443be21f75bf4dda60ceb0",
+    "path": "backend/src/llm/openai-compatible.ts",
+    "sourceSha256": "75fdc50d0ff5550712fc50e967f7880950aad035fbab87fa40f2b5d9d0d6daaa",
+    "oldSealId": "aa08f46a5ae70bccacc4b43e1621aaf341a26c873111dd15b6ee091836cdf3a2",
+    "causeSealIds": [
+      "645edd45396d6adfa94cbdc369cd999ebadf30fb6f22108e8e91dd9387c6503b",
+      "2c6888e9d07a676d4b429b041b241e1631845b18fac4fb4cda280a4a29670d50",
+      "4f58829cb7484d0427f8419361af8b256803343e007acdd361ba4f5b0bead046",
+      "b872fc34e9268f23ed69589e254cbcee22c49e0711f41598d3dcdff5b349475a",
+      "e7e672e9013c6c48a2ab3116c0db1e53821221f4ca09ec5048e7cb781adf3945"
+    ],
+    "test": null,
+    "secondsSinceStart": 873.825,
+    "revision": 2,
+    "supersedesPublishedSeal": null
+  },
+  {
+    "key": "old:6d6e0ceb41bec054864136538c5964cc4ab61c11a4f1c0f4ea9cf19b0314fcec",
+    "ref": "all-tests-20261008/current-source-closure/verification/awareness-adjudication-result-20261007",
+    "sealId": "3e99dd5c4f65a5a8f0af5c56822c3fda9497f4d8fe1ad70efcc97abf3703c82c",
+    "path": "backend/src/llm/awareness-adjudication-result.test.ts",
+    "sourceSha256": "c8b7b4f7ad6589ec1c73a2d3162009639ab999744f88582beb9a85b833db2de2",
+    "oldSealId": "6d6e0ceb41bec054864136538c5964cc4ab61c11a4f1c0f4ea9cf19b0314fcec",
+    "causeSealIds": [
+      "2c6888e9d07a676d4b429b041b241e1631845b18fac4fb4cda280a4a29670d50",
+      "4f58829cb7484d0427f8419361af8b256803343e007acdd361ba4f5b0bead046",
+      "58a7d6c20b9045b8db37a79dd619b1999664b6024d443be21f75bf4dda60ceb0"
+    ],
+    "test": {
+      "path": "backend/src/llm/awareness-adjudication-result.test.ts",
+      "ref": "verification/awareness-adjudication-result-20261007"
+    },
+    "secondsSinceStart": 885.997,
+    "revision": 2,
+    "supersedesPublishedSeal": null
+  },
+  {
+    "key": "old:714fcabc08db2375c192b3e46b9a8c842897f7eeb63401d9bb0295e3f195cecf",
+    "ref": "all-tests-20261008/current-source-closure/implementation/cc304-focused-revise-route-current-20260925",
+    "sealId": "e6e7e1bbbf82ccddf281aea8a4a7274acaf2b49e930024195ca14e8cf196ed71",
+    "path": "backend/src/routes.ts",
+    "sourceSha256": "ec2500cac883a552bc4527b1878c16029cfab3160b2402b34a4e10219fbeee71",
+    "oldSealId": "714fcabc08db2375c192b3e46b9a8c842897f7eeb63401d9bb0295e3f195cecf",
+    "causeSealIds": [
+      "0fdaa008d974122964d82e435083020ce109467a48406e6dfac85b777e4af174",
+      "137fb216bdd17be1b005ed6ec66c949dceed3b262a93daedc66a512128db5a1a",
+      "259189536d954a68eedc73cc443fa2d348f2e721a9d90e4eaf88ea7b917a862a",
+      "3876d51b894a8abba151da704d76efb5c092c1dddb2e609b5ef9d4a45bbd9986",
+      "9c6282d8a555cfbdc81294604903dab66a9fe63080b6eaf0793935a544e8c41a",
+      "bfa742a7c40087467d93bc881794b8852173975eeddb9292fa0694fd495c4307",
+      "b0b10edb4decc344c95818f528118116814e1d978393829ab0e6dcb284582695",
+      "911161c0cfda1614e3cf7f2dab13417a37c2b4e37657c8bb5b2161f92113bfeb"
+    ],
+    "test": null,
+    "secondsSinceStart": 910.014,
+    "revision": 2,
+    "supersedesPublishedSeal": null
+  },
+  {
+    "key": "old:73fb22d5bbbe5c6d5633e57b7ba31e1d7207b6f9e0e95fae8c0fc1455a23caa4",
+    "ref": "all-tests-20261008/current-source-closure/all-tests-20261008/implementation-boundary-probe-launcher",
+    "sealId": "32946037efd7493ab502767e5437f106f9167bbfb63bf430d1aef3e6db2e94c6",
+    "path": "backend/src/testing/replay-semantic-migration.ts",
+    "sourceSha256": "860dcecc7312f4e5352238182e518ef7c4650074dfbe2f8a92201f425afc4d79",
+    "oldSealId": "73fb22d5bbbe5c6d5633e57b7ba31e1d7207b6f9e0e95fae8c0fc1455a23caa4",
+    "causeSealIds": [
+      "1e2cd86ec390bc138764694edb3c115c85c2922dccbd5d7e571350666f5757bc",
+      "90676e41a7e0dd5ff58d7960703f8a2c37c787ba87c9f58ce9e9fc6b1b2e42ef"
+    ],
+    "test": null,
+    "secondsSinceStart": 918.946,
+    "revision": 2,
+    "supersedesPublishedSeal": null
+  },
+  {
+    "key": "old:871b4b46e531e367409a529704c6b64bb1d041a22d3643fb0f6da4705473c1dc",
+    "ref": "all-tests-20261008/current-source-closure/all-tests-20261007/implementation-current-narration-builder-contracts",
+    "sealId": "0eb0fd17b84821fe7a099d9c49001e726bc1e8f1d2ca931f56b43b9389826a5f",
+    "path": "backend/src/llm/openai-compatible.ts",
+    "sourceSha256": "75fdc50d0ff5550712fc50e967f7880950aad035fbab87fa40f2b5d9d0d6daaa",
+    "oldSealId": "871b4b46e531e367409a529704c6b64bb1d041a22d3643fb0f6da4705473c1dc",
+    "causeSealIds": [
+      "2c6888e9d07a676d4b429b041b241e1631845b18fac4fb4cda280a4a29670d50",
+      "38dddd1b1aa02f0968cbe7284d8bd3507a5d34a5ef9cdbf9ba95cf230b1be8eb",
+      "f457c669375c1681fdf7277a8abd6f7e05848f33abb595d21df018b75b78866d",
+      "e7e672e9013c6c48a2ab3116c0db1e53821221f4ca09ec5048e7cb781adf3945"
+    ],
+    "test": null,
+    "secondsSinceStart": 934.518,
+    "revision": 2,
+    "supersedesPublishedSeal": null
+  }
+]

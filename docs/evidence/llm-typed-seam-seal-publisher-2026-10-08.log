@@ -1,0 +1,12 @@
+sealed all-tests-20261008/authority-agency-typed-seam
+sealed all-tests-20261008/authority-profile-typed-seam
+sealed all-tests-20261008/design-agent-typed-seam
+sealed all-tests-20261008/implementation-agent-typed-seam
+sealed verification/agent-typed-seam-bounded-20261008
+sealed all-tests-20261008/design-perception-typed-seam
+sealed all-tests-20261008/implementation-perception-typed-seam
+sealed verification/perception-typed-seam-bounded-20261008
+sealed all-tests-20261008/design-routing-typed-seam
+sealed all-tests-20261008/implementation-routing-typed-seam
+sealed verification/routing-typed-seam-bounded-20261008
+readback complete

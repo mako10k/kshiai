@@ -1,0 +1,42 @@
+{
+  "schema": "kshiai/provider-accounting-type-repair/v1",
+  "goalComplete": false,
+  "diagnostic": {
+    "files": 2,
+    "tests": 15,
+    "passed": 15,
+    "failed": 0,
+    "skipped": 0,
+    "strictTypecheckExit": 0
+  },
+  "changes": [
+    "Replace private SDK client as unknown as override with a typed subclass and mocked HTTP installed before SDK construction",
+    "Parse permit-state and SQLite column readback using Zod instead of unchecked casts"
+  ],
+  "preserved": [
+    "All twelve accounting test cases remain",
+    "Application retry observed as two actual mocked SDK sends; physical failure/success receipts remain distinct",
+    "No production provider, database, cutover control or runtime source changed"
+  ],
+  "sourceHashes": {
+    "backend/src/llm/provider-accounting.test.ts": "3dd86e2bcfb7ac70ffd8581d52d8cbfa88cefb16915436456a7dd6182b3ac793",
+    "backend/src/llm/provider-accounting.ts": "5c5465b99ed5c58b7dbbe92691c8dda51466bcd0b04a66d838e7fd52b2353181",
+    "backend/src/services/cutover-admission.ts": "d716a314bdf0f8072aa7ca1ee6ad99fbfe6b31b2cdddfe639713a889a4ab7701",
+    "backend/src/repositories/cutover-control.ts": "74a4f851bbcd72e19cec6e894529ea12262f040d260c8d7c5ce9ca062b14d30c",
+    "backend/src/llm/provider-operation-taxonomy.ts": "c418e9f1fe00ae6fe5180d79c9174b3236c448ae824c05501f63146f47ec47a4",
+    "backend/src/llm/openai-compatible.ts": "8d4be097ddbfcb0da515dd0db402c7dc6dddccb763d625fce16165e7c524d2a5"
+  },
+  "authorityReadback": {
+    "cutover": "Accepted ADR0040 plus accepted linked design: closed fence and operation-accounting/indeterminate transitions",
+    "observation": "Accepted ADR0057: current operation classification and immutable historical ledger identity",
+    "usage": "Accepted ADR0051: physical usage, unknown categories and durable accounting",
+    "notAuthority": "ADR0019 remains Proposed and is not used to authorize budget behavior"
+  },
+  "sealGap": {
+    "existingTestRef": "verification/vt104-provider-accounting-20260930",
+    "existingImplementationRef": "implementation/vt104-cutover-control-local-20260930",
+    "existingImplementationSeal": "24b2f5a035a699c2e2236ef6d901f0dc6c554b9075d99627195be79a3fc328ce",
+    "observation": "Existing implementation is an unbound 80709-byte multi-file snapshot, not a source-bound current readback",
+    "requiredNextAction": "Review all twelve case contracts and bind current individual admission, control repository, accounting and SDK sources; preserve old graph history; replace one inventory binding only after complete current Cause review"
+  }
+}

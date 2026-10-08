@@ -1,0 +1,7 @@
+sealed all-tests-20261008/design-battle-causality-bounded
+sealed all-tests-20261008/implementation-battle-causality-bounded
+sealed verification/battle-causality-bounded-20261008
+sealed all-tests-20261008/design-battle-effects-bounded
+sealed all-tests-20261008/implementation-battle-effects-bounded
+sealed verification/battle-effects-bounded-20261008
+readback complete

@@ -1,0 +1,40 @@
+{
+  "scope": "Four retired-builder rejection cases plus adjustment parser; legacy import helpers not claimed",
+  "entries": [
+    {
+      "ref": "all-tests-20261007/authority-v3-writes",
+      "path": "docs/adr/0043-v3-character-updates-with-historical-v2-display.md",
+      "sealId": "480c02403f61dc6a9cd7d54861639b962dbc3bde86673481e02e0defc8415e17",
+      "sha256": "d9e93ca090771b38167e0c2d0189ec792cbf88d807a85272097f9a7cb5f82a44",
+      "causeSealIds": [
+        "a1c688a46b255e61a935098665e31e0e6f368cc259b72b0b81d87a4ec1552c3a"
+      ]
+    },
+    {
+      "ref": "all-tests-20261007/implementation-retired-character-authoring",
+      "path": "backend/src/services/character-authoring-service.ts",
+      "sealId": "fe98078e33db80587a9694804807184024b6fe2f27f281eb74f92c8353e6e998",
+      "sha256": "6b5cc4aa7cfb26064de0439883da515d0172cf95cc4a631ab9709db8577cdfd0",
+      "causeSealIds": [
+        "480c02403f61dc6a9cd7d54861639b962dbc3bde86673481e02e0defc8415e17"
+      ]
+    },
+    {
+      "ref": "verification/retired-character-authoring-20261007",
+      "path": "backend/src/services/character-authoring-service.test.ts",
+      "sealId": "a1dbfceecc9981e91c75cbb07700039a7f519ccd2be5116f73070231f422b701",
+      "sha256": "9c18e623b611d9c9b90feab095fcf689eb07c90ac935749f32c19ec6bb91a1de",
+      "causeSealIds": [
+        "480c02403f61dc6a9cd7d54861639b962dbc3bde86673481e02e0defc8415e17",
+        "fe98078e33db80587a9694804807184024b6fe2f27f281eb74f92c8353e6e998"
+      ]
+    }
+  ],
+  "existingUpstreamSeals": [
+    {
+      "ref": "decision/character-v3-write-boundary-20261002",
+      "path": "docs/adr/0043-v3-character-updates-with-historical-v2-display.think",
+      "sealId": "a1c688a46b255e61a935098665e31e0e6f368cc259b72b0b81d87a4ec1552c3a"
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "newRefs": 3,
+  "previousHeadsUnchanged": true,
+  "previousHeadCount": 1050,
+  "totalRefs": 1053,
+  "sourceBytesMatch": true,
+  "stale": 0,
+  "fsck": "ok",
+  "limitations": [
+    "Only two original runtime-directory cases",
+    "Not full object tree comparison",
+    "Full251 goal incomplete"
+  ]
+}

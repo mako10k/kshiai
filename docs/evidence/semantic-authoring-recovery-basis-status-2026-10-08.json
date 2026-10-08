@@ -1,0 +1,126 @@
+{
+  "foundation": {
+    "ref": "requirement/structured-semantic-foundation-v3-accepted-snapshot",
+    "head_seal_id": "2a779ad74cb7e11bbc803024ea90c3ba6fc8ec57a0c6701b441a449a9440587a",
+    "candidate_to_head": "NO_CANDIDATE",
+    "draft": false,
+    "stale": {
+      "self": false,
+      "direct_target_seal_ids": [],
+      "transitive_paths": []
+    },
+    "sealed_state_labels": [
+      "SEALED_STATE_CLEAN"
+    ],
+    "local_source": null
+  },
+  "foundationReceipt": {
+    "ref": "acceptance/structured-semantic-foundation-v3-owner-decision",
+    "head_seal_id": "d53bc670bd6f0889a13f229a2f7583e2d76f5acb4fe7fd43a6391827355a657d",
+    "candidate_to_head": "NO_CANDIDATE",
+    "draft": false,
+    "stale": {
+      "self": false,
+      "direct_target_seal_ids": [],
+      "transitive_paths": []
+    },
+    "sealed_state_labels": [
+      "SEALED_STATE_CLEAN"
+    ],
+    "local_source": null
+  },
+  "character": {
+    "ref": "requirement/character-v3-authoring-v5-accepted-snapshot",
+    "head_seal_id": "3942057ff54a50c9ba7330f8069242d637aa62302b067be0d9796198f1932f01",
+    "candidate_to_head": "NO_CANDIDATE",
+    "draft": false,
+    "stale": {
+      "self": false,
+      "direct_target_seal_ids": [],
+      "transitive_paths": []
+    },
+    "sealed_state_labels": [
+      "SEALED_STATE_CLEAN"
+    ],
+    "local_source": null
+  },
+  "characterReceipt": {
+    "ref": "acceptance/character-v3-authoring-v5-current",
+    "head_seal_id": "d4827ddffae7ca5d6680c5fa0eb062295ed2f1be377e639f215eda930179c7fd",
+    "candidate_to_head": "NO_CANDIDATE",
+    "draft": false,
+    "stale": {
+      "self": false,
+      "direct_target_seal_ids": [],
+      "transitive_paths": []
+    },
+    "sealed_state_labels": [
+      "SEALED_STATE_CLEAN"
+    ],
+    "local_source": null
+  },
+  "design": {
+    "ref": "design/structured-semantic-authoring-kernel-v1-current",
+    "head_seal_id": "9664f17a979e36b650a466d62ba17e62a9e8962cdc36a123d67857f7f9702bf1",
+    "candidate_to_head": "NO_CANDIDATE",
+    "draft": false,
+    "stale": {
+      "self": false,
+      "direct_target_seal_ids": [],
+      "transitive_paths": []
+    },
+    "sealed_state_labels": [
+      "SEALED_STATE_CLEAN"
+    ],
+    "local_source": null
+  },
+  "time": {
+    "ref": "acceptance/adr-0032-current",
+    "head_seal_id": "996c4d1144c9bdac462d595a9baf46e8ed29548e8044b0131e67ad940bc6b66b",
+    "candidate_to_head": "NO_CANDIDATE",
+    "draft": false,
+    "stale": {
+      "self": false,
+      "direct_target_seal_ids": [],
+      "transitive_paths": []
+    },
+    "sealed_state_labels": [
+      "SEALED_STATE_CLEAN"
+    ],
+    "local_source": null
+  },
+  "configuration": {
+    "ref": "acceptance/adr-0033-current",
+    "head_seal_id": "52ac744769e34ae6b7998d4bfc40fed48543f3aa9b51192a8dd51175aec23972",
+    "candidate_to_head": "NO_CANDIDATE",
+    "draft": false,
+    "stale": {
+      "self": false,
+      "direct_target_seal_ids": [],
+      "transitive_paths": []
+    },
+    "sealed_state_labels": [
+      "SEALED_STATE_CLEAN"
+    ],
+    "local_source": null
+  },
+  "migration": {
+    "ref": "all-tests-20261007/authority-migration-operation-wire",
+    "head_seal_id": "2fb9650ddebe867a978634fea432e65d0611085c8cb823c36a6d6f3f5eaa2962",
+    "candidate_to_head": "NO_CANDIDATE",
+    "draft": false,
+    "stale": {
+      "self": false,
+      "direct_target_seal_ids": [],
+      "transitive_paths": []
+    },
+    "sealed_state_labels": [
+      "SEALED_STATE_CLEAN"
+    ],
+    "local_source": {
+      "path": "docs/adr/0030-llm-assisted-character-semantic-migration.think",
+      "baseline": "HEAD",
+      "relation": "WORKFILE_MATCHES_HEAD"
+    }
+  }
+}

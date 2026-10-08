@@ -6,6 +6,7 @@ import { join } from "node:path";
 import { it } from "node:test";
 import { BattleStateSchema, CharacterGenerationEnvelopeV3Schema, compileCharacterBattleCompilerInputsV4,
   AwarenessLatentOutputSchema, AwarenessConsciousOutputSchema, AwarenessFrozenNarrationSchema } from "@kshiai/shared";
+import type { AwarenessCharacterState } from "@kshiai/shared";
 import type { AwarenessProviderRoles } from "../llm/awareness-provider-factory.js";
 import type { AwarenessVerifiedBillingContract } from "../llm/awareness-dispatch-admission.js";
 import type { LlmProvider } from "../llm/types.js";
@@ -141,7 +142,7 @@ it("public KO commits terminal combat and aftermath together without starting po
   assert.equal(runtime.runtime.status, "terminal");
   assert.ok(runtime.runtime.terminalAt !== null);
   for (const side of ["a", "b"] as const) {
-    const subjective = runtime.runtime.sides[side];
+    const subjective: AwarenessCharacterState = runtime.runtime.sides[side];
     assert.equal(subjective.job?.status, "cancelled");
     assert.ok(subjective.generation > (subjective.job?.generation ?? -1));
   }

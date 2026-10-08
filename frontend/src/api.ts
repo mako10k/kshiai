@@ -21,6 +21,7 @@ import type {
   NarrationStylePublic,
   NarrationDefinitionV2,
   UserPublic,
+  SemanticAuthoringAcceptedV1,
 } from "@kshiai/shared";
 import { authenticatedFetch } from "./authenticated-fetch";
 import { supabase } from "./supabase";
@@ -570,16 +571,11 @@ export const api = {
         body: JSON.stringify({ prompt }),
       },
     ),
-  chatCharacterDraft: (id: string, message: string) =>
-    request<{
-      draft: {
-        id: string;
-        character: CharacterPublic;
-        assistantMessage: string;
-      };
-    }>(`/api/character-drafts/${id}/chat`, {
+  chatCharacterDraft: (id: string, message: string, candidateDigest: string) =>
+    request<SemanticAuthoringAcceptedV1>(`/api/character-drafts/${id}/chat`, {
       method: "POST",
-      body: JSON.stringify({ message }),
+      headers: { "Idempotency-Key": crypto.randomUUID() },
+      body: JSON.stringify({ message, candidateDigest }),
     }),
   latestCharacterDraft: () =>
     request<{

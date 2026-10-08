@@ -1,5 +1,5 @@
 domain ADR0034:
-  description "ADR-0034 revision 1: Seal-based current test authority. Status Accepted."
+  description "ADR-0034 revision 1: Seal-based current test authority. Status Superseded by ADR0058; original acceptance and rationale retained."
 
 problem P1:
   |

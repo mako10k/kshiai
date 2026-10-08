@@ -1,0 +1,296 @@
+TAP version 13
+# [battle] side A deep psyche retained prior state Error: timeout:advanceCharacterPsyche:20000ms
+#     at MockLlmProvider.provider.advanceCharacterPsyche (/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/battle-speech-wiring.test.ts:924:13)
+#     at advanceCharacterAgents (/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/battle-service.ts:2399:32)
+#     at TestContext.<anonymous> (/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/battle-speech-wiring.test.ts:927:26)
+#     at Test.runInAsyncScope (node:async_hooks:214:14)
+#     at Test.run (node:internal/test_runner/test:1047:25)
+#     at Suite.processPendingSubtests (node:internal/test_runner/test:744:18)
+#     at Test.postRun (node:internal/test_runner/test:1173:19)
+#     at Test.run (node:internal/test_runner/test:1101:12)
+#     at async Suite.processPendingSubtests (node:internal/test_runner/test:744:7)
+# [battle] side B deep psyche retained prior state Error: timeout:advanceCharacterPsyche:20000ms
+#     at MockLlmProvider.provider.advanceCharacterPsyche (/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/battle-speech-wiring.test.ts:924:13)
+#     at advanceCharacterAgents (/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/battle-service.ts:2400:32)
+#     at TestContext.<anonymous> (/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/battle-speech-wiring.test.ts:927:26)
+#     at Test.runInAsyncScope (node:async_hooks:214:14)
+#     at Test.run (node:internal/test_runner/test:1047:25)
+#     at Suite.processPendingSubtests (node:internal/test_runner/test:744:18)
+#     at Test.postRun (node:internal/test_runner/test:1173:19)
+#     at Test.run (node:internal/test_runner/test:1101:12)
+#     at async Suite.processPendingSubtests (node:internal/test_runner/test:744:7)
+# [battle] side A deep psyche retained prior state LlmApplicationResultError: LLM_APPLICATION_RESULT_SCHEMA_INVALID:delta.interior.speechAppraisal:invalid_type
+#     at MockLlmProvider.provider.advanceCharacterPsyche (/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/battle-speech-wiring.test.ts:964:13)
+#     at advanceCharacterAgents (/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/battle-service.ts:2399:32)
+#     at TestContext.<anonymous> (/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/battle-speech-wiring.test.ts:970:26)
+#     at Test.runInAsyncScope (node:async_hooks:214:14)
+#     at Test.run (node:internal/test_runner/test:1047:25)
+#     at Suite.processPendingSubtests (node:internal/test_runner/test:744:18)
+#     at Test.postRun (node:internal/test_runner/test:1173:19)
+#     at Test.run (node:internal/test_runner/test:1101:12)
+#     at async Suite.processPendingSubtests (node:internal/test_runner/test:744:7) {
+#   reason: 'schema_invalid',
+#   detail: 'delta.interior.speechAppraisal:invalid_type'
+# }
+# [battle] side B deep psyche retained prior state LlmApplicationResultError: LLM_APPLICATION_RESULT_SCHEMA_INVALID:delta.interior.speechAppraisal:invalid_type
+#     at MockLlmProvider.provider.advanceCharacterPsyche (/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/battle-speech-wiring.test.ts:964:13)
+#     at advanceCharacterAgents (/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/battle-service.ts:2400:32)
+#     at TestContext.<anonymous> (/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/battle-speech-wiring.test.ts:970:26)
+#     at Test.runInAsyncScope (node:async_hooks:214:14)
+#     at Test.run (node:internal/test_runner/test:1047:25)
+#     at Suite.processPendingSubtests (node:internal/test_runner/test:744:18)
+#     at Test.postRun (node:internal/test_runner/test:1173:19)
+#     at Test.run (node:internal/test_runner/test:1101:12)
+#     at async Suite.processPendingSubtests (node:internal/test_runner/test:744:7) {
+#   reason: 'schema_invalid',
+#   detail: 'delta.interior.speechAppraisal:invalid_type'
+# }
+# [battle] semantic reconciliation skipped provider unavailable
+# [battle] committed expression projection rejected atomically [
+#   {
+#     "code": "custom",
+#     "path": [
+#       "observerSide"
+#     ],
+#     "message": "side A registry must use observer side a"
+#   }
+# ]
+# [llm] test-provider ready engine=test-engine fast=test-fast
+# Subtest: character-authored public speech
+    # Subtest: persists internal character-rule receipts outside provider input
+    ok 1 - persists internal character-rule receipts outside provider input
+      ---
+      duration_ms: 36.973948
+      type: 'test'
+      ...
+    # Subtest: runs only the selected isolated character context
+    ok 2 - runs only the selected isolated character context
+      ---
+      duration_ms: 13.944582
+      type: 'test'
+      ...
+    # Subtest: binds normal settings authority and isolated override provenance
+    ok 3 - binds normal settings authority and isolated override provenance
+      ---
+      duration_ms: 0.769965
+      type: 'test'
+      ...
+    # Subtest: persists narrator recognition only for subjects in the selected view
+    ok 4 - persists narrator recognition only for subjects in the selected view
+      ---
+      duration_ms: 6.11296
+      type: 'test'
+      ...
+    # Subtest: commits accepted character speech before narration and projects it to each frame
+    ok 5 - commits accepted character speech before narration and projects it to each frame
+      ---
+      duration_ms: 15.567219
+      type: 'test'
+      ...
+    # Subtest: commits a grounded manifestation only after the expression realizes it
+    ok 6 - commits a grounded manifestation only after the expression realizes it
+      ---
+      duration_ms: 16.280314
+      type: 'test'
+      ...
+    # Subtest: projects deterministic psyche and no-effect focus shadow without another model call
+    ok 7 - projects deterministic psyche and no-effect focus shadow without another model call
+      ---
+      duration_ms: 31.012291
+      type: 'test'
+      ...
+    # Subtest: separates V2 Compact state from consumed utterance history
+    ok 8 - separates V2 Compact state from consumed utterance history
+      ---
+      duration_ms: 15.685647
+      type: 'test'
+      ...
+    # Subtest: keeps matchup memory separate from compact battle-private memory
+    ok 9 - keeps matchup memory separate from compact battle-private memory
+      ---
+      duration_ms: 10.669674
+      type: 'test'
+      ...
+    # Subtest: clears inherited compact private memory when prologue psyche is unavailable
+    ok 10 - clears inherited compact private memory when prologue psyche is unavailable
+      ---
+      duration_ms: 31.240872
+      type: 'test'
+      ...
+    # Subtest: records deep-psyche schema rejection as an application defect
+    ok 11 - records deep-psyche schema rejection as an application defect
+      ---
+      duration_ms: 8.859748
+      type: 'test'
+      ...
+    # Subtest: records fulfilled speech with a rejected action as application rejection
+    ok 12 - records fulfilled speech with a rejected action as application rejection
+      ---
+      duration_ms: 9.097881
+      type: 'test'
+      ...
+    # Subtest: uses initial perception for prologue decisions and reaction-only aftermath
+    ok 13 - uses initial perception for prologue decisions and reaction-only aftermath
+      ---
+      duration_ms: 11.23062
+      type: 'test'
+      ...
+    # Subtest: applies the administrator history window only to character context
+    ok 14 - applies the administrator history window only to character context
+      ---
+      duration_ms: 8.024456
+      type: 'test'
+      ...
+    # Subtest: does not publish or remember an agent line that the world blocks
+    ok 15 - does not publish or remember an agent line that the world blocks
+      ---
+      duration_ms: 9.48385
+      type: 'test'
+      ...
+    # Subtest: continues the eligible side when the other side has no self-directed action
+    ok 16 - continues the eligible side when the other side has no self-directed action
+      ---
+      duration_ms: 9.971466
+      type: 'test'
+      ...
+    # Subtest: carries committed utterances into the next agent perception without a provider
+    ok 17 - carries committed utterances into the next agent perception without a provider
+      ---
+      duration_ms: 17.241242
+      type: 'test'
+      ...
+    # Subtest: keeps committed speech within the perception limit and continues from the current registry
+    ok 18 - keeps committed speech within the perception limit and continues from the current registry
+      ---
+      duration_ms: 7.656413
+      type: 'test'
+      ...
+    # Subtest: rejects expression commit atomically when current projection continuity is invalid
+    ok 19 - rejects expression commit atomically when current projection continuity is invalid
+      ---
+      duration_ms: 5.009049
+      type: 'test'
+      ...
+    # Subtest: keeps character facts authoritative while accepting placement and punctuation
+    ok 20 - keeps character facts authoritative while accepting placement and punctuation
+      ---
+      duration_ms: 0.817264
+      type: 'test'
+      ...
+    # Subtest: accepts narrator-authored display labels without changing canonical speech
+    ok 21 - accepts narrator-authored display labels without changing canonical speech
+      ---
+      duration_ms: 0.445657
+      type: 'test'
+      ...
+    # Subtest: keeps scene-grounded third-party speech without treating it as canonical A/B speech
+    ok 22 - keeps scene-grounded third-party speech without treating it as canonical A/B speech
+      ---
+      duration_ms: 0.322225
+      type: 'test'
+      ...
+    # Subtest: keeps actual speech in private continuity regardless of public rendering
+    ok 23 - keeps actual speech in private continuity regardless of public rendering
+      ---
+      duration_ms: 0.658724
+      type: 'test'
+      ...
+    # Subtest: accepts a V2 utterance while rejecting only its invalid action
+    ok 24 - accepts a V2 utterance while rejecting only its invalid action
+      ---
+      duration_ms: 0.322188
+      type: 'test'
+      ...
+    # Subtest: accepts actual speech but rejects an action outside the server list
+    ok 25 - accepts actual speech but rejects an action outside the server list
+      ---
+      duration_ms: 0.346674
+      type: 'test'
+      ...
+    # Subtest: records action proposal acceptance and targeted rejection reasons
+    ok 26 - records action proposal acceptance and targeted rejection reasons
+      ---
+      duration_ms: 0.927021
+      type: 'test'
+      ...
+    # Subtest: writes reflect analysis into battle-volatile memory only
+    ok 27 - writes reflect analysis into battle-volatile memory only
+      ---
+      duration_ms: 3.660232
+      type: 'test'
+      ...
+    # Subtest: keeps valid state and speech when an OpenAI-compatible action proposal is invalid
+    ok 28 - keeps valid state and speech when an OpenAI-compatible action proposal is invalid
+      ---
+      duration_ms: 6.551745
+      type: 'test'
+      ...
+    # Subtest: overrides contradictory continuity with canonical self names
+    ok 29 - overrides contradictory continuity with canonical self names
+      ---
+      duration_ms: 0.378916
+      type: 'test'
+      ...
+    # Subtest: bounds invalid or out-of-range narrator placement
+    ok 30 - bounds invalid or out-of-range narrator placement
+      ---
+      duration_ms: 0.228178
+      type: 'test'
+      ...
+    # Subtest: builds turn-limit input only from committed records
+    ok 31 - builds turn-limit input only from committed records
+      ---
+      duration_ms: 0.78686
+      type: 'test'
+      ...
+    # Subtest: persists one canonical adjudication independent of presentation inputs
+    ok 32 - persists one canonical adjudication independent of presentation inputs
+      ---
+      duration_ms: 5.825684
+      type: 'test'
+      ...
+    # Subtest: commits ordered combat and judgment receipts from frozen canonical facts
+    ok 33 - commits ordered combat and judgment receipts from frozen canonical facts
+      ---
+      duration_ms: 3.316031
+      type: 'test'
+      ...
+    # Subtest: projects only factor identity and discards raw adjudication prose
+    ok 34 - projects only factor identity and discards raw adjudication prose
+      ---
+      duration_ms: 0.894105
+      type: 'test'
+      ...
+    # Subtest: projects draw and inconsistent winner facts without exposing internals
+    ok 35 - projects draw and inconsistent winner facts without exposing internals
+      ---
+      duration_ms: 0.442612
+      type: 'test'
+      ...
+    # Subtest: keeps only the exact outcome immutable across narration styles
+    ok 36 - keeps only the exact outcome immutable across narration styles
+      ---
+      duration_ms: 0.303286
+      type: 'test'
+      ...
+    # Subtest: inserts one immutable aftermath result and rejects invented outcomes or speech
+    ok 37 - inserts one immutable aftermath result and rejects invented outcomes or speech
+      ---
+      duration_ms: 0.520868
+      type: 'test'
+      ...
+    1..37
+ok 1 - character-authored public speech
+  ---
+  duration_ms: 294.61053
+  type: 'suite'
+  ...
+1..1
+# tests 37
+# suites 1
+# pass 37
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 1082.284545

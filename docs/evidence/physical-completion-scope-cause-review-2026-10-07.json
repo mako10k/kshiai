@@ -1,0 +1,17 @@
+{
+  "scope": "Four local completion-scope tests: preserves postresponse validation cause, leaves unsent/incomplete attempts unconfirmed, isolates concurrent scopes and partially complete retry sequences, preserves successful value identity. ADR0053 response accounting inherited by ADR0056; no prompt binding or live provider claim.",
+  "path": "backend/src/llm/llm-physical-completion.test.ts",
+  "ref": "verification/physical-completion-scope-20261007",
+  "sha256": "4273a99be45d4a94e6a567a311aa0fb7109b607fa3b2312b7c2b8780368e95fa",
+  "causeSealIds": [
+    "2c6888e9d07a676d4b429b041b241e1631845b18fac4fb4cda280a4a29670d50",
+    "5c7e473fe4f6da136b9fa09cb5339da0c61210687630d4da4498d956139278b2",
+    "104b75473d4236887e586474778688398b1ebe3f49681ba9d7c633e221b8ffc9"
+  ],
+  "diagnostic": {
+    "pass": 4,
+    "fail": 0,
+    "skipped": 0,
+    "strictTypecheckExit": 0
+  }
+}

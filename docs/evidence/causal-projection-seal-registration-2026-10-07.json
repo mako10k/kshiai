@@ -1,0 +1,220 @@
+{
+  "entries": [
+    {
+      "key": "design-retained-perception-projection",
+      "path": "docs/design.llmthink.dsl",
+      "parents": [
+        "requirements",
+        "legacy",
+        "narration",
+        "currentLegacyAdoption"
+      ],
+      "scope": "Retained legacy design clauses D16 counterpart identity/access and perspective rights, D23 unknown causal attribution/ordinal cues, D26 exact existing magnitude/reserve bands. Requirements section4.2/F-NAR05 plus Accepted ADR0051 inherited ADR0050 D12 old-generation continuation and ADR0006 canonical-owned immutable narration input. Only these clauses support this cohort; older parallel ordering, narrator-authored speech and winner policies elsewhere in this document are not adopted as current policy.",
+      "ref": "all-tests-20261007/design-retained-perception-projection",
+      "test": false,
+      "sha256": "af2faa86c2723aa1b0aee92c32b2dd7ec32c35642c7ddef96585aedec790afd6",
+      "sealId": "8fcf782dd2cc070b868cda0ce065d86440a4c38a7e8ce5dc6928eb2583733cdd",
+      "causeSealIds": [
+        "203e66fc4e30772adab026012c67f1b1ac4ca86ad2ada11b501c639a27a19eac",
+        "d5695200a29531ed085f10c0d502effc2af325ee206874b1f32c61db6872fba4",
+        "78f9fec1b418020c221d67930654a6ead967fb85393603a544651cea83a61371",
+        "4a236b55e9ad9e4aa54eb2c6bbe9d77e0a318881ba8328363505153d16e151dd"
+      ]
+    },
+    {
+      "key": "implementation-causal-qualitative-quantization",
+      "path": "packages/shared/src/perception-quantization.ts",
+      "parents": [
+        "design-retained-perception-projection",
+        "perception"
+      ],
+      "scope": "Pure quantitative-to-ordinal projection under D26: independent absolute and relative axes, explicit outcome classification, target/provenance retained only in server-only evidence, self reserve banding. Exact original constants remain unchanged. No raw value public delivery, actual LLM behavior or current pipeline invocation proof.",
+      "ref": "all-tests-20261007/implementation-causal-qualitative-quantization",
+      "test": false,
+      "sha256": "baa8db6a0068b79146b336070eeb94e3961e47b7e2c1b25323b8cfdab931ac59",
+      "sealId": "1429b36aab4d03e9cb64acedfcf46329f345c0226b04f987449bad1875af2f42",
+      "causeSealIds": [
+        "8fcf782dd2cc070b868cda0ce065d86440a4c38a7e8ce5dc6928eb2583733cdd",
+        "635dddb9346372392eefec016dc989a0bcf82d8dd14f049bb771d910c1a924ae"
+      ]
+    },
+    {
+      "key": "implementation-retained-narration-perspective",
+      "path": "packages/shared/src/narration-perspective.ts",
+      "parents": [
+        "design-retained-perception-projection",
+        "battle",
+        "perception"
+      ],
+      "scope": "Retained legacy CharacterAgentState digest projection and locked/fluid focus helpers; summary omits private material, counterpart condition requires identified plus coarse/clear access, detail selection restricted by focus. Not evidence that current awareness-v5 consumes these old-agent helpers; semantic owner values are supplied fixtures, not model quality evidence.",
+      "ref": "all-tests-20261007/implementation-retained-narration-perspective",
+      "test": false,
+      "sha256": "e6a9f4d6ef637a71950d44d20d102e6d9f90ee87021d24d4909bc932e9affa0f",
+      "sealId": "38385b665ca3a65736cb986e64a235ef583a37b0c519fb15c06fa27397c609c4",
+      "causeSealIds": [
+        "8fcf782dd2cc070b868cda0ce065d86440a4c38a7e8ce5dc6928eb2583733cdd",
+        "fd2692da29f2deaf81b6567e5499276f95ece18dfd67f0a669fd1a2077292209",
+        "635dddb9346372392eefec016dc989a0bcf82d8dd14f049bb771d910c1a924ae"
+      ]
+    },
+    {
+      "key": "fixture-causal-receipt-engine-adapter",
+      "path": "packages/shared/src/battle-engine-test-helper.ts",
+      "parents": [
+        "engine",
+        "battle"
+      ],
+      "scope": "Existing test-only adapter fills explicitly optional test basic attack with defaultBasicAttack and invokes strict engine contracts. Used only to build synthetic two-sheet committed facts for receipt tests; no new gameplay implementation or certification of every engine rule, persistence, dispatch or live battle.",
+      "ref": "all-tests-20261007/fixture-causal-receipt-engine-adapter",
+      "test": false,
+      "sha256": "a6ae8e377e870a49152e9a10374ef997c114585c14ed20f9bd2f0999185917c0",
+      "sealId": "b077db61bb4341345b4d70a288f4de7cd8c1eff1b032ff42453cca1ab72c3e63",
+      "causeSealIds": [
+        "bbac9d8f7324c9cc82705e42235739a129b0d0bd3d6b017b757e9ffffaa14508",
+        "fd2692da29f2deaf81b6567e5499276f95ece18dfd67f0a669fd1a2077292209"
+      ]
+    },
+    {
+      "key": "implementation-turn-causal-receipt-projection",
+      "path": "packages/shared/src/battle-turn-causal-receipt.ts",
+      "parents": [
+        "narration",
+        "intent",
+        "design-retained-perception-projection",
+        "implementation-causal-qualitative-quantization",
+        "battle",
+        "perception",
+        "semantic"
+      ],
+      "scope": "Pure ephemeral receipt builder from supplied owners and narrator projection. Typed effective intent retains producer values; action/event/evidence links validated structurally, prose not mined; accepted semantic patch replays to supplied committed state; unknown links remain unknown, output deeply frozen. Projection removes IDs/raw values and limits character modes to their view. Seven exercised cases only; not a persistent phase receipt or current awareness-v5 integration proof.",
+      "ref": "all-tests-20261007/implementation-turn-causal-receipt-projection",
+      "test": false,
+      "sha256": "0dfdc552e4f0967e9f4bf5b9ad117babd2294a89c310d2aeab7e862188626dc0",
+      "sealId": "380ac8824e9b71cb1f886088318ac2d539db126fe347c9a7467f3bcf9aec60b5",
+      "causeSealIds": [
+        "78f9fec1b418020c221d67930654a6ead967fb85393603a544651cea83a61371",
+        "ab8f65b4b5ef87ffa12a3ad16c7c30ae920717ec65c799bfa82524177750f8eb",
+        "8fcf782dd2cc070b868cda0ce065d86440a4c38a7e8ce5dc6928eb2583733cdd",
+        "1429b36aab4d03e9cb64acedfcf46329f345c0226b04f987449bad1875af2f42",
+        "fd2692da29f2deaf81b6567e5499276f95ece18dfd67f0a669fd1a2077292209",
+        "635dddb9346372392eefec016dc989a0bcf82d8dd14f049bb771d910c1a924ae",
+        "8534c37b4da9615462035a1428ee6616200614e289efc11a875c91b6a9bca009"
+      ]
+    },
+    {
+      "key": "perception-quantization-current",
+      "path": "packages/shared/src/perception-quantization.test.ts",
+      "parents": [
+        "design-retained-perception-projection",
+        "perception",
+        "implementation-causal-qualitative-quantization"
+      ],
+      "scope": "Entire unchanged six-case file: absolute/relative boundaries, independent axes, no-effect/immunity/incapacity/overkill, A/B and target symmetry without raw values, reserve boundaries and base-focus denominator. Synthetic evidence only, no live perception calibration or all parameter-key coverage claimed.",
+      "ref": "verification/perception-quantization-current-20261007",
+      "test": true,
+      "sha256": "d4c62678e20050d0737c273cf0c3290082a130e0c30aefa06c7a0f524ebd34db",
+      "sealId": "60df1fd849f35780d3671c2830c9b74341d3bd9f31bfa4f7138e944720a9406f",
+      "causeSealIds": [
+        "8fcf782dd2cc070b868cda0ce065d86440a4c38a7e8ce5dc6928eb2583733cdd",
+        "635dddb9346372392eefec016dc989a0bcf82d8dd14f049bb771d910c1a924ae",
+        "1429b36aab4d03e9cb64acedfcf46329f345c0226b04f987449bad1875af2f42"
+      ]
+    },
+    {
+      "key": "narration-perspective-current",
+      "path": "packages/shared/src/narration-perspective.test.ts",
+      "parents": [
+        "design-retained-perception-projection",
+        "implementation-retained-narration-perspective",
+        "battle",
+        "perception"
+      ],
+      "scope": "Entire unchanged four-case file: locked/fluid mapping, compact summary omits private detail, counterpart condition gated by current access/identity, allowed focus receives detail and external receives none. Not all focus-helper permutations, narrator response behavior or current awareness-v5 integration acceptance.",
+      "ref": "verification/narration-perspective-current-20261007",
+      "test": true,
+      "sha256": "431112fdecfedb5b4a267835a7d551696eff407064e674c2c794e9e4be687122",
+      "sealId": "c7396f2e10219ba2b40f0568afadb652e391f4d58f3ab78a8f079a5c39158ee2",
+      "causeSealIds": [
+        "8fcf782dd2cc070b868cda0ce065d86440a4c38a7e8ce5dc6928eb2583733cdd",
+        "38385b665ca3a65736cb986e64a235ef583a37b0c519fb15c06fa27397c609c4",
+        "fd2692da29f2deaf81b6567e5499276f95ece18dfd67f0a669fd1a2077292209",
+        "635dddb9346372392eefec016dc989a0bcf82d8dd14f049bb771d910c1a924ae"
+      ]
+    },
+    {
+      "key": "turn-causal-receipt-current",
+      "path": "packages/shared/src/battle-turn-causal-receipt.test.ts",
+      "parents": [
+        "implementation-turn-causal-receipt-projection",
+        "fixture-causal-receipt-engine-adapter",
+        "implementation-causal-qualitative-quantization",
+        "semantic",
+        "perception"
+      ],
+      "scope": "Entire unchanged seven-case file: explicit supplied fact ownership/deep freeze; absent links unknown despite prose; dangling/noncommitted evidence rejected; applied semantic patch must reproduce state; external ID/raw/path removal; only unique omniscient semantic attribution; character-limited observed consequences remain unassigned. Fixture resolves synthetic legacy sheets using strict engine adapter, not persistence/live/current awareness-v5 or comprehensive engine proof.",
+      "ref": "verification/turn-causal-receipt-current-20261007",
+      "test": true,
+      "sha256": "2d58a6ac4e605bcdf2a900811af561db3416234a50395f3ff1c1131336871d98",
+      "sealId": "29f2834d20fca31147321bbc97bf5407bd90a0120839585d469398abe40ce1a8",
+      "causeSealIds": [
+        "380ac8824e9b71cb1f886088318ac2d539db126fe347c9a7467f3bcf9aec60b5",
+        "b077db61bb4341345b4d70a288f4de7cd8c1eff1b032ff42453cca1ab72c3e63",
+        "1429b36aab4d03e9cb64acedfcf46329f345c0226b04f987449bad1875af2f42",
+        "8534c37b4da9615462035a1428ee6616200614e289efc11a875c91b6a9bca009",
+        "635dddb9346372392eefec016dc989a0bcf82d8dd14f049bb771d910c1a924ae"
+      ]
+    }
+  ],
+  "diagnostic": {
+    "pass": 17,
+    "fail": 0,
+    "skipped": 0,
+    "strictTypecheckExit": 0
+  },
+  "limitations": [
+    "Original17cases retained; no source or test changes required",
+    "Pure synthetic/shared tests; not provider, persistence or whole current pipeline acceptance",
+    "Design file binding applies only to named retained clauses; contradictory historical ordering/speech/winner clauses elsewhere not adopted"
+  ],
+  "withinCohortAuthorityCompletion": {
+    "currentAuthority": "awareness-guidance-20261007/authority-current",
+    "currentAuthoritySealId": "4a236b55e9ad9e4aa54eb2c6bbe9d77e0a318881ba8328363505153d16e151dd",
+    "history": [
+      {
+        "ref": "all-tests-20261007/design-retained-perception-projection",
+        "previousSealId": "21a73a3e8c157e90f0813d39f40524832683287c9ec8162b624a71f2947c9d8e",
+        "sealId": "8fcf782dd2cc070b868cda0ce065d86440a4c38a7e8ce5dc6928eb2583733cdd"
+      },
+      {
+        "ref": "all-tests-20261007/implementation-causal-qualitative-quantization",
+        "previousSealId": "ec7c774e4e86ba53b29247b601d1526584e4dfe84e3b7b7d3426a5f895cece3b",
+        "sealId": "1429b36aab4d03e9cb64acedfcf46329f345c0226b04f987449bad1875af2f42"
+      },
+      {
+        "ref": "all-tests-20261007/implementation-retained-narration-perspective",
+        "previousSealId": "fec69a710d6126fe6e2f7baf8f81ffcf2a4f64e375998cd14f293fa2583d5cae",
+        "sealId": "38385b665ca3a65736cb986e64a235ef583a37b0c519fb15c06fa27397c609c4"
+      },
+      {
+        "ref": "all-tests-20261007/implementation-turn-causal-receipt-projection",
+        "previousSealId": "5ff5c8a0a703fe61bd7b368142cb66327a77e0e54bbd616f0d928a6088764970",
+        "sealId": "380ac8824e9b71cb1f886088318ac2d539db126fe347c9a7467f3bcf9aec60b5"
+      },
+      {
+        "ref": "verification/perception-quantization-current-20261007",
+        "previousSealId": "bbbea0dcb73a73ced97ebb75929ec1f70a4b99ec8606fe32276c75f4e4a69036",
+        "sealId": "60df1fd849f35780d3671c2830c9b74341d3bd9f31bfa4f7138e944720a9406f"
+      },
+      {
+        "ref": "verification/narration-perspective-current-20261007",
+        "previousSealId": "de6146140281345d84eac333315a2c5325202842b78fcf97a0e7d8ef53caa44f",
+        "sealId": "c7396f2e10219ba2b40f0568afadb652e391f4d58f3ab78a8f079a5c39158ee2"
+      },
+      {
+        "ref": "verification/turn-causal-receipt-current-20261007",
+        "previousSealId": "8bcbe491c7b535028458d926dbbbcd50fb56b9a35139045ea0eec398ad25cf84",
+        "sealId": "29f2834d20fca31147321bbc97bf5407bd90a0120839585d469398abe40ce1a8"
+      }
+    ]
+  }
+}

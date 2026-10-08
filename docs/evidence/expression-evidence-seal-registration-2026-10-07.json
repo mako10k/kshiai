@@ -1,0 +1,116 @@
+{
+  "entries": [
+    {
+      "key": "design-expression-evidence-test-contract",
+      "path": "docs/expression-evidence-test-contract-review-2026-10-07.md",
+      "parents": [
+        "requirements",
+        "design"
+      ],
+      "scope": "Existing six-case conformance only: retained V2 nextUtterance closed output with independent invalid-action rejection; committed evidence references, raw-free structural qualitative cue and rejected sensory-section handling. No code/product-rule change; fixture refusal covers combined bad inputs, not independent every branch.",
+      "ref": "all-tests-20261007/design-expression-evidence-test-contract",
+      "test": false,
+      "sha256": "3f3375e4b6b9c807adf0adfc1dad4d25a58e138922327de88d2107b9717ea82d",
+      "sealId": "983486b548722c15be423373dc73cf29a52ae3e585471679725221fd9608cb2c",
+      "causeSealIds": [
+        "203e66fc4e30772adab026012c67f1b1ac4ca86ad2ada11b501c639a27a19eac",
+        "8fcf782dd2cc070b868cda0ce065d86440a4c38a7e8ce5dc6928eb2583733cdd"
+      ]
+    },
+    {
+      "key": "implementation-retained-compact-expression-decoder",
+      "path": "backend/src/llm/openai-compatible.ts",
+      "parents": [
+        "requirements",
+        "battle",
+        "design-expression-evidence-test-contract"
+      ],
+      "scope": "Scope only decodeCharacterExpressionCompactResultV2 and its CoreSchema: allowed output keys, validated utterance/manifestation, separately validated CharacterActionIntent. Whole file bytes bound but remaining provider/authoring/psyche/narration code not adopted or certified. Original two scenarios; no latest awareness-v5/live model acceptance.",
+      "ref": "all-tests-20261007/implementation-retained-compact-expression-decoder",
+      "test": false,
+      "sha256": "8d4be097ddbfcb0da515dd0db402c7dc6dddccb763d625fce16165e7c524d2a5",
+      "sealId": "be6c5fd8e04b304d51b2023d34486a7e4028e69512cd6c6a9d54ae3fef337a3c",
+      "causeSealIds": [
+        "203e66fc4e30772adab026012c67f1b1ac4ca86ad2ada11b501c639a27a19eac",
+        "fd2692da29f2deaf81b6567e5499276f95ece18dfd67f0a669fd1a2077292209",
+        "983486b548722c15be423373dc73cf29a52ae3e585471679725221fd9608cb2c"
+      ]
+    },
+    {
+      "key": "implementation-committed-perception-evidence-validation",
+      "path": "backend/src/llm/perception-evidence.ts",
+      "parents": [
+        "requirements",
+        "design",
+        "wire",
+        "quantization",
+        "materials",
+        "design-expression-evidence-test-contract"
+      ],
+      "scope": "Four exercised validator/projection scenarios for supplied committed mechanical/sensory evidence and qualitative cues. Checks supply/schema/reference structure, not truth of provider claims, all target-side attribution, every unavailable/revocation branch, physical access or atomic integration. Retained reviewed prompt materials, not current model specs.",
+      "ref": "all-tests-20261007/implementation-committed-perception-evidence-validation",
+      "test": false,
+      "sha256": "3137c1459f318d9b9eb1c6433c42691bf1c25ba7a2dd5a4d0303c1259d639a13",
+      "sealId": "13a282ebdcf1517d9a895de170ea68f9d225d92b3996a04b07caf4bb8225b98c",
+      "causeSealIds": [
+        "203e66fc4e30772adab026012c67f1b1ac4ca86ad2ada11b501c639a27a19eac",
+        "8fcf782dd2cc070b868cda0ce065d86440a4c38a7e8ce5dc6928eb2583733cdd",
+        "635dddb9346372392eefec016dc989a0bcf82d8dd14f049bb771d910c1a924ae",
+        "1429b36aab4d03e9cb64acedfcf46329f345c0226b04f987449bad1875af2f42",
+        "3e55a3ffb470d3a6ccc397366b15cd9889707b2b96909b2f4f2bf8c16ee068db",
+        "983486b548722c15be423373dc73cf29a52ae3e585471679725221fd9608cb2c"
+      ]
+    },
+    {
+      "key": "retained-compact-expression-decoder-current",
+      "path": "backend/src/llm/character-expression-contract.test.ts",
+      "parents": [
+        "requirements",
+        "implementation-retained-compact-expression-decoder",
+        "design-expression-evidence-test-contract"
+      ],
+      "scope": "Entire unchanged two-case file: closed nextUtterance output accepts valid wait action; rejects old speech and unexpected root field; invalid action becomes null/invalid without losing valid utterance. Does not validate current awareness-v5 output contract.",
+      "ref": "verification/retained-compact-expression-decoder-current-20261007",
+      "test": true,
+      "sha256": "a0332c070d14db9e679d6c7d64efc1e403be98204a808d919b328203ffb5f8c9",
+      "sealId": "334383eed7e6d311408df36b38964de0e82ed4eaaa0f5f59817c978006174dde",
+      "causeSealIds": [
+        "203e66fc4e30772adab026012c67f1b1ac4ca86ad2ada11b501c639a27a19eac",
+        "be6c5fd8e04b304d51b2023d34486a7e4028e69512cd6c6a9d54ae3fef337a3c",
+        "983486b548722c15be423373dc73cf29a52ae3e585471679725221fd9608cb2c"
+      ]
+    },
+    {
+      "key": "committed-perception-evidence-current",
+      "path": "backend/src/llm/perception-evidence.test.ts",
+      "parents": [
+        "requirements",
+        "design",
+        "implementation-committed-perception-evidence-validation",
+        "design-expression-evidence-test-contract"
+      ],
+      "scope": "Entire unchanged four-case file: valid supplied mechanical references and combined invalid-input refusal; changing event prose leaves raw-free qualitative cues unchanged; structurally unspecified event cue omitted; uncommitted entity sensory source rejects whole section. No broad branch completeness, physical truth, model accuracy or pipeline/durability acceptance.",
+      "ref": "verification/committed-perception-evidence-current-20261007",
+      "test": true,
+      "sha256": "5e9a188d0c504ee32266fc6be89857bd5a2bd4395da62dab4a33a98fb1a3208f",
+      "sealId": "628531a8b4dd8dc0d6900e66ce6184d3665ad7451a6920d253fbfee54aff92ff",
+      "causeSealIds": [
+        "203e66fc4e30772adab026012c67f1b1ac4ca86ad2ada11b501c639a27a19eac",
+        "8fcf782dd2cc070b868cda0ce065d86440a4c38a7e8ce5dc6928eb2583733cdd",
+        "13a282ebdcf1517d9a895de170ea68f9d225d92b3996a04b07caf4bb8225b98c",
+        "983486b548722c15be423373dc73cf29a52ae3e585471679725221fd9608cb2c"
+      ]
+    }
+  ],
+  "diagnostic": {
+    "focusedPass": 6,
+    "fail": 0,
+    "skipped": 0,
+    "strictTypecheckExit": 0
+  },
+  "limitations": [
+    "Original six cases/assertions retained; no code changes",
+    "Pure supplied-evidence/retained decoder tests, not current awareness-v5 or live provider/physical truth/atomic integration",
+    "First mechanical negative fixture combines invalid inputs; independent refusal of each field not proven"
+  ]
+}

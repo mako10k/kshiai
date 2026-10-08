@@ -1,0 +1,22 @@
+{
+  "observedAt": "2026-10-02T02:59:33.742Z",
+  "battleId": "btl_b1082810379ee23a5c6ebfcef4780bce",
+  "turn": 2,
+  "status": "active",
+  "battleRevision": 5,
+  "pipelineAuthorityVersion": 1,
+  "characters": {
+    "a": {
+      "assetId": "stage-trial-neva-736a5e323e94f501",
+      "generationId": "character:stage-trial-neva-736a5e323e94f501:g1:343ddb0ba3ebef5a"
+    },
+    "b": {
+      "assetId": "stage-trial-rio-736a5e323e94f501",
+      "generationId": "character:stage-trial-rio-736a5e323e94f501:g1:743ab0b84e76b3f4"
+    }
+  },
+  "dialogue": {
+    "schemaVersion": 3,
+    "revision": 7
+  }
+}

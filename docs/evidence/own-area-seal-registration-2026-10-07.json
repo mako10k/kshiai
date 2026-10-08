@@ -1,0 +1,106 @@
+{
+  "entries": [
+    {
+      "key": "implementation-own-area-world-reference",
+      "path": "packages/shared/src/battle-world.ts",
+      "parents": [
+        "design",
+        "placement"
+      ],
+      "scope": "Initial layout and canonical area references must name an own dictionary key. Reject inherited toString references; preserve existing area schema and initializer behavior. Tested canonical state and explicit initial layout only, no whole transition or live acceptance.",
+      "ref": "all-tests-20261007/implementation-own-area-world-reference",
+      "test": false,
+      "sha256": "bc85795bdeab266c5e8489b51c56c80e84c605b521e95c25a2482f248ab6249d",
+      "sealId": "9535443db3405d25086fe60873f7113ed0278b7e638e8e124015e231b7487064",
+      "causeSealIds": [
+        "254f8a32c06a105ff1d2d6c8e8943d246ed2925e3856a52df862082725f6245a",
+        "bbdf88f6e4a55ed11c978c75df29f590ddd1d99c7383eac1a9b26d54609c9031"
+      ]
+    },
+    {
+      "key": "implementation-own-area-creation-reference",
+      "path": "packages/shared/src/battlefield-creation.ts",
+      "parents": [
+        "design",
+        "compiler",
+        "implementation-own-area-world-reference"
+      ],
+      "scope": "Typed initial layout carries declared stable IDs and placements. Validate legacy IDs and own-key existence/collisions so a declared constructor area remains valid. No history migration or added provider call.",
+      "ref": "all-tests-20261007/implementation-own-area-creation-reference",
+      "test": false,
+      "sha256": "156c5ff5bf9aacbfc0b3a652eff2f161bebd5537ddfd3df833b76fc59f81c7dc",
+      "sealId": "ec37f5a65fe4aa7611177e09944e29b6521fe87ea1609027a92ac037122298b2",
+      "causeSealIds": [
+        "254f8a32c06a105ff1d2d6c8e8943d246ed2925e3856a52df862082725f6245a",
+        "54f969c54c0489a5a5b7f3cb3fd3d97c4af5833c1d71d0e4d26649e4886db6d5",
+        "9535443db3405d25086fe60873f7113ed0278b7e638e8e124015e231b7487064"
+      ]
+    },
+    {
+      "key": "own-area-reposition-transition",
+      "path": "packages/shared/src/reposition-transition.test.ts",
+      "parents": [
+        "reposition",
+        "implementation-own-area-world-reference",
+        "implementation-own-area-creation-reference"
+      ],
+      "scope": "Entire four-case regression: adjacent hops through original declared IDs, legacy reposition contracts, and valid constructor area placement. No whole battle engine policy certification.",
+      "ref": "verification/own-area-reposition-transition-20261007",
+      "test": true,
+      "sha256": "743037421c61079b321c08e473d1bafcfc92244d220aea5c75d2f8de76f764b7",
+      "sealId": "66f3a875b9558a74b7be2187b3778ff05f2106e3a8328ee27bf39358a4ba82ec",
+      "causeSealIds": [
+        "6efb5be6e2ddbb719f97bc5438544aaec79e985db691ba80e22e9a69934e220c",
+        "9535443db3405d25086fe60873f7113ed0278b7e638e8e124015e231b7487064",
+        "ec37f5a65fe4aa7611177e09944e29b6521fe87ea1609027a92ac037122298b2"
+      ]
+    },
+    {
+      "key": "own-area-world-state",
+      "path": "packages/shared/src/battle-world.test.ts",
+      "parents": [
+        "placement",
+        "implementation-own-area-world-reference"
+      ],
+      "scope": "Entire thirteen-case canonical world suite including inherited toString reference rejection. Synthetic world operations/schema proof only; no LLM or live acceptance.",
+      "ref": "verification/own-area-world-state-20261007",
+      "test": true,
+      "sha256": "b5dcc440a63713b1eb1dd9e5d0db347ed04d41b6ddccae75b9619e0aeea24d9d",
+      "sealId": "efa2e596e953081ed8f2155463d0b4cecc403a1b943534b02f1478881ec29c49",
+      "causeSealIds": [
+        "bbdf88f6e4a55ed11c978c75df29f590ddd1d99c7383eac1a9b26d54609c9031",
+        "9535443db3405d25086fe60873f7113ed0278b7e638e8e124015e231b7487064"
+      ]
+    },
+    {
+      "key": "own-area-structured-battlefield",
+      "path": "packages/shared/src/structured-battlefield.test.ts",
+      "parents": [
+        "compiler",
+        "implementation-own-area-world-reference",
+        "implementation-own-area-creation-reference"
+      ],
+      "scope": "Entire eleven-case structured battlefield suite: original IDs, duplicate names, exact initial placements, missing/dangling and inherited toString references, typed mandatory layout, and legacy bypass rejection. No generated battlefield acceptance or existing-world migration.",
+      "ref": "verification/own-area-structured-battlefield-20261007",
+      "test": true,
+      "sha256": "e1b23d50e9704e11c228da1f79aa65d880baee51326d622004b3d7ebcb2faec3",
+      "sealId": "700e8a1306ab7dc33dabfde139c8fd9dedd077accf487e5cbf69548cf60385d2",
+      "causeSealIds": [
+        "54f969c54c0489a5a5b7f3cb3fd3d97c4af5833c1d71d0e4d26649e4886db6d5",
+        "9535443db3405d25086fe60873f7113ed0278b7e638e8e124015e231b7487064",
+        "ec37f5a65fe4aa7611177e09944e29b6521fe87ea1609027a92ac037122298b2"
+      ]
+    }
+  ],
+  "diagnostic": {
+    "sharedPass": 421,
+    "targetedPass": 42,
+    "fail": 0,
+    "skipped": 0,
+    "strictExit": 0,
+    "workspaceTypecheckExit": 0
+  },
+  "limitations": [
+    "Three full test files replace earlier inventory refs; existing seals remain historical. Other upstream workfile freshness still requires aggregate reconciliation. No production acceptance."
+  ]
+}

@@ -1,0 +1,47 @@
+TAP version 13
+# Subtest: historical character view
+    # Subtest: reads validated frozen profiles without interpreting obsolete compiler fields
+    ok 1 - reads validated frozen profiles without interpreting obsolete compiler fields
+      ---
+      duration_ms: 7.732439
+      type: 'test'
+      ...
+    # Subtest: rejects malformed stored profiles without supplying current-character replacements
+    ok 2 - rejects malformed stored profiles without supplying current-character replacements
+      ---
+      duration_ms: 6.814171
+      type: 'test'
+      ...
+    # Subtest: returns the old V2 snapshot despite a later current migration
+    ok 3 - returns the old V2 snapshot despite a later current migration
+      ---
+      duration_ms: 1.48488
+      type: 'test'
+      ...
+    # Subtest: rejects missing manifests and unrelated characters
+    ok 4 - rejects missing manifests and unrelated characters
+      ---
+      duration_ms: 1.889616
+      type: 'test'
+      ...
+    # Subtest: rejects mismatched binding and snapshot identities
+    ok 5 - rejects mismatched binding and snapshot identities
+      ---
+      duration_ms: 1.825372
+      type: 'test'
+      ...
+    1..5
+ok 1 - historical character view
+  ---
+  duration_ms: 24.702183
+  type: 'suite'
+  ...
+1..1
+# tests 5
+# suites 1
+# pass 5
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 1281.551798

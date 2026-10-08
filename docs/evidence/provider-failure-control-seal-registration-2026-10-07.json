@@ -1,0 +1,107 @@
+{
+  "review": "docs/evidence/provider-failure-control-cause-review-2026-10-07.json",
+  "entries": [
+    {
+      "key": "authority-retained-provider-retry",
+      "path": "docs/adr/0028-versioned-conscious-agency-contract.think",
+      "parents": [],
+      "scope": "Existing Accepted ADR0028 revision2 D8 retained transport helper ceiling only: max2 retries total, rate-limit max2, service-unavailable max1, timeout/ineligible no new retry category. Old phase/psyche/agency/model policies outside this scope; awareness latest policy keeps zero automatic retry.",
+      "test": false,
+      "ref": "all-tests-20261007/authority-retained-provider-retry",
+      "sha256": "b5ee7ff73adb102c2cefcc015ead40bf9afe6fa11993cb65234132146290d9ba",
+      "sealId": "a44d16eab5bcef2604d2ef8da6a6581012b0e48d008ae93f53cca482aec19cdf",
+      "causeSealIds": []
+    },
+    {
+      "key": "implementation-provider-error-classification",
+      "path": "backend/src/llm/provider-errors.ts",
+      "parents": [
+        "authority-retained-provider-retry",
+        "authority"
+      ],
+      "scope": "Only tested lexical/status/cause-chain error classification and capped retry-header delay; rate limit precedence over 403 billing interpretation. No factual diagnosis of actual provider/account incident, application-result class or complete header/date branches certified.",
+      "test": false,
+      "ref": "all-tests-20261007/implementation-provider-error-classification",
+      "sha256": "e11320210883062c34809ae2cc32ffb7686e24b828ec5e294a83c4264a9fc2a6",
+      "sealId": "1d8f15dd27c1c2d0180af4beb178ff2a2417ef237f47236b55fb241399bc1b77",
+      "causeSealIds": [
+        "a44d16eab5bcef2604d2ef8da6a6581012b0e48d008ae93f53cca482aec19cdf",
+        "4a236b55e9ad9e4aa54eb2c6bbe9d77e0a318881ba8328363505153d16e151dd"
+      ]
+    },
+    {
+      "key": "implementation-retained-provider-retry",
+      "path": "backend/src/llm/provider-retry.ts",
+      "parents": [
+        "authority-retained-provider-retry",
+        "implementation-provider-error-classification"
+      ],
+      "scope": "Only bounded invocation of the same supplied operation callback: max2 rate-limit retries, max1 service-unavailable within total2, known nonretryable failure rethrows exact error, canRetry false refuses. Default first two rate-limit backoff waits tested via injected sleep. No live HTTP, provider identity proof from callback, all mixed sequences, observer accounting or activation for no-retry awareness calls.",
+      "test": false,
+      "ref": "all-tests-20261007/implementation-retained-provider-retry",
+      "sha256": "b827adab5f4a64864810762b0d0c2a29b6de0a4cb721d9adef740692fdf4dfb2",
+      "sealId": "817bb2b903ba1bdaf64f063d728ba835c4bd599384f3f4d9650726f3ef74aee0",
+      "causeSealIds": [
+        "a44d16eab5bcef2604d2ef8da6a6581012b0e48d008ae93f53cca482aec19cdf",
+        "1d8f15dd27c1c2d0180af4beb178ff2a2417ef237f47236b55fb241399bc1b77"
+      ]
+    },
+    {
+      "key": "provider-errors",
+      "path": "backend/src/llm/provider-errors.test.ts",
+      "parents": [
+        "authority-retained-provider-retry",
+        "implementation-provider-error-classification"
+      ],
+      "scope": "All three local tests: 429/503/abort/402/403-credit/DNS cause/syntax classification, 403 rate limit not billing, retry headers2s/cap10s/missing. Classification is test of reported fields, not verified remote root cause; no retry activated.",
+      "test": true,
+      "ref": "verification/provider-errors-20261007",
+      "sha256": "a3daa816166230f6d96ebbcf9ac7c9012e96366536b27bafa7296c69115785d6",
+      "sealId": "d99ac91be3f7261fa349f25e9b081a6385a30f5216ae5793a3ade7674822d8fa",
+      "causeSealIds": [
+        "a44d16eab5bcef2604d2ef8da6a6581012b0e48d008ae93f53cca482aec19cdf",
+        "1d8f15dd27c1c2d0180af4beb178ff2a2417ef237f47236b55fb241399bc1b77"
+      ]
+    },
+    {
+      "key": "provider-retry",
+      "path": "backend/src/llm/provider-retry.test.ts",
+      "parents": [
+        "authority-retained-provider-retry",
+        "implementation-provider-error-classification",
+        "implementation-retained-provider-retry"
+      ],
+      "scope": "All four local fake-operation tests: rate-limit two retries and injected waits1s/2s, 503 one retry and original failure, timeout/billing/DNS/parse zero retries, canRetry false once. No actual streaming fixture or provider identity/HTTP, account quota, complete mixed failures or latest awareness retry activation.",
+      "test": true,
+      "ref": "verification/provider-retry-20261007",
+      "sha256": "86959d337c539db3dc801949629f6fd5aa988a9dd45ad5c4dcdddd7ea7a16bd7",
+      "sealId": "229ed9d2df2ab970f344f2b0e2f8ce5ec224e317f4eb20199920c7267bbf0589",
+      "causeSealIds": [
+        "a44d16eab5bcef2604d2ef8da6a6581012b0e48d008ae93f53cca482aec19cdf",
+        "1d8f15dd27c1c2d0180af4beb178ff2a2417ef237f47236b55fb241399bc1b77",
+        "817bb2b903ba1bdaf64f063d728ba835c4bd599384f3f4d9650726f3ef74aee0"
+      ]
+    }
+  ],
+  "diagnostic": {
+    "pass": 7,
+    "fail": 0,
+    "skipped": 0,
+    "strictTypecheckExit": 0
+  },
+  "readback": {
+    "newRefs": 5,
+    "sourceMatch": true,
+    "stale": 0,
+    "previousHeadsChanged": 0,
+    "previousRefs": 716,
+    "totalRefs": 721,
+    "fsck": "ok",
+    "unitEligibility": {
+      "active": 79,
+      "provisional": 1,
+      "disabled": 167,
+      "unsealed": 151
+    }
+  }
+}

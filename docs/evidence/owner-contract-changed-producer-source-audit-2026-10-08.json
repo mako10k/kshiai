@@ -1,0 +1,83 @@
+{
+  "paths": [
+    {
+      "path": "packages/shared/src/asset-visibility.ts",
+      "currentSha256": "9f5053543357b4cfc81c0d8f99e4509f68fd77fde21ad480dcd12794effb3c97",
+      "bindings": []
+    },
+    {
+      "path": "packages/shared/src/provider-route.ts",
+      "currentSha256": "dc4802cf1fceaf0c0306d449b5d51014ce52c5f0900434fd6380ff9a8ae599f0",
+      "bindings": []
+    },
+    {
+      "path": "backend/src/llm/fallback.ts",
+      "currentSha256": "4651355187f8fc0040d03c8d37b8ca6d05f0c96fb9721db734b1beb55bf32ba6",
+      "bindings": []
+    },
+    {
+      "path": "backend/src/services/battle-public-projection.ts",
+      "currentSha256": "df6e8d86c696507428e05ce8eb370949b79726f58a6e266ae0ff0ecfa434dc56",
+      "bindings": [
+        {
+          "ref": "all-tests-20261007/implementation-retained-agency-v3-public-private-boundary",
+          "baseline": "HEAD",
+          "relation": "WORKFILE_DIFFERS_FROM_HEAD"
+        }
+      ]
+    },
+    {
+      "path": "backend/src/services/battle-service.ts",
+      "currentSha256": "b1cb72011a0b1c40872b4d56da313d4a01504a8e2a860dd96b087b2e7b712af1",
+      "bindings": [
+        {
+          "ref": "all-tests-20261007/implementation-awareness-creation-public-service",
+          "baseline": "HEAD",
+          "relation": "WORKFILE_DIFFERS_FROM_HEAD"
+        },
+        {
+          "ref": "all-tests-20261007/implementation-battlefield-battle-binding",
+          "baseline": "HEAD",
+          "relation": "WORKFILE_DIFFERS_FROM_HEAD"
+        },
+        {
+          "ref": "all-tests-20261007/implementation-canonical-narration-battle-service",
+          "baseline": "HEAD",
+          "relation": "WORKFILE_DIFFERS_FROM_HEAD"
+        },
+        {
+          "ref": "all-tests-20261007/implementation-narration-battle-binding",
+          "baseline": "HEAD",
+          "relation": "WORKFILE_DIFFERS_FROM_HEAD"
+        },
+        {
+          "ref": "all-tests-20261007/implementation-retained-agency-v3-service-flow",
+          "baseline": "HEAD",
+          "relation": "WORKFILE_DIFFERS_FROM_HEAD"
+        },
+        {
+          "ref": "all-tests-20261007/implementation-stable-area-ready-binding",
+          "baseline": "HEAD",
+          "relation": "WORKFILE_DIFFERS_FROM_HEAD"
+        },
+        {
+          "ref": "all-tests-20261008/implementation-boundary-battle",
+          "baseline": "HEAD",
+          "relation": "WORKFILE_DIFFERS_FROM_HEAD"
+        },
+        {
+          "ref": "all-tests-20261008/implementation-historical-agency-inventory",
+          "baseline": "HEAD",
+          "relation": "WORKFILE_DIFFERS_FROM_HEAD"
+        },
+        {
+          "ref": "awareness-guidance-20261007/battle-frame",
+          "baseline": "HEAD",
+          "relation": "WORKFILE_DIFFERS_FROM_HEAD"
+        }
+      ]
+    }
+  ],
+  "currentTestInventoryDoesNotProveTransitiveWorkfileEquality": true,
+  "nextAction": "Bind new producers to AcceptedADR0060 and propagate changed projection/service source bindings before whole-goal completion"
+}

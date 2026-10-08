@@ -1,0 +1,27 @@
+{
+  "implemented": true,
+  "sealed": false,
+  "path": "backend/src/llm/openai-compatible-agent.test.ts",
+  "originalCases": 6,
+  "assertionsPreserved": 42,
+  "assertionTextsPreserved": true,
+  "privateCastsRemoved": 5,
+  "neverCastsRemoved": 2,
+  "schemaValidatedDecodedContractInput": true,
+  "fixtureChange": "Required expression conversation.anchoredExchange explicitly null; all original previous fields preserved in typed variable",
+  "productionSourceChanged": false,
+  "sha256": "fb7b4b3b233acc5f73fa8fce2fa9baeb8653316d192ec0e538cfde41775fe897",
+  "independentReview": "PASS on final SHA; earlier PASS superseded after compile defect",
+  "notProved": [
+    "real transport through agent prompt cases",
+    "live semantic quality"
+  ],
+  "next": "Independent review then combined Seal publication",
+  "cohortDiagnostic": {
+    "pass": 15,
+    "fail": 0,
+    "skip": 0
+  },
+  "additionalInputRepair": "Legacy expression psyche projected to emotion, speechStyle, selfReference per CharacterConsciousPsycheProjection; raw interior no longer forwarded",
+  "workspaceTypecheckExit": 0
+}

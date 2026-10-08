@@ -1,0 +1,90 @@
+{
+  "entries": [
+    {
+      "ref": "all-tests-20261007/authority-stable-area-reposition",
+      "sourceBytesMatch": true,
+      "sealId": "6efb5be6e2ddbb719f97bc5438544aaec79e985db691ba80e22e9a69934e220c"
+    },
+    {
+      "ref": "all-tests-20261007/authority-canonical-placement-separation",
+      "sourceBytesMatch": true,
+      "sealId": "bbdf88f6e4a55ed11c978c75df29f590ddd1d99c7383eac1a9b26d54609c9031"
+    },
+    {
+      "ref": "all-tests-20261007/design-stable-area-identity-repair",
+      "sourceBytesMatch": true,
+      "sealId": "254f8a32c06a105ff1d2d6c8e8943d246ed2925e3856a52df862082725f6245a"
+    },
+    {
+      "ref": "all-tests-20261007/implementation-stable-initial-world-layout",
+      "sourceBytesMatch": true,
+      "sealId": "2c5b1cfe3cf17fa58ff39fb45e30eaccb0b91506a39e2c1349671d35bcb95270"
+    },
+    {
+      "ref": "all-tests-20261007/implementation-typed-battlefield-creation",
+      "sourceBytesMatch": true,
+      "sealId": "20c050a7fb0b19ccae7df3d80e3740fb5f235b4f5dd500cf706fbd8093392b91"
+    },
+    {
+      "ref": "all-tests-20261007/implementation-stable-area-reposition-plans",
+      "sourceBytesMatch": true,
+      "sealId": "f822672884d2c6fd2a54869cecc58c05f1bf3717947f6f2299302c615b102579"
+    },
+    {
+      "ref": "all-tests-20261007/implementation-stable-area-battle-initialization",
+      "sourceBytesMatch": true,
+      "sealId": "bbac9d8f7324c9cc82705e42235739a129b0d0bd3d6b017b757e9ffffaa14508"
+    },
+    {
+      "ref": "all-tests-20261007/implementation-stable-area-ready-binding",
+      "sourceBytesMatch": true,
+      "sealId": "046b127d623138820b0ba14d0b15b619609d36a448b83a9e7e41e548fb0d01cb"
+    },
+    {
+      "ref": "all-tests-20261007/fixture-current-legacy-inventory-creation",
+      "sourceBytesMatch": true,
+      "sealId": "7ed5f6b59fb21bfee662c9b29ac29e7fe915d4576b3bdd5d735e90248124c3cc"
+    },
+    {
+      "ref": "all-tests-20261007/implementation-stable-area-authoring-http",
+      "sourceBytesMatch": true,
+      "sealId": "d2efb94d5241f39f3228b1c628b659a66ba1cc8af91ca0df9b0eff21eaac6bb2"
+    },
+    {
+      "ref": "verification/stable-area-reposition-transition-20261007",
+      "sourceBytesMatch": true,
+      "sealId": "bf5b3c5eec929e7780e804de0680c211d47f54f670be0faf542d42b508338047"
+    },
+    {
+      "ref": "verification/stable-area-world-state-20261007",
+      "sourceBytesMatch": true,
+      "sealId": "ddd71c1f3ff7b119812ad61515ccfb43782d6a23d7609a61fc6cb386515b02c4"
+    },
+    {
+      "ref": "verification/stable-area-structured-battlefield-20261007",
+      "sourceBytesMatch": true,
+      "sealId": "76b666e4bc8c7198696b1a32b07dee9620af263a5aabcda84ef485295d46a1b7"
+    },
+    {
+      "ref": "verification/stable-area-awareness-battle-contract-20261007",
+      "sourceBytesMatch": true,
+      "sealId": "37626a8ad19dd76cc18de588d232be444fcc51da615d24fda745ce1c8d5200f8"
+    },
+    {
+      "ref": "verification/stable-area-battlefield-http-acceptance-20261007",
+      "sourceBytesMatch": true,
+      "sealId": "375cd9f6138a65938b61f76b970c4f5968a12bac65816d042acbab5f69e42f63"
+    },
+    {
+      "ref": "verification/stable-area-narration-http-acceptance-20261007",
+      "sourceBytesMatch": true,
+      "sealId": "74945ba83bbcd251be235ef198a36aae9b3bae599339511a3a56689c61611aed"
+    }
+  ],
+  "previousHeadCount": 771,
+  "previousHeadsUnchanged": true,
+  "totalRefs": 787,
+  "limitations": [
+    "Only six full test files registered in this cohort; engine/public diagnostic files remain unsealed. Broader old source snapshots for world/engine/service/fixtures need subsequent freshness reconciliation. No production or old-world migration proof."
+  ]
+}

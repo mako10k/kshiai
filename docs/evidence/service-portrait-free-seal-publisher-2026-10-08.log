@@ -1,0 +1,8 @@
+sealed all-tests-20261008/design-portrait-v3-bounded
+sealed all-tests-20261008/implementation-portrait-v3-activation
+sealed all-tests-20261008/implementation-portrait-v3-route
+sealed verification/portrait-v3-bounded-20261008
+sealed all-tests-20261008/design-free-action-service-bounded
+sealed all-tests-20261008/implementation-free-action-service-bounded
+sealed verification/free-action-service-bounded-20261008
+readback complete

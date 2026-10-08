@@ -8,7 +8,7 @@
     },
     {
       "path": "e2e/v3-local-integration.spec.ts",
-      "ref": "verification/vt103-local-integration-20260930"
+      "ref": "verification/local-integration-current-20261008"
     },
     {
       "path": "backend/src/services/battle-participation-eligibility.test.ts",
@@ -24,7 +24,7 @@
     },
     {
       "path": "backend/src/services/v3-battle-creation.test.ts",
-      "ref": "verification/vt102-v3-battle-paths-20260930"
+      "ref": "verification/v3-battle-creation-recovery-bounded-20261008"
     },
     {
       "path": "packages/shared/src/character-battle-compiler-v4.test.ts",
@@ -36,31 +36,31 @@
     },
     {
       "path": "backend/src/llm/character-definition-response-schema.test.ts",
-      "ref": "verification/character-definition-response-schema"
+      "ref": "verification/character-definition-response-schema-recovery-bounded-20261008"
     },
     {
       "path": "backend/src/llm/character-migration-ollama-provider.test.ts",
-      "ref": "verification/character-migration-ollama-adapter"
+      "ref": "verification/character-migration-ollama-provider-recovery-bounded-20261008"
     },
     {
       "path": "backend/src/llm/character-migration-probe-provider.test.ts",
-      "ref": "verification/semantic-probe-provider"
+      "ref": "verification/migration-probe-provider-current-20261007"
     },
     {
       "path": "backend/src/llm/character-migration-response-schema.test.ts",
-      "ref": "verification/character-migration-response-schema"
+      "ref": "verification/migration-response-projection-current-20261007"
     },
     {
       "path": "backend/src/llm/openai-compatible-character-definition.test.ts",
-      "ref": "verification/character-authoring-response-schema"
+      "ref": "verification/openai-compatible-character-definition-recovery-bounded-20261008"
     },
     {
       "path": "backend/src/llm/provider-json.test.ts",
-      "ref": "verification/provider-json-v1"
+      "ref": "verification/provider-json-accounting-20261007"
     },
     {
       "path": "backend/src/llm/semantic-authoring-provider.test.ts",
-      "ref": "verification/semantic-authoring-provider-v1"
+      "ref": "verification/semantic-recovery-provider-bounded-20261008"
     },
     {
       "path": "backend/src/repositories/local-v3-trial-characters.test.ts",
@@ -68,7 +68,7 @@
     },
     {
       "path": "backend/src/repositories/character-semantic-migration.test.ts",
-      "ref": "verification/character-semantic-migration-persistence"
+      "ref": "verification/migration-repair-persistence-current-20261007"
     },
     {
       "path": "backend/src/repositories/semantic-authoring.test.ts",
@@ -80,19 +80,19 @@
     },
     {
       "path": "backend/src/services/character-migration-diagnostics.test.ts",
-      "ref": "verification/character-migration-diagnostics"
+      "ref": "verification/migration-repair-diagnostics-current-20261007"
     },
     {
       "path": "backend/src/services/character-semantic-migration.test.ts",
-      "ref": "verification/character-semantic-migration-generation"
+      "ref": "verification/migration-repair-generation-current-20261007"
     },
     {
       "path": "backend/src/services/semantic-authoring/adapters/character-v3.test.ts",
-      "ref": "verification/character-v3-migrate-preservation-bound-current-20260925"
+      "ref": "verification/semantic-recovery-character-adapter-bounded-20261008"
     },
     {
       "path": "backend/src/services/semantic-authoring/conformance.test.ts",
-      "ref": "verification/semantic-authoring-conformance-current-provisional-20260918"
+      "ref": "verification/semantic-recovery-conformance-bounded-20261008"
     },
     {
       "path": "backend/src/services/semantic-authoring/kernel-foundation.test.ts",
@@ -100,7 +100,7 @@
     },
     {
       "path": "backend/src/services/semantic-authoring/public-mapping.test.ts",
-      "ref": "verification/semantic-authoring-public-mapping-v1"
+      "ref": "verification/semantic-recovery-public-mapping-bounded-20261008"
     },
     {
       "path": "backend/src/services/semantic-authoring/scripted-ports.test.ts",
@@ -108,7 +108,7 @@
     },
     {
       "path": "e2e/character-focused-review.spec.ts",
-      "ref": "verification/vt104-character-focused-review-20260930"
+      "ref": "verification/character-focused-review-current-20261008"
     },
     {
       "path": "packages/shared/src/character-definition-v3.test.ts",
@@ -116,11 +116,11 @@
     },
     {
       "path": "packages/shared/src/character-semantic-change-set.test.ts",
-      "ref": "verification/character-semantic-change-set-current-20260918"
+      "ref": "verification/migration-change-set-wire-current-20261007"
     },
     {
       "path": "packages/shared/src/character-semantic-authoring.test.ts",
-      "ref": "verification/semantic-authoring-character-contracts-v1"
+      "ref": "verification/semantic-recovery-character-contracts-bounded-20261008"
     },
     {
       "path": "packages/shared/src/semantic-authoring.test.ts",
@@ -156,7 +156,7 @@
     },
     {
       "path": "backend/src/routes-cutover-http.test.ts",
-      "ref": "verification/vt104-routes-cutover-http-20260930"
+      "ref": "verification/routes-cutover-http-recovery-bounded-20261008"
     },
     {
       "path": "backend/src/services/cutover-background-dispatch.test.ts",
@@ -180,11 +180,11 @@
     },
     {
       "path": "backend/src/llm/provider-accounting.test.ts",
-      "ref": "verification/vt104-provider-accounting-20260930"
+      "ref": "verification/provider-accounting-current-20261007"
     },
     {
       "path": "backend/src/services/supabase-identity.test.ts",
-      "ref": "verification/vt104-supabase-identity-20260930"
+      "ref": "verification/supabase-signed-identity-current-20261007"
     },
     {
       "path": "backend/src/services/cutover-stage-smoke.test.ts",
@@ -216,7 +216,7 @@
     },
     {
       "path": "backend/src/services/character-v2-update-boundary.test.ts",
-      "ref": "verification/character-v2-write-retirement-20261002"
+      "ref": "verification/character-v2-update-boundary-recovery-bounded-20261008"
     },
     {
       "path": "backend/src/services/character-historical-view.test.ts",
@@ -233,6 +233,762 @@
     {
       "path": "e2e/history-character-navigation.spec.ts",
       "ref": "verification/history-character-navigation-20261002"
+    },
+    {
+      "path": "packages/shared/src/awareness-guidance.test.ts",
+      "ref": "awareness-guidance-20261007/verification-guidance"
+    },
+    {
+      "path": "backend/src/services/awareness-context.test.ts",
+      "ref": "awareness-guidance-20261007/verification-context"
+    },
+    {
+      "path": "backend/src/services/awareness-execution.test.ts",
+      "ref": "awareness-guidance-20261007/verification-execution"
+    },
+    {
+      "path": "packages/shared/src/action-intent-contract.test.ts",
+      "ref": "verification/action-intent-contract-20261007"
+    },
+    {
+      "path": "scripts/test-authority-empty.test.mjs",
+      "ref": "verification/test-authority-execution-gate-20261007"
+    },
+    {
+      "path": "packages/shared/src/awareness-state.test.ts",
+      "ref": "verification/awareness-state-20261007"
+    },
+    {
+      "path": "packages/shared/src/awareness-policy.test.ts",
+      "ref": "verification/awareness-policy-20261007"
+    },
+    {
+      "path": "packages/shared/src/awareness-pipeline.test.ts",
+      "ref": "verification/awareness-pipeline-20261007"
+    },
+    {
+      "path": "backend/src/services/character-authoring-service.test.ts",
+      "ref": "verification/retired-character-authoring-20261007"
+    },
+    {
+      "path": "packages/shared/src/battle-contract-types.test.ts",
+      "ref": "verification/battle-contract-types-20261007"
+    },
+    {
+      "path": "backend/src/services/awareness-clock.test.ts",
+      "ref": "verification/awareness-clock-20261007"
+    },
+    {
+      "path": "backend/src/routes-authoring-read-purity.test.ts",
+      "ref": "verification/authoring-read-purity-current-20261007"
+    },
+    {
+      "path": "packages/shared/src/structured-battlefield.test.ts",
+      "ref": "verification/own-area-structured-battlefield-20261007"
+    },
+    {
+      "path": "backend/src/routes-structured-battlefield-acceptance.test.ts",
+      "ref": "verification/stable-area-battlefield-http-acceptance-20261007"
+    },
+    {
+      "path": "backend/src/repositories/system-battlefield-seed.test.ts",
+      "ref": "verification/system-battlefield-seed-20261007"
+    },
+    {
+      "path": "backend/src/services/character-action-fallback.test.ts",
+      "ref": "verification/action-fallback-20261007"
+    },
+    {
+      "path": "backend/src/repositories/character-assets-v2.test.ts",
+      "ref": "verification/character-assets-repository-20261007"
+    },
+    {
+      "path": "backend/src/services/character-v3-profile-adapter.test.ts",
+      "ref": "verification/character-profile-v3-projection-20261007"
+    },
+    {
+      "path": "backend/src/services/llm-usage-cost-report.test.ts",
+      "ref": "verification/usage-cost-report-20261007"
+    },
+    {
+      "path": "backend/src/repositories/llm-usage.test.ts",
+      "ref": "verification/usage-ledger-sdk-20261007"
+    },
+    {
+      "path": "backend/src/llm/llm-physical-completion.test.ts",
+      "ref": "verification/physical-completion-scope-20261007"
+    },
+    {
+      "path": "backend/src/llm/awareness-output-contract.test.ts",
+      "ref": "verification/action-output-guidance-20261007"
+    },
+    {
+      "path": "backend/src/llm/awareness-latent-output-guidance.test.ts",
+      "ref": "verification/latent-output-brevity-20261007"
+    },
+    {
+      "path": "backend/src/llm/prompt-prose.test.ts",
+      "ref": "verification/prompt-prose-20261007"
+    },
+    {
+      "path": "backend/src/llm/awareness-request.test.ts",
+      "ref": "verification/awareness-request-20261007"
+    },
+    {
+      "path": "backend/src/llm/model-request-options.test.ts",
+      "ref": "verification/model-request-options-20261007"
+    },
+    {
+      "path": "backend/src/llm/openai-compatible-model-options.test.ts",
+      "ref": "verification/sdk-model-options-20261007"
+    },
+    {
+      "path": "backend/src/llm/awareness-provider.test.ts",
+      "ref": "verification/awareness-role-provider-20261007"
+    },
+    {
+      "path": "backend/src/llm/awareness-narration.test.ts",
+      "ref": "verification/awareness-narration-batch-20261007"
+    },
+    {
+      "path": "backend/src/llm/awareness-frozen-narration.test.ts",
+      "ref": "verification/awareness-frozen-narration-20261007"
+    },
+    {
+      "path": "backend/src/llm/awareness-provider-factory.test.ts",
+      "ref": "verification/awareness-provider-factory-20261007"
+    },
+    {
+      "path": "backend/src/llm/adjudication-prompt-prose.test.ts",
+      "ref": "verification/adjudication-prose-20261007"
+    },
+    {
+      "path": "backend/src/llm/awareness-dispatch-admission.test.ts",
+      "ref": "verification/awareness-dispatch-admission-20261007"
+    },
+    {
+      "path": "backend/src/llm/awareness-dispatch-context.test.ts",
+      "ref": "verification/awareness-dispatch-context-20261007"
+    },
+    {
+      "path": "backend/src/llm/awareness-adjudication-result.test.ts",
+      "ref": "verification/awareness-adjudication-result-20261007"
+    },
+    {
+      "path": "backend/src/llm/narration-prompt-contract.test.ts",
+      "ref": "verification/narration-prompt-contract-20261007"
+    },
+    {
+      "path": "backend/src/llm/provider-response-schema.test.ts",
+      "ref": "verification/provider-response-schema-20261007"
+    },
+    {
+      "path": "packages/shared/src/narration-perception.test.ts",
+      "ref": "verification/narration-perception-projection-20261007"
+    },
+    {
+      "path": "backend/src/llm/openai-compatible-narration.test.ts",
+      "ref": "verification/direct-narration-projection-input-20261007"
+    },
+    {
+      "path": "backend/src/llm/provider-errors.test.ts",
+      "ref": "verification/provider-errors-20261007"
+    },
+    {
+      "path": "backend/src/llm/provider-retry.test.ts",
+      "ref": "verification/provider-retry-20261007"
+    },
+    {
+      "path": "backend/src/llm/narrator-presentation-focus-evaluation.test.ts",
+      "ref": "verification/presentation-protocol-20261007"
+    },
+    {
+      "path": "packages/shared/src/character-focus-policy.test.ts",
+      "ref": "verification/character-focus-shadow-20261007"
+    },
+    {
+      "path": "backend/src/llm/character-focus-ablation.test.ts",
+      "ref": "verification/character-focus-ablation-20261007"
+    },
+    {
+      "path": "backend/src/llm/character-focus-ablation-report.test.ts",
+      "ref": "verification/character-focus-ablation-report-20261007"
+    },
+    {
+      "path": "packages/shared/src/profile-grounding.test.ts",
+      "ref": "verification/profile-grounding-20261007"
+    },
+    {
+      "path": "packages/shared/src/structured-assets.test.ts",
+      "ref": "verification/authoring-progress-presentation-20261007"
+    },
+    {
+      "path": "packages/shared/src/structured-narration.test.ts",
+      "ref": "verification/structured-narration-20261007"
+    },
+    {
+      "path": "backend/src/routes-structured-narration-acceptance.test.ts",
+      "ref": "verification/stable-area-narration-http-acceptance-20261007"
+    },
+    {
+      "path": "packages/shared/src/turn-event-contract.test.ts",
+      "ref": "verification/turn-event-contract-20261007"
+    },
+    {
+      "path": "packages/shared/src/utterance-perception.test.ts",
+      "ref": "verification/utterance-perception-20261007"
+    },
+    {
+      "path": "packages/shared/src/semantic-state.test.ts",
+      "ref": "verification/semantic-state-20261007"
+    },
+    {
+      "path": "packages/shared/src/reposition-transition.test.ts",
+      "ref": "verification/own-area-reposition-transition-20261007"
+    },
+    {
+      "path": "packages/shared/src/battle-world.test.ts",
+      "ref": "verification/own-area-world-state-20261007"
+    },
+    {
+      "path": "packages/shared/src/awareness-battle.test.ts",
+      "ref": "verification/stable-area-awareness-battle-contract-20261007"
+    },
+    {
+      "path": "packages/shared/src/action-norm-contract.test.ts",
+      "ref": "verification/conditional-action-norm-contract-20261007"
+    },
+    {
+      "path": "packages/shared/src/compiler-phase-contract.test.ts",
+      "ref": "verification/conditional-compiler-phase-contract-20261007"
+    },
+    {
+      "path": "backend/src/scripts/semantic-migration-probe-fixture.test.ts",
+      "ref": "verification/semantic-migration-probe-fixture-recovery-bounded-20261008"
+    },
+    {
+      "path": "backend/src/scripts/semantic-migration-probe-run.test.ts",
+      "ref": "verification/semantic-migration-probe-run-recovery-bounded-20261008"
+    },
+    {
+      "path": "packages/shared/src/battle-temporal-rules.test.ts",
+      "ref": "verification/temporal-plan-current-20261007"
+    },
+    {
+      "path": "packages/shared/src/battle-causal-execution.test.ts",
+      "ref": "verification/causal-checkpoint-current-20261007"
+    },
+    {
+      "path": "packages/shared/src/perception-quantization.test.ts",
+      "ref": "verification/perception-quantization-current-20261007"
+    },
+    {
+      "path": "packages/shared/src/narration-perspective.test.ts",
+      "ref": "verification/narration-perspective-current-20261007"
+    },
+    {
+      "path": "packages/shared/src/battle-turn-causal-receipt.test.ts",
+      "ref": "verification/turn-causal-receipt-current-20261007"
+    },
+    {
+      "path": "packages/shared/src/perception.test.ts",
+      "ref": "verification/perception-schema-current-20261007"
+    },
+    {
+      "path": "packages/shared/src/perception-projection.test.ts",
+      "ref": "verification/perception-projection-current-20261007"
+    },
+    {
+      "path": "backend/src/account-access.test.ts",
+      "ref": "verification/account-realm-access-current-20261007"
+    },
+    {
+      "path": "backend/src/auth.test.ts",
+      "ref": "verification/authentication-persistence-current-20261007"
+    },
+    {
+      "path": "backend/src/origin-verification.test.ts",
+      "ref": "verification/origin-secret-comparison-current-20261007"
+    },
+    {
+      "path": "frontend/src/authenticated-fetch.test.ts",
+      "ref": "verification/browser-authenticated-fetch-current-20261007"
+    },
+    {
+      "path": "frontend/src/battle-narration.test.ts",
+      "ref": "verification/narration-client-reducer-current-20261007"
+    },
+    {
+      "path": "frontend/src/battle-screen.test.ts",
+      "ref": "verification/narration-client-screen-current-20261007"
+    },
+    {
+      "path": "backend/src/llm/character-expression-contract.test.ts",
+      "ref": "verification/retained-compact-expression-decoder-current-20261007"
+    },
+    {
+      "path": "backend/src/llm/perception-evidence.test.ts",
+      "ref": "verification/committed-perception-evidence-current-20261007"
+    },
+    {
+      "path": "backend/src/llm/perception-prompt-strategy.test.ts",
+      "ref": "verification/perception-fixed-evaluation-current-20261007"
+    },
+    {
+      "path": "frontend/src/match-selection-preferences.test.ts",
+      "ref": "verification/selection-preferences-current-20261007"
+    },
+    {
+      "path": "frontend/src/battle-scroll.test.ts",
+      "ref": "verification/battle-scroll-viewport-current-20261007"
+    },
+    {
+      "path": "backend/src/llm/provider-config.test.ts",
+      "ref": "verification/provider-config-boundaries-current-20261007"
+    },
+    {
+      "path": "backend/src/repositories/test-realm-assets.test.ts",
+      "ref": "verification/test-realm-assets-current-20261007"
+    },
+    {
+      "path": "backend/src/services/e2e-session.test.ts",
+      "ref": "verification/injected-e2e-session-current-20261007"
+    },
+    {
+      "path": "backend/src/routes-e2e-session.test.ts",
+      "ref": "verification/e2e-session-middleware-current-20261007"
+    },
+    {
+      "path": "packages/shared/src/dialogue-context.test.ts",
+      "ref": "verification/retained-dialogue-context-current-20261007"
+    },
+    {
+      "path": "packages/shared/src/compact-psyche-decode.test.ts",
+      "ref": "verification/retained-compact-psyche-decoder-current-20261007"
+    },
+    {
+      "path": "packages/shared/src/psyche-reaction-policy.test.ts",
+      "ref": "verification/retained-psyche-reaction-v1-current-20261007"
+    },
+    {
+      "path": "packages/shared/src/conscious-dynamic.test.ts",
+      "ref": "verification/dynamic-v4-shared-current-20261007"
+    },
+    {
+      "path": "backend/src/llm/conscious-dynamic.test.ts",
+      "ref": "verification/dynamic-v4-provider-current-20261007"
+    },
+    {
+      "path": "backend/src/repositories/dialogue-pipeline-settings.test.ts",
+      "ref": "verification/dialogue-settings-storage-current-20261007"
+    },
+    {
+      "path": "backend/src/services/conscious-agency-binding.test.ts",
+      "ref": "verification/retained-agency-v3-binding-current-20261007"
+    },
+    {
+      "path": "backend/src/services/conscious-agency-runtime.test.ts",
+      "ref": "verification/retained-agency-v3-runtime-current-20261007"
+    },
+    {
+      "path": "backend/src/services/conscious-agency-persistence.test.ts",
+      "ref": "verification/retained-agency-v3-persistence-current-20261007"
+    },
+    {
+      "path": "backend/src/repositories/battle-awareness-narration-reservation.test.ts",
+      "ref": "verification/narration-reservation-storage-current-20261007"
+    },
+    {
+      "path": "backend/src/repositories/battle-awareness-narrator.test.ts",
+      "ref": "verification/narrator-continuity-storage-current-20261007"
+    },
+    {
+      "path": "backend/src/services/awareness-narration-claim-snapshot.test.ts",
+      "ref": "verification/narration-claim-snapshot-current-20261007"
+    },
+    {
+      "path": "backend/src/services/awareness-narration-event-storage.test.ts",
+      "ref": "verification/narration-event-storage-current-20261007"
+    },
+    {
+      "path": "backend/src/services/awareness-narration-worker.test.ts",
+      "ref": "verification/awareness-narration-worker-bounded-current-20261007"
+    },
+    {
+      "path": "backend/src/services/awareness-narration-continuation.test.ts",
+      "ref": "verification/awareness-narration-continuation-bounded-current-20261007"
+    },
+    {
+      "path": "backend/src/services/awareness-narration-queue.test.ts",
+      "ref": "verification/awareness-narration-queue-bounded-current-20261007"
+    },
+    {
+      "path": "backend/src/services/awareness-narration-urgency.test.ts",
+      "ref": "verification/awareness-narration-urgency-bounded-current-20261007"
+    },
+    {
+      "path": "backend/src/scripts/awareness-narration-convergence.test.ts",
+      "ref": "verification/awareness-narration-convergence-bounded-current-20261007"
+    },
+    {
+      "path": "backend/src/services/awareness-world-commit.test.ts",
+      "ref": "verification/awareness-world-commit-bounded-current-20261007"
+    },
+    {
+      "path": "backend/src/services/awareness-expression-commit.test.ts",
+      "ref": "verification/awareness-expression-commit-bounded-current-20261007"
+    },
+    {
+      "path": "backend/src/services/awareness-adjudication-guard.test.ts",
+      "ref": "verification/awareness-adjudication-guard-bounded-current-20261007"
+    },
+    {
+      "path": "backend/src/services/normal-awareness-policy.test.ts",
+      "ref": "verification/normal-awareness-policy-bounded-current-20261007"
+    },
+    {
+      "path": "backend/src/services/distributed-guard.test.ts",
+      "ref": "verification/distributed-guard-bounded-current-20261007"
+    },
+    {
+      "path": "backend/src/services/battle-causal-narration.test.ts",
+      "ref": "verification/battle-causal-narration-bounded-current-20261007"
+    },
+    {
+      "path": "backend/src/services/battle-consumer-wiring.test.ts",
+      "ref": "verification/battle-consumer-wiring-bounded-current-20261007"
+    },
+    {
+      "path": "packages/shared/src/character-definition-check.test.ts",
+      "ref": "verification/character-definition-check-bounded-character-contract-20261007"
+    },
+    {
+      "path": "packages/shared/src/character-definition-rules.test.ts",
+      "ref": "verification/character-definition-rules-bounded-character-contract-20261007"
+    },
+    {
+      "path": "packages/shared/src/structured-character.test.ts",
+      "ref": "verification/structured-character-bounded-character-contract-20261007"
+    },
+    {
+      "path": "packages/shared/src/character.test.ts",
+      "ref": "verification/character-bounded-character-contract-20261007"
+    },
+    {
+      "path": "packages/shared/src/character-manifestation.test.ts",
+      "ref": "verification/character-manifestation-bounded-character-contract-20261007"
+    },
+    {
+      "path": "packages/shared/src/battle-asset-manifest.test.ts",
+      "ref": "verification/battle-asset-manifest-bounded-character-contract-20261007"
+    },
+    {
+      "path": "backend/src/repositories/character-generation-reader.test.ts",
+      "ref": "verification/character-generation-reader-bounded-character-contract-20261007"
+    },
+    {
+      "path": "backend/src/repositories/battle-awareness-creation.test.ts",
+      "ref": "verification/battle-awareness-creation-bounded-awareness-creation-20261007"
+    },
+    {
+      "path": "backend/src/repositories/battle-awareness.test.ts",
+      "ref": "verification/battle-awareness-bounded-awareness-creation-20261007"
+    },
+    {
+      "path": "backend/src/services/awareness-battle-creation.test.ts",
+      "ref": "verification/awareness-battle-creation-bounded-awareness-creation-20261007"
+    },
+    {
+      "path": "backend/src/services/awareness-battle-service.test.ts",
+      "ref": "verification/awareness-battle-service-bounded-awareness-creation-20261007"
+    },
+    {
+      "path": "backend/src/services/awareness-creation-encounter.test.ts",
+      "ref": "verification/awareness-creation-encounter-bounded-awareness-creation-20261007"
+    },
+    {
+      "path": "backend/src/services/battle-create-idempotency.test.ts",
+      "ref": "verification/battle-create-idempotency-bounded-awareness-creation-20261007"
+    },
+    {
+      "path": "backend/src/repositories/battle-awareness-postgres.test.ts",
+      "ref": "verification/battle-awareness-postgres-bounded-native-pg-20261007"
+    },
+    {
+      "path": "backend/src/repositories/battle-awareness-narration-events-postgres.test.ts",
+      "ref": "verification/battle-awareness-narration-events-postgres-bounded-native-pg-20261007"
+    },
+    {
+      "path": "backend/src/repositories/battle-awareness-narration-reservation-postgres.test.ts",
+      "ref": "verification/battle-awareness-narration-reservation-postgres-bounded-native-pg-20261007"
+    },
+    {
+      "path": "packages/shared/src/battle-engine-absence.test.ts",
+      "ref": "verification/battle-engine-absence-bounded-20261007"
+    },
+    {
+      "path": "scripts/sealgraph-runtime-dirs.test.mjs",
+      "ref": "verification/sealgraph-runtime-directories-bounded-20261007"
+    },
+    {
+      "path": "scripts/select-release-rollback-target.test.mjs",
+      "ref": "verification/rollback-selector-bounded-20261007"
+    },
+    {
+      "path": "scripts/smoke-deployment.test.mjs",
+      "ref": "verification/health-convergence-bounded-20261007"
+    },
+    {
+      "path": "scripts/r2-smoke-startup.test.mjs",
+      "ref": "verification/r2-startup-bounded-20261007"
+    },
+    {
+      "path": "infra/cloudflare-worker/src/index.test.ts",
+      "ref": "verification/worker-edge-bounded-20261007"
+    },
+    {
+      "path": "backend/src/character-name-uniqueness.test.ts",
+      "ref": "verification/character-name-helper-bounded-20261007"
+    },
+    {
+      "path": "backend/src/config-pacing.test.ts",
+      "ref": "verification/config-name-parser-bounded-20261007"
+    },
+    {
+      "path": "backend/src/image/openai-compatible.test.ts",
+      "ref": "verification/image-provider-response-bounded-20261007"
+    },
+    {
+      "path": "backend/src/services/r2-storage.test.ts",
+      "ref": "verification/r2-object-writer-bounded-20261008"
+    },
+    {
+      "path": "backend/src/services/image-service.test.ts",
+      "ref": "verification/image-prompt-failure-bounded-20261008"
+    },
+    {
+      "path": "backend/src/services/image-archive.test.ts",
+      "ref": "verification/local-media-archive-connected-20261008"
+    },
+    {
+      "path": "backend/src/postgres-config.test.ts",
+      "ref": "verification/postgres-ca-path-bounded-20261008"
+    },
+    {
+      "path": "backend/src/scripts/postgres-migrations.test.ts",
+      "ref": "verification/postgres-migration-discovery-bounded-20261008"
+    },
+    {
+      "path": "backend/src/scripts/sqlite-to-postgres.test.ts",
+      "ref": "verification/sqlite-source-inspection-bounded-20261008"
+    },
+    {
+      "path": "packages/shared/src/battlefield-definition-check.test.ts",
+      "ref": "verification/battlefield-gap-helper-bounded-20261008"
+    },
+    {
+      "path": "packages/shared/src/battle-stream.test.ts",
+      "ref": "verification/partial-narrator-helper-bounded-20261008"
+    },
+    {
+      "path": "packages/shared/src/narration-composer.test.ts",
+      "ref": "verification/narration-composer-helper-bounded-20261008"
+    },
+    {
+      "path": "packages/shared/src/narrative.test.ts",
+      "ref": "verification/narrative-helper-bounded-20261008"
+    },
+    {
+      "path": "packages/shared/src/drama.test.ts",
+      "ref": "verification/drama-helper-bounded-20261008"
+    },
+    {
+      "path": "packages/shared/src/supervisor.test.ts",
+      "ref": "verification/supervisor-helper-bounded-20261008"
+    },
+    {
+      "path": "backend/src/scripts/authenticated-read-surface-smoke.test.ts",
+      "ref": "verification/authenticated-read-probes-bounded-20261008"
+    },
+    {
+      "path": "backend/src/scripts/authenticated-sse-smoke.test.ts",
+      "ref": "verification/authenticated-terminal-sse-bounded-20261008"
+    },
+    {
+      "path": "backend/src/scripts/awareness-public-observation.test.ts",
+      "ref": "verification/awareness-usage-verifier-bounded-20261008"
+    },
+    {
+      "path": "backend/src/llm/openai-compatible-agent.test.ts",
+      "ref": "verification/agent-typed-seam-bounded-20261008"
+    },
+    {
+      "path": "backend/src/llm/openai-compatible-perception.test.ts",
+      "ref": "verification/perception-typed-seam-bounded-20261008"
+    },
+    {
+      "path": "backend/src/llm/openai-compatible-routing.test.ts",
+      "ref": "verification/routing-typed-seam-bounded-20261008"
+    },
+    {
+      "path": "backend/src/llm/openai-compatible-psyche-repair.test.ts",
+      "ref": "verification/psyche-repair-bounded-20261008"
+    },
+    {
+      "path": "backend/src/llm/mock.test.ts",
+      "ref": "verification/mock-bounded-20261008"
+    },
+    {
+      "path": "backend/src/services/character-portrait-v3.test.ts",
+      "ref": "verification/portrait-v3-bounded-20261008"
+    },
+    {
+      "path": "backend/src/services/free-action-service.test.ts",
+      "ref": "verification/free-action-service-bounded-20261008"
+    },
+    {
+      "path": "backend/src/services/internal-observability.test.ts",
+      "ref": "verification/internal-observation-private-bounded-20261008"
+    },
+    {
+      "path": "backend/src/services/character-agency-inventory.test.ts",
+      "ref": "verification/historical-agency-inventory-bounded-20261008"
+    },
+    {
+      "path": "backend/src/scripts/dialogue-quality.test.ts",
+      "ref": "verification/dialogue-quality-helper-bounded-20261008"
+    },
+    {
+      "path": "backend/src/scripts/migrate-legacy-account.test.ts",
+      "ref": "verification/migrate-legacy-account-helper-bounded-20261008"
+    },
+    {
+      "path": "backend/src/scripts/supabase-auth-smoke.test.ts",
+      "ref": "verification/supabase-auth-smoke-helper-bounded-20261008"
+    },
+    {
+      "path": "packages/shared/src/battle-policy.test.ts",
+      "ref": "verification/battle-policy-bounded-20261008"
+    },
+    {
+      "path": "packages/shared/src/battle-social.test.ts",
+      "ref": "verification/battle-social-bounded-20261008"
+    },
+    {
+      "path": "packages/shared/src/scene-beat.test.ts",
+      "ref": "verification/scene-beat-bounded-20261008"
+    },
+    {
+      "path": "packages/shared/src/conscious-agency.test.ts",
+      "ref": "verification/conscious-agency-bounded-20261008"
+    },
+    {
+      "path": "packages/shared/src/battle-causality.test.ts",
+      "ref": "verification/battle-causality-bounded-20261008"
+    },
+    {
+      "path": "packages/shared/src/battle-effects.test.ts",
+      "ref": "verification/battle-effects-bounded-20261008"
+    },
+    {
+      "path": "backend/src/repositories/battle-presentations.test.ts",
+      "ref": "verification/battle-presentations-history-bounded-20261008"
+    },
+    {
+      "path": "backend/src/repositories/battles-improvement.test.ts",
+      "ref": "verification/battles-improvement-history-bounded-20261008"
+    },
+    {
+      "path": "backend/src/services/awareness-trial-harness.test.ts",
+      "ref": "verification/awareness-trial-harness-bounded-20261008"
+    },
+    {
+      "path": "backend/src/scripts/persistent-e2e-workflow.test.ts",
+      "ref": "verification/persistent-e2e-workflow-bounded-20261008"
+    },
+    {
+      "path": "backend/src/services/semantic-authoring/revision-scope-evaluation.test.ts",
+      "ref": "verification/revision-scope-evaluation-bounded-20261008"
+    },
+    {
+      "path": "backend/src/services/semantic-authoring/revision-scope-ollama.test.ts",
+      "ref": "verification/revision-scope-ollama-bounded-20261008"
+    },
+    {
+      "path": "backend/src/scripts/persistent-battle-e2e.test.ts",
+      "ref": "verification/persistent-battle-e2e-bounded-20261008"
+    },
+    {
+      "path": "backend/src/scripts/character-authoring-a2-freeze.test.ts",
+      "ref": "verification/character-authoring-a2-freeze-bounded-20261008"
+    },
+    {
+      "path": "backend/src/services/scene-beat-wiring.test.ts",
+      "ref": "verification/scene-beat-wiring-bounded-20261008"
+    },
+    {
+      "path": "backend/src/services/battle-speech-wiring.test.ts",
+      "ref": "verification/battle-speech-wiring-bounded-20261008"
+    },
+    {
+      "path": "scripts/adr-historical-exceptions.test.mjs",
+      "ref": "verification/adr-historical-exceptions-bounded-20261008"
+    },
+    {
+      "path": "packages/shared/src/balance-observe.test.ts",
+      "ref": "verification/balance-observe-bounded-20261008"
+    },
+    {
+      "path": "e2e/battle-screen.spec.ts",
+      "ref": "verification/battle-screen-current-20261008"
+    },
+    {
+      "path": "packages/shared/src/action-feasibility.test.ts",
+      "ref": "verification/action-feasibility-bounded-20261008"
+    },
+    {
+      "path": "packages/shared/src/battle-pacing.test.ts",
+      "ref": "verification/pacing-representation-bounded-20261008"
+    },
+    {
+      "path": "backend/src/routes-structured-asset-integration.test.ts",
+      "ref": "verification/structured-asset-integration-bounded-20261008"
+    },
+    {
+      "path": "packages/shared/src/asset-visibility.test.ts",
+      "ref": "verification/owner-shared-visibility-20261008"
+    },
+    {
+      "path": "backend/src/repositories/asset-visibility.test.ts",
+      "ref": "verification/owner-backend-visibility-20261008"
+    },
+    {
+      "path": "backend/src/llm/fallback.test.ts",
+      "ref": "verification/owner-fallback-20261008"
+    },
+    {
+      "path": "backend/src/services/battle-public.test.ts",
+      "ref": "verification/owner-battle-public-20261008"
+    },
+    {
+      "path": "packages/shared/src/character-improvement.test.ts",
+      "ref": "verification/owner-improvement-20261008"
+    },
+    {
+      "path": "packages/shared/src/rating.test.ts",
+      "ref": "verification/owner-rating-arithmetic-20261008"
+    },
+    {
+      "path": "frontend/src/match-rating.test.ts",
+      "ref": "verification/owner-match-rating-20261008"
+    },
+    {
+      "path": "backend/src/repositories/characters.test.ts",
+      "ref": "verification/owner-characters-rating-20261008"
+    },
+    {
+      "path": "backend/src/services/rating-service-transaction.test.ts",
+      "ref": "verification/owner-rating-transaction-20261008"
     }
   ]
 }

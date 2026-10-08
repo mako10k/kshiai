@@ -32,3 +32,13 @@ it("rejects a token signed by a different key and missing configuration", async 
   assert.equal(await verify(undefined), null);
   assert.equal(await createSupabaseIdentityVerifier({ supabaseUrl: "", supabaseJwksUrl: "" })(signed), null);
 });
+
+it("rejects an expired token with otherwise valid identity claims", async () => {
+  const expired = await new SignJWT({ sub: "subject", role: "authenticated" })
+    .setProtectedHeader({ alg: "ES256" })
+    .setIssuer(`${settings.supabaseUrl}/auth/v1`)
+    .setAudience("authenticated")
+    .setExpirationTime(1)
+    .sign(keys.privateKey);
+  assert.equal(await verify(expired), null);
+});

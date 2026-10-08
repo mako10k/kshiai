@@ -1,0 +1,258 @@
+{
+  "thought_id": "docs-evidence-character-contract-vocabulary-rca-2026-10-07",
+  "id_source": "file",
+  "report": {
+    "engine_version": "0.1.0",
+    "document_id": "docs-evidence-character-contract-vocabulary-rca-2026-10-07",
+    "generated_at": "2026-10-07T09:46:19.286Z",
+    "summary": {
+      "fatal_count": 0,
+      "error_count": 0,
+      "warning_count": 0,
+      "info_count": 0,
+      "hint_count": 10
+    },
+    "results": [
+      {
+        "issue_id": "ISSUE-001",
+        "category": "contradiction_candidate",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "D1",
+            "role": "decision",
+            "step_id": "S-D1"
+          },
+          {
+            "ref_id": "D2",
+            "role": "decision",
+            "step_id": "S-D2"
+          }
+        ],
+        "message": "D1 と D2 は同一根拠 E1, E2, E3, U1 を共有しており、緊張関係にある可能性がある。",
+        "rationale": "複数の decision が同じ based_on 参照を共有しているため、観点と結論の整合性を再確認するべきである。",
+        "metadata": {
+          "shared_refs": [
+            "E1",
+            "E2",
+            "E3",
+            "U1"
+          ],
+          "line": 13,
+          "column": 10,
+          "end_column": 12
+        }
+      },
+      {
+        "issue_id": "ISSUE-002",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "CharacterContractVocabulary",
+            "role": "domain"
+          }
+        ],
+        "message": "domain CharacterContractVocabulary の description は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 2,
+          "column": 3,
+          "text": "Remove the contract-test vocabulary widening without changing negative-membership behavior",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-003",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "P1",
+            "role": "problem"
+          }
+        ],
+        "message": "problem P1 は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 4,
+          "column": 3,
+          "text": "structured-character.test.ts casts the registered observed-event-kind tuple to readonly string[] before testing direct_address membership.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-004",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "E1",
+            "role": "evidence",
+            "step_id": "S-E1"
+          }
+        ],
+        "message": "evidence E1 は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 6,
+          "column": 3,
+          "text": "The observed-event vocabulary excludes direct_address, whereas the registered speech reactTo vocabulary includes it. The original assertion expects false and is accompanied by safeParse rejection and accepted utterance tests.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-005",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "E2",
+            "role": "evidence",
+            "step_id": "S-E2"
+          }
+        ],
+        "message": "evidence E2 は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 8,
+          "column": 3,
+          "text": "The assertion widens a contract constant to bypass the narrow includes parameter type. Runtime TypeScript erasure leaves the original values unchanged; a passing assertion cannot prove the absence of this escape. The separate schema rejection test already verifies runtime exclusion.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-006",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "E3",
+            "role": "evidence",
+            "step_id": "S-E3"
+          }
+        ],
+        "message": "evidence E3 は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 10,
+          "column": 3,
+          "text": "Repository rules require contract-related escapes found during a repair to be closed, preserving required information and original test cases. Independent read-only review identified exactly this expression among five files.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-007",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "U1",
+            "role": "premise",
+            "step_id": "S-U1"
+          }
+        ],
+        "message": "premise U1 は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 12,
+          "column": 3,
+          "text": "This is a local test-expression type bypass, not evidence of runtime vocabulary widening, production data loss or a historical introduction cause. A string-typed Set can accept an arbitrary query while retaining the same literal source values.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-008",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "D1",
+            "role": "decision",
+            "step_id": "S-D1"
+          }
+        ],
+        "message": "decision D1 は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 14,
+          "column": 3,
+          "text": "The producing condition is selecting a narrow literal tuple includes signature then asserting the tuple as broad strings to query an intentionally unsupported value. Remove the cast by constructing Set<string> from the unchanged tuple and testing has(direct_address). Preserve the false expectation, schema rejection, original test labels and all other assertions. No production type, schema, vocabulary or behavior changes.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-009",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "D2",
+            "role": "decision",
+            "step_id": "S-D2"
+          }
+        ],
+        "message": "decision D2 は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 16,
+          "column": 3,
+          "text": "Run all original seven-file cases, standalone strict imported-type check and workspace check. Compare original assertions except for this explicitly equivalent membership operation; establish unchanged literal input and expected false. Seal only the reviewed pure schema/helper/reader scope and preserve the global unsealed stop.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-010",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "D1",
+            "role": "decision",
+            "step_id": "S-D1"
+          },
+          {
+            "ref_id": "D2",
+            "role": "decision",
+            "step_id": "S-D2"
+          }
+        ],
+        "message": "D1 と D2 は意味的に近接している可能性がある。",
+        "metadata": {
+          "line": 13,
+          "column": 10,
+          "end_column": 12,
+          "similarity": 0.6603,
+          "semantic_distance": 0.3397,
+          "embedding_provider": "ollama",
+          "embedding_model": "nomic-embed-text"
+        }
+      }
+    ],
+    "query_results": []
+  }
+}

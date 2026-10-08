@@ -1,0 +1,149 @@
+{
+  "entries": [
+    {
+      "key": "design-scene-wiring-bounded",
+      "path": "docs/scene-speech-test-contract-review-2026-10-08.md",
+      "parents": [
+        "scene",
+        "clock",
+        "closed",
+        "historical"
+      ],
+      "scope": "Historical scene beat closure/ordered deferral/live continuation only; no newV5 policy migration, providerquality or publiccompletion.",
+      "ref": "all-tests-20261008/design-scene-wiring-bounded",
+      "test": false,
+      "sha256": "ffec5e085e909e7f00ed9d1cea1440a40e670713b14706a1ded86688eda31cf6",
+      "sealId": "c84a92509d1b10ff08ea94a32e112eb6182d901879465e12e2eaeff4dd1670ab",
+      "causeSealIds": [
+        "5e8a10263f039ce3036187193c3182db2bf0648c40d8254aa5d9a2c9c15ad890",
+        "eca19b9925440ce3fdae98983a9121f3a887ad7a8ba137528209a6817c3dfa95",
+        "2c84ef3d0dd122e76543935595e774cfd33957cb01713505644e50f9ec5678ba",
+        "4a236b55e9ad9e4aa54eb2c6bbe9d77e0a318881ba8328363505153d16e151dd"
+      ]
+    },
+    {
+      "key": "design-speech-wiring-bounded",
+      "path": "docs/scene-speech-test-contract-review-2026-10-08.md",
+      "parents": [
+        "requirements",
+        "character",
+        "canonical",
+        "channels",
+        "expression",
+        "latest"
+      ],
+      "scope": "Retained schema2 committed speech/canonical-observer/narrator semantic wiring only; complete typed fixture, all37cases250assertions. No fullnewV5 integration, live quality, deployment or exhaustiveprivacy certification.",
+      "ref": "all-tests-20261008/design-speech-wiring-bounded",
+      "test": false,
+      "sha256": "ffec5e085e909e7f00ed9d1cea1440a40e670713b14706a1ded86688eda31cf6",
+      "sealId": "76ac950c0ec5964f4e43521dbf4f42f8fb1b2c08d1f57ddcb8b1dd519da05655",
+      "causeSealIds": [
+        "203e66fc4e30772adab026012c67f1b1ac4ca86ad2ada11b501c639a27a19eac",
+        "51b88502ce6cf07710e956c6d10f128b83233b93d97309ce392a37a631be3dba",
+        "bbdf88f6e4a55ed11c978c75df29f590ddd1d99c7383eac1a9b26d54609c9031",
+        "09e78a830856b823afef86d311752163722c1c37c3c6b7c9b17a1da63649af21",
+        "81c85423654dba4a056b6ca9844f1bf5569fbaff36621c3b9e05efabd9dcdc36",
+        "9aae6f378e9b227f6909912129368e8317bdc4d773933342da1ca3914be6dae0"
+      ]
+    },
+    {
+      "key": "scene-beat-wiring-bounded-20261008",
+      "path": "backend/src/services/scene-beat-wiring.test.ts",
+      "parents": [
+        "design-scene-wiring-bounded",
+        "service",
+        "storage",
+        "scene-producer",
+        "battle-schema"
+      ],
+      "scope": "Historical scene beat closure/ordered deferral/live continuation only; no newV5 policy migration, providerquality or publiccompletion.",
+      "ref": "verification/scene-beat-wiring-bounded-20261008",
+      "test": true,
+      "sha256": "76e81f3717ecb271da902e629e6cc44cb21454f154b5599ca712dcf998616490",
+      "sealId": "1b7674b7d5986b4784a2e270db6bb4392fff4987559e0942d2bb7553743b086a",
+      "causeSealIds": [
+        "c84a92509d1b10ff08ea94a32e112eb6182d901879465e12e2eaeff4dd1670ab",
+        "2eae8cc721eb57bccdb6600c1bcdf5c9c9cf72d1d2dc4feb7fb0f0d1b715b3bb",
+        "c13f788ff9274a1abf7cc32574a4882693f2a5eed8082bdec37afdf9216023e3",
+        "fc0912642cea1b6d5c26f1e87b0255f1a7078b17dd42021f437c4d99df920f73",
+        "dea87dce601f04086669be004a795680aa84ccff0dfa3091dcdff9fe1338ee72"
+      ]
+    },
+    {
+      "key": "battle-speech-wiring-bounded-20261008",
+      "path": "backend/src/services/battle-speech-wiring.test.ts",
+      "parents": [
+        "design-speech-wiring-bounded",
+        "service",
+        "activation",
+        "battle-schema",
+        "social",
+        "narration",
+        "utterance",
+        "dialogue",
+        "sdk"
+      ],
+      "scope": "Retained schema2 committed speech/canonical-observer/narrator semantic wiring only; complete typed fixture, all37cases250assertions. No fullnewV5 integration, live quality, deployment or exhaustiveprivacy certification.",
+      "ref": "verification/battle-speech-wiring-bounded-20261008",
+      "test": true,
+      "sha256": "9546f063aaceec17aa7cd528bde0ad91431a3e0d803f65bf96b850656314ff48",
+      "sealId": "2d5c03f299e5ab8f4e4088010c51bafd8660b70fcb4580d936ae3e04cb88ba6b",
+      "causeSealIds": [
+        "76ac950c0ec5964f4e43521dbf4f42f8fb1b2c08d1f57ddcb8b1dd519da05655",
+        "2eae8cc721eb57bccdb6600c1bcdf5c9c9cf72d1d2dc4feb7fb0f0d1b715b3bb",
+        "e966130abcf3866532407c9296999c40c724cd7bf693418cd2610155dbb36535",
+        "dea87dce601f04086669be004a795680aa84ccff0dfa3091dcdff9fe1338ee72",
+        "60bc354087b631ce0e235a08657a38c55e5cb6ecc8036eebd4caa5dc9c8c9dec",
+        "bd16bf609c83970863080df28633127aa3f7fcd9beff89c797adff15c38789fa",
+        "a6bf11b8b7f44ce01470acc41b8b93ac2f8aa84b08c9461ea2016e6795dbc912",
+        "d593d2fc8a2f959aa2bc71a87f492d5e34a9390c1089bdaed1d843483755adcd",
+        "42b6ff80a71caa184ae9ccec1a087e025eb5e831d7e900d23bb08860ef918df4"
+      ]
+    }
+  ],
+  "roots": {
+    "requirements": "all-tests-20261007/authority-semantic-observation-requirements",
+    "scene": "all-tests-20261008/authority-scene-beat",
+    "clock": "all-tests-20261008/authority-scene-clock",
+    "closed": "all-tests-20261007/authority-closed-contract",
+    "historical": "awareness-guidance-20261007/authority-current",
+    "character": "all-tests-20261007/authority-character-profile-support",
+    "canonical": "all-tests-20261007/authority-canonical-placement-separation",
+    "channels": "all-tests-20261007/authority-observer-sensory-channels",
+    "expression": "all-tests-20261007/authority-separated-compact-expression",
+    "latest": "all-tests-20261007/authority-canonical-narration-latest",
+    "service": "all-tests-20261008/implementation-boundary-battle",
+    "storage": "all-tests-20261008/implementation-boundary-battles",
+    "activation": "all-tests-20261007/implementation-retained-agency-v3-activation",
+    "battle-schema": "all-tests-20261008/implementation-retained-agency-schema-bounded",
+    "social": "all-tests-20261008/implementation-battle-social-bounded",
+    "scene-producer": "all-tests-20261008/implementation-scene-beat-bounded",
+    "narration": "all-tests-20261007/implementation-narration-view-projections",
+    "utterance": "all-tests-20261007/implementation-committed-utterance-perception",
+    "dialogue": "all-tests-20261007/implementation-retained-dialogue-snapshots",
+    "sdk": "all-tests-20261008/implementation-openai-compatible-character-definition-recovery-bounded"
+  },
+  "rootSealIds": {
+    "requirements": "203e66fc4e30772adab026012c67f1b1ac4ca86ad2ada11b501c639a27a19eac",
+    "scene": "5e8a10263f039ce3036187193c3182db2bf0648c40d8254aa5d9a2c9c15ad890",
+    "clock": "eca19b9925440ce3fdae98983a9121f3a887ad7a8ba137528209a6817c3dfa95",
+    "closed": "2c84ef3d0dd122e76543935595e774cfd33957cb01713505644e50f9ec5678ba",
+    "historical": "4a236b55e9ad9e4aa54eb2c6bbe9d77e0a318881ba8328363505153d16e151dd",
+    "character": "51b88502ce6cf07710e956c6d10f128b83233b93d97309ce392a37a631be3dba",
+    "canonical": "bbdf88f6e4a55ed11c978c75df29f590ddd1d99c7383eac1a9b26d54609c9031",
+    "channels": "09e78a830856b823afef86d311752163722c1c37c3c6b7c9b17a1da63649af21",
+    "expression": "81c85423654dba4a056b6ca9844f1bf5569fbaff36621c3b9e05efabd9dcdc36",
+    "latest": "9aae6f378e9b227f6909912129368e8317bdc4d773933342da1ca3914be6dae0",
+    "service": "2eae8cc721eb57bccdb6600c1bcdf5c9c9cf72d1d2dc4feb7fb0f0d1b715b3bb",
+    "storage": "c13f788ff9274a1abf7cc32574a4882693f2a5eed8082bdec37afdf9216023e3",
+    "activation": "e966130abcf3866532407c9296999c40c724cd7bf693418cd2610155dbb36535",
+    "battle-schema": "dea87dce601f04086669be004a795680aa84ccff0dfa3091dcdff9fe1338ee72",
+    "social": "60bc354087b631ce0e235a08657a38c55e5cb6ecc8036eebd4caa5dc9c8c9dec",
+    "scene-producer": "fc0912642cea1b6d5c26f1e87b0255f1a7078b17dd42021f437c4d99df920f73",
+    "narration": "bd16bf609c83970863080df28633127aa3f7fcd9beff89c797adff15c38789fa",
+    "utterance": "a6bf11b8b7f44ce01470acc41b8b93ac2f8aa84b08c9461ea2016e6795dbc912",
+    "dialogue": "d593d2fc8a2f959aa2bc71a87f492d5e34a9390c1089bdaed1d843483755adcd",
+    "sdk": "42b6ff80a71caa184ae9ccec1a087e025eb5e831d7e900d23bb08860ef918df4"
+  },
+  "elapsedSeconds": 130.131
+}

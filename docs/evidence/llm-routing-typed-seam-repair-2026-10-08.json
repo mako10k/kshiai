@@ -1,0 +1,32 @@
+{
+  "implemented": true,
+  "sealed": false,
+  "path": "backend/src/llm/openai-compatible-routing.test.ts",
+  "originalCases": 6,
+  "originalAssertions": 13,
+  "assertionTextsPreserved": true,
+  "typeEscapesRemaining": false,
+  "productionSourceChanged": false,
+  "seams": {
+    "success": "real SDK create and mocked fetch installed before construction",
+    "failures": "typed SDK create wrapper throws original injected error; preserves error identity and provider retry count",
+    "referee": "test-local subclass exposes existing protected chatJson; typed mock observes requested tier"
+  },
+  "notProved": [
+    "real HTTP 429/503 response parsing",
+    "provider quality or live operation"
+  ],
+  "diagnostic": {
+    "pass": 6,
+    "fail": 0,
+    "skip": 0
+  },
+  "sha256": "eeb519cdbacdfdab3f995c001825293896dcb7f31b5397a2ac8ffe9c8336caf8",
+  "next": "Agent test repairs, independent bounded review and combined Seal publication",
+  "cohortDiagnostic": {
+    "pass": 9,
+    "fail": 0,
+    "skip": 0
+  },
+  "workspaceTypecheckExit": 0
+}

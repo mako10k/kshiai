@@ -1,0 +1,10 @@
+domain MECHANICAL_DELIVERY_TYPES:
+  description "Check required mechanical transfer at compile time before runtime schema validation."
+evidence OWNER:
+  "Owner asks to handle mechanical handoff with types; prior implementation already requires transient guidance on frame and execution context."
+evidence GAP:
+  "Execution constructs role payloads directly inside Zod.parse, whose argument accepts unknown. Missing payload properties can evade static checking at that seam."
+premise BOUNDARY:
+  "Keep runtime validation and existing persisted schemas. Explicitly type producer return and role payload object before parsing. Content correctness remains covered by source-to-prompt and mutation diagnostics."
+decision IMPLEMENT based_on OWNER, GAP, BOUNDARY:
+  "Add typed payload construction and verify removed required properties cause TypeScript errors at frame, boundary, context and conscious input construction; restore all diagnostic mutations."

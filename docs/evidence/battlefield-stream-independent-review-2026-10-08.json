@@ -1,0 +1,37 @@
+{
+  "reviewer": "/root/archive_connection_review",
+  "mode": "read-only",
+  "decision": "PASS",
+  "files": {
+    "packages/shared/src/battlefield-definition-check.test.ts": "251617d96d514e5d506bef37f872839bd2dd5c39566326e7273c2abeb0720e78",
+    "packages/shared/src/battlefield-definition-check.ts": "15170bdc806f762c595aec02b7719e3a9b298ee780896dbf73f46da2ff358ba8",
+    "packages/shared/src/battle-stream.test.ts": "5e74f82170786194101a9567f136489c38f098a8924d865c2f00e6cdb6cd9b7c",
+    "packages/shared/src/battle-stream.ts": "8d84348561dc57c7abcc87e97ff261bb19cb62dc0e39cde5cdfa305c50191c64",
+    "backend/src/services/local-media-store.ts": "cfca0b70b26fb2e5e5c4515b83d6610526241985c4fb58933b2e47768c138b5b",
+    "backend/src/services/image-service.ts": "cd9b5cc1e018a65074a32ff15a59d6c74b2bf0bc941218fb6f8250f4235c8da1",
+    "backend/src/scripts/sqlite-to-postgres.ts": "5e5aa8c4e9d4cde49edb0211c4fb664e620bacff9d9f648c382e53d4f223fe09"
+  },
+  "INSIDE": {
+    "blockers": [],
+    "verified": [
+      "Original6cases/allassertions retained",
+      "Added1minimalcase exercises both repaired fallback guard paths",
+      "FinalZod/safeParse-first/authoritativefield behavior retained",
+      "Streamsource/tests unchanged",
+      "R-only3sources bodyotherwisebyte-identical",
+      "25local pass/0fail/0skip; workspace types0"
+    ]
+  },
+  "OUTSIDE": [
+    "F-BF06 system preset read-only",
+    "Full authoring/provider/image/activation/caller E2E",
+    "CompleteJSON/SSE/UI/awareness stream acceptance",
+    "Live acceptance"
+  ],
+  "BOUNDARY_DISPUTE": [],
+  "callerEvidence": "Dirtyadapter actualcallsite contextual only; no whole-file source claim",
+  "remainingGates": [
+    "Exact sources/Causes/current heads/fsck",
+    "Formal full251 execution"
+  ]
+}

@@ -1,0 +1,9 @@
+# 場面区切り・発声接続のwholefile検証
+
+元2wholefile44ケースを保持。元scene7は変更なし、発声37の不完全manifest cast2件とtrace cast6件を閉じた。元assertion250を保持し、実sideA/B・style/field/pipelineの完全schema2履歴manifestとZodでtraceを検証する。独立INSIDE、元44診断pass、修正後37pass、全workspace型検査exit0。証跡 docs/evidence/scene-speech-independent-review-2026-10-08.json と battle-speech-type-repair-2026-10-08.json。
+
+場面7ケースはAccepted ADR0016/0017のK3・public clock・開いたbeat中の実況繰延・ordered receipt、ADR0021のlive continuation、ADR0051の履歴束縛保持を検査する。later bucketは履歴schema2で拒否提案/決定fallbackを保存し、新規V5作成へ旧仕様を課さない。orphan active advanceは採用/idempotentcontinuationだけを検査し、一般の並行性網羅ではない。
+
+発声37はAccepted要件 F-BTL-13/15/48/54/55、ADR0011の構造化character/privacy、ADR0022の正準world/observer分離、ADR0023のchannel分離、ADR0025のexpressionstate/utterancehistory/nextutterance分離、ADR0056の最新版出力契約の意味保持に基づく。内部rule receiptはproviderへ渡さず、確定発声だけを世界/知覚へcommitする。無効な判断/manifestation/sensory evidenceは原子的に拒否し、第三者の表示発声を正準AB発声に混ぜず、referee/judgment/aftermathは確定記録/勝敗から生成する。RejectedADR0029は根拠にしない。
+
+実battle-service、battles、activation、shared battle/social/scene/narration/utterance/dialogueと実mock/SDKを現在sourceで結ぶ。既存producer Sealはソース同一性のpinとして再利用し、別のテスト範囲全体の証明とは解釈しない。このwholefileの根拠は本reviewと元ケースの結果である。新規awareness-v5全パイプライン、実provider品質、公開配備・完走、privacy網羅、policymigrationを証明しない。

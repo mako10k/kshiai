@@ -1,0 +1,24 @@
+domain CanonicalNarrationFixtureTypes:
+  description "Close mechanical type and fixture obligations before sealing twelve test files"
+problem P1:
+  "Two worker provider overrides have four implicit-any callback parameters under the standalone strict compiler."
+problem P2:
+  "Two consumer fixtures assert partial asset manifests and an events-only turn record as authoritative BattleState fields."
+evidence E1:
+  "Before changes all original twelve files execute 77 cases with zero failures and zero skips. Strict TypeScript reports TS7006 at worker.test lines150/152/196/198. The backend tsconfig includes src/**/* and explicitly sets noImplicitAny:false as a historical remainder, so its normal typecheck does not reject these implicit-any parameters."
+evidence E2:
+  "The two uncontextualized Object.assign provider overrides infer their own object type rather than AwarenessNarrationProvider. The declared provider signature explicitly accepts readonly AwarenessFrozenNarration[]. An earlier override in the same file already uses Parameters<AwarenessNarrationProvider[narrateFrozenBatch]>[0]."
+evidence E3:
+  "consumer-wiring.test lines114-127 and349-354 contain characters-only manifests cast as BattleState assetManifest. Actual BattleAssetManifest schemas require schemaVersion, boundAt, both complete bindings, narrationStyle, battlefield, dialoguePipeline and rules. Lines355-388 assert an events-only record despite BattleTurnRecordSchema requiring turn, both changes and cognition. structuredClone(state) already has its inferred BattleState type."
+evidence E4:
+  "Repository rules forbid escapes on authoritative snapshots during a repair. The accepted goal preserves all original cases and assertions while making mechanical handoffs checkable. These are local test fixtures, not delivered mock capabilities or live battle records."
+premise U1:
+  "Passing fixture behavior does not establish complete snapshot validity. This observation does not establish production data loss, a service runtime defect or a historical cause of missing information. Mock/SQLite execution does not prove provider quality or PostgreSQL concurrency."
+premise A1:
+  "Removing assertions without supplying required fields fails compile. Narrowing authoritative contracts or broadening schemas would weaken the consumer guarantee. Creating full synthetic immutable bindings using existing schemas/compilers and a complete turn record preserves the exercised logical inputs."
+decision D1 based_on P1, E1, E2, E4, U1:
+  "Producing condition for worker diagnostics is lost contextual provider typing in the local override expression. The strict standalone check exposes it; runtime tests erase types and the historical backend noImplicitAny:false configuration also does not reject this gap. The standalone strict invocation ignores project config and enables the missing check. Annotate both materials parameters with the actual declared method parameter type, preserving runtime callbacks."
+decision D2 based_on P2, E3, E4, U1, A1:
+  "Producing condition for invalid fixture contracts is assembling incomplete authoritative fields and asserting them into final contract types. Casts suppress required-field checks; successful helper-focused tests only traverse selected fields. Replace with complete schema-parsed synthetic version2 asset manifests and schema-validated turn record, remove redundant clone assertion and retain every original test/assertion. No production code, schema or accepted policy changes."
+decision D3 based_on D1, D2, E1, E4, U1:
+  "Reverify all77 original cases, strict imported types and allworkspace types; compare original assertion AST expressions and test calls as preserved multisets. Bind current repaired bytes with exact reviewed causes, readback and fsck. Do not claim global completion while unsealed files remain."

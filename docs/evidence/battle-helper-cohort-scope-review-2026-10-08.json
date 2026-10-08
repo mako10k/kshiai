@@ -1,0 +1,50 @@
+{
+  "schema": "kshiai/battle-helper-scope-review/v1",
+  "reviewer": "/root/battle_helper_contract_review",
+  "state": "four wholefile helper scopes PASS; exact pacing/cooldown mechanical authority remains unconfirmed",
+  "files": {
+    "packages/shared/src/narration-composer.ts": "4aeef8061c04e35df573ed7304fc82cf3f78a724c3e704dee6eff22e805877c0",
+    "packages/shared/src/narration-composer.test.ts": "8bee8d81b2c47a2d8fc7af79214ce4c6fe798635c065a31d134fcfbe0a308ea1",
+    "packages/shared/src/narrative.ts": "7b88255c817402174376ef593212865c65a0dce73b690ccd0b8257d248ae0dde",
+    "packages/shared/src/narrative.test.ts": "050922eeeabe4d5015c961683103452c3742111994bb0fbce1c4bbcf4dc85e9e",
+    "packages/shared/src/drama.ts": "af9bb95300c749757255fdb01fe1ed1eb29a8dd07f3dc5e1afa0adf881fa01ec",
+    "packages/shared/src/drama.test.ts": "0612308966ab982f8f5937a5fb90161d997cab03250d9d4b62a4fb2e84942fdb",
+    "packages/shared/src/supervisor.ts": "5fa44dd7e2982c0f489f311ce0fc1366c5bd30779258755517797377f11b80bc",
+    "packages/shared/src/supervisor.test.ts": "b473765c2b3863ac5656e2a7eea96323a126f911f68b4d93af6468e90219aacb",
+    "packages/shared/src/battle-pacing.ts": "2950f0d51844f4996b614d6a5c3c00f963960cedf5d3b4b47d738f95727b80fb",
+    "packages/shared/src/battle-pacing.test.ts": "5b519c93b9ef326c4fd7bb06d2de8c81b393b50074c076a6183f205d1b979d4b",
+    "packages/shared/src/skill-cooldown.ts": "df1412a92d45ce50ad2cd6dccf0aa7d421b843601901269bf7e59e3ccd6aa4ca",
+    "packages/shared/src/skill-cooldown.test.ts": "bcd1cc5b3694983cd109d1c8350f0f35d0d38fcc0d9c91cd0ca52f576292ccb9"
+  },
+  "candidateFiles": [
+    "narration-composer",
+    "narrative",
+    "drama",
+    "supervisor",
+    "battle-pacing",
+    "skill-cooldown"
+  ],
+  "diagnostic": {
+    "cases": 20,
+    "pass": 20,
+    "fail": 0,
+    "skip": 0,
+    "proof": "docs/evidence/battle-helper-cohort-preseal-2026-10-08.tap"
+  },
+  "wholeGoalComplete": false,
+  "normalSealCandidates": [
+    "narration-composer",
+    "narrative",
+    "drama",
+    "supervisor"
+  ],
+  "inside": [],
+  "outside": [
+    "Provider/SSE/persistence/end-to-end acceptance not established by these unit tests"
+  ],
+  "boundaryDisputes": [
+    "Whole battle-pacing candidate mechanical policy adoption",
+    "Exact power-to-cooldown mechanical lockout policy"
+  ],
+  "reviewCorrection": "Numeric display bounds, exact quiet helper strings and narrator hints are bounded implementation detail; absence of separate owner acceptance is not by itself a blocker unless an accepted clause conflicts."
+}

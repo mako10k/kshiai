@@ -1,0 +1,18 @@
+domain HelperAndGateSeal:
+  description "Whole-file helper verification and failure-certain early authority stop"
+problem P1:
+  "Four helper files remain unsealed and official failed test runs spend time inspecting all mapped Seals although unmapped discovered tests already require failure."
+evidence E1:
+  "Accepted requirements F-BTL15/17/18/27/28/54 and F-UI05 govern actual speech/display/narration/stalemate roles. Independent review passes narration-composer/narrative/drama/supervisor as bounded existing behavior without policy expansion. Six-file20case diagnostic passes all with no skip; pacing/cooldown numeric adoption is unresolved and not sealed."
+evidence E2:
+  "Accepted ADR0058 requires detected unmapped or missing-ref tests to stop before any execution, preserves list inspection and inherited authority classifications. ADR0036 preserves draft exclusion. Independent review confirms detection-time early stop and explicit non-evaluation output do not weaken those contracts."
+evidence E3:
+  "Real copied driver private-root integration covers unit/e2e without SealGraph, list still requiring inspection, all-mapped still requiring inspection. Original9selector+6gate cases and assertion calls are retained; four cases added. Diagnostic19pass0fail0skip and workspace types pass. Official unchanged gate53unsealed exit1 took54.324seconds before improvement."
+premise A1:
+  "All247unit+4E2E original file scope remains. No test deletion, subset aggregate-green definition, unsealed exception, cache, provider call, deployment or shared workday end is authorized."
+decision D1 based_on P1, E1, A1:
+  "Seal four existing whole helper tests through explicit scoped shared design and distinct producer Causes. State helper limitations; do not adopt pacing/cooldown mechanics, mandatory V5 fabricated speech or full SSE/DB acceptance."
+decision D2 based_on P1, E2, E3, A1:
+  "Publish reviewed execution-order design and refreshed driver/source-matched regression Seals, link new Cause before unlinking old Cause, assert previous target revision, preserve all old immutable bodies and unrelated heads. Old selector synthetic classification is reverified against the actual current driver, not treated as closure enforcement."
+decision D3 based_on D1, D2, A1:
+  "Measure actual official early failed gate and keep list mode complete; record current full classification once after batch. All unsealed tests must continue to stop formal execution before any case runs. Overall goal remains active."

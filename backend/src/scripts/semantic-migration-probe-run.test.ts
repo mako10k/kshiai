@@ -21,10 +21,10 @@ it("binds the new run and corrected prompt without reusing the consumed v1 ident
   process.env.AUTH_PROVIDER = "legacy";
   process.env.DATABASE_URL = "";
   process.env.DATABASE_PATH = join(directory, "probe.sqlite");
-  const { closeDatabase, databaseKind } = await import("../db.js");
+  const { closeDatabase, databaseKind, query } = await import("../db.js");
   try {
     assert.equal(databaseKind(), "sqlite");
-    const { seedSemanticMigrationProbe } = await import("./semantic-migration-probe-fixture.js");
+    const { seedSemanticMigrationProbe } = await import("../testing/semantic-migration-probe-fixture.js");
     const { createCharacterMigrationContext, CHARACTER_MIGRATION_PROMPT_V2 } =
       await import("../services/character-migration-context.js");
     const { initialCharacterMigrationMerge } = await import("../services/character-migration-merge.js");
@@ -33,6 +33,18 @@ it("binds the new run and corrected prompt without reusing the consumed v1 ident
       await import("../llm/character-migration-probe-provider.js");
     const { assertXaiResponseSchema } = await import("../llm/provider-response-schema.js");
     const attempt = await seedSemanticMigrationProbe(SEMANTIC_MIGRATION_PROBE_RUN_V2);
+    const counts = async () => (await query<{ users: number; characters: number; generations: number }>(
+      "SELECT (SELECT COUNT(*) FROM users) AS users, (SELECT COUNT(*) FROM characters) AS characters, (SELECT COUNT(*) FROM asset_generations) AS generations", [])).rows;
+    const seededCounts = await counts();
+    await assert.rejects(seedSemanticMigrationProbe(SEMANTIC_MIGRATION_PROBE_RUN_V2), /SEMANTIC_PROBE_FRESH_DATABASE_REQUIRED/);
+    const previousMode = process.env.NODE_ENV;
+    try {
+      process.env.NODE_ENV = "production";
+      await assert.rejects(seedSemanticMigrationProbe(SEMANTIC_MIGRATION_PROBE_RUN_V2), /SEMANTIC_PROBE_ISOLATED_SQLITE_REQUIRED/);
+    } finally {
+      process.env.NODE_ENV = previousMode;
+    }
+    assert.deepEqual(await counts(), seededCounts);
     assert.equal(attempt.migrationAttemptId, "semantic-migration-grok-2026-09-10-v2");
     assert.notEqual(attempt.migrationAttemptId, MIGRATION_PROBE_CONTRACT.runId);
     assert.equal(attempt.promptIdentity, CHARACTER_MIGRATION_PROMPT_V2);

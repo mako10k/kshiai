@@ -84,7 +84,7 @@ current check.
 | [0031](0031-focused-structured-semantic-authoring-kernel.md) | Superseded by 0032 | Thin typed authoring kernel retained by 0032 except for its elapsed-time semantics |
 | [0032](0032-separate-authoring-time-boundaries.md) | Accepted | Separate provider, worker, semantic-progress and cumulative-resource time boundaries; exact values remain undecided |
 | [0033](0033-runtime-config-not-run-identity.md) | Accepted | Keep provider transport and worker execution Config generations out of durable run identity; retain correctness-bearing fences, requests, accounting and outcomes |
-| [0034](0034-seal-based-test-authority.md) | Accepted | Require source-matched verification Seals with explicit current Causes for authoritative test evidence while preserving historical validity |
+| [0034](0034-seal-based-test-authority.md) | Superseded by 0058 | Require source-matched verification Seals with explicit current Causes for authoritative test evidence while preserving historical validity |
 | [0035](0035-resolve-revision-scope-from-request.md) | Accepted | Resolve request-specific character revision scope from natural language before focused work |
 | [0036](0036-propagate-draft-test-evidence.md) | Accepted | Treat test results backed by draft verification or Causes as draft evidence, not authoritative current pass/fail |
 | [0037](0037-append-only-narration-fragments.md) | Rejected | Historical unaccepted Fragment proposal replaced by the broader 0038 candidate |
@@ -114,3 +114,11 @@ current check.
 - [ADR-0056: 正常完走の確認まで出力契約を最新版で実行する](0056-latest-prompt-contract-until-completion.md) — Accepted
 
 - [ADR-0057: Awarenessの公開完走を実利用量で検証する](0057-awareness-public-observation-accounting.md) — Accepted
+
+- [ADR-0058: 未Sealテストがあればテスト実行を停止する](0058-stop-test-runs-with-unsealed-tests.md) — Accepted
+
+- [ADR-0059: キャラ作成・修正の最終候補を完全に接続する](0059-complete-focused-character-review-payload.md) — Accepted; revision1、公開プロフィールの同一run内完結、create/revise最大10回、採用前の修正は不変な新attempt。
+
+- [ADR-0060: 所有者判断によるテスト契約回復](0060-owner-test-contract-recovery.md) — Accepted; 未決STA量/penalty種類は別検討。
+
+- [ADR-0061: 改善分析の利用条件](0061-manual-improvement-analysis-eligibility.md) — Accepted; 初回5終了試合、以後成功分析snapshot+10。

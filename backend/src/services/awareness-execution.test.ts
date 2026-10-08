@@ -9,6 +9,7 @@ import {
   AwarenessInitialize, AwarenessObservedPolicy, defaultCharacterIdentity,
   type AwarenessConsciousInput, type AwarenessConsciousOutput, type AwarenessLatentInput,
 } from "@kshiai/shared";
+import { prepareAwarenessRequest } from "../llm/awareness-request.js";
 import { createAwarenessExecution, type AwarenessExecutionContext, type AwarenessExecutionModels,
   type AwarenessModelReceipt, type AwarenessDispatchProof, type AwarenessPrepareTickInput } from "./awareness-execution.js";
 
@@ -16,7 +17,13 @@ const directory = mkdtempSync(join(tmpdir(), "kshiai-awareness-execution-"));
 process.env.DATABASE_URL = "";
 process.env.DATABASE_PATH = join(directory, "test.db");
 process.env.AUTH_PROVIDER = "legacy";
+const { config } = await import("../config.js");
+assert.equal(config.databasePath, join(directory, "test.db"), "Execution tests require their isolated database before any writes");
+assert.equal(config.databaseUrl, null);
 const { getDb } = await import("../db.js");
+const { validAwarenessGuidanceFixture } = await import("./awareness-guidance-test-fixture.js");
+const { buildAwarenessBoundaryContext } = await import("./awareness-battle-boundary.js");
+const { buildAwarenessCharacterActionFrame } = await import("./battle-service.js");
 const repo = await import("../repositories/battle-awareness.js");
 const { awarenessExecutionStorage } = await import("./awareness-execution-storage.js");
 const { battleAwarenessSchemaSql } = await import("../repositories/battle-awareness-schema.js");
@@ -36,7 +43,7 @@ function context(side: "a" | "b"): AwarenessExecutionContext {
     character: { schemaVersion: 1, displayName: side.toUpperCase(), identity: defaultCharacterIdentity(),
       tags: [], appearanceSummary: "", traits: [], narrativeBlurb: "", basicAction: { name: "防御", description: "構える" },
       skills: [], equipment: { weapon: null, armor: null } },
-    characteristics: [], training: [], consciousCharacteristics: [], consciousTraining: [], availableActions: [], facts: [], stimuli: [],
+    characteristics: [], training: [], consciousCharacteristics: [], consciousGuidance: { kind: "none" }, consciousTraining: [], availableActions: [], facts: [], stimuli: [],
     receivedSpeech: false, intentCompleted: false, intentInvalid: false,
     perception: { schemaVersion: 1, observer: { side, self: "self" }, turn: 0, revision: 0,
       self: { subject: { kind: "self" }, currentAccess: "clear", identityKnowledge: "identified", perceivedAs: "自分", percepts: [] },
@@ -184,6 +191,43 @@ describe("awareness execution", () => {
     assert.equal(JSON.stringify(conscious).includes("無自覚"), false);
     assert.deepEqual(latent.characteristics, ["無自覚の秘密の癖"]);
     assert.deepEqual(latent.training, ["無自覚の反射訓練"]);
+  });
+
+  it("delivers live self-aware guidance from frozen assets through the actual decision and execution to the rendered prompt", async () => {
+    const run = await fixture("execution-guidance-delivery");
+    const source = validAwarenessGuidanceFixture("guidance-source");
+    const frame = buildAwarenessCharacterActionFrame({ state: source.state, sheet: source.characters.a,
+      counterpartSheet: source.characters.b, side: "a", phase: "turn" });
+    assert.equal(frame.consciousGuidance.kind, "applicable");
+    const projected = buildAwarenessBoundaryContext({ state: source.state, side: "a", generation: source.generation, frame,
+      receivedSpeech: false, intentCompleted: false, intentInvalid: false });
+    const input = run.input(0);
+    input.sides.a = projected;
+    assert.equal((await run.execution.prepareTick(input)).canCommitWorld, true);
+    const conscious = run.thoughtInputs.find((value) => value.side === "a");
+    const latent = run.latentInputs.find((value) => value.side === "a");
+    assert.ok(conscious); assert.ok(latent);
+    assert.equal(conscious.characteristics.includes(source.known), true);
+    assert.equal(conscious.characteristics.includes(source.partial.slice(0, 160)), true);
+    const prompt = prepareAwarenessRequest({ role: "conscious", input: conscious }).user;
+    assert.equal(prompt.includes(source.known), true);
+    assert.equal(prompt.includes(source.hidden), false);
+    assert.equal(prompt.includes(source.inapplicable), false);
+    assert.equal(prompt.includes(source.partial), false);
+    assert.equal(prepareAwarenessRequest({ role: "subconscious", input: latent }).user.includes(source.known), false);
+    const saved = await repo.getAwarenessRuntime(input.battleId);
+    assert.ok(saved?.runtime.sides.a.job);
+    assert.equal(saved.runtime.sides.a.job.input.characteristics.includes(source.known), true);
+  });
+
+  it("rejects a missing guidance transfer before dispatching either character", async () => {
+    const run = await fixture("execution-guidance-missing");
+    const input = run.input(0);
+    Reflect.deleteProperty(input.sides.b, "consciousGuidance");
+    const result = await run.execution.prepareTick(input);
+    assert.equal(result.canCommitWorld, false);
+    assert.equal(result.snapshot.runtime.status, "incomplete");
+    assert.deepEqual(run.order, []);
   });
 
   it("ends when an initial physical thought remains unknown past its deadline", async () => {

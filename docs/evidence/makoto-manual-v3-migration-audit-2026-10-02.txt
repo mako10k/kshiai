@@ -1,0 +1,55 @@
+thought_id: tmp-makoto-direct-migration
+id_source: file
+status: draft
+draft: thoughts/tmp-makoto-direct-migration/draft.think
+latest_audit: thoughts/tmp-makoto-direct-migration/audits/2026-10-02T04-47-23.645Z.json
+next: reuse this thought_id with thought show/history/reflect/delete or dsl audit --id
+document: tmp-makoto-direct-migration
+engine: 0.1.0
+summary: fatal=0 error=0 warning=0 info=0 hint=4
+
+issues:
+- [hint] semantic_hint: domain MIGRATE の description は 1 行の quoted text が長いため、block text に変えると読みやすい。 (MIGRATE)
+  rationale: 長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。
+  suggestion: 長い 1 行本文を block text へ分割し、意味の切れ目で改行する。
+  syntax_help: llmthink dsl help syntax detail
+  syntax_guidance:
+    長い本文は block text を使い、意味の切れ目で改行する。
+    例:
+    problem P1:
+      |
+        1 行目の説明
+        2 行目の説明
+- [hint] semantic_hint: evidence OWNER は 1 行の quoted text が長いため、block text に変えると読みやすい。 (OWNER)
+  rationale: 長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。
+  suggestion: 長い 1 行本文を block text へ分割し、意味の切れ目で改行する。
+  syntax_help: llmthink dsl help syntax detail
+  syntax_guidance:
+    長い本文は block text を使い、意味の切れ目で改行する。
+    例:
+    problem P1:
+      |
+        1 行目の説明
+        2 行目の説明
+- [hint] semantic_hint: evidence CURRENT は 1 行の quoted text が長いため、block text に変えると読みやすい。 (CURRENT)
+  rationale: 長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。
+  suggestion: 長い 1 行本文を block text へ分割し、意味の切れ目で改行する。
+  syntax_help: llmthink dsl help syntax detail
+  syntax_guidance:
+    長い本文は block text を使い、意味の切れ目で改行する。
+    例:
+    problem P1:
+      |
+        1 行目の説明
+        2 行目の説明
+- [hint] semantic_hint: decision EXECUTE は 1 行の quoted text が長いため、block text に変えると読みやすい。 (EXECUTE)
+  rationale: 長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。
+  suggestion: 長い 1 行本文を block text へ分割し、意味の切れ目で改行する。
+  syntax_help: llmthink dsl help syntax detail
+  syntax_guidance:
+    長い本文は block text を使い、意味の切れ目で改行する。
+    例:
+    problem P1:
+      |
+        1 行目の説明
+        2 行目の説明

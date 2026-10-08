@@ -1,0 +1,60 @@
+TAP version 13
+# Subtest: battle narration reducer
+    # Subtest: replaces one receipt and ignores at-least-once duplicates
+    ok 1 - replaces one receipt and ignores at-least-once duplicates
+      ---
+      duration_ms: 1.622583
+      type: 'test'
+      ...
+    # Subtest: orders successor receipts even when events arrive out of order
+    ok 2 - orders successor receipts even when events arrive out of order
+      ---
+      duration_ms: 1.308554
+      type: 'test'
+      ...
+    1..2
+ok 1 - battle narration reducer
+  ---
+  duration_ms: 5.476905
+  type: 'suite'
+  ...
+# Subtest: battle screen model
+    # Subtest: uses narration entries as the only story when any exist
+    ok 1 - uses narration entries as the only story when any exist
+      ---
+      duration_ms: 1.581727
+      type: 'test'
+      ...
+    # Subtest: falls back to the snapshot log only before the narration stream has entries
+    ok 2 - falls back to the snapshot log only before the narration stream has entries
+      ---
+      duration_ms: 0.37534
+      type: 'test'
+      ...
+    # Subtest: keeps pending narration in the story instead of mixing snapshot log
+    ok 3 - keeps pending narration in the story instead of mixing snapshot log
+      ---
+      duration_ms: 0.389141
+      type: 'test'
+      ...
+    # Subtest: names progress from pause, advance phase, or the idle auto-advance state
+    ok 4 - names progress from pause, advance phase, or the idle auto-advance state
+      ---
+      duration_ms: 0.326663
+      type: 'test'
+      ...
+    1..4
+ok 2 - battle screen model
+  ---
+  duration_ms: 4.557234
+  type: 'suite'
+  ...
+1..2
+# tests 6
+# suites 2
+# pass 6
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 197.522603

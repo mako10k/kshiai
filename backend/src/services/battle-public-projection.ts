@@ -1,7 +1,6 @@
 /** R: Project private battle state into the public BattlePublic DTO. */
 import {
   projectPublicObjectStates,
-  ratingForDisplay,
   sceneBeatK,
   stanceLabel,
   summarizeSelectedPolicies,
@@ -19,11 +18,10 @@ type PublicRatingSettlement = NonNullable<BattlePublic["ratingSettlement"]>;
 
 function toPublicRatingEntry(
   entry: RatingSettlement["sideA"],
-  population: RatingDisplayContext["public"] | undefined,
 ): NonNullable<PublicRatingSettlement["sideA"]> {
   return {
-    before: ratingForDisplay(entry.before, population),
-    after: ratingForDisplay(entry.after, population),
+    before: entry.before,
+    after: entry.after,
     delta: entry.delta,
     provisionalAfter: entry.provisionalAfter,
   };
@@ -31,7 +29,6 @@ function toPublicRatingEntry(
 
 function toPublicRatingSettlement(
   settlement: BattleState["ratingSettlement"],
-  display: RatingDisplayContext | undefined,
 ): BattlePublic["ratingSettlement"] {
   if (!settlement?.applied) return null;
   const overall = settlement.overall ?? {
@@ -44,17 +41,17 @@ function toPublicRatingSettlement(
     ranked: settlement.ranked,
     sameOwner: settlement.sameOwner,
     overall: {
-      sideA: toPublicRatingEntry(overall.sideA, display?.overall),
-      sideB: toPublicRatingEntry(overall.sideB, display?.overall),
+      sideA: toPublicRatingEntry(overall.sideA),
+      sideB: toPublicRatingEntry(overall.sideB),
     },
     public: publicSettlement
       ? {
-          sideA: toPublicRatingEntry(publicSettlement.sideA, display?.public),
-          sideB: toPublicRatingEntry(publicSettlement.sideB, display?.public),
+          sideA: toPublicRatingEntry(publicSettlement.sideA),
+          sideB: toPublicRatingEntry(publicSettlement.sideB),
         }
       : null,
-    sideA: toPublicRatingEntry(overall.sideA, display?.overall),
-    sideB: toPublicRatingEntry(overall.sideB, display?.overall),
+    sideA: toPublicRatingEntry(overall.sideA),
+    sideB: toPublicRatingEntry(overall.sideB),
   };
 }
 
@@ -130,7 +127,7 @@ export function projectBattlePublic(
   mySheet: CharacterSheet,
   resultSummary?: string | null,
   oppSheet?: CharacterSheet | null,
-  ratingDisplay?: RatingDisplayContext,
+  _ratingDisplay?: RatingDisplayContext,
 ): BattlePublic {
   const sideASheet = mySheet.id === state.sideA.characterId ? mySheet : oppSheet;
   const sideBSheet = mySheet.id === state.sideB.characterId ? mySheet : oppSheet;
@@ -181,7 +178,6 @@ export function projectBattlePublic(
     resultSummary: resultSummary ?? null,
     ratingSettlement: toPublicRatingSettlement(
       state.ratingSettlement,
-      ratingDisplay,
     ),
   };
 }

@@ -1,5 +1,6 @@
 // R: Verify V3 generation binding across real SQLite battle operations.
 import assert from "node:assert/strict";
+import { z } from "zod";
 import { dynamicAgentResult, runConsciousGeneration } from "../llm/conscious-dynamic.js";
 import { after, describe, it } from "node:test";
 import { mkdtempSync, rmSync } from "node:fs";
@@ -26,6 +27,8 @@ process.env.DATABASE_PATH = join(temporaryDirectory, "v3-battle.db");
 const { saveHistoricalCharacterFixture } = await import("../testing/historical-character-fixtures.js");
 const { closeDatabase, query, withTransaction } = await import("../db.js");
 const { MockLlmProvider } = await import("../llm/mock.js");
+const { createOfflineAwarenessProvider } = await import("../testing/offline-awareness-provider.js");
+const { persistHistoricalV4BattleFixture } = await import("../testing/historical-v4-battle-fixture.js");
 const generationRepo = await import("../testing/historical-asset-generations.js");
 const settingsRepo = await import("../repositories/dialogue-pipeline-settings.js");
 const { ensureSystemNarrationStyles } = await import("../repositories/narration-styles.js");
@@ -73,7 +76,7 @@ after(async () => {
 });
 
 describe("ADR-0039 V3 character battle binding", () => {
-  it("creates an all-V3 battle and keeps exact character generations after pointer changes and reload", async () => {
+  it("continues a historical V4 battle and keeps exact V3 character generations after pointer changes and reload", async () => {
     const fixture = createConsciousFixture();
     fixture.opp.visibility = "public";
     await query(
@@ -113,7 +116,7 @@ describe("ADR-0039 V3 character battle binding", () => {
       patch: { ...fixture.settings, schemaVersion: 3, expectedRevision: 0 },
     });
 
-    const llm = new MockLlmProvider();
+    const llm = createOfflineAwarenessProvider();
     llm.advanceCharacterPsyche = async () => { throw new Error("Unexpected V4 psyche call"); };
     let consciousCalls = 0;
     const originalAgent = llm.advanceCharacterAgent.bind(llm);
@@ -123,13 +126,11 @@ describe("ADR-0039 V3 character battle binding", () => {
       consciousCalls += 1;
       return originalAgent(input);
     };
-    const created = await startBattle({
+    const created = await persistHistoricalV4BattleFixture({
       userId: "inventory-owner",
       battleId: "v3-battle-bound",
       myCharacterId: fixture.mine.id,
       opponentCharacterId: fixture.opp.id,
-      battlefieldMode: "random",
-      llm,
     });
     const bound = await getBattle(created.id);
     assert.equal(bound?.assetManifest?.schemaVersion, 4);
@@ -402,6 +403,44 @@ describe("ADR-0039 V3 character battle binding", () => {
     );
   });
 
+  it("creates awareness-v5 with V3 characters and keeps their exact generations after pointer changes", async () => {
+    const fixture = createConsciousFixture();
+    fixture.mine.id = "awareness-binding-self";
+    fixture.opp.id = "awareness-binding-counterpart";
+    fixture.opp.visibility = "public";
+    await saveHistoricalCharacterFixture(fixture.mine);
+    await saveHistoricalCharacterFixture(fixture.opp);
+    const previousA = await generationRepo.getCurrentAssetGeneration("character", fixture.mine.id);
+    const previousB = await generationRepo.getCurrentAssetGeneration("character", fixture.opp.id);
+    assert.ok(previousA && previousB);
+    const a = await generationRepo.createAssetGeneration({ assetType: "character", assetId: fixture.mine.id,
+      schemaVersion: 3, content: envelopeV3(fixture.mine) });
+    const b = await generationRepo.createAssetGeneration({ assetType: "character", assetId: fixture.opp.id,
+      schemaVersion: 3, content: envelopeV3(fixture.opp) });
+    const llm = createOfflineAwarenessProvider();
+    const created = await startBattle({ userId: "inventory-owner", battleId: "awareness-generation-binding",
+      myCharacterId: fixture.mine.id, opponentCharacterId: fixture.opp.id, battlefieldMode: "random", llm });
+    const before = await getBattle(created.id);
+    assert.ok(before?.assetManifest?.schemaVersion === 5);
+    assert.equal(before.assetManifest.characters.a.generationId, a.generationId);
+    assert.equal(before.assetManifest.characters.b.generationId, b.generationId);
+    assert.equal(before.assetManifest.characters.a.contentDigest, a.contentDigest);
+    assert.equal(before.assetManifest.characters.b.contentDigest, b.contentDigest);
+    assert.equal(before.assetManifest.consciousOutputContract, "awareness-v5");
+    await withTransaction(async (connection) => {
+      await generationRepo.activateAssetGeneration(connection, previousA, a.generationId);
+      await generationRepo.activateAssetGeneration(connection, previousB, b.generationId);
+    });
+    await advanceTurn({ userId: "inventory-owner", battleId: created.id,
+      operationId: "awareness-binding-prologue", llm });
+    const after = await getBattle(created.id);
+    assert.ok(after);
+    assert.deepEqual(after.assetManifest, before.assetManifest);
+    assert.equal(llm.encounterDispatches, 1);
+    // This case ends before the later cutover assertions; its continuation was
+    // validated independently of the historical V4 path above.
+  });
+
   it("advances a V4 battle whose frozen norms allow only free actions", async () => {
     const fixture = createConsciousFixture();
     fixture.mine.id = "free-only-self";
@@ -424,7 +463,7 @@ describe("ADR-0039 V3 character battle binding", () => {
       assetType: "character", assetId: fixture.opp.id, schemaVersion: 3,
       content: envelopeV3(fixture.opp),
     });
-    const llm = new MockLlmProvider();
+    const llm = createOfflineAwarenessProvider();
     const originalAgent = llm.advanceCharacterAgent.bind(llm);
     const emitted: { characterName: string; action: CharacterActionIntent }[] = [];
     llm.advanceCharacterAgent = async (input) => {
@@ -447,10 +486,9 @@ describe("ADR-0039 V3 character battle binding", () => {
           intent: { valid: true, value: { aim: "対象の位置を確かめる", basisRefs: [input.facts[0]!.ref] } },
           nextAction: { valid: true, value: action } } };
     };
-    const created = await startBattle({
+    const created = await persistHistoricalV4BattleFixture({
       userId: "inventory-owner", battleId: "v3-free-only-regression",
       myCharacterId: fixture.mine.id, opponentCharacterId: fixture.opp.id,
-      battlefieldMode: "random", llm,
     });
     const before = await getBattle(created.id);
     assert.ok(before);
@@ -490,9 +528,12 @@ describe("ADR-0039 V3 character battle binding", () => {
     llm.advanceCharacterAgent = async (input) => {
       assert.ok(input.contextMode === "compact" && input.contractVersion === 4);
       return dynamicAgentResult(await runConsciousGeneration(input, input, async (_system, user, opts) => {
-        const body = JSON.parse(user);
-        requestedFields.push(Object.keys(opts.responseFormat?.json_schema.schema.properties ?? {}));
-        return body.repair ? { nextUtterance: "修復した発言。" } : { nextUtterance: 9 };
+        assert.ok(user.startsWith("以下は判断のための資料"));
+        const format = z.object({ json_schema: z.object({ schema: z.object({
+          properties: z.record(z.unknown()),
+        }) }) }).parse(opts.responseFormat);
+        requestedFields.push(Object.keys(format.json_schema.schema.properties));
+        return opts.label === "consciousDynamicRepair" ? { nextUtterance: "修復した発言。" } : { nextUtterance: 9 };
       }));
     };
     const invoke = (state: BattleState) => advanceCharacterAgents({ llm, before: state, after: structuredClone(state),

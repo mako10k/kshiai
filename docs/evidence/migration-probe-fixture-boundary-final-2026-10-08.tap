@@ -1,0 +1,119 @@
+TAP version 13
+# Subtest: authors a valid V2 source with both selectorless and executable preferences
+ok 1 - authors a valid V2 source with both selectorless and executable preferences
+  ---
+  duration_ms: 47.614572
+  type: 'test'
+  ...
+# Subtest: keeps V2 unchanged and assigns the corrected prompt an independent V3 run
+ok 2 - keeps V2 unchanged and assigns the corrected prompt an independent V3 run
+  ---
+  duration_ms: 4.427499
+  type: 'test'
+  ...
+# Subtest: binds the new run and corrected prompt without reusing the consumed v1 identity
+ok 3 - binds the new run and corrected prompt without reusing the consumed v1 identity
+  ---
+  duration_ms: 1673.741248
+  type: 'test'
+  ...
+# Subtest: V2 display without ordinary writes
+    # Subtest: serves the bound old profile despite invalid executable battle data and retains access controls
+    ok 1 - serves the bound old profile despite invalid executable battle data and retains access controls
+      ---
+      duration_ms: 107.774442
+      type: 'test'
+      ...
+    # Subtest: keeps current old-version display available
+    ok 2 - keeps current old-version display available
+      ---
+      duration_ms: 32.781236
+      type: 'test'
+      ...
+    # Subtest: does not advertise unavailable migration or create an attempt when it is requested
+    ok 3 - does not advertise unavailable migration or create an attempt when it is requested
+      ---
+      duration_ms: 20.948197
+      type: 'test'
+      ...
+    # Subtest: rejects every ordinary owner mutation before creating attempts or changing the row
+    ok 4 - rejects every ordinary owner mutation before creating attempts or changing the row
+      ---
+      duration_ms: 91.782639
+      type: 'test'
+      ...
+    # Subtest: rejects programmatic V2 creation and updates without changing stored rows
+    ok 5 - rejects programmatic V2 creation and updates without changing stored rows
+      ---
+      duration_ms: 6.79585
+      type: 'test'
+      ...
+    # Subtest: retires dormant V2 provider generation before touching the provider or reporting work
+    ok 6 - retires dormant V2 provider generation before touching the provider or reporting work
+      ---
+      duration_ms: 3.08116
+      type: 'test'
+      ...
+    # Subtest: rejects V2 portrait writes and keeps full restore unavailable
+    ok 7 - rejects V2 portrait writes and keeps full restore unavailable
+      ---
+      duration_ms: 6.87003
+      type: 'test'
+      ...
+    # Subtest: rejects legacy generation writes through the real generic repository
+    ok 8 - rejects legacy generation writes through the real generic repository
+      ---
+      duration_ms: 39.447937
+      type: 'test'
+      ...
+    # Subtest: keeps historical fixture writes outside the runtime dependency graph
+    ok 9 - keeps historical fixture writes outside the runtime dependency graph
+      ---
+      duration_ms: 62.845096
+      type: 'test'
+      ...
+    # Subtest: preserves the legacy definition when saving bound battle accounting facts
+    ok 10 - preserves the legacy definition when saving bound battle accounting facts
+      ---
+      duration_ms: 16.955633
+      type: 'test'
+      ...
+    # Subtest: does not fall back to V2 creation or migration when no V3 authoring provider exists
+    ok 11 - does not fall back to V2 creation or migration when no V3 authoring provider exists
+      ---
+      duration_ms: 19.782055
+      type: 'test'
+      ...
+    # Subtest: rejects confirmation of a previously stored V2 candidate without changing its generation
+    ok 12 - rejects confirmation of a previously stored V2 candidate without changing its generation
+      ---
+      duration_ms: 46.709708
+      type: 'test'
+      ...
+    # Subtest: retains direct validated V3 candidate preparation and activation
+    ok 13 - retains direct validated V3 candidate preparation and activation
+      ---
+      duration_ms: 109.816343
+      type: 'test'
+      ...
+    # Subtest: keeps a bound V2 profile independent of the owner's current V3 generation
+    ok 14 - keeps a bound V2 profile independent of the owner's current V3 generation
+      ---
+      duration_ms: 52.522289
+      type: 'test'
+      ...
+    1..14
+ok 4 - V2 display without ordinary writes
+  ---
+  duration_ms: 629.017531
+  type: 'suite'
+  ...
+1..4
+# tests 17
+# suites 1
+# pass 17
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 3585.244401

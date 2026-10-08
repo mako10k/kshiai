@@ -57,3 +57,57 @@ describe("OpenAI-compatible image provider", () => {
     assert.equal(result.sourceUrl, "data:image/jpeg;base64,abc");
   });
 });
+
+describe("image response contract", () => {
+  it("rejects non-string URL and base64 fields before returning a result", async () => {
+    for (const item of [{ url: 123 }, { b64_json: { encoded: "abc" } }]) {
+      const provider = new OpenAiCompatibleImageProvider(
+        "test", "fixture", "https://example.invalid", "fixture",
+        async () => new Response(JSON.stringify({ data: [item] })),
+      );
+      await assert.rejects(
+        provider.generate({ prompt: "fixture", aspectRatio: "1:1" }),
+        /test_image_empty_response/,
+      );
+    }
+  });
+
+  it("preserves valid base64 responses and moderation rejection", async () => {
+    const provider = new OpenAiCompatibleImageProvider(
+      "test", "fixture", "https://example.invalid", "fixture",
+      async () => new Response(JSON.stringify({ data: [{ b64_json: "YWJj" }] })),
+    );
+    assert.deepEqual(
+      await provider.generate({ prompt: "fixture", aspectRatio: "1:1" }),
+      { sourceUrl: "data:image/jpeg;base64,YWJj" },
+    );
+    const moderated = new OpenAiCompatibleImageProvider(
+      "test", "fixture", "https://example.invalid", "fixture",
+      async () => new Response(JSON.stringify({
+        data: [{ url: "https://example.invalid/image", respect_moderation: false }],
+      })),
+    );
+    await assert.rejects(
+      moderated.generate({ prompt: "fixture", aspectRatio: "1:1" }),
+      /test_moderation_filtered/,
+    );
+  });
+});
+
+it("preserves structured HTTP errors and bounded raw error diagnostics", async () => {
+  for (const [body, detail] of [
+    [JSON.stringify({ error: "rejected" }), "rejected"],
+    [JSON.stringify({ error: { message: "nested" } }), "nested"],
+    [JSON.stringify({ message: "plain" }), "plain"],
+    ["x".repeat(600), "x".repeat(500)],
+  ]) {
+    const provider = new OpenAiCompatibleImageProvider(
+      "test", "fixture", "https://example.invalid", "fixture",
+      async () => new Response(body, { status: 400 }),
+    );
+    await assert.rejects(
+      provider.generate({ prompt: "fixture", aspectRatio: "1:1" }),
+      { message: `test_400:${detail}`, status: 400 },
+    );
+  }
+});

@@ -1,0 +1,201 @@
+TAP version 13
+# Subtest: compact adjudication facts
+    # Subtest: preserves strings, numbers, booleans, null, empty containers and ordered attempts
+    ok 1 - preserves strings, numbers, booleans, null, empty containers and ordered attempts
+      ---
+      duration_ms: 2.175917
+      type: 'test'
+      ...
+    # Subtest: reduces structural text without omitting canonical material
+    ok 2 - reduces structural text without omitting canonical material
+      ---
+      duration_ms: 1.337152
+      type: 'test'
+      ...
+    # Subtest: rejects cycles, unsupported values and excessive nesting instead of silently dropping facts
+    ok 3 - rejects cycles, unsupported values and excessive nesting instead of silently dropping facts
+      ---
+      duration_ms: 22.25192
+      type: 'test'
+      ...
+    1..3
+ok 1 - compact adjudication facts
+  ---
+  duration_ms: 28.282202
+  type: 'suite'
+  ...
+# [llm] xai ready engine=grok-4.5 fast=grok-4.3
+# [llm] xai/adjudicateFreeActions model=grok-4.5 ok 124ms
+# [llm] xai ready engine=grok-4.5 fast=grok-4.3
+# [llm] xai/reconcileTurnSemanticState model=grok-4.5 ok 3ms
+# Subtest: strict awareness adjudication results
+    # Subtest: rejects invalid winners and absent or fabricated referee rationales
+    ok 1 - rejects invalid winners and absent or fabricated referee rationales
+      ---
+      duration_ms: 2.273416
+      type: 'test'
+      ...
+    # Subtest: rejects corrupt operations, coerced situation values and missing required sensory evidence
+    ok 2 - rejects corrupt operations, coerced situation values and missing required sensory evidence
+      ---
+      duration_ms: 1.145785
+      type: 'test'
+      ...
+    # Subtest: preserves valid world operations with server-owned revision and event references
+    ok 3 - preserves valid world operations with server-owned revision and event references
+      ---
+      duration_ms: 1.249583
+      type: 'test'
+      ...
+    # Subtest: rejects a schema-valid empty batch instead of synthesizing failed free actions
+    ok 4 - rejects a schema-valid empty batch instead of synthesizing failed free actions
+      ---
+      duration_ms: 133.433523
+      type: 'test'
+      ...
+    # Subtest: throws after a successful HTTP response instead of silently normalizing invalid semantic content
+    ok 5 - throws after a successful HTTP response instead of silently normalizing invalid semantic content
+      ---
+      duration_ms: 5.961208
+      type: 'test'
+      ...
+    1..5
+ok 2 - strict awareness adjudication results
+  ---
+  duration_ms: 145.862
+  type: 'suite'
+  ...
+# Subtest: awareness exact dispatch admission
+    # Subtest: binds full rendered prompts, model identity, and generation cap to a verified quote
+    ok 1 - binds full rendered prompts, model identity, and generation cap to a verified quote
+      ---
+      duration_ms: 3.100086
+      type: 'test'
+      ...
+    # Subtest: rejects missing contracts and cross-model quotes
+    ok 2 - rejects missing contracts and cross-model quotes
+      ---
+      duration_ms: 0.581548
+      type: 'test'
+      ...
+    # Subtest: rejects mismatched hashes, caps, incomplete framing, and malformed cost
+    ok 3 - rejects mismatched hashes, caps, incomplete framing, and malformed cost
+      ---
+      duration_ms: 2.24804
+      type: 'test'
+      ...
+    # Subtest: fails closed on quote service error and does not mutate the original request
+    ok 4 - fails closed on quote service error and does not mutate the original request
+      ---
+      duration_ms: 0.803669
+      type: 'test'
+      ...
+    # Subtest: leaves roles inadmissible without an unambiguous configured billing contract
+    ok 5 - leaves roles inadmissible without an unambiguous configured billing contract
+      ---
+      duration_ms: 11.500996
+      type: 'test'
+      ...
+    1..5
+ok 3 - awareness exact dispatch admission
+  ---
+  duration_ms: 20.776791
+  type: 'suite'
+  ...
+# Subtest: explicit observed dispatch admission
+    # Subtest: selects observed admission only through the immutable policy without contacting quote services
+    ok 1 - selects observed admission only through the immutable policy without contacting quote services
+      ---
+      duration_ms: 2.447326
+      type: 'test'
+      ...
+    # Subtest: hashes the latest actual request for every recorded prompt identity
+    ok 2 - hashes the latest actual request for every recorded prompt identity
+      ---
+      duration_ms: 9.929089
+      type: 'test'
+      ...
+    # Subtest: does not invent token or cost values and still enforces output and time limits
+    ok 3 - does not invent token or cost values and still enforces output and time limits
+      ---
+      duration_ms: 0.911795
+      type: 'test'
+      ...
+    1..3
+ok 4 - explicit observed dispatch admission
+  ---
+  duration_ms: 13.854055
+  type: 'suite'
+  ...
+# [llm] xai ready engine=grok-4.5 fast=grok-4.3
+# [llm] xai/engine model=grok-4.5 ok 123ms
+# [llm] xai ready engine=grok-4.5 fast=grok-4.3
+# [llm] xai/engine model=grok-4.5 ok 4ms
+# [llm] xai ready engine=grok-4.5 fast=grok-4.3
+# [llm] xai ready engine=grok-4.5 fast=grok-4.3
+# [llm] xai/engine model=grok-4.5 fail 1ms: test pre-dispatch stop
+# [llm] xai ready engine=grok-4.5 fast=grok-4.3
+# [llm] xai ready engine=grok-4.5 fast=grok-4.3
+# [llm] xai ready engine=grok-4.5 fast=grok-4.3
+# [llm] xai/engine model=grok-4.5 fail 1ms: verified maximum charge unavailable
+# [llm] xai ready engine=grok-4.5 fast=grok-4.3
+# [llm] xai/awareness-v5:narration-frozen model=grok-4.3 ok 4ms
+# Subtest: awareness adjudication dispatch context
+    # Subtest: quotes the exact prose, schema overhead and engine cap passed to the physical SDK request
+    ok 1 - quotes the exact prose, schema overhead and engine cap passed to the physical SDK request
+      ---
+      duration_ms: 133.349753
+      type: 'test'
+      ...
+    # Subtest: clips the quoted physical timeout to the absolute battle time remaining
+    ok 2 - clips the quoted physical timeout to the absolute battle time remaining
+      ---
+      duration_ms: 6.423805
+      type: 'test'
+      ...
+    # Subtest: prepares the bound adjudication deadline without dispatching or weakening token caps
+    ok 3 - prepares the bound adjudication deadline without dispatching or weakening token caps
+      ---
+      duration_ms: 2.684089
+      type: 'test'
+      ...
+    # Subtest: refuses streaming, tools, and mismatched model identities before dispatch
+    ok 4 - refuses streaming, tools, and mismatched model identities before dispatch
+      ---
+      duration_ms: 1.59603
+      type: 'test'
+      ...
+    # Subtest: never dispatches or retries when admission rejects the physical request
+    ok 5 - never dispatches or retries when admission rejects the physical request
+      ---
+      duration_ms: 2.347529
+      type: 'test'
+      ...
+    1..5
+ok 5 - awareness adjudication dispatch context
+  ---
+  duration_ms: 148.321365
+  type: 'suite'
+  ...
+# Subtest: frozen narration SDK strict response format
+    # Subtest: quotes and sends the same strict schema unmodified in one physical attempt
+    ok 1 - quotes and sends the same strict schema unmodified in one physical attempt
+      ---
+      duration_ms: 9.786415
+      type: 'test'
+      ...
+    1..1
+ok 6 - frozen narration SDK strict response format
+  ---
+  duration_ms: 10.060166
+  type: 'suite'
+  ...
+1..6
+# tests 22
+# suites 6
+# pass 22
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 1205.61311

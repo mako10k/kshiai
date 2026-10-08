@@ -1,0 +1,145 @@
+TAP version 13
+# Subtest: compact psyche decoder
+    # Subtest: accepts a successful JSON object that carries unknown envelope keys
+    ok 1 - accepts a successful JSON object that carries unknown envelope keys
+      ---
+      duration_ms: 4.195754
+      type: 'test'
+      ...
+    # Subtest: lifts legacy cost strings into consequence objects
+    ok 2 - lifts legacy cost strings into consequence objects
+      ---
+      duration_ms: 0.729167
+      type: 'test'
+      ...
+    # Subtest: still rejects a missing compact speech appraisal and reports the path
+    ok 3 - still rejects a missing compact speech appraisal and reports the path
+      ---
+      duration_ms: 1.531929
+      type: 'test'
+      ...
+    # Subtest: rejects an expression brief whose continuity decision contradicts the appraisal
+    ok 4 - rejects an expression brief whose continuity decision contradicts the appraisal
+      ---
+      duration_ms: 0.995334
+      type: 'test'
+      ...
+    # Subtest: rejects whitespace-only required appraisal text
+    ok 5 - rejects whitespace-only required appraisal text
+      ---
+      duration_ms: 0.865048
+      type: 'test'
+      ...
+    1..5
+ok 1 - compact psyche decoder
+  ---
+  duration_ms: 10.539276
+  type: 'suite'
+  ...
+# Subtest: dialogue context contracts
+    # Subtest: bounds observer packet material without accepting an ambiguous side
+    ok 1 - bounds observer packet material without accepting an ambiguous side
+      ---
+      duration_ms: 3.27858
+      type: 'test'
+      ...
+    # Subtest: keeps expression guidance compact and private
+    ok 2 - keeps expression guidance compact and private
+      ---
+      duration_ms: 1.096133
+      type: 'test'
+      ...
+    # Subtest: requires compact psyche to carry its social feedback loop
+    ok 3 - requires compact psyche to carry its social feedback loop
+      ---
+      duration_ms: 1.85894
+      type: 'test'
+      ...
+    # Subtest: makes a stable battle-owned snapshot from operator settings
+    ok 4 - makes a stable battle-owned snapshot from operator settings
+      ---
+      duration_ms: 1.839591
+      type: 'test'
+      ...
+    # Subtest: selects the revised Compact contract only for V2 snapshots
+    ok 5 - selects the revised Compact contract only for V2 snapshots
+      ---
+      duration_ms: 0.500095
+      type: 'test'
+      ...
+    # Subtest: keeps old receipts readable and requires provenance for deployment overrides
+    ok 6 - keeps old receipts readable and requires provenance for deployment overrides
+      ---
+      duration_ms: 1.352806
+      type: 'test'
+      ...
+    # Subtest: projects only the observer's changed percepts and evidence references
+    ok 7 - projects only the observer's changed percepts and evidence references
+      ---
+      duration_ms: 1.425573
+      type: 'test'
+      ...
+    # Subtest: retains event provenance across perception projection and packet construction
+    ok 8 - retains event provenance across perception projection and packet construction
+      ---
+      duration_ms: 9.988585
+      type: 'test'
+      ...
+    # Subtest: does not carry unobserved evidence into the other observer packet
+    ok 9 - does not carry unobserved evidence into the other observer packet
+      ---
+      duration_ms: 0.597394
+      type: 'test'
+      ...
+    # Subtest: keeps committed utterance perception in conversation rather than result packets
+    ok 10 - keeps committed utterance perception in conversation rather than result packets
+      ---
+      duration_ms: 0.909194
+      type: 'test'
+      ...
+    1..10
+ok 2 - dialogue context contracts
+  ---
+  duration_ms: 25.286513
+  type: 'suite'
+  ...
+# Subtest: deterministic psyche reaction policy V1
+    # Subtest: projects repeatedly without advancing state and retains the transition projection formula
+    ok 1 - projects repeatedly without advancing state and retains the transition projection formula
+      ---
+      duration_ms: 4.169041
+      type: 'test'
+      ...
+    # Subtest: is deterministic and uses only structured certainty and source IDs
+    ok 2 - is deterministic and uses only structured certainty and source IDs
+      ---
+      duration_ms: 0.700175
+      type: 'test'
+      ...
+    # Subtest: decays without inventing a new reaction when features are unavailable
+    ok 3 - decays without inventing a new reaction when features are unavailable
+      ---
+      duration_ms: 0.296112
+      type: 'test'
+      ...
+    # Subtest: keeps impulse separate from action and applies inhibition monotonically
+    ok 4 - keeps impulse separate from action and applies inhibition monotonically
+      ---
+      duration_ms: 0.616111
+      type: 'test'
+      ...
+    1..4
+ok 3 - deterministic psyche reaction policy V1
+  ---
+  duration_ms: 7.642015
+  type: 'suite'
+  ...
+1..3
+# tests 19
+# suites 3
+# pass 19
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 594.976918

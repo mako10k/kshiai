@@ -1,0 +1,179 @@
+{
+  "thought_id": "format",
+  "id_source": "file",
+  "report": {
+    "engine_version": "0.1.0",
+    "document_id": "format",
+    "generated_at": "2026-10-07T01:56:43.598Z",
+    "summary": {
+      "fatal_count": 0,
+      "error_count": 0,
+      "warning_count": 0,
+      "info_count": 0,
+      "hint_count": 7
+    },
+    "results": [
+      {
+        "issue_id": "ISSUE-001",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "TICK_WAIT",
+            "role": "domain"
+          }
+        ],
+        "message": "domain TICK_WAIT の description は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 2,
+          "column": 3,
+          "text": "Preserve the adopted minimum tick interval when a timer wakes before the persisted wall-clock boundary.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-002",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "E_SOURCE",
+            "role": "evidence",
+            "step_id": "S-E_SOURCE"
+          }
+        ],
+        "message": "evidence E_SOURCE は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 4,
+          "column": 3,
+          "text": "battle-service.ts4842-4844 calculates lastCommittedAt+minTickIntervalMs-Date.now once and sleeps once. awareness-execution.ts252-254 rejects world commit with active runtime and no incompleteReason when the wall-clock interval is still short. battle-service.ts4847-4849 then treats every canCommitWorld false as a required-boundary failure and catches it to persist incomplete.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-003",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "E_TEST",
+            "role": "evidence",
+            "step_id": "S-E_TEST"
+          }
+        ],
+        "message": "evidence E_TEST は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 6,
+          "column": 3,
+          "text": "Existing awareness-execution.test.ts270-282 explicitly verifies a too-early boundary returns canCommitWorld false and resumes successfully after the minimum interval. Shared policy is immutable minTickIntervalMs1000 under Accepted ADR0054 retaining prior policy controls.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-004",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "E_RUN",
+            "role": "evidence",
+            "step_id": "S-E_RUN"
+          }
+        ],
+        "message": "evidence E_RUN は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 8,
+          "column": 3,
+          "text": "Offline E2E r4 fails at an explicit incomplete-status assertion with AWARENESS_REQUIRED_BOUNDARY_FAILED. Route log has a negative -1390ms elapsed duration measured with Date.now. No source-wide Date.now replacement was found in the active fixture. The OS clock adjustment origin is unknown. Exact runtime snapshot at the rejection is not retained, so this occurrence's trigger remains inferred.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-005",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "P_SCOPE",
+            "role": "premise",
+            "step_id": "S-P_SCOPE"
+          }
+        ],
+        "message": "premise P_SCOPE は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 10,
+          "column": 3,
+          "text": "User authorizes repairing all tests with type integrity. Accepted ADR0054 preserves tick spacing and finite global deadlines; no policy relaxation, clock replacement, retries of model transport, deployment, or paid call is authorized.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-006",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "P_ALTERNATIVES",
+            "role": "premise",
+            "step_id": "S-P_ALTERNATIVES"
+          }
+        ],
+        "message": "premise P_ALTERNATIVES は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 12,
+          "column": 3,
+          "text": "Changing the test to accept incomplete or removing minimum spacing loses obligations. A second fixed sleep does not establish the boundary. Recheck the persisted not-before time after each wake and stop at the existing global deadline. This corrects the independently verified one-shot-wait defect without asserting the OS trigger is proven.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-007",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "D_REPAIR",
+            "role": "decision",
+            "step_id": "S-D_REPAIR"
+          }
+        ],
+        "message": "decision D_REPAIR は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 14,
+          "column": 3,
+          "text": "Add a typed bounded tick-wait helper in awareness-clock.ts and use it at the existing production waiting seam. Test a backward clock reading and early timer wake followed by the correct boundary, elapsed global deadline, and zero unnecessary sleep. Then rerun clock tests, guidance tests and strict E2E types, followed by the offline E2E. Changed production Seal stays stale until its reviewed scope and dependent proof are refreshed; do not claim type-only equivalence.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      }
+    ],
+    "query_results": []
+  }
+}

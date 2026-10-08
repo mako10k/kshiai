@@ -1,0 +1,276 @@
+{
+  "entries": [
+    {
+      "key": "evidence-awareness-creation-inference",
+      "path": "docs/evidence/awareness-creation-fixture-inference-rca-2026-10-07.think",
+      "parents": [
+        "current",
+        "state"
+      ],
+      "scope": "Audited observed local TS7022; exact compiler internal cycle unknown. Shared side-state annotation only, unchanged initializer/51assertions and all cases.",
+      "ref": "all-tests-20261007/evidence-awareness-creation-inference",
+      "test": false,
+      "sha256": "74bba670d39dea23f2b2afedbb83537ab80efb178053ada7fcf4f5a247074920",
+      "sealId": "589a449c7638a1968f7e53fa7ba62eac18227648e39346997435f633c379a126",
+      "causeSealIds": [
+        "4a236b55e9ad9e4aa54eb2c6bbe9d77e0a318881ba8328363505153d16e151dd",
+        "cea338023663fcb0df2f08b3e889a61b0033e7d60008a6301090ccac8a3fe50a"
+      ]
+    },
+    {
+      "key": "design-awareness-creation-cohort",
+      "path": "docs/awareness-creation-test-contract-review-2026-10-07.md",
+      "parents": [
+        "current",
+        "narration",
+        "waits",
+        "latest",
+        "activation",
+        "retirement",
+        "evidence-awareness-creation-inference"
+      ],
+      "scope": "Six whole files29cases current create/persistence/initial advance; old certified proof-refusal scoped to explicit immutable binding, new ordinary observed policy has no required proof. No trial restart/live acceptance.",
+      "ref": "all-tests-20261007/design-awareness-creation-cohort",
+      "test": false,
+      "sha256": "4e57b2c42bb9db50ee1935e11b588c9d453cbca4b16223111d5a4f1a97b2e573",
+      "sealId": "41ddc91bb49a0da92b977f084f6ae83d43db87a80a76d6395c10bdd14509dd7e",
+      "causeSealIds": [
+        "4a236b55e9ad9e4aa54eb2c6bbe9d77e0a318881ba8328363505153d16e151dd",
+        "78f9fec1b418020c221d67930654a6ead967fb85393603a544651cea83a61371",
+        "f16e9ead78dda44031acb7b49b711d967e3284a6d113edafbbb57cbbd15e49fe",
+        "9aae6f378e9b227f6909912129368e8317bdc4d773933342da1ca3914be6dae0",
+        "645e178be9a4b4662822f09d79c5977797a0830e072ee816510a4a62aa5b8e52",
+        "a1c688a46b255e61a935098665e31e0e6f368cc259b72b0b81d87a4ec1552c3a",
+        "589a449c7638a1968f7e53fa7ba62eac18227648e39346997435f633c379a126"
+      ]
+    },
+    {
+      "key": "implementation-awareness-creation-ledger",
+      "path": "backend/src/repositories/battle-awareness-creation.ts",
+      "parents": [
+        "design-awareness-creation-cohort",
+        "oldCreation",
+        "db",
+        "state"
+      ],
+      "scope": "SQLite creation prepared/reserved/ready/adopted identity/once-only/deadline/atomic adoption and unknown latefee paths. Not PG concurrency or actual prices.",
+      "ref": "all-tests-20261007/implementation-awareness-creation-ledger",
+      "test": false,
+      "sha256": "0fa81094da6da7c061318719a2651836d4ad1adc883bb21e2289e4e8c92ea378",
+      "sealId": "dd290d037c8a794b9f498c642b56322f832f349b05d4e8324cc4432a51a6a859",
+      "causeSealIds": [
+        "41ddc91bb49a0da92b977f084f6ae83d43db87a80a76d6395c10bdd14509dd7e",
+        "b032bb02400e49e7c727eb9a35b1d7488b740bfb02bff55c62892cc216c80374",
+        "4ea52a357e72328f2c5e136344aa945c23078b1c6957fc150f77a6153663ebee",
+        "cea338023663fcb0df2f08b3e889a61b0033e7d60008a6301090ccac8a3fe50a"
+      ]
+    },
+    {
+      "key": "implementation-awareness-creation-runtime",
+      "path": "backend/src/repositories/battle-awareness.ts",
+      "parents": [
+        "design-awareness-creation-cohort",
+        "oldRuntime",
+        "db",
+        "state"
+      ],
+      "scope": "Nine local SQLite CAS/fence/lease/atomic rollback/reservations/async acceptance/narrator-only drain cases; no multi-instance PG/SSE proof.",
+      "ref": "all-tests-20261007/implementation-awareness-creation-runtime",
+      "test": false,
+      "sha256": "7a1fb475a5b52153a4262f80a987bb0158988319a6cc0bf6f2b8df44beff2953",
+      "sealId": "3e99d5c91a92a2de7ce63f1a3d09d84df9743e9e7c6866fc6d27efe0768b25a9",
+      "causeSealIds": [
+        "41ddc91bb49a0da92b977f084f6ae83d43db87a80a76d6395c10bdd14509dd7e",
+        "8c03873ba349ed1531f1dc6adf2d11b86b8e525c3cf6e501e38ff6ff2bf25cef",
+        "4ea52a357e72328f2c5e136344aa945c23078b1c6957fc150f77a6153663ebee",
+        "cea338023663fcb0df2f08b3e889a61b0033e7d60008a6301090ccac8a3fe50a"
+      ]
+    },
+    {
+      "key": "implementation-awareness-creation-encounter",
+      "path": "backend/src/services/awareness-creation-encounter.ts",
+      "parents": [
+        "design-awareness-creation-cohort",
+        "oldEncounter",
+        "admission",
+        "sdk",
+        "usage"
+      ],
+      "scope": "Six fake SDK transport cases explicit observed no billing/price versus retained certified/default admission, persist before send and failures; not actual token estimate/price/network.",
+      "ref": "all-tests-20261007/implementation-awareness-creation-encounter",
+      "test": false,
+      "sha256": "84dd49b45795edf215bac5baf3114a847f421724a4f16b1b1c35c76d0dc399a0",
+      "sealId": "422c8aab7cae0d26a5734530d3a31765fce0437d2032e164019401550dfb9476",
+      "causeSealIds": [
+        "41ddc91bb49a0da92b977f084f6ae83d43db87a80a76d6395c10bdd14509dd7e",
+        "2d99aa018a2e32804418c6537e3484698d89df8772d0c4db281f29230eb45976",
+        "8abba1a9c8979c938c12dd7bfb72af72c43496dbb487ff827477c7ff5951482f",
+        "11ad190b10415f87aaf38a9598ec3ac3e05031fd2c03800aac12da69ae178d91",
+        "a716bc3b8e2473ca01d2cf7408bdc93dc769f8556428f493d9ee803dd7859619"
+      ]
+    },
+    {
+      "key": "implementation-awareness-creation-public-service",
+      "path": "backend/src/services/battle-service.ts",
+      "parents": [
+        "design-awareness-creation-cohort",
+        "oldService",
+        "implementation-awareness-creation-ledger",
+        "implementation-awareness-creation-runtime",
+        "implementation-awareness-creation-encounter",
+        "storage",
+        "settings"
+      ],
+      "scope": "Only startBattle/advanceTurn exercised paths for validV3 immutable creation, initial phase/KO/failed semantic canonical preservation/idempotent replay/no implicitfallback; not full service/ratings/normal public completion.",
+      "ref": "all-tests-20261007/implementation-awareness-creation-public-service",
+      "test": false,
+      "sha256": "80eda28c060f4f789dfb64a13a3babf2e4d82db77a8b34cebeb938cba040bce8",
+      "sealId": "69e82fdca805afbd8bb4e1988e51b8c47fe773bb00f24fa9b79bad4e21359484",
+      "causeSealIds": [
+        "41ddc91bb49a0da92b977f084f6ae83d43db87a80a76d6395c10bdd14509dd7e",
+        "29f8c4e12b07b449473dc30f4a32d9b580001da28438bde3c77b88d86a17bbac",
+        "dd290d037c8a794b9f498c642b56322f832f349b05d4e8324cc4432a51a6a859",
+        "3e99d5c91a92a2de7ce63f1a3d09d84df9743e9e7c6866fc6d27efe0768b25a9",
+        "422c8aab7cae0d26a5734530d3a31765fce0437d2032e164019401550dfb9476",
+        "f09f7e2e5eae9da983979783a5f430dbf5372ce31ae52deaeac5da3c79ffa192",
+        "6b23aca081e9f87055fdbe8ef961da8d6c9daf2653973e33e5b9e713a7947333"
+      ]
+    },
+    {
+      "key": "battle-awareness-creation-bounded-awareness-creation",
+      "path": "backend/src/repositories/battle-awareness-creation.test.ts",
+      "parents": [
+        "implementation-awareness-creation-ledger",
+        "fixture",
+        "policy"
+      ],
+      "scope": "Whole original 7 cases retained. Local SQLite/offline/fakeSDK bounded proof only; proof refusal is historical certified binding, no paid/live/current pricing acceptance.",
+      "ref": "verification/battle-awareness-creation-bounded-awareness-creation-20261007",
+      "test": true,
+      "sha256": "4661dd253bcebae3d66da54925308c50e28ba99a213c6390b678505223cf7c86",
+      "sealId": "8040ca4074520f679981e6dcf596df6ce82ebf5ba50a7eedcb9c22db573c6f45",
+      "causeSealIds": [
+        "dd290d037c8a794b9f498c642b56322f832f349b05d4e8324cc4432a51a6a859",
+        "6ac6f7936f62bf30134d2c26620c335f7b71357945f0713f35f4635a70754a31",
+        "c064db895ea9f010d2f6fb28360b243285cbe93156c19f8286e161ec2d0d731a"
+      ]
+    },
+    {
+      "key": "battle-awareness-bounded-awareness-creation",
+      "path": "backend/src/repositories/battle-awareness.test.ts",
+      "parents": [
+        "implementation-awareness-creation-runtime",
+        "fixture",
+        "physical"
+      ],
+      "scope": "Whole original 9 cases retained. Local SQLite/offline/fakeSDK bounded proof only; proof refusal is historical certified binding, no paid/live/current pricing acceptance.",
+      "ref": "verification/battle-awareness-bounded-awareness-creation-20261007",
+      "test": true,
+      "sha256": "ecba9bd7f98d72569df255962199f3b244f27a0ea7bd9d04bafc74201ff3f76e",
+      "sealId": "e2e7cccb45af2afb0376078546414eb2b4cc18e67c3b936f7cd3e759afb4bc6a",
+      "causeSealIds": [
+        "3e99d5c91a92a2de7ce63f1a3d09d84df9743e9e7c6866fc6d27efe0768b25a9",
+        "6ac6f7936f62bf30134d2c26620c335f7b71357945f0713f35f4635a70754a31",
+        "104b75473d4236887e586474778688398b1ebe3f49681ba9d7c633e221b8ffc9"
+      ]
+    },
+    {
+      "key": "awareness-battle-creation-bounded-awareness-creation",
+      "path": "backend/src/services/awareness-battle-creation.test.ts",
+      "parents": [
+        "implementation-awareness-creation-public-service",
+        "roles",
+        "sdk",
+        "v3fixture",
+        "usage"
+      ],
+      "scope": "Whole original 1 cases retained. Local SQLite/offline/fakeSDK bounded proof only; proof refusal is historical certified binding, no paid/live/current pricing acceptance.",
+      "ref": "verification/awareness-battle-creation-bounded-awareness-creation-20261007",
+      "test": true,
+      "sha256": "cbf4526395d59be0d4883808e2a77a3b74a5cf156c76a43601a000e1095bc564",
+      "sealId": "7e51aa543579e6d4f6d649a76d96a9f460eccbec5ee408bed815ab0cfd7a6dbe",
+      "causeSealIds": [
+        "69e82fdca805afbd8bb4e1988e51b8c47fe773bb00f24fa9b79bad4e21359484",
+        "ae27a3a0d74786dd4155d2ab94eaa17bea2c220e9ca916477e395189f00ae030",
+        "11ad190b10415f87aaf38a9598ec3ac3e05031fd2c03800aac12da69ae178d91",
+        "c8b0ffded33bafbc8743d8b941fa6a3be202f7abf2f52f02b6ff8abd0bca9de1",
+        "a716bc3b8e2473ca01d2cf7408bdc93dc769f8556428f493d9ee803dd7859619"
+      ]
+    },
+    {
+      "key": "awareness-battle-service-bounded-awareness-creation",
+      "path": "backend/src/services/awareness-battle-service.test.ts",
+      "parents": [
+        "implementation-awareness-creation-public-service",
+        "fixture",
+        "state"
+      ],
+      "scope": "Whole original 5 cases retained. Local SQLite/offline/fakeSDK bounded proof only; proof refusal is historical certified binding, no paid/live/current pricing acceptance.",
+      "ref": "verification/awareness-battle-service-bounded-awareness-creation-20261007",
+      "test": true,
+      "sha256": "c7e61249546b9538e40c64cb49cd79feaaec87df0c31ef50cc60cf45d8176d45",
+      "sealId": "138e3dec2f18ca9fdd4f4a9b6b8da91bdc1d6aeb05e26b4648e0d90e486fb25b",
+      "causeSealIds": [
+        "69e82fdca805afbd8bb4e1988e51b8c47fe773bb00f24fa9b79bad4e21359484",
+        "6ac6f7936f62bf30134d2c26620c335f7b71357945f0713f35f4635a70754a31",
+        "cea338023663fcb0df2f08b3e889a61b0033e7d60008a6301090ccac8a3fe50a"
+      ]
+    },
+    {
+      "key": "awareness-creation-encounter-bounded-awareness-creation",
+      "path": "backend/src/services/awareness-creation-encounter.test.ts",
+      "parents": [
+        "implementation-awareness-creation-encounter",
+        "admission",
+        "usage"
+      ],
+      "scope": "Whole original 6 cases retained. Local SQLite/offline/fakeSDK bounded proof only; proof refusal is historical certified binding, no paid/live/current pricing acceptance.",
+      "ref": "verification/awareness-creation-encounter-bounded-awareness-creation-20261007",
+      "test": true,
+      "sha256": "e800433ecfeaaba35bf6e500e1cd46a72559fc9a467417b706397c4cf91531bf",
+      "sealId": "e662c1f52256d165fc5abe43532dbcb44afe9a52b81ba777519246bf6c8bb2d4",
+      "causeSealIds": [
+        "422c8aab7cae0d26a5734530d3a31765fce0437d2032e164019401550dfb9476",
+        "8abba1a9c8979c938c12dd7bfb72af72c43496dbb487ff827477c7ff5951482f",
+        "a716bc3b8e2473ca01d2cf7408bdc93dc769f8556428f493d9ee803dd7859619"
+      ]
+    },
+    {
+      "key": "battle-create-idempotency-bounded-awareness-creation",
+      "path": "backend/src/services/battle-create-idempotency.test.ts",
+      "parents": [
+        "implementation-awareness-creation-public-service",
+        "offline",
+        "v3fixture",
+        "dialogueFixture",
+        "activation"
+      ],
+      "scope": "Whole original 1 cases retained. Local SQLite/offline/fakeSDK bounded proof only; proof refusal is historical certified binding, no paid/live/current pricing acceptance.",
+      "ref": "verification/battle-create-idempotency-bounded-awareness-creation-20261007",
+      "test": true,
+      "sha256": "77256250fdd27414968c91b923bbec81c8355de6b128cff1b8d32f9a6fac7855",
+      "sealId": "8184a6247197a11d86d421f37f33200b2265486732ba8733e490deec2bf0f591",
+      "causeSealIds": [
+        "69e82fdca805afbd8bb4e1988e51b8c47fe773bb00f24fa9b79bad4e21359484",
+        "1c34e06ab8d2273a0eb86a3cc40d7c29d753199bfb121896fe6d455826c9eae0",
+        "c8b0ffded33bafbc8743d8b941fa6a3be202f7abf2f52f02b6ff8abd0bca9de1",
+        "ffa16af3f341c2b25cf2e64dce646c61cc10f5fe95bed4784b619f8017931be2",
+        "645e178be9a4b4662822f09d79c5977797a0830e072ee816510a4a62aa5b8e52"
+      ]
+    }
+  ],
+  "diagnostic": {
+    "focusedPass": 29,
+    "fail": 0,
+    "skipped": 0,
+    "strictTypecheckExit": 0,
+    "workspaceTypecheckExit": 0
+  },
+  "limitations": [
+    "29original cases/all51changed-file assertions preserved; annotation/import only; other5files unchanged",
+    "Private SQLite/offline/fakeSDK, not PG/live provider/pricing/full latest prompt/public completion",
+    "Certified proof-refusal only prior explicit policy; current ordinary observed usage-v2 not weakened",
+    "Idempotency timeout fixture string is not elapsed-time proof and exact usage-v2 revision not asserted by that case",
+    "251 whole files/unsealed stop/Owner decision gates preserved"
+  ]
+}

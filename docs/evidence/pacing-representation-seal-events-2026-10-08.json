@@ -1,0 +1,106 @@
+[
+  {
+    "key": "design-pacing-representation-bounded",
+    "path": "docs/pacing-representation-test-contract-review-2026-10-08.md",
+    "parents": [
+      "requirements",
+      "clock"
+    ],
+    "scope": "Original3 cases: named candidate schema, reproducible private offline measurement and explicitly injected effects-only branch. Candidate is actually bound by normal creation; no selector/default/config/adoption/numericalfitness/speech proof.",
+    "ref": "all-tests-20261008/design-pacing-representation-bounded",
+    "test": false,
+    "sha256": "07a999e13cae3fdc8e5a110c4a7041959578968018c9a4ecf6fd4a46abee25c6",
+    "sealId": "b6960db0446a8cdc86d525548a5236d1c2eb150d7a9e9ff6906bf9453a61a5f3",
+    "causeSealIds": [
+      "203e66fc4e30772adab026012c67f1b1ac4ca86ad2ada11b501c639a27a19eac",
+      "eca19b9925440ce3fdae98983a9121f3a887ad7a8ba137528209a6817c3dfa95"
+    ]
+  },
+  {
+    "key": "evidence-pacing-candidate-unaccepted",
+    "path": "docs/battle-pacing-candidate-12-v2.md",
+    "parents": [
+      "design-pacing-representation-bounded"
+    ],
+    "scope": "Original3 cases: named candidate schema, reproducible private offline measurement and explicitly injected effects-only branch. Candidate is actually bound by normal creation; no selector/default/config/adoption/numericalfitness/speech proof.",
+    "ref": "all-tests-20261008/evidence-pacing-candidate-unaccepted",
+    "test": false,
+    "sha256": "7a8fe6452aa2728a1ca47d85c60775f94a3323bb44485106e73690000055c32b",
+    "sealId": "966c38e5fb5e748ff582d738f2acc926cdda56c0ff54f6a4737342e69f799b03",
+    "causeSealIds": [
+      "b6960db0446a8cdc86d525548a5236d1c2eb150d7a9e9ff6906bf9453a61a5f3"
+    ]
+  },
+  {
+    "key": "evidence-pacing-local-measurement",
+    "path": "docs/battle-pacing-local-measurement-2026-08-12.md",
+    "parents": [
+      "design-pacing-representation-bounded"
+    ],
+    "scope": "Original3 cases: named candidate schema, reproducible private offline measurement and explicitly injected effects-only branch. Candidate is actually bound by normal creation; no selector/default/config/adoption/numericalfitness/speech proof.",
+    "ref": "all-tests-20261008/evidence-pacing-local-measurement",
+    "test": false,
+    "sha256": "5cfaa9760a09599a5fa7fb5e11a0bee11fb496ffa4bffeafa20a13b8466e2220",
+    "sealId": "c7c54998c96e5a25f65fef37f9b0d2a101dcc7bff679c662e7b1ab827d8839d7",
+    "causeSealIds": [
+      "b6960db0446a8cdc86d525548a5236d1c2eb150d7a9e9ff6906bf9453a61a5f3"
+    ]
+  },
+  {
+    "key": "implementation-pacing-policy-representation",
+    "path": "packages/shared/src/battle-pacing.ts",
+    "parents": [
+      "design-pacing-representation-bounded",
+      "evidence-pacing-candidate-unaccepted"
+    ],
+    "scope": "Original3 cases: named candidate schema, reproducible private offline measurement and explicitly injected effects-only branch. Candidate is actually bound by normal creation; no selector/default/config/adoption/numericalfitness/speech proof.",
+    "ref": "all-tests-20261008/implementation-pacing-policy-representation",
+    "test": false,
+    "sha256": "2950f0d51844f4996b614d6a5c3c00f963960cedf5d3b4b47d738f95727b80fb",
+    "sealId": "e311d707c12cfb215fe5cfa95146d3fac9348a3f41831b9fd8b45413c9179c71",
+    "causeSealIds": [
+      "b6960db0446a8cdc86d525548a5236d1c2eb150d7a9e9ff6906bf9453a61a5f3",
+      "966c38e5fb5e748ff582d738f2acc926cdda56c0ff54f6a4737342e69f799b03"
+    ]
+  },
+  {
+    "key": "implementation-pacing-private-observation",
+    "path": "packages/shared/src/battle-pacing-observe.ts",
+    "parents": [
+      "implementation-pacing-policy-representation",
+      "evidence-pacing-local-measurement",
+      "engine"
+    ],
+    "scope": "Original3 cases: named candidate schema, reproducible private offline measurement and explicitly injected effects-only branch. Candidate is actually bound by normal creation; no selector/default/config/adoption/numericalfitness/speech proof.",
+    "ref": "all-tests-20261008/implementation-pacing-private-observation",
+    "test": false,
+    "sha256": "6d32777b6804c188804eeef8108bab8c3377f98587be909279d3162827bec8b9",
+    "sealId": "e676ee381274b950bd749e3ca0f4fb88373406e27ac135c8d1063a724ee336ae",
+    "causeSealIds": [
+      "e311d707c12cfb215fe5cfa95146d3fac9348a3f41831b9fd8b45413c9179c71",
+      "c7c54998c96e5a25f65fef37f9b0d2a101dcc7bff679c662e7b1ab827d8839d7",
+      "45867c376e614f18be8600a5de958d96a558c004bdb0f6ab5e7a000f2108a3a6"
+    ]
+  },
+  {
+    "key": "pacing-representation-bounded-20261008",
+    "path": "packages/shared/src/battle-pacing.test.ts",
+    "parents": [
+      "implementation-pacing-policy-representation",
+      "implementation-pacing-private-observation",
+      "engine",
+      "helper"
+    ],
+    "scope": "Original3 cases: named candidate schema, reproducible private offline measurement and explicitly injected effects-only branch. Candidate is actually bound by normal creation; no selector/default/config/adoption/numericalfitness/speech proof.",
+    "ref": "verification/pacing-representation-bounded-20261008",
+    "test": true,
+    "sha256": "5b519c93b9ef326c4fd7bb06d2de8c81b393b50074c076a6183f205d1b979d4b",
+    "sealId": "5f18aade0fd2fff56038e1843a2a3bed6a65badb61a6ef9b81d233d58ad40f8a",
+    "causeSealIds": [
+      "e311d707c12cfb215fe5cfa95146d3fac9348a3f41831b9fd8b45413c9179c71",
+      "e676ee381274b950bd749e3ca0f4fb88373406e27ac135c8d1063a724ee336ae",
+      "45867c376e614f18be8600a5de958d96a558c004bdb0f6ab5e7a000f2108a3a6",
+      "b077db61bb4341345b4d70a288f4de7cd8c1eff1b032ff42453cca1ab72c3e63"
+    ]
+  }
+]

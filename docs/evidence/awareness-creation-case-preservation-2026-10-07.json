@@ -1,0 +1,20 @@
+[
+  {
+    "path": "backend/src/services/awareness-battle-service.test.ts",
+    "beforeSha256": "060ff50c58627a9568cf1ee0e8b8af49403ac27be959b6a27f3974a98be9fa29",
+    "afterSha256": "c7e61249546b9538e40c64cb49cd79feaaec87df0c31ef50cc60cf45d8176d45",
+    "originalAssertions": 51,
+    "currentAssertions": 51,
+    "originalTestCalls": 4,
+    "allOriginalAssertionsPreserved": true,
+    "allOriginalTestCallsPreserved": true,
+    "allOtherBytesPreservedExceptImportAndAnnotation": true,
+    "otherFiveFilesUnchanged": [
+      "backend/src/repositories/battle-awareness-creation.test.ts",
+      "backend/src/repositories/battle-awareness.test.ts",
+      "backend/src/services/awareness-battle-creation.test.ts",
+      "backend/src/services/awareness-creation-encounter.test.ts",
+      "backend/src/services/battle-create-idempotency.test.ts"
+    ]
+  }
+]

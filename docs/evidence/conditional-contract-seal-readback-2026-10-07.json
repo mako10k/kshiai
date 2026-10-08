@@ -1,0 +1,13 @@
+{
+  "newRefs": 6,
+  "previousHeadsUnchanged": true,
+  "previousHeadCount": 792,
+  "totalRefs": 798,
+  "sourceBytesMatch": true,
+  "stale": 0,
+  "limitations": [
+    "Two whole local schema test files only",
+    "No upstream architectural change or live/deployment acceptance",
+    "Compiler test validates current registry pair consistency, not completeness of registry or compiler implementations"
+  ]
+}

@@ -1,0 +1,14 @@
+domain BackendImplicitAnyContainment:
+  description "Close the last observed implicit-any diagnostic and restore strict default checking"
+problem P1:
+  "Full backend compilation with noImplicitAny true reports exactly one TS7022 at character-historical-view.test.ts raw declaration in malformed snapshot loop."
+evidence E1:
+  "Backend tsconfig sets strict true but overrides noImplicitAny false. Full diagnostic log identifies only raw at line57."
+evidence E2:
+  "raw is deliberately malformed external input passed unchanged to resolveHistoricalCharacterViewFromJson(raw: unknown). Snapshot fixtures include null, empty object, empty displayName and wrong identity. No direct initializer self-reference is visible."
+premise U1:
+  "Compiler internal inference-cycle mechanism is unknown. An unknown annotation describes the actual untrusted-input boundary; it must not be used on a validated authoritative snapshot."
+decision D1 based_on P1, E1, E2, U1:
+  "Annotate only malformed raw as unknown, preserve initializer and every assertion. Verify original cases and full backend strict compilation. Remove noImplicitAny false override only after full strict succeeds, to ensure normal workspace checks enforce this existing rule."
+decision D2 based_on D1, E1, U1:
+  "Separately verify normal workspace typecheck and a temporary implicit-any negative control. Runtime, schema and historical read semantics stay unchanged; root compiler inference cause remains unknown."

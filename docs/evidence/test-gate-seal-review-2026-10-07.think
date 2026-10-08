@@ -1,0 +1,10 @@
+domain GATE_SEAL:
+  description "Seal the regression that prevents unsealed tests from producing aggregate success."
+evidence OWNER:
+  "Owner ordered unsealed tests must stop tests, accepted ADR0058 revision1 records that exact instruction. Current sealing and all-test causal recovery are authorized."
+evidence REVIEW:
+  "Read Accepted ADR0058 and companion think, test-authority-empty.test.mjs and implementation requireSealedTests/classification. The six gate cases reject empty active, reject mixed unsealed, reject missing refs, list all blockers and preserve other classifications. Both gate/selector tests diagnostically pass15 with skip0."
+premise BOUNDS:
+  "Four new local refs only: ADR0058 think scoped adoption root, ADR text, selector implementation and empty-test regression. Test Causes target exact ADR and implementation Seals. Append one inventory mapping. Keep all old heads, current classification, test scope and drafts unchanged. This does not make all-tests pass."
+decision D1 based_on OWNER, REVIEW, BOUNDS:
+  "Publish reviewed exact source bytes and cause IDs after audit, verify source/HEAD identity and current test eligibility, then continue remaining all-test recovery."

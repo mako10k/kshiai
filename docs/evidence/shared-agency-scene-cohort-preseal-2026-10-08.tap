@@ -1,0 +1,230 @@
+TAP version 13
+# Subtest: battle policy perspectives
+    # Subtest: keeps at most one selected choice per perspective
+    ok 1 - keeps at most one selected choice per perspective
+      ---
+      duration_ms: 2.184095
+      type: 'test'
+      ...
+    # Subtest: preserves an empty selection as unspecified
+    ok 2 - preserves an empty selection as unspecified
+      ---
+      duration_ms: 0.289546
+      type: 'test'
+      ...
+    1..2
+ok 1 - battle policy perspectives
+  ---
+  duration_ms: 4.506464
+  type: 'suite'
+  ...
+# Subtest: battle encounter and narrator continuity
+    # Subtest: rejects incomplete encounter proposals before deterministic fallback
+    ok 1 - rejects incomplete encounter proposals before deterministic fallback
+      ---
+      duration_ms: 1.28768
+      type: 'test'
+      ...
+    # Subtest: validates battle-label collisions and profile-backed self references
+    ok 2 - validates battle-label collisions and profile-backed self references
+      ---
+      duration_ms: 1.711952
+      type: 'test'
+      ...
+    # Subtest: updates A and B narrator records together without merging them
+    ok 3 - updates A and B narrator records together without merging them
+      ---
+      duration_ms: 16.426774
+      type: 'test'
+      ...
+    # Subtest: keeps an identified battle label while subject continuity remains intact
+    ok 4 - keeps an identified battle label while subject continuity remains intact
+      ---
+      duration_ms: 8.190104
+      type: 'test'
+      ...
+    # Subtest: builds deterministic legacy context without public prose
+    ok 5 - builds deterministic legacy context without public prose
+      ---
+      duration_ms: 0.474517
+      type: 'test'
+      ...
+    1..5
+ok 2 - battle encounter and narrator continuity
+  ---
+  duration_ms: 29.687864
+  type: 'suite'
+  ...
+# Subtest: ADR-0028 closed conscious state and partial acceptance
+    # Subtest: preserves legacy absence without injecting a new goal
+    ok 1 - preserves legacy absence without injecting a new goal
+      ---
+      duration_ms: 1.509002
+      type: 'test'
+      ...
+    # Subtest: initializes and returns typed goal/decision without mutating previous state
+    ok 2 - initializes and returns typed goal/decision without mutating previous state
+      ---
+      duration_ms: 3.572561
+      type: 'test'
+      ...
+    # Subtest: trims strings and rejects blank, overlong and duplicated refs
+    ok 3 - trims strings and rejects blank, overlong and duplicated refs
+      ---
+      duration_ms: 1.035727
+      type: 'test'
+      ...
+    # Subtest: rejects decisions without a goal and extra state keys
+    ok 4 - rejects decisions without a goal and extra state keys
+      ---
+      duration_ms: 0.917763
+      type: 'test'
+      ...
+    # Subtest: rejects extra envelope keys and phase-forbidden writes before all fields
+    ok 5 - rejects extra envelope keys and phase-forbidden writes before all fields
+      ---
+      duration_ms: 0.759727
+      type: 'test'
+      ...
+    # Subtest: keeps an invalid initial goal uninitialized while decoding independent speech
+    ok 6 - keeps an invalid initial goal uninitialized while decoding independent speech
+      ---
+      duration_ms: 2.102655
+      type: 'test'
+      ...
+    # Subtest: keeps an invalid initial goal uninitialized while decoding independent speech
+    ok 7 - keeps an invalid initial goal uninitialized while decoding independent speech
+      ---
+      duration_ms: 1.313629
+      type: 'test'
+      ...
+    # Subtest: keeps an invalid initial goal uninitialized while decoding independent speech
+    ok 8 - keeps an invalid initial goal uninitialized while decoding independent speech
+      ---
+      duration_ms: 1.084782
+      type: 'test'
+      ...
+    # Subtest: keeps an invalid initial goal uninitialized while decoding independent speech
+    ok 9 - keeps an invalid initial goal uninitialized while decoding independent speech
+      ---
+      duration_ms: 1.21072
+      type: 'test'
+      ...
+    # Subtest: retains a valid new goal when intent is invalid
+    ok 10 - retains a valid new goal when intent is invalid
+      ---
+      duration_ms: 1.077322
+      type: 'test'
+      ...
+    # Subtest: rejects unavailable or malformed action and its intent, without losing the initial goal
+    ok 11 - rejects unavailable or malformed action and its intent, without losing the initial goal
+      ---
+      duration_ms: 8.31519
+      type: 'test'
+      ...
+    # Subtest: accepts null action and null speech as a proposal, not a realized utterance
+    ok 12 - accepts null action and null speech as a proposal, not a realized utterance
+      ---
+      duration_ms: 0.607749
+      type: 'test'
+      ...
+    # Subtest: preserves the initial goal across a second judgment and old refs across fact sets
+    ok 13 - preserves the initial goal across a second judgment and old refs across fact sets
+      ---
+      duration_ms: 0.593999
+      type: 'test'
+      ...
+    # Subtest: rejects initial goal replacement even when its text is identical
+    ok 14 - rejects initial goal replacement even when its text is identical
+      ---
+      duration_ms: 0.57448
+      type: 'test'
+      ...
+    # Subtest: does not carry old accepted intent into later fallback
+    ok 15 - does not carry old accepted intent into later fallback
+      ---
+      duration_ms: 1.05227
+      type: 'test'
+      ...
+    # Subtest: later updates only accepted intent/action and preserves the goal
+    ok 16 - later updates only accepted intent/action and preserves the goal
+      ---
+      duration_ms: 0.455343
+      type: 'test'
+      ...
+    # Subtest: aftermath cannot update agency state
+    ok 17 - aftermath cannot update agency state
+      ---
+      duration_ms: 0.435167
+      type: 'test'
+      ...
+    # Subtest: rejects malformed speech independently from valid action/intent
+    ok 18 - rejects malformed speech independently from valid action/intent
+      ---
+      duration_ms: 0.467069
+      type: 'test'
+      ...
+    # Subtest: preserves same-text speech occurrences without a reuse classifier
+    ok 19 - preserves same-text speech occurrences without a reuse classifier
+      ---
+      duration_ms: 0.264008
+      type: 'test'
+      ...
+    # Subtest: bounds server facts and rejects duplicate refs
+    ok 20 - bounds server facts and rejects duplicate refs
+      ---
+      duration_ms: 1.042174
+      type: 'test'
+      ...
+    1..20
+ok 3 - ADR-0028 closed conscious state and partial acceptance
+  ---
+  duration_ms: 30.59329
+  type: 'suite'
+  ...
+# Subtest: scene beats
+    # Subtest: treats missing beat state as one-receipt legacy narration
+    ok 1 - treats missing beat state as one-receipt legacy narration
+      ---
+      duration_ms: 1.135749
+      type: 'test'
+      ...
+    # Subtest: holds the public turn across intra-turn beats and increments on a new turn
+    ok 2 - holds the public turn across intra-turn beats and increments on a new turn
+      ---
+      duration_ms: 0.330452
+      type: 'test'
+      ...
+    # Subtest: closes on K receipts, terminal, scene delta, or infeasible reservation
+    ok 3 - closes on K receipts, terminal, scene delta, or infeasible reservation
+      ---
+      duration_ms: 0.229369
+      type: 'test'
+      ...
+    # Subtest: closes when a side loses at least 15 percent HP
+    ok 4 - closes when a side loses at least 15 percent HP
+      ---
+      duration_ms: 0.351128
+      type: 'test'
+      ...
+    # Subtest: consumes reserved actions in order
+    ok 5 - consumes reserved actions in order
+      ---
+      duration_ms: 1.227835
+      type: 'test'
+      ...
+    1..5
+ok 4 - scene beats
+  ---
+  duration_ms: 4.7279
+  type: 'suite'
+  ...
+1..4
+# tests 32
+# suites 4
+# pass 32
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 448.070992

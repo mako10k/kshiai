@@ -1,0 +1,3 @@
+docs/adr/0059-complete-focused-character-review-payload.think: LLMTHINK audit clean; projection status=Accepted
+docs/adr/0060-owner-test-contract-recovery.think: LLMTHINK audit clean; projection status=Accepted
+ADR checks passed: 2 current file(s) audited; 0 pinned historical file(s) excluded

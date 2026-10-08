@@ -1,0 +1,16 @@
+domain CONTRACT_COMPARISON:
+  description "Compare existing awareness information delivery contracts before implementation."
+evidence OWNER:
+  "Owner requests contracts side by side and early detection; latest continuation resumes this scoped investigation."
+evidence GUIDANCE:
+  "Compiler stores consciousGuidance separately; old consumers overlay live projected guidance, awareness context reads static consciousSelf and receives actions and facts only."
+evidence TEST:
+  "Context fixture has empty guidance and only unaware coreNeeds; its positive assertion cannot establish delivery of applicable guidance or aware needs."
+evidence INPUT:
+  "Conscious schema requires arrays but no origin coverage or dialogue continuation; renderer serializes received fields."
+premise LIMIT:
+  "These observations establish a particular delivery omission and detection gap, not the root cause of monotonous battle behavior. Absence of a dedicated history field alone does not prove all dialogue disappears."
+premise OPTIONS:
+  "Adding labels alone preserves missing source information. Adding every source field leaks hidden traits. Comparing obligations to projection and validation allows conditional delivery and intentional exclusion to be distinguished."
+decision NEXT based_on OWNER, GUIDANCE, TEST, INPUT, LIMIT, OPTIONS:
+  "Write a bounded comparison and concrete repair candidate. Preserve source code, seals and unrelated WIP; no paid calls, deployment or blanket resealing."

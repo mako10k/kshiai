@@ -1,0 +1,126 @@
+{
+  "entries": [
+    {
+      "key": "design-observer-perception-fixture-types",
+      "path": "docs/perception-test-fixture-type-repair-2026-10-07.md",
+      "parents": [
+        "design",
+        "channels",
+        "perception"
+      ],
+      "scope": "Local test construction repair under AGENTS type-escape rule and all-tests owner goal: raw negative payload rather than pretending a valid frame has hidden fields; literal reserve key tuple; keep all original cases/assertions and strengthen targeted refusal causes. Existing retained design D23/D24/D27 and Accepted ADR0023 rules2/4; no schema or algorithm change.",
+      "ref": "all-tests-20261007/design-observer-perception-fixture-types",
+      "test": false,
+      "sha256": "d43989ee49eb566f64ea5e754afce27d022dd426b9a5599a49f95c3f53a6e445",
+      "sealId": "10c3c72eed80f3aa2b8cda5210fca56b88f59b5290c3052e904fbd777a46ab8e",
+      "causeSealIds": [
+        "8fcf782dd2cc070b868cda0ce065d86440a4c38a7e8ce5dc6928eb2583733cdd",
+        "09e78a830856b823afef86d311752163722c1c37c3c6b7c9b17a1da63649af21",
+        "635dddb9346372392eefec016dc989a0bcf82d8dd14f049bb771d910c1a924ae"
+      ]
+    },
+    {
+      "key": "implementation-observer-perception-schema-boundaries",
+      "path": "packages/shared/src/perception.ts",
+      "parents": [
+        "design",
+        "perception",
+        "design-observer-perception-fixture-types"
+      ],
+      "scope": "Runtime wire boundary exercised by complete nine-case file: explicit self/counterpart slots, strict percept field rejection, observer-scoped contact IDs, aggregate frame counts, qualitative class/outcome consistency, bounded monotonic contact registry, external versus omniscient control-reference separation. Domain refinements are not claimed to be static impossibility proofs; no full schema coverage or provider evidence truth claim.",
+      "ref": "all-tests-20261007/implementation-observer-perception-schema-boundaries",
+      "test": false,
+      "sha256": "10c4f51c03e43764656e3da50b0af068ad877c91a5d7a4a356d6ffd6d8c2b92c",
+      "sealId": "15fd4f634dd21a81daf7167b4e987daed49349b0cee4c61bd912e3a7d4f06575",
+      "causeSealIds": [
+        "8fcf782dd2cc070b868cda0ce065d86440a4c38a7e8ce5dc6928eb2583733cdd",
+        "635dddb9346372392eefec016dc989a0bcf82d8dd14f049bb771d910c1a924ae",
+        "10c3c72eed80f3aa2b8cda5210fca56b88f59b5290c3052e904fbd777a46ab8e"
+      ]
+    },
+    {
+      "key": "implementation-observer-contact-projection",
+      "path": "packages/shared/src/perception-projection.ts",
+      "parents": [
+        "design",
+        "channels",
+        "implementation-observer-perception-schema-boundaries",
+        "world",
+        "causality",
+        "semantic"
+      ],
+      "scope": "Deterministic observer projection of supplied sensory/mechanical evidence, canonical physical baseline (ignores pair.sight), private apparent identity, observer-local opaque percept/contact IDs, prospective grouping/split/identity continuity, bounded eviction/ambient fallback and preserved minimal registry. Whole source bound, claims limited to twelve exercised scenarios; no DB persistence, provider evidence accuracy, every priority-capacity branch or current awareness-v5 caller certification.",
+      "ref": "all-tests-20261007/implementation-observer-contact-projection",
+      "test": false,
+      "sha256": "0362190298b04f66ecd3cb2851705222c9f58998a15acfa6fe495c1e8f63a383",
+      "sealId": "f6cd3f76e5e1fd9e559e33dc09754baadd630a8bfb8de5387ba73f6aa8f7276c",
+      "causeSealIds": [
+        "8fcf782dd2cc070b868cda0ce065d86440a4c38a7e8ce5dc6928eb2583733cdd",
+        "09e78a830856b823afef86d311752163722c1c37c3c6b7c9b17a1da63649af21",
+        "15fd4f634dd21a81daf7167b4e987daed49349b0cee4c61bd912e3a7d4f06575",
+        "9535443db3405d25086fe60873f7113ed0278b7e638e8e124015e231b7487064",
+        "92323f1ce7d639dc1cb97e7fac7f2335c01849c5cabcb1f0d9e0a7d870cf0352",
+        "8534c37b4da9615462035a1428ee6616200614e289efc11a875c91b6a9bca009"
+      ]
+    },
+    {
+      "key": "perception-schema-current",
+      "path": "packages/shared/src/perception.test.ts",
+      "parents": [
+        "design",
+        "implementation-observer-perception-schema-boundaries",
+        "design-observer-perception-fixture-types"
+      ],
+      "scope": "Entire original nine-case file retained: accessible self and inaccessible unknown counterpart, valid baseline plus exact hidden entityId refusal, invalid self and counterpart roles, total percept limit, A/B contact scoping, unchanged/effective cue consistency, server-only canonical evidence sources, monotonic/capacity registry, external disallows canonical controlId while omniscient permits. New assertions sharpen existing cases; no schema rewrite or claim that all runtime refinements are static type constraints.",
+      "ref": "verification/perception-schema-current-20261007",
+      "test": true,
+      "sha256": "85c1a2113610b43a173cf840e34f1a41e95767ce1fe885c61b743f3510bd6981",
+      "sealId": "741f350d75ca5e1af16c76a65bb23f41c94383d7e172fa9819081cc025db38b6",
+      "causeSealIds": [
+        "8fcf782dd2cc070b868cda0ce065d86440a4c38a7e8ce5dc6928eb2583733cdd",
+        "15fd4f634dd21a81daf7167b4e987daed49349b0cee4c61bd912e3a7d4f06575",
+        "10c3c72eed80f3aa2b8cda5210fca56b88f59b5290c3052e904fbd777a46ab8e"
+      ]
+    },
+    {
+      "key": "perception-projection-current",
+      "path": "packages/shared/src/perception-projection.test.ts",
+      "parents": [
+        "design",
+        "channels",
+        "implementation-observer-contact-projection",
+        "implementation-observer-perception-schema-boundaries",
+        "world",
+        "semantic",
+        "design-observer-perception-fixture-types"
+      ],
+      "scope": "Entire original twelve-case file retained: initial/continuing physical visibility without identity; witnessed/unwitnessed apparent form; observer-local hallucination without canonical creation; presence/exposure/organ access and pair.sight ignored; explicit committed access loss; raw-free private cues/redaction/deep freeze; prospective contact identity/group split; bounded eviction/non-reused sequence/ambient fallback; A/B symmetry; minimal fallback and legacy identity. Synthetic supplied evidence only, some direct callers omit worldState; no real sensory correctness or production integration proof.",
+      "ref": "verification/perception-projection-current-20261007",
+      "test": true,
+      "sha256": "7aae7fa9a4a72499ab226c14a4e02fe616bd9c8aab65fb0378391ac5b5094913",
+      "sealId": "83c4cb037c5c400f30fe3ce91b7d5fcd8aa76852f4371d33070ca9a845567792",
+      "causeSealIds": [
+        "8fcf782dd2cc070b868cda0ce065d86440a4c38a7e8ce5dc6928eb2583733cdd",
+        "09e78a830856b823afef86d311752163722c1c37c3c6b7c9b17a1da63649af21",
+        "f6cd3f76e5e1fd9e559e33dc09754baadd630a8bfb8de5387ba73f6aa8f7276c",
+        "15fd4f634dd21a81daf7167b4e987daed49349b0cee4c61bd912e3a7d4f06575",
+        "9535443db3405d25086fe60873f7113ed0278b7e638e8e124015e231b7487064",
+        "8534c37b4da9615462035a1428ee6616200614e289efc11a875c91b6a9bca009",
+        "10c3c72eed80f3aa2b8cda5210fca56b88f59b5290c3052e904fbd777a46ab8e"
+      ]
+    }
+  ],
+  "diagnostic": {
+    "focusedPass": 21,
+    "sharedPass": 424,
+    "fail": 0,
+    "skipped": 0,
+    "strictTypecheckExit": 0,
+    "workspaceTypecheckExit": 0
+  },
+  "limitations": [
+    "Original cases retained; two test fixtures repaired without runtime/schema/algorithm changes",
+    "Runtime refinement tests are not blanket static typing guarantees",
+    "Synthetic evidence/current shared helper behavior, not provider, persistence or full awareness-v5 integration acceptance"
+  ]
+}

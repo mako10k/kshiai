@@ -1,0 +1,11 @@
+{
+  "schema": "kshiai/source-closure-publication-stop/v1",
+  "observedAt": "2026-10-08T19:45:00.203582+09:00",
+  "parentPid": 1099046,
+  "finishedChildPid": 1351801,
+  "finishedChildAction": "link",
+  "pendingRef": "all-tests-20261008/current-source-closure/verification/awareness-frozen-narration-20261007",
+  "publishedJournalCount": 118,
+  "reason": "Broad remaining-unit diagnostic found fixed-trial review incorrectly editable. Freeze and finish the current CLI operation before terminating this owned publisher; retain original refs and any partial candidate. Source repair requires a new closure plan/readback before resuming.",
+  "sharedWorktimeStopped": false
+}

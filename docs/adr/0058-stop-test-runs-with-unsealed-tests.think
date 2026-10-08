@@ -1,0 +1,12 @@
+domain ADR0058:
+  description "Stop authoritative test execution on discovered unsealed tests. Status Accepted, revision 1."
+evidence OWNER_ACCEPTANCE:
+  "2026-10-06 owner explicitly orders: unsealed は、テストを通過させず止めること."
+evidence CURRENT:
+  "ADR0034 disables tests without current authority. The aggregate runner logs unsealed tests but can still exit0 when active tests pass. Missing inventory maps to unsealed; missing verification Seal maps to missing_ref."
+premise SCOPE:
+  "Preserve ADR0034 authority conditions and all historical Seals. Add a pre-execution stop for unsealed and missing_ref. Inventory listing stays diagnostic and usable. Other stale, source-diverged, missing-basis and provisional classifications remain unchanged. No automatic Seal creation, test deletion or ignore exception."
+premise OPTIONS:
+  "Warning plus skip permits misleading successful runs. Running unsealed tests as authoritative evidence violates the retained authority rules. Stopping before execution implements the exact owner instruction."
+decision ACCEPTANCE based_on OWNER_ACCEPTANCE, CURRENT, SCOPE, OPTIONS:
+  "Accept revision1. The authoritative unit and e2e selectors must fail with exit1 before running tests if a discovered test lacks its inventory mapping or verification Seal. Report blocking paths and reasons. Preserve diagnostic --list and the zero-active-test gate. ADR0058 supersedes ADR0034 aggregate handling while inheriting all other authority conditions."

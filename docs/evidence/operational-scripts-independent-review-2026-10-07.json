@@ -1,0 +1,21 @@
+{
+  "reviewer": "/root/llm_boundary_seal_audit",
+  "wholeFiles": 3,
+  "cases": 8,
+  "sourceHashes": {
+    "scripts/select-release-rollback-target.test.mjs": "b5e04f515a579f9523f5ad048de93700ef9c11147313516271d3833037826b9b",
+    "scripts/r2-smoke-startup.test.mjs": "fb249f61d05e4711f7e8d1656eb66e9503f7eaae9a214b03794878ab2887da49",
+    "scripts/smoke-deployment.test.mjs": "f2efcd89aa39ff8affc91a8718e4f015117c8b17ad569c0bba9aa560a79163fb",
+    "scripts/select-release-rollback-target.mjs": "6c19d8dec4cf2bd95da2f2f6d19bd8fc508a2ee7f04ddc9f74190e475729c6c4",
+    "backend/src/scripts/r2-smoke.ts": "4fed3496f8faa64f87ccb19b7e9d399a1927b5cc3661df34420d52309cfd88a1",
+    "scripts/smoke-deployment.mjs": "4cbc34fd8b8b13a911b58d8058fef7ccdd5f1d5ac29992f2b607242587c4a910",
+    "docs/release_process.md": "1255ae837cd8944cc1760267ba78c2ce967853b0de52b057d3d95f7b0911fcc0"
+  },
+  "insideContradictions": [],
+  "scope": "local helpers/current release consumer contracts only",
+  "outside": [
+    "remote rollback/public health/R2 credential validity",
+    "discarded cutover execution",
+    "split traffic support/real elapsed delay"
+  ]
+}

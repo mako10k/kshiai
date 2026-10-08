@@ -1,0 +1,20 @@
+{
+  "startedAt": "2026-10-02T02:46:44.180Z",
+  "humanApproval": "OKです。",
+  "candidate": {
+    "projectRef": "cvrbhpkfqkpqdegxfrlq",
+    "ownerEmail": "mako10k@mk10.org",
+    "ownerUserId": "usr_568b632d7ad86cfe3e356171",
+    "requestKey": "v3-trial-rc2-20261002",
+    "script": "backend/src/scripts/register-v3-stage-trial.ts",
+    "maxInvocations": 1,
+    "characterIds": [
+      "stage-trial-neva-736a5e323e94f501",
+      "stage-trial-rio-736a5e323e94f501"
+    ],
+    "providerCalls": 0,
+    "autoConfirm": false,
+    "authChanges": 0,
+    "readback": "two owner-bound attempt IDs, candidate digests and review URLs; no activation"
+  }
+}

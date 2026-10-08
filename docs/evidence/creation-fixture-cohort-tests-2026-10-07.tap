@@ -1,0 +1,162 @@
+TAP version 13
+# [battles] advance start btl_8674b814d77283fe18859c081672770f
+# [battles] advance ok btl_8674b814d77283fe18859c081672770f turn=0 352ms aft=0
+# Subtest: integrated structured asset cutover
+    # Subtest: keeps selection, binding, replay, history, and deletion on immutable generations
+    ok 1 - keeps selection, binding, replay, history, and deletion on immutable generations
+      ---
+      duration_ms: 1058.067034
+      type: 'test'
+      ...
+    # Subtest: freezes legacy character rows without appending V1 generations
+    ok 2 - freezes legacy character rows without appending V1 generations
+      ---
+      duration_ms: 4.522658
+      type: 'test'
+      ...
+    1..2
+ok 1 - integrated structured asset cutover
+  ---
+  duration_ms: 1260.046647
+  type: 'suite'
+  ...
+# Subtest: structured battlefield route acceptance
+    # Subtest: records structure-stage failure without exposing a partial battlefield
+    ok 1 - records structure-stage failure without exposing a partial battlefield
+      ---
+      duration_ms: 93.338646
+      type: 'test'
+      ...
+    # Subtest: keeps legacy battlefields visible to management but out of every match binding
+    ok 2 - keeps legacy battlefields visible to management but out of every match binding
+      ---
+      duration_ms: 164.137755
+      type: 'test'
+      ...
+    # Subtest: upgrades a legacy battlefield only after explicit owner confirmation
+    ok 3 - upgrades a legacy battlefield only after explicit owner confirmation
+      ---
+      duration_ms: 97.951193
+      type: 'test'
+      ...
+    # Subtest: returns a compare review and list mark for an awaiting battlefield upgrade
+    ok 4 - returns a compare review and list mark for an awaiting battlefield upgrade
+      ---
+      duration_ms: 78.38003
+      type: 'test'
+      ...
+    # Subtest: expires an upgrade candidate without creating or selecting a generation
+    ok 5 - expires an upgrade candidate without creating or selecting a generation
+      ---
+      duration_ms: 25.884869
+      type: 'test'
+      ...
+    # Subtest: rejects a stale revision candidate after concurrent current-pointer drift
+    ok 6 - rejects a stale revision candidate after concurrent current-pointer drift
+      ---
+      duration_ms: 37.208005
+      type: 'test'
+      ...
+    # Subtest: commits create revision and image changes only as confirmed immutable generations
+    ok 7 - commits create revision and image changes only as confirmed immutable generations
+      ---
+      duration_ms: 129.061164
+      type: 'test'
+      ...
+    # Subtest: binds an exact preset revision and deterministic compiler without mutating it
+    ok 8 - binds an exact preset revision and deterministic compiler without mutating it
+      ---
+      duration_ms: 358.881333
+      type: 'test'
+      ...
+    1..8
+ok 2 - structured battlefield route acceptance
+  ---
+  duration_ms: 1172.156225
+  type: 'suite'
+  ...
+# [llm] openai ready engine=gpt-6-luna fast=gpt-6-luna
+# [llm] xai ready engine=grok-engine fast=grok-fast
+# [llm] xai ready engine=grok-engine fast=grok-fast
+# [llm] xai/prepareBattleEncounter model=grok-engine ok 67ms
+# [llm] openai ready engine=gpt-6-luna fast=gpt-6-luna
+# [llm] xai ready engine=grok-engine fast=grok-fast
+# [llm] xai ready engine=grok-engine fast=grok-fast
+# [llm] xai/prepareBattleEncounter model=grok-engine fail 2ms: AWARENESS_VERIFIED_ADMISSION_REQUIRED
+# [llm] openai ready engine=gpt-6-luna fast=gpt-6-luna
+# [llm] xai ready engine=grok-engine fast=grok-fast
+# [llm] xai ready engine=grok-engine fast=grok-fast
+# [llm] xai/prepareBattleEncounter model=grok-engine ok 6ms
+# [llm] openai ready engine=gpt-6-luna fast=gpt-6-luna
+# [llm] xai ready engine=grok-engine fast=grok-fast
+# [llm] xai ready engine=grok-engine fast=grok-fast
+# [llm] xai/prepareBattleEncounter model=grok-engine ok 7ms
+# [llm] openai ready engine=gpt-6-luna fast=gpt-6-luna
+# [llm] xai ready engine=grok-engine fast=grok-fast
+# [llm] xai ready engine=grok-engine fast=grok-fast
+# [llm] xai/prepareBattleEncounter model=grok-engine ok 6ms
+# Subtest: admitted creation encounter through actual compatible SDK
+    # Subtest: preserves V5 world and perceptions without synthesizing legacy subjective agents
+    ok 1 - preserves V5 world and perceptions without synthesizing legacy subjective agents
+      ---
+      duration_ms: 69.965804
+      type: 'test'
+      ...
+    # Subtest: quotes the full prose engine request capped at 1500 and reuses the durable ready result
+    ok 2 - quotes the full prose engine request capped at 1500 and reuses the durable ready result
+      ---
+      duration_ms: 167.653855
+      type: 'test'
+      ...
+    # Subtest: makes zero HTTP calls without verified billing proof and creates no canonical battle
+    ok 3 - makes zero HTTP calls without verified billing proof and creates no canonical battle
+      ---
+      duration_ms: 9.816314
+      type: 'test'
+      ...
+    # Subtest: persists an invalid provider proposal as failure and never retries transmission
+    ok 4 - persists an invalid provider proposal as failure and never retries transmission
+      ---
+      duration_ms: 18.837985
+      type: 'test'
+      ...
+    # Subtest: adopts the reserved encounter runtime atomically in actual canonical insertNewBattle
+    ok 5 - adopts the reserved encounter runtime atomically in actual canonical insertNewBattle
+      ---
+      duration_ms: 70.261669
+      type: 'test'
+      ...
+    1..5
+ok 3 - admitted creation encounter through actual compatible SDK
+  ---
+  duration_ms: 339.412233
+  type: 'suite'
+  ...
+# Subtest: observed creation sends one scoped SDK call without a pricing contract
+ok 4 - observed creation sends one scoped SDK call without a pricing contract
+  ---
+  duration_ms: 14.390449
+  type: 'test'
+  ...
+# Subtest: battle create idempotency
+    # Subtest: reads back one deterministic battle without repeating encounter LLM work
+    ok 1 - reads back one deterministic battle without repeating encounter LLM work
+      ---
+      duration_ms: 1300.518895
+      type: 'test'
+      ...
+    1..1
+ok 5 - battle create idempotency
+  ---
+  duration_ms: 1304.893628
+  type: 'suite'
+  ...
+1..5
+# tests 17
+# suites 4
+# pass 17
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 3179.723274

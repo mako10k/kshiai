@@ -1,19 +1,31 @@
+/** R: Connect owner character authoring commands to their frozen, fenced semantic runs. */
 import { createHash, randomUUID } from "node:crypto";
 import { isDeepStrictEqual } from "node:util";
 import { z } from "zod";
 import { CHARACTER_BATTLE_MECHANICS_CAPABILITY_SET_V3,
   CharacterCompilerCompatibilityV1Schema, CharacterDeferredValueV1Schema,
-  CharacterDefinitionV3Schema, type CharacterAuthoringReview,
+  CharacterDefinitionV3Schema, CharacterGenerationEnvelopeV3Schema, type CharacterAuthoringReview,
   isCharacterBattleMechanicsCapabilitySetV3,
   projectCharacterCompilerCompatibilityV1,
-  type CharacterDefinitionV3, type SemanticAuthoringRunV1,
+  type CharacterDefinitionV3, type SemanticAuthoringRunV1, type SemanticAuthoringPolicyV1,
   type SourceDispositionDecisionV1 } from "@kshiai/shared";
 import { query, withTransaction, type DatabaseConnection } from "../db.js";
 import type { LlmProvider } from "../llm/types.js";
-import { assetContentDigest, getCurrentAssetGeneration } from "../repositories/asset-generations.js";
+import { assetContentDigest, getCurrentAssetGeneration, getAssetGeneration } from "../repositories/asset-generations.js";
+import { saveCompleteFocusedCharacterCandidate, readCompleteFocusedCharacterReview } from "../repositories/character-focused-candidate.js";
+import { decodeCharacterReviewCorrectionSourceV1, correctionStructuralSource,
+  correctionPredecessorDefinition, correctionPredecessorDisclosure, correctionPredecessorCompatibility,
+  type CharacterReviewCorrectionSourceV1, type CompleteCharacterSourceV1 }
+  from "./semantic-authoring/character-review-correction-source.js";
+import { COMPLETE_CHARACTER_ADAPTER_V1, createCompleteCharacterAdapterV1,
+  projectCompleteCharacterWorkV1 } from "./semantic-authoring/adapters/character-complete.js";
+import { FocusedCharacterCompleteReviewV1Schema,
+  type FocusedCharacterCompleteReviewV1 } from "./semantic-authoring/adapters/character-profile-work.js";
 import { assertFamilyAuthoringFence, finishFamilyAuthoringJobInTransaction,
   type AuthoringExecutionFence } from "../repositories/family-authoring-jobs.js";
 import * as runs from "../repositories/semantic-authoring.js";
+import { insertOwnerNotification } from "../repositories/owner-notifications.js";
+import { fixedCandidateOwnerReview } from "./character-authoring-candidate.js";
 import { createCharacterSemanticAuthoringAdapterV3,
   type CharacterAuthoringSourceV1, type CharacterMigrationReviewCandidateV1 } from "./semantic-authoring/adapters/character-v3.js";
 import { buildCharacterMigrationSourceLedgerV1,
@@ -22,14 +34,14 @@ import { projectFocusedCharacterWorkV1 } from "./semantic-authoring/adapters/cha
 import { createDurableSemanticAuthoringExecutionV1 } from "./semantic-authoring/durable-execution.js";
 import { executeSemanticAuthoringV1, type FocusedProviderTransportV1,
   type SemanticAuthoringExecutionPersistenceV1 } from "./semantic-authoring/execution.js";
-import { semanticAuthoringExecutionPolicyV1 } from "./semantic-authoring/execution-policy.js";
+import { characterAuthoringExecutionPolicyV2, frozenCharacterAuthoringExecutionPolicyV1 } from "./semantic-authoring/execution-policy.js";
 import { decodeUnresolvedCharacterRevisionSourceV1,
   type UnresolvedCharacterRevisionSourceV1 } from "./semantic-authoring/character-revision-scope-source.js";
 import { CharacterRevisionScopeResolutionV1Schema,
   resolveCharacterRevisionScopeV1 } from "./semantic-authoring/character-revision-scope.js";
 
 export type CharacterFocusedRegistrationSourceV1 =
-  CharacterAuthoringSourceV1 | UnresolvedCharacterRevisionSourceV1;
+  CompleteCharacterSourceV1 | UnresolvedCharacterRevisionSourceV1;
 
 type CharacterFocusedRegistrationInput = Readonly<{
   attemptId: string; ownerUserId: string; characterId: string; sourceGenerationId: string | null;
@@ -41,11 +53,12 @@ function decodeRegistrationSource(input: CharacterFocusedRegistrationInput) {
   const adapter = createCharacterSemanticAuthoringAdapterV3();
   const decoded = adapter.decodeFrozenSource(input.source);
   const pendingScope = decodeUnresolvedCharacterRevisionSourceV1(input.source);
-  if ((!decoded.accepted && !pendingScope)
+  const correction = decodeCharacterReviewCorrectionSourceV1(input.source);
+  if ((!decoded.accepted && !pendingScope && !correction)
     || (decoded.accepted && decoded.value.kind === "revise" && !decoded.value.naturalText?.trim())) {
     throw new Error("FOCUSED_CHARACTER_SOURCE_INVALID");
   }
-  const source = pendingScope ?? (decoded.accepted ? decoded.value : null);
+  const source = correction ?? pendingScope ?? (decoded.accepted ? decoded.value : null);
   if (!source) throw new Error("FOCUSED_CHARACTER_SOURCE_INVALID");
   if (source.kind === "migrate" && !isCharacterBattleMechanicsCapabilitySetV3(source.requiredCapabilities)) {
     throw new Error("FOCUSED_CHARACTER_CAPABILITY_SET_INVALID");
@@ -62,7 +75,9 @@ async function assertRegistrationCommand(connection: DatabaseConnection,
   const command = attempt.rows[0];
   if (command?.owner_user_id !== input.ownerUserId || command.character_id !== input.characterId
     || command.status !== "pending_structure") throw new Error("FOCUSED_CHARACTER_COMMAND_MISMATCH");
-  const expectedKind = source.kind === "create" ? "create"
+  const expectedKind = source.kind === "review_candidate_correction"
+    ? source.predecessorCandidate.mode === "create" ? "create" : "revision"
+    : source.kind === "create" ? "create"
     : source.kind === "revise" || source.kind === "revise_pending_scope" ? "revision" : "upgrade";
   if (command.kind !== expectedKind || command.expected_generation_id !== input.expectedCurrentGenerationId
     || input.sourceGenerationId !== input.expectedCurrentGenerationId
@@ -84,6 +99,23 @@ function assertCapsuleIdentity(input: CharacterFocusedRegistrationInput,
 async function assertRegistrationSourceGeneration(connection: DatabaseConnection,
   input: CharacterFocusedRegistrationInput, source: CharacterFocusedRegistrationSourceV1) {
   if (source.kind === "create") return;
+  if (source.kind === "review_candidate_correction") {
+    const frozen = await readCompleteFocusedCharacterReview(connection, source.predecessorAttemptId, input.ownerUserId);
+    if (assetContentDigest(frozen.complete) !== assetContentDigest(source.predecessorCandidate)) {
+      throw new Error("CORRECTION_PREDECESSOR_BINDING_MISMATCH");
+    }
+    if (frozen.runId !== input.predecessorRunId) {
+      // A retry's parent is the failed correction run, while its immutable review source stays the same.
+      const retryParent = await connection.query<{ source_content_digest: string }>(
+        `SELECT source_content_digest FROM semantic_authoring_runs WHERE run_id = $1
+          AND owner_user_id = $2 AND source_asset_id = $3 AND family = 'character' AND status = 'failed'`,
+        [input.predecessorRunId, input.ownerUserId, input.characterId]);
+      if (retryParent.rows[0]?.source_content_digest !== assetContentDigest(source)) {
+        throw new Error("CORRECTION_PREDECESSOR_BINDING_MISMATCH");
+      }
+    }
+    return;
+  }
   const generation = await connection.query<{ content_json: unknown; schema_version: number }>(
     `SELECT content_json, schema_version FROM asset_generations
       WHERE generation_id = $1 AND asset_type = 'character' AND asset_id = $2`,
@@ -106,15 +138,20 @@ export async function registerCharacterFocusedAuthoringV3(connection: DatabaseCo
   assertCapsuleIdentity(input, source);
   await assertRegistrationSourceGeneration(connection, input, source);
   const runId = randomUUID();
+  const mode = source.kind === "review_candidate_correction" ? source.predecessorCandidate.mode
+    : source.kind === "revise_pending_scope" ? "revise" : source.kind;
+  const policy = characterAuthoringExecutionPolicyV2(mode, input.pricingIdentity);
   const run: Omit<SemanticAuthoringRunV1, "executionFence"> = {
     runId, attemptId: input.attemptId, family: "character",
-    mode: source.kind === "revise_pending_scope" ? "revise" : source.kind,
+    mode,
     ownerUserId: input.ownerUserId,
     sourceIdentity: { assetId: input.characterId, generationId: input.sourceGenerationId,
       contentDigest: assetContentDigest(source) },
-    targetContract: { family: "character", version: 3 }, adapterIdentity: adapter.identity,
-    policyIdentity: "semantic_authoring_policy_v1", pricingIdentity: input.pricingIdentity,
-    tokenEstimatorIdentity: "utf8-byte-upper-bound-v1",
+    targetContract: { family: "character", version: 3 },
+    adapterIdentity: policy.identity === "character_complete_review_policy_v2"
+      ? COMPLETE_CHARACTER_ADAPTER_V1 : adapter.identity,
+    policyIdentity: policy.identity, pricingIdentity: policy.pricingIdentity,
+    tokenEstimatorIdentity: policy.tokenEstimatorIdentity,
     expectedCurrentGenerationId: input.expectedCurrentGenerationId,
   };
   await runs.insertPendingSemanticAuthoringRunV1({
@@ -148,6 +185,12 @@ async function terminalExistingFocusedRun(existing: StoredFocusedRun,
     await connection.query(`UPDATE character_authoring_attempts SET status = 'failed',
       error_code = 'process_or_lease_lost' WHERE attempt_id = $1 AND owner_user_id = $2`,
     [input.attemptId, input.ownerUserId]);
+    await insertOwnerNotification(connection, {
+      ownerUserId: input.ownerUserId, kind: "authoring_failed", attemptId: input.attemptId,
+      characterId: existing.sourceIdentity.assetId,
+      attemptKind: existing.mode === "migrate" ? "upgrade" : existing.mode === "revise" ? "revision" : "create",
+      createdAt: new Date().toISOString(),
+    });
     await finishFamilyAuthoringJobInTransaction(connection, "character", input.attemptId,
       "completed", input.executionFence);
   });
@@ -163,13 +206,13 @@ async function resolvePendingRevisionSource(input: {
   pending: UnresolvedCharacterRevisionSourceV1; storedResolution: unknown | null;
   run: ClaimedFocusedRun; provider: FocusedProviderTransportV1;
   persistence: SemanticAuthoringExecutionPersistenceV1<CharacterDefinitionV3
-    | CharacterMigrationReviewCandidateV1, string>;
+    | CharacterMigrationReviewCandidateV1 | FocusedCharacterCompleteReviewV1, string>;
   fail: FailFocusedBeforeDispatch;
 }) {
   let resolution: unknown = input.storedResolution;
   if (resolution === null) {
     const scopeOutcome = await resolveCharacterRevisionScopeV1({ naturalText: input.pending.naturalText,
-      provider: input.provider, policy: semanticAuthoringExecutionPolicyV1(input.provider.pricingIdentity),
+      provider: input.provider, policy: frozenCharacterAuthoringExecutionPolicyV1(input.run),
       accounting: input.run.accounting, persistence: input.persistence });
     if (scopeOutcome.status === "lost_ownership") return { accepted: false as const, result: "failed" as const };
     if (scopeOutcome.status === "failed") return { accepted: false as const,
@@ -202,11 +245,17 @@ async function resolvePendingRevisionSource(input: {
 function createFocusedPersistence(runId: string, run: ClaimedFocusedRun,
   input: { attemptId: string; ownerUserId: string; executionFence: AuthoringExecutionFence }) {
   return createDurableSemanticAuthoringExecutionV1<
-    CharacterDefinitionV3 | CharacterMigrationReviewCandidateV1, string>({
+    CharacterDefinitionV3 | CharacterMigrationReviewCandidateV1 | FocusedCharacterCompleteReviewV1, string>({
     run, familyPayloadRef: `character-focused:${runId}`,
     async persistFamilyResult(connection, result) {
       await assertFamilyAuthoringFence(connection, "character", input.attemptId, input.executionFence);
       const now = new Date().toISOString();
+      if (result.kind === "ready_for_review" && run.adapterIdentity === COMPLETE_CHARACTER_ADAPTER_V1) {
+        await saveCompleteFocusedCharacterCandidate(connection, {
+          attemptId: input.attemptId, ownerUserId: input.ownerUserId, mode: run.mode,
+          candidate: result.finalCandidate, candidateDigest: result.finalCandidateDigest, updatedAt: now,
+        });
+      }
       const written = await connection.query(`UPDATE character_focused_authoring_payloads
         SET result_json = $2, finished_at = $3 WHERE run_id = $1 AND result_json IS NULL`,
       [runId, JSON.stringify(result), now]);
@@ -218,6 +267,13 @@ function createFocusedPersistence(runId: string, run: ClaimedFocusedRun,
         result.kind === "ready_for_review" ? "awaiting_owner_acceptance" : "failed",
         result.kind === "failed" ? result.receipt.category
           : result.kind === "needs_owner_answer" ? "AUTHORING_OWNER_ANSWER_REQUIRED" : null, now]);
+      await insertOwnerNotification(connection, {
+        ownerUserId: input.ownerUserId,
+        kind: result.kind === "ready_for_review" ? "authoring_ready" : "authoring_failed",
+        attemptId: input.attemptId, characterId: run.sourceIdentity.assetId,
+        attemptKind: run.mode === "migrate" ? "upgrade" : run.mode === "revise" ? "revision" : "create",
+        createdAt: now,
+      });
       await finishFamilyAuthoringJobInTransaction(connection, "character", input.attemptId,
         "completed", input.executionFence);
     },
@@ -226,7 +282,7 @@ function createFocusedPersistence(runId: string, run: ClaimedFocusedRun,
 
 async function failFocusedBeforeDispatch(input: { runId: string; run: ClaimedFocusedRun;
   persistence: SemanticAuthoringExecutionPersistenceV1<CharacterDefinitionV3
-    | CharacterMigrationReviewCandidateV1, string>; code: string;
+    | CharacterMigrationReviewCandidateV1 | FocusedCharacterCompleteReviewV1, string>; code: string;
   category: "technical_failure" | "trusted_state_corrupt" | "resource_exhausted"
     | "provider_transport_unavailable";
   transportReason?: "policy_disallows_recovery" | "no_admissible_recovery_basis" }) {
@@ -245,7 +301,7 @@ async function resolvePendingExecutionSource(input: { pending: UnresolvedCharact
   storedResolution: unknown | null; existing: StoredFocusedRun; run: ClaimedFocusedRun;
   provider: FocusedProviderTransportV1;
   persistence: SemanticAuthoringExecutionPersistenceV1<CharacterDefinitionV3
-    | CharacterMigrationReviewCandidateV1, string>; fail: FailFocusedBeforeDispatch }) {
+    | CharacterMigrationReviewCandidateV1 | FocusedCharacterCompleteReviewV1, string>; fail: FailFocusedBeforeDispatch }) {
   if (assetContentDigest(input.pending) !== input.existing.sourceIdentity.contentDigest) {
     return { accepted: false as const, result: await input.fail("source_drift", "trusted_state_corrupt") };
   }
@@ -263,7 +319,7 @@ async function resolvePendingExecutionSource(input: { pending: UnresolvedCharact
 async function loadFocusedExecutionSource(input: { runId: string; existing: StoredFocusedRun;
   run: ClaimedFocusedRun; provider: FocusedProviderTransportV1;
   persistence: SemanticAuthoringExecutionPersistenceV1<CharacterDefinitionV3
-    | CharacterMigrationReviewCandidateV1, string>; fail: FailFocusedBeforeDispatch }) {
+    | CharacterMigrationReviewCandidateV1 | FocusedCharacterCompleteReviewV1, string>; fail: FailFocusedBeforeDispatch }) {
   const stored = await query<{ source_json: unknown; resolved_source_json: unknown | null }>(
     `SELECT source_json, resolved_source_json FROM character_focused_authoring_payloads WHERE run_id = $1`,
     [input.runId]);
@@ -274,6 +330,25 @@ async function loadFocusedExecutionSource(input: { runId: string; existing: Stor
   const current = await getCurrentAssetGeneration("character", input.existing.sourceIdentity.assetId);
   if ((current?.generationId ?? null) !== input.existing.expectedCurrentGenerationId) {
     return { accepted: false as const, result: await input.fail("pointer_drift", "trusted_state_corrupt") };
+  }
+  const correction = decodeCharacterReviewCorrectionSourceV1(source);
+  if (correction) {
+    if (assetContentDigest(correction) !== input.existing.sourceIdentity.contentDigest
+      || correction.requestedCluster !== null) {
+      return { accepted: false as const, result: await input.fail("source_drift", "trusted_state_corrupt") };
+    }
+    const resolved = await resolvePendingRevisionSource({
+      pending: { kind: "revise_pending_scope", definition: correctionPredecessorDefinition(correction.predecessorCandidate),
+        naturalText: correction.naturalText }, storedResolution: stored.rows[0]?.resolved_source_json ?? null,
+      run: input.run, provider: input.provider, persistence: input.persistence, fail: input.fail,
+    });
+    if (!resolved.accepted) return resolved;
+    const pointer = await getCurrentAssetGeneration("character", input.existing.sourceIdentity.assetId);
+    if ((pointer?.generationId ?? null) !== input.existing.expectedCurrentGenerationId) {
+      return { accepted: false as const, result: await input.fail("pointer_drift", "trusted_state_corrupt") };
+    }
+    return { accepted: true as const, adapter: createCharacterSemanticAuthoringAdapterV3(),
+      source: { ...correction, requestedCluster: resolved.source.requestedCluster } };
   }
   const pendingScope = decodeUnresolvedCharacterRevisionSourceV1(source);
   if (pendingScope) {
@@ -290,6 +365,46 @@ async function loadFocusedExecutionSource(input: { runId: string; existing: Stor
     return { accepted: false as const, result: await input.fail("source_drift", "trusted_state_corrupt") };
   }
   return { accepted: true as const, adapter, source: decoded.value };
+}
+
+async function completeExecutionAdapter(run: ClaimedFocusedRun, source: CompleteCharacterSourceV1,
+  executionFence: AuthoringExecutionFence) {
+  const attempt = await withTransaction(async (connection) => {
+    await assertFamilyAuthoringFence(connection, "character", run.attemptId, executionFence);
+    const found = await connection.query<{ source_digest: string; source_text: string; kind: string }>(
+      `SELECT source_digest, source_text, kind FROM character_authoring_attempts
+        WHERE attempt_id = $1 AND owner_user_id = $2 AND character_id = $3`,
+      [run.attemptId, run.ownerUserId, run.sourceIdentity.assetId]);
+    return z.object({ source_digest: z.string().regex(/^[a-f0-9]{64}$/),
+      source_text: z.string(), kind: z.string() }).parse(found.rows[0]);
+  });
+  const mode = source.kind === "review_candidate_correction" ? source.predecessorCandidate.mode : source.kind;
+  if (source.kind === "migrate" || run.mode !== mode
+    || attempt.kind !== (mode === "create" ? "create" : "revision")
+    || source.naturalText !== attempt.source_text) throw new Error("FOCUSED_CHARACTER_COMMAND_MISMATCH");
+  if (source.kind === "review_candidate_correction") {
+    await withTransaction(async (connection) => {
+      await assertFamilyAuthoringFence(connection, "character", run.attemptId, executionFence);
+      const frozen = await readCompleteFocusedCharacterReview(connection, source.predecessorAttemptId, run.ownerUserId);
+      if (assetContentDigest(frozen.complete) !== assetContentDigest(source.predecessorCandidate)) {
+        throw new Error("CORRECTION_PREDECESSOR_BINDING_MISMATCH");
+      }
+    });
+    return createCompleteCharacterAdapterV1({ attemptId: run.attemptId, sourceDigest: attempt.source_digest,
+      revisionDisclosurePolicy: correctionPredecessorDisclosure(source.predecessorCandidate),
+      compilerCompatibility: correctionPredecessorCompatibility(source.predecessorCandidate) });
+  }
+  const generation = source.kind === "revise" && run.sourceIdentity.generationId
+    ? await getAssetGeneration(run.sourceIdentity.generationId) : null;
+  const previous = generation ? CharacterGenerationEnvelopeV3Schema.parse(generation.content) : null;
+  if (source.kind === "revise" && (!generation || !previous
+    || generation.assetType !== "character" || generation.assetId !== run.sourceIdentity.assetId
+    || assetContentDigest(previous.definition) !== assetContentDigest(source.definition))) {
+    throw new Error("FOCUSED_CHARACTER_SOURCE_GENERATION_MISMATCH");
+  }
+  return createCompleteCharacterAdapterV1({ attemptId: run.attemptId,
+    sourceDigest: attempt.source_digest, revisionDisclosurePolicy: previous?.disclosurePolicy ?? null,
+    compilerCompatibility: CHARACTER_BATTLE_MECHANICS_CAPABILITY_SET_V3.required });
 }
 
 export async function runCharacterFocusedAuthoringJobV3(input: {
@@ -322,20 +437,49 @@ export async function runCharacterFocusedAuthoringJobV3(input: {
     || provider.tokenEstimatorIdentity !== run.tokenEstimatorIdentity) {
     return fail("provider_identity", "technical_failure");
   }
+  // Validate the recorded allowance before revision-scope dispatch can reserve/send.
+  let policy: SemanticAuthoringPolicyV1;
+  try {
+    policy = frozenCharacterAuthoringExecutionPolicyV1(run);
+  } catch {
+    return fail("policy_identity", "trusted_state_corrupt");
+  }
+  const completeRun = policy.identity === "character_complete_review_policy_v2";
+  if (run.adapterIdentity !== (completeRun ? COMPLETE_CHARACTER_ADAPTER_V1
+    : createCharacterSemanticAuthoringAdapterV3().identity)) {
+    return fail("adapter_identity", "trusted_state_corrupt");
+  }
   const loaded = await loadFocusedExecutionSource({ runId, existing, run, provider, persistence, fail });
   if (!loaded.accepted) return loaded.result;
+  let completeAdapter: Awaited<ReturnType<typeof completeExecutionAdapter>> | null = null;
+  if (completeRun) {
+    try { completeAdapter = await completeExecutionAdapter(run, loaded.source, input.executionFence); }
+    catch { return fail("complete_source_binding", "trusted_state_corrupt"); }
+  }
   const accountedRun = await runs.getSemanticAuthoringRunV1(runId);
   if (!accountedRun || accountedRun.status !== "claimed") return "failed";
-  const outcome = await executeSemanticAuthoringV1({
-    adapter: loaded.adapter, run, frozenSource: loaded.source,
-    policy: semanticAuthoringExecutionPolicyV1(provider.pricingIdentity), provider, persistence,
+  // Project the actual running phase under the family fence; reads only observe it.
+  await withTransaction(async (connection) => {
+    await assertFamilyAuthoringFence(connection, "character", input.attemptId, input.executionFence);
+    await connection.query(`UPDATE character_authoring_attempts
+      SET status = 'generating_structure', updated_at = $3
+      WHERE attempt_id = $1 AND owner_user_id = $2 AND status = 'pending_structure'`,
+    [input.attemptId, input.ownerUserId, new Date().toISOString()]);
+  });
+  const issues = {
+    revisionMismatch: { key: "kernel:revision", finding: { code: "revision", explanation: "Stale proposal revision" } },
+    proposalRejected: { key: "kernel:proposal", finding: { code: "proposal", explanation: "Invalid JSON or proposal schema; resubmit only the current focused work" } },
+    referenceCheckFailed: { key: "kernel:reference", finding: { code: "reference", explanation: "Unknown proposal reference" } },
+  };
+  const outcome = completeAdapter ? await executeSemanticAuthoringV1({
+    adapter: completeAdapter, run, frozenSource: loaded.source, policy, provider, persistence,
+    initialAccounting: accountedRun.accounting, project: projectCompleteCharacterWorkV1, issues,
+  }) : await executeSemanticAuthoringV1({
+    adapter: loaded.adapter, run, frozenSource: correctionStructuralSource(loaded.source),
+    policy, provider, persistence,
     initialAccounting: accountedRun.accounting,
     project: projectFocusedCharacterWorkV1,
-    issues: {
-      revisionMismatch: { key: "kernel:revision", finding: { code: "revision", explanation: "Stale proposal revision" } },
-      proposalRejected: { key: "kernel:proposal", finding: { code: "proposal", explanation: "Invalid JSON or proposal schema; resubmit only the current focused work" } },
-      referenceCheckFailed: { key: "kernel:reference", finding: { code: "reference", explanation: "Unknown proposal reference" } },
-    },
+    issues,
   });
   return outcome.status === "saved" && outcome.result.kind === "ready_for_review" ? "completed" : "failed";
 }
@@ -349,7 +493,8 @@ const migrationReviewCandidateSchema = z.object({ kind: z.literal("migration_rev
 }).strict();
 
 const focusedReadyReviewSchema = z.object({ kind: z.literal("ready_for_review"),
-  finalCandidate: z.union([CharacterDefinitionV3Schema, migrationReviewCandidateSchema]),
+  finalCandidate: z.union([CharacterDefinitionV3Schema, migrationReviewCandidateSchema,
+    FocusedCharacterCompleteReviewV1Schema]),
   finalCandidateDigest: z.string().regex(/^[a-f0-9]{64}$/),
   expectedCurrentGenerationId: z.string().nullable(),
   sourceLedger: z.object({ sourceDispositions: z.array(z.object({
@@ -542,18 +687,50 @@ function reviewSourceFields(source: CharacterAuthoringSourceV1) {
 /** Owner-only inspection of the stored terminal payload; never grants activation. */
 export async function readCharacterFocusedAuthoringReviewV3(attemptId: string, ownerUserId: string): Promise<{
   sourceRetryAvailable: boolean;
+  correctionSource: { kind: "complete" | "legacy_structural"; candidateDigest: string } | null;
   semanticCandidateReview: CharacterAuthoringReview["semanticCandidateReview"];
 } | null> {
-  const found = await query<{ status: string; source_json: unknown;
+  const found = await query<{ attempt_status: string; mode: string; status: string; source_generation_id: string | null; source_json: unknown;
     resolved_source_json: unknown | null; result_json: unknown }>(
-    `SELECT r.status, p.source_json, p.resolved_source_json, p.result_json FROM semantic_authoring_runs r
+    `SELECT a.status AS attempt_status, r.mode, r.status, r.source_generation_id, p.source_json, p.resolved_source_json, p.result_json FROM semantic_authoring_runs r
       JOIN character_focused_authoring_payloads p ON p.run_id = r.run_id
+      JOIN character_authoring_attempts a ON a.attempt_id = r.attempt_id AND a.owner_user_id = r.owner_user_id
       WHERE r.attempt_id = $1 AND r.owner_user_id = $2`, [attemptId, ownerUserId]);
   const row = found.rows[0];
   if (!row) return null;
   const ready = focusedReadyReviewSchema.safeParse(
     typeof row.result_json === "string" ? JSON.parse(row.result_json) : row.result_json);
-  if (!ready.success) return { sourceRetryAvailable: row.status === "failed", semanticCandidateReview: null };
+  if (!ready.success) return { sourceRetryAvailable: row.status === "failed", semanticCandidateReview: null, correctionSource: null };
+  const correctionSource = row.status === "ready_for_review" && row.attempt_status === "awaiting_owner_acceptance"
+    && row.mode !== "migrate" ? await withTransaction(async connection => {
+      const frozen = await readCompleteFocusedCharacterReview(connection, attemptId, ownerUserId);
+      return { kind: frozen.complete.kind === "character_complete_review_v1" ? "complete" as const : "legacy_structural" as const,
+        candidateDigest: frozen.complete.candidateDigest };
+    }) : null;
+  const complete = FocusedCharacterCompleteReviewV1Schema.safeParse(ready.data.finalCandidate);
+  if (complete.success) {
+    if (ready.data.finalCandidateDigest !== complete.data.candidateDigest
+      || complete.data.envelope.provenance.attemptId !== attemptId) {
+      throw new Error("FOCUSED_CHARACTER_COMPLETE_REVIEW_BINDING_MISMATCH");
+    }
+    const correction = decodeCharacterReviewCorrectionSourceV1(
+      typeof row.source_json === "string" ? JSON.parse(row.source_json) : row.source_json);
+    if (correction) {
+      if (correction.predecessorCandidate.mode !== complete.data.mode) throw new Error("FOCUSED_CHARACTER_SOURCE_INVALID");
+      const review = fixedCandidateOwnerReview(complete.data.envelope, correction.naturalText,
+        { kind: "revision", currentCandidate: correction.predecessorCandidate.kind === "character_complete_review_v1"
+          ? correction.predecessorCandidate.envelope : correction.predecessorCandidate.definition });
+      return { sourceRetryAvailable: false, correctionSource, semanticCandidateReview: review.semanticCandidateReview ?? null };
+    }
+    const source = createCharacterSemanticAuthoringAdapterV3().decodeFrozenSource(decodeFocusedReviewSource(row));
+    if (!source.accepted || source.value.kind === "migrate" || source.value.kind !== complete.data.mode) {
+      throw new Error("FOCUSED_CHARACTER_SOURCE_INVALID");
+    }
+    const previous = row.source_generation_id ? await getAssetGeneration(row.source_generation_id) : null;
+    const review = fixedCandidateOwnerReview(complete.data.envelope, source.value.naturalText ?? null,
+      { kind: complete.data.mode === "create" ? "create" : "revision", currentCandidate: previous?.content ?? null });
+    return { sourceRetryAvailable: false, correctionSource, semanticCandidateReview: review.semanticCandidateReview ?? null };
+  }
   const parsedMigrationCandidate = migrationReviewCandidateSchema.safeParse(ready.data.finalCandidate);
   const migrationCandidate = parsedMigrationCandidate.success ? parsedMigrationCandidate.data : null;
   const definition = CharacterDefinitionV3Schema.parse(
@@ -572,7 +749,7 @@ export async function readCharacterFocusedAuthoringReviewV3(attemptId: string, o
     expressionNotes: "表現上の注記", actionNorms: "行動規範", consciousGuidance: "意識的な指針",
     mechanicalConflictFallbacks: "機械的な競合時の代替", inventory: "所持品",
     initialLoadout: "初期装備", combat: "戦闘設定" };
-  return { sourceRetryAvailable: false, semanticCandidateReview: {
+  return { sourceRetryAvailable: false, correctionSource, semanticCandidateReview: {
     schemaVersion: 3,
     fields: Object.entries(definition).map(([key, value]) => ({
       key, label: labels[key] ?? key,
@@ -593,6 +770,8 @@ export async function readCharacterFocusedAuthoringReviewV3(attemptId: string, o
       requiringCapability: `${value.requiringCapability.consumer}@${value.requiringCapability.version}`,
     })) ?? [],
     compatibility: migrationCompatibilityReview(migrationCandidate),
-    limitation: "構造化候補を保存しました。意味・公開範囲の検証と最終採用の接続は未完了です。現在の世代は変更していません。",
+    limitation: correctionSource?.kind === "legacy_structural"
+      ? "旧構造候補はプロフィールとclaim検証が未完了です。明示的な調整で新しい試行を開始できます。現在の世代は変更していません。"
+      : "構造化候補を保存しました。意味・公開範囲の検証と最終採用の接続は未完了です。現在の世代は変更していません。",
   } };
 }

@@ -1,0 +1,301 @@
+{
+  "schema": "kshiai/stable-area-cause-review/v1",
+  "upstream": [
+    {
+      "ref": "awareness-guidance-20261007/authority-current",
+      "sealId": "4a236b55e9ad9e4aa54eb2c6bbe9d77e0a318881ba8328363505153d16e151dd"
+    },
+    {
+      "ref": "awareness-guidance-20261007/authority-inherited",
+      "sealId": "d5695200a29531ed085f10c0d502effc2af325ee206874b1f32c61db6872fba4"
+    },
+    {
+      "ref": "all-tests-20261007/authority-battlefield",
+      "sealId": "a65c9b0a1bf9589c18778e7cf7ca7985d7ccde11c3a36c7e0b5db5874f34c7b8"
+    },
+    {
+      "ref": "all-tests-20261007/implementation-battlefield-compiler",
+      "sealId": "54f969c54c0489a5a5b7f3cb3fd3d97c4af5833c1d71d0e4d26649e4886db6d5"
+    },
+    {
+      "ref": "all-tests-20261007/implementation-semantic-state-patch-observation",
+      "sealId": "8534c37b4da9615462035a1428ee6616200614e289efc11a875c91b6a9bca009"
+    },
+    {
+      "ref": "all-tests-20261007/implementation-closed-battle-contract",
+      "sealId": "fd2692da29f2deaf81b6567e5499276f95ece18dfd67f0a669fd1a2077292209"
+    },
+    {
+      "ref": "all-tests-20261007/authority-authoring-review",
+      "sealId": "811d0305e67ce73b5902135bb8662e7ee31e6efaf98852b0ad5de8d1f0c15007"
+    },
+    {
+      "ref": "all-tests-20261007/implementation-battlefield-generations",
+      "sealId": "b4c3e3bc530e4707194dbdbebead357c1ba366ce7e24ab1f4a8b5440b6686459"
+    },
+    {
+      "ref": "all-tests-20261007/implementation-battlefield-management",
+      "sealId": "c6ae9384dbe1557c3adb9d94530a4ce2e5f3e025c14cca05f418fd9879f1745c"
+    },
+    {
+      "ref": "all-tests-20261007/implementation-battlefield-authoring",
+      "sealId": "08e378322bfc5c7d21c1df48e50b51713fdf7cc429f0e2229de8ff2eba6bd8fb"
+    },
+    {
+      "ref": "all-tests-20261007/implementation-family-authoring-worker",
+      "sealId": "b6f48bb19b9fc3a71a5c0dd0371df7841f1f4bf52f0c80fe63136be3966bcce5"
+    },
+    {
+      "ref": "all-tests-20261007/implementation-narration-activation-validated-storage",
+      "sealId": "9a63b5e031f3ca89944c74ec4b3034ca95fe12921f7c628b68beb9a9b4dcec76"
+    },
+    {
+      "ref": "all-tests-20261007/implementation-narration-candidate-building",
+      "sealId": "b5d994be6d213058541cb20240ae3e13ae9db1d0bd44df1a4961c738f21077e8"
+    },
+    {
+      "ref": "all-tests-20261007/implementation-narration-family-runner",
+      "sealId": "7a8b93dcb2e8101713ce91646b5d4fd4221f80a15a43f69d70a800a764ae89fc"
+    }
+  ],
+  "nodes": [
+    {
+      "key": "authority-stable-area-reposition",
+      "path": "docs/adr/0020-reposition-and-appropriate-range.think",
+      "parents": [],
+      "scope": "Accepted D1 one adjacent frozen topology hop or one in-area rank change; retained bounds and old battle interpretation only. No new movement policy or deployment permission.",
+      "test": false,
+      "ref": "all-tests-20261007/authority-stable-area-reposition",
+      "sha256": "05e0abd7b6f39a62e786a8da837ae0406eb464a131b8b1bd02fcfb1b4b1d7c7a"
+    },
+    {
+      "key": "authority-canonical-placement-separation",
+      "path": "docs/adr/0022-canonical-world-and-observer-cognition.think",
+      "parents": [],
+      "scope": "Accepted canonical placements/topology remain world-owned and observer cognition does not drive engine revalidation. Scope retained boundary; old evidence is not a current production result.",
+      "test": false,
+      "ref": "all-tests-20261007/authority-canonical-placement-separation",
+      "sha256": "bc22073fcd623932c4380f4ddb75023c015322d67538e6d9aa7076d0f2b58f82"
+    },
+    {
+      "key": "design-stable-area-identity-repair",
+      "path": "docs/battlefield-initial-area-identity-repair-2026-10-07.md",
+      "parents": [
+        "battlefield",
+        "authority-stable-area-reposition",
+        "authority-canonical-placement-separation",
+        "authority"
+      ],
+      "scope": "Internal lossless projection repair of existing Accepted stable ID/placement contract. Required structured creation instance plus initial layout, generic legacy typed branch, unchanged stored/public shapes and existing saved worlds. No new architecture or old-world migration adopted.",
+      "test": false,
+      "ref": "all-tests-20261007/design-stable-area-identity-repair",
+      "sha256": "b2b2612eb7d6e90c3a50d34e60ddda251b9bf273e42361b6a3c28e424f4171b8"
+    },
+    {
+      "key": "implementation-stable-initial-world-layout",
+      "path": "packages/shared/src/battle-world.ts",
+      "parents": [
+        "design-stable-area-identity-repair",
+        "semantic",
+        "authority-canonical-placement-separation"
+      ],
+      "scope": "Current canonical constructor validates complete initial scene mappings and area/entity references; preserves supplied IDs. Twelve world cases also exercise atomic transitions, cycles/disappearance, source IDs, old dependent absence and structured semantic reconciliation not clobbering engine-owned placements. No all world operation/error/visibility matrix certified.",
+      "test": false,
+      "ref": "all-tests-20261007/implementation-stable-initial-world-layout",
+      "sha256": "f14926cad2ed92274b0373d15da068399eee0ed48cac7a1d77d76476ca4c72d4"
+    },
+    {
+      "key": "implementation-typed-battlefield-creation",
+      "path": "packages/shared/src/battlefield-creation.ts",
+      "parents": [
+        "design-stable-area-identity-repair",
+        "compiler",
+        "implementation-stable-initial-world-layout"
+      ],
+      "scope": "Required tagged structured instance/layout prepared from one validated full definition; explicit actor entries, terrain/object/effect ID placements including same names, no new provider call. Legacy declared area IDs/entries retained, ambiguous labels rejected; current compiled instance cannot masquerade as legacy. Only tested legacy sample paths, not all malformed legacy fields certified.",
+      "test": false,
+      "ref": "all-tests-20261007/implementation-typed-battlefield-creation",
+      "sha256": "f6206d609be71e280a821ea7730b355bbaae83e1d8cbe24641283039ace95637"
+    },
+    {
+      "key": "implementation-stable-area-reposition-plans",
+      "path": "packages/shared/src/reposition-transition.ts",
+      "parents": [
+        "authority-stable-area-reposition",
+        "authority-canonical-placement-separation",
+        "implementation-stable-initial-world-layout"
+      ],
+      "scope": "Only adjacent-area close hop from area.1 to area.2 then area.3, same-area distance opening and canonical missing counterpart localization exercised. Full path selection, blocked graph, away/localize/noop matrix not certified.",
+      "test": false,
+      "ref": "all-tests-20261007/implementation-stable-area-reposition-plans",
+      "sha256": "0f33f0e62363e7097478f3981e0db2d471424c039c3baf79754cd4bcfe7f3f17"
+    },
+    {
+      "key": "implementation-stable-area-battle-initialization",
+      "path": "packages/shared/src/battle-engine.ts",
+      "parents": [
+        "implementation-typed-battlefield-creation",
+        "implementation-stable-initial-world-layout",
+        "implementation-stable-area-reposition-plans"
+      ],
+      "scope": "Only current createBattleState consumes required creation context, persists unchanged instance, and ensureBattleWorldState retains saved canonical world. Legacy engine file46-case diagnostic passed, but whole engine policy numerics/finisher/cooldown conformance is not being sealed by this source scope.",
+      "test": false,
+      "ref": "all-tests-20261007/implementation-stable-area-battle-initialization",
+      "sha256": "5d838d68b5a7832ef051670770ce117b5aec53d3eb650233a9b8ad0c0971f0ae"
+    },
+    {
+      "key": "implementation-stable-area-ready-binding",
+      "path": "backend/src/services/battle-service.ts",
+      "parents": [
+        "battlefield",
+        "implementation-typed-battlefield-creation",
+        "implementation-stable-area-battle-initialization",
+        "bfStorage",
+        "narStorage"
+      ],
+      "scope": "Only ready battlefield selection prepares mandatory structured creation from same frozen definition, passes it into engine, and binds resulting unchanged instance/generation manifest on current awareness new creation. No other battle progression/waiting/settlement behavior or full service proof.",
+      "test": false,
+      "ref": "all-tests-20261007/implementation-stable-area-ready-binding",
+      "sha256": "7c9e7a83c5767688e1d5f702f12875d2664218b59a5998429295b94dc3bfd09d"
+    },
+    {
+      "key": "fixture-current-legacy-inventory-creation",
+      "path": "backend/src/services/character-agency-inventory.fixtures.ts",
+      "parents": [
+        "implementation-stable-area-battle-initialization",
+        "inherited"
+      ],
+      "scope": "Only typed explicit legacy battlefield fixture construction supporting narration test settings and controlled conscious fixture. No real current character creation or inventory quality proof.",
+      "test": false,
+      "ref": "all-tests-20261007/fixture-current-legacy-inventory-creation",
+      "sha256": "997c8d115eef2caf8c609dc63c6b22dee03f8aaf1473559c1d05f9cb0fa8b90e"
+    },
+    {
+      "key": "implementation-stable-area-authoring-http",
+      "path": "backend/src/routes.ts",
+      "parents": [
+        "review",
+        "bfStorage",
+        "bfManagement",
+        "bfAuthoring",
+        "worker",
+        "family",
+        "narAuthoring",
+        "narStorage",
+        "implementation-stable-area-ready-binding"
+      ],
+      "scope": "Only eight battlefield and six narration actual HTTP/persistence tests retained, including failure/review/confirmation/expiry/current-pointer drift and immutable new-battle style/field binding. Unresolved ordinary character-create routes remain outside this scope.",
+      "test": false,
+      "ref": "all-tests-20261007/implementation-stable-area-authoring-http",
+      "sha256": "c62c1c59bfbd373480e43fd60b4f32c0a3ea73a051329bee3aa048da98ab209f"
+    },
+    {
+      "key": "stable-area-reposition-transition",
+      "path": "packages/shared/src/reposition-transition.test.ts",
+      "parents": [
+        "authority-stable-area-reposition",
+        "implementation-stable-area-reposition-plans",
+        "implementation-stable-area-battle-initialization",
+        "implementation-stable-initial-world-layout"
+      ],
+      "scope": "All3cases, strengthened without deleting old behavior: original3area IDs/entries and empty middle retained, one then two adjacent hops, saved world identity preserved, same-area opening, canonical present vs absent counterpart. No full graph matrix or live battle proof.",
+      "test": true,
+      "ref": "verification/stable-area-reposition-transition-20261007",
+      "sha256": "d0926e719277e998293d177deb7beb35287fa7cc2b42e629178042f58c33cf45"
+    },
+    {
+      "key": "stable-area-world-state",
+      "path": "packages/shared/src/battle-world.test.ts",
+      "parents": [
+        "implementation-stable-initial-world-layout",
+        "authority-canonical-placement-separation",
+        "semantic"
+      ],
+      "scope": "All12original cases: initial senses/near opponents, atomic mental/object/pair changes, worn blindfold, invalid disappearance/cycle/event source rejection, location-derived distance, semantic transition with no engine-placement clobber, dependent absence and observer-labeled object identity during concretization. No all hidden-object disclosure or production replay matrix.",
+      "test": true,
+      "ref": "verification/stable-area-world-state-20261007",
+      "sha256": "930c78c36aa4e2ee3d43041aac091ebf17aa9e935f96233bdcf9f6c2269b7a3e"
+    },
+    {
+      "key": "stable-area-structured-battlefield",
+      "path": "packages/shared/src/structured-battlefield.test.ts",
+      "parents": [
+        "battlefield",
+        "compiler",
+        "implementation-typed-battlefield-creation",
+        "implementation-stable-area-battle-initialization",
+        "implementation-stable-initial-world-layout"
+      ],
+      "scope": "All11cases: original deterministic compiler, exact source authoring entries, private public projection and valid receipt/registry cases retained; added same-name actor/object/effect area identity, transient layout not persisted, missing/dangling mapping rejection, legacy bypass rejection and compile-time required structured layout. Supplied supported receipt only, not real independent claim validation.",
+      "test": true,
+      "ref": "verification/stable-area-structured-battlefield-20261007",
+      "sha256": "2881118bb9a2cc42652a1f1f884b3104f1050c394237e34d79aece611cf70b91"
+    },
+    {
+      "key": "stable-area-awareness-battle-contract",
+      "path": "packages/shared/src/awareness-battle.test.ts",
+      "parents": [
+        "inherited",
+        "authority",
+        "closed",
+        "implementation-stable-area-battle-initialization"
+      ],
+      "scope": "All9original cases with explicit legacy fixture input: complete V4 semantics retained, frozen V5 policy/compiler tuple required, incomplete reason/no winner/no canonical finish/no old agency, V4 incomplete rejection and rating settlement excluded on technical incomplete. Schema-only supplied fixture; not actual runtime stop/settlement or normal production deadline measurement.",
+      "test": true,
+      "ref": "verification/stable-area-awareness-battle-contract-20261007",
+      "sha256": "dbaf06b2576d6702f3892575bf3e26fe71011dd5ad503f1ab836e80e33cc3f84"
+    },
+    {
+      "key": "stable-area-battlefield-http-acceptance",
+      "path": "backend/src/routes-structured-battlefield-acceptance.test.ts",
+      "parents": [
+        "implementation-stable-area-authoring-http",
+        "implementation-stable-area-ready-binding",
+        "bfStorage",
+        "bfManagement",
+        "bfAuthoring",
+        "compiler",
+        "worker"
+      ],
+      "scope": "All8existing actual isolated HTTP/persistence cases remain positive: structure failure no partial, legacy excluded, explicit upgrade owner adoption, compare review, expiry and stale pointer no append, immutable create/revise/image, exact preset/compiled instance binding. Mock provider/media only, no natural provider quality/deployment.",
+      "test": true,
+      "ref": "verification/stable-area-battlefield-http-acceptance-20261007",
+      "sha256": "c5ed65efc024fe12051ba4e52bbbacd07b857eee4215a3931b46c26967587558"
+    },
+    {
+      "key": "stable-area-narration-http-acceptance",
+      "path": "backend/src/routes-structured-narration-acceptance.test.ts",
+      "parents": [
+        "implementation-stable-area-authoring-http",
+        "implementation-stable-area-ready-binding",
+        "narStorage",
+        "narAuthoring",
+        "family",
+        "fixture-current-legacy-inventory-creation"
+      ],
+      "scope": "All6existing isolated HTTP cases retained: structure failure, legacy selector block, creation/upgrade confirm replay zero style regeneration, immutable narrator revision and phase rules at current battle creation, expiry/drift rejection and corrupt stored style replay/activation refusal. No full battle or actual narration quality.",
+      "test": true,
+      "ref": "verification/stable-area-narration-http-acceptance-20261007",
+      "sha256": "6f29961ea9996842bf7b28421491c8b002efb56b40d44242c7316ff43707d385"
+    }
+  ],
+  "diagnostic": {
+    "pass": 110,
+    "fail": 0,
+    "skipped": 0,
+    "strictTypecheckExit": 0
+  },
+  "clauses": [
+    "Accepted ADR0012 stable deterministic battlefield IDs",
+    "Accepted ADR0020 D1 one adjacent hop",
+    "Accepted ADR0022 canonical placement ownership",
+    "Inherited ADR0050/0051 immutable V4/V5 binding",
+    "Accepted ADR0014 owner review and atomic generation confirmation"
+  ],
+  "limitations": [
+    "110 diagnostic cases in8files, only6wholefiles registered here",
+    "Engine46 and public15 diagnostic files remain unsealed pending their own wider contracts",
+    "No real provider, public deployment or old-world migration",
+    "Existing prior source refs to changed world/engine/service/fixtures remain historical; broader consumer freshness reconciliation still required"
+  ]
+}

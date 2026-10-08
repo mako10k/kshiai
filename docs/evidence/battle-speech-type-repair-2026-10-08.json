@@ -1,0 +1,18 @@
+{
+  "beforeSha256": "0a8fe55e5e4f89f561b6cfeb3fe717a3cf59a9e1b69cd4f8790aa5c225b49147",
+  "afterSha256": "9546f063aaceec17aa7cd528bde0ad91431a3e0d803f65bf96b850656314ff48",
+  "beforeCases": 37,
+  "afterCases": 37,
+  "beforeAssertions": 250,
+  "afterAssertions": 250,
+  "partialManifestCastsRemoved": 2,
+  "traceCastsRemoved": 6,
+  "diagnostic": {
+    "cases": 37,
+    "pass": 37,
+    "fail": 0,
+    "skip": 0
+  },
+  "productionSourceChanged": false,
+  "change": "Complete historical manifest with actual character snapshots and explicit source bindings; runtime zod trace inspection instead of assertions."
+}

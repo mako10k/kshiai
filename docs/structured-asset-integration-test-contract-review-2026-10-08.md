@@ -1,0 +1,11 @@
+# 資産統合テストの契約照合
+
+対象は backend/src/routes-structured-asset-integration.test.ts の元2ケース全体。前段の独立読み取りレビュー（battle_helper_contract_review）はINSIDEと判定し、ローカル診断は2pass・0fail・0skip。再開時はその結果と現在のソースSHAを照合する。
+
+第1ケースは明示的にpublicとしたready定義fixtureを用い、選択・battle binding format v5への世代固定・公開DTOの内部情報非開示・対話設定の固定・portrait/戦場/実況定義の更新と旧試合の不変・削除後の履歴継続・advance冪等性・固定済み実況スタイル・開発者観測の権限制御を検証する。Accepted ADR0010/0011/0012/0013/0018/0039/0051/0054/0056および既存portrait局所契約が根拠。更新する資産世代と既存試合の不変性が対象である。
+
+第2ケースは歴史的character definition v2表示行への更新/削除拒否、V1世代を生成しないこと、現在選択の対象外を検証する。Accepted ADR0043/0010が根拠。通常のv2作成や破棄した旧切替試行の達成は主張しない。
+
+fixtureの係数1.25・mockモデル名・明示publicは試験変数であり、本番の数値・モデル・省略時visibility政策の採用根拠にしない。Object.assignで型付きawareness roleをMockへ接続する部分は権威状態型を拡張せず、レビューは型逃避とは判定しなかった。独立要件レビュー待ちの候補やProposed ADR0059、Superseded ADR0003はCauseに使用しない。
+
+合格はprivate SQLite・型付きmockを用いる局所HTTP/保存統合に限る。実LLM品質・公開配備・料金・レーティング計算・通常進行policy採用の証明を含まない。元ケースとassertionは変更しない。

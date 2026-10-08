@@ -1,0 +1,19 @@
+{
+  "startedUnix": 1791368807.622466,
+  "scope": "after initial source/diagnostic investigation, through review consolidation and seal readback",
+  "finishedUnix": 1791369159.7847753,
+  "elapsedSeconds": 352.16230964660645,
+  "wholeFiles": 3,
+  "cases": 8,
+  "registrationWriter": {
+    "scope": "registration writer only, excludes prior review and verification",
+    "elapsedSeconds": 162.1011734008789,
+    "wholeFiles": 3,
+    "newRefs": 10,
+    "causeEdges": 11
+  },
+  "limitations": [
+    "Initial source investigation/diagnostic excluded",
+    "No homogeneous comparison or general speed claim"
+  ]
+}

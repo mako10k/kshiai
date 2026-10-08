@@ -38,9 +38,15 @@ function insertUser(input: {
   );
 }
 
+// R: Verify server-owned realm classification and internal access using isolated local identities.
 describe("account realm access", () => {
   it("fails unknown account kinds closed to the general realm", () => {
-    assert.equal(access.normalizeAccountKind("unknown"), "general");
+    for (const kind of ["general", "developer", "test", "e2e"] as const) {
+      assert.equal(access.normalizeAccountKind(kind), kind);
+    }
+    for (const value of ["unknown", undefined, null, 1, { kind: "developer" }, ["developer"]]) {
+      assert.equal(access.normalizeAccountKind(value), "general");
+    }
     assert.equal(access.accountRealm("general"), "general");
     assert.equal(access.accountRealm("developer"), "test");
     assert.equal(access.accountRealm("test"), "test");

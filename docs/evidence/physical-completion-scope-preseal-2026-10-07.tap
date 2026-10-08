@@ -1,0 +1,34 @@
+TAP version 13
+# Subtest: wraps validation rejection after a complete response and preserves cause
+ok 1 - wraps validation rejection after a complete response and preserves cause
+  ---
+  duration_ms: 2.017857
+  type: 'test'
+  ...
+# Subtest: leaves unsent and incomplete attempts unconfirmed
+ok 2 - leaves unsent and incomplete attempts unconfirmed
+  ---
+  duration_ms: 0.437565
+  type: 'test'
+  ...
+# Subtest: isolates concurrent calls and keeps a partially completed retry sequence unknown
+ok 3 - isolates concurrent calls and keeps a partially completed retry sequence unknown
+  ---
+  duration_ms: 0.592596
+  type: 'test'
+  ...
+# Subtest: returns successful values without changing their identity
+ok 4 - returns successful values without changing their identity
+  ---
+  duration_ms: 0.262467
+  type: 'test'
+  ...
+1..4
+# tests 4
+# suites 0
+# pass 4
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 179.34767

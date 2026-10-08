@@ -1,12 +1,14 @@
 # ADR-0034: Require Seal-based authority for current test evidence
 
-- Status: Accepted
+- Status: Superseded
 - Revision: 1
 - Date: 2026-09-16
 - Decision owner: Product owner
 - Related: `scripts/test-authority.mjs`,
   `scripts/test-authority-inventory.json`, and
   `docs/evidence/test-authority-inventory-2026-09-15.md`
+
+2026-10-06: [ADR0058](0058-stop-test-runs-with-unsealed-tests.md)へ継承。未Sealは除外して集約成功にせず、実行前に停止する。他のauthority条件と下記の決定理由は継承する。下記は受入時の履歴である。
 
 ## Context
 

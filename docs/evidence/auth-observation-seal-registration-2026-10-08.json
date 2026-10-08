@@ -1,0 +1,158 @@
+{
+  "entries": [
+    {
+      "key": "design-authenticated-read-probes",
+      "path": "docs/auth-observation-test-contract-review-2026-10-08.md",
+      "parents": [
+        "read"
+      ],
+      "scope": "Retained immutable historical read boundary; injected-fetch13GET path/query/header/shape unit probe, not13actual server routes or deployed data acceptance.",
+      "ref": "all-tests-20261008/design-authenticated-read-probes",
+      "test": false,
+      "sha256": "0bd7f9e95f02ecb7cf510bdeaa92d17ac5b6bd0626e094414eabb35fe62405a3",
+      "sealId": "b7296db93a395328061697dd23136838573cf7c5c42bc4f7c7dcc011f6becd29",
+      "causeSealIds": [
+        "480c02403f61dc6a9cd7d54861639b962dbc3bde86673481e02e0defc8415e17"
+      ]
+    },
+    {
+      "key": "design-authenticated-terminal-sse",
+      "path": "docs/auth-observation-test-contract-review-2026-10-08.md",
+      "parents": [
+        "read",
+        "public",
+        "output"
+      ],
+      "scope": "Local legacy-cookie/authenticated SSE transport/access/cleanup for intentionally finished internal fixture only. Not newV5 completion/latest narration/live origin or Supabase acceptance; oldcutovertrial remains discarded.",
+      "ref": "all-tests-20261008/design-authenticated-terminal-sse",
+      "test": false,
+      "sha256": "0bd7f9e95f02ecb7cf510bdeaa92d17ac5b6bd0626e094414eabb35fe62405a3",
+      "sealId": "3dbe98a94cdf060c6df8d6a01d2638f72de969aae7e54e424c392884e34b3e98",
+      "causeSealIds": [
+        "480c02403f61dc6a9cd7d54861639b962dbc3bde86673481e02e0defc8415e17",
+        "f37d62dd130cf26f48ced720565c4fad035b93a3f3ad1c3e98943cdc9bf585d1",
+        "2c6888e9d07a676d4b429b041b241e1631845b18fac4fb4cda280a4a29670d50"
+      ]
+    },
+    {
+      "key": "design-awareness-usage-verifier",
+      "path": "docs/auth-observation-test-contract-review-2026-10-08.md",
+      "parents": [
+        "public",
+        "usage"
+      ],
+      "scope": "Pure typed completed-runtime/usage-row verification and known/null token report; no prices, actual SDK storage/DB drain/public battle acceptance.",
+      "ref": "all-tests-20261008/design-awareness-usage-verifier",
+      "test": false,
+      "sha256": "0bd7f9e95f02ecb7cf510bdeaa92d17ac5b6bd0626e094414eabb35fe62405a3",
+      "sealId": "8c857bcc03886e1c335bd125f882b1ed00451b0d01a99738c5c03768bf6a5aa5",
+      "causeSealIds": [
+        "f37d62dd130cf26f48ced720565c4fad035b93a3f3ad1c3e98943cdc9bf585d1",
+        "4a236b55e9ad9e4aa54eb2c6bbe9d77e0a318881ba8328363505153d16e151dd"
+      ]
+    },
+    {
+      "key": "implementation-authenticated-read-probes",
+      "path": "backend/src/scripts/authenticated-read-surface-smoke.ts",
+      "parents": [
+        "design-authenticated-read-probes"
+      ],
+      "scope": "Actual request construction, schema parsing and endpoint failure helper under injectedfetch. No actual server route execution.",
+      "ref": "all-tests-20261008/implementation-authenticated-read-probes",
+      "test": false,
+      "sha256": "8d55f2b47c2af911cc5f34f3ef145ff30a57b994638f97af0ba721de965a8584",
+      "sealId": "0d3076c276086178a4b68f0c1190f72eda10626dde3817a3a2c3c20c9371f8cc",
+      "causeSealIds": [
+        "b7296db93a395328061697dd23136838573cf7c5c42bc4f7c7dcc011f6becd29"
+      ]
+    },
+    {
+      "key": "implementation-authenticated-terminal-sse",
+      "path": "backend/src/scripts/authenticated-sse-smoke.ts",
+      "parents": [
+        "design-authenticated-terminal-sse"
+      ],
+      "scope": "Actual insert finished private fixture, SSE terminal error/content-type checks and scoped finally cleanup. Local main-case route calls only; no provider or full battle completion.",
+      "ref": "all-tests-20261008/implementation-authenticated-terminal-sse",
+      "test": false,
+      "sha256": "532cae4a7327b972a0e996e3bbf264ae1fc2068aebd88c36dfb19f3887d74f0a",
+      "sealId": "460bd1447bd6f2c8b9b4d917d7fee3e7e4cb65019b69b5a531d6f395c1d351bd",
+      "causeSealIds": [
+        "3dbe98a94cdf060c6df8d6a01d2638f72de969aae7e54e424c392884e34b3e98"
+      ]
+    },
+    {
+      "key": "implementation-awareness-usage-verifier",
+      "path": "backend/src/scripts/awareness-public-observation.ts",
+      "parents": [
+        "design-awareness-usage-verifier"
+      ],
+      "scope": "Pure verify function over typed runtime and parsed rows; wrapper DB reads/drain and other checks not exercised by these two cases.",
+      "ref": "all-tests-20261008/implementation-awareness-usage-verifier",
+      "test": false,
+      "sha256": "35e9d96afdef13e57a0121c82969664aa5512eb0d94b395d208af5c0b3d959cc",
+      "sealId": "881ade683e58e30f0a74b23a770031b95c693198f722973845edd8800773741b",
+      "causeSealIds": [
+        "8c857bcc03886e1c335bd125f882b1ed00451b0d01a99738c5c03768bf6a5aa5"
+      ]
+    },
+    {
+      "key": "authenticated-read-probes-bounded-20261008",
+      "path": "backend/src/scripts/authenticated-read-surface-smoke.test.ts",
+      "parents": [
+        "implementation-authenticated-read-probes"
+      ],
+      "scope": "Whole original2cases/assertions unchanged. Injectedfetch13GET path/query/order/Bearer/encodedfixtureID/minimalshape and endpoint-identified failure only.",
+      "ref": "verification/authenticated-read-probes-bounded-20261008",
+      "test": true,
+      "sha256": "09c0b4d0558e454f38b46becc7f894e151c45c97a7ceb4902cc593e077b63a70",
+      "sealId": "19145d3259b132dd95234a6efb7f91c24f5332baf02276aa4de421ad31fcc5c2",
+      "causeSealIds": [
+        "0d3076c276086178a4b68f0c1190f72eda10626dde3817a3a2c3c20c9371f8cc"
+      ]
+    },
+    {
+      "key": "authenticated-terminal-sse-bounded-20261008",
+      "path": "backend/src/scripts/authenticated-sse-smoke.test.ts",
+      "parents": [
+        "implementation-authenticated-terminal-sse"
+      ],
+      "scope": "Whole original3cases/assertions unchanged. Actual local Hono/legacycookie/SQLite maincase404/403/ownerstream terminalerror/provider0/scopedcleanup; injected503 and JSONcontenttype failure cleanup. Not public completion.",
+      "ref": "verification/authenticated-terminal-sse-bounded-20261008",
+      "test": true,
+      "sha256": "4acfbb9e0d22c03f00aa8d9fd4fd44bf5976894ff33de4f26246e59b0b144f0e",
+      "sealId": "19a06de5bddea608f147aaf1535ab9dc42336dd92c99681225adf348eb4af63e",
+      "causeSealIds": [
+        "460bd1447bd6f2c8b9b4d917d7fee3e7e4cb65019b69b5a531d6f395c1d351bd"
+      ]
+    },
+    {
+      "key": "awareness-usage-verifier-bounded-20261008",
+      "path": "backend/src/scripts/awareness-public-observation.test.ts",
+      "parents": [
+        "implementation-awareness-usage-verifier"
+      ],
+      "scope": "Whole original2cases/assertions unchanged. Synthetic terminalruntime/rows: narrationphysical1for3receipts, known sums/nullcount/unknownprice/rawUsage omitted, missingruntime/outstanding/started/crossbattle/count mismatch rejection; not all wrapper/check paths or SDK/DB acceptance.",
+      "ref": "verification/awareness-usage-verifier-bounded-20261008",
+      "test": true,
+      "sha256": "20605b55d20c22a04589a044f872e68273981e24ae9a056b04ab7efad66738d3",
+      "sealId": "ac60a741618d22d1327f2778d28271e7ca775500378a98a4a3ba49ff8a0364a8",
+      "causeSealIds": [
+        "881ade683e58e30f0a74b23a770031b95c693198f722973845edd8800773741b"
+      ]
+    }
+  ],
+  "roots": {
+    "read": "all-tests-20261007/authority-v3-writes",
+    "public": "all-tests-20261007/authority-provider-observation",
+    "output": "all-tests-20261007/authority-current-output-guidance",
+    "usage": "awareness-guidance-20261007/authority-current"
+  },
+  "rootSealIds": {
+    "read": "480c02403f61dc6a9cd7d54861639b962dbc3bde86673481e02e0defc8415e17",
+    "public": "f37d62dd130cf26f48ced720565c4fad035b93a3f3ad1c3e98943cdc9bf585d1",
+    "output": "2c6888e9d07a676d4b429b041b241e1631845b18fac4fb4cda280a4a29670d50",
+    "usage": "4a236b55e9ad9e4aa54eb2c6bbe9d77e0a318881ba8328363505153d16e151dd"
+  },
+  "elapsedSeconds": 110.381
+}

@@ -1,0 +1,14 @@
+domain POLICY_SEAL:
+  description "Seal four offline policy regression obligations against their exact accepted revisions."
+evidence AUTHORITY:
+  "Read Accepted ADR0051 accounting and historical certified-policy preservation; ADR0052 explicit isolated measurement tuple; ADR0054 ordinary new usage-v2 timing, retaining old tuples. Read same-name acceptance thoughts with owner instructions and finite scope. Existing published current authority, pipeline contract and state reducer match their exact frozen bytes."
+evidence REVIEW:
+  "Read full awareness-policy.ts and four test cases. Normal60/90/60/60 seconds, global600, publication180 and terminal90 match ADR0054; isolated measurement remains separate under0052. Revised identity rejects mixed tuple; observed null maximum remains unknown under0051, certified rejects null. All four passed in the complete shared diagnostic (415 cases); no provider request is executed."
+premise SCOPE:
+  "Seal adoption thoughts as explicit bounded roots recording owner authority, not granting fresh paid/deployment permission. ADRs depend on exact adoption roots and current accounting authority. Policy implementation depends on both exact timing ADRs and adopted decision contract. Verification depends on these authorities and actual policy/pipeline/state implementations. Historical short defaults are not claimed as ordinary current creation."
+premise UNKNOWN:
+  "Four schema cases do not prove SDK deadline propagation, production default selection or real model completion; those tests remain separate. Whole-file binding tracks reviewed responsibility and tested tuple clauses, not every dependency's truth. All-test goal remains incomplete."
+premise ALTERNATIVES:
+  "Do not use only superseded0050, promote historical timing to current default, infer zero cost or bulk Seal unreviewed entries. Retain existing heads and unresolved failures."
+decision D1 based_on AUTHORITY, REVIEW, SCOPE, UNKNOWN, ALTERNATIVES:
+  "Audit then create six exact new refs, verify candidate bytes and Cause IDs, Seal each and register only awareness-policy.test.ts. Read back source/stale/fsck and prior heads."

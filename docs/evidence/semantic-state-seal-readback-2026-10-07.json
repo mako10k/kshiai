@@ -1,0 +1,30 @@
+{
+  "entries": [
+    {
+      "ref": "all-tests-20261007/authority-semantic-observation-requirements",
+      "sourceBytesMatch": true,
+      "sealId": "203e66fc4e30772adab026012c67f1b1ac4ca86ad2ada11b501c639a27a19eac"
+    },
+    {
+      "ref": "all-tests-20261007/design-semantic-patch-observation-boundary",
+      "sourceBytesMatch": true,
+      "sealId": "6b5d1581434ff8316eb45c2bc9b103d97f48fa42fd958999fe1cf13e15da967e"
+    },
+    {
+      "ref": "all-tests-20261007/implementation-semantic-state-patch-observation",
+      "sourceBytesMatch": true,
+      "sealId": "8534c37b4da9615462035a1428ee6616200614e289efc11a875c91b6a9bca009"
+    },
+    {
+      "ref": "verification/semantic-state-20261007",
+      "sourceBytesMatch": true,
+      "sealId": "ab7903dd325752de4ca28afe43daf80091d413a353e15d2a2ed93ddb71e32364"
+    }
+  ],
+  "previousHeadCount": 767,
+  "previousHeadsUnchanged": true,
+  "totalRefs": 771,
+  "limitations": [
+    "Separate strengthened reposition regression fails and remains unsealed; no canonical area repair complete claim."
+  ]
+}

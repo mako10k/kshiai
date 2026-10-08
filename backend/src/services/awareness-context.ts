@@ -1,6 +1,6 @@
 // R: Project immutable character assets and current observer perception into separate awareness inputs.
 import {
-  CharacterGenerationEnvelopeV3Schema,
+  CharacterGenerationEnvelopeV3Schema, AwarenessConsciousGuidanceSchema, type AwarenessConsciousGuidance,
   buildCharacterSelfProfileAnchor,
   deriveBattleProfileStateOverrides,
   type BattleState,
@@ -15,6 +15,7 @@ export function buildAwarenessExecutionContext(input: {
   generation: AssetGeneration;
   availableActions: readonly ObserverSafeAvailableAction[];
   actionFacts?: readonly { ref: string; content: string }[];
+  consciousGuidance: AwarenessConsciousGuidance;
   receivedSpeech: boolean;
   intentCompleted: boolean;
   intentInvalid: boolean;
@@ -50,6 +51,7 @@ export function buildAwarenessExecutionContext(input: {
       ...compiler.consciousSelf.actionPrinciples,
     ],
     consciousTraining: [],
+    consciousGuidance: AwarenessConsciousGuidanceSchema.parse(input.consciousGuidance),
     perception,
     availableActions: [...input.availableActions],
     facts: [...percepts.map((percept) => ({ ref: percept.perceptId, content: percept.phenomenon })), ...(input.actionFacts ?? [])],

@@ -1,6 +1,6 @@
 /** R: Validate and project persisted character candidates for owner review and activation. */
 import {
-  CharacterGenerationEnvelopeV2Schema, CharacterGenerationEnvelopeV3Schema,
+  CharacterGenerationEnvelopeV2Schema, CharacterGenerationEnvelopeV3Schema, CharacterDefinitionV3Schema,
   projectCharacterProfileSourceV3, validateCharacterProfileClaimAssessmentV2,
   assertCharacterGenerationReadyV2, characterDefinitionV2ToLegacySheet,
   characterDefinitionV3ToLegacySheet, CHARACTER_BATTLE_MECHANICS_CAPABILITY_SET_V3,
@@ -52,7 +52,9 @@ export function fixedCandidateOwnerReview(candidate: CharacterAuthoringCandidate
     try { source = JSON.parse(sourceText); } catch { /* Revision instructions remain their original text. */ }
   }
   const current = CharacterGenerationEnvelopeV3Schema.safeParse(options.currentCandidate);
-  const previousDefinition = current.success ? current.data.definition : null;
+  const structuralPrevious = CharacterDefinitionV3Schema.safeParse(options.currentCandidate);
+  const previousDefinition = current.success ? current.data.definition
+    : structuralPrevious.success ? structuralPrevious.data : null;
   const revising = options.kind === "revision";
   const labels: Record<string, string> = { definition: "人物・能力・行動規範の全設定",
     disclosurePolicy: "公開範囲", publicPresentation: "公開説明と検証記録",

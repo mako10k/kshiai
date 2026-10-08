@@ -1,0 +1,58 @@
+{
+  "schema": "kshiai/current-creation-contract-repair/v1",
+  "authority": [
+    {
+      "path": "docs/battle-consciousness-implementation-decisions-2026-10-05.md",
+      "clause": "Q06 new awareness-v5 creation; existing dynamic-v4 and earlier continuation remains separate"
+    },
+    {
+      "path": "docs/adr/0051-observed-llm-usage-accounting.md",
+      "clause": "Decision: observed accounting retains no automatic transport retry/fallback and immutable policy bindings"
+    },
+    {
+      "path": "docs/adr/0018-dialogue-context-activation-authority.md",
+      "clause": "Persisted activation source and frozen battle settings"
+    }
+  ],
+  "changes": [
+    "Replace V2-only creation assets with runtime-validated V3 envelopes and a schema-3 compact dialogue binding.",
+    "Parse complete canonical state instead of unchecked structural casts.",
+    "Keep battle ID replay, one encounter dispatch, immutable generation/content digest, private compiler projections and frozen prior settings checks.",
+    "Replace old successful encounter fallback expectations with current fail-closed timeout/ceiling/DNS and no second provider dispatch checks.",
+    "Inject optional local encounter failure inside the existing physical admission guard; default offline provider behavior remains the same."
+  ],
+  "scopePreservation": {
+    "unitFiles": 247,
+    "e2eFiles": 4,
+    "removedFiles": 0,
+    "skippedCases": 0,
+    "oldV4SpecificCases": "backend/src/services/v3-battle-creation.test.ts unchanged; 3 diagnostic failures remain"
+  },
+  "files": [
+    {
+      "path": "backend/src/services/battle-create-idempotency.test.ts",
+      "sha256": "77256250fdd27414968c91b923bbec81c8355de6b128cff1b8d32f9a6fac7855"
+    },
+    {
+      "path": "backend/src/testing/offline-awareness-provider.ts",
+      "sha256": "1eca62e07410c63ad3b89a02cde87b5c45694a719d99470fa0cf4e7e3494147e"
+    },
+    {
+      "path": "backend/src/testing/v3-character-envelope-fixture.ts",
+      "sha256": "c3eff395a23dc3ee82cee6a5a20d1525ee2fb2984ce28bc24f1d2cc61e420c57"
+    }
+  ],
+  "results": {
+    "cohortFiles": 4,
+    "passed": 17,
+    "failed": 0,
+    "skipped": 0,
+    "strictTypecheckExitCode": 0,
+    "allWorkspaceAndDeploymentTypecheckExitCode": 0,
+    "allWorkspaceTypecheckLog": "docs/evidence/creation-fixture-typecheck-2026-10-07.log"
+  },
+  "paidProviderCalls": 0,
+  "productionImplementationChanged": false,
+  "formalSeal": "pending creation/replay/activation cross-contract review",
+  "testLog": "docs/evidence/creation-fixture-cohort-tests-2026-10-07.tap"
+}

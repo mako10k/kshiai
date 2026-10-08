@@ -1,0 +1,101 @@
+{
+  "nodes": [
+    {
+      "key": "design-narration-client-test-contract",
+      "path": "docs/narration-client-test-contract-review-2026-10-07.md",
+      "parents": [
+        "requirements",
+        "authority"
+      ],
+      "scope": "Existing six-case pure client-helper conformance to Accepted ADR0006 terminal receipt replacement, event de-duplication, ordered sequence, pending blocks and retained embedded-log reading; F-UI04/08 display/loading/error. No new policy, code changes, browser or whole pipeline acceptance.",
+      "ref": "all-tests-20261007/design-narration-client-test-contract",
+      "test": false,
+      "sha256": "27b46aa611a5e8ade66abca030cc30579f25afb6eb5f82c75e7681ffa9573144"
+    },
+    {
+      "key": "design-narration-client-retained-state-machine",
+      "path": "docs/battle-narration-stream-design.md",
+      "parents": [
+        "authority",
+        "design-narration-client-test-contract"
+      ],
+      "scope": "Frontend state machine clauses only: receipt-keyed sequence-ordered queued/generating/completed/failed blocks; advance/narration activities separate. Whole document source bound, no queue/deployment/provider/old partial-prose instructions elsewhere adopted by these helper tests.",
+      "ref": "all-tests-20261007/design-narration-client-retained-state-machine",
+      "test": false,
+      "sha256": "c6a9785d3fdb304a53b949bc6f76e08b0264e0276b2f0017a41dcdaabfae04eb"
+    },
+    {
+      "key": "implementation-narration-client-reducer",
+      "path": "frontend/src/battle-narration.ts",
+      "parents": [
+        "authority",
+        "design-narration-client-test-contract",
+        "design-narration-client-retained-state-machine"
+      ],
+      "scope": "Pure supplied public snapshot/event reducer: copy and sequence sort initial entries; replace receipt, sort successors and reject already-seen event ID. Two exercised scenarios only; bounded ID retention and reset/reconnect wiring not comprehensively proved.",
+      "ref": "all-tests-20261007/implementation-narration-client-reducer",
+      "test": false,
+      "sha256": "f39334303da5c779724901456fea6a8d3a7afbb24a997612b186c231732c0423"
+    },
+    {
+      "key": "implementation-narration-client-screen-model",
+      "path": "frontend/src/battle-screen.ts",
+      "parents": [
+        "requirements",
+        "authority",
+        "design-narration-client-test-contract",
+        "design-narration-client-retained-state-machine"
+      ],
+      "scope": "Pure story/progress model in four scenarios: entry precedence, empty-entry legacy first-paint fallback, generating placeholder and pause/busy/idle/error text. Existing wording regression only, not new normative strings; no React/SSE/browser/integration proof.",
+      "ref": "all-tests-20261007/implementation-narration-client-screen-model",
+      "test": false,
+      "sha256": "f39628cc61703708a2cd9db93224bc199965a56dc08ccd2ab591c592b056c474"
+    },
+    {
+      "key": "narration-client-reducer-current",
+      "path": "frontend/src/battle-narration.test.ts",
+      "parents": [
+        "authority",
+        "implementation-narration-client-reducer",
+        "design-narration-client-test-contract"
+      ],
+      "scope": "Entire unchanged two-case file: terminal receipt replacement, duplicate event identity rejection, out-of-order successor sequence ordering. Synthetic DTOs, no current wire/transport/DB/reset integration acceptance.",
+      "ref": "verification/narration-client-reducer-current-20261007",
+      "test": true,
+      "sha256": "7b0296db798885446fe49943d564241cc22bc26e400fefdbb5493552e38caff2"
+    },
+    {
+      "key": "narration-client-screen-current",
+      "path": "frontend/src/battle-screen.test.ts",
+      "parents": [
+        "requirements",
+        "authority",
+        "implementation-narration-client-screen-model",
+        "design-narration-client-test-contract"
+      ],
+      "scope": "Entire unchanged four-case file: narration-entry precedence, empty-entry legacy snapshot first paint, pending narration and progress wording for paused/agents/idle/error. Existing display regression only; no new product policy or browser rendering acceptance.",
+      "ref": "verification/narration-client-screen-current-20261007",
+      "test": true,
+      "sha256": "4f7a7bc0f344cda46866abf98ab8e2f2efa97acb3dfad2717e75d4495c6f4819"
+    }
+  ],
+  "seeds": {
+    "requirements": "all-tests-20261007/authority-semantic-observation-requirements",
+    "authority": "all-tests-20261007/authority-narration-source-boundary"
+  },
+  "authority": [
+    "Accepted ADR0006 Decision/Compatibility",
+    "requirements F-UI04/F-UI08"
+  ],
+  "diagnostic": {
+    "focusedPass": 6,
+    "fail": 0,
+    "skipped": 0,
+    "strictTypecheckExit": 0
+  },
+  "limitations": [
+    "Pure synthetic DTO helper tests only; no provider, persistence, browser, reset/reconnect or full pipeline acceptance",
+    "Original six cases/assertions retained; no runtime or test code changes",
+    "Current public narration remains terminal-only; superseded ADR0005 not direct authority"
+  ]
+}

@@ -1,0 +1,65 @@
+{
+  "schema": "kshiai/reviewed-seal-revision/v1",
+  "scope": "Four individually reviewed source/test/historical-evidence observers; no unrelated refresh",
+  "evidence": "agent-tuple-type-equivalence-2026-10-07.json",
+  "entries": [
+    {
+      "ref": "awareness-guidance-20261007/battle-frame",
+      "path": "backend/src/services/battle-service.ts",
+      "previousSeal": "b98f66956fd4cdcf715e44ebd26c18d43b9ac81bf2f4ed77bb0a7964b87f0e78",
+      "sealId": "c778f88206f59e2310caf7c95631468f6442f6d4437f122beb6319c4c8597ae1",
+      "sha256": "f364c9fdaf3d46c3ab4198043505a1c85d8dd5c6d130213662f9bf0304a9dfc6",
+      "causeSealIds": [
+        "3c21eecd043b8b60217a9bef09b3dd9d7a57bdd10bc143bace584e18f046d045",
+        "474d2d4458679df6cb71e6e8f049a3f051192620c36f9e3f9b18799d1bda5317",
+        "90e466f427cb1a6c1a6161c7ee913c177bff496bc6d363cd3109a585faeb6a95"
+      ],
+      "scope": "Nullable settled-result type contract, unchanged emitted runtime"
+    },
+    {
+      "ref": "awareness-guidance-20261007/verification-execution",
+      "path": "backend/src/services/awareness-execution.test.ts",
+      "previousSeal": "8e733694b5e06c8adaf059c72a3922dfba0c315b3df7e823c3dcca33622d7bea",
+      "sealId": "17a20f68e997b1e7842132b754c02a8847d1234f319de677f7dd24fa6569fdff",
+      "sha256": "8d5123e514cd605b4fdc933212c2eba0b5d42a3d50b8a1363a476bdf6c5009b6",
+      "causeSealIds": [
+        "2fb338bc68a8b07de76319443b6204612712153361a12043832b89957828e0d9",
+        "352509199d80c1220249893bfa4167f305c6790b2529001ebf8933b354143d8f",
+        "474d2d4458679df6cb71e6e8f049a3f051192620c36f9e3f9b18799d1bda5317",
+        "51d31cd3aa7d1daa3b12d62186f663eae29e39d87a7571820b9fc17c8bd59ded",
+        "6eb5f3240dfbfcf076911bba3a4ae3c8f0289ea0411368d58e5098fcf5426d91",
+        "90e466f427cb1a6c1a6161c7ee913c177bff496bc6d363cd3109a585faeb6a95",
+        "c778f88206f59e2310caf7c95631468f6442f6d4437f122beb6319c4c8597ae1"
+      ],
+      "scope": "Type-only equivalent source revision; original historic receipt observations preserved"
+    },
+    {
+      "ref": "awareness-guidance-20261007/static-omission-evidence",
+      "path": "docs/evidence/awareness-guidance-static-omission-readback-2026-10-07.json",
+      "previousSeal": "dff92f17526cdd0f865e11d604f155a7eec24237f58a21222ec390c3625d463c",
+      "sealId": "5dd405cb7caedb466d7c266277397d3c9837db7e2da991356daa796f0f2983e0",
+      "sha256": "cddb86aec07bd6823c1240cb7f1f5f245659c37901d2ae02f1d8aa00bacbbbf3",
+      "causeSealIds": [
+        "352509199d80c1220249893bfa4167f305c6790b2529001ebf8933b354143d8f",
+        "3c21eecd043b8b60217a9bef09b3dd9d7a57bdd10bc143bace584e18f046d045",
+        "6eb5f3240dfbfcf076911bba3a4ae3c8f0289ea0411368d58e5098fcf5426d91",
+        "90e466f427cb1a6c1a6161c7ee913c177bff496bc6d363cd3109a585faeb6a95",
+        "c778f88206f59e2310caf7c95631468f6442f6d4437f122beb6319c4c8597ae1"
+      ],
+      "scope": "Type-only equivalent source revision; original historic receipt observations preserved"
+    },
+    {
+      "ref": "awareness-guidance-20261007/runtime-readback",
+      "path": "docs/evidence/awareness-guidance-delivery-readback-2026-10-07.json",
+      "previousSeal": "a02d1c9aad355d589e7708366206c8206caf114f242451cbe286eb9a81b37570",
+      "sealId": "c716f9214ef759bc9f27e77896fadcec7a62579128d786f9bceccf3371b62d09",
+      "sha256": "09f11a431181d74738951c96b75bd90dee828f43f460040361e310d15bbb2075",
+      "causeSealIds": [
+        "17a20f68e997b1e7842132b754c02a8847d1234f319de677f7dd24fa6569fdff",
+        "58e65d4179a3c0ff99386543d8bf586daba163d0edac1f53fa055128885bf8fd",
+        "c33efcbab05dc4f71b5051272f6fc00cea60a44b9177427e3700dcf14910f119"
+      ],
+      "scope": "Type-only equivalent source revision; original historic receipt observations preserved"
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "newRefs": 5,
+  "previousHeadsUnchanged": true,
+  "previousHeadCount": 875,
+  "totalRefs": 880,
+  "sourceBytesMatch": true,
+  "stale": 0,
+  "fsck": "ok",
+  "limitations": [
+    "Original six cases/assertions retained; no code changes",
+    "Pure supplied-evidence/retained decoder tests, not current awareness-v5 or live provider/physical truth/atomic integration",
+    "First mechanical negative fixture combines invalid inputs; independent refusal of each field not proven"
+  ]
+}

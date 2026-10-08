@@ -1,0 +1,58 @@
+{
+  "nodes": [
+    {
+      "key": "design-provider-config-test-contract",
+      "path": "docs/provider-config-test-contract-review-2026-10-07.md",
+      "parents": [
+        "requirements"
+      ],
+      "scope": "F-CFG06 pure mock-boundary conformance plus explicitly regression-only stored fast-model literal/mode-parser assertions. Exact Accepted normative adoption of these literals not confirmed and not inferred; no config/model/policy change, live work or F-CFG05 fallback resolution.",
+      "ref": "all-tests-20261007/design-provider-config-test-contract",
+      "test": false,
+      "sha256": "9c50bc8896faab4b95fcfff7584e73524377533698f013bebe705652ce9a886e"
+    },
+    {
+      "key": "implementation-provider-config-boundary-helpers",
+      "path": "backend/src/config.ts",
+      "parents": [
+        "requirements",
+        "design-provider-config-test-contract"
+      ],
+      "scope": "Scope only isMockProviderAllowed, DEFAULT_XAI_FAST_MODEL and parseBattleCausalNarrationMode: explicit mock development/test gate and current literal/parser behavior. Whole source bound but remaining env/DB/media/auth/provider-routing initialization not adopted or comprehensively certified. Production argument tested under test module environment, not production boot.",
+      "ref": "all-tests-20261007/implementation-provider-config-boundary-helpers",
+      "test": false,
+      "sha256": "6b58fd9428c378fefee216abc3e7f062d9798a9cec9d28c8d2ac831fb3cdc750"
+    },
+    {
+      "key": "provider-config-boundaries-current",
+      "path": "backend/src/llm/provider-config.test.ts",
+      "parents": [
+        "requirements",
+        "implementation-provider-config-boundary-helpers",
+        "design-provider-config-test-contract"
+      ],
+      "scope": "Entire unchanged four-case file plus module-level fast-model assertion: explicit mock outside production, production denies even opt-in, real provider requires opt-in, existing off/guarded parser normalizes/rejects enabled. Exact model/mode values stored regression only, not newly Accepted product rules; no real dispatch/fallback/awareness-v5 model selection acceptance.",
+      "ref": "verification/provider-config-boundaries-current-20261007",
+      "test": true,
+      "sha256": "a09853f84c1a9988ff3b1c8e90a70fbf8d75f1ea33715a46bdbfde4fd42d33eb"
+    }
+  ],
+  "seeds": {
+    "requirements": "all-tests-20261007/authority-semantic-observation-requirements"
+  },
+  "authority": [
+    "requirements F-CFG06 explicit mock development/test boundary"
+  ],
+  "diagnostic": {
+    "focusedPass": 4,
+    "moduleLevelAssertion": "passed by successful file execution",
+    "fail": 0,
+    "skipped": 0,
+    "strictTypecheckExit": 0
+  },
+  "limitations": [
+    "Original four cases and top-level assertion retained; no code/test/config change",
+    "Exact Accepted model-default and mode-allowlist clauses not confirmed; stored-value assertions are regression only",
+    "No current model capability/default selection, production boot, dispatch, fallback resolution or live provider acceptance"
+  ]
+}

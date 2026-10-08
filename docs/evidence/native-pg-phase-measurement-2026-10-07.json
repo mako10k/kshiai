@@ -1,0 +1,23 @@
+{
+  "scope": "3-file phase from recorded diagnostic start through review, fixture repair, registration and final readback; earlier exploratory preparation excluded",
+  "startedUnix": 1791367411.127254,
+  "finishedUnix": 1791368113.6269708,
+  "elapsedSeconds": 702.4997181892395,
+  "wholeFiles": 3,
+  "cases": 4,
+  "registrationWriter": {
+    "scope": "registration writer only, excludes prior review and verification",
+    "elapsedSeconds": 223.35567378997803,
+    "wholeFiles": 3,
+    "newRefs": 8,
+    "causeEdges": 21
+  },
+  "method": "three-file nativePG contract review, actual lock-barrier test and stopped private cluster, unchanged sources, exact readback; prior8.55s preparation/run recorded separately",
+  "comparison": {
+    "previousRegistrationOnlySeconds": 1017.8405129909515,
+    "previousWholeFiles": 12,
+    "currentRegistrationSecondsPerFile": 74.451891263326,
+    "previousRegistrationSecondsPerFile": 84.82004274924596,
+    "limitations": "Writer-only samples have different source sizes and cause-edge counts; do not compare previous writer time against current whole-phase time or infer general performance."
+  }
+}

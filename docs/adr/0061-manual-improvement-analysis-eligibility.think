@@ -1,0 +1,8 @@
+domain ADR0061:
+  description "Accepted revision1: manual improvement analysis first5 finished battles, then last successful analysis count plus10."
+evidence OWNER_ACCEPTANCE:
+  "2026-10-08 owner answers 現行の5試合・追加10試合を採用 to explicit owner-only/manual question excluding automatic and paid test execution."
+evidence REQUIREMENT:
+  "docs/character-improvement-eligibility-requirement-candidate-r1-2026-10-08.md SHA ce836f4eaa05e914e558b8cd9958658548312625e0291c0121b332d781c7d71b describes existing finished battle counts, successful snapshot update, shared UI/API and owner/current definition guards. Four original cases preserved."
+decision ACCEPTANCE based_on OWNER_ACCEPTANCE, REQUIREMENT:
+  "Accept existing first5 and last successful count+10 manual analysis eligibility. Preserve owner boundary and successful save accounting. No automatic or paid/live dispatch, concurrency/cost guarantees, schema/data rewrite or deployment authority."

@@ -1,0 +1,7 @@
+{
+  "scope": "registration writer only, excludes prior review and verification",
+  "elapsedSeconds": 489.40264225006104,
+  "wholeFiles": 6,
+  "newRefs": 12,
+  "causeEdges": 51
+}

@@ -1,0 +1,170 @@
+{
+  "schema": "kshiai/character-focus-protocol-cause-review/v1",
+  "upstream": [
+    {
+      "ref": "all-tests-20261007/contract-adjudication-perception-wire",
+      "sealId": "635dddb9346372392eefec016dc989a0bcf82d8dd14f049bb771d910c1a924ae"
+    }
+  ],
+  "nodes": [
+    {
+      "key": "authority-character-focus-shadow",
+      "path": "docs/adr/0008-battle-private-character-focus-state.md",
+      "parents": [],
+      "scope": "Existing Accepted ADR0008 decision: deterministic fixture and no-effect shadow slice only, observer-relative evidence, bounded private primary/secondary, decay/hysteresis, focus effectiveness only, missing input no-focus. No routine model call, action/world authority, expression adoption or public rollout.",
+      "test": false,
+      "ref": "all-tests-20261007/authority-character-focus-shadow",
+      "sha256": "bc0decc96234ee24497b21fe23c54740d7f97f14d95d69e9782f3f0fb1cc0a28"
+    },
+    {
+      "key": "authority-character-focus-replay-record",
+      "path": "docs/evidence/character-focus-replay-authorization-2026-08-13.md",
+      "parents": [],
+      "scope": "Historical owner-authorized fixed comparison record: 12 scenarios x4 arms x3 samples, A exact compact control, B foreground-only, C persistence steady, D focus-modulated, blinded packet. Used only to verify existing offline preparation; no renewed physical call authorization or current provider/model/pricing claim.",
+      "test": false,
+      "ref": "all-tests-20261007/authority-character-focus-replay-record",
+      "sha256": "17aa31547c349ddc4d79fdb2cf1c87fad3461f481c78abfc4628d5f45a1e3d39"
+    },
+    {
+      "key": "design-character-focus-protocol",
+      "path": "docs/character-focus-hypothesis-plan.md",
+      "parents": [
+        "authority-character-focus-shadow",
+        "authority-character-focus-replay-record"
+      ],
+      "scope": "Only frozen four-arm comparison, 144 inputs, scenario-macro aggregation and predeclared KPI thresholds. Current document records no candidate selected; no experiment outcome, causal uplift, ordinary expression adoption, staging or production authority certified.",
+      "test": false,
+      "ref": "all-tests-20261007/design-character-focus-protocol",
+      "sha256": "1e1eead40cbe3b7588c6933903604ed5c12610b9ff825244ea7b82430b3e4a7f"
+    },
+    {
+      "key": "contract-character-focus-wire",
+      "path": "packages/shared/src/battle.ts",
+      "parents": [
+        "authority-character-focus-shadow"
+      ],
+      "scope": "Only CharacterFocusStateV1, PacketV1, TransitionReceiptV1, observer packet and conversation types consumed by tested deterministic transition. Entire other battle contract not certified.",
+      "test": false,
+      "ref": "all-tests-20261007/contract-character-focus-wire",
+      "sha256": "fc5d492df5fd5252b66e12017b265a4697cc3f798acc2811434b3c33d23b0752"
+    },
+    {
+      "key": "implementation-character-focus-shadow",
+      "path": "packages/shared/src/character-focus-policy.ts",
+      "parents": [
+        "authority-character-focus-shadow",
+        "contract-character-focus-wire",
+        "perception"
+      ],
+      "scope": "Tested deterministic observer-relative focus selection, decay on unavailable input, salience independent of prose, A/B symmetry, weak-cue and optional secondary capacity only. No kernel writer/persistence, real perception truth, all invalid-input branches or expression effect proof.",
+      "test": false,
+      "ref": "all-tests-20261007/implementation-character-focus-shadow",
+      "sha256": "7f121ab175e5c908da1f40be4f265e634bb059e27b32b55edd5b0b894e0f9d17"
+    },
+    {
+      "key": "fixture-character-focus-shadow",
+      "path": "packages/shared/src/character-focus-policy.fixtures.ts",
+      "parents": [
+        "authority-character-focus-shadow",
+        "contract-character-focus-wire"
+      ],
+      "scope": "Twelve synthetic observer-relative fixtures with per-band expected focus, held or switched evidence, unavailable and hidden-source cases; bounded test material, not observed human behavior or real battle evidence.",
+      "test": false,
+      "ref": "all-tests-20261007/fixture-character-focus-shadow",
+      "sha256": "9f19218e1c999fe2801b5d6db29b7135e89fe7a481cac506af1858a41fd349b2"
+    },
+    {
+      "key": "implementation-character-focus-control-prompt",
+      "path": "backend/src/llm/character-expression-prompt.ts",
+      "parents": [
+        "authority-character-focus-replay-record"
+      ],
+      "scope": "Only exact exported CHARACTER_EXPRESSION_COMPACT_SYSTEM_PROMPT used as the offline A control and prefix in treatment material. No delivered expression dispatch, latest-awareness compatibility, response or full other prompt methods certified.",
+      "test": false,
+      "ref": "all-tests-20261007/implementation-character-focus-control-prompt",
+      "sha256": "06210c2705e00910b043ad290c848348764ab5abba3a064e1593310939900272"
+    },
+    {
+      "key": "implementation-character-focus-ablation",
+      "path": "backend/src/llm/character-focus-ablation.ts",
+      "parents": [
+        "design-character-focus-protocol",
+        "implementation-character-focus-shadow",
+        "fixture-character-focus-shadow",
+        "implementation-character-focus-control-prompt"
+      ],
+      "scope": "Only balanced 144 unique local inputs, exact A prompt, final ID-free focus field in treatment, B/C persistence and C/D modulation separation, blinded context omission and serializable protocol. No physical send, attempt/token/cost ceilings enforcement or whole arbitrary nested privacy validation.",
+      "test": false,
+      "ref": "all-tests-20261007/implementation-character-focus-ablation",
+      "sha256": "87192b681c4b9e9a6a222ded88992d4a9a8ec9165a1a45fcdfe44301af93b529"
+    },
+    {
+      "key": "implementation-character-focus-ablation-report",
+      "path": "backend/src/llm/character-focus-ablation-report.ts",
+      "parents": [
+        "design-character-focus-protocol",
+        "implementation-character-focus-ablation"
+      ],
+      "scope": "Only rejection of incomplete reviewer input and complete synthetic aligned score aggregation: scenario macro, reviewer agreement, directional comparisons, focus calibration, listed threshold/exact speech guards. Caller supplies reconciled scores; this module and tests do not certify reconciliation algorithm, real review quality, all rejection branches or product-effect outcome.",
+      "test": false,
+      "ref": "all-tests-20261007/implementation-character-focus-ablation-report",
+      "sha256": "cafa505c9f839422df2bf28191893288efa4b3fd9a65d1d82e6656654285c0e1"
+    },
+    {
+      "key": "character-focus-shadow",
+      "path": "packages/shared/src/character-focus-policy.test.ts",
+      "parents": [
+        "authority-character-focus-shadow",
+        "contract-character-focus-wire",
+        "implementation-character-focus-shadow",
+        "fixture-character-focus-shadow"
+      ],
+      "scope": "All five local cases: twelve fixtures across all three focus bands, deterministic replay and no prose salience scoring, missing/mismatched input no-focus plus decay, A/B symmetry, strong primary and high-focus-only secondary capacity. No additional model call, world/action authority, public integration or effect claim.",
+      "test": true,
+      "ref": "verification/character-focus-shadow-20261007",
+      "sha256": "ad331f49ed62a056ebed25d3f1ac5fcebe839de89b84bc7916b9a0d0158e6372"
+    },
+    {
+      "key": "character-focus-ablation",
+      "path": "backend/src/llm/character-focus-ablation.test.ts",
+      "parents": [
+        "design-character-focus-protocol",
+        "implementation-character-focus-ablation"
+      ],
+      "scope": "All five protocol cases: 144 unique balanced requests with3 samples, exact A and ID-free last field, foreground/persistence/effectiveness isolation, blinded arm/band omission, serializable protocol. No empirical output quality, actual paid requests or deep recursive freeze proof.",
+      "test": true,
+      "ref": "verification/character-focus-ablation-20261007",
+      "sha256": "1555c232768ac42f8ba27afebaaee5b562ec731bae6fd4cc45ca8f245356fcd5"
+    },
+    {
+      "key": "character-focus-ablation-report",
+      "path": "backend/src/llm/character-focus-ablation-report.test.ts",
+      "parents": [
+        "design-character-focus-protocol",
+        "implementation-character-focus-ablation",
+        "implementation-character-focus-ablation-report"
+      ],
+      "scope": "Both local report cases: incomplete144-row reviewer set rejected, aligned synthetic binary scores yield expected macro/agreements/directional/focus/threshold/exact-speech values. No complete malformed review matrix, deterministic reconciliation enforcement or historical replay result certification.",
+      "test": true,
+      "ref": "verification/character-focus-ablation-report-20261007",
+      "sha256": "82c22072fe5b0624a73601a379fdc762926cbb1fbcae8eee6ced22b772e2109f"
+    }
+  ],
+  "diagnostic": {
+    "pass": 12,
+    "fail": 0,
+    "skipped": 0,
+    "strictTypecheckExit": 0
+  },
+  "clauses": [
+    "Accepted ADR0008 decision: deterministic fixture and no-effect shadow only",
+    "Historical owner replay record frozen comparison A/B/C/D and144 inputs",
+    "Hypothesis plan frozen comparison and scenario-macro threshold sections; no candidate selected"
+  ],
+  "limitations": [
+    "Local processing only, zero physical provider calls",
+    "No new paid experiment or ordinary expression adoption authorized",
+    "Report accepts caller reconciled scores; real reconciliation and reviewer quality outside tested scope",
+    "No actual product effect, public integration, deep recursive freeze or complete malformed matrix proof"
+  ]
+}

@@ -1,0 +1,28 @@
+{
+  "reviewer": "battle_helper_contract_review",
+  "verdict": "INSIDE",
+  "contradictions": [],
+  "originalCases": 10,
+  "addedCases": 1,
+  "cases": 11,
+  "files": {
+    "packages/shared/src/asset-visibility.ts": "9f5053543357b4cfc81c0d8f99e4509f68fd77fde21ad480dcd12794effb3c97",
+    "packages/shared/src/asset-visibility.test.ts": "2de6ec2d9b0a400b23cd303d2b6b124922e7c92759d768b1bbfdaa9595011524",
+    "backend/src/repositories/asset-visibility.ts": "93106967599716a73b6845b7794b462f21fda05ce7f3593e3ce255a84499f550",
+    "backend/src/repositories/asset-visibility.test.ts": "79bf98763472116d1f727ec673c10791ca033e50284236e058f2b1142d66337b",
+    "backend/src/repositories/friends.ts": "ab5e4bb89e6cbd3a77bf53c6db424351cc0a28ae6e944d4af1a1f7fa3643c12a",
+    "packages/shared/src/provider-route.ts": "dc4802cf1fceaf0c0306d449b5d51014ce52c5f0900434fd6380ff9a8ae599f0",
+    "backend/src/llm/fallback.ts": "4651355187f8fc0040d03c8d37b8ca6d05f0c96fb9721db734b1beb55bf32ba6",
+    "backend/src/llm/fallback.test.ts": "e8aac7f8f90681ed530bf23cf7b1d7ddd1dccbba3077c14ce939d93353186b70"
+  },
+  "requirement": "docs/battle-test-contract-owner-decisions-2026-10-08.md",
+  "authority": "docs/adr/0060-owner-test-contract-recovery.think",
+  "scope": "Private unknown/missing/null visibility; owner-to-viewer friends; 429 one-hour cooldown/fallback/route receipt; retained DNS/billing and terminal operation errors; actual typed Proxy target",
+  "excluded": [
+    "Rating",
+    "Balance",
+    "STA/free-action penalties",
+    "ADR0059 implementation",
+    "Paid/live/deploy"
+  ]
+}

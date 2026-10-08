@@ -1,0 +1,18 @@
+{
+  "newRefs": 17,
+  "existingRefsRefreshed": 4,
+  "otherPreviousHeadsUnchanged": true,
+  "previousHeadCount": 932,
+  "unchangedPreviousHeads": 928,
+  "totalRefs": 949,
+  "sourceBytesMatch": true,
+  "stale": 0,
+  "exactPreviousCauseRelations": true,
+  "fsck": "ok",
+  "limitations": [
+    "All17original cases retained; local type annotation plus2cast removals only, no runtimechange",
+    "Synthetic historicalV3 helpers/service/SQLite, not publiccreation success or discardedtrial revival",
+    "Mocked chat; not current awareness-v5/live provider/completeprivacy acceptance",
+    "Four existing scoped area refs refreshed with exactpreviouscauses after14HTTPpass, other928existingheads unchanged"
+  ]
+}

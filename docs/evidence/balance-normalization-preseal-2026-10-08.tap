@@ -1,0 +1,41 @@
+TAP version 13
+# Subtest: balance
+    # Subtest: soft-caps extreme parameters
+    ok 1 - soft-caps extreme parameters
+      ---
+      duration_ms: 1.424871
+      type: 'test'
+      ...
+    # Subtest: caps peaked mechanics without rewriting LLM-authored prose
+    ok 2 - caps peaked mechanics without rewriting LLM-authored prose
+      ---
+      duration_ms: 4.110761
+      type: 'test'
+      ...
+    # Subtest: caps per-hit damage vs max HP
+    ok 3 - caps per-hit damage vs max HP
+      ---
+      duration_ms: 0.444155
+      type: 'test'
+      ...
+    # Subtest: adds costs to free status skills and tradeoffs to positive equipment
+    ok 4 - adds costs to free status skills and tradeoffs to positive equipment
+      ---
+      duration_ms: 0.383414
+      type: 'test'
+      ...
+    1..4
+ok 1 - balance
+  ---
+  duration_ms: 7.800614
+  type: 'suite'
+  ...
+1..1
+# tests 4
+# suites 1
+# pass 4
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 382.884026

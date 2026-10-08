@@ -1,0 +1,10 @@
+sealed all-tests-20261008/design-awareness-trial-harness-bounded
+sealed all-tests-20261008/implementation-trial-harness-run-awareness-trial
+sealed all-tests-20261008/implementation-trial-harness-awareness-trial-candidate
+sealed all-tests-20261008/implementation-trial-harness-awareness-trial-http-fixture
+sealed all-tests-20261008/implementation-trial-harness-awareness-trial-execution
+sealed all-tests-20261008/implementation-trial-harness-awareness-trial-seed
+sealed all-tests-20261008/implementation-trial-harness-awareness-trial-input-sizes
+sealed all-tests-20261008/implementation-trial-harness-awareness-real-trial-candidate-2026-10-05
+sealed verification/awareness-trial-harness-bounded-20261008
+readback complete

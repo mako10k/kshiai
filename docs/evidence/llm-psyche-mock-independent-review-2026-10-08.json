@@ -1,0 +1,12 @@
+{
+  "verdict": "PASS",
+  "files": {
+    "backend/src/llm/openai-compatible-psyche-repair.test.ts": "4f142cca3295556e9c369f0522ae77701a00e60b8460b30dfab111f11c2143c0",
+    "backend/src/llm/mock.test.ts": "bff68bfca3e264fdd8a1c2a73f092b6c382781ac09c1e2d99d26072c16759a3c",
+    "backend/src/llm/openai-compatible.ts": "8d4be097ddbfcb0da515dd0db402c7dc6dddccb763d625fce16165e7c524d2a5",
+    "backend/src/llm/mock.ts": "df9fa66abdcd601351516c3903a09030690717b493454e8b5d141f0506cf385c"
+  },
+  "reviewer": "/root/battle_helper_contract_review",
+  "scope": "whole retained psyche7 + mock7; deterministic doubles not real model authority",
+  "excludedFallback": "Normative DNS/billing classification authority being independently rechecked; not sealed in this cohort"
+}

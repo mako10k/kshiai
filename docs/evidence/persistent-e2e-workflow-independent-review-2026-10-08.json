@@ -1,0 +1,24 @@
+{
+  "reviewer": "battle_helper_contract_review",
+  "classification": "INSIDE",
+  "cases": 7,
+  "pass": 7,
+  "fail": 0,
+  "skip": 0,
+  "sealed": false,
+  "files": {
+    "backend/src/scripts/persistent-e2e-workflow.test.ts": "b343a85e85c4ff2f47386ce7d99a6ad883d88e951c81266b38a794922a770371",
+    ".github/workflows/stage-release.yml": "2872883d30ce1abb41e0b667a09ee31fa0580a3745728393dee8dee9178d98df",
+    ".github/workflows/promote-release.yml": "caa7b9ef2c0eab375820422de456dd95ba967229d6674d0b72e2ce434f72f161",
+    ".github/workflows/observe-persistent-e2e.yml": "e1a9e7943aa3d6cae8091322a4ba30bf5e8d1b4a89f14c88181d42df85db38c7",
+    "backend/src/scripts/supabase-auth-smoke.ts": "93aaed4f15fed5efe4a88250a06500986854b9b970e8de8def50393b0a75a08c"
+  },
+  "acceptedCauses": [
+    "ADR0006",
+    "ADR0015",
+    "ADR0018",
+    "ADR0024",
+    "ADR0057"
+  ],
+  "scope": "Static existing Stage/Promote/Observe guard text only; no workflow execution, deployment, paid A3 authorization, B8 semantic proof, candidate pacing numeric adoption, live acceptance, or OLD_CUTOVER_TRIAL verification"
+}

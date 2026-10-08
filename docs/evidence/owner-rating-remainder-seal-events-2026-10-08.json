@@ -1,0 +1,150 @@
+[
+  {
+    "key": "design-owner-rating-remainder",
+    "path": "docs/owner-rating-remainder-test-contract-review-2026-10-08.md",
+    "parents": [
+      "owner",
+      "requirements",
+      "envelope"
+    ],
+    "scope": "Whole original23 cases across4 files under AcceptedADR0060 inherited Elo/dual tracks/current profile centering; owner management/realm/matching and tested canonical accounting transaction. Historical settlement snapshots stay separate. No numeric calibration, missing snapshot migration, old trial success, live/deploy or untested concurrency proof.",
+    "ref": "all-tests-20261008/design-owner-rating-remainder",
+    "test": false,
+    "sha256": "8e5cc93292a9a360dd1e64cdfc063d0cd484147c40fe204d4039e8fb0b170130",
+    "sealId": "38a9837ed2618776af00f3bd695b37fc7d329ecbb2e0c5bbd0d2b79ccb330b13",
+    "causeSealIds": [
+      "214dad6f51c26770d5acc145acfc01f9d69bf15eeab57ccefdb7fa080ad4a6e4",
+      "203e66fc4e30772adab026012c67f1b1ac4ca86ad2ada11b501c639a27a19eac",
+      "fdaeaeb9f3694421a8776649f58ec4e89962ae6f95fc3249b8ca4b6a93b6e3ed"
+    ]
+  },
+  {
+    "key": "implementation-owner-rating-arithmetic",
+    "path": "packages/shared/src/rating.ts",
+    "parents": [
+      "design-owner-rating-remainder"
+    ],
+    "scope": "Whole original23 cases across4 files under AcceptedADR0060 inherited Elo/dual tracks/current profile centering; owner management/realm/matching and tested canonical accounting transaction. Historical settlement snapshots stay separate. No numeric calibration, missing snapshot migration, old trial success, live/deploy or untested concurrency proof.",
+    "ref": "all-tests-20261008/implementation-owner-rating-arithmetic",
+    "test": false,
+    "sha256": "bd2cedc5f6f7f57fcd344ffae96d6b5f9b5664935757f073f4106cedf2aa281e",
+    "sealId": "88f9eaac9f91a91185dc80a0a4869db41442ead2494d4d46067dc168ffb54088",
+    "causeSealIds": [
+      "38a9837ed2618776af00f3bd695b37fc7d329ecbb2e0c5bbd0d2b79ccb330b13"
+    ]
+  },
+  {
+    "key": "implementation-owner-match-rating",
+    "path": "frontend/src/match-rating.ts",
+    "parents": [
+      "implementation-owner-rating-arithmetic"
+    ],
+    "scope": "Whole original23 cases across4 files under AcceptedADR0060 inherited Elo/dual tracks/current profile centering; owner management/realm/matching and tested canonical accounting transaction. Historical settlement snapshots stay separate. No numeric calibration, missing snapshot migration, old trial success, live/deploy or untested concurrency proof.",
+    "ref": "all-tests-20261008/implementation-owner-match-rating",
+    "test": false,
+    "sha256": "441306c1a95cabd43c1db1860ab4d8bd8617f7745631d5121659f13217bd48e9",
+    "sealId": "b3d3c044f49ecefc5bb63a02b65f36b117006a21d2cb1622879218bd507880bf",
+    "causeSealIds": [
+      "88f9eaac9f91a91185dc80a0a4869db41442ead2494d4d46067dc168ffb54088"
+    ]
+  },
+  {
+    "key": "implementation-owner-rating-accounting",
+    "path": "backend/src/services/rating-service.ts",
+    "parents": [
+      "design-owner-rating-remainder",
+      "accounting",
+      "db"
+    ],
+    "scope": "Whole original23 cases across4 files under AcceptedADR0060 inherited Elo/dual tracks/current profile centering; owner management/realm/matching and tested canonical accounting transaction. Historical settlement snapshots stay separate. No numeric calibration, missing snapshot migration, old trial success, live/deploy or untested concurrency proof.",
+    "ref": "all-tests-20261008/implementation-owner-rating-accounting",
+    "test": false,
+    "sha256": "17912afa98143f0d52cecf2119d9da8949598e95339839d744aba1b3975e8e7f",
+    "sealId": "895e57e81b7f31fb092e3164c2ea4b7693964086078f15a0441fb16726337ce8",
+    "causeSealIds": [
+      "38a9837ed2618776af00f3bd695b37fc7d329ecbb2e0c5bbd0d2b79ccb330b13",
+      "cb577967d632ef4c96ec047453411792d7c31160bf2bfcf4cadff90869d507f7",
+      "29388522fd326751bb29a58fc9145bbf64bc1f96d80e2f54420065b80363d535"
+    ]
+  },
+  {
+    "key": "owner-rating-arithmetic-20261008",
+    "path": "packages/shared/src/rating.test.ts",
+    "parents": [
+      "implementation-owner-rating-arithmetic"
+    ],
+    "scope": "Whole original23 cases across4 files under AcceptedADR0060 inherited Elo/dual tracks/current profile centering; owner management/realm/matching and tested canonical accounting transaction. Historical settlement snapshots stay separate. No numeric calibration, missing snapshot migration, old trial success, live/deploy or untested concurrency proof.",
+    "ref": "verification/owner-rating-arithmetic-20261008",
+    "test": true,
+    "sha256": "ea560c3b3641f3a3e156ab8568acbbdf75704cfb2b742ee3a118c302fa0e6f1f",
+    "sealId": "9f5feb58aa57a15525182aea345cb298b287b0346050edc552122ac441863c92",
+    "causeSealIds": [
+      "88f9eaac9f91a91185dc80a0a4869db41442ead2494d4d46067dc168ffb54088"
+    ]
+  },
+  {
+    "key": "owner-match-rating-20261008",
+    "path": "frontend/src/match-rating.test.ts",
+    "parents": [
+      "implementation-owner-match-rating"
+    ],
+    "scope": "Whole original23 cases across4 files under AcceptedADR0060 inherited Elo/dual tracks/current profile centering; owner management/realm/matching and tested canonical accounting transaction. Historical settlement snapshots stay separate. No numeric calibration, missing snapshot migration, old trial success, live/deploy or untested concurrency proof.",
+    "ref": "verification/owner-match-rating-20261008",
+    "test": true,
+    "sha256": "1267896f6290efe93c6e96f0d99e8f61021253f8c73841ce9514cf9c1ef5290a",
+    "sealId": "f10813ec09147c460afeea3c1294f0685a1b2e59dae3dc55320207e9e9cbdee4",
+    "causeSealIds": [
+      "b3d3c044f49ecefc5bb63a02b65f36b117006a21d2cb1622879218bd507880bf"
+    ]
+  },
+  {
+    "key": "owner-characters-rating-20261008",
+    "path": "backend/src/repositories/characters.test.ts",
+    "parents": [
+      "design-owner-rating-remainder",
+      "characters",
+      "viewer",
+      "db",
+      "realm",
+      "historical",
+      "generations",
+      "neva",
+      "import"
+    ],
+    "scope": "Whole original23 cases across4 files under AcceptedADR0060 inherited Elo/dual tracks/current profile centering; owner management/realm/matching and tested canonical accounting transaction. Historical settlement snapshots stay separate. No numeric calibration, missing snapshot migration, old trial success, live/deploy or untested concurrency proof.",
+    "ref": "verification/owner-characters-rating-20261008",
+    "test": true,
+    "sha256": "3bace9c3766a651f31db306bb72eacc00a70b788817812f7c368c8f87664da0c",
+    "sealId": "ac93c3c970f294b13e77ea1b2f85035fb3a851b06794d1b2354ed9e261b2ee77",
+    "causeSealIds": [
+      "38a9837ed2618776af00f3bd695b37fc7d329ecbb2e0c5bbd0d2b79ccb330b13",
+      "6c315ff831dd9d2818e56a98727fc72bdd703c5cab6552bc28baec03c45c734c",
+      "05bb4b1fceeb0682c87efbcae4f30792f602fb964be0eb1d396f2f2f693b6bb8",
+      "29388522fd326751bb29a58fc9145bbf64bc1f96d80e2f54420065b80363d535",
+      "f1e75ecb6eff5e81e855cac205f50dd21795c346dcbd8bfd60a2974a37d2faf2",
+      "7ded913cf0afb3625fa20d843b6b61ad27be823815dcb89ad384380de9306eb0",
+      "c3e33346f9aa6f552e4a935706d8f9cc5a4dcfbf4e01fc6d5567b2773525c026",
+      "86ef8457d8b8fc47cf67a1df8a2d292628c807fc335eb8706be9f4b41d4c520d",
+      "6a8d0c70d178a47c529d0e8bc6bf13897ea9863b64e8ae7bb5c4b00cda6e8818"
+    ]
+  },
+  {
+    "key": "owner-rating-transaction-20261008",
+    "path": "backend/src/services/rating-service-transaction.test.ts",
+    "parents": [
+      "implementation-owner-rating-accounting",
+      "battles",
+      "fixture"
+    ],
+    "scope": "Whole original23 cases across4 files under AcceptedADR0060 inherited Elo/dual tracks/current profile centering; owner management/realm/matching and tested canonical accounting transaction. Historical settlement snapshots stay separate. No numeric calibration, missing snapshot migration, old trial success, live/deploy or untested concurrency proof.",
+    "ref": "verification/owner-rating-transaction-20261008",
+    "test": true,
+    "sha256": "3e221c88bf7d3bb10e7787d2d17174cd59ed9b09f6fb1f1218175160354d5685",
+    "sealId": "144b80e9fadb7d42fd9524fc28aa7e6b407ce70730a14c388db6a219dcdc4387",
+    "causeSealIds": [
+      "895e57e81b7f31fb092e3164c2ea4b7693964086078f15a0441fb16726337ce8",
+      "c13f788ff9274a1abf7cc32574a4882693f2a5eed8082bdec37afdf9216023e3",
+      "6ac6f7936f62bf30134d2c26620c335f7b71357945f0713f35f4635a70754a31"
+    ]
+  }
+]

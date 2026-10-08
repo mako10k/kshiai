@@ -1,0 +1,16 @@
+domain CausalExecutionCompletion:
+  description "Bounded causal-execution receipt completeness repair"
+problem P1:
+  "A commit requires every actor decision and terminal execution requires every planned bucket commit."
+evidence E1:
+  "Before-repair local six-case suite reports four pass and two fail. A simultaneous bucket awaiting commit with decidedSides [a,a] is accepted. Terminal two-bucket states with committed indices [0,0] or [0,5] are accepted for both awaiting_finalize and finished."
+evidence E2:
+  "CausalTurnExecutionSchema checks array length and allowed actor membership before transform deduplicates and sorts those arrays. Actor membership alone does not prove both actors occurred, and terminal length alone does not prove each planned bucket occurred. A decoded terminal [0,0] becomes [0], contradicting its completion state."
+evidence E3:
+  "Accepted ADR0001 requires explicit causal ordering and committed predecessors, retaining historical ruleset interpretation. Existing schema messages require every active-bucket decision and every temporal bucket commit. Internal transition helpers deduplicate accepted sides and append actual bucket indices; malformed decoded receipts are the trigger, not the normal helper-generated sequence."
+premise U1:
+  "No production occurrence or historical introduction has been established. This pure schema reproduction establishes the present producing condition only. Static array types cannot encode dynamic set coverage; runtime validation remains required."
+decision D1 based_on P1, E1, E2, E3, U1:
+  "Producing condition: validating count before normalization without distinct actor and planned bucket coverage. Trigger: a malformed duplicate or out-of-plan receipt. Escape: four original tests exercise helper-generated valid transitions but not malformed persisted completion snapshots. No model or persistence race is needed to reproduce it."
+decision D2 based_on D1, E3, U1:
+  "Retain existing length checks and wire shape, additionally require distinct decided-side coverage before bucket commit and membership of every actual planned bucket before terminal acceptance. Preserve valid legacy and sequential inputs, harmless existing normalization and helpers. Add the two negative regressions, reverify full shared tests and strict types, then seal exact authority/source/tests. No DB rewrite, historical fact invention, new ruleset, deployment or live calls."

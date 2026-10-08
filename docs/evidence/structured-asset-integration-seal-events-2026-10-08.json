@@ -1,0 +1,82 @@
+[
+  {
+    "key": "design-structured-asset-integration-bounded",
+    "path": "docs/structured-asset-integration-test-contract-review-2026-10-08.md",
+    "parents": [
+      "envelope",
+      "character",
+      "field",
+      "narration",
+      "dialogue",
+      "lifecycle",
+      "writes",
+      "awareness",
+      "waits",
+      "frozen-narration",
+      "portrait"
+    ],
+    "scope": "Whole original2cases with explicit public ready fixtures: immutable generation binding, disclosure, update/delete historical continuation, idempotency, frozen narration and owner/developer observation. Historical v2 write rejection. Local private SQLite and typedMock only; no numeric/model/defaultvisibility policy, live provider, old cutover trial or deployment acceptance.",
+    "ref": "all-tests-20261008/design-structured-asset-integration-bounded",
+    "test": false,
+    "sha256": "53961b735d695ed97e921cf26c51996cb7b1c16333b66975dcb2c853d8717066",
+    "sealId": "9a7cb23975d68d0773b200012da42b7008fb70fdf0c92152095d79db39d32ded",
+    "causeSealIds": [
+      "fdaeaeb9f3694421a8776649f58ec4e89962ae6f95fc3249b8ca4b6a93b6e3ed",
+      "51b88502ce6cf07710e956c6d10f128b83233b93d97309ce392a37a631be3dba",
+      "a65c9b0a1bf9589c18778e7cf7ca7985d7ccde11c3a36c7e0b5db5874f34c7b8",
+      "51875275fc237d7d28d5b090581feb463e9c9d74cdada06bce76198277b9c129",
+      "645e178be9a4b4662822f09d79c5977797a0830e072ee816510a4a62aa5b8e52",
+      "f49312f0b4c786dd41b4c2092a992dfebd04bfff33396a4891a199add8f5f17e",
+      "480c02403f61dc6a9cd7d54861639b962dbc3bde86673481e02e0defc8415e17",
+      "4a236b55e9ad9e4aa54eb2c6bbe9d77e0a318881ba8328363505153d16e151dd",
+      "f16e9ead78dda44031acb7b49b711d967e3284a6d113edafbbb57cbbd15e49fe",
+      "9aae6f378e9b227f6909912129368e8317bdc4d773933342da1ca3914be6dae0",
+      "4b1d5ffdbdb194067123c2a7e761ea33514e5ffd6812b7c0f3c48f6d233d5196"
+    ]
+  },
+  {
+    "key": "structured-asset-integration-bounded-20261008",
+    "path": "backend/src/routes-structured-asset-integration.test.ts",
+    "parents": [
+      "design-structured-asset-integration-bounded",
+      "routes",
+      "db",
+      "characters",
+      "character-assets",
+      "battlefields",
+      "battlefield-assets",
+      "narration-styles",
+      "narration-assets",
+      "battles",
+      "settings",
+      "narration-authoring",
+      "battle-service",
+      "neva",
+      "preparation",
+      "mock"
+    ],
+    "scope": "Whole original2cases with explicit public ready fixtures: immutable generation binding, disclosure, update/delete historical continuation, idempotency, frozen narration and owner/developer observation. Historical v2 write rejection. Local private SQLite and typedMock only; no numeric/model/defaultvisibility policy, live provider, old cutover trial or deployment acceptance.",
+    "ref": "verification/structured-asset-integration-bounded-20261008",
+    "test": true,
+    "sha256": "4278c5e9881d4568f7ae31f9e40826498ec9d2e5de6b96dc69ea69e2126edd7f",
+    "sealId": "dcd4a07d88c2122d3dcaa50fa967172eb2673846224070052b1c4abc8fb2a9c0",
+    "causeSealIds": [
+      "9a7cb23975d68d0773b200012da42b7008fb70fdf0c92152095d79db39d32ded",
+      "fcf165143e528ea548c1e9c8313a465199e185c9f066ef7a60e1996a9e09856f",
+      "29388522fd326751bb29a58fc9145bbf64bc1f96d80e2f54420065b80363d535",
+      "6c315ff831dd9d2818e56a98727fc72bdd703c5cab6552bc28baec03c45c734c",
+      "991a0bed1f9217e6978039cb39b7b217e3122a147cd91f22786df658d1917be7",
+      "c6ae9384dbe1557c3adb9d94530a4ce2e5f3e025c14cca05f418fd9879f1745c",
+      "b4c3e3bc530e4707194dbdbebead357c1ba366ce7e24ab1f4a8b5440b6686459",
+      "16c112b9b92ceaf3b11efa7a3958680b3a8d8efa785bd1ce5d5a73148cdffc9c",
+      "9a63b5e031f3ca89944c74ec4b3034ca95fe12921f7c628b68beb9a9b4dcec76",
+      "c13f788ff9274a1abf7cc32574a4882693f2a5eed8082bdec37afdf9216023e3",
+      "a4b348e58291d2bf152ffb13a831408af7c9c8813600725f6a8815261391030a",
+      "b5d994be6d213058541cb20240ae3e13ae9db1d0bd44df1a4961c738f21077e8",
+      "2eae8cc721eb57bccdb6600c1bcdf5c9c9cf72d1d2dc4feb7fb0f0d1b715b3bb",
+      "86ef8457d8b8fc47cf67a1df8a2d292628c807fc335eb8706be9f4b41d4c520d",
+      "ccf97654c093b99cd30adcec5b1a72c8a4fab6d78e3e38c2258df52121a992ed",
+      "e418d4ec33efce96955bece728bddb6140a4effb4e9c36b6f2fb46ac89ef85e4"
+    ]
+  }
+]

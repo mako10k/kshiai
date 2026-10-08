@@ -1,0 +1,60 @@
+TAP version 13
+# Subtest: turn event conditional contracts
+    # Subtest: rejects missing expression payloads and mixed source ownership
+    ok 1 - rejects missing expression payloads and mixed source ownership
+      ---
+      duration_ms: 7.018752
+      type: 'test'
+      ...
+    # Subtest: preserves producer expression and source fields
+    ok 2 - preserves producer expression and source fields
+      ---
+      duration_ms: 1.81031
+      type: 'test'
+      ...
+    1..2
+ok 1 - turn event conditional contracts
+  ---
+  duration_ms: 11.973961
+  type: 'suite'
+  ...
+# Subtest: committed utterance perception
+    # Subtest: commits character-authored speech and projects exact hearing without identity leakage
+    ok 1 - commits character-authored speech and projects exact hearing without identity leakage
+      ---
+      duration_ms: 27.503998
+      type: 'test'
+      ...
+    # Subtest: projects partial, misunderstood, unattributed, and unheard speech separately
+    ok 2 - projects partial, misunderstood, unattributed, and unheard speech separately
+      ---
+      duration_ms: 15.359337
+      type: 'test'
+      ...
+    # Subtest: rejects physically impossible expressions and stays symmetric by side
+    ok 3 - rejects physically impossible expressions and stays symmetric by side
+      ---
+      duration_ms: 28.161834
+      type: 'test'
+      ...
+    # Subtest: does not relink an unwitnessed transformed speaker by canonical voice label
+    ok 4 - does not relink an unwitnessed transformed speaker by canonical voice label
+      ---
+      duration_ms: 13.41822
+      type: 'test'
+      ...
+    1..4
+ok 2 - committed utterance perception
+  ---
+  duration_ms: 87.384523
+  type: 'suite'
+  ...
+1..2
+# tests 6
+# suites 2
+# pass 6
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 665.260802

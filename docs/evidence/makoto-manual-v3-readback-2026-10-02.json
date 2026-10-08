@@ -1,0 +1,32 @@
+{
+  "observedAt": "2026-10-02T04:47:54.092Z",
+  "characterId": "chr_7cb0db2370d44d616c097b6a",
+  "ownerUserId": "usr_568b632d7ad86cfe3e356171",
+  "generationId": "character:chr_7cb0db2370d44d616c097b6a:g3:a8539a0536b041e5",
+  "schemaVersion": 3,
+  "previousGenerationRetained": true,
+  "operationalFieldsPreserved": [
+    "visibility",
+    "record",
+    "recordOverall",
+    "improvementMemo",
+    "opponentMemories",
+    "deletedAt",
+    "revisionSnapshot"
+  ],
+  "battleEligibility": "ready",
+  "history": [
+    {
+      "generation_id": "character:chr_7cb0db2370d44d616c097b6a:g1:1f84c0b0fafc751c",
+      "schema_version": 2
+    },
+    {
+      "generation_id": "character:chr_7cb0db2370d44d616c097b6a:g2:187adb371d2a6bf3",
+      "schema_version": 2
+    },
+    {
+      "generation_id": "character:chr_7cb0db2370d44d616c097b6a:g3:a8539a0536b041e5",
+      "schema_version": 3
+    }
+  ]
+}

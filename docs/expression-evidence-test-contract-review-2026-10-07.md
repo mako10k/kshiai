@@ -1,0 +1,19 @@
+# 表現出力・知覚根拠境界のテスト因果契約
+
+ユーザーの全テスト成立・因果整理・Seal指示の範囲で、既存2ファイル6件を保持したまま検証する。コード、出力仕様、行動規則は変更しない。
+
+## 上位契約と維持される境界
+
+requirements F-BTL-15のV2 Compact表現境界は、今回の出力nextUtteranceと完了履歴・意味状態を分離する。F-BTL-50は不正な行動を有効な実発話から独立に拒否する。character-expression-contract.test.tsの2件は閉じた出力外枠・旧speechキー拒否、および不正行動だけの拒否を確かめる。openai-compatible.tsの拘束対象はdecodeCharacterExpressionCompactResultV2とそのCoreSchema、CharacterActionIntentSchemaの利用だけであり、巨大な同ファイル全体の機能を受け入れるものではない。現行awareness-v5の出力デコーダ検証でもない。
+
+F-BTL-32の決定論的量子化と生値排除、F-BTL-33の世界差分と知覚根拠の独立検証、F-BTL-36の失敗時に知覚を捏造しない境界、F-BTL-43の構造化根拠、F-BTL-52の帰属制限、および現行ADR0051により維持されたdesign D23/D24/D27を知覚側の根拠とする。battle-perception.md §2/§3/T_EVIDENCEは維持された生成世代の設計説明として読む。旧モデル名・価格・実測品質や現在の呼出構成はここで再採用しない。
+
+perception-evidence.test.tsの4件は、供給されたmechanical evidenceの確定行動・イベント・対象存在の参照検証、event文章に依存せず生値を落とした定性cue、構造化情報のないcueの省略、未確定sourceを含むsensory section全体の拒否を確認する。最初の拒否fixtureは複数の不正値を同時に含むため、それぞれの独立した拒否分岐が証明されたとは扱わない。ここではtarget側の帰属やすべての不正形状・状態遷移も網羅したとは扱わない。
+
+## 証拠と非対象
+
+6件全件をNode22・隔離DB環境で実行し、対象のimport経路をstrict型検査する。完了したテスト結果は検証器の局所的証拠であり、入力根拠そのものの物理的真実やLLM品質を保証しない。
+
+物理的な視聴覚アクセスは別projection境界に属する。ADR0023のpair.sight/soundを正準認知にしない規則を、この検証器だけで検証済みとはしない。実provider、現在の全pipeline配線、DB原子的commit、UI、公開配備は非対象。旧の切替試行は復活させない。
+
+source bytesと親Seal IDを読み戻し、fsckを確認する。既存のテストとassertionを除去せず、unsealedがある正式テストは実行前に止める。
