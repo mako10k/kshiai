@@ -30,5 +30,8 @@ describe("PostgreSQL migration discovery", () => {
     );
     assert.match(first[0]?.checksum ?? "", /^[a-f0-9]{64}$/);
     assert.equal(first[0]?.checksum, second[0]?.checksum);
+    assert.equal(first[0]?.sql, "SELECT 1;\n");
+    assert.equal(first[0]?.checksum, "b4e0497804e46e0a0b0b8c31975b062152d551bac49c3c2e80932567b4085dcd");
+    assert.equal(first[1]?.checksum, "a41109d24069b4822ddc5f367b25d484dc7e839bff338ce7a3e5da641caacda0");
   });
 });

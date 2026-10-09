@@ -1,0 +1,17 @@
+{
+  "reviewer": "/root/llm_boundary_seal_audit",
+  "mode": "read-only",
+  "decision": "Whole repaired five-case file can be sealed; sourceUrl numeric leakage closed",
+  "files": {
+    "backend/src/image/openai-compatible.test.ts": "f0be06a1fe3fa8db6cc690d97ad73c59d82b41595aa189e68410f0c868fe894a",
+    "backend/src/image/openai-compatible.ts": "d315ec1aa6e85e2260dee35cf3abcabea4240c179926734913d8de957d03ec7f",
+    "backend/src/image/image-response.ts": "c4d64fb2ce0bd8434c51d3ffe97e524d913596f5c7929a97b04c2755ec1da6ba",
+    "backend/src/image/fallback.ts": "94e6de293d26771dfc2cab337e3d11a0646f9c6acc0ba92b3d55164273448395",
+    "backend/src/image/types.ts": "0397f52023874802a0245cabd7453112dfb53a57e029e340d30d54d21221a9f1"
+  },
+  "limits": [
+    "No quota suspension/live interoperability/quality/persistence proof",
+    "No trim/HTTP path/header assertion",
+    "No base64 content authenticity proof"
+  ]
+}

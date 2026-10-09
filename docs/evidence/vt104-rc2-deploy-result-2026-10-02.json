@@ -1,0 +1,116 @@
+{
+  "observedAt": "2026-10-02T11:21:44.696061+09:00",
+  "workflowRunId": 36954429062,
+  "workflowConclusion": "failure",
+  "failedStep": "Resume empty narration queue for the new candidate",
+  "workflowError": "kshiai-github-deploy lacks cloudtasks.queues.resume",
+  "workflowSuccessfulSteps": [
+    "schema forward migrations",
+    "no-traffic candidate backend",
+    "Worker immutable version upload",
+    "Worker binding readback",
+    "actual edge preparation verification"
+  ],
+  "rootCompletedApprovedMissingAction": {
+    "operation": "queueResume",
+    "count": 1,
+    "readback": "RUNNING",
+    "receipt": {
+      "returncode": 0,
+      "stdout": "",
+      "stderr": "Resumed queue [asia-northeast1/kshiai-narration].\n"
+    }
+  },
+  "actualPreparationReceipt": "docs/evidence/vt104-rc2-actual-preparation-2026-10-02.json",
+  "migrationReadback": {
+    "observedAt": "2026-10-02T02:19:39.891Z",
+    "targetProject": "cvrbhpkfqkpqdegxfrlq",
+    "route": "existing session pooler",
+    "readonly": true,
+    "counts": {
+      "provider_operation_runs": 0,
+      "provider_operation_attempts": 0,
+      "battle_narration_attempts": 0,
+      "battle_narration_entries": 0,
+      "asset_authoring_outbox": 0,
+      "character_authoring_jobs": 0,
+      "battlefield_authoring_jobs": 0,
+      "narration_style_authoring_jobs": 0,
+      "battle_leases": 0,
+      "battle_narration_leases": 0
+    },
+    "migrations": {
+      "applied": [
+        "0001_initial_postgres.sql",
+        "0002_runtime_constraints.sql",
+        "0003_distributed_runtime.sql",
+        "0004_supabase_auth.sql",
+        "0005_normalize_legacy_battlefields.sql",
+        "0006_character_drafts.sql",
+        "0007_account_kind.sql",
+        "0007_friendships.sql",
+        "0008_developer_account_kind.sql",
+        "0009_dialogue_pipeline_settings.sql",
+        "0010_user_public_profile.sql",
+        "0011_asset_generations.sql",
+        "0012_battle_revision.sql",
+        "0013_battle_presentations.sql",
+        "0014_ordered_narration_worker.sql",
+        "0015_pipeline_recovery_fencing.sql",
+        "0016_provider_operation_accounting.sql",
+        "0017_structured_character_assets.sql",
+        "0018_structured_battlefield_assets.sql",
+        "0019_structured_narration_assets.sql",
+        "0020_character_authoring_jobs.sql",
+        "0021_owner_notifications.sql",
+        "0022_family_authoring_jobs.sql",
+        "0023_authoring_dispatch.sql",
+        "0024_character_semantic_migration.sql",
+        "0025_semantic_authoring_runs.sql",
+        "0026_character_focused_authoring_payloads.sql",
+        "0027_character_revision_scope_resolution.sql",
+        "0028_semantic_authoring_provider_timeout.sql",
+        "0029_battle_discard_receipts.sql",
+        "0030_cutover_control.sql"
+      ],
+      "pending": []
+    }
+  },
+  "publicBackendTraffic": [
+    {
+      "percent": 100,
+      "revisionName": "kshiai-api-00141-vis"
+    },
+    {
+      "revisionName": "kshiai-api-00147-pos",
+      "tag": "v3-trial-36954429062-1",
+      "url": "https://v3-trial-36954429062-1---kshiai-api-crpgn6evfa-an.a.run.app"
+    }
+  ],
+  "publicWorkerCurrentDeployment": {
+    "id": "b37cdee3-9ffe-4237-a502-15a9848aa0cb",
+    "source": "wrangler",
+    "strategy": "percentage",
+    "author_email": "mako10k@mk10.org",
+    "annotations": {
+      "workers/message": "Promote v0.22.0-rc.11",
+      "workers/triggered_by": "deployment"
+    },
+    "versions": [
+      {
+        "version_id": "5942f1cb-fd54-43c7-95df-51ae380df862",
+        "percentage": 100
+      }
+    ],
+    "created_on": "2026-09-08T08:00:48.447741Z"
+  },
+  "sourceCommit": "4ab19719ef7fa61cdfb8571c4579c3c64cc96dfb",
+  "imageDigestReadback": "asia-northeast1-docker.pkg.dev/kshiai/kshiai/backend@sha256:2e7051ec6395d36a27124ace0cad8d032bbb6b47878509339b05ce27c679c056",
+  "authSettingsWrites": 0,
+  "paidProviderCalls": 0,
+  "remaining": [
+    "Exact Google preview callback allowlist addition approval",
+    "Owner Neva/Rio ordinary review/confirm/activation",
+    "Real create/advance/SSE/reload/result game evidence"
+  ]
+}

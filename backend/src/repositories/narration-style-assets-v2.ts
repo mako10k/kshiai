@@ -3,6 +3,7 @@ import {
   AssetAuthoringAttemptStatusSchema,
   AssetCompatibilitySchema,
   NarrationGenerationEnvelopeV2Schema,
+  NarrationStyleSchema,
   assertNarrationGenerationReadyV2,
   narrationDefinitionV2ToLegacyStyle,
   type AssetAuthoringAttemptKind,
@@ -58,6 +59,22 @@ export type NarrationStyleAuthoringAttempt = {
 };
 
 type AttemptRow = AuthoringAttemptRow & { narration_style_id: string };
+
+function parseStoredNarrationStyle(value: unknown): NarrationStyle {
+  let raw: unknown = value;
+  if (typeof value === "string") {
+    try {
+      raw = JSON.parse(value);
+    } catch (cause) {
+      throw new Error("NARRATION_STYLE_STORED_ROW_INVALID", { cause });
+    }
+  }
+  const parsed = NarrationStyleSchema.safeParse(raw);
+  if (!parsed.success) {
+    throw new Error("NARRATION_STYLE_STORED_ROW_INVALID", { cause: parsed.error });
+  }
+  return parsed.data;
+}
 
 function parseAttempt(row: AttemptRow): NarrationStyleAuthoringAttempt {
   const base = parseAuthoringAttemptBase(row);
@@ -444,7 +461,7 @@ export async function activateNarrationStyleAuthoringAttempt(input: {
       return {
         kind: "activated" as const,
         value: {
-          style: (typeof rawStyle === "string" ? JSON.parse(rawStyle) : rawStyle) as NarrationStyle,
+          style: parseStoredNarrationStyle(rawStyle),
           generation: {
           assetType: row.asset_type,
           assetId: row.asset_id,
@@ -518,9 +535,7 @@ export async function activateNarrationStyleAuthoringAttempt(input: {
       throw new Error("NARRATION_STYLE_OWNER_MISMATCH");
     }
     const currentStyle = currentRow
-      ? (typeof currentRow.sheet_json === "string"
-          ? JSON.parse(currentRow.sheet_json)
-          : currentRow.sheet_json) as NarrationStyle
+      ? parseStoredNarrationStyle(currentRow.sheet_json)
       : null;
     const actual = await currentGenerationRow(connection, attempt.narrationStyleId);
     if ((actual?.generation_id ?? null) !== attempt.expectedGenerationId ||

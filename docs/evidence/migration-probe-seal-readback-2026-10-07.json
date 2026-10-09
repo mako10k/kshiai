@@ -1,0 +1,13 @@
+{
+  "newRefs": 12,
+  "previousHeadsUnchanged": true,
+  "previousHeadCount": 804,
+  "totalRefs": 816,
+  "sourceBytesMatch": true,
+  "stale": 0,
+  "limitations": [
+    "Three local isolated probe files only",
+    "No live provider acceptance or full migration engine certification",
+    "Historical hardcoded price arithmetic is not a current price claim. All network work is replaced by injected fetches; temporary SQLite isolated before imports."
+  ]
+}

@@ -1,0 +1,99 @@
+{
+  "scope": "Six offline subjective-state/accounting/narration schema obligations; no current-default or live claim",
+  "entries": [
+    {
+      "ref": "all-tests-20261007/implementation-awareness-narration-contract",
+      "path": "packages/shared/src/awareness-narration-contract.ts",
+      "sealId": "869a646e8732d4d6f0f2b2982844f0db0313911e1ca00b0ca886586057a18f2c",
+      "sha256": "828bf7fde81d8156023b406d002ca1899b4b1c66f6fd28d7abf32645c35b7d3d",
+      "causeSealIds": [
+        "1adba1d06106cfcc7537dcd2d85aa94f745a4a79ff6b3f5ac4911a11efdf79a8",
+        "1edf3239229665d39a55aee22af5148f4408f6c8dfea24ca200ae835af46e02d"
+      ]
+    },
+    {
+      "ref": "verification/awareness-pipeline-20261007",
+      "path": "packages/shared/src/awareness-pipeline.test.ts",
+      "sealId": "95f46f534d7370fff8539ba0f0a64ceb249215fedad321dc595b886cb04f4e2a",
+      "sha256": "ceb6c9214f831c4d26745b6c25e859f11fadce71a95ed02e8b2a8397cb4702ec",
+      "causeSealIds": [
+        "1adba1d06106cfcc7537dcd2d85aa94f745a4a79ff6b3f5ac4911a11efdf79a8",
+        "1edf3239229665d39a55aee22af5148f4408f6c8dfea24ca200ae835af46e02d",
+        "4a236b55e9ad9e4aa54eb2c6bbe9d77e0a318881ba8328363505153d16e151dd",
+        "56e673314fc7d2d4b1caef3c2c3411213422bba8d58a28bb6f8fbe5f3fa3df72",
+        "869a646e8732d4d6f0f2b2982844f0db0313911e1ca00b0ca886586057a18f2c",
+        "bfad7f3d9646ec7657e4db701b034d71990427ee991a8a037efe3d09f5367e48",
+        "c064db895ea9f010d2f6fb28360b243285cbe93156c19f8286e161ec2d0d731a",
+        "cea338023663fcb0df2f08b3e889a61b0033e7d60008a6301090ccac8a3fe50a"
+      ]
+    }
+  ],
+  "existingUpstreamSeals": [
+    {
+      "ref": "awareness-guidance-20261007/authority-current",
+      "path": "docs/adr/0051-observed-llm-usage-accounting.md",
+      "sealId": "4a236b55e9ad9e4aa54eb2c6bbe9d77e0a318881ba8328363505153d16e151dd",
+      "causes": [
+        "d5695200a29531ed085f10c0d502effc2af325ee206874b1f32c61db6872fba4"
+      ]
+    },
+    {
+      "ref": "awareness-guidance-20261007/input-contract",
+      "path": "packages/shared/src/awareness-pipeline.ts",
+      "sealId": "56e673314fc7d2d4b1caef3c2c3411213422bba8d58a28bb6f8fbe5f3fa3df72",
+      "causes": [
+        "1adba1d06106cfcc7537dcd2d85aa94f745a4a79ff6b3f5ac4911a11efdf79a8"
+      ]
+    },
+    {
+      "ref": "awareness-guidance-20261007/requirements",
+      "path": "docs/battle-consciousness-requirements-2026-10-05.md",
+      "sealId": "bfad7f3d9646ec7657e4db701b034d71990427ee991a8a037efe3d09f5367e48",
+      "causes": [
+        "4a236b55e9ad9e4aa54eb2c6bbe9d77e0a318881ba8328363505153d16e151dd"
+      ]
+    },
+    {
+      "ref": "awareness-guidance-20261007/basic-design",
+      "path": "docs/battle-consciousness-basic-design-2026-10-05.md",
+      "sealId": "1adba1d06106cfcc7537dcd2d85aa94f745a4a79ff6b3f5ac4911a11efdf79a8",
+      "causes": [
+        "bfad7f3d9646ec7657e4db701b034d71990427ee991a8a037efe3d09f5367e48",
+        "4a236b55e9ad9e4aa54eb2c6bbe9d77e0a318881ba8328363505153d16e151dd"
+      ]
+    },
+    {
+      "ref": "all-tests-20261007/contract-awareness-decisions",
+      "path": "docs/battle-consciousness-implementation-decisions-2026-10-05.md",
+      "sealId": "1edf3239229665d39a55aee22af5148f4408f6c8dfea24ca200ae835af46e02d",
+      "sha256": "76dd7398683b9f633793ff606dcdea5e59dd540c635a62409c3527c60bc87095",
+      "causeSealIds": [
+        "4a236b55e9ad9e4aa54eb2c6bbe9d77e0a318881ba8328363505153d16e151dd",
+        "bfad7f3d9646ec7657e4db701b034d71990427ee991a8a037efe3d09f5367e48"
+      ]
+    },
+    {
+      "ref": "all-tests-20261007/implementation-awareness-state",
+      "path": "packages/shared/src/awareness-state.ts",
+      "sealId": "cea338023663fcb0df2f08b3e889a61b0033e7d60008a6301090ccac8a3fe50a",
+      "sha256": "a3cb6a4bb7fb4fd44aa5a8d054496a69ee791045c5271261b5e59d7aeebad43a",
+      "causeSealIds": [
+        "1adba1d06106cfcc7537dcd2d85aa94f745a4a79ff6b3f5ac4911a11efdf79a8",
+        "1edf3239229665d39a55aee22af5148f4408f6c8dfea24ca200ae835af46e02d",
+        "56e673314fc7d2d4b1caef3c2c3411213422bba8d58a28bb6f8fbe5f3fa3df72"
+      ]
+    },
+    {
+      "ref": "all-tests-20261007/implementation-awareness-policy",
+      "path": "packages/shared/src/awareness-policy.ts",
+      "sealId": "c064db895ea9f010d2f6fb28360b243285cbe93156c19f8286e161ec2d0d731a",
+      "sha256": "e77a702f8f6b8e831723940491e9f2966a4de48a6c1cba126da3f413a04aa2b1",
+      "causeSealIds": [
+        "1edf3239229665d39a55aee22af5148f4408f6c8dfea24ca200ae835af46e02d",
+        "4a236b55e9ad9e4aa54eb2c6bbe9d77e0a318881ba8328363505153d16e151dd",
+        "66468c9b30e9ba4cd3a8649b7c3fa3f32a100622edb09d7864d54327be3db18a",
+        "7f8ac50262580d0a94e13d82627be496f8e2e8fd059c194c4d93d84d2af28f43"
+      ]
+    }
+  ]
+}

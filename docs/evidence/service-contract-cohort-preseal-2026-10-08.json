@@ -1,0 +1,20 @@
+{
+  "scope": "whole original4files,29cases; diagnostic only, not Seal or full suite acceptance",
+  "pass": 29,
+  "fail": 0,
+  "skip": 0,
+  "sourceHashes": {
+    "backend/src/services/character-agency-inventory.test.ts": "5526bd5b27046ddc7f47539542ec7e5811bbdae632dffc3c9c4ddee6029a7262",
+    "backend/src/services/character-portrait-v3.test.ts": "d4ce4330bc1de1c11f913a9d6050f496d8f5cc5fd4bec7c67241281f91383c14",
+    "backend/src/services/free-action-service.test.ts": "a3748c34fd42c98356f329d9c4aef9960993442c3cc410defdb402bf4c8ae02f",
+    "backend/src/services/internal-observability.test.ts": "fd3cd392b7a93c5f8215e2d08783550aeddf6e6d7a5b8b9a56322f2c6aee1c5a"
+  },
+  "reviewPending": true,
+  "questions": [
+    "historical CA00 omissions are deficiency observations, not adoption for current pipeline",
+    "portrait mocked image provider only with real local route/storage lifecycle",
+    "free action candidate/commit canonical grounding, not live model quality",
+    "internal observer service does not prove route administrator authentication"
+  ],
+  "next": "Independently confirm Accepted causes before publication; preserve all cases"
+}

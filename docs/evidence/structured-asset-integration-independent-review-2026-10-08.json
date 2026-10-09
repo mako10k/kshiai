@@ -1,0 +1,20 @@
+{
+  "verdict": "INSIDE",
+  "originalCases": 2,
+  "reviewer": "battle_helper_contract_review",
+  "provenance": "Independent result preserved in preceding turn continuation summary; current bytes checked on resumption",
+  "files": {
+    "backend/src/routes-structured-asset-integration.test.ts": "4278c5e9881d4568f7ae31f9e40826498ec9d2e5de6b96dc69ea69e2126edd7f"
+  },
+  "diagnostic": "docs/evidence/structured-asset-integration-preseal-2026-10-08.tap",
+  "cases": [
+    "Frozen generations, disclosure, updates/deletion, continuation and authorized developer observation",
+    "Historical v2 row rejects current writes and current selection"
+  ],
+  "excluded": [
+    "Production numeric/model/default visibility adoption",
+    "Old cutover trial success",
+    "Live LLM or deployment acceptance",
+    "Proposed ADR0059"
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "r2BeforeSha256": "48d9f042e5c39fee48eb625d3b7414b11bb57cfc2de99f2fde2946c6efbe849b",
+  "r2AfterSha256": "e6eb03a74cfd1750b7c53009bdd91ed9d055c929e91f0dec55b368a694ed49dd",
+  "titleOnlyChange": {
+    "before": "writes a private S3 object and returns its shared public URL",
+    "after": "builds the configured PutObject command and returns a shared URL"
+  },
+  "allCasesAndAssertionsUnchanged": true,
+  "originalCases": 7,
+  "removedCases": 0,
+  "removedAssertions": 0
+}

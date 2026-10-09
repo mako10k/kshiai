@@ -1,0 +1,219 @@
+{
+  "thought_id": "docs-evidence-vt104-rc2-transition-preparation-2026-10-02",
+  "id_source": "file",
+  "report": {
+    "engine_version": "0.1.0",
+    "document_id": "docs-evidence-vt104-rc2-transition-preparation-2026-10-02",
+    "generated_at": "2026-10-02T01:18:37.202Z",
+    "summary": {
+      "fatal_count": 0,
+      "error_count": 0,
+      "warning_count": 0,
+      "info_count": 1,
+      "hint_count": 8
+    },
+    "results": [
+      {
+        "issue_id": "ISSUE-001",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "PACKAGING",
+            "role": "evidence",
+            "step_id": "S-PACKAGING"
+          }
+        ],
+        "message": "evidence PACKAGING がどの decision からも直接参照されていない。",
+        "rationale": "supporting node が explicit based_on graph に現れないと、何の判断を支える記述なのか再読時に追いにくい。",
+        "suggestion": "対応する decision の based_on に追加するか、意図的な孤立であれば orphan_future / orphan_reference annotation を付ける。",
+        "metadata": {
+          "line": 16,
+          "column": 10,
+          "end_column": 19,
+          "orphan_rule": "supporting_node_direct_incoming_edge"
+        }
+      },
+      {
+        "issue_id": "ISSUE-002",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "SOURCE",
+            "role": "evidence",
+            "step_id": "S-SOURCE"
+          }
+        ],
+        "message": "evidence SOURCE は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 4,
+          "column": 3,
+          "text": "HEAD7a4d417 branch cc304 remote same. Frozen source4ab RC2 image2e7051ec; successful readonly GCP execution4nsmc proves plan18/168/14, digestc5ac4056.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-003",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "LIVE",
+            "role": "evidence",
+            "step_id": "S-LIVE"
+          }
+        ],
+        "message": "evidence LIVE は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 6,
+          "column": 3,
+          "text": "Fresh cloud public revision00141-vis100percent, tags78, queueRUNNING tasks0, fivejobs no liveexecutions. Pooler readonly provider/authoring/lease counts0; migrations0026-0030pending.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-004",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "ACCESS",
+            "role": "evidence",
+            "step_id": "S-ACCESS"
+          }
+        ],
+        "message": "evidence ACCESS は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 8,
+          "column": 3,
+          "text": "secdat Cloudflare token required-key preflight fails; wrangler whoami loggedInfalse. No Cloudflare live preview settings observation.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-005",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "AUTHORITY",
+            "role": "premise",
+            "step_id": "S-AUTHORITY"
+          }
+        ],
+        "message": "premise AUTHORITY は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 10,
+          "column": 3,
+          "text": "Existing ownerapproval covers sourceCI RC prepare and readonly probe only. Sharedstop, deletion, migration, deployment and authallowlist writes require exact disclosed approval. Goal permits local reviewable candidate preparation.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-006",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "LIMITS",
+            "role": "pending",
+            "step_id": "S-LIMITS"
+          }
+        ],
+        "message": "pending LIMITS は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 12,
+          "column": 3,
+          "text": "Cloudflare shared-preview configuration and exact callback unknown. Stop times and receipts obtained only after real operations. Paid trialbudget not accepted. No realtimeinventoryquiescence claim beforestop.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-007",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "PREPARE",
+            "role": "decision",
+            "step_id": "S-PREPARE"
+          }
+        ],
+        "message": "decision PREPARE は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 14,
+          "column": 3,
+          "text": "Retain fresh evidence and new RC2 candidate with exact frozen plan, 8 secret identitiesversion1 subject to metadata recheck, operation bounds and sequence; expose dynamic receipt provenance. Keep all externalwrites0. Request smallest missingCloudflare authentication choice while preparing independent packet. Before sharedstop require preview readiness and full ownerapproval; do not create fake receipts or revive snapshot requirement.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-008",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "PACKAGING",
+            "role": "evidence",
+            "step_id": "S-PACKAGING"
+          }
+        ],
+        "message": "evidence PACKAGING は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 17,
+          "column": 3,
+          "text": "Local candidate wrapper syntaxcheck passed. Reviewed plan33509bytes base6444680 split3 envparts <=16384bytes; reconstructed bytesSHA matches. Wrapper binds real5key policy, executes compiledapplyonce and independentreadback; outputs only enum/generic error on failure. No GCPdeploy/execute during this preparation. Existing source/runtimeRC unchanged.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-009",
+        "category": "semantic_hint",
+        "severity": "info",
+        "target_refs": [
+          {
+            "ref_id": "LIMITS",
+            "role": "pending",
+            "step_id": "S-LIMITS"
+          }
+        ],
+        "message": "pending が存在するため、判断の確定度は下げて表示するべきである。",
+        "metadata": {
+          "line": 11,
+          "column": 9,
+          "end_column": 15
+        }
+      }
+    ],
+    "query_results": []
+  }
+}

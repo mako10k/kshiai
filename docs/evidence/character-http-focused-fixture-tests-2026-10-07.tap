@@ -1,0 +1,216 @@
+TAP version 13
+# [image] route_hit asset=route-ready-mine
+# Subtest: structured character route acceptance
+    # Subtest: records provider failures without exposing a partial character
+    ok 1 - records provider failures without exposing a partial character
+      ---
+      duration_ms: 54.688455
+      type: 'test'
+      ...
+    # Subtest: uses only V2 attempts for create review confirm and discard routes
+    not ok 2 - uses only V2 attempts for create review confirm and discard routes
+      ---
+      duration_ms: 47.971122
+      type: 'test'
+      location: '/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/routes-structured-character-acceptance.test.ts:9:542'
+      failureType: 'testCodeFailure'
+      error: "Cannot read properties of null (reading 'id')"
+      code: 'ERR_TEST_FAILURE'
+      name: 'TypeError'
+      stack: |-
+        TestContext.<anonymous> (/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/routes-structured-character-acceptance.test.ts:269:66)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async Suite.processPendingSubtests (node:internal/test_runner/test:744:7)
+      ...
+    # Subtest: does not read mutate confirm or delete legacy draft rows
+    ok 3 - does not read mutate confirm or delete legacy draft rows
+      ---
+      duration_ms: 7.170772
+      type: 'test'
+      ...
+    # Subtest: rejects legacy restore and portrait mutations before side effects
+    ok 4 - rejects legacy restore and portrait mutations before side effects
+      ---
+      duration_ms: 4.638939
+      type: 'test'
+      ...
+    # Subtest: commits immutable V3 portrait generations and rejects unavailable restore
+    ok 5 - commits immutable V3 portrait generations and rejects unavailable restore
+      ---
+      duration_ms: 322.889642
+      type: 'test'
+      ...
+    # Subtest: excludes unsupported characters from every selector route
+    ok 6 - excludes unsupported characters from every selector route
+      ---
+      duration_ms: 42.877783
+      type: 'test'
+      ...
+    # Subtest: rejects direct battle creation for either unsupported side
+    ok 7 - rejects direct battle creation for either unsupported side
+      ---
+      duration_ms: 12.661715
+      type: 'test'
+      ...
+    # Subtest: upgrades an existing character only after owner confirmation
+    not ok 8 - upgrades an existing character only after owner confirmation
+      ---
+      duration_ms: 18.261995
+      type: 'test'
+      location: '/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/routes-structured-character-acceptance.test.ts:12:6502'
+      failureType: 'testCodeFailure'
+      error: |-
+        Expected values to be strictly equal:
+        
+        3 !== 2
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 2
+      actual: 3
+      operator: 'strictEqual'
+      stack: |-
+        TestContext.<anonymous> (/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/routes-structured-character-acceptance.test.ts:659:12)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async Suite.processPendingSubtests (node:internal/test_runner/test:744:7)
+      ...
+    # Subtest: exposes in-flight authoring progress while an upgrade is running
+    not ok 9 - exposes in-flight authoring progress while an upgrade is running
+      ---
+      duration_ms: 4.577549
+      type: 'test'
+      location: '/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/routes-structured-character-acceptance.test.ts:12:8195'
+      failureType: 'testCodeFailure'
+      error: |-
+        Expected values to be strictly equal:
+        
+        409 !== 202
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 202
+      actual: 409
+      operator: 'strictEqual'
+      stack: |-
+        TestContext.<anonymous> (/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/routes-structured-character-acceptance.test.ts:744:12)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async Suite.processPendingSubtests (node:internal/test_runner/test:744:7)
+      ...
+    # Subtest: does not surface an older awaiting draft after a later attempt fails
+    ok 10 - does not surface an older awaiting draft after a later attempt fails
+      ---
+      duration_ms: 50.052364
+      type: 'test'
+      ...
+    # Subtest: discards an unclaimed queued attempt before the worker runs
+    ok 11 - discards an unclaimed queued attempt before the worker runs
+      ---
+      duration_ms: 3.804845
+      type: 'test'
+      ...
+    # Subtest: returns a create review without a current character
+    not ok 12 - returns a create review without a current character
+      ---
+      duration_ms: 32.597485
+      type: 'test'
+      location: '/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/routes-structured-character-acceptance.test.ts:12:12212'
+      failureType: 'testCodeFailure'
+      error: |-
+        Expected values to be strictly equal:
+        
+        false !== true
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: true
+      actual: false
+      operator: 'strictEqual'
+      stack: |-
+        TestContext.<anonymous> (/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/routes-structured-character-acceptance.test.ts:882:12)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async Suite.processPendingSubtests (node:internal/test_runner/test:744:7)
+      ...
+    # Subtest: returns a compare review for upgrade and marks an older attempt stale
+    not ok 13 - returns a compare review for upgrade and marks an older attempt stale
+      ---
+      duration_ms: 5.945592
+      type: 'test'
+      location: '/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/routes-structured-character-acceptance.test.ts:12:13037'
+      failureType: 'testCodeFailure'
+      error: |-
+        Expected values to be strictly equal:
+        
+        400 !== 202
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 202
+      actual: 400
+      operator: 'strictEqual'
+      stack: |-
+        TestContext.<anonymous> (/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/routes-structured-character-acceptance.test.ts:904:12)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async Suite.processPendingSubtests (node:internal/test_runner/test:744:7)
+      ...
+    # Subtest: lists characters without deserializing a historical candidate
+    not ok 14 - lists characters without deserializing a historical candidate
+      ---
+      duration_ms: 1.920935
+      type: 'test'
+      location: '/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/routes-structured-character-acceptance.test.ts:12:15018'
+      failureType: 'testCodeFailure'
+      error: |-
+        Expected values to be strictly equal:
+        
+        400 !== 202
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 202
+      actual: 400
+      operator: 'strictEqual'
+      stack: |-
+        TestContext.<anonymous> (/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/routes-structured-character-acceptance.test.ts:988:12)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async Suite.processPendingSubtests (node:internal/test_runner/test:744:7)
+      ...
+    # Subtest: projects ready and failed notifications without duplicating them
+    not ok 15 - projects ready and failed notifications without duplicating them
+      ---
+      duration_ms: 85.045293
+      type: 'test'
+      location: '/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/routes-structured-character-acceptance.test.ts:14:865'
+      failureType: 'testCodeFailure'
+      error: |-
+        The expression evaluated to a falsy value:
+        
+          assert.ok(ready)
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: true
+      operator: '=='
+      stack: |-
+        TestContext.<anonymous> (/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/routes-structured-character-acceptance.test.ts:1088:12)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async Suite.processPendingSubtests (node:internal/test_runner/test:744:7)
+      ...
+    1..15
+not ok 1 - structured character route acceptance
+  ---
+  duration_ms: 725.228496
+  type: 'suite'
+  location: '/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/routes-structured-character-acceptance.test.ts:6:242'
+  failureType: 'subtestsFailed'
+  error: '7 subtests failed'
+  code: 'ERR_TEST_FAILURE'
+  ...
+1..1
+# tests 15
+# suites 1
+# pass 8
+# fail 7
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 1904.14623

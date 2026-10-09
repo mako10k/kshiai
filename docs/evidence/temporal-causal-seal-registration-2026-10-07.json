@@ -1,0 +1,136 @@
+{
+  "entries": [
+    {
+      "key": "authority-temporal-order",
+      "path": "docs/adr/0001-turn-initiative-and-simultaneous-resolution.md",
+      "parents": [],
+      "scope": "Existing Accepted ADR0001 Decision and Compatibility: new ordinary actions sequential with persisted fair tie receipt; retain original historical initiative-window-v1 plan meaning. This root does not certify service durability, observer safety, current awareness-v5 dispatch or deployment.",
+      "ref": "all-tests-20261007/authority-temporal-order",
+      "test": false,
+      "sha256": "8a18305e179d54a0850810b1a5ccf62746c795e8fa83d7eb05c8c2103ad108a3",
+      "sealId": "a47ee884ec95e1a9af74ef53818561b9d101791ad982c26f456bd5ffc17c4270",
+      "causeSealIds": []
+    },
+    {
+      "key": "design-causal-receipt-completeness",
+      "path": "docs/causal-execution-receipt-completeness-repair-2026-10-07.md",
+      "parents": [
+        "authority-temporal-order"
+      ],
+      "scope": "Existing contract repair: distinct actor coverage before commit and all planned bucket positions before finalization, preserve original size checks and normalization. No new policy or migration; serializable state-machine scope only.",
+      "ref": "all-tests-20261007/design-causal-receipt-completeness",
+      "test": false,
+      "sha256": "b33093cd411a46f669287d9a4696fda8ecc498bdc726147f75f7c5ba97d592bb",
+      "sealId": "0bd46356dc4736cc7c34c24cedd3e21b9cfb02a1c461618a3bda752362fc5e76",
+      "causeSealIds": [
+        "a47ee884ec95e1a9af74ef53818561b9d101791ad982c26f456bd5ffc17c4270"
+      ]
+    },
+    {
+      "key": "evidence-causal-receipt-rca",
+      "path": "docs/evidence/causal-execution-completion-rca-2026-10-07.think",
+      "parents": [
+        "authority-temporal-order",
+        "design-causal-receipt-completeness"
+      ],
+      "scope": "Audited local reproduction and causal explanation of duplicate/incomplete receipt validation; no proof of production occurrence or historical introduction. RCA facts do not establish new product rules.",
+      "ref": "all-tests-20261007/evidence-causal-receipt-rca",
+      "test": false,
+      "sha256": "eceab022ada519c8cb02ac61fd3b5e28bf08bd13b557159c57962be9d98ba47c",
+      "sealId": "75fa4107fde0743124e57bb1554f7260f0b17784606ac4fe1aba25662ece47ef",
+      "causeSealIds": [
+        "a47ee884ec95e1a9af74ef53818561b9d101791ad982c26f456bd5ffc17c4270",
+        "0bd46356dc4736cc7c34c24cedd3e21b9cfb02a1c461618a3bda752362fc5e76"
+      ]
+    },
+    {
+      "key": "implementation-retained-temporal-plans",
+      "path": "packages/shared/src/battle-temporal-rules.ts",
+      "parents": [
+        "authority-temporal-order"
+      ],
+      "scope": "Pure sequential ordering and equal-score persisted receipt construction; original initiative-window-v1 builder and exclusive-claim helpers retained for historical interpretation. No claim that current ordinary action dispatcher selects legacy implicit simultaneity, or that a receipt is persisted to DB.",
+      "ref": "all-tests-20261007/implementation-retained-temporal-plans",
+      "test": false,
+      "sha256": "e91b70002a31377e99476b5e0d76e67205423c0e3d905b46cf87923f56a6c38b",
+      "sealId": "7a3ffe34641dad7287bf3c4d6831f9515680b618b96778a4398107a31847a8fa",
+      "causeSealIds": [
+        "a47ee884ec95e1a9af74ef53818561b9d101791ad982c26f456bd5ffc17c4270"
+      ]
+    },
+    {
+      "key": "implementation-causal-receipt-completeness",
+      "path": "packages/shared/src/battle-causal-execution.ts",
+      "parents": [
+        "authority-temporal-order",
+        "design-causal-receipt-completeness",
+        "implementation-retained-temporal-plans",
+        "evidence-causal-receipt-rca"
+      ],
+      "scope": "Serializable schema and transition gates only: actor/bucket coverage retained with size checks before normalization, sequential prerequisite and legacy atomic all-actor readiness. No actual DB commit, observer delivery, LLM behavior or current awareness-v5 connection certified.",
+      "ref": "all-tests-20261007/implementation-causal-receipt-completeness",
+      "test": false,
+      "sha256": "3db000ba05ebe16b62a359b1c668f30a111123e907c366ef4c50d65310e3e365",
+      "sealId": "740785630914beeb6088d7890830e87c09c8efbe3ca495037a2641e9e52a85f7",
+      "causeSealIds": [
+        "a47ee884ec95e1a9af74ef53818561b9d101791ad982c26f456bd5ffc17c4270",
+        "0bd46356dc4736cc7c34c24cedd3e21b9cfb02a1c461618a3bda752362fc5e76",
+        "7a3ffe34641dad7287bf3c4d6831f9515680b618b96778a4398107a31847a8fa",
+        "75fa4107fde0743124e57bb1554f7260f0b17784606ac4fe1aba25662ece47ef"
+      ]
+    },
+    {
+      "key": "temporal-plan-current",
+      "path": "packages/shared/src/battle-temporal-rules.test.ts",
+      "parents": [
+        "authority-temporal-order",
+        "implementation-retained-temporal-plans"
+      ],
+      "scope": "Entire original thirteen-case file: sequential order, fair/weighted first-turn tie receipt, previous-order reuse and swapped receipt behavior; historical finite window/round/swap rules and exclusive-claim helpers. Pure representation tests; historical policies not reintroduced into new ordinary turns.",
+      "ref": "verification/temporal-plan-current-20261007",
+      "test": true,
+      "sha256": "1c3fd991ea638b97db63d5f89c422e22b62c3ec385562a85369790d0df62f16f",
+      "sealId": "d4ef82752128036ae42f4d507e58fd34e66c76719c64c130aadb462427d33e5a",
+      "causeSealIds": [
+        "a47ee884ec95e1a9af74ef53818561b9d101791ad982c26f456bd5ffc17c4270",
+        "7a3ffe34641dad7287bf3c4d6831f9515680b618b96778a4398107a31847a8fa"
+      ]
+    },
+    {
+      "key": "causal-checkpoint-current",
+      "path": "packages/shared/src/battle-causal-execution.test.ts",
+      "parents": [
+        "authority-temporal-order",
+        "design-causal-receipt-completeness",
+        "implementation-causal-receipt-completeness",
+        "implementation-retained-temporal-plans",
+        "evidence-causal-receipt-rca"
+      ],
+      "scope": "Entire seven-case file: preserve original four transition cases; reject repeated actor and duplicate/out-of-plan terminal buckets; valid sequential-v2 serialization/resume preserves receipt and completes both buckets. Test names mentioning durable/persists refer only to checkpoint representation here; DB durability and real battle integration require separate verification.",
+      "ref": "verification/causal-checkpoint-current-20261007",
+      "test": true,
+      "sha256": "1d0f42450f216a9a5df6bd51dab348412a16e9d4623d085b29537b3c06d7736b",
+      "sealId": "ecbea24931f21a918ed1bd5ca9e64a452acafabe723aee6cec935450e0d77352",
+      "causeSealIds": [
+        "a47ee884ec95e1a9af74ef53818561b9d101791ad982c26f456bd5ffc17c4270",
+        "0bd46356dc4736cc7c34c24cedd3e21b9cfb02a1c461618a3bda752362fc5e76",
+        "740785630914beeb6088d7890830e87c09c8efbe3ca495037a2641e9e52a85f7",
+        "7a3ffe34641dad7287bf3c4d6831f9515680b618b96778a4398107a31847a8fa",
+        "75fa4107fde0743124e57bb1554f7260f0b17784606ac4fe1aba25662ece47ef"
+      ]
+    }
+  ],
+  "diagnostic": {
+    "focusedPass": 20,
+    "sharedPass": 424,
+    "fail": 0,
+    "skipped": 0,
+    "strictTypecheckExit": 0,
+    "workspaceTypecheckExit": 0
+  },
+  "limitations": [
+    "Serializable checkpoint only; no DB durability or observer delivery proof",
+    "Legacy temporal helpers retained for historical interpretation",
+    "No current awareness-v5 dispatch or live provider acceptance"
+  ]
+}

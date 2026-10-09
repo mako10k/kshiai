@@ -1,0 +1,21 @@
+{
+  "schema": "kshiai/final-source-build-validation/v1",
+  "nodeVersion": "22.22.3",
+  "buildExitCode": 0,
+  "lintExitCode": 0,
+  "lintIncludes": [
+    "all workspace typecheck",
+    "deployment typecheck",
+    "jscpd",
+    "lizard"
+  ],
+  "logSha256": {
+    "docs/evidence/formal-all-tests-2026-10-09/build.log": "a72c089d0162368d9b14de59b5c9f12cede54db3983ba84a3de40faa06dffb7e",
+    "docs/evidence/formal-all-tests-2026-10-09/lint.log": "1485d55f9168371f1aa3bdd0a3940e9510283e73a89dabb7bd9cadbbbfbd4a11"
+  },
+  "sourceCohort": {
+    "path": "docs/evidence/current-source-cohort-snapshot-2026-10-09.json",
+    "sha256": "b44001e3b5c0d84948d6e4dfd112cd4a7e2d03d74c17a8a8452c04561c17e831"
+  },
+  "scope": "Observed final local commands, not CI or deployment completion."
+}

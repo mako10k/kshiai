@@ -1,0 +1,33 @@
+domain InitialAreaOwnReference:
+  description "Bounded dictionary ownership guard repair"
+problem P1:
+  "Canonical initial area references must resolve to declared own entries."
+evidence E1:
+  |
+    The strengthened structured-battlefield test changes a mapped character area to
+    toString without declaring that area. Before-repair TAP fails Missing expected
+    rejection. Canonical/initial layout guards check areas[id] truthiness.
+evidence E2:
+  |
+    Plain JavaScript objects inherit toString and constructor. A property lookup can
+    return an inherited function even when the record has no own area entry.
+    The legacy creation helper also tests areas[id] to detect duplicates/collisions.
+    Existing StableBattlefieldIdSchema allows these letter-prefixed stable IDs.
+evidence E3:
+  |
+    This is a pure local regression, not model, transport or production observation.
+    Accepted stable ID and canonical reference rules require declared own areas;
+    banning legal IDs or choosing a replacement would alter the contract.
+    Existing saved malformed snapshots and historical introduction remain unknown.
+decision D1 based_on P1, E1, E2, E3:
+  |
+    The producing condition is treating inherited object properties as canonical
+    record entries. The toString reference is the trigger; ordinary invented-ID
+    cases missed this dictionary ownership distinction. Model behavior is not the
+    cause on this pure constructor path.
+decision D2 based_on D1, E3:
+  |
+    Use own-key checks for canonical/initial area and entity references and legacy
+    duplicate/collision detection, validating declared legacy IDs before writing.
+    Preserve legal constructor IDs when actually declared. Reverify the full shared
+    and affected current HTTP cohort and refresh the changed source/test seals.

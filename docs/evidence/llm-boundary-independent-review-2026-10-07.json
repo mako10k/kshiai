@@ -1,0 +1,32 @@
+{
+  "reviewer": "/root/llm_boundary_seal_audit",
+  "mode": "read-only, no test execution or graph mutation",
+  "files": {
+    "backend/src/llm/character-expression-contract.test.ts": {
+      "cases": 2,
+      "basis": "F-BTL15 retained expressionState/utteranceHistory/nextUtterance; latest awareness output not certified by V2 decoder"
+    },
+    "backend/src/llm/perception-evidence.test.ts": {
+      "cases": 4,
+      "basis": "F-BTL32/33/36/43/52; supplied evidence validation/projection only; not model accuracy or physical access"
+    },
+    "backend/src/llm/perception-prompt-strategy.test.ts": {
+      "cases": 11,
+      "basis": "Retained reviewed fixed-fixture strategy, existing response grammar materials binding; mock matrix not live quality or current model specs",
+      "typeReviewPending": "Three fixture/schema direct type assertions require root scope review"
+    },
+    "backend/src/llm/provider-config.test.ts": {
+      "cases": 4,
+      "basis": "F-CFG06 mock boundary; exact fast-model and mode allowlist Accepted basis not found in inspected sources",
+      "excluded": "F-CFG05 fallback contradiction not settled"
+    }
+  },
+  "next": "Root verify exact clauses/current bytes, test complete files, review type assertions, then decide bounded conformance Seals. No normative adoption inferred from passing tests.",
+  "providerConfigRootDisposition": {
+    "scope": "Entire local test file, including top-level stored constant assertion",
+    "acceptedConformance": "F-CFG06 three pure mock-boundary cases",
+    "regressionOnly": "Existing fast-model literal and mode parser; exact Accepted normative adoption not confirmed",
+    "unresolved": "No current default-model decision, live acceptance or F-CFG05 fallback resolution inferred",
+    "design": "docs/provider-config-test-contract-review-2026-10-07.md"
+  }
+}

@@ -1,3 +1,4 @@
+import { z } from "zod";
 import assert from "node:assert/strict";
 import { mkdtempSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
@@ -6,10 +7,17 @@ import { after, before, describe, it } from "node:test";
 import {
   defaultParameters,
   defaultBasicAttack,
+  BattlePublicSchema,
+  defaultDialoguePipelineSettings,
+  AwarenessConsciousOutputSchema,
+  AwarenessLatentOutputSchema,
   type BattlefieldPreset,
   type CharacterSheet,
   type NarrationStyle,
 } from "@kshiai/shared";
+import type { AwarenessProviderRoles } from "./llm/awareness-provider-factory.js";
+import { currentAwarenessDispatchContext } from "./llm/awareness-dispatch-context.js";
+import type { LlmProvider } from "./llm/types.js";
 
 const directory = mkdtempSync(join(tmpdir(), "kshiai-asset-integration-"));
 process.env.DATABASE_URL = "";
@@ -17,11 +25,16 @@ process.env.AUTH_PROVIDER = "legacy";
 process.env.DATABASE_PATH = join(directory, "routes.db");
 process.env.LLM_PROVIDER = "mock";
 
-const { saveHistoricalCharacterFixture } = await import("./testing/historical-character-fixtures.js");
 const { closeDatabase, query } = await import("./db.js");
 const { MockLlmProvider } = await import("./llm/mock.js");
 const characterRepo = await import("./repositories/characters.js");
 const characterAssetRepo = await import("./repositories/character-assets-v2.js");
+const { createV3StageTrialCandidate, createV3StageTrialSource } = await import(
+  "./fixtures/neva-v3.js"
+);
+const { prepareV3TrialCharacter } = await import(
+  "./repositories/local-v3-trial-characters.js"
+);
 const battlefieldRepo = await import("./repositories/battlefields.js");
 const battlefieldAssetRepo = await import("./repositories/battlefield-assets-v2.js");
 const narrationRepo = await import("./repositories/narration-styles.js");
@@ -29,6 +42,7 @@ const narrationAssetRepo = await import(
   "./repositories/narration-style-assets-v2.js"
 );
 const battleRepo = await import("./repositories/battles.js");
+const settingsRepo = await import("./repositories/dialogue-pipeline-settings.js");
 const { buildImportedNarrationStyleEnvelopeV2 } = await import(
   "./services/narration-style-authoring-service.js"
 );
@@ -47,7 +61,30 @@ const authHeaders = { Cookie: `kshiai_session=${sessionToken}` };
 const developerHeaders = {
   Cookie: `kshiai_session=${developerSessionToken}`,
 };
-const app = buildRoutes({ llm: new MockLlmProvider() });
+const provider = new MockLlmProvider();
+provider.prepareBattleEncounter = async function(
+  input: Parameters<LlmProvider["prepareBattleEncounter"]>[0],
+): ReturnType<LlmProvider["prepareBattleEncounter"]> {
+  const guard = currentAwarenessDispatchContext();
+  if (!guard) return MockLlmProvider.prototype.prepareBattleEncounter.call(this, input);
+  return guard.run({ provider: guard.provider, model: guard.model,
+    system: "test battle encounter system", user: JSON.stringify(input),
+    options: { tier: "engine", timeoutMs: guard.limits.deadlineMs,
+      maxCompletionTokens: guard.limits.outputTokens, label: "prepareBattleEncounter",
+      retry: "none", responseFormat: { type: "json_object" } },
+  }, async () => ({ result: await MockLlmProvider.prototype.prepareBattleEncounter.call(this, input), usage: null }));
+};
+const awarenessRoles: AwarenessProviderRoles = {
+  models: {
+    subconscious: async (input) => AwarenessLatentOutputSchema.parse({ state: { ...input.currentState, updatedTick: input.tick }, reflexDesires: [], affectiveDesires: [], reconsider: false, cancelThought: false }),
+    conscious: async () => AwarenessConsciousOutputSchema.parse({ goal: null, thought: "", desires: [], influences: [] }),
+  },
+  adjudication: { identity: { provider: "xai", engineModel: "grok-test", fastModel: "grok-test" }, requestJson: async () => { throw new Error("unexpected transport call"); } },
+  adjudicationProvider: provider,
+  narration: { identity: { provider: "xai", engineModel: "grok-test", fastModel: "grok-test" }, narrateBatch: async () => [], narrateFrozenBatch: async () => [] },
+};
+Object.assign(provider, { awareness: awarenessRoles, awarenessBillingContracts: [] });
+const app = buildRoutes({ llm: provider });
 
 function character(input: {
   id: string;
@@ -62,20 +99,9 @@ function character(input: {
     tags: ["integration-ready"],
     createdAt: now,
     updatedAt: now,
-    appearance: {
-      summary: `${input.displayName}の公開外見`,
-      visualPrompt: `${input.displayName} portrait`,
-      imageUrl: null,
-    },
-    traits: ["慎重"],
-    parameters: defaultParameters(),
-    basicAttack: defaultBasicAttack(),
-    skills: [],
-    weapon: null,
-    armor: null,
-    combatFlags: { canFight: true, irreversibleIncapacitated: false },
-    narrativeBlurb: `${input.displayName}の公開プロフィール。`,
-    visibility: "public",
+    appearance: { summary: `${input.displayName}の公開外見`, visualPrompt: `${input.displayName} portrait`, imageUrl: null },
+    traits: ["慎重"], parameters: defaultParameters(), basicAttack: defaultBasicAttack(), skills: [], weapon: null, armor: null,
+    combatFlags: { canFight: true, irreversibleIncapacitated: false }, narrativeBlurb: `${input.displayName}の公開プロフィール。`, visibility: "public",
   };
 }
 
@@ -120,7 +146,7 @@ function narrationStyle(): NarrationStyle {
 }
 
 async function idsFrom(response: Response, key: string): Promise<Set<string>> {
-  const body = await response.json() as Record<string, Array<{ id: string }>>;
+  const body = z.object({ [key]: z.array(z.object({ id: z.string() })) }).parse(await response.json());
   return new Set((body[key] ?? []).map((value) => value.id));
 }
 
@@ -145,16 +171,30 @@ before(async () => {
       developerId,
     ],
   );
-  await saveHistoricalCharacterFixture(character({
-    id: mineId,
-    ownerUserId: ownerId,
-    displayName: "統合自キャラ",
-  }));
-  await saveHistoricalCharacterFixture(character({
-    id: opponentId,
-    ownerUserId: opponentOwnerId,
-    displayName: "統合相手キャラ",
-  }));
+  const settings = defaultDialoguePipelineSettings();
+  await settingsRepo.updateDialoguePipelineSettings({
+    userId: ownerId,
+    patch: { ...settings, schemaVersion: 3, contextProjectionMode: "compact", expectedRevision: 0 },
+  });
+  for (const input of [
+    { id: mineId, ownerUserId: ownerId },
+    { id: opponentId, ownerUserId: opponentOwnerId },
+  ]) {
+    const prepared = await prepareV3TrialCharacter({
+      characterId: input.id,
+      ownerUserId: input.ownerUserId,
+      envelope: createV3StageTrialCandidate(),
+      source: createV3StageTrialSource(),
+    });
+    assert.equal(prepared.status, "awaiting_owner_acceptance");
+    assert.ok(prepared.candidateDigest);
+    await characterAssetRepo.activateCharacterAuthoringAttempt({
+      attemptId: prepared.attemptId,
+      ownerUserId: input.ownerUserId,
+      candidateDigest: prepared.candidateDigest,
+    });
+    await query("UPDATE characters SET owner_user_id = $2 WHERE id = $1", [input.id, input.ownerUserId]);
+  }
   await battlefieldRepo.importPreset(battlefield());
   const readyStyle = narrationStyle();
   await narrationAssetRepo.activateImportedNarrationStyle({
@@ -174,20 +214,20 @@ after(async () => {
 describe("integrated structured asset cutover", () => {
   it("keeps selection, binding, replay, history, and deletion on immutable generations", async () => {
     const ownerSearch = await app.request(
-      "/api/characters?selectable=true&q=統合自キャラ",
+      "/api/characters?selectable=true",
       { headers: authHeaders },
     );
     assert.equal(ownerSearch.status, 200);
     assert.deepEqual(await idsFrom(ownerSearch, "characters"), new Set([mineId]));
 
     const opponentSearch = await app.request(
-      "/api/match/candidates?q=統合相手キャラ",
+      "/api/match/candidates",
       { headers: authHeaders },
     );
     assert.equal(opponentSearch.status, 200);
     assert.deepEqual(
       await idsFrom(opponentSearch, "candidates"),
-      new Set([opponentId]),
+      new Set([mineId, opponentId]),
     );
 
     for (const endpoint of ["/api/match/random", "/api/match/auto"]) {
@@ -198,7 +238,7 @@ describe("integrated structured asset cutover", () => {
       });
       assert.equal(response.status, 200);
       assert.equal(
-        ((await response.json()) as { opponent: { id: string } }).opponent.id,
+        (z.object({ opponent: z.object({ id: z.string() }) }).parse((await response.json()))).opponent.id,
         opponentId,
       );
     }
@@ -238,8 +278,9 @@ describe("integrated structured asset cutover", () => {
       }),
     });
     assert.equal(create.status, 200);
-    const createBody = await create.json() as { battle: { id: string } };
-    const publicCreateJson = JSON.stringify(createBody);
+    const rawCreateBody: unknown = await create.json();
+    const createBody = z.object({ battle: BattlePublicSchema.passthrough() }).passthrough().parse(rawCreateBody);
+    const publicCreateJson = JSON.stringify(rawCreateBody);
     for (const forbidden of [
       "assetManifest",
       "compiledPolicyV2",
@@ -289,7 +330,7 @@ describe("integrated structured asset cutover", () => {
     );
     assert.equal(
       bound.assetManifest.dialoguePipeline.activationSource,
-      "default",
+      "persisted_setting",
     );
     assert.equal(
       bound.assetManifest.dialoguePipeline.overrideDeployment,
@@ -297,9 +338,9 @@ describe("integrated structured asset cutover", () => {
     );
     assert.equal(
       bound.assetManifest.dialoguePipeline.snapshot.contextProjectionMode,
-      "legacy",
+      "compact",
     );
-    assert.equal(bound.assetManifest.dialoguePipeline.snapshot.revision, 0);
+    assert.equal(bound.assetManifest.dialoguePipeline.snapshot.revision, 1);
 
     const revisedCharacter = await characterAssetRepo.activateCharacterPortraitRevision({
       characterId: mineId,
@@ -351,9 +392,12 @@ describe("integrated structured asset cutover", () => {
       headers: authHeaders,
     });
     assert.equal(readAfterDeletion.status, 200);
+    const rawReadAfterDeletion: unknown = await readAfterDeletion.json();
+    z.object({ battle: BattlePublicSchema.passthrough() }).parse(rawReadAfterDeletion);
+    const wireBattleResponse = z.object({ battle: z.unknown() });
     assert.deepEqual(
-      (await readAfterDeletion.json() as { battle: unknown }).battle,
-      createBody.battle,
+      wireBattleResponse.parse(rawReadAfterDeletion).battle,
+      wireBattleResponse.parse(rawCreateBody).battle,
     );
 
     const history = await app.request(
@@ -361,9 +405,7 @@ describe("integrated structured asset cutover", () => {
       { headers: authHeaders },
     );
     assert.equal(history.status, 200);
-    const historyBody = await history.json() as {
-      battles: Array<{ id: string }>;
-    };
+    const historyBody = z.object({ battles: z.array(z.object({ id: z.string() })) }).parse(await history.json());
     assert.equal(historyBody.battles.some((item) => item.id === battleId), true);
 
     const advanceRequest = {
@@ -389,13 +431,9 @@ describe("integrated structured asset cutover", () => {
     );
     const frozenInput = prologueReceipt?.narrationInput;
     assert.ok(frozenInput && "kind" in frozenInput);
-    assert.equal(frozenInput.kind, "prologue");
-    const frozenRequest = frozenInput.request;
-    assert.equal(frozenRequest?.styleInstruction, boundPrologueInstruction);
-    assert.equal(
-      JSON.stringify(frozenRequest).includes("REVISED_STYLE_SECRET"),
-      false,
-    );
+    assert.equal(frozenInput.kind, "awareness-v5");
+    assert.equal(frozenInput.system.includes(boundPrologueInstruction), true);
+    assert.equal(JSON.stringify(frozenInput).includes("REVISED_STYLE_SECRET"), false);
 
     assert.equal(
       (await idsFrom(await app.request(
@@ -429,13 +467,7 @@ describe("integrated structured asset cutover", () => {
       { headers: developerHeaders },
     );
     assert.equal(developerObservation.status, 200);
-    const observationBody = await developerObservation.json() as {
-      canonicalCurrent: { assetManifest: unknown };
-      rawBattleState: {
-        agentStateA: unknown;
-        phaseReceipts: Array<{ narrationInput: unknown }>;
-      };
-    };
+    const observationBody = z.object({ canonicalCurrent: z.object({ assetManifest: z.unknown() }), rawBattleState: z.object({ agentStateA: z.unknown(), phaseReceipts: z.array(z.object({ narrationInput: z.unknown() })) }) }).parse(await developerObservation.json());
     assert.equal(
       JSON.stringify(observationBody.canonicalCurrent.assetManifest),
       boundManifestJson,
@@ -470,12 +502,14 @@ describe("integrated structured asset cutover", () => {
       ],
     );
 
-    assert.ok(await characterRepo.updateCharacterVisibility(
-      legacy.id,
-      ownerId,
-      "private",
-    ));
-    assert.ok(await characterRepo.softDeleteCharacter(legacy.id, ownerId));
+    await assert.rejects(
+      () => characterRepo.updateCharacterVisibility(legacy.id, ownerId, "private"),
+      /CHARACTER_V3_UPDATE_REQUIRED/,
+    );
+    await assert.rejects(
+      () => characterRepo.softDeleteCharacter(legacy.id, ownerId),
+      /CHARACTER_V3_UPDATE_REQUIRED/,
+    );
     const generations = await query<{ count: number }>(
       `SELECT COUNT(*) AS count FROM asset_generations
         WHERE asset_type = 'character' AND asset_id = $1`,

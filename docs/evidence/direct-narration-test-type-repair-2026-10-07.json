@@ -1,0 +1,30 @@
+{
+  "schema": "kshiai/direct-narration-test-type-repair/v1",
+  "source": "backend/src/llm/openai-compatible-narration.test.ts",
+  "sha256": "986e751f9e43d24da92088b479a386cdbf6ccef9d03ceb45b6a083f002138aa1",
+  "changes": [
+    "Replace three double assertions into private chatJson with typed subclass overriding existing protected seam",
+    "Remove broad string-record assertion from extra legacy reason fixture; keep legacy value actually present",
+    "Keep original three tests and exact privacy/causal/projection assertions"
+  ],
+  "authority": [
+    "User AGENTS Type escapes rule: repair paths retain strict checker; no unchecked private method downcast"
+  ],
+  "diagnostic": {
+    "cohortTests": 14,
+    "pass": 14,
+    "fail": 0,
+    "skipped": 0,
+    "directNarrationTests": 3,
+    "strictTypecheckExit": 0,
+    "workspaceTypecheckExit": 0
+  },
+  "formalSeal": "current after authority/source projection review",
+  "limitations": [
+    "Valid fake transport results only",
+    "Existing production direct response decoding not certified by this test seam repair",
+    "No live provider calls"
+  ],
+  "formalSealAtRepair": "pending authority-to-case/source projection review; no test removed or skipped",
+  "sealRegistration": "docs/evidence/narration-projection-seal-registration-2026-10-07.json"
+}

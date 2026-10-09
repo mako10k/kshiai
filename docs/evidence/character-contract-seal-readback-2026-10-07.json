@@ -1,0 +1,16 @@
+{
+  "newRefs": 18,
+  "previousHeadsUnchanged": true,
+  "previousHeadCount": 1008,
+  "totalRefs": 1026,
+  "sourceBytesMatch": true,
+  "stale": 0,
+  "fsck": "ok",
+  "limitations": [
+    "All original43cases and six untouched files preserved; one equivalent negative membership query only",
+    "Pure/local schemas, deterministic helpers and synthetic versioned reader, not DB lifecycle/model/public acceptance",
+    "Reader scope is selected compared fields and rejection paths, not all semantic preservation",
+    "V2 helper/test imports do not reopen ordinary V2 writes; Owner decision gates unchanged",
+    "251 whole files retained and unsealed stop preserved"
+  ]
+}

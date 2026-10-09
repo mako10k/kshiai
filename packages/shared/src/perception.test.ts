@@ -86,6 +86,7 @@ function frame(side: "a" | "b" = "a"): CharacterPerceptionFrame {
   };
 }
 
+// R: Verify runtime boundaries between private perception evidence and observer-facing frames.
 describe("observer-relative perception schemas", () => {
   it("accepts explicit self and an inaccessible unidentified counterpart", () => {
     const parsed = CharacterPerceptionFrameSchema.parse(frame());
@@ -97,20 +98,50 @@ describe("observer-relative perception schemas", () => {
   });
 
   it("rejects hidden canonical source mappings in character-facing percepts", () => {
-    const candidate = structuredClone(frame()) as unknown as Record<string, unknown>;
-    const others = candidate.others as Array<Record<string, unknown>>;
-    const percepts = others[0]?.percepts as Array<Record<string, unknown>>;
-    percepts[0]!.entityId = "character.b";
-    assert.equal(CharacterPerceptionFrameSchema.safeParse(candidate).success, false);
+    const base = frame();
+    assert.equal(CharacterPerceptionFrameSchema.safeParse(base).success, true);
+    const candidate = {
+      ...base,
+      others: base.others.map((slot, slotIndex) => slotIndex === 0
+        ? {
+            ...slot,
+            percepts: slot.percepts.map((item, perceptIndex) => perceptIndex === 0
+              ? { ...item, entityId: "character.b" }
+              : item),
+          }
+        : slot),
+    };
+    const result = CharacterPerceptionFrameSchema.safeParse(candidate);
+    assert.equal(result.success, false);
+    if (result.success) assert.fail("hidden canonical mapping was accepted");
+    assert.ok(result.error.issues.some((issue) =>
+      issue.code === "unrecognized_keys" &&
+      issue.keys.includes("entityId") &&
+      JSON.stringify(issue.path) === JSON.stringify(["others", 0, "percepts", 0])
+    ));
   });
 
   it("requires the self and counterpart subject roles", () => {
-    const candidate = frame();
-    candidate.self = {
-      ...candidate.self,
-      subject: { kind: "counterpart" },
+    const base = frame();
+    const candidate = {
+      ...base,
+      self: { ...base.self, subject: { kind: "counterpart" } },
     };
     assert.equal(CharacterPerceptionFrameSchema.safeParse(candidate).success, false);
+    const counterpartCandidate = {
+      ...base,
+      counterpart: {
+        ...base.counterpart,
+        subject: { kind: "self" },
+        identityKnowledge: "identified",
+      },
+    };
+    const result = CharacterPerceptionFrameSchema.safeParse(counterpartCandidate);
+    assert.equal(result.success, false);
+    if (result.success) assert.fail("counterpart role was accepted as self");
+    assert.ok(result.error.issues.some((issue) =>
+      JSON.stringify(issue.path) === JSON.stringify(["counterpart", "subject", "kind"])
+    ));
   });
 
   it("bounds percepts across all frame slots rather than per slot only", () => {

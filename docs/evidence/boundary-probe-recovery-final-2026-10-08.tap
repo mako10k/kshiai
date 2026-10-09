@@ -1,0 +1,176 @@
+TAP version 13
+# Subtest: closed HTTP routes block public auth/media and preserve owner /api/me auth
+ok 1 - closed HTTP routes block public auth/media and preserve owner /api/me auth
+  ---
+  duration_ms: 3325.53338
+  type: 'test'
+  ...
+# Subtest: authors a valid V2 source with both selectorless and executable preferences
+ok 2 - authors a valid V2 source with both selectorless and executable preferences
+  ---
+  duration_ms: 53.254358
+  type: 'test'
+  ...
+# Subtest: keeps V2 unchanged and assigns the corrected prompt an independent V3 run
+ok 3 - keeps V2 unchanged and assigns the corrected prompt an independent V3 run
+  ---
+  duration_ms: 6.497433
+  type: 'test'
+  ...
+# Subtest: binds the new run and corrected prompt without reusing the consumed v1 identity
+ok 4 - binds the new run and corrected prompt without reusing the consumed v1 identity
+  ---
+  duration_ms: 2148.528331
+  type: 'test'
+  ...
+# Subtest: V2 display without ordinary writes
+    # Subtest: serves the bound old profile despite invalid executable battle data and retains access controls
+    ok 1 - serves the bound old profile despite invalid executable battle data and retains access controls
+      ---
+      duration_ms: 82.265451
+      type: 'test'
+      ...
+    # Subtest: keeps current old-version display available
+    ok 2 - keeps current old-version display available
+      ---
+      duration_ms: 17.975631
+      type: 'test'
+      ...
+    # Subtest: does not advertise unavailable migration or create an attempt when it is requested
+    ok 3 - does not advertise unavailable migration or create an attempt when it is requested
+      ---
+      duration_ms: 12.801839
+      type: 'test'
+      ...
+    # Subtest: rejects every ordinary owner mutation before creating attempts or changing the row
+    ok 4 - rejects every ordinary owner mutation before creating attempts or changing the row
+      ---
+      duration_ms: 56.459549
+      type: 'test'
+      ...
+    # Subtest: rejects programmatic V2 creation and updates without changing stored rows
+    ok 5 - rejects programmatic V2 creation and updates without changing stored rows
+      ---
+      duration_ms: 5.732325
+      type: 'test'
+      ...
+    # Subtest: retires dormant V2 provider generation before touching the provider or reporting work
+    ok 6 - retires dormant V2 provider generation before touching the provider or reporting work
+      ---
+      duration_ms: 4.367225
+      type: 'test'
+      ...
+    # Subtest: rejects V2 portrait writes and keeps full restore unavailable
+    ok 7 - rejects V2 portrait writes and keeps full restore unavailable
+      ---
+      duration_ms: 5.229483
+      type: 'test'
+      ...
+    # Subtest: rejects legacy generation writes through the real generic repository
+    ok 8 - rejects legacy generation writes through the real generic repository
+      ---
+      duration_ms: 27.908544
+      type: 'test'
+      ...
+    # Subtest: keeps historical fixture writes outside the runtime dependency graph
+    ok 9 - keeps historical fixture writes outside the runtime dependency graph
+      ---
+      duration_ms: 37.233551
+      type: 'test'
+      ...
+    # Subtest: preserves the legacy definition when saving bound battle accounting facts
+    ok 10 - preserves the legacy definition when saving bound battle accounting facts
+      ---
+      duration_ms: 6.088004
+      type: 'test'
+      ...
+    # Subtest: does not fall back to V2 creation or migration when no V3 authoring provider exists
+    ok 11 - does not fall back to V2 creation or migration when no V3 authoring provider exists
+      ---
+      duration_ms: 12.275122
+      type: 'test'
+      ...
+    # Subtest: rejects confirmation of a previously stored V2 candidate without changing its generation
+    ok 12 - rejects confirmation of a previously stored V2 candidate without changing its generation
+      ---
+      duration_ms: 18.007655
+      type: 'test'
+      ...
+    # Subtest: retains direct validated V3 candidate preparation and activation
+    ok 13 - retains direct validated V3 candidate preparation and activation
+      ---
+      duration_ms: 51.537078
+      type: 'test'
+      ...
+    # Subtest: keeps a bound V2 profile independent of the owner's current V3 generation
+    ok 14 - keeps a bound V2 profile independent of the owner's current V3 generation
+      ---
+      duration_ms: 30.205454
+      type: 'test'
+      ...
+    1..14
+ok 5 - V2 display without ordinary writes
+  ---
+  duration_ms: 383.989638
+  type: 'suite'
+  ...
+# [battles] advance start v3-battle-bound
+# [battles] advance ok v3-battle-bound turn=1 248ms aft=0
+# [battles] advance stream start v3-battle-bound
+# [battles] advance stream ok v3-battle-bound turn=2 205ms aft=0
+# [balance] battle ok v3-battle-bound turns=12 maxHit=15% earlyKo=0 oneShot=0 winner=a
+# [battles] startBattle failed MY_CHARACTER_V3_CAPABILITY_BLOCKED Error: MY_CHARACTER_V3_CAPABILITY_BLOCKED
+#     at resolveBattleParticipants (/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/battle-service.ts:611:49)
+#     at async startBattle (/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/battle-service.ts:640:7)
+#     at async <anonymous> (/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/routes.ts:2616:11)
+#     at async dispatch (file:///home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/node_modules/hono/dist/compose.js:22:17)
+#     at async requireUser (/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/auth.ts:233:3)
+#     at async dispatch (file:///home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/node_modules/hono/dist/compose.js:22:17)
+#     at async dispatch (file:///home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/node_modules/hono/dist/compose.js:22:17)
+#     at async file:///home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/node_modules/hono/dist/hono-base.js:308:25
+#     at async TestContext.<anonymous> (/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/v3-battle-creation.test.ts:345:27)
+#     at async Test.run (node:internal/test_runner/test:1054:7)
+# [battles] advance start btl_15badb7f34869b37514b401ec1f94efb
+# [battles] advance ok btl_15badb7f34869b37514b401ec1f94efb turn=0 292ms aft=0
+# [battles] advance stream start btl_15badb7f34869b37514b401ec1f94efb
+# [battles] advance stream ok btl_15badb7f34869b37514b401ec1f94efb turn=1 1094ms aft=0
+# Subtest: ADR-0039 V3 character battle binding
+    # Subtest: continues a historical V4 battle and keeps exact V3 character generations after pointer changes and reload
+    ok 1 - continues a historical V4 battle and keeps exact V3 character generations after pointer changes and reload
+      ---
+      duration_ms: 6689.218544
+      type: 'test'
+      ...
+    # Subtest: creates awareness-v5 with V3 characters and keeps their exact generations after pointer changes
+    ok 2 - creates awareness-v5 with V3 characters and keeps their exact generations after pointer changes
+      ---
+      duration_ms: 328.62519
+      type: 'test'
+      ...
+    # Subtest: advances a V4 battle whose frozen norms allow only free actions
+    ok 3 - advances a V4 battle whose frozen norms allow only free actions
+      ---
+      duration_ms: 240.967866
+      type: 'test'
+      ...
+    # Subtest: reserves repair durably without committing unfinished phase state and does not reset on reload
+    ok 4 - reserves repair durably without committing unfinished phase state and does not reset on reload
+      ---
+      duration_ms: 152.403685
+      type: 'test'
+      ...
+    1..4
+ok 6 - ADR-0039 V3 character battle binding
+  ---
+  duration_ms: 7413.813704
+  type: 'suite'
+  ...
+1..6
+# tests 22
+# suites 2
+# pass 22
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 10090.273274

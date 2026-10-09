@@ -1,0 +1,60 @@
+TAP version 13
+# Subtest: balance-observe
+    # Subtest: flags one-shot and early KO from HP deltas
+    ok 1 - flags one-shot and early KO from HP deltas
+      ---
+      duration_ms: 0.992998
+      type: 'test'
+      ...
+    # Subtest: computes sheet sharpness higher for peaked builds
+    ok 2 - computes sheet sharpness higher for peaked builds
+      ---
+      duration_ms: 0.51691
+      type: 'test'
+      ...
+    1..2
+ok 1 - balance-observe
+  ---
+  duration_ms: 2.572018
+  type: 'suite'
+  ...
+# Subtest: improvement analysis eligibility
+    # Subtest: blocks until the first threshold
+    ok 1 - blocks until the first threshold
+      ---
+      duration_ms: 3.762268
+      type: 'test'
+      ...
+    # Subtest: allows the first analysis at 5 finished battles
+    ok 2 - allows the first analysis at 5 finished battles
+      ---
+      duration_ms: 0.626184
+      type: 'test'
+      ...
+    # Subtest: requires 10 more battles after an analysis
+    ok 3 - requires 10 more battles after an analysis
+      ---
+      duration_ms: 0.894533
+      type: 'test'
+      ...
+    # Subtest: uses the snapshot battle count, not absolute multiples of 10
+    ok 4 - uses the snapshot battle count, not absolute multiples of 10
+      ---
+      duration_ms: 0.250082
+      type: 'test'
+      ...
+    1..4
+ok 2 - improvement analysis eligibility
+  ---
+  duration_ms: 6.827808
+  type: 'suite'
+  ...
+1..2
+# tests 6
+# suites 2
+# pass 6
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 338.888879

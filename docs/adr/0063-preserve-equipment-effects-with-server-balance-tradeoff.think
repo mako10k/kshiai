@@ -1,0 +1,10 @@
+domain ADR0063:
+  description "Accepted revision1: retain four authored equipment effects and store server-added stamina burden separately when the effect slots are full."
+evidence OWNER_ACCEPTANCE:
+  "2026-10-09 owner answers 補正専用フィールドを採用 to the exact question: only when4 effects are full, preserve all originals and save added server-only STA difference in optional balanceTradeoff with maximum12. Maintain generated effect limit4, compiler consumes original effects plus burden, vacant slots retain previous effects representation."
+evidence CONTRACT:
+  "Existing normalization formula computes a stamina difference bounded from-12 to-2. Existing negative tradeoff prevents duplicate addition. Equipment start application consumes all original effects and the separate burden. LLM equipment generation does not author this server-only field."
+evidence COMPATIBILITY:
+  "ADR0060 adopted numerical correction but prohibited dropping authored effects. This decision replaces only the destructive fourth-effect truncation. Preserve legacy optional-field reading and immutable saved battles; no database migration or paid/live trial."
+decision ACCEPTANCE based_on OWNER_ACCEPTANCE, CONTRACT, COMPATIBILITY:
+  "Accept optional strict balanceTradeoff for full4 effect equipment only, parameter stamina and integer delta-12 through-2. Preserve all originals, ordinary generation limit4, previous vacant-slot representation, idempotent correction and combined engine application. This ADR records source and contract authority, not CI or deployment completion."

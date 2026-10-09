@@ -1,0 +1,40 @@
+{
+  "compilerExitCode": 2,
+  "detectedOmissions": [
+    {
+      "file": "battle-service.ts",
+      "field": "consciousGuidance"
+    },
+    {
+      "file": "awareness-battle-boundary.ts",
+      "field": "consciousGuidance"
+    },
+    {
+      "file": "awareness-context.ts",
+      "field": "consciousGuidance"
+    },
+    {
+      "file": "awareness-execution.ts",
+      "field": "feltProjection"
+    },
+    {
+      "file": "awareness-execution.ts",
+      "field": "stimuli"
+    }
+  ],
+  "restored": true,
+  "diagnostics": [
+    "src/services/awareness-battle-boundary.ts(26,41): error TS2345: Argument of type '{ availableActions: readonly ObserverSafeAvailableAction[]; actionFacts: readonly { ref: string; content: string; }[]; generation: AssetGeneration; ... 4 more ...; intentInvalid: boolean; }' is not assignable to parameter of type '{ state: BattleState; side: \"a\" | \"b\"; generation: AssetGeneration; availableActions: readonly ObserverSafeAvailableAction[]; ... 4 more ...; intentInvalid: boolean; }'.\n  Property 'consciousGuidance' is missing in type '{ availableActions: readonly ObserverSafeAvailableAction[]; actionFacts: readonly { ref: string; content: string; }[]; generation: AssetGeneration; ... 4 more ...; intentInvalid: boolean; }' but required in type '{ state: BattleState; side: \"a\" | \"b\"; generation: AssetGeneration; availableActions: readonly ObserverSafeAvailableAction[]; ... 4 more ...; intentInvalid: boolean; }'.",
+    "src/services/awareness-context.ts(38,3): error TS2322: Type '{ character: { schemaVersion: 1; displayName: string; identity: { realName: string | null; nicknames: string[]; selfNames: string[]; epithets: string[]; gender: string | null; age: string | null; }; ... 7 more ...; currentStateOverrides?: { statement: string; itemLabel: string; profileField: \"appearance\" | \"weapon\" ...' is not assignable to type 'AwarenessExecutionContext'.\n  Property 'consciousGuidance' is missing in type '{ character: { schemaVersion: 1; displayName: string; identity: { realName: string | null; nicknames: string[]; selfNames: string[]; epithets: string[]; gender: string | null; age: string | null; }; ... 7 more ...; currentStateOverrides?: { statement: string; itemLabel: string; profileField: \"appearance\" | \"weapon\" ...' but required in type '{ stimuli: { id: string; content: string; }[]; consciousCharacteristics: string[]; consciousGuidance: { kind: \"none\"; } | { kind: \"applicable\"; actionPrinciples: string[]; }; consciousTraining: string[]; receivedSpeech: boolean; intentCompleted: boolean; intentInvalid: boolean; }'.",
+    "src/services/awareness-execution.ts(153,11): error TS2741: Property 'feltProjection' is missing in type '{ side: \"a\" | \"b\"; sourceTick: number; consciousState: { goal: string | null; updatedTick: number | null; thought: string; } | { goal: string | null; updatedTick: number | null; thought: string; }; ... 5 more ...; perception: { schemaVersion: 1; turn: number; revision: number; latestDiff: { fromRevision: number; toR...' but required in type '{ side: \"a\" | \"b\"; character: { schemaVersion: 1; displayName: string; identity: { realName: string | null; nicknames: string[]; selfNames: string[]; epithets: string[]; gender: string | null; age: string | null; }; ... 7 more ...; currentStateOverrides?: { ...; }[] | undefined; }; ... 7 more ...; consciousState: { ...'.",
+    "src/services/awareness-execution.ts(198,11): error TS2741: Property 'stimuli' is missing in type '{ side: \"a\" | \"b\"; tick: number; currentState: { tendencies: { id: string; response: string; strength: number; validUntilTick: number; feeling: string; awareness: number; cue: string; }[]; updatedTick: number; sensations: { id: string; feeling: string; awareness: number; }[]; emotions: { id: string; feeling: string;...' but required in type '{ side: \"a\" | \"b\"; character: { schemaVersion: 1; displayName: string; identity: { realName: string | null; nicknames: string[]; selfNames: string[]; epithets: string[]; gender: string | null; age: string | null; }; ... 7 more ...; currentStateOverrides?: { ...; }[] | undefined; }; ... 8 more ...; training: string[]...'.",
+    "src/services/battle-service.ts(1575,3): error TS2741: Property 'consciousGuidance' is missing in type '{ availableActions: ObserverSafeAvailableAction[]; facts: { ref: string; content: string; }[]; accepts: (action: { kind: \"defend\" | \"skill\" | \"basic_attack\"; description?: undefined; ... 7 more ...; reflectionGuideline?: undefined; } | { ...; } | { ...; } | { ...; } | { ...; }) => boolean; }' but required in type 'AwarenessActionFrame'."
+  ],
+  "normalFullTypecheckExitCode": 0,
+  "restoredBackendTypecheckExitCode": 0,
+  "directDiagnosticTests": {
+    "passed": 23,
+    "failed": 0,
+    "formalAcceptance": false
+  }
+}

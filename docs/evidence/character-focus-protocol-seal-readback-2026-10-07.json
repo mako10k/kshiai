@@ -1,0 +1,11 @@
+{
+  "sourceReadbackMatches": true,
+  "allPreviousHeadsPreserved": 723,
+  "newRefs": 12,
+  "fsck": "ok",
+  "active": 83,
+  "unsealed": 147,
+  "formalTestsExecuted": false,
+  "workspaceTypecheckExit": 0,
+  "workspaceTypecheckLog": "docs/evidence/character-focus-protocol-workspace-types-2026-10-07.log"
+}

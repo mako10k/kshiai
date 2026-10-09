@@ -1,0 +1,17 @@
+{
+  "priorRefs": 1103,
+  "currentRefs": 1113,
+  "newRefs": 10,
+  "refreshedRefs": [
+    "all-tests-20261007/implementation-test-gate",
+    "verification/test-authority-execution-gate-20261007",
+    "verification/test-authority-selector-synthetic-20260918"
+  ],
+  "untouchedHeadsPreserved": 1100,
+  "oldChangedBodiesRetained": true,
+  "exactCausesReadback": true,
+  "exactHeadSourcesReadback": true,
+  "currentStatusesClean": true,
+  "fsck": "ok",
+  "elapsedSeconds": 139.988
+}

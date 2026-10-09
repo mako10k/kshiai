@@ -1,0 +1,87 @@
+{
+  "nodes": [
+    {
+      "key": "design-image-provider-boundary",
+      "path": "docs/image-provider-test-contract-review-2026-10-07.md",
+      "parents": [
+        "requirements"
+      ],
+      "scope": "F-CFG-07 and existing string ImageGenerationResult boundary, ordinary image provider priority only; no quota/live/storage acceptance.",
+      "ref": "all-tests-20261007/design-image-provider-boundary",
+      "test": false,
+      "sha256": "c34c0d9d32c1cb9c7531267b0fbcd75f7e379f498298d5f0d3fcbc9d37d5783e"
+    },
+    {
+      "key": "contract-image-provider",
+      "path": "backend/src/image/types.ts",
+      "parents": [
+        "design-image-provider-boundary"
+      ],
+      "scope": "Existing typed request/result/ImageProvider contract, including sourceUrl:string; no new output schema promise.",
+      "ref": "all-tests-20261007/contract-image-provider",
+      "test": false,
+      "sha256": "0397f52023874802a0245cabd7453112dfb53a57e029e340d30d54d21221a9f1"
+    },
+    {
+      "key": "implementation-image-response-decoder",
+      "path": "backend/src/image/image-response.ts",
+      "parents": [
+        "contract-image-provider"
+      ],
+      "scope": "Pure unknown JSON decoding with runtime record/array/string refinement and existing diagnostics; no type assertions.",
+      "ref": "all-tests-20261007/implementation-image-response-decoder",
+      "test": false,
+      "sha256": "c4d64fb2ce0bd8434c51d3ffe97e524d913596f5c7929a97b04c2755ec1da6ba"
+    },
+    {
+      "key": "implementation-image-http-adapter",
+      "path": "backend/src/image/openai-compatible.ts",
+      "parents": [
+        "implementation-image-response-decoder",
+        "contract-image-provider"
+      ],
+      "scope": "HTTP request/status boundary delegates validated response decoding; typed output only. No actual provider compatibility claimed.",
+      "ref": "all-tests-20261007/implementation-image-http-adapter",
+      "test": false,
+      "sha256": "d315ec1aa6e85e2260dee35cf3abcabea4240c179926734913d8de957d03ec7f"
+    },
+    {
+      "key": "implementation-image-priority-fallback",
+      "path": "backend/src/image/fallback.ts",
+      "parents": [
+        "contract-image-provider",
+        "design-image-provider-boundary"
+      ],
+      "scope": "Ordinary thrown failure continues ordered ImageProvider list; not quota pause or routing authorization proof.",
+      "ref": "all-tests-20261007/implementation-image-priority-fallback",
+      "test": false,
+      "sha256": "94e6de293d26771dfc2cab337e3d11a0646f9c6acc0ba92b3d55164273448395"
+    },
+    {
+      "key": "image-provider-response-bounded",
+      "path": "backend/src/image/openai-compatible.test.ts",
+      "parents": [
+        "implementation-image-http-adapter",
+        "implementation-image-priority-fallback"
+      ],
+      "scope": "Whole five cases: original two exact prefix preserved; malformed output rejection/base64/moderation/HTTP diagnostic regressions added. No trim/path/header/live assertions.",
+      "ref": "verification/image-provider-response-bounded-20261007",
+      "test": true,
+      "sha256": "f0be06a1fe3fa8db6cc690d97ad73c59d82b41595aa189e68410f0c868fe894a"
+    }
+  ],
+  "seeds": {
+    "requirements": "all-tests-20261007/authority-semantic-observation-requirements"
+  },
+  "diagnostic": {
+    "focusedPass": 5,
+    "fail": 0,
+    "skipped": 0,
+    "workspaceTypecheckEvidence": "docs/evidence/image-response-repaired-workspace-types-2026-10-07.log"
+  },
+  "limitations": [
+    "Original two cases/assertions preserved, three meaningful boundary regressions added",
+    "No quota/live interoperability/storage/quality/trim/path/header proof",
+    "Numeric sourceUrl leakage repaired, full251 goal incomplete"
+  ]
+}

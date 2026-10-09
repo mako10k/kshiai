@@ -1,0 +1,14 @@
+{
+  "newRefs": 4,
+  "previousHeadsUnchanged": true,
+  "previousHeadCount": 1046,
+  "totalRefs": 1050,
+  "sourceBytesMatch": true,
+  "stale": 0,
+  "fsck": "ok",
+  "limitations": [
+    "Only absence/strict intent paths, not whole engine or numeric balancing",
+    "All original12cases/assertions unchanged",
+    "251files and unsealed fail-closed preserved"
+  ]
+}

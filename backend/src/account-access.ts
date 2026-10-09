@@ -1,3 +1,4 @@
+// R: Evaluate access rights from server-owned account realms and administrator identities.
 import { config } from "./config.js";
 import { query } from "./db.js";
 
@@ -14,9 +15,7 @@ export type UserAccessProfile = {
 };
 
 export function normalizeAccountKind(value: unknown): AccountKind {
-  return ACCOUNT_KINDS.includes(value as AccountKind)
-    ? value as AccountKind
-    : "general";
+  return ACCOUNT_KINDS.find((kind) => kind === value) ?? "general";
 }
 
 export function accountRealm(kind: AccountKind): AccountRealm {

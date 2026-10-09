@@ -1,0 +1,14 @@
+{
+  "newRefs": 4,
+  "previousHeadsUnchanged": true,
+  "previousHeadCount": 1063,
+  "totalRefs": 1067,
+  "sourceBytesMatch": true,
+  "stale": 0,
+  "fsck": "ok",
+  "limitations": [
+    "Only original three local worker cases",
+    "Injected fetch/static assets, not deployment or actual backend verifier",
+    "Source/implementation unchanged, full251 goal incomplete"
+  ]
+}

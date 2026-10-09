@@ -1,0 +1,166 @@
+{
+  "review": "docs/evidence/provider-json-cause-review-2026-10-07.json",
+  "entries": [
+    {
+      "key": "authority-provider-observation",
+      "path": "docs/adr/0057-awareness-public-observation-accounting.md",
+      "parents": [
+        "authority"
+      ],
+      "scope": "Accepted registered provider operation taxonomy and preservation of physical observation controls/usage identity. Local tests do not prove public deployment/completion and do not revive discarded cutover trial.",
+      "test": false,
+      "ref": "all-tests-20261007/authority-provider-observation",
+      "sha256": "a1fe069645d2093e037c6f49dddec9827bfa4e80c2303325126ef896e04032ca",
+      "sealId": "f37d62dd130cf26f48ced720565c4fad035b93a3f3ad1c3e98943cdc9bf585d1",
+      "causeSealIds": [
+        "4a236b55e9ad9e4aa54eb2c6bbe9d77e0a318881ba8328363505153d16e151dd"
+      ]
+    },
+    {
+      "key": "design-provider-json-accounting",
+      "path": "docs/battle-awareness-prompt-repair-release-2026-10-05.md",
+      "parents": [
+        "authority",
+        "physical",
+        "authority-provider-observation"
+      ],
+      "scope": "Only HTTP completion accounting versus logical acceptance separation and original content privacy in response diagnostic design. Prompt/narration/public release evidence is outside this cohort.",
+      "test": false,
+      "ref": "all-tests-20261007/design-provider-json-accounting",
+      "sha256": "c9a494b6b18d169bc2fe1a50e246382e68086a9ea2a1c0c44ab1c1b536943cbd",
+      "sealId": "7cfd32e06c7f96617d0f1bad6b08e849074caab508917efd394b920e84577547",
+      "causeSealIds": [
+        "4a236b55e9ad9e4aa54eb2c6bbe9d77e0a318881ba8328363505153d16e151dd",
+        "2c6888e9d07a676d4b429b041b241e1631845b18fac4fb4cda280a4a29670d50",
+        "f37d62dd130cf26f48ced720565c4fad035b93a3f3ad1c3e98943cdc9bf585d1"
+      ]
+    },
+    {
+      "key": "implementation-provider-operation-taxonomy",
+      "path": "backend/src/llm/provider-operation-taxonomy.ts",
+      "parents": [
+        "authority-provider-observation"
+      ],
+      "scope": "Registered operation names including narrateTurn used by local accounting fixture; unknown remains unregistered. Full taxonomy coverage has separate tests.",
+      "test": false,
+      "ref": "all-tests-20261007/implementation-provider-operation-taxonomy",
+      "sha256": "c418e9f1fe00ae6fe5180d79c9174b3236c448ae824c05501f63146f47ec47a4",
+      "sealId": "8c5c86d6669841955ae7ddca134e76d66c91a983e6364535405f7546b73972c3",
+      "causeSealIds": [
+        "f37d62dd130cf26f48ced720565c4fad035b93a3f3ad1c3e98943cdc9bf585d1"
+      ]
+    },
+    {
+      "key": "implementation-provider-observation-accounting",
+      "path": "backend/src/llm/provider-accounting.ts",
+      "parents": [
+        "authority",
+        "authority-provider-observation",
+        "design-provider-json-accounting",
+        "implementation-provider-operation-taxonomy"
+      ],
+      "scope": "Observation-run create/bind, budgeted single physical reservation, successful HTTP token receipt before content parsing, durable readback. Only no-active-cutover ordinary context exercised here; cutover permits/outcomes, full taxonomy and unknown transport cases outside this test claim.",
+      "test": false,
+      "ref": "all-tests-20261007/implementation-provider-observation-accounting",
+      "sha256": "5c5465b99ed5c58b7dbbe92691c8dda51466bcd0b04a66d838e7fd52b2353181",
+      "sealId": "853199e46ca7c4a69af8b43b20dc9b72e36b20bd3dda7620eac482be6a3c716d",
+      "causeSealIds": [
+        "4a236b55e9ad9e4aa54eb2c6bbe9d77e0a318881ba8328363505153d16e151dd",
+        "f37d62dd130cf26f48ced720565c4fad035b93a3f3ad1c3e98943cdc9bf585d1",
+        "7cfd32e06c7f96617d0f1bad6b08e849074caab508917efd394b920e84577547",
+        "8c5c86d6669841955ae7ddca134e76d66c91a983e6364535405f7546b73972c3"
+      ]
+    },
+    {
+      "key": "implementation-provider-json-decoder",
+      "path": "backend/src/llm/provider-json.ts",
+      "parents": [
+        "authority",
+        "physical",
+        "design-provider-json-accounting"
+      ],
+      "scope": "Malformed JSON rejected with constant non-content error message and bounded rejected text held only in memory; valid JSON returns unknown for domain validation. No silent repair or retry.",
+      "test": false,
+      "ref": "all-tests-20261007/implementation-provider-json-decoder",
+      "sha256": "66f8d5f878ee06a8f9c732f8b3f24a51e9d2171e0e6ddfc8de2df3a91ddc282e",
+      "sealId": "a1947c2099a22ca104da4ddba1a9c4ef660cee388accd7946e8511e3d7cf3f56",
+      "causeSealIds": [
+        "4a236b55e9ad9e4aa54eb2c6bbe9d77e0a318881ba8328363505153d16e151dd",
+        "2c6888e9d07a676d4b429b041b241e1631845b18fac4fb4cda280a4a29670d50",
+        "7cfd32e06c7f96617d0f1bad6b08e849074caab508917efd394b920e84577547"
+      ]
+    },
+    {
+      "key": "implementation-sdk-json-accounting-boundary",
+      "path": "backend/src/llm/openai-compatible.ts",
+      "parents": [
+        "authority",
+        "physical",
+        "design-provider-json-accounting",
+        "implementation-provider-observation-accounting",
+        "implementation-provider-json-decoder"
+      ],
+      "scope": "Only nonstream chatJson SDK response returns actual HTTP usage to observation accounting before decoding, including explicit zero, and parser failure is outside transport retry. No streamed/tool parser, model routing or domain-generation completion claim.",
+      "test": false,
+      "ref": "all-tests-20261007/implementation-sdk-json-accounting-boundary",
+      "sha256": "8d4be097ddbfcb0da515dd0db402c7dc6dddccb763d625fce16165e7c524d2a5",
+      "sealId": "3f3dd4c5984778043e1a692b58d89c536c9af360c6a2b4881b76deb10c9e19a2",
+      "causeSealIds": [
+        "4a236b55e9ad9e4aa54eb2c6bbe9d77e0a318881ba8328363505153d16e151dd",
+        "2c6888e9d07a676d4b429b041b241e1631845b18fac4fb4cda280a4a29670d50",
+        "7cfd32e06c7f96617d0f1bad6b08e849074caab508917efd394b920e84577547",
+        "853199e46ca7c4a69af8b43b20dc9b72e36b20bd3dda7620eac482be6a3c716d",
+        "a1947c2099a22ca104da4ddba1a9c4ef660cee388accd7946e8511e3d7cf3f56"
+      ]
+    },
+    {
+      "key": "provider-json-accounting",
+      "path": "backend/src/llm/provider-json.test.ts",
+      "parents": [
+        "authority",
+        "physical",
+        "authority-provider-observation",
+        "design-provider-json-accounting",
+        "implementation-provider-operation-taxonomy",
+        "implementation-provider-observation-accounting",
+        "implementation-provider-json-decoder",
+        "implementation-sdk-json-accounting-boundary"
+      ],
+      "scope": "Two mocked SDK/temporary SQLite tests: malformed JSON after 29 reported total tokens and empty content after explicit zero-token response, each one physical request and succeeded observation receipt before logical syntax rejection. No real provider, cutover trial or candidate acceptance.",
+      "test": true,
+      "ref": "verification/provider-json-accounting-20261007",
+      "sha256": "56eeca3caa87e99bdf8ed94ff9ecb90d9786e4b5835a7f570b01847831afecdf",
+      "sealId": "66ba4b137b0a653e02487d93b3afc2ed991d194839f6654de5f8df7dc2ef0032",
+      "causeSealIds": [
+        "4a236b55e9ad9e4aa54eb2c6bbe9d77e0a318881ba8328363505153d16e151dd",
+        "2c6888e9d07a676d4b429b041b241e1631845b18fac4fb4cda280a4a29670d50",
+        "f37d62dd130cf26f48ced720565c4fad035b93a3f3ad1c3e98943cdc9bf585d1",
+        "7cfd32e06c7f96617d0f1bad6b08e849074caab508917efd394b920e84577547",
+        "8c5c86d6669841955ae7ddca134e76d66c91a983e6364535405f7546b73972c3",
+        "853199e46ca7c4a69af8b43b20dc9b72e36b20bd3dda7620eac482be6a3c716d",
+        "a1947c2099a22ca104da4ddba1a9c4ef660cee388accd7946e8511e3d7cf3f56",
+        "3f3dd4c5984778043e1a692b58d89c536c9af360c6a2b4881b76deb10c9e19a2"
+      ]
+    }
+  ],
+  "diagnostic": {
+    "pass": 2,
+    "fail": 0,
+    "skipped": 0,
+    "strictTypecheckExit": 0
+  },
+  "inventoryRebinding": {
+    "path": "backend/src/llm/provider-json.test.ts",
+    "previousRef": "verification/provider-json-v1",
+    "previousSeal": "e6e1bb3406765cafb1e83016f34f54e05391c1ef2ce0cab0143ff96d5b445211",
+    "newRef": "verification/provider-json-accounting-20261007",
+    "newSeal": "66ba4b137b0a653e02487d93b3afc2ed991d194839f6654de5f8df7dc2ef0032",
+    "review": "Original malformed JSON case retained; retired V2 operation label replaced with registered narrateTurn; empty-content explicit-zero regression added. Old graph/history not rewritten."
+  },
+  "readback": {
+    "sourceMatches": 7,
+    "stale": 0,
+    "previousHeadsUnchanged": 657,
+    "fsck": "ok"
+  }
+}

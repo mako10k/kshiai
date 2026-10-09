@@ -1,0 +1,25 @@
+
+> kshiai@0.23.0 typecheck
+> npm run typecheck --workspaces --if-present && npm run typecheck:deployment
+
+
+> @kshiai/shared@0.23.0 typecheck
+> tsc -p tsconfig.json --noEmit
+
+
+> @kshiai/backend@0.23.0 typecheck
+> tsc -p tsconfig.json --noEmit
+
+src/scripts/replay-semantic-migration.ts(45,55): error TS2307: Cannot find module './semantic-migration-probe-fixture.js' or its corresponding type declarations.
+npm error Lifecycle script `typecheck` failed with error:
+npm error code 2
+npm error path /home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend
+npm error workspace @kshiai/backend@0.23.0
+npm error location /home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend
+npm error command failed
+npm error command sh -c tsc -p tsconfig.json --noEmit
+
+
+> @kshiai/frontend@0.23.0 typecheck
+> tsc -b --noEmit
+

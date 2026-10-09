@@ -1,0 +1,16 @@
+domain ImageArchiveConnectionRepair:
+  description "Repair archive tests that bypass the implementation they claim to verify"
+problem P1:
+  "The original archive case copies bytes through fs.copyFileSync instead of invoking archiveActiveCharacterPortrait; it can pass without the service copying an active portrait."
+evidence E1:
+  "image-archive.test.ts case1 directly writes/copies/reads private fixture files. There is no service archive invocation. Case2 tests public URL formatting and missing=null but cannot distinguish accepted previous filename from rejected filename."
+evidence E2:
+  "image-service.ts owns active URL selection, primary fallback, copy, failure-to-null and success/failure logging. Its resolver checks kind, filename, path and existence. These responsibilities are absent from the original archive assertions' execution path."
+premise A1:
+  "User retains all247unit plus4E2E files and original assertions. Accepted ADR0010/0011 and character-v3-write-boundary remain normative. No ordinary character-definition-v2 writer or hosted persistence authority is added."
+decision CAUSE based_on P1, E1, E2:
+  "The producing condition is test construction that substitutes low-level filesystem operations for service invocation. The detection gap is accepting plausible case titles/green filesystem checks without checking the invoked production path; type checking cannot detect this semantic substitution."
+decision REPAIR based_on CAUSE, A1:
+  "Extract shared real local-media operations behind an explicitly typed private-root store. Existing service wrappers use the production root/logger; repaired tests call actual service wrappers with a real temporary filesystem store. Preserve default path/URL/copy/error/log behavior and original byte/URL/missing assertions. Add positive previous-file resolution and active revision archive coverage."
+decision VERIFY based_on REPAIR, E2, A1:
+  "Independent review, private real files, workspace types, existing image-helper tests and original-case preservation precede normal Seal. Revalidate current source-bound image-service implementation and dependent verification with exact replacement Cause; preserve old immutable revisions. Formal aggregate remains blocked by remaining unsealed tests."

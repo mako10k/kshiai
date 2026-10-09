@@ -1,0 +1,12 @@
+domain LAUNCH:
+  description "Finish exact operator job manifest candidate before shared-state approval."
+evidence CURRENT:
+  "Same linked worktreeHEAD7a4d417 and preserved in-scope dirty docs. Success4nsmc task config baseline retained; source4ab/RC2 image frozen. Cloudflare route still pending owner answer."
+evidence CODE:
+  "Compiled CLI closeDatabase resets Postgres pool null before await pool.end; subsequent readback opens independent pool. Docker WORKDIR/app matches eval-relative compiled import. Plan threeparts restore exact33509bytes SHA."
+premise SCOPE:
+  "Local candidate packaging is authorized preparation. No live job replace, execute, stop, deletion, migration or auth change is authorized by this continuation."
+pending INPUT:
+  "Real stop policy must be generated from actual owner approval and independently proved writer closure; no sample policy can serve as execution evidence."
+decision PACKAGE based_on CURRENT, CODE, SCOPE, INPUT:
+  "Produce complete job manifest template, frozen replace/execute argv and readback bindings. Keep dynamic policy absent and require explicit materialization after approval. Verify locally wrapper missing or corrupted input refuses before DB import. No remote mutation and no fake completed receipts."

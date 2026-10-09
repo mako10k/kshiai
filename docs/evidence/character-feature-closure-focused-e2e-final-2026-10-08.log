@@ -1,0 +1,16 @@
+[WebServer] (node:881519) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 5 tests using 1 worker
+
+(node:881600) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:881600) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 e2e/character-focused-review.spec.ts:24:5 › shows the stored structured difference without presenting incomplete work as acceptable (3.2s)
+  ✓  2 e2e/character-focused-review.spec.ts:39:5 › keeps the same owner command after an ambiguous response and opens the new attempt (2.5s)
+  ✓  3 e2e/character-focused-review.spec.ts:68:5 › confirms a fixed V3 candidate with the exact reviewed digest and exposes its complete review (3.1s)
+  ✓  4 e2e/character-focused-review.spec.ts:100:5 › restricts closed owner review to confirmation and stays on the exact review after saving (2.3s)
+  ✓  5 e2e/character-focused-review.spec.ts:139:5 › keeps an owned V2 profile readable without advertising unavailable migration or ordinary editors (2.2s)
+
+  5 passed (2.5m)

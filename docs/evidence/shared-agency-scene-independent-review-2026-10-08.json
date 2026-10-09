@@ -1,0 +1,27 @@
+{
+  "verdict": "PASS",
+  "files": {
+    "packages/shared/src/battle-social.ts": "65c24fddb1de10b595f1a6514a68112f3cc5e42a3acb42e707e44fc4d0255bd5",
+    "packages/shared/src/battle-social.test.ts": "7764d288f8a943baf84320355f9231e6c07361367143614f7ccaf33956966560",
+    "packages/shared/src/scene-beat.ts": "8a8174801e1a7060cae88044a051fa5ab9f878ca7aad796e495c3e2ec38492f3",
+    "packages/shared/src/scene-beat.test.ts": "d9d31cdcc745f2b035622f8062ebb5243ac721dfbf929c8b54c57776ea718a2f",
+    "packages/shared/src/conscious-agency.ts": "6dff7d4af9f07460536001771168d3115ed1fa6e38630d630f8f143ee0b2c870",
+    "packages/shared/src/conscious-agency.test.ts": "bebc80fc9fdf90f71628cfc99b1e29e07768cf6ee5f4d523271e68a08c054776",
+    "packages/shared/src/battle-policy.test.ts": "89b428b76e219df6f39f23c4a626b55b156006ade3f0ea226864a27e0633b797",
+    "packages/shared/src/battle.ts": "fc5d492df5fd5252b66e12017b265a4697cc3f798acc2811434b3c33d23b0752"
+  },
+  "reviewer": "/root/battle_helper_contract_review",
+  "cases": 32,
+  "scope": "policy2/social5/scene5/historicalpinnedV3agency20",
+  "causes": {
+    "policy": "F-BTL16",
+    "social": "F-BTL53/55/57",
+    "scene": "AcceptedADR0016/0017",
+    "agency": "AcceptedADR0047 retainedhistoricalADR0028"
+  },
+  "excluded": [
+    "live model/pipeline quality",
+    "V4/V5 acceptance",
+    "provider count/cost acceptance"
+  ]
+}

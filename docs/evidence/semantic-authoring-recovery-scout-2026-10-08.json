@@ -1,0 +1,14 @@
+{
+  "files": {
+    "backend/src/llm/semantic-authoring-provider.test.ts": "0c6846d3422cd538e3470456622d5f278fa5635a03e4f0844b5db27f0df466b0",
+    "backend/src/services/semantic-authoring/adapters/character-v3.test.ts": "fd544e0245832e806755cceb7ad9259ecaf15fc6e2f785566cb886735e26e8c1",
+    "backend/src/services/semantic-authoring/public-mapping.test.ts": "5589d87f82716abea927164acfc781bd3a26f2d808bab9287d73fab1c482ffe8",
+    "backend/src/services/semantic-authoring/conformance.test.ts": "0e9ababee0db7df3a18c365ae8fac859e518c0f4fa07d473296b27092479ee31",
+    "packages/shared/src/character-semantic-authoring.test.ts": "9adcf3f338043773019a137517952e94d35baa1656fe5a461492846fc24098ae"
+  },
+  "pass": 47,
+  "fail": 0,
+  "skip": 0,
+  "sealed": false,
+  "independentReviewPending": true
+}

@@ -1,0 +1,1662 @@
+{
+  "schema": "kshiai/current-source-cause-impact/v1",
+  "method": "Reverse reachability through exact normative Cause targets; changed source-bound HEAD seeds. Prior R2 nodes retained as additional affected work. New unsealed test paths and missing producers require explicit links.",
+  "reachableGraphNodes": 943,
+  "changedReachableSeeds": 63,
+  "affectedClosureNodes": 272,
+  "newBeyondR2": 119,
+  "affectedMappedTests": [
+    {
+      "path": "e2e/v3-local-integration.spec.ts",
+      "ref": "verification/local-integration-current-20261008",
+      "sealId": "f5bc4e32207d5b2f7dddbc74ab945af49771a3df46ba46ca11ee2a07fef06b31"
+    },
+    {
+      "path": "backend/src/services/v3-battle-creation.test.ts",
+      "ref": "verification/v3-battle-creation-recovery-bounded-20261008",
+      "sealId": "58a7034ae30a4e8660db9c01161ea05ee28dbc0eb539d8e661559169945910de"
+    },
+    {
+      "path": "backend/src/llm/openai-compatible-character-definition.test.ts",
+      "ref": "verification/openai-compatible-character-definition-recovery-bounded-20261008",
+      "sealId": "a928e47ef948b5b0a729f767d0496b8013d67103aa1a5389d2da89650922e112"
+    },
+    {
+      "path": "backend/src/llm/provider-json.test.ts",
+      "ref": "verification/provider-json-accounting-20261007",
+      "sealId": "66ba4b137b0a653e02487d93b3afc2ed991d194839f6654de5f8df7dc2ef0032"
+    },
+    {
+      "path": "backend/src/llm/provider-accounting.test.ts",
+      "ref": "verification/provider-accounting-current-20261007",
+      "sealId": "b9b4686ee6f66fdcb17d5f720b2e53888c4dd455313b2113c7e43ede340299f5"
+    },
+    {
+      "path": "backend/src/services/character-v2-update-boundary.test.ts",
+      "ref": "verification/character-v2-update-boundary-recovery-bounded-20261008",
+      "sealId": "9c44026e7f6192152cba87a4c37a8c893e17e2e0a9be7516ac318685d6586439"
+    },
+    {
+      "path": "backend/src/services/awareness-context.test.ts",
+      "ref": "awareness-guidance-20261007/verification-context",
+      "sealId": "58e65d4179a3c0ff99386543d8bf586daba163d0edac1f53fa055128885bf8fd"
+    },
+    {
+      "path": "backend/src/services/awareness-execution.test.ts",
+      "ref": "awareness-guidance-20261007/verification-execution",
+      "sealId": "17a20f68e997b1e7842132b754c02a8847d1234f319de677f7dd24fa6569fdff"
+    },
+    {
+      "path": "packages/shared/src/action-intent-contract.test.ts",
+      "ref": "verification/action-intent-contract-20261007",
+      "sealId": "622ca79d5d7d7a59143d3dc436ce9bbbfc1ac0feed94270864193a0e5bea661c"
+    },
+    {
+      "path": "packages/shared/src/awareness-state.test.ts",
+      "ref": "verification/awareness-state-20261007",
+      "sealId": "c20387af136077c79090a6de785ac93057b92ad60f5a9aa0e92398b4c190f0ef"
+    },
+    {
+      "path": "packages/shared/src/awareness-policy.test.ts",
+      "ref": "verification/awareness-policy-20261007",
+      "sealId": "e8c1fb99205b28211e0c6c9fb1b290ae9046df3a346d8e4cc6ea21831d7e2b3c"
+    },
+    {
+      "path": "packages/shared/src/awareness-pipeline.test.ts",
+      "ref": "verification/awareness-pipeline-20261007",
+      "sealId": "95f46f534d7370fff8539ba0f0a64ceb249215fedad321dc595b886cb04f4e2a"
+    },
+    {
+      "path": "packages/shared/src/battle-contract-types.test.ts",
+      "ref": "verification/battle-contract-types-20261007",
+      "sealId": "a4c75f329082707016895dc47f49ef57e38ac63caa8a76bfeebfd5946356d9e5"
+    },
+    {
+      "path": "backend/src/routes-authoring-read-purity.test.ts",
+      "ref": "verification/authoring-read-purity-current-20261007",
+      "sealId": "33c3815b246bd1ad28daccc940c45e880d90e53913ee745a5a0b7463a05879f9"
+    },
+    {
+      "path": "packages/shared/src/structured-battlefield.test.ts",
+      "ref": "verification/own-area-structured-battlefield-20261007",
+      "sealId": "700e8a1306ab7dc33dabfde139c8fd9dedd077accf487e5cbf69548cf60385d2"
+    },
+    {
+      "path": "backend/src/routes-structured-battlefield-acceptance.test.ts",
+      "ref": "verification/stable-area-battlefield-http-acceptance-20261007",
+      "sealId": "8b5497c1da2af6c911183d10bbf845d45e74fe69a2a267a0fafbf6e5da854c42"
+    },
+    {
+      "path": "backend/src/services/character-action-fallback.test.ts",
+      "ref": "verification/action-fallback-20261007",
+      "sealId": "fee427307dc6c65a9712c00d05e593a083a57e6042f423adf711cad1c1b0656a"
+    },
+    {
+      "path": "backend/src/repositories/character-assets-v2.test.ts",
+      "ref": "verification/character-assets-repository-20261007",
+      "sealId": "4d33938f8494654cc3ec9f0fa0bff4e60bc242bc5961d348b381a5ca2c0cae42"
+    },
+    {
+      "path": "backend/src/repositories/llm-usage.test.ts",
+      "ref": "verification/usage-ledger-sdk-20261007",
+      "sealId": "2671b62b0ee78b4d80c926b14b69a99df3cd15c358206e86dbd6cde4487dd9a2"
+    },
+    {
+      "path": "backend/src/llm/awareness-output-contract.test.ts",
+      "ref": "verification/action-output-guidance-20261007",
+      "sealId": "8099b1d6ab742c05b159452594d9f174f32c99dbb5665cbf6c9f37749da00355"
+    },
+    {
+      "path": "backend/src/llm/awareness-latent-output-guidance.test.ts",
+      "ref": "verification/latent-output-brevity-20261007",
+      "sealId": "737022613bf6e08186b036d06a19138c9c7bda42088e91b5a3287108270d6a8c"
+    },
+    {
+      "path": "backend/src/llm/awareness-request.test.ts",
+      "ref": "verification/awareness-request-20261007",
+      "sealId": "250687d2278cd3a547eb48093c2e84fdd5fb5d03cf5526623d11f7c73a7da0d6"
+    },
+    {
+      "path": "backend/src/llm/openai-compatible-model-options.test.ts",
+      "ref": "verification/sdk-model-options-20261007",
+      "sealId": "e673f8ab363f47d757fe209dc1888d50238295a5036c37dbe99dc7ef0c521705"
+    },
+    {
+      "path": "backend/src/llm/awareness-provider.test.ts",
+      "ref": "verification/awareness-role-provider-20261007",
+      "sealId": "39b3b8bbcb417300d70fed428158e9d3020aae152b78b90e471323b6a256c0da"
+    },
+    {
+      "path": "backend/src/llm/awareness-narration.test.ts",
+      "ref": "verification/awareness-narration-batch-20261007",
+      "sealId": "a75c40e5f4121eff38ea4324cb8cbacba56d659a4d66995eb1a7fd58c4a652bf"
+    },
+    {
+      "path": "backend/src/llm/awareness-frozen-narration.test.ts",
+      "ref": "verification/awareness-frozen-narration-20261007",
+      "sealId": "2bc627a64211c6af5311ee885f237fca60cc9e44bb556cf901826b28622e2941"
+    },
+    {
+      "path": "backend/src/llm/awareness-provider-factory.test.ts",
+      "ref": "verification/awareness-provider-factory-20261007",
+      "sealId": "551ae7d8ea5734eee239f8d6fe9eb1d1ebc94bc2d291a8177e7ba58379d41237"
+    },
+    {
+      "path": "backend/src/llm/awareness-dispatch-admission.test.ts",
+      "ref": "verification/awareness-dispatch-admission-20261007",
+      "sealId": "c5b5c0c8c87899ea9484378b595faa560cadfedc42a4b2ad09cc61113cb97375"
+    },
+    {
+      "path": "backend/src/llm/awareness-dispatch-context.test.ts",
+      "ref": "verification/awareness-dispatch-context-20261007",
+      "sealId": "a8bd77581a0e475618eb1a02af79dc7e24c3b7cdf4959fa3264c6098f4cc4ae7"
+    },
+    {
+      "path": "backend/src/llm/awareness-adjudication-result.test.ts",
+      "ref": "verification/awareness-adjudication-result-20261007",
+      "sealId": "6d6e0ceb41bec054864136538c5964cc4ab61c11a4f1c0f4ea9cf19b0314fcec"
+    },
+    {
+      "path": "backend/src/llm/narration-prompt-contract.test.ts",
+      "ref": "verification/narration-prompt-contract-20261007",
+      "sealId": "7ab3fea47a5d0f0dd3ec4a5e26206a9dd778d9b336706d658e9bcf199f6b8465"
+    },
+    {
+      "path": "backend/src/llm/provider-response-schema.test.ts",
+      "ref": "verification/provider-response-schema-20261007",
+      "sealId": "c3f863e3f85498e21342866155699b0d288af3471be88bf3a6ea322fd45eb10f"
+    },
+    {
+      "path": "packages/shared/src/narration-perception.test.ts",
+      "ref": "verification/narration-perception-projection-20261007",
+      "sealId": "fb875ba1de28fd6079576c1f9e5f156c35555583f5748e5df6dae67b5af28832"
+    },
+    {
+      "path": "backend/src/llm/openai-compatible-narration.test.ts",
+      "ref": "verification/direct-narration-projection-input-20261007",
+      "sealId": "ece13f8be78174ec431251ffd3f7bcd01aef52c4c94093a631d64819a97c7194"
+    },
+    {
+      "path": "backend/src/llm/narrator-presentation-focus-evaluation.test.ts",
+      "ref": "verification/presentation-protocol-20261007",
+      "sealId": "97a724470ebd013bce876238617aded319fd10eb648daea156cb91746cf131f1"
+    },
+    {
+      "path": "packages/shared/src/character-focus-policy.test.ts",
+      "ref": "verification/character-focus-shadow-20261007",
+      "sealId": "9885efe7289a9b42b53dda4a752c6878e80f282b3aa0131dd85241ada773be6d"
+    },
+    {
+      "path": "backend/src/llm/character-focus-ablation.test.ts",
+      "ref": "verification/character-focus-ablation-20261007",
+      "sealId": "218cadf482d9dcb0bfb12bbd421281920bac71f3110b9a43b00dbd1ef6530b88"
+    },
+    {
+      "path": "backend/src/llm/character-focus-ablation-report.test.ts",
+      "ref": "verification/character-focus-ablation-report-20261007",
+      "sealId": "ed962cb5cbf3e5f39ac29a44941ecd7628283bad8280e1397c7d4efe9a99e35c"
+    },
+    {
+      "path": "packages/shared/src/profile-grounding.test.ts",
+      "ref": "verification/profile-grounding-20261007",
+      "sealId": "98eb01f9a2229b1050d699e1c8e523b56497059583a67ec0e1e72272fbdea38e"
+    },
+    {
+      "path": "backend/src/routes-structured-narration-acceptance.test.ts",
+      "ref": "verification/stable-area-narration-http-acceptance-20261007",
+      "sealId": "67fb7d4ddcae06450cbad5d2476ddf7ea178afca7b19e247eef6c8db19e36739"
+    },
+    {
+      "path": "packages/shared/src/turn-event-contract.test.ts",
+      "ref": "verification/turn-event-contract-20261007",
+      "sealId": "1524247f80c8d87c492d44b5426b35d35598863123f8a2ffba30445dbe3d7f46"
+    },
+    {
+      "path": "packages/shared/src/utterance-perception.test.ts",
+      "ref": "verification/utterance-perception-20261007",
+      "sealId": "46682f88987e303b31ec67ec316f68ddbf2fa07a34bde181d4246e92c939155d"
+    },
+    {
+      "path": "packages/shared/src/reposition-transition.test.ts",
+      "ref": "verification/own-area-reposition-transition-20261007",
+      "sealId": "66f3a875b9558a74b7be2187b3778ff05f2106e3a8328ee27bf39358a4ba82ec"
+    },
+    {
+      "path": "packages/shared/src/awareness-battle.test.ts",
+      "ref": "verification/stable-area-awareness-battle-contract-20261007",
+      "sealId": "37626a8ad19dd76cc18de588d232be444fcc51da615d24fda745ce1c8d5200f8"
+    },
+    {
+      "path": "packages/shared/src/perception-quantization.test.ts",
+      "ref": "verification/perception-quantization-current-20261007",
+      "sealId": "60df1fd849f35780d3671c2830c9b74341d3bd9f31bfa4f7138e944720a9406f"
+    },
+    {
+      "path": "packages/shared/src/narration-perspective.test.ts",
+      "ref": "verification/narration-perspective-current-20261007",
+      "sealId": "c7396f2e10219ba2b40f0568afadb652e391f4d58f3ab78a8f079a5c39158ee2"
+    },
+    {
+      "path": "packages/shared/src/battle-turn-causal-receipt.test.ts",
+      "ref": "verification/turn-causal-receipt-current-20261007",
+      "sealId": "29f2834d20fca31147321bbc97bf5407bd90a0120839585d469398abe40ce1a8"
+    },
+    {
+      "path": "packages/shared/src/perception.test.ts",
+      "ref": "verification/perception-schema-current-20261007",
+      "sealId": "741f350d75ca5e1af16c76a65bb23f41c94383d7e172fa9819081cc025db38b6"
+    },
+    {
+      "path": "packages/shared/src/perception-projection.test.ts",
+      "ref": "verification/perception-projection-current-20261007",
+      "sealId": "83c4cb037c5c400f30fe3ce91b7d5fcd8aa76852f4371d33070ca9a845567792"
+    },
+    {
+      "path": "backend/src/llm/character-expression-contract.test.ts",
+      "ref": "verification/retained-compact-expression-decoder-current-20261007",
+      "sealId": "334383eed7e6d311408df36b38964de0e82ed4eaaa0f5f59817c978006174dde"
+    },
+    {
+      "path": "backend/src/llm/perception-evidence.test.ts",
+      "ref": "verification/committed-perception-evidence-current-20261007",
+      "sealId": "628531a8b4dd8dc0d6900e66ce6184d3665ad7451a6920d253fbfee54aff92ff"
+    },
+    {
+      "path": "backend/src/llm/perception-prompt-strategy.test.ts",
+      "ref": "verification/perception-fixed-evaluation-current-20261007",
+      "sealId": "3578230167f5cbfbc8689898d837bee383c89e3cc414f1c74f5e1ad19a2b791f"
+    },
+    {
+      "path": "packages/shared/src/dialogue-context.test.ts",
+      "ref": "verification/retained-dialogue-context-current-20261007",
+      "sealId": "802e19e809db257f0a4d722153f11824be4d3993003f8cda77ac61072a2321bc"
+    },
+    {
+      "path": "packages/shared/src/compact-psyche-decode.test.ts",
+      "ref": "verification/retained-compact-psyche-decoder-current-20261007",
+      "sealId": "cc750b13f9e30b5ab80b2bf51a85b82ea244e69cfe238e0424e907b443a5588b"
+    },
+    {
+      "path": "packages/shared/src/psyche-reaction-policy.test.ts",
+      "ref": "verification/retained-psyche-reaction-v1-current-20261007",
+      "sealId": "1c52c9a23f14d737830104602736b9d6050ed139a3025c5e7752aa008d6ba056"
+    },
+    {
+      "path": "packages/shared/src/conscious-dynamic.test.ts",
+      "ref": "verification/dynamic-v4-shared-current-20261007",
+      "sealId": "fbc53eb15b5fe0c0e5f0779ecd0e6003410d8caf695b96eb98d229460b79b090"
+    },
+    {
+      "path": "backend/src/llm/conscious-dynamic.test.ts",
+      "ref": "verification/dynamic-v4-provider-current-20261007",
+      "sealId": "d846992408136be4af06e558aad8d3f1007643d62841b83a138e84308cba32c9"
+    },
+    {
+      "path": "backend/src/services/conscious-agency-binding.test.ts",
+      "ref": "verification/retained-agency-v3-binding-current-20261007",
+      "sealId": "24c9bcf77ec9d82ae97c4f57abe416d7f73db1910ba05b1d384b51e5f12607a3"
+    },
+    {
+      "path": "backend/src/services/conscious-agency-runtime.test.ts",
+      "ref": "verification/retained-agency-v3-runtime-current-20261007",
+      "sealId": "fa58553524f9a1eb71835166e3953a88a94f2939b74016f18a3931f77198ea66"
+    },
+    {
+      "path": "backend/src/services/conscious-agency-persistence.test.ts",
+      "ref": "verification/retained-agency-v3-persistence-current-20261007",
+      "sealId": "0df9cbe4abb949879c85eba500d7e80d742ffba5adfb2a80ed4b555e077eab45"
+    },
+    {
+      "path": "backend/src/repositories/battle-awareness-narration-reservation.test.ts",
+      "ref": "verification/narration-reservation-storage-current-20261007",
+      "sealId": "af3fab324250de872010116f2bd7bc23214104aab3d86b80d0b4892da718d2b7"
+    },
+    {
+      "path": "backend/src/repositories/battle-awareness-narrator.test.ts",
+      "ref": "verification/narrator-continuity-storage-current-20261007",
+      "sealId": "fc463e7260c49c5c77823ade78c3b744e2a99decc65aed6c57a7f66e5badc84c"
+    },
+    {
+      "path": "backend/src/services/awareness-narration-claim-snapshot.test.ts",
+      "ref": "verification/narration-claim-snapshot-current-20261007",
+      "sealId": "dacc831dc9a5a55bed0c500a205949447e6f1e10a4efba2cdad33a3ecaec8170"
+    },
+    {
+      "path": "backend/src/services/awareness-narration-event-storage.test.ts",
+      "ref": "verification/narration-event-storage-current-20261007",
+      "sealId": "db2119a28b0bf3e394e3b7874aa05b747d7bc811f25aa70500450402d4a0a18d"
+    },
+    {
+      "path": "backend/src/services/awareness-narration-worker.test.ts",
+      "ref": "verification/awareness-narration-worker-bounded-current-20261007",
+      "sealId": "f345679a378d02706c792cf06060ea5f6de12c4f59f3c305bd080fcb35adc990"
+    },
+    {
+      "path": "backend/src/services/awareness-narration-continuation.test.ts",
+      "ref": "verification/awareness-narration-continuation-bounded-current-20261007",
+      "sealId": "e2823ff492c187657982505299761321e7ec60111ea99400bc0bc05cf7ce2ff8"
+    },
+    {
+      "path": "backend/src/services/awareness-narration-urgency.test.ts",
+      "ref": "verification/awareness-narration-urgency-bounded-current-20261007",
+      "sealId": "a5e8e7b885d54e5846b83092f7b05180d1d09c49fd9413a39dd47d0bc997526d"
+    },
+    {
+      "path": "backend/src/services/awareness-world-commit.test.ts",
+      "ref": "verification/awareness-world-commit-bounded-current-20261007",
+      "sealId": "2155a828a7cb8d7d0d93506fa0dfbc78c85535b8773bd4ca3f825cd8af4c63d1"
+    },
+    {
+      "path": "backend/src/services/awareness-expression-commit.test.ts",
+      "ref": "verification/awareness-expression-commit-bounded-current-20261007",
+      "sealId": "52aff00439a13e0baefc7c3f23f1c35a29208ac967fa4a4b9401b55613c99a21"
+    },
+    {
+      "path": "backend/src/services/awareness-adjudication-guard.test.ts",
+      "ref": "verification/awareness-adjudication-guard-bounded-current-20261007",
+      "sealId": "1f1843e02aeb635bb678c9f5b3f399bb5271cc9a34e25fe2f4ccf5f84488d66e"
+    },
+    {
+      "path": "backend/src/services/normal-awareness-policy.test.ts",
+      "ref": "verification/normal-awareness-policy-bounded-current-20261007",
+      "sealId": "3666451e428f32f71eb4eaf71effbff06515ee065cdd932ed8915c43b7de2259"
+    },
+    {
+      "path": "backend/src/services/distributed-guard.test.ts",
+      "ref": "verification/distributed-guard-bounded-current-20261007",
+      "sealId": "c0bba53d85453e55c8dfc8062b63f60e0b2c629d1af9f50a9f954fadcc27d725"
+    },
+    {
+      "path": "backend/src/services/battle-causal-narration.test.ts",
+      "ref": "verification/battle-causal-narration-bounded-current-20261007",
+      "sealId": "929614f7953c82a0c4f4c54bae84e6ae11064e81848ce2228b64fa4da02ebe60"
+    },
+    {
+      "path": "backend/src/services/battle-consumer-wiring.test.ts",
+      "ref": "verification/battle-consumer-wiring-bounded-current-20261007",
+      "sealId": "d969f6d3398dc3005aff16c3a5f0d81986cde3dfb8eaec48f48195e06b4a092a"
+    },
+    {
+      "path": "packages/shared/src/character-definition-check.test.ts",
+      "ref": "verification/character-definition-check-bounded-character-contract-20261007",
+      "sealId": "dda0106ae33970ab0bdd0fe796fce20a24b29e96ab7fd184a3cc694af406d7c8"
+    },
+    {
+      "path": "packages/shared/src/character-definition-rules.test.ts",
+      "ref": "verification/character-definition-rules-bounded-character-contract-20261007",
+      "sealId": "679bce7aadf5980abdfefe1324b5c8d4bd5d961a120f90085da349785c1d6ef9"
+    },
+    {
+      "path": "packages/shared/src/structured-character.test.ts",
+      "ref": "verification/structured-character-bounded-character-contract-20261007",
+      "sealId": "5d3e7b9d8530f3ba01a78f25ae224d5a5151663633ff01a33ad37be083584534"
+    },
+    {
+      "path": "packages/shared/src/character.test.ts",
+      "ref": "verification/character-bounded-character-contract-20261007",
+      "sealId": "b7d6a956e9db0e444d17d54748fff2ff43eea6740157e912c016520a42d23ac6"
+    },
+    {
+      "path": "packages/shared/src/character-manifestation.test.ts",
+      "ref": "verification/character-manifestation-bounded-character-contract-20261007",
+      "sealId": "876097eba731aa019bd69b2d48f46733c85746df31891b096a71d1f76bcc022f"
+    },
+    {
+      "path": "packages/shared/src/battle-asset-manifest.test.ts",
+      "ref": "verification/battle-asset-manifest-bounded-character-contract-20261007",
+      "sealId": "7a239f09a9cef64998df7969c7e32b35ac0f1505c8fea7f686ad68b58ebabc5c"
+    },
+    {
+      "path": "backend/src/repositories/character-generation-reader.test.ts",
+      "ref": "verification/character-generation-reader-bounded-character-contract-20261007",
+      "sealId": "2ca174b89c55b02c82ba1b93494f2f5660ca1b7546c01e0500dbfcda8b44e8ab"
+    },
+    {
+      "path": "backend/src/repositories/battle-awareness-creation.test.ts",
+      "ref": "verification/battle-awareness-creation-bounded-awareness-creation-20261007",
+      "sealId": "9958ac7fdd8d862d47915ce8ece056b251506e2718c22f46ab7775ea22544176"
+    },
+    {
+      "path": "backend/src/repositories/battle-awareness.test.ts",
+      "ref": "verification/battle-awareness-bounded-awareness-creation-20261007",
+      "sealId": "cfe00eb6c63e4d8131cc6174c6c56cd7f4ff10052a208c12f445b49aaab780c3"
+    },
+    {
+      "path": "backend/src/services/awareness-battle-creation.test.ts",
+      "ref": "verification/awareness-battle-creation-bounded-awareness-creation-20261007",
+      "sealId": "53d5933f214fa6683fbf198a660a3ce47b929b85ccf2a18680e24a18028ca7ab"
+    },
+    {
+      "path": "backend/src/services/awareness-battle-service.test.ts",
+      "ref": "verification/awareness-battle-service-bounded-awareness-creation-20261007",
+      "sealId": "8580d37b61869e20c4959c67206988ca356f178e3f74895a09016c7b9c52fe4f"
+    },
+    {
+      "path": "backend/src/services/awareness-creation-encounter.test.ts",
+      "ref": "verification/awareness-creation-encounter-bounded-awareness-creation-20261007",
+      "sealId": "afc973998b2a0aed1ce265e005764de05bf47980ee8eae6d60c2ad8259bc126c"
+    },
+    {
+      "path": "backend/src/services/battle-create-idempotency.test.ts",
+      "ref": "verification/battle-create-idempotency-bounded-awareness-creation-20261007",
+      "sealId": "2cb50f7f6a261d9605011de5ee688c5b2306cd9d8416679edc60bcf6fb8d7828"
+    },
+    {
+      "path": "backend/src/repositories/battle-awareness-postgres.test.ts",
+      "ref": "verification/battle-awareness-postgres-bounded-native-pg-20261007",
+      "sealId": "5694d174aa491d92cbd04dc3c6f997e2f453145c1de1cf2d7b7b1e6d7fa7f9c4"
+    },
+    {
+      "path": "backend/src/repositories/battle-awareness-narration-events-postgres.test.ts",
+      "ref": "verification/battle-awareness-narration-events-postgres-bounded-native-pg-20261007",
+      "sealId": "cfa925d91ae62f7614d48e96e72df54ad78cbc7482ddd023baa35b6036c0b55a"
+    },
+    {
+      "path": "backend/src/repositories/battle-awareness-narration-reservation-postgres.test.ts",
+      "ref": "verification/battle-awareness-narration-reservation-postgres-bounded-native-pg-20261007",
+      "sealId": "3ef9dbacbd2573508abd0520de1b65c991fbbc8f453616021e81e2eafbcb6c82"
+    },
+    {
+      "path": "packages/shared/src/battle-engine-absence.test.ts",
+      "ref": "verification/battle-engine-absence-bounded-20261007",
+      "sealId": "f25feef15fb6e6fc9d88d9e15d65ad7a9b61d85ad92166f2b06e56ccb354344a"
+    },
+    {
+      "path": "backend/src/llm/openai-compatible-agent.test.ts",
+      "ref": "verification/agent-typed-seam-bounded-20261008",
+      "sealId": "88b651b11bee401e5b0e8dd019e86e29ba2a319da1c226196d1f5de1f84823ff"
+    },
+    {
+      "path": "backend/src/llm/openai-compatible-perception.test.ts",
+      "ref": "verification/perception-typed-seam-bounded-20261008",
+      "sealId": "5383f46e17fbf709a60d07e1d3278ff95f638c28261239ac3d21077620eaf215"
+    },
+    {
+      "path": "backend/src/llm/openai-compatible-routing.test.ts",
+      "ref": "verification/routing-typed-seam-bounded-20261008",
+      "sealId": "0595f010d8716e7fa14181a8e6065c93d1b863ea910acd970acd99a94137127e"
+    },
+    {
+      "path": "backend/src/llm/openai-compatible-psyche-repair.test.ts",
+      "ref": "verification/psyche-repair-bounded-20261008",
+      "sealId": "09d61c50f520e3a93618d90fd0f96b72f374a48cc14568715c488daae5d79ef6"
+    },
+    {
+      "path": "backend/src/llm/mock.test.ts",
+      "ref": "verification/mock-bounded-20261008",
+      "sealId": "6c9b15cac35128f3ec21e1586d2db5b9f01eb7e516c4dcdc4ef6697106c0cbe4"
+    },
+    {
+      "path": "backend/src/services/character-portrait-v3.test.ts",
+      "ref": "verification/portrait-v3-bounded-20261008",
+      "sealId": "0b349d1dfb958a33e71c52e699789174ce68f30a89a19b6b763d617fc37253c1"
+    },
+    {
+      "path": "backend/src/services/free-action-service.test.ts",
+      "ref": "verification/free-action-service-bounded-20261008",
+      "sealId": "c25556aa53ec82eaa7339bc657a4240bdf3f8235c2bbeabc46bf62ef3eb6c6a3"
+    },
+    {
+      "path": "backend/src/services/character-agency-inventory.test.ts",
+      "ref": "verification/historical-agency-inventory-bounded-20261008",
+      "sealId": "35d9e9be33dc48d9258733a111baff83047d59cbd17633c82f12f5095df96789"
+    },
+    {
+      "path": "packages/shared/src/battle-policy.test.ts",
+      "ref": "verification/battle-policy-bounded-20261008",
+      "sealId": "5ccff28d28e272f803f2f1ecffcbc88ba76a55e03f656cfdbe5b6f001b835bd5"
+    },
+    {
+      "path": "packages/shared/src/conscious-agency.test.ts",
+      "ref": "verification/conscious-agency-bounded-20261008",
+      "sealId": "e4901838dcd2988a87a62f8d41bf373a4725164e339622e625733a5eeee4255c"
+    },
+    {
+      "path": "backend/src/scripts/character-authoring-a2-freeze.test.ts",
+      "ref": "verification/character-authoring-a2-freeze-bounded-20261008",
+      "sealId": "6d13151cbf3a36368cc65085413161fb2ca63a2a940ac2328c67471ccc4928bd"
+    },
+    {
+      "path": "backend/src/services/scene-beat-wiring.test.ts",
+      "ref": "verification/scene-beat-wiring-bounded-20261008",
+      "sealId": "1b7674b7d5986b4784a2e270db6bb4392fff4987559e0942d2bb7553743b086a"
+    },
+    {
+      "path": "backend/src/services/battle-speech-wiring.test.ts",
+      "ref": "verification/battle-speech-wiring-bounded-20261008",
+      "sealId": "2d5c03f299e5ab8f4e4088010c51bafd8660b70fcb4580d936ae3e04cb88ba6b"
+    },
+    {
+      "path": "packages/shared/src/action-feasibility.test.ts",
+      "ref": "verification/action-feasibility-bounded-20261008",
+      "sealId": "9bc28c55d0c07c706c80fa52aa4a87a433c6c7102657d156db7162e3f838821a"
+    },
+    {
+      "path": "packages/shared/src/battle-pacing.test.ts",
+      "ref": "verification/pacing-representation-bounded-20261008",
+      "sealId": "5f18aade0fd2fff56038e1843a2a3bed6a65badb61a6ef9b81d233d58ad40f8a"
+    },
+    {
+      "path": "backend/src/routes-structured-asset-integration.test.ts",
+      "ref": "verification/structured-asset-integration-bounded-20261008",
+      "sealId": "dcd4a07d88c2122d3dcaa50fa967172eb2673846224070052b1c4abc8fb2a9c0"
+    },
+    {
+      "path": "backend/src/llm/fallback.test.ts",
+      "ref": "verification/owner-fallback-20261008",
+      "sealId": "319168d850906297165aa87f23d140e158b7b12d60b65719b851617ed22f0566"
+    },
+    {
+      "path": "backend/src/services/battle-public.test.ts",
+      "ref": "verification/owner-battle-public-20261008",
+      "sealId": "187421bb2491fc67a511420e347feb04e5fbaa897a950d19fb78f8e963b9a197"
+    },
+    {
+      "path": "backend/src/repositories/characters.test.ts",
+      "ref": "verification/owner-characters-rating-20261008",
+      "sealId": "ac93c3c970f294b13e77ea1b2f85035fb3a851b06794d1b2354ed9e261b2ee77"
+    },
+    {
+      "path": "backend/src/services/rating-service-transaction.test.ts",
+      "ref": "verification/owner-rating-transaction-20261008",
+      "sealId": "144b80e9fadb7d42fd9524fc28aa7e6b407ce70730a14c388db6a219dcdc4387"
+    }
+  ],
+  "seedNodes": [
+    {
+      "sealId": "0021883e808ae8bf7d59ead2180519d677c39d02b46ee485c358bb7fd19c27da",
+      "refs": [
+        "all-tests-20261007/implementation-awareness-creation-public-service"
+      ]
+    },
+    {
+      "sealId": "02b6d59807b18e91e8cd3dc336900072e54507b2a4390bb5a4da0e2808cb536f",
+      "refs": [
+        "all-tests-20261008/implementation-routing-typed-seam"
+      ]
+    },
+    {
+      "sealId": "05bb4b1fceeb0682c87efbcae4f30792f602fb964be0eb1d396f2f2f693b6bb8",
+      "refs": [
+        "all-tests-20261008/implementation-owner-rating-viewer"
+      ]
+    },
+    {
+      "sealId": "07bfb1eb0ecc8da49c09cb11dac8514426124a47ed01e070bb4590d2654c425b",
+      "refs": [
+        "all-tests-20261007/fixture-retained-agency-v3-mock-producer"
+      ]
+    },
+    {
+      "sealId": "0a644f4030dfc8699a17a56cc993e2b18443acd89adebf26a227ea4106ae9574",
+      "refs": [
+        "all-tests-20261007/contract-profile-anchor-character-source"
+      ]
+    },
+    {
+      "sealId": "11ad190b10415f87aaf38a9598ec3ac3e05031fd2c03800aac12da69ae178d91",
+      "refs": [
+        "all-tests-20261007/implementation-sdk-awareness-dispatch"
+      ]
+    },
+    {
+      "sealId": "15fd4f634dd21a81daf7167b4e987daed49349b0cee4c61bd912e3a7d4f06575",
+      "refs": [
+        "all-tests-20261007/implementation-observer-perception-schema-boundaries"
+      ]
+    },
+    {
+      "sealId": "17a20f68e997b1e7842132b754c02a8847d1234f319de677f7dd24fa6569fdff",
+      "refs": [
+        "awareness-guidance-20261007/verification-execution"
+      ]
+    },
+    {
+      "sealId": "18a1252ed2bfa2773aa446b80e9779cab123dd9f7ea1088ead63714d92e3aa1c",
+      "refs": [
+        "all-tests-20261007/implementation-current-focused-pending-read"
+      ]
+    },
+    {
+      "sealId": "1cfe34d09cd50a541ad9f2d6c15ed977f1614987b2c70dadc8096ced4b9fc8ee",
+      "refs": [
+        "all-tests-20261007/implementation-character-contract-battle-binding"
+      ]
+    },
+    {
+      "sealId": "20c050a7fb0b19ccae7df3d80e3740fb5f235b4f5dd500cf706fbd8093392b91",
+      "refs": [
+        "all-tests-20261007/implementation-typed-battlefield-creation"
+      ]
+    },
+    {
+      "sealId": "2eae8cc721eb57bccdb6600c1bcdf5c9c9cf72d1d2dc4feb7fb0f0d1b715b3bb",
+      "refs": [
+        "all-tests-20261008/implementation-boundary-battle"
+      ]
+    },
+    {
+      "sealId": "352509199d80c1220249893bfa4167f305c6790b2529001ebf8933b354143d8f",
+      "refs": [
+        "awareness-guidance-20261007/context"
+      ]
+    },
+    {
+      "sealId": "37c2c2a32ac105abc59614d16728f0a1c3f40deedcada2366693c65d9a1f14ec",
+      "refs": [
+        "all-tests-20261007/contract-character-focus-wire"
+      ]
+    },
+    {
+      "sealId": "3c919c7c047bddd5eeabad3f7c74e5416c147c4df4817b89c945178a90567a20",
+      "refs": [
+        "all-tests-20261008/implementation-psyche-repair-bounded"
+      ]
+    },
+    {
+      "sealId": "3e03f05f493e0cd591a3f6a02a88f7d9f1dcfd540893edb757fd3989bf6eee7f",
+      "refs": [
+        "all-tests-20261007/contract-adjudication-referee-wire"
+      ]
+    },
+    {
+      "sealId": "3f3dd4c5984778043e1a692b58d89c536c9af360c6a2b4881b76deb10c9e19a2",
+      "refs": [
+        "all-tests-20261007/implementation-sdk-json-accounting-boundary"
+      ]
+    },
+    {
+      "sealId": "42b6ff80a71caa184ae9ccec1a087e025eb5e831d7e900d23bb08860ef918df4",
+      "refs": [
+        "all-tests-20261008/implementation-openai-compatible-character-definition-recovery-bounded"
+      ]
+    },
+    {
+      "sealId": "45867c376e614f18be8600a5de958d96a558c004bdb0f6ab5e7a000f2108a3a6",
+      "refs": [
+        "all-tests-20261007/implementation-absence-engine"
+      ]
+    },
+    {
+      "sealId": "5452852d0f1bf38ed89dca0b72e4eebb2db5b47bda137a1983f2e45e0bd14cc9",
+      "refs": [
+        "all-tests-20261007/implementation-sdk-retained-agency-v3-dispatch"
+      ]
+    },
+    {
+      "sealId": "56e673314fc7d2d4b1caef3c2c3411213422bba8d58a28bb6f8fbe5f3fa3df72",
+      "refs": [
+        "awareness-guidance-20261007/input-contract"
+      ]
+    },
+    {
+      "sealId": "58e65d4179a3c0ff99386543d8bf586daba163d0edac1f53fa055128885bf8fd",
+      "refs": [
+        "awareness-guidance-20261007/verification-context"
+      ]
+    },
+    {
+      "sealId": "5b34d18fd701cf1ff6e739950e129ca0cf43a883d71a88795245a73ad34c1b5b",
+      "refs": [
+        "all-tests-20261007/implementation-provider-accounting-sdk-retries"
+      ]
+    },
+    {
+      "sealId": "5c06dcccd164d1e51610184f474296ee948c8fef2a4469c62453df2b33e244d2",
+      "refs": [
+        "all-tests-20261007/implementation-sdk-response-schema-ordinary-gate"
+      ]
+    },
+    {
+      "sealId": "5ed84bb05d9fa80fe934a229f677f0ae63067abe91d7ddb3e0fa0a9e3685b263",
+      "refs": [
+        "all-tests-20261008/implementation-free-action-service-bounded"
+      ]
+    },
+    {
+      "sealId": "635dddb9346372392eefec016dc989a0bcf82d8dd14f049bb771d910c1a924ae",
+      "refs": [
+        "all-tests-20261007/contract-adjudication-perception-wire"
+      ]
+    },
+    {
+      "sealId": "6a27811e1eb660c9de4c5c7f4a1adf9f8561c4af42d15847c3e0f2f622787c1b",
+      "refs": [
+        "all-tests-20261007/implementation-canonical-narration-fixture-engine"
+      ]
+    },
+    {
+      "sealId": "6eb5f3240dfbfcf076911bba3a4ae3c8f0289ea0411368d58e5098fcf5426d91",
+      "refs": [
+        "awareness-guidance-20261007/execution"
+      ]
+    },
+    {
+      "sealId": "6fc9de4333a04acce3cde69962c8e70cff20999112df9ef4959ad23d19164b2f",
+      "refs": [
+        "all-tests-20261007/implementation-character-repository-activation"
+      ]
+    },
+    {
+      "sealId": "71a3806f51ddb38886b2de44719b17f973c4d263a4257613274dfa1862a50ef4",
+      "refs": [
+        "all-tests-20261007/implementation-character-attempt-reads"
+      ]
+    },
+    {
+      "sealId": "7872163ad23ff4c6f179f120b45857d18c80cea88160afe880b8d733729d77aa",
+      "refs": [
+        "all-tests-20261007/implementation-canonical-narration-battle-service"
+      ]
+    },
+    {
+      "sealId": "7c3693e3b4211157a5b340153f8317d853971ef27e080aa4f84332a20c3fd8a5",
+      "refs": [
+        "all-tests-20261008/implementation-agent-typed-seam"
+      ]
+    },
+    {
+      "sealId": "7dbc6d9ea7ddfcfeb7f7659c1a8fd47c5a39b48988ba64b5de04048140c9098f",
+      "refs": [
+        "all-tests-20261007/implementation-intent"
+      ]
+    },
+    {
+      "sealId": "7fafa0e59a17475925224cbda6d3d97f05930a271c05d81a2026404546024fb7",
+      "refs": [
+        "all-tests-20261007/implementation-sdk-model-options"
+      ]
+    },
+    {
+      "sealId": "871b4b46e531e367409a529704c6b64bb1d041a22d3643fb0f6da4705473c1dc",
+      "refs": [
+        "all-tests-20261007/implementation-current-narration-builder-contracts"
+      ]
+    },
+    {
+      "sealId": "8842e3a6d39126a4f982ec5869abf0f89532a828a7e2b174699af2dd84e3fc2d",
+      "refs": [
+        "all-tests-20261008/implementation-battle-policy-bounded"
+      ]
+    },
+    {
+      "sealId": "8d6bf70266a8a48bc0227bb6c69995a951948a704c1fee95f6e1fdd08d188075",
+      "refs": [
+        "all-tests-20261008/implementation-boundary-character-assets"
+      ]
+    },
+    {
+      "sealId": "95f46f534d7370fff8539ba0f0a64ceb249215fedad321dc595b886cb04f4e2a",
+      "refs": [
+        "verification/awareness-pipeline-20261007"
+      ]
+    },
+    {
+      "sealId": "991a0bed1f9217e6978039cb39b7b217e3122a147cd91f22786df658d1917be7",
+      "refs": [
+        "all-tests-20261008/implementation-portrait-v3-activation"
+      ]
+    },
+    {
+      "sealId": "99daa2bed6e0d01bde12df6dffd1ce3478049c4602e6231b668ea98d165e8a10",
+      "refs": [
+        "all-tests-20261007/implementation-retained-agency-v3-service-flow"
+      ]
+    },
+    {
+      "sealId": "9d37bcc598eff9e88cdfb50cd42a812bbfedb4db318d6473ed39f0f8c42b3c68",
+      "refs": [
+        "all-tests-20261008/implementation-historical-agency-inventory"
+      ]
+    },
+    {
+      "sealId": "a2587450446ea9744be156f1e61993df47e8e03433ba332fb646e50a456fe09b",
+      "refs": [
+        "all-tests-20261008/implementation-action-feasibility-bounded"
+      ]
+    },
+    {
+      "sealId": "aa08f46a5ae70bccacc4b43e1621aaf341a26c873111dd15b6ee091836cdf3a2",
+      "refs": [
+        "all-tests-20261007/implementation-sdk-awareness-adjudication-result"
+      ]
+    },
+    {
+      "sealId": "aab43121b4eedb246691f7ea5f6071496074e760649ea9330dc550494a6830f1",
+      "refs": [
+        "all-tests-20261007/implementation-expression-observer-projection"
+      ]
+    },
+    {
+      "sealId": "ab889a4617f6f343aecbb1b47e503db56c41c7b4f19ca0cc32b4d60d1c0b3b93",
+      "refs": [
+        "all-tests-20261007/implementation-narration-phase-builders"
+      ]
+    },
+    {
+      "sealId": "b872fc34e9268f23ed69589e254cbcee22c49e0711f41598d3dcdff5b349475a",
+      "refs": [
+        "all-tests-20261007/contract-adjudication-free-action-wire"
+      ]
+    },
+    {
+      "sealId": "b976cf61e0af34ee39d63f4bf5e274f29e08db10220b5c564fd6314e3f9db9f9",
+      "refs": [
+        "all-tests-20261007/implementation-sdk-usage-paths"
+      ]
+    },
+    {
+      "sealId": "bbac9d8f7324c9cc82705e42235739a129b0d0bd3d6b017b757e9ffffaa14508",
+      "refs": [
+        "all-tests-20261007/implementation-stable-area-battle-initialization"
+      ]
+    },
+    {
+      "sealId": "bc4e17992fc99bebd82c0723ae94bbd5e55c07fbbb7ec0aeae83e0796a6267b5",
+      "refs": [
+        "all-tests-20261007/implementation-direct-narration-projection-input"
+      ]
+    },
+    {
+      "sealId": "be6c5fd8e04b304d51b2023d34486a7e4028e69512cd6c6a9d54ae3fef337a3c",
+      "refs": [
+        "all-tests-20261007/implementation-retained-compact-expression-decoder"
+      ]
+    },
+    {
+      "sealId": "c25556aa53ec82eaa7339bc657a4240bdf3f8235c2bbeabc46bf62ef3eb6c6a3",
+      "refs": [
+        "verification/free-action-service-bounded-20261008"
+      ]
+    },
+    {
+      "sealId": "c75f415a640db0d2d69d8455e5b8eff530cdf43f7dde97bcebdb98b56ae087ad",
+      "refs": [
+        "all-tests-20261007/contract-turn-event-conditional-delivery"
+      ]
+    },
+    {
+      "sealId": "c778f88206f59e2310caf7c95631468f6442f6d4437f122beb6319c4c8597ae1",
+      "refs": [
+        "awareness-guidance-20261007/battle-frame"
+      ]
+    },
+    {
+      "sealId": "ca44acedaa6634d8a56c49e3aad978d32cbe6e76704b5daa602c851614d05690",
+      "refs": [
+        "all-tests-20261007/implementation-sdk-retained-dynamic-v4-dispatch"
+      ]
+    },
+    {
+      "sealId": "cbef9de20b431a38f89505c9d0f1f194fe9b63d0d1f9aa5e45d9156c36221fe3",
+      "refs": [
+        "all-tests-20261007/implementation-character-contract-character"
+      ]
+    },
+    {
+      "sealId": "dea87dce601f04086669be004a795680aa84ccff0dfa3091dcdff9fe1338ee72",
+      "refs": [
+        "all-tests-20261008/implementation-retained-agency-schema-bounded"
+      ]
+    },
+    {
+      "sealId": "e0172f5b6435f4b0c657cc130f7f987cbeae565aa097d57d5e7e3d4fc06dce98",
+      "refs": [
+        "all-tests-20261007/implementation-absence-continuation"
+      ]
+    },
+    {
+      "sealId": "e418d4ec33efce96955bece728bddb6140a4effb4e9c36b6f2fb46ac89ef85e4",
+      "refs": [
+        "all-tests-20261008/implementation-mock-bounded"
+      ]
+    },
+    {
+      "sealId": "e82f2436ea3107d7e9ea91589511117998ec8cf02078c043d1a172eb94e5f4b3",
+      "refs": [
+        "all-tests-20261007/implementation-stable-area-ready-binding"
+      ]
+    },
+    {
+      "sealId": "ec37f5a65fe4aa7611177e09944e29b6521fe87ea1609027a92ac037122298b2",
+      "refs": [
+        "all-tests-20261007/implementation-own-area-creation-reference"
+      ]
+    },
+    {
+      "sealId": "f6cd3f76e5e1fd9e559e33dc09754baadd630a8bfb8de5387ba73f6aa8f7276c",
+      "refs": [
+        "all-tests-20261007/implementation-observer-contact-projection"
+      ]
+    },
+    {
+      "sealId": "fd2692da29f2deaf81b6567e5499276f95ece18dfd67f0a669fd1a2077292209",
+      "refs": [
+        "all-tests-20261007/implementation-closed-battle-contract"
+      ]
+    },
+    {
+      "sealId": "fd9582a733bd7a3698b053fb0db428f7d6ea59ce3f545ecc1429ce9ee0127c1d",
+      "refs": [
+        "all-tests-20261008/implementation-perception-typed-seam"
+      ]
+    }
+  ],
+  "additionalClosureNodes": [
+    {
+      "sealId": "05bb4b1fceeb0682c87efbcae4f30792f602fb964be0eb1d396f2f2f693b6bb8",
+      "refs": [
+        "all-tests-20261008/implementation-owner-rating-viewer"
+      ]
+    },
+    {
+      "sealId": "05bd1827dd9fc4e4a2ce70d01555522762444fdffdc0b1515a8bf70e74599e59",
+      "refs": [
+        "all-tests-20261007/implementation-retained-compact-psyche-decoder"
+      ]
+    },
+    {
+      "sealId": "0a644f4030dfc8699a17a56cc993e2b18443acd89adebf26a227ea4106ae9574",
+      "refs": [
+        "all-tests-20261007/contract-profile-anchor-character-source"
+      ]
+    },
+    {
+      "sealId": "10c3c72eed80f3aa2b8cda5210fca56b88f59b5290c3052e904fbd777a46ab8e",
+      "refs": [
+        "all-tests-20261007/design-observer-perception-fixture-types"
+      ]
+    },
+    {
+      "sealId": "13a282ebdcf1517d9a895de170ea68f9d225d92b3996a04b07caf4bb8225b98c",
+      "refs": [
+        "all-tests-20261007/implementation-committed-perception-evidence-validation"
+      ]
+    },
+    {
+      "sealId": "1429b36aab4d03e9cb64acedfcf46329f345c0226b04f987449bad1875af2f42",
+      "refs": [
+        "all-tests-20261007/implementation-causal-qualitative-quantization"
+      ]
+    },
+    {
+      "sealId": "1524247f80c8d87c492d44b5426b35d35598863123f8a2ffba30445dbe3d7f46",
+      "refs": [
+        "verification/turn-event-contract-20261007"
+      ]
+    },
+    {
+      "sealId": "15fd4f634dd21a81daf7167b4e987daed49349b0cee4c61bd912e3a7d4f06575",
+      "refs": [
+        "all-tests-20261007/implementation-observer-perception-schema-boundaries"
+      ]
+    },
+    {
+      "sealId": "16ea8f3aad256ca42468e071218d4f0dcb00f164de4fb70196b25a2844ef5b7e",
+      "refs": [
+        "all-tests-20261007/implementation-character-focus-ablation-report"
+      ]
+    },
+    {
+      "sealId": "187421bb2491fc67a511420e347feb04e5fbaa897a950d19fb78f8e963b9a197",
+      "refs": [
+        "verification/owner-battle-public-20261008"
+      ]
+    },
+    {
+      "sealId": "1c52c9a23f14d737830104602736b9d6050ed139a3025c5e7752aa008d6ba056",
+      "refs": [
+        "verification/retained-psyche-reaction-v1-current-20261007"
+      ]
+    },
+    {
+      "sealId": "1cfe34d09cd50a541ad9f2d6c15ed977f1614987b2c70dadc8096ced4b9fc8ee",
+      "refs": [
+        "all-tests-20261007/implementation-character-contract-battle-binding"
+      ]
+    },
+    {
+      "sealId": "211f430ae024c70fa3bd8aed992bad5865c048b9016c182f95b7c828db709d17",
+      "refs": [
+        "all-tests-20261007/implementation-latent-output-brevity"
+      ]
+    },
+    {
+      "sealId": "214e555196025a403f72171e3289d70c889a4733d5f67fd1b2863bd2fb9346c5",
+      "refs": [
+        "all-tests-20261007/implementation-dynamic-v4-fixture-reaction"
+      ]
+    },
+    {
+      "sealId": "218cadf482d9dcb0bfb12bbd421281920bac71f3110b9a43b00dbd1ef6530b88",
+      "refs": [
+        "verification/character-focus-ablation-20261007"
+      ]
+    },
+    {
+      "sealId": "250687d2278cd3a547eb48093c2e84fdd5fb5d03cf5526623d11f7c73a7da0d6",
+      "refs": [
+        "verification/awareness-request-20261007"
+      ]
+    },
+    {
+      "sealId": "2ca174b89c55b02c82ba1b93494f2f5660ca1b7546c01e0500dbfcda8b44e8ab",
+      "refs": [
+        "verification/character-generation-reader-bounded-character-contract-20261007"
+      ]
+    },
+    {
+      "sealId": "2fb338bc68a8b07de76319443b6204612712153361a12043832b89957828e0d9",
+      "refs": [
+        "awareness-guidance-20261007/prompt"
+      ]
+    },
+    {
+      "sealId": "319168d850906297165aa87f23d140e158b7b12d60b65719b851617ed22f0566",
+      "refs": [
+        "verification/owner-fallback-20261008"
+      ]
+    },
+    {
+      "sealId": "352509199d80c1220249893bfa4167f305c6790b2529001ebf8933b354143d8f",
+      "refs": [
+        "awareness-guidance-20261007/context"
+      ]
+    },
+    {
+      "sealId": "3578230167f5cbfbc8689898d837bee383c89e3cc414f1c74f5e1ad19a2b791f",
+      "refs": [
+        "verification/perception-fixed-evaluation-current-20261007"
+      ]
+    },
+    {
+      "sealId": "37c2c2a32ac105abc59614d16728f0a1c3f40deedcada2366693c65d9a1f14ec",
+      "refs": [
+        "all-tests-20261007/contract-character-focus-wire"
+      ]
+    },
+    {
+      "sealId": "380ac8824e9b71cb1f886088318ac2d539db126fe347c9a7467f3bcf9aec60b5",
+      "refs": [
+        "all-tests-20261007/implementation-turn-causal-receipt-projection"
+      ]
+    },
+    {
+      "sealId": "38385b665ca3a65736cb986e64a235ef583a37b0c519fb15c06fa27397c609c4",
+      "refs": [
+        "all-tests-20261007/implementation-retained-narration-perspective"
+      ]
+    },
+    {
+      "sealId": "39b3b8bbcb417300d70fed428158e9d3020aae152b78b90e471323b6a256c0da",
+      "refs": [
+        "verification/awareness-role-provider-20261007"
+      ]
+    },
+    {
+      "sealId": "3d0638621f237dba7c7d7e0df6892b7946d8f44210ccfecfed642a51c0d823f0",
+      "refs": [
+        "all-tests-20261007/implementation-awareness-role-provider"
+      ]
+    },
+    {
+      "sealId": "3e03f05f493e0cd591a3f6a02a88f7d9f1dcfd540893edb757fd3989bf6eee7f",
+      "refs": [
+        "all-tests-20261007/contract-adjudication-referee-wire"
+      ]
+    },
+    {
+      "sealId": "3e55a3ffb470d3a6ccc397366b15cd9889707b2b96909b2f4f2bf8c16ee068db",
+      "refs": [
+        "all-tests-20261007/implementation-perception-response-grammar-materials"
+      ]
+    },
+    {
+      "sealId": "41ddc91bb49a0da92b977f084f6ae83d43db87a80a76d6395c10bdd14509dd7e",
+      "refs": [
+        "all-tests-20261007/design-awareness-creation-cohort"
+      ]
+    },
+    {
+      "sealId": "45867c376e614f18be8600a5de958d96a558c004bdb0f6ab5e7a000f2108a3a6",
+      "refs": [
+        "all-tests-20261007/implementation-absence-engine"
+      ]
+    },
+    {
+      "sealId": "4961b478d08e323a25f270e2d501ef777c329257d2a50abcfff746bf8efb52b5",
+      "refs": [
+        "all-tests-20261007/implementation-perception-fixed-matrix-runner"
+      ]
+    },
+    {
+      "sealId": "4e52ae21a6e36bb0e4c74a39b4a51bf9593ee467398fb71c7a5cdd066429afc9",
+      "refs": [
+        "all-tests-20261007/implementation-character-contract-rules"
+      ]
+    },
+    {
+      "sealId": "4f58829cb7484d0427f8419361af8b256803343e007acdd361ba4f5b0bead046",
+      "refs": [
+        "all-tests-20261007/implementation-awareness-adjudication-decoder"
+      ]
+    },
+    {
+      "sealId": "4f90e3c0b9b4d0724a14ef676a54bf9d04bff511dcf14471dce1ea6b0c6b5a40",
+      "refs": [
+        "all-tests-20261007/implementation-action-fallback"
+      ]
+    },
+    {
+      "sealId": "51d31cd3aa7d1daa3b12d62186f663eae29e39d87a7571820b9fc17c8bd59ded",
+      "refs": [
+        "awareness-guidance-20261007/fixture"
+      ]
+    },
+    {
+      "sealId": "56e673314fc7d2d4b1caef3c2c3411213422bba8d58a28bb6f8fbe5f3fa3df72",
+      "refs": [
+        "awareness-guidance-20261007/input-contract"
+      ]
+    },
+    {
+      "sealId": "572cae28a0027c0a8d8c1f34866854d059dd8f40c6494453ec4c41e03f0bbad3",
+      "refs": [
+        "all-tests-20261007/implementation-retained-agency-v3-acceptance"
+      ]
+    },
+    {
+      "sealId": "589a449c7638a1968f7e53fa7ba62eac18227648e39346997435f633c379a126",
+      "refs": [
+        "all-tests-20261007/evidence-awareness-creation-inference"
+      ]
+    },
+    {
+      "sealId": "58e65d4179a3c0ff99386543d8bf586daba163d0edac1f53fa055128885bf8fd",
+      "refs": [
+        "awareness-guidance-20261007/verification-context"
+      ]
+    },
+    {
+      "sealId": "5ccff28d28e272f803f2f1ecffcbc88ba76a55e03f656cfdbe5b6f001b835bd5",
+      "refs": [
+        "verification/battle-policy-bounded-20261008"
+      ]
+    },
+    {
+      "sealId": "5d3e7b9d8530f3ba01a78f25ae224d5a5151663633ff01a33ad37be083584534",
+      "refs": [
+        "verification/structured-character-bounded-character-contract-20261007"
+      ]
+    },
+    {
+      "sealId": "5ed84bb05d9fa80fe934a229f677f0ae63067abe91d7ddb3e0fa0a9e3685b263",
+      "refs": [
+        "all-tests-20261008/implementation-free-action-service-bounded"
+      ]
+    },
+    {
+      "sealId": "604fe01d141d9532df38636e7168dcde40197a80f684141d5720661f8ed815ec",
+      "refs": [
+        "all-tests-20261007/implementation-narration-storage-context"
+      ]
+    },
+    {
+      "sealId": "60df1fd849f35780d3671c2830c9b74341d3bd9f31bfa4f7138e944720a9406f",
+      "refs": [
+        "verification/perception-quantization-current-20261007"
+      ]
+    },
+    {
+      "sealId": "622ca79d5d7d7a59143d3dc436ce9bbbfc1ac0feed94270864193a0e5bea661c",
+      "refs": [
+        "verification/action-intent-contract-20261007"
+      ]
+    },
+    {
+      "sealId": "628531a8b4dd8dc0d6900e66ce6184d3665ad7451a6920d253fbfee54aff92ff",
+      "refs": [
+        "verification/committed-perception-evidence-current-20261007"
+      ]
+    },
+    {
+      "sealId": "6307e70060c3fe7460f155c7a6530b79fc0202aa8a6530c7d2161dd9e9bcc8ee",
+      "refs": [
+        "all-tests-20261007/design-action-output-guidance"
+      ]
+    },
+    {
+      "sealId": "635dddb9346372392eefec016dc989a0bcf82d8dd14f049bb771d910c1a924ae",
+      "refs": [
+        "all-tests-20261007/contract-adjudication-perception-wire"
+      ]
+    },
+    {
+      "sealId": "66f3a875b9558a74b7be2187b3778ff05f2106e3a8328ee27bf39358a4ba82ec",
+      "refs": [
+        "verification/own-area-reposition-transition-20261007"
+      ]
+    },
+    {
+      "sealId": "679bce7aadf5980abdfefe1324b5c8d4bd5d961a120f90085da349785c1d6ef9",
+      "refs": [
+        "verification/character-definition-rules-bounded-character-contract-20261007"
+      ]
+    },
+    {
+      "sealId": "69dd46f4733de53d3b76824b1e980d4aed079736d1c8c9829ca7f485b044756f",
+      "refs": [
+        "all-tests-20261007/implementation-perception-evaluation-scoring"
+      ]
+    },
+    {
+      "sealId": "6a27811e1eb660c9de4c5c7f4a1adf9f8561c4af42d15847c3e0f2f622787c1b",
+      "refs": [
+        "all-tests-20261007/implementation-canonical-narration-fixture-engine"
+      ]
+    },
+    {
+      "sealId": "6ac6f7936f62bf30134d2c26620c335f7b71357945f0713f35f4635a70754a31",
+      "refs": [
+        "all-tests-20261007/implementation-narration-storage-fixture"
+      ]
+    },
+    {
+      "sealId": "6c9b15cac35128f3ec21e1586d2db5b9f01eb7e516c4dcdc4ef6697106c0cbe4",
+      "refs": [
+        "verification/mock-bounded-20261008"
+      ]
+    },
+    {
+      "sealId": "6eb5f3240dfbfcf076911bba3a4ae3c8f0289ea0411368d58e5098fcf5426d91",
+      "refs": [
+        "awareness-guidance-20261007/execution"
+      ]
+    },
+    {
+      "sealId": "6f9888992cc5b9c4c965f7e9dd0a32b60a35cd69a4f52167beed5b249c3313e5",
+      "refs": [
+        "all-tests-20261008/implementation-owner-fallback"
+      ]
+    },
+    {
+      "sealId": "6ff4c29637092fa43f351ba55137fdcebfa272214c4f4c4e6ac34431aba47897",
+      "refs": [
+        "all-tests-20261007/implementation-canonical-narration-character-rules"
+      ]
+    },
+    {
+      "sealId": "700e8a1306ab7dc33dabfde139c8fd9dedd077accf487e5cbf69548cf60385d2",
+      "refs": [
+        "verification/own-area-structured-battlefield-20261007"
+      ]
+    },
+    {
+      "sealId": "737022613bf6e08186b036d06a19138c9c7bda42088e91b5a3287108270d6a8c",
+      "refs": [
+        "verification/latent-output-brevity-20261007"
+      ]
+    },
+    {
+      "sealId": "741f350d75ca5e1af16c76a65bb23f41c94383d7e172fa9819081cc025db38b6",
+      "refs": [
+        "verification/perception-schema-current-20261007"
+      ]
+    },
+    {
+      "sealId": "7a239f09a9cef64998df7969c7e32b35ac0f1505c8fea7f686ad68b58ebabc5c",
+      "refs": [
+        "verification/battle-asset-manifest-bounded-character-contract-20261007"
+      ]
+    },
+    {
+      "sealId": "7dbc6d9ea7ddfcfeb7f7659c1a8fd47c5a39b48988ba64b5de04048140c9098f",
+      "refs": [
+        "all-tests-20261007/implementation-intent"
+      ]
+    },
+    {
+      "sealId": "8099b1d6ab742c05b159452594d9f174f32c99dbb5665cbf6c9f37749da00355",
+      "refs": [
+        "verification/action-output-guidance-20261007"
+      ]
+    },
+    {
+      "sealId": "843ccdb53463e26ed618086bc059ac71ddbcd396158ee05b3b897d3dd26e33f3",
+      "refs": [
+        "all-tests-20261007/fixture-character-focus-shadow"
+      ]
+    },
+    {
+      "sealId": "8842e3a6d39126a4f982ec5869abf0f89532a828a7e2b174699af2dd84e3fc2d",
+      "refs": [
+        "all-tests-20261008/implementation-battle-policy-bounded"
+      ]
+    },
+    {
+      "sealId": "8a694e455e34c6fe834a750168986f909c7825fd6050f9f6a7fd478bf3094949",
+      "refs": [
+        "all-tests-20261007/implementation-retained-psyche-reaction-v1"
+      ]
+    },
+    {
+      "sealId": "8abba1a9c8979c938c12dd7bfb72af72c43496dbb487ff827477c7ff5951482f",
+      "refs": [
+        "all-tests-20261007/implementation-awareness-dispatch-admission"
+      ]
+    },
+    {
+      "sealId": "90e466f427cb1a6c1a6161c7ee913c177bff496bc6d363cd3109a585faeb6a95",
+      "refs": [
+        "awareness-guidance-20261007/boundary"
+      ]
+    },
+    {
+      "sealId": "922c0cd5ebd3b2cb26d6868c0741ba419b31bba79556011563e68b55779bc123",
+      "refs": [
+        "all-tests-20261007/implementation-retained-perception-topology-registry"
+      ]
+    },
+    {
+      "sealId": "928076b37913fec3fa95919a84aa3b36d9f2ad1848aa1596f452c3a21c65c980",
+      "refs": [
+        "all-tests-20261007/design-perception-evaluator-fixture-types"
+      ]
+    },
+    {
+      "sealId": "95f46f534d7370fff8539ba0f0a64ceb249215fedad321dc595b886cb04f4e2a",
+      "refs": [
+        "verification/awareness-pipeline-20261007"
+      ]
+    },
+    {
+      "sealId": "9885efe7289a9b42b53dda4a752c6878e80f282b3aa0131dd85241ada773be6d",
+      "refs": [
+        "verification/character-focus-shadow-20261007"
+      ]
+    },
+    {
+      "sealId": "9bc28c55d0c07c706c80fa52aa4a87a433c6c7102657d156db7162e3f838821a",
+      "refs": [
+        "verification/action-feasibility-bounded-20261008"
+      ]
+    },
+    {
+      "sealId": "9c51ca49a5a2e384956f36f6f16e87e1ffd7bc9df706b7c6f9e3f2cc8c569c80",
+      "refs": [
+        "all-tests-20261007/implementation-dynamic-v4-shared-acceptance"
+      ]
+    },
+    {
+      "sealId": "9eb921581f505bfc5c61c3fdf7427bae61e8201366957c37d820c60d6e3b7cd2",
+      "refs": [
+        "all-tests-20261007/implementation-character-focus-shadow"
+      ]
+    },
+    {
+      "sealId": "a2587450446ea9744be156f1e61993df47e8e03433ba332fb646e50a456fe09b",
+      "refs": [
+        "all-tests-20261008/implementation-action-feasibility-bounded"
+      ]
+    },
+    {
+      "sealId": "a4c75f329082707016895dc47f49ef57e38ac63caa8a76bfeebfd5946356d9e5",
+      "refs": [
+        "verification/battle-contract-types-20261007"
+      ]
+    },
+    {
+      "sealId": "a5131fda394922d8d6fa8be20b56395ed29f75aea8ec47d9a467dc824f6d0f54",
+      "refs": [
+        "all-tests-20261007/implementation-character-contract-reader"
+      ]
+    },
+    {
+      "sealId": "a5aa60da48344215189f906b44be4199669871abcf25b8fb75ac2118e74f7f67",
+      "refs": [
+        "all-tests-20261007/implementation-dynamic-v4-generation"
+      ]
+    },
+    {
+      "sealId": "a5e8e7b885d54e5846b83092f7b05180d1d09c49fd9413a39dd47d0bc997526d",
+      "refs": [
+        "verification/awareness-narration-urgency-bounded-current-20261007"
+      ]
+    },
+    {
+      "sealId": "b6683e212b1c82e07a5b341859a78be13b3a62470a32ee4dbfefdf68f0d302a9",
+      "refs": [
+        "all-tests-20261007/implementation-canonical-narration-character-compiler"
+      ]
+    },
+    {
+      "sealId": "b7d6a956e9db0e444d17d54748fff2ff43eea6740157e912c016520a42d23ac6",
+      "refs": [
+        "verification/character-bounded-character-contract-20261007"
+      ]
+    },
+    {
+      "sealId": "b872fc34e9268f23ed69589e254cbcee22c49e0711f41598d3dcdff5b349475a",
+      "refs": [
+        "all-tests-20261007/contract-adjudication-free-action-wire"
+      ]
+    },
+    {
+      "sealId": "b94c5cce82ce40391910a8dba02ab76cf9c320ed2354635a9bc37a31fcbe8fc7",
+      "refs": [
+        "all-tests-20261007/implementation-narration-storage-budget"
+      ]
+    },
+    {
+      "sealId": "bb7112ff39b462e2759e46e8fb60b5cbfb395412bb163c9beefe6e8f8c3e7be1",
+      "refs": [
+        "all-tests-20261007/implementation-awareness-request"
+      ]
+    },
+    {
+      "sealId": "bd16bf609c83970863080df28633127aa3f7fcd9beff89c797adff15c38789fa",
+      "refs": [
+        "all-tests-20261007/implementation-narration-view-projections"
+      ]
+    },
+    {
+      "sealId": "c06bf5b70763e6c7816a51b97c19600b19717cee67aacadb1e45ea4d844fd999",
+      "refs": [
+        "all-tests-20261007/implementation-character-focus-ablation"
+      ]
+    },
+    {
+      "sealId": "c20387af136077c79090a6de785ac93057b92ad60f5a9aa0e92398b4c190f0ef",
+      "refs": [
+        "verification/awareness-state-20261007"
+      ]
+    },
+    {
+      "sealId": "c25556aa53ec82eaa7339bc657a4240bdf3f8235c2bbeabc46bf62ef3eb6c6a3",
+      "refs": [
+        "verification/free-action-service-bounded-20261008"
+      ]
+    },
+    {
+      "sealId": "c269fec69156793be784ccf206ff49130529531e01a5eafd91240336425dd9de",
+      "refs": [
+        "all-tests-20261007/implementation-retained-agency-v3-request-boundary"
+      ]
+    },
+    {
+      "sealId": "c46950ec1e0d73d6a6e223d47bb9e6e42e0a6a54040e203ef06df758665b0add",
+      "refs": [
+        "all-tests-20261007/implementation-canonical-narration-urgency"
+      ]
+    },
+    {
+      "sealId": "c5b5c0c8c87899ea9484378b595faa560cadfedc42a4b2ad09cc61113cb97375",
+      "refs": [
+        "verification/awareness-dispatch-admission-20261007"
+      ]
+    },
+    {
+      "sealId": "c7396f2e10219ba2b40f0568afadb652e391f4d58f3ab78a8f079a5c39158ee2",
+      "refs": [
+        "verification/narration-perspective-current-20261007"
+      ]
+    },
+    {
+      "sealId": "c75f415a640db0d2d69d8455e5b8eff530cdf43f7dde97bcebdb98b56ae087ad",
+      "refs": [
+        "all-tests-20261007/contract-turn-event-conditional-delivery"
+      ]
+    },
+    {
+      "sealId": "cbef9de20b431a38f89505c9d0f1f194fe9b63d0d1f9aa5e45d9156c36221fe3",
+      "refs": [
+        "all-tests-20261007/implementation-character-contract-character"
+      ]
+    },
+    {
+      "sealId": "cc750b13f9e30b5ab80b2bf51a85b82ea244e69cfe238e0424e907b443a5588b",
+      "refs": [
+        "verification/retained-compact-psyche-decoder-current-20261007"
+      ]
+    },
+    {
+      "sealId": "cea338023663fcb0df2f08b3e889a61b0033e7d60008a6301090ccac8a3fe50a",
+      "refs": [
+        "all-tests-20261007/implementation-awareness-state"
+      ]
+    },
+    {
+      "sealId": "d19cdafcda2ec9a65e0f23e41e6bd42c905ec6bef86f5b65ee0b9e44365e052c",
+      "refs": [
+        "all-tests-20261007/implementation-character-contract-check"
+      ]
+    },
+    {
+      "sealId": "d2519328e27669c5674a955184a902995c9daba1c8d8ef925404334a710f0fd3",
+      "refs": [
+        "all-tests-20261007/implementation-narration-storage-social"
+      ]
+    },
+    {
+      "sealId": "d60aaf8a3be5c2a28922ca9735108e69943f67cc3f2bc0988b0be384362129b8",
+      "refs": [
+        "all-tests-20261007/design-retained-perception-evaluation-matrix"
+      ]
+    },
+    {
+      "sealId": "d833631e02d60d0471e0891a70581b12ea9b9afa7ff0b1a453f3121191d4cf7f",
+      "refs": [
+        "all-tests-20261007/implementation-action-output-guidance"
+      ]
+    },
+    {
+      "sealId": "dc6c837f6d1c590196e829ca59119ace316499c4110e96f830b2bb8c903b5fa8",
+      "refs": [
+        "all-tests-20261007/implementation-character-contract-structured"
+      ]
+    },
+    {
+      "sealId": "dcae87e46eca5e9b668253444c0ea0f24c2b904cbc3700673bee7724fbc05724",
+      "refs": [
+        "all-tests-20261007/implementation-retained-v3-agency-decoder"
+      ]
+    },
+    {
+      "sealId": "dda0106ae33970ab0bdd0fe796fce20a24b29e96ab7fd184a3cc694af406d7c8",
+      "refs": [
+        "verification/character-definition-check-bounded-character-contract-20261007"
+      ]
+    },
+    {
+      "sealId": "dea87dce601f04086669be004a795680aa84ccff0dfa3091dcdff9fe1338ee72",
+      "refs": [
+        "all-tests-20261008/implementation-retained-agency-schema-bounded"
+      ]
+    },
+    {
+      "sealId": "e0172f5b6435f4b0c657cc130f7f987cbeae565aa097d57d5e7e3d4fc06dce98",
+      "refs": [
+        "all-tests-20261007/implementation-absence-continuation"
+      ]
+    },
+    {
+      "sealId": "e418d4ec33efce96955bece728bddb6140a4effb4e9c36b6f2fb46ac89ef85e4",
+      "refs": [
+        "all-tests-20261008/implementation-mock-bounded"
+      ]
+    },
+    {
+      "sealId": "e4901838dcd2988a87a62f8d41bf373a4725164e339622e625733a5eeee4255c",
+      "refs": [
+        "verification/conscious-agency-bounded-20261008"
+      ]
+    },
+    {
+      "sealId": "e676ee381274b950bd749e3ca0f4fb88373406e27ac135c8d1063a724ee336ae",
+      "refs": [
+        "all-tests-20261008/implementation-pacing-private-observation"
+      ]
+    },
+    {
+      "sealId": "e8c1fb99205b28211e0c6c9fb1b290ae9046df3a346d8e4cc6ea21831d7e2b3c",
+      "refs": [
+        "verification/awareness-policy-20261007"
+      ]
+    },
+    {
+      "sealId": "e9798badf954b488acf2089320db3628f278704b7190cb2729200a46e428f467",
+      "refs": [
+        "all-tests-20261007/fixture-canonical-narration-engine-adapter"
+      ]
+    },
+    {
+      "sealId": "ec37f5a65fe4aa7611177e09944e29b6521fe87ea1609027a92ac037122298b2",
+      "refs": [
+        "all-tests-20261007/implementation-own-area-creation-reference"
+      ]
+    },
+    {
+      "sealId": "ed962cb5cbf3e5f39ac29a44941ecd7628283bad8280e1397c7d4efe9a99e35c",
+      "refs": [
+        "verification/character-focus-ablation-report-20261007"
+      ]
+    },
+    {
+      "sealId": "f25feef15fb6e6fc9d88d9e15d65ad7a9b61d85ad92166f2b06e56ccb354344a",
+      "refs": [
+        "verification/battle-engine-absence-bounded-20261007"
+      ]
+    },
+    {
+      "sealId": "f75dad235ccfd2dff70adb0abcb98e7a1c4445208b8b4867fd8fdd241d206af7",
+      "refs": [
+        "all-tests-20261007/design-latent-output-brevity"
+      ]
+    },
+    {
+      "sealId": "fb875ba1de28fd6079576c1f9e5f156c35555583f5748e5df6dae67b5af28832",
+      "refs": [
+        "verification/narration-perception-projection-20261007"
+      ]
+    },
+    {
+      "sealId": "fbc53eb15b5fe0c0e5f0779ecd0e6003410d8caf695b96eb98d229460b79b090",
+      "refs": [
+        "verification/dynamic-v4-shared-current-20261007"
+      ]
+    },
+    {
+      "sealId": "fd2692da29f2deaf81b6567e5499276f95ece18dfd67f0a669fd1a2077292209",
+      "refs": [
+        "all-tests-20261007/implementation-closed-battle-contract"
+      ]
+    },
+    {
+      "sealId": "fee427307dc6c65a9712c00d05e593a083a57e6042f423adf711cad1c1b0656a",
+      "refs": [
+        "verification/action-fallback-20261007"
+      ]
+    }
+  ],
+  "verificationLimits": "Imports not already represented by Cause Links are not inferred as delivered; explicit new role seams are required."
+}

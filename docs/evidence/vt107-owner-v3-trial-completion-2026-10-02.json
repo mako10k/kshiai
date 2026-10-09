@@ -1,0 +1,25 @@
+{
+  "observedAt": "2026-10-02T03:08:16.959Z",
+  "goal": "V3でのユーザ体験を早期に実現する。現行の認証から必要性がない限り変更はしない。",
+  "battleId": "btl_b1082810379ee23a5c6ebfcef4780bce",
+  "status": "finished",
+  "turn": 9,
+  "revision": 28,
+  "winnerSide": "b",
+  "finishReason": "incapacitated",
+  "verification": {
+    "googleLogin": "owner reported success; existing owner mapping read back",
+    "candidateConfirmation": "two succeeded attempts and bound immutable generations independently read",
+    "selection": "owner reported both selectable",
+    "progress": "DB turn2 then3 then5 then9; owner saw progress",
+    "reload": "owner reported restoration, subsequent BATTLE_BUSY recovered via same battle retry",
+    "result": "owner reported completion; DB finished and aftermath completed",
+    "authentication": "existing provider retained; exact preview redirect allowlist append only"
+  },
+  "limitations": [
+    "One real battle only; BATTLE_BUSY occurred once; not general reliability proof",
+    "User rates battle uninteresting: similar situations and mutual waiting despite less repetition",
+    "No independent browser network trace asserting every SSE frame"
+  ],
+  "remainingForInitialTrial": 0
+}

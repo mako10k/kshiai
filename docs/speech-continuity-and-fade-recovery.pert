@@ -1,7 +1,7 @@
 project SPEECH_CONTINUITY_FADE:
   version 5
   title "Speech recovery and economic consciousness policy design"
-  description "Current owner goal: maintain a current valid canonical PERT, follow justified dag next, deploy the normal awareness pipeline and complete one public match. Held old cutover verification is a separate preserved branch; overall plan closure requires both branches, current public delivery is AWARENESS_PUBLIC_COMPLETED."
+  description "Owner goal: normal awareness public delivery and one completed match achieved. Owner discarded the old cutover trial on 2026-10-06; archive its original task ID/start/suspend evidence and close by withdrawal, not verification. No old trial resumption planned. Overall finish combines proven public completion with recorded owner discard."
   duration_unit point
   velocity 1p/1h
   finish ALL_PLAN_WORK_RESOLVED
@@ -89,13 +89,14 @@ task awareness-connect AWARENESS_MODULES_READY -> AWARENESS_CONNECTED:
     DEV 1
   source "backend/src/services/battle-service.ts"
 
-task awareness-verify AWARENESS_CONNECTED -> OLD_CUTOVER_TRIAL_VERIFIED:
-  title "Verify held old V3 cutover trial contract after owner resumes it"
-  description "Split original mixed verification scope under 2026-10-06 owner goal update. Preserve original task ID and start/suspend history. Old V3 trial contract remains held; not a prerequisite of normal public deployment."
+task awareness-verify AWARENESS_CONNECTED -> OLD_CUTOVER_TRIAL_DISCARDED:
+  title "旧切替試行を所有者指示により破棄（検証未実施）"
+  description "Owner explicitly discarded this previously held trial on 2026-10-06. Disposition=discarded; no trial implementation or verification performed. Technical done means administrative closure by withdrawal, not successful verification. Preserve original task ID and start/suspend history. Original 3p forecast is withdrawn; remaining scope is zero."
   duration 3p
-  status suspended
+  status done
   requires:
     DEV 1
+  tags [discarded, verification-not-performed]
   source "docs/adr/0050-asynchronous-awareness-projected-character-pipeline.md"
 
 task usage-measurement AWARENESS_CONNECTED -> AWARENESS_VERIFIED:
@@ -203,7 +204,7 @@ task awareness-public-deploy AWARENESS_VERIFIED -> AWARENESS_PUBLIC_DEPLOYED:
 task awareness-public-completion AWARENESS_PUBLIC_DEPLOYED -> AWARENESS_PUBLIC_COMPLETED:
   title "Verify a fresh public battle finishes with narration and actual token accounting"
   duration 0.5p
-  status suspended
+  status done
   requires:
     DEV 1
   source "docs/adr/0056-latest-prompt-contract-until-completion.md"
@@ -509,17 +510,15 @@ work_event WE-ff7b2f6011944533ade641b3096f757e14733038ab6c09fc5ade4be7ce8c8d45:
   occurred_at 2026-10-06T09:04:25+09:00
   effort 0.11ph
 
-milestone OLD_CUTOVER_TRIAL_VERIFIED:
-  title "Held legacy cutover contract verification complete"
 
 milestone ALL_PLAN_WORK_RESOLVED:
-  title "Public delivery and separately held legacy verification both resolved"
+  title "Public delivery completed and old trial explicitly discarded"
 
 gate PUBLIC_DELIVERY_RESOLVED AWARENESS_PUBLIC_COMPLETED -> ALL_PLAN_WORK_RESOLVED:
   reason "Current public delivery branch completion; does not depend on held legacy trial"
 
-gate LEGACY_HOLD_RESOLVED OLD_CUTOVER_TRIAL_VERIFIED -> ALL_PLAN_WORK_RESOLVED:
-  reason "Separate held obligation retained; never claimed complete by normal public deployment"
+gate LEGACY_HOLD_RESOLVED OLD_CUTOVER_TRIAL_DISCARDED -> ALL_PLAN_WORK_RESOLVED:
+  reason "Owner discarded the old trial obligation on 2026-10-06; closure does not assert successful legacy verification"
 
 work_event WE-6c45501c47154d068bd16b6bf63319c07c6df52adb247a22442784db2d0d7978:
   model 1
@@ -1107,3 +1106,56 @@ work_event awareness-public-completion-reservation-ci-wait-20261006:
   kind suspend
   occurred_at 2026-10-06T17:25:30+09:00
   reason "Reservation repair local checks and independent review passed; await required native PostgreSQL CI evidence"
+
+work_event awareness-public-completion-rc17-stage-readback-resume-20261006:
+  model 1
+  task awareness-public-completion
+  kind resume
+  occurred_at 2026-10-06T17:48:43+09:00
+
+work_event awareness-public-completion-rc17-promote-wait-20261006:
+  model 1
+  task awareness-public-completion
+  kind suspend
+  occurred_at 2026-10-06T17:49:14+09:00
+  reason "Exact rc17 Stage all gates passed; await protected production owner approval and official Promote execution"
+
+work_event awareness-public-completion-rc17-public-readback-resume-20261006:
+  model 1
+  task awareness-public-completion
+  kind resume
+  occurred_at 2026-10-06T17:52:34+09:00
+
+work_event awareness-public-completion-rc17-observe-wait-20261006:
+  model 1
+  task awareness-public-completion
+  kind suspend
+  occurred_at 2026-10-06T17:53:04+09:00
+  reason "Public Promote and independent traffic/health passed; await protected Observe approval/execution"
+
+work_event awareness-public-completion-rc17-final-verification-resume-20261006:
+  model 1
+  task awareness-public-completion
+  kind resume
+  occurred_at 2026-10-06T18:24:58+09:00
+
+work_event awareness-public-completion-rc17-proof-finish-20261006:
+  model 1
+  task awareness-public-completion
+  kind finish
+  occurred_at 2026-10-06T18:24:59+09:00
+
+milestone OLD_CUTOVER_TRIAL_DISCARDED:
+  title "Owner discarded old cutover trial; verification not performed"
+
+work_event awareness-old-trial-owner-discard-record-start-20261006:
+  model 1
+  task awareness-verify
+  kind resume
+  occurred_at 2026-10-06T18:35:55+09:00
+
+work_event awareness-old-trial-owner-discard-record-finish-20261006:
+  model 1
+  task awareness-verify
+  kind finish
+  occurred_at 2026-10-06T18:35:56+09:00

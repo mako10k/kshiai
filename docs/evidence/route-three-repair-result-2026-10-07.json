@@ -1,0 +1,45 @@
+{
+  "schema": "kshiai/route-three-repair-result/v1",
+  "readOnlyOutsideAuthorizedTests": true,
+  "authorizedFiles": [
+    "backend/src/routes-authoring-read-purity.test.ts",
+    "backend/src/routes-structured-asset-integration.test.ts",
+    "backend/src/routes-structured-battlefield-acceptance.test.ts"
+  ],
+  "changes": [
+    {
+      "path": "backend/src/routes-authoring-read-purity.test.ts",
+      "reason": "The ordinary V2 character authoring API is retired by ADR-0043. The read-purity test now starts a focused V3 create attempt with a frozen source, preserving all six read endpoints, DB/outbox equality, and zero provider calls."
+    },
+    {
+      "path": "backend/src/routes-structured-asset-integration.test.ts",
+      "reason": "Replaced historical V2 character success fixtures with existing V3 trial candidate preparation and explicit owner activation. Kept a V2 legacy row test, now asserting character_v3_update_required and no generation/side effect. Bound dialogue assertions now use persisted schema-3 compact settings and awareness-v5 frozen narration source. Mock awareness admission is local and does not contact a provider."
+    },
+    {
+      "path": "backend/src/routes-structured-battlefield-acceptance.test.ts",
+      "reason": "Replaced historical V2 battle participants with existing V3 trial candidates and explicit owner activation. Added local mock awareness admission and schema-3 compact dialogue settings so exact battlefield revision binding reaches the current V3 battle path. No paid or external calls."
+    }
+  ],
+  "diagnostic": {
+    "node": "v22.22.3",
+    "preloader": "/tmp/kshiai-diagnostic-db-env.mjs",
+    "command": "NODE_OPTIONS=--import /tmp/kshiai-diagnostic-db-env.mjs npx tsx --test backend/src/routes-authoring-read-purity.test.ts backend/src/routes-structured-asset-integration.test.ts backend/src/routes-structured-battlefield-acceptance.test.ts",
+    "tests": 11,
+    "passed": 11,
+    "failed": 0,
+    "skipped": 0,
+    "cancelled": 0,
+    "externalOrPaidCalls": false,
+    "database": "isolated temporary SQLite via test-local DATABASE_PATH and preloader DATABASE_URL empty",
+    "diffCheck": "git diff --check passed"
+  },
+  "contractNotes": [
+    "Historical V2 read/display and immutable snapshot coverage remains; no V2 writer was revived.",
+    "Legacy character mutation remains an explicit pre-side-effect rejection.",
+    "Current V3 battle fixtures carry battle-mechanics@3 through the existing accepted trial fixture helper; ordinary awareness creation is admitted through a local in-memory mock route and does not invoke network transport.",
+    "No production source, Seal, inventory, PERT, Git, external service, or shared environment was changed."
+  ],
+  "unknowns": [
+    "The repository-wide typecheck and unrelated dirty work were not rerun; this result is limited to the three authorized tests and their diagnostics."
+  ]
+}

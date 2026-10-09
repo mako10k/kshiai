@@ -1,0 +1,236 @@
+{
+  "review": "docs/evidence/structured-narration-cause-review-2026-10-07.json",
+  "entries": [
+    {
+      "key": "authority-structured-narration",
+      "path": "docs/adr/0013-structured-narration-definition.md",
+      "parents": [],
+      "scope": "Accepted ADR0013 retained structured narration definition, private rhetoric/control exclusion, six-phase compiler and immutable selected generation. No pricing or natural live quality assertion.",
+      "test": false,
+      "ref": "all-tests-20261007/authority-structured-narration",
+      "sha256": "e8eef95efd2a7f3ceab1c82f102065532a5eaccfe1e9dd550ad15ecf56bd29d5",
+      "sealId": "51875275fc237d7d28d5b090581feb463e9c9d74cdada06bce76198277b9c129",
+      "causeSealIds": []
+    },
+    {
+      "key": "implementation-structured-narration-contract",
+      "path": "packages/shared/src/structured-narration.ts",
+      "parents": [
+        "authority-structured-narration",
+        "contract"
+      ],
+      "scope": "Strict definition validation, public projection whitelist, claim receipt identity and bounded deterministic phase compiler. Supplied supported receipt only; no recomputed projection digest or real independent provider assessment proof.",
+      "test": false,
+      "ref": "all-tests-20261007/implementation-structured-narration-contract",
+      "sha256": "5ece3ceb469b7ce84e1c77908f4a685e5ca678b939ff5fd8877349506b7afd90",
+      "sealId": "d6f0fed558e50190a05d3c10981730b029d7985215bf53f9e5d8d275e071c54f",
+      "causeSealIds": [
+        "51875275fc237d7d28d5b090581feb463e9c9d74cdada06bce76198277b9c129",
+        "5a84c8424772e34504daf62f2737bb29646a8762a07c26db984696686be56e3c"
+      ]
+    },
+    {
+      "key": "implementation-narration-phase-bridge",
+      "path": "packages/shared/src/narration-style.ts",
+      "parents": [
+        "implementation-structured-narration-contract"
+      ],
+      "scope": "Snapshot and phase mapping bridge used by four shared tests; no all narration pipeline performance guarantee.",
+      "test": false,
+      "ref": "all-tests-20261007/implementation-narration-phase-bridge",
+      "sha256": "3070bc64e492c21967de92a1bdb3fc4e460029ad0cbed4b9a6d633bf40483158",
+      "sealId": "7c9a43bbfebfc008c7934b887d09cc3cf654e36c976744284db8caba16413cd4",
+      "causeSealIds": [
+        "d6f0fed558e50190a05d3c10981730b029d7985215bf53f9e5d8d275e071c54f"
+      ]
+    },
+    {
+      "key": "implementation-narration-candidate-building",
+      "path": "backend/src/services/narration-style-authoring-service.ts",
+      "parents": [
+        "authority-structured-narration",
+        "envelope",
+        "implementation-structured-narration-contract"
+      ],
+      "scope": "Typed candidate definition/public projection/profile/receipt assembly tested using injected mock provider; trusted fixture imports distinct from natural generation. No actual provider quality or billable calls.",
+      "test": false,
+      "ref": "all-tests-20261007/implementation-narration-candidate-building",
+      "sha256": "cbba4b90456aeb594303242ef32abb69dc20635fcf6720874d1e88434790c6e7",
+      "sealId": "b5d994be6d213058541cb20240ae3e13ae9db1d0bd44df1a4961c738f21077e8",
+      "causeSealIds": [
+        "51875275fc237d7d28d5b090581feb463e9c9d74cdada06bce76198277b9c129",
+        "fdaeaeb9f3694421a8776649f58ec4e89962ae6f95fc3249b8ca4b6a93b6e3ed",
+        "d6f0fed558e50190a05d3c10981730b029d7985215bf53f9e5d8d275e071c54f"
+      ]
+    },
+    {
+      "key": "implementation-narration-activation-validated-storage",
+      "path": "backend/src/repositories/narration-style-assets-v2.ts",
+      "parents": [
+        "envelope",
+        "queue",
+        "implementation-narration-candidate-building"
+      ],
+      "scope": "Create/revision persistence, activation/replay, expiry and generation drift tested. Stored NarrationStyleSchema now rejects corrupt instruction before replay or append. No all malformed storage branches or historical immutable replay projection proof.",
+      "test": false,
+      "ref": "all-tests-20261007/implementation-narration-activation-validated-storage",
+      "sha256": "049d5bc7fa565eb24714deb6392b85d5f061655a5c335f68bc5c22bb6d431aa1",
+      "sealId": "9a63b5e031f3ca89944c74ec4b3034ca95fe12921f7c628b68beb9a9b4dcec76",
+      "causeSealIds": [
+        "fdaeaeb9f3694421a8776649f58ec4e89962ae6f95fc3249b8ca4b6a93b6e3ed",
+        "811d0305e67ce73b5902135bb8662e7ee31e6efaf98852b0ad5de8d1f0c15007",
+        "b5d994be6d213058541cb20240ae3e13ae9db1d0bd44df1a4961c738f21077e8"
+      ]
+    },
+    {
+      "key": "implementation-narration-family-runner",
+      "path": "backend/src/services/family-authoring-runners.ts",
+      "parents": [
+        "queue",
+        "implementation-narration-candidate-building",
+        "implementation-narration-activation-validated-storage"
+      ],
+      "scope": "Only narration style worker success and injected structure failure handling exercised by route suite. Other family runners not certified.",
+      "test": false,
+      "ref": "all-tests-20261007/implementation-narration-family-runner",
+      "sha256": "b8a15b2b733da84dbf0fbb979a5cc05e54bdebe30f51ccf32d2d0b9434cc52df",
+      "sealId": "7a8b93dcb2e8101713ce91646b5d4fd4221f80a15a43f69d70a800a764ae89fc",
+      "causeSealIds": [
+        "811d0305e67ce73b5902135bb8662e7ee31e6efaf98852b0ad5de8d1f0c15007",
+        "b5d994be6d213058541cb20240ae3e13ae9db1d0bd44df1a4961c738f21077e8",
+        "9a63b5e031f3ca89944c74ec4b3034ca95fe12921f7c628b68beb9a9b4dcec76"
+      ]
+    },
+    {
+      "key": "implementation-narration-battle-binding",
+      "path": "backend/src/services/battle-service.ts",
+      "parents": [
+        "world",
+        "implementation-narration-activation-validated-storage",
+        "implementation-narration-phase-bridge"
+      ],
+      "scope": "Only current battle creation reads ready immutable narration generation, manifest digest and compiled phase rules with no extra style generation. Not battle progress, waiting clock or whole service conformance.",
+      "test": false,
+      "ref": "all-tests-20261007/implementation-narration-battle-binding",
+      "sha256": "0c1982e7e9a0ed28a36654be55be3bfbd25fbb0ac445bcbb73c364bed91440fc",
+      "sealId": "2b02aa82a50af634346b4cfabe00986f738ec2c151c292c4da5351477b5c5d52",
+      "causeSealIds": [
+        "4a236b55e9ad9e4aa54eb2c6bbe9d77e0a318881ba8328363505153d16e151dd",
+        "9a63b5e031f3ca89944c74ec4b3034ca95fe12921f7c628b68beb9a9b4dcec76",
+        "7c9a43bbfebfc008c7934b887d09cc3cf654e36c976744284db8caba16413cd4"
+      ]
+    },
+    {
+      "key": "implementation-narration-battle-storage",
+      "path": "backend/src/repositories/battles.ts",
+      "parents": [
+        "implementation-narration-battle-binding"
+      ],
+      "scope": "Only persistence/readback of created battle manifest and frozen narration policy observed in this suite. No full battle history or lifecycle proof.",
+      "test": false,
+      "ref": "all-tests-20261007/implementation-narration-battle-storage",
+      "sha256": "e0f5d0977e5a103249a382bbd5ac318f0a7a7b2abcde95ad2f4491ead5ca892f",
+      "sealId": "e458d8c9d12fe2f116fd33e22034b140a0fb1bac63fe5c5c5167e03e2159acba",
+      "causeSealIds": [
+        "2b02aa82a50af634346b4cfabe00986f738ec2c151c292c4da5351477b5c5d52"
+      ]
+    },
+    {
+      "key": "fixture-narration-route-offline-awareness",
+      "path": "backend/src/testing/offline-awareness-provider.ts",
+      "parents": [
+        "world"
+      ],
+      "scope": "Injected typed offline provider supports current battle creation. Fake transport and usage only; no actual model tokens or quality.",
+      "test": false,
+      "ref": "all-tests-20261007/fixture-narration-route-offline-awareness",
+      "sha256": "1eca62e07410c63ad3b89a02cde87b5c45694a719d99470fa0cf4e7e3494147e",
+      "sealId": "1c34e06ab8d2273a0eb86a3cc40d7c29d753199bfb121896fe6d455826c9eae0",
+      "causeSealIds": [
+        "4a236b55e9ad9e4aa54eb2c6bbe9d77e0a318881ba8328363505153d16e151dd"
+      ]
+    },
+    {
+      "key": "fixture-narration-route-v3-envelope",
+      "path": "backend/src/testing/v3-character-envelope-fixture.ts",
+      "parents": [
+        "envelope"
+      ],
+      "scope": "Synthetic trusted V3 character envelope used for narration battle-binding case. Never proof natural character-create profile completion.",
+      "test": false,
+      "ref": "all-tests-20261007/fixture-narration-route-v3-envelope",
+      "sha256": "c3eff395a23dc3ee82cee6a5a20d1525ee2fb2984ce28bc24f1d2cc61e420c57",
+      "sealId": "71b6f946fecfe00f9db9f216ecdf048316be65b2ae262d69852dbab7497e01a3",
+      "causeSealIds": [
+        "fdaeaeb9f3694421a8776649f58ec4e89962ae6f95fc3249b8ca4b6a93b6e3ed"
+      ]
+    },
+    {
+      "key": "implementation-narration-route-acceptance",
+      "path": "backend/src/routes.ts",
+      "parents": [
+        "implementation-narration-family-runner",
+        "implementation-narration-activation-validated-storage",
+        "implementation-narration-battle-storage",
+        "fixture-narration-route-offline-awareness",
+        "fixture-narration-route-v3-envelope",
+        "world"
+      ],
+      "scope": "Only narration authoring review/confirm, legacy selector refusal, and current awareness battle creation frozen narration binding exercised. Character create failures remain unresolved, other routes not certified.",
+      "test": false,
+      "ref": "all-tests-20261007/implementation-narration-route-acceptance",
+      "sha256": "c62c1c59bfbd373480e43fd60b4f32c0a3ea73a051329bee3aa048da98ab209f",
+      "sealId": "49136c362e322c5b6cd87afd1f37a75478d5c0e4bc123441ae0f49f57662143d",
+      "causeSealIds": [
+        "7a8b93dcb2e8101713ce91646b5d4fd4221f80a15a43f69d70a800a764ae89fc",
+        "9a63b5e031f3ca89944c74ec4b3034ca95fe12921f7c628b68beb9a9b4dcec76",
+        "e458d8c9d12fe2f116fd33e22034b140a0fb1bac63fe5c5c5167e03e2159acba",
+        "1c34e06ab8d2273a0eb86a3cc40d7c29d753199bfb121896fe6d455826c9eae0",
+        "71b6f946fecfe00f9db9f216ecdf048316be65b2ae262d69852dbab7497e01a3",
+        "4a236b55e9ad9e4aa54eb2c6bbe9d77e0a318881ba8328363505153d16e151dd"
+      ]
+    },
+    {
+      "key": "structured-narration",
+      "path": "packages/shared/src/structured-narration.test.ts",
+      "parents": [
+        "implementation-structured-narration-contract",
+        "implementation-narration-phase-bridge"
+      ],
+      "scope": "All four cases strict phases/IDs/markers, public private-field exclusion, bounded compiler and bridge, compiler registry and receipt presence. No live LLM or all invalid receipts matrix.",
+      "test": true,
+      "ref": "verification/structured-narration-20261007",
+      "sha256": "8df3a0c2d4d8b1e2aa2a5eafa3598ef6e35ea0f7575c26b1382f3f1b74dbcae1",
+      "sealId": "b969163c4cdecc17864344cd362a16d0c1070e82d4c0c61520e752b548059d77",
+      "causeSealIds": [
+        "d6f0fed558e50190a05d3c10981730b029d7985215bf53f9e5d8d275e071c54f",
+        "7c9a43bbfebfc008c7934b887d09cc3cf654e36c976744284db8caba16413cd4"
+      ]
+    },
+    {
+      "key": "structured-narration-acceptance",
+      "path": "backend/src/routes-structured-narration-acceptance.test.ts",
+      "parents": [
+        "implementation-narration-route-acceptance",
+        "implementation-narration-activation-validated-storage",
+        "implementation-narration-candidate-building"
+      ],
+      "scope": "All six isolated SQLite cases: injected structure failure no partial activation, legacy management and selector exclusion, create/upgrade review and zero-call confirmation replay, immutable narration binding at awareness-v5 battle creation, expiry/drift no append, corrupt stored style both rejection branches and unchanged generation/restored replay. Synthetic V3 fixture characters and offline awareness provider; no full battle progress or natural character creation proof.",
+      "test": true,
+      "ref": "verification/structured-narration-acceptance-20261007",
+      "sha256": "6f29961ea9996842bf7b28421491c8b002efb56b40d44242c7316ff43707d385",
+      "sealId": "5a7ba79637625aa008208caa7a8592003437178b4eeb4064f96671807be3d049",
+      "causeSealIds": [
+        "49136c362e322c5b6cd87afd1f37a75478d5c0e4bc123441ae0f49f57662143d",
+        "9a63b5e031f3ca89944c74ec4b3034ca95fe12921f7c628b68beb9a9b4dcec76",
+        "b5d994be6d213058541cb20240ae3e13ae9db1d0bd44df1a4961c738f21077e8"
+      ]
+    }
+  ],
+  "diagnostic": {
+    "pass": 10,
+    "fail": 0,
+    "skipped": 0,
+    "strictTypecheckExit": 0
+  }
+}

@@ -1,0 +1,154 @@
+TAP version 13
+# Subtest: awareness frozen narration
+    # Subtest: dispatches the exact prepared material for every phase without another interpretation call
+    ok 1 - dispatches the exact prepared material for every phase without another interpretation call
+      ---
+      duration_ms: 36.213818
+      type: 'test'
+      ...
+    # Subtest: uses the bound long narration deadline and preserves a shorter absolute deadline
+    ok 2 - uses the bound long narration deadline and preserves a shorter absolute deadline
+      ---
+      duration_ms: 6.598647
+      type: 'test'
+      ...
+    # Subtest: applies a receipt-bound policy override without changing a shared provider's default
+    ok 3 - applies a receipt-bound policy override without changing a shared provider's default
+      ---
+      duration_ms: 14.914329
+      type: 'test'
+      ...
+    # Subtest: rejects mixed phases and batching noncombat phases
+    ok 4 - rejects mixed phases and batching noncombat phases
+      ---
+      duration_ms: 1.966274
+      type: 'test'
+      ...
+    # Subtest: keeps canonical verdict separate from generated framing
+    ok 5 - keeps canonical verdict separate from generated framing
+      ---
+      duration_ms: 1.73167
+      type: 'test'
+      ...
+    # Subtest: freezes typed prologue sources without canonical speaker names
+    ok 6 - freezes typed prologue sources without canonical speaker names
+      ---
+      duration_ms: 1.486858
+      type: 'test'
+      ...
+    1..6
+ok 1 - awareness frozen narration
+  ---
+  duration_ms: 66.119036
+  type: 'suite'
+  ...
+# Subtest: frozen narration strict provider grammar
+    # Subtest: derives all phase limits and exact batch counts from the runtime receipt shape
+    ok 1 - derives all phase limits and exact batch counts from the runtime receipt shape
+      ---
+      duration_ms: 11.891686
+      type: 'test'
+      ...
+    1..1
+ok 2 - frozen narration strict provider grammar
+  ---
+  duration_ms: 13.157265
+  type: 'suite'
+  ...
+# Subtest: awareness narration batch provider
+    # Subtest: publishes three ordered receipt outputs from one capped Grok call
+    ok 1 - publishes three ordered receipt outputs from one capped Grok call
+      ---
+      duration_ms: 21.631318
+      type: 'test'
+      ...
+    # Subtest: applies long measurement narration timeout only when explicitly bound
+    ok 2 - applies long measurement narration timeout only when explicitly bound
+      ---
+      duration_ms: 5.324008
+      type: 'test'
+      ...
+    # Subtest: validates against the frozen dispatch source after callers mutate their inputs
+    ok 3 - validates against the frozen dispatch source after callers mutate their inputs
+      ---
+      duration_ms: 8.737914
+      type: 'test'
+      ...
+    # Subtest: rejects missing receipt coverage without a second attempt
+    ok 4 - rejects missing receipt coverage without a second attempt
+      ---
+      duration_ms: 6.442586
+      type: 'test'
+      ...
+    # Subtest: rejects swapped identities and cross-receipt speech
+    ok 5 - rejects swapped identities and cross-receipt speech
+      ---
+      duration_ms: 16.1965
+      type: 'test'
+      ...
+    # Subtest: rejects duplicates, too-large batches, and expired deadlines before dispatch
+    ok 6 - rejects duplicates, too-large batches, and expired deadlines before dispatch
+      ---
+      duration_ms: 2.289294
+      type: 'test'
+      ...
+    # Subtest: rejects missing speech and unsupported recognition subjects
+    ok 7 - rejects missing speech and unsupported recognition subjects
+      ---
+      duration_ms: 5.716659
+      type: 'test'
+      ...
+    1..7
+ok 3 - awareness narration batch provider
+  ---
+  duration_ms: 70.545486
+  type: 'suite'
+  ...
+# [llm] openai ready engine=gpt-6-luna fast=gpt-6-luna
+# [llm] xai ready engine=grok-4.5 fast=grok-4.3
+# Subtest: awareness provider role factory
+    # Subtest: binds Luna and preserves configured Grok identities with no fallback or retries
+    ok 1 - binds Luna and preserves configured Grok identities with no fallback or retries
+      ---
+      duration_ms: 8.563574
+      type: 'test'
+      ...
+    # Subtest: forwards an explicit bound measurement policy into the narration role
+    ok 2 - forwards an explicit bound measurement policy into the narration role
+      ---
+      duration_ms: 8.63463
+      type: 'test'
+      ...
+    # Subtest: exposes the configured Grok domain adapter without sending a request
+    ok 3 - exposes the configured Grok domain adapter without sending a request
+      ---
+      duration_ms: 11.116397
+      type: 'test'
+      ...
+    # Subtest: leaves all roles unconfigured when either credential is absent
+    ok 4 - leaves all roles unconfigured when either credential is absent
+      ---
+      duration_ms: 0.452523
+      type: 'test'
+      ...
+    # Subtest: rejects non-Grok models and invalid transport URLs before adapter creation
+    ok 5 - rejects non-Grok models and invalid transport URLs before adapter creation
+      ---
+      duration_ms: 1.722802
+      type: 'test'
+      ...
+    1..5
+ok 4 - awareness provider role factory
+  ---
+  duration_ms: 33.844647
+  type: 'suite'
+  ...
+1..4
+# tests 19
+# suites 4
+# pass 19
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 1456.069756

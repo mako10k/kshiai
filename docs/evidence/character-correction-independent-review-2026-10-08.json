@@ -1,0 +1,63 @@
+{
+  "reviewer": "/root/battle_helper_contract_review",
+  "mode": "readonly",
+  "verdict": "PASS",
+  "classification": "INSIDE_ACCEPTED_ADR0059_D4_COMPLETE_PREDECESSOR",
+  "sourceSha256": {
+    "backend/src/services/semantic-authoring/character-review-correction-source.ts": "842093163b0c3dedfd3c09901f222641406eff559972949332b6ba1f3b92164e",
+    "backend/src/services/semantic-authoring/adapters/character-complete.ts": "b0df9f24a067f2b972ce51d2d6dec9b84a9e93e06d47f22c8bb8d5d830a63710",
+    "backend/src/services/semantic-authoring/adapters/character-context.ts": "09b805192da9243d88bf7619feaa598c50750e6733c3ab5bef532ffd4e8b8d77",
+    "backend/src/services/semantic-authoring/adapters/schema-notation.ts": "d5c422cdb9994b00cf9f2135fcdbb66beca3feed53b9a50bf427667f928191a9",
+    "backend/src/services/character-focused-authoring.ts": "270fa09ff52d46391de33991ef58c65593fafc0d7e93427f94330a2f6bc13e73",
+    "backend/src/repositories/character-focused-candidate.ts": "331aeba8a820372a6bc2a74c388df5524f84b9a6b5d01093a619561ab488ff60",
+    "backend/src/repositories/character-assets-v2.ts": "896462d98400ba9beacbdb5934b6442c73c492d03a1494420b48c3dd1a8c4547",
+    "backend/src/routes.ts": "79050c09fef90ca84a831884d79b2073a3a8d7eaafc899bcd4b298c7377cd673",
+    "packages/shared/src/api.ts": "a49ecbc152c827582ee244a86ee7b40c9c3be5962c6f30465191651be67637dd",
+    "frontend/src/api.ts": "0e2862ce0e666cc6ba56ae63e091c3f2f7171b2eed8a2e5d18d668787d657f38",
+    "frontend/src/pages/CharacterReviewPage.tsx": "dddcb952af6acc8714161ebc64e6bd9a73eda295128afb2d5ee2bd015bbd16b1",
+    "backend/src/services/character-focused-authoring.test.ts": "938d15fd88674a41c4b88b0a2c536ec9fcbb4a6663a53e281ce8612b98463169",
+    "backend/src/routes-structured-character-acceptance.test.ts": "993aecad714b3e76be64b9b54d4e172fb2503799a3f6aca19f7de3e359aa4247",
+    "backend/src/services/character-v3-profile-adapter.test.ts": "13dd6765ef9547b35cb047b6c3591f78b18ffb43f6131089c62da24334197254"
+  },
+  "confirmed": [
+    "immutable reviewed source distinct from active generation",
+    "owner/predecessor/candidate digest/instruction/idempotency binding",
+    "exact replay and conflicting key refusal",
+    "source deduplication only on deep equality",
+    "compact input notation preserves decoder schemas and constraints",
+    "reviewed predecessor and failed retry parent have separate checked bindings",
+    "same-run scope/repair/lenses/profile/claims budget",
+    "old candidate unchanged and new digest required for confirmation"
+  ],
+  "diagnostic": {
+    "cases": 56,
+    "pass": 56,
+    "fail": 0,
+    "skip": 0,
+    "seconds": 9.625519383,
+    "originalHttpCases": 15,
+    "log": "docs/evidence/character-correction-final-diagnostic-2026-10-08.tap"
+  },
+  "measurement": {
+    "successorPhysicalCalls": 7,
+    "estimatedInputTokenBounds": [
+      1000,
+      5748,
+      3112,
+      3027,
+      2940,
+      3317,
+      3806
+    ],
+    "estimator": "utf8-byte-upper-bound-v1",
+    "actualModelTokenizerTokensMeasured": false,
+    "maximumInputTokenBound": 5748,
+    "maxPerCall": 6000
+  },
+  "causeCorrection": "Initial mechanics reservation failed at 6616 estimated input tokens, not at the physical call-count limit. Source alias alone reduced to 6356, primitive notation to 6201, system shortening to 6095, complete meaning-preserving notation to 5748.",
+  "remaining": [
+    "explicit correction of historical structural-only predecessor (ADR0059 D5)",
+    "whole-feature current-source Seal propagation",
+    "all 251 formal files passing"
+  ]
+}

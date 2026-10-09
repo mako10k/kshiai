@@ -1,0 +1,7 @@
+# バランス観測helperのwholefile検証
+
+元2ケース、独立INSIDE。改善分析の元4ケースと合計6のdiagnosticpass/fail0/skip0。改善分析の5/10利用条件は未受理契約として別に保持し、このSealに含めない。
+
+Accepted requirements F-CFG-08の運用/バランス観測境界における純粋な計算helperを検証する。HP差分traceから観測ラベルを計算し、peak buildのprofileがflatより高く、最大skill powerを保持することを確認する。90%/2turn等はこのhelperの診断ラベルであり、戦闘ルール、候補登録・対戦受付の拒否、最適バランス品質、公開API権限の検証ではない。関数は外部stateやゲームルールを変更しない。
+
+docs/battle-fit-gap-acceptance.mdはserver-only observation/private認知非搭載/admin aggregateという実装境界を観察した過去資料であり、新たな方針の所有者承認とは扱わない。この非規範的記録もsourceで保存するが、権限は要件の観測境界から導く。実pure producerと元wholefileを現在bytesへ固定する。

@@ -1,4 +1,6 @@
-import { CurrentAwarenessPromptRevision } from "@kshiai/shared";
+import { projectBattleActionEffort } from "@kshiai/shared";
+import { CurrentActionEffortPolicyV1 } from "@kshiai/shared";
+import { CurrentAwarenessPromptRevision, evaluatedAwarenessConsciousGuidance } from "@kshiai/shared";
 // R: Coordinate battle creation and turn execution using bound assets and committed state.
 import { awarenessNarrationUrgent } from "./awareness-narration-urgency.js";
 import { prepareAwarenessCreationEncounter } from "./awareness-creation-encounter.js";
@@ -8,6 +10,7 @@ import { AwarenessInitialize, AwarenessNormalPolicy, AwarenessPolicyV1Schema, ty
 import { currentAwarenessAdvanceContext, withAwarenessAdvanceContext, saveCompletedBattleBoundary } from "./awareness-advance-context.js";
 import { prepareAwarenessBattleBoundary, stopAwarenessBattleRuntime, type AwarenessActionFrame } from "./awareness-battle-boundary.js";
 import { createAwarenessAdjudicationGuard } from "./awareness-adjudication-guard.js";
+import { waitForAwarenessTickBoundary } from "./awareness-clock.js";
 import { withAwarenessDispatchContext } from "../llm/awareness-dispatch-context.js";
 import { currentBattleLeaseFence } from "./distributed-guard.js";
 import { commitAwarenessWorld } from "./awareness-world-commit.js";
@@ -200,7 +203,8 @@ import {
   projectCharacterRelationshipDescriptionV2,
   resolveCharacterRelationshipV2,
   BATTLEFIELD_INSTANCE_COMPILER_V2,
-  compileBattlefieldInstanceV2,
+  prepareStructuredBattlefieldCreationV2,
+  type BattlefieldCreation,
   selectBattlefieldEvolutionAffordanceV2,
   type CharacterActionNormProgramV2,
   type CharacterActionNormProgramV3,
@@ -271,7 +275,6 @@ import {
 } from "./dialogue-pipeline-activation.js";
 import { getReadyCharacterGeneration } from "../repositories/character-assets-v2.js";
 import { readCharacterGeneration } from "../repositories/character-generation-reader.js";
-import { getUserAccessProfile } from "../account-access.js";
 import { withBattleLease } from "./distributed-guard.js";
 import {
   buildFreeActionCanonicalRoots,
@@ -326,11 +329,6 @@ export async function toBattlePublicForViewer(
   resultSummary?: string | null,
   oppSheet?: CharacterSheet | null,
 ): Promise<BattlePublic> {
-  const ratingDisplay = state.ratingSettlement?.applied
-    ? await charRepo.getRatingDisplayContext(
-        (await getUserAccessProfile(mySheet.ownerUserId)).realm,
-      )
-    : undefined;
   const presentationLog = config.battlePresentationReadModel
     ? await presentationRepo.listBattlePresentations(state.id)
     : [];
@@ -342,7 +340,6 @@ export async function toBattlePublicForViewer(
     mySheet,
     resultSummary,
     oppSheet,
-    ratingDisplay,
   );
 }
 
@@ -351,7 +348,7 @@ async function resolveBattlefieldInstance(input: {
   battlefieldMode?: "random" | "preset";
   userId: string;
 }): Promise<{
-  instance: BattlefieldInstance;
+  creation: Extract<BattlefieldCreation, { kind: "structured" }>;
   source: bfRepo.ReadyBattlefieldPreset;
 }> {
   const mode =
@@ -371,24 +368,14 @@ async function resolveBattlefieldInstance(input: {
         ? "BATTLEFIELD_UPGRADE_REQUIRED"
         : "BATTLEFIELD_NOT_FOUND");
     }
-    return {
-      instance: compileBattlefieldInstanceV2(
-        source.envelope.definition,
-        source.preset.id,
-      ),
-      source,
-    };
+    const creation = prepareStructuredBattlefieldCreationV2(source.envelope.definition, source.preset.id);
+    return { creation, source };
   }
 
   const source = await bfRepo.pickRandomSystemPreset();
   if (!source) throw new Error("BATTLEFIELD_READY_SYSTEM_PRESET_MISSING");
-  return {
-    instance: compileBattlefieldInstanceV2(
-      source.envelope.definition,
-      source.preset.id,
-    ),
-    source,
-  };
+  const creation = prepareStructuredBattlefieldCreationV2(source.envelope.definition, source.preset.id);
+  return { creation, source };
 }
 
 function fieldHintFromPreset(preset: BattlefieldPreset | null): {
@@ -652,7 +639,7 @@ export async function startBattle(input: StartBattleInput): Promise<BattlePublic
     battlefieldMode: input.battlefieldMode,
     userId: input.userId,
   });
-  const battlefield = resolvedBattlefield.instance;
+  const battlefield = resolvedBattlefield.creation.instance;
 
   // Tactical policy cards are no longer selected/generated at match setup.
   // Each isolated character agent chooses its own opening strategy at turn 0.
@@ -723,7 +710,8 @@ export async function startBattle(input: StartBattleInput): Promise<BattlePublic
     sideB: opp,
     turnLimit: 12,
     pacingPolicy: LOCAL_TWELVE_TURN_PACING_CANDIDATE,
-    battlefield,
+    actionEffortPolicy: CurrentActionEffortPolicyV1,
+    battlefield: resolvedBattlefield.creation,
     stanceA: input.stance,
     policiesA,
     selectedPolicyIdsA,
@@ -1564,6 +1552,19 @@ function buildCharacterDecisionContext(input: {
       : v2NormResolution?.consciousActionPrinciples ?? null,
   });
   return decision;
+}
+
+/** Carry evaluated live guidance together with the exact decision's legal action frame. */
+export function buildAwarenessCharacterActionFrame(input: Parameters<typeof buildCharacterDecisionContext>[0]): AwarenessActionFrame {
+  const decision = buildCharacterDecisionContext(input);
+  if (!decision) throw new Error("AWARENESS_DECISION_FRAME_REQUIRED");
+  const guidance = characterDecisionRuleMetadata.get(decision)?.consciousActionPrinciples;
+  if (guidance == null) throw new Error("AWARENESS_EVALUATED_GUIDANCE_REQUIRED");
+  return { consciousGuidance: evaluatedAwarenessConsciousGuidance(guidance),
+    availableActions: decision.availableActions,
+    facts: (decision.affordances ?? []).map((affordance) => ({ ref: affordance.ref,
+      content: `${affordance.perceivedAs}。${affordance.relation}。${affordance.possiblePreparations.map((item) => item.description).join("。")}${affordance.possibleUses.map((item) => item.description).join("。")}` })),
+    accepts: (action) => validateCharacterActionProposal({ proposedAction: action, decision }).acceptedAction !== null };
 }
 
 /** Build the deliberately narrow input used between sequential buckets. */
@@ -2669,7 +2670,7 @@ export async function advanceCharacterAgents(input: {
       validateAction: (action) => validateCharacterActionProposal({ proposedAction: action, decision: agentInput.decision }).reason,
     });
   }
-  let agents;
+  let agents: [PromiseSettledResult<CharacterAgentAdvanceResult | null>, PromiseSettledResult<CharacterAgentAdvanceResult | null>];
   try {
     agents = await withTimeout(Promise.allSettled([
       agentInputA ? input.llm.advanceCharacterAgent(agentInputA) : Promise.resolve(null),
@@ -2940,7 +2941,7 @@ export async function advanceCharacterAgents(input: {
           reasonCode: "semantic_unavailable",
           detail: null,
         };
-  let stateAfterUtterances: BattleState = {
+  let stateAfterUtterances: BattleState & Required<Pick<BattleState, "agentStateA" | "agentStateB">> = {
     ...input.after,
     agentStateA: {
       ...acceptedA.state,
@@ -2991,6 +2992,7 @@ export async function advanceCharacterAgents(input: {
       };
       const projectedA = projectObserverPerception({
         ...projectionBase,
+        actionEffort: projectBattleActionEffort(stateAfterUtterances, "a"),
         observerSide: "a",
         reserveEvidence: buildServerOnlyReserveCues({
           side: "a",
@@ -3004,6 +3006,7 @@ export async function advanceCharacterAgents(input: {
       });
       const projectedB = projectObserverPerception({
         ...projectionBase,
+        actionEffort: projectBattleActionEffort(stateAfterUtterances, "b"),
         observerSide: "b",
         reserveEvidence: buildServerOnlyReserveCues({
           side: "b",
@@ -3052,7 +3055,7 @@ export async function advanceCharacterAgents(input: {
     }
   }
   stateAfterUtterances.agentStateA = {
-    ...(stateAfterUtterances.agentStateA as CharacterAgentState),
+    ...stateAfterUtterances.agentStateA,
     lastSpeech: committedSpeechSides.has("a")
       ? acceptedA.state.lastSpeech
       : previousA.lastSpeech,
@@ -3066,7 +3069,7 @@ export async function advanceCharacterAgents(input: {
     }),
   };
   stateAfterUtterances.agentStateB = {
-    ...(stateAfterUtterances.agentStateB as CharacterAgentState),
+    ...stateAfterUtterances.agentStateB,
     lastSpeech: committedSpeechSides.has("b")
       ? acceptedB.state.lastSpeech
       : previousB.lastSpeech,
@@ -3904,6 +3907,7 @@ export async function reconcileSemanticState(input: {
     try {
       const projectedA = projectObserverPerception({
         ...projectionBase,
+        actionEffort: projectBattleActionEffort(state, "a"),
         observerSide: "a",
         events: [...committedEvents, ...previousUtteranceEvents],
         reserveEvidence: reserveEvidenceA,
@@ -3915,6 +3919,7 @@ export async function reconcileSemanticState(input: {
       });
       const projectedB = projectObserverPerception({
         ...projectionBase,
+        actionEffort: projectBattleActionEffort(state, "b"),
         observerSide: "b",
         events: [...committedEvents, ...previousUtteranceEvents],
         reserveEvidence: reserveEvidenceB,
@@ -4817,24 +4822,22 @@ async function advanceTurnWithLease(input: Parameters<typeof advanceTurnCoreWith
   const frame = (side: "a" | "b"): AwarenessActionFrame => {
     const manifest = baseline.assetManifest;
     if (manifest?.schemaVersion !== 5) throw new Error("AWARENESS_MANIFEST_REQUIRED");
-    const decision = buildCharacterDecisionContext({ state: baseline,
+    return buildAwarenessCharacterActionFrame({ state: baseline,
       sheet: manifest.characters[side].snapshot,
       counterpartSheet: manifest.characters[side === "a" ? "b" : "a"].snapshot,
       side, decisionTurn: nextPublicCombatTurn(baseline), phase: baseline.prologuePending ? "prologue" : "turn" });
-    if (!decision) throw new Error("AWARENESS_DECISION_FRAME_REQUIRED");
-    return { availableActions: decision.availableActions,
-      facts: (decision.affordances ?? []).map((affordance) => ({ ref: affordance.ref,
-        content: `${affordance.perceivedAs}。${affordance.relation}。${affordance.possiblePreparations.map((item) => item.description).join("。")}${affordance.possibleUses.map((item) => item.description).join("。")}` })),
-      accepts: (action) => validateCharacterActionProposal({ proposedAction: action, decision }).acceptedAction !== null };
   };
   await initializeAwarenessRuntime({ battleId: baseline.id, fence, now: new Date().toISOString(),
     runtime: AwarenessInitialize({ policy: baseline.assetManifest.awarenessPolicy, startedAt: Date.parse(baseline.assetManifest.boundAt),
       promptRevision: baseline.assetManifest.promptRevision, outputRevision: baseline.assetManifest.outputRevision }) });
   const priorRuntime = await getAwarenessRuntime(baseline.id);
-  const waitMs = priorRuntime?.runtime.lastCommittedAt === null || priorRuntime === null ? 0
-    : Math.max(0, priorRuntime.runtime.lastCommittedAt + priorRuntime.runtime.policy.minTickIntervalMs - Date.now());
-  if (waitMs > 0) await new Promise<void>((resolve) => setTimeout(resolve, waitMs));
   try {
+    if (priorRuntime !== null && priorRuntime.runtime.lastCommittedAt !== null) {
+      await waitForAwarenessTickBoundary({
+        notBefore: priorRuntime.runtime.lastCommittedAt + priorRuntime.runtime.policy.minTickIntervalMs,
+        deadlineAt: priorRuntime.runtime.deadlineAt,
+      });
+    }
     const prepared = await prepareAwarenessBattleBoundary({ state: baseline, llm: input.llm, fence, tick,
       phase: baseline.prologuePending ? "prologue" : "turn", frames: { a: frame("a"), b: frame("b") } });
     if (!prepared.canCommitWorld) throw new Error(prepared.snapshot.runtime.incompleteReason ?? "AWARENESS_REQUIRED_BOUNDARY_FAILED");
@@ -5147,6 +5150,7 @@ async function advanceTurnCoreWithLease(input: {
       });
       if (boundaryState.semanticState) {
         const projected = projectObserverPerception({
+          actionEffort: projectBattleActionEffort(boundaryState, laterSide),
           observerSide: laterSide,
           turn: boundaryState.turn,
           semanticState: boundaryState.semanticState,

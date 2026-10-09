@@ -1,0 +1,12 @@
+{
+  "schema": "kshiai/cause-reader-method-comparison/v1",
+  "nodes": 943,
+  "mappedTests": 247,
+  "entireGraphEquivalent": true,
+  "headsEquivalent": true,
+  "testHeadsEquivalent": true,
+  "publicCliSeconds": 731.964,
+  "hashVerifiedObjectReadSeconds": 0.552,
+  "hashVerifiedWithCliSamplesSeconds": 5.674,
+  "limits": "Read-only comparison. Publication, CAS, source bindings and final fsck remain official CLI operations. No test authority or deployment result follows from read speed."
+}

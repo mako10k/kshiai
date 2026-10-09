@@ -1,0 +1,151 @@
+{
+  "review": "docs/evidence/expression-delivery-cause-review-2026-10-07.json",
+  "entries": [
+    {
+      "key": "authority-conditional-event-alignment",
+      "path": "docs/adr/0046-align-conditional-contracts.think",
+      "parents": [],
+      "scope": "Accepted ADR0046 D1 existing runtime conditional union alignment and producer value preservation only. D2 deployment is outside this work; this root does not authorize a new remote mutation.",
+      "test": false,
+      "ref": "all-tests-20261007/authority-conditional-event-alignment",
+      "sha256": "ba27268d92f3e74db31e07830461170339fc7a2f219257f2d638b95ae4022b6e",
+      "sealId": "df1074f8d520f877ab0f1fb62633520c31da784118e1933cfaa5a1b3d409d577",
+      "causeSealIds": []
+    },
+    {
+      "key": "authority-observer-sensory-channels",
+      "path": "docs/adr/0023-pair-channels-are-not-unique-cognition.think",
+      "parents": [],
+      "scope": "Accepted ADR0023 D1 hearing from organ/distance/area and expression properties, observer-local visual access; compatibility pair channels not cognition authority. No all geometry or sound reach numerical proof.",
+      "test": false,
+      "ref": "all-tests-20261007/authority-observer-sensory-channels",
+      "sha256": "d6789225d9ca8820cb961eb9f345af375c42c9b91e0096f3a7f7ee30296c39b8",
+      "sealId": "09e78a830856b823afef86d311752163722c1c37c3c6b7c9b17a1da63649af21",
+      "causeSealIds": []
+    },
+    {
+      "key": "contract-turn-event-conditional-delivery",
+      "path": "packages/shared/src/battle.ts",
+      "parents": [
+        "authority-conditional-event-alignment",
+        "output"
+      ],
+      "scope": "Only TurnEvent discriminator requires utterance/manifestation producer payload and forbids dual action/effect ownership. Tests preserve supplied utterance and manifestation fields. Other battle contract sections not certified.",
+      "test": false,
+      "ref": "all-tests-20261007/contract-turn-event-conditional-delivery",
+      "sha256": "fc5d492df5fd5252b66e12017b265a4697cc3f798acc2811434b3c33d23b0752",
+      "sealId": "c75f415a640db0d2d69d8455e5b8eff530cdf43f7dde97bcebdb98b56ae087ad",
+      "causeSealIds": [
+        "df1074f8d520f877ab0f1fb62633520c31da784118e1933cfaa5a1b3d409d577",
+        "2c6888e9d07a676d4b429b041b241e1631845b18fac4fb4cda280a4a29670d50"
+      ]
+    },
+    {
+      "key": "implementation-expression-causal-senses",
+      "path": "packages/shared/src/battle-causality.ts",
+      "parents": [
+        "authority-observer-sensory-channels",
+        "world"
+      ],
+      "scope": "Only deriveBattleActorCausality organ baseline and attached hidden hearingEffect block used in fixture. No numerical mechanics multipliers or full causal interaction matrix proof.",
+      "test": false,
+      "ref": "all-tests-20261007/implementation-expression-causal-senses",
+      "sha256": "a3748c02f1a2eef130300df51805eeca5a07c3f83e7e7670fc7c090b281a6bdd",
+      "sealId": "92323f1ce7d639dc1cb97e7fac7f2335c01849c5cabcb1f0d9e0a7d870cf0352",
+      "causeSealIds": [
+        "09e78a830856b823afef86d311752163722c1c37c3c6b7c9b17a1da63649af21",
+        "e54f08ad6e2c12e8bc0d606d127673f1f5d1c9338b0f2e499742538ad42ab527"
+      ]
+    },
+    {
+      "key": "implementation-expression-observer-projection",
+      "path": "packages/shared/src/perception-projection.ts",
+      "parents": [
+        "authority-observer-sensory-channels",
+        "perception",
+        "semantic",
+        "world",
+        "implementation-expression-causal-senses"
+      ],
+      "scope": "Only initial observer fixture and speech sensory evidence projection, hidden speaker contact, known but unlinked transformed apparent identity. No whole dynamic perception reconstruction or all arbitrary privacy guarantee.",
+      "test": false,
+      "ref": "all-tests-20261007/implementation-expression-observer-projection",
+      "sha256": "0362190298b04f66ecd3cb2851705222c9f58998a15acfa6fe495c1e8f63a383",
+      "sealId": "aab43121b4eedb246691f7ea5f6071496074e760649ea9330dc550494a6830f1",
+      "causeSealIds": [
+        "09e78a830856b823afef86d311752163722c1c37c3c6b7c9b17a1da63649af21",
+        "635dddb9346372392eefec016dc989a0bcf82d8dd14f049bb771d910c1a924ae",
+        "dce107f59177be59fec704680461fb377ad1211e05fd35db9e654b94c0691b59",
+        "e54f08ad6e2c12e8bc0d606d127673f1f5d1c9338b0f2e499742538ad42ab527",
+        "92323f1ce7d639dc1cb97e7fac7f2335c01849c5cabcb1f0d9e0a7d870cf0352"
+      ]
+    },
+    {
+      "key": "implementation-committed-utterance-perception",
+      "path": "packages/shared/src/utterance-perception.ts",
+      "parents": [
+        "authority",
+        "authority-observer-sensory-channels",
+        "contract-turn-event-conditional-delivery",
+        "implementation-expression-causal-senses",
+        "implementation-expression-observer-projection"
+      ],
+      "scope": "Commit supplied speech when physically possible and project observer-local hearing/language/attribution from canonical organs and prior observer frame. Exact text survives clear hearing without canonical name leak; partial/no language, hidden speaker, blocked organ/effect, side symmetry and unwitnessed transformed speaker tested. No all modalities or full character output connection proof.",
+      "test": false,
+      "ref": "all-tests-20261007/implementation-committed-utterance-perception",
+      "sha256": "a13a8bcfda93fbfe2892d607539d6d2524fe57692d3f12a1003d238c54e2996b",
+      "sealId": "a6bf11b8b7f44ce01470acc41b8b93ac2f8aa84b08c9461ea2016e6795dbc912",
+      "causeSealIds": [
+        "4a236b55e9ad9e4aa54eb2c6bbe9d77e0a318881ba8328363505153d16e151dd",
+        "09e78a830856b823afef86d311752163722c1c37c3c6b7c9b17a1da63649af21",
+        "c75f415a640db0d2d69d8455e5b8eff530cdf43f7dde97bcebdb98b56ae087ad",
+        "92323f1ce7d639dc1cb97e7fac7f2335c01849c5cabcb1f0d9e0a7d870cf0352",
+        "aab43121b4eedb246691f7ea5f6071496074e760649ea9330dc550494a6830f1"
+      ]
+    },
+    {
+      "key": "turn-event-contract",
+      "path": "packages/shared/src/turn-event-contract.test.ts",
+      "parents": [
+        "authority-conditional-event-alignment",
+        "contract-turn-event-conditional-delivery"
+      ],
+      "scope": "Entire two-case regression and three compile-time Fits assignments: incomplete utterance, wrong info payload, dual source invalid at type level; runtime missing utterance/manifestation or dual source rejected; valid producer utterance/manifestation value equality. Strict tsc executed; no blanket compile-time invalid value matrix.",
+      "test": true,
+      "ref": "verification/turn-event-contract-20261007",
+      "sha256": "cc0f8f2c6bf55b5e02fe6a2461c81ed31ea9b706d1b932c658307cef58a2824d",
+      "sealId": "1524247f80c8d87c492d44b5426b35d35598863123f8a2ffba30445dbe3d7f46",
+      "causeSealIds": [
+        "df1074f8d520f877ab0f1fb62633520c31da784118e1933cfaa5a1b3d409d577",
+        "c75f415a640db0d2d69d8455e5b8eff530cdf43f7dde97bcebdb98b56ae087ad"
+      ]
+    },
+    {
+      "key": "utterance-perception",
+      "path": "packages/shared/src/utterance-perception.test.ts",
+      "parents": [
+        "implementation-committed-utterance-perception",
+        "implementation-expression-observer-projection",
+        "implementation-expression-causal-senses",
+        "contract-turn-event-conditional-delivery"
+      ],
+      "scope": "Entire four-case supplied-world regression: original character speech heard without canonical name, partial/no understanding vs hearing, unseen attribution/contact, hearing blocked or hidden effect blocks with private ID excluded, impossible speech rejected, sides symmetric, unwitnessed transformed speaker not relinked by canonical voice. No live model or whole battle execution proof.",
+      "test": true,
+      "ref": "verification/utterance-perception-20261007",
+      "sha256": "2f13536d6083ca8e5bb065e4d184fce33c2dc182957579b2c1ca4c75b6c7a400",
+      "sealId": "46682f88987e303b31ec67ec316f68ddbf2fa07a34bde181d4246e92c939155d",
+      "causeSealIds": [
+        "a6bf11b8b7f44ce01470acc41b8b93ac2f8aa84b08c9461ea2016e6795dbc912",
+        "aab43121b4eedb246691f7ea5f6071496074e760649ea9330dc550494a6830f1",
+        "92323f1ce7d639dc1cb97e7fac7f2335c01849c5cabcb1f0d9e0a7d870cf0352",
+        "c75f415a640db0d2d69d8455e5b8eff530cdf43f7dde97bcebdb98b56ae087ad"
+      ]
+    }
+  ],
+  "diagnostic": {
+    "pass": 6,
+    "fail": 0,
+    "skipped": 0,
+    "strictTypecheckExit": 0
+  }
+}

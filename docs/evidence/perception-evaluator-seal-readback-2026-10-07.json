@@ -1,0 +1,14 @@
+{
+  "newRefs": 6,
+  "previousHeadsUnchanged": true,
+  "previousHeadCount": 880,
+  "totalRefs": 886,
+  "sourceBytesMatch": true,
+  "stale": 0,
+  "fsck": "ok",
+  "limitations": [
+    "Original eleven cases/assertions retained; test-only validated fixture construction",
+    "27 fake calls, no external API; stored model strings not current provider specifications or primary selection proof",
+    "Schema/operation comparison not runtime semantic commit or real provider quality"
+  ]
+}

@@ -1,0 +1,59 @@
+{
+  "entries": [
+    {
+      "key": "design-runtime-directories",
+      "path": "docs/sealgraph-runtime-directory-test-review-2026-10-07.md",
+      "parents": [
+        "gate"
+      ],
+      "scope": "Preserve canonical SealGraph data while restoring disposable runtime directories; unchanged two local cases.",
+      "ref": "all-tests-20261007/design-runtime-directories",
+      "test": false,
+      "sha256": "53c3f5b51a0ee961ce96b4bd7df01be8cb08e32485dea0433eafd8e5b1bcc40f",
+      "sealId": "40430d0c6a0270f5ec0a181dfc01e8f483dca38d2f405625d81db8e72d9deed8",
+      "causeSealIds": [
+        "ac14858b7b48b7a0857eba65a94a7659b11752383804a6aea41efc934518186a"
+      ]
+    },
+    {
+      "key": "implementation-runtime-directories",
+      "path": "scripts/sealgraph-runtime-dirs.mjs",
+      "parents": [
+        "design-runtime-directories"
+      ],
+      "scope": "Checks existing config/objects/refs before idempotent mkdir of ignored runtime directories; no repository bootstrap.",
+      "ref": "all-tests-20261007/implementation-runtime-directories",
+      "test": false,
+      "sha256": "787baa8a4bc14356dd532891da7a8e72c8e789d05aa969e1529479036af79e7a",
+      "sealId": "c3f30b2d37333548cd24744c6715619858a0e1786a7a516529051c680b153378",
+      "causeSealIds": [
+        "40430d0c6a0270f5ec0a181dfc01e8f483dca38d2f405625d81db8e72d9deed8"
+      ]
+    },
+    {
+      "key": "sealgraph-runtime-directories-bounded",
+      "path": "scripts/sealgraph-runtime-dirs.test.mjs",
+      "parents": [
+        "implementation-runtime-directories"
+      ],
+      "scope": "Whole unchanged two cases config preservation/idempotent setup and absent repository rejection; no full tree equality claim.",
+      "ref": "verification/sealgraph-runtime-directories-bounded-20261007",
+      "test": true,
+      "sha256": "87012df79f51840e8a2852e72a1c2db40244544e7bca9e00fdfd30f3f99caf6d",
+      "sealId": "a97751865e7a8918af21f3d816d80735f46f2a8f6d1eb275ccf3b063a5205a19",
+      "causeSealIds": [
+        "c3f30b2d37333548cd24744c6715619858a0e1786a7a516529051c680b153378"
+      ]
+    }
+  ],
+  "diagnostic": {
+    "focusedPass": 2,
+    "fail": 0,
+    "skipped": 0
+  },
+  "limitations": [
+    "Only two original runtime-directory cases",
+    "Not full object tree comparison",
+    "Full251 goal incomplete"
+  ]
+}

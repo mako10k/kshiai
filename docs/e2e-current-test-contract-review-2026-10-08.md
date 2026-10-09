@@ -1,0 +1,17 @@
+# 現在のE2E 3ファイルの検証契約
+
+## 範囲と根拠
+
+元の3ファイル・9ケース・assertionを保持する。独立レビューは docs/evidence/e2e-current-recovery-independent-review-2026-10-08.json。診断実行はSealを置き換えず、正式全体合格とも扱わない。
+
+battle-screenの3ケースはF-BTL15/27/37/48とAccepted ADR0006に沿い、到着済み発声の即時表示、参加者向け表示範囲、固定ナビゲーション上のログ配置、追加された現在行への追従をAPIモックで確認する。60/80pxは現在UIの配置検証値であり新規ゲームルールではない。fixture、BattlePage、BattlePageView、stylesが実際の入力と表示producerとなる。
+
+character-focused-reviewの5ケースはAccepted ADR0035の限定された再試行・候補差分・元入力、Accepted authoring契約の正確なdigest確認、ADR0043の履歴キャラクター定義v2の読み取り専用表示を確認する。全APIはモック。曖昧な応答後の同一commandId、後続attemptへの表示遷移、確定限定画面の保存後の同一review維持を対象とし、サーバCASや配備の成立までは証明しない。CharacterReviewPageとCharacterDetailPageが実際の表示producer。
+
+v3-local-integrationの1ケースはAccepted ADR0039の不変generation/digest/snapshot、HTTP/SSE/action/replay、削除receipt、未完了破棄と完了保持を、localhostの実Hono/React・使い捨てSQLite・型付きoffline providerで確認する。Accepted ADR0043による通常キャラクター定義v2作成拒否、ADR0054/0056の現在の意識パイプラインawareness-v5と最新出力契約を含む。compilerInputsV4という保存フィールド名は戦闘束縛形式v5内の情報であり、新規戦闘束縛形式v4採用ではない。固定キャラクター定義v3入力の直接準備はローカルfixtureであり、破棄済み旧切替試行の成功義務を再開しない。
+
+## 因果接続と除外
+
+Accepted契約→この検証設計→現在の入力fixture/実producer→元wholefileの検証へ接続する。既存Sealを再利用する場合はsourceが現在ファイルと一致することを照合する。古いHEADを変更しない。
+
+外部ブラウザ通信を拒否し、実LLM・公開環境・Supabase・有料実験・本番配備・OLD_CUTOVER_TRIAL_VERIFIED・Proposed ADR0038/0059の採用は証明しない。元テストの削除、skip、assertion緩和を行わない。

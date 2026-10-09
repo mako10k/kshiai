@@ -1,0 +1,46 @@
+{
+  "scope": "Seven complete test files; read-only independent review",
+  "reviewer": "/root/frontend_seal_contract_audit",
+  "files": {
+    "frontend/src/battle-narration.test.ts": {
+      "cases": 2,
+      "decision": "Accepted ADR0006 supports pure reducer; root verified exact clauses and all cases"
+    },
+    "frontend/src/battle-screen.test.ts": {
+      "cases": 4,
+      "decision": "ADR0006 and F-UI04/08 support pure view model; root verified clauses and all cases"
+    },
+    "frontend/src/battle-scroll.test.ts": {
+      "cases": 5,
+      "decision": "Viewport clause found; exact timing threshold basis remains unconfirmed"
+    },
+    "frontend/src/match-rating.test.ts": {
+      "cases": 4,
+      "decision": "Exact rating/display normative basis not found; no seal"
+    },
+    "frontend/src/match-selection-preferences.test.ts": {
+      "cases": 3,
+      "decision": "Generic selection requirement found; detailed search/recency basis not found; no seal"
+    },
+    "packages/shared/src/battle-stream.test.ts": {
+      "cases": 3,
+      "decision": "Legacy/private helper; current public durable-entry pipeline not established by parser tests; no seal in this cohort"
+    },
+    "packages/shared/src/rating.test.ts": {
+      "cases": 8,
+      "decision": "Exact algorithm normative basis not found; no seal"
+    }
+  },
+  "limitations": [
+    "Not-found authority is limited to inspected sources, not proof that an owner never accepted it",
+    "No tests, source, inventory or seals modified by reviewer",
+    "Root owns implementation, scope judgment and actual test/Seal verification"
+  ],
+  "followupCorrection20261007": {
+    "file": "frontend/src/match-selection-preferences.test.ts",
+    "observedAuthority": "docs/requirements.md F-MTCH-07 §4.3",
+    "finding": "Current clause explicitly covers per-kind recent usage and search; original audit used only F-UI03 and did not include this clause",
+    "resolution": "Root verifies three cases against F-MTCH07; normalization algorithm is existing implementation regression, not owner-prescribed form",
+    "proof": "docs/selection-scroll-test-contract-review-2026-10-07.md"
+  }
+}

@@ -1,3 +1,4 @@
+// R: Coordinate asset image generation through provider and media storage contracts.
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -10,25 +11,18 @@ import type {
 import { config } from "../config.js";
 import { createImageProvider, type ImageProvider } from "../image/index.js";
 import { putR2Image, type MediaKind } from "./r2-storage.js";
+import { createLocalMediaStore, publicMediaPath, type LocalMediaStore } from "./local-media-store.js";
+export { publicMediaPath } from "./local-media-store.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const mediaRoot = path.resolve(__dirname, "../../data/media");
 const logDir = path.resolve(__dirname, "../../data/logs");
 const imageLogPath = path.join(logDir, "image-gen.jsonl");
 
-export function mediaDir(...parts: string[]): string {
-  const dir = path.join(mediaRoot, ...parts);
-  fs.mkdirSync(dir, { recursive: true });
-  return dir;
-}
+const localMediaStore = createLocalMediaStore(mediaRoot, logImageEvent);
 
-export function publicMediaPath(
-  kind: "characters" | "battlefields",
-  id: string,
-  variant: "primary" | "previous" = "primary",
-): string {
-  const file = variant === "previous" ? `${id}.prev.jpg` : `${id}.jpg`;
-  return `/api/media/${kind}/${file}`;
+export function mediaDir(...parts: string[]): string {
+  return localMediaStore.mediaDir(...parts);
 }
 
 export function publicRevisionedMediaPath(
@@ -48,67 +42,22 @@ export function absoluteMediaFile(
   id: string,
   variant: "primary" | "previous" = "primary",
 ): string {
-  const file = variant === "previous" ? `${id}.prev.jpg` : `${id}.jpg`;
-  return path.join(mediaDir(kind), file);
+  return localMediaStore.absoluteMediaFile(kind, id, variant);
 }
 
-/**
- * Resolve a stored /api/media/... URL to an absolute file path under media root.
- */
+/** Resolve a stored /api/media/... URL under the configured local root. */
 export function absolutePathFromPublicMediaUrl(
   url: string | null | undefined,
 ): string | null {
-  if (!url) return null;
-  try {
-    const pathname = new URL(url, "http://local.invalid").pathname;
-    const m = pathname.match(
-      /^\/api\/media\/(characters|battlefields)\/([a-zA-Z0-9_.-]+\.jpe?g)$/i,
-    );
-    if (!m) return null;
-    const kind = m[1] as "characters" | "battlefields";
-    const file = m[2]!;
-    const full = path.join(mediaDir(kind), file);
-    if (!full.startsWith(mediaDir(kind))) return null;
-    return full;
-  } catch {
-    return null;
-  }
+  return localMediaStore.absolutePathFromPublicMediaUrl(url);
 }
 
-/**
- * Copy the currently active portrait to the previous slot before a re-gen.
- * Returns the public URL of the archived previous image, or null if nothing to archive.
- */
+/** Copy the active portrait to the previous slot before a re-generation. */
 export function archiveActiveCharacterPortrait(
   sheet: CharacterSheet,
+  store: LocalMediaStore = localMediaStore,
 ): string | null {
-  const activeUrl = sheet.appearance.imageUrl ?? null;
-  const activePath =
-    absolutePathFromPublicMediaUrl(activeUrl) ??
-    absoluteMediaFile("characters", sheet.id, "primary");
-  if (!fs.existsSync(activePath)) return null;
-
-  const prevPath = absoluteMediaFile("characters", sheet.id, "previous");
-  // Avoid no-op copy when already writing over the same file later.
-  try {
-    fs.copyFileSync(activePath, prevPath);
-  } catch (e) {
-    logImageEvent({
-      phase: "archive_failed",
-      ok: false,
-      characterId: sheet.id,
-      error: e instanceof Error ? e.message : String(e),
-    });
-    return null;
-  }
-  const previousUrl = publicMediaPath("characters", sheet.id, "previous");
-  logImageEvent({
-    phase: "archived_previous",
-    ok: true,
-    characterId: sheet.id,
-    previousUrl,
-  });
-  return previousUrl;
+  return store.archivePortrait(sheet.id, sheet.appearance.imageUrl);
 }
 
 /** Append one JSON line for image-gen diagnostics (no API keys). */
@@ -543,12 +492,7 @@ export async function generateAndStoreBattlefieldImage(
 export function resolveMediaFile(
   kind: string,
   file: string,
+  store: LocalMediaStore = localMediaStore,
 ): string | null {
-  if (kind !== "characters" && kind !== "battlefields") return null;
-  if (!/^[a-zA-Z0-9_.-]+\.jpe?g$/i.test(file)) return null;
-  const base = mediaDir(kind);
-  const full = path.join(base, file);
-  if (!full.startsWith(base)) return null;
-  if (!fs.existsSync(full)) return null;
-  return full;
+  return store.resolveMediaFile(kind, file);
 }

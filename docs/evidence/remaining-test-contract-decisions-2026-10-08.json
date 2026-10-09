@@ -1,0 +1,88 @@
+{
+  "schema": "kshiai/remaining-test-contract-decisions/v1",
+  "updatedAt": "2026-10-08T06:53:42.514736+00:00",
+  "remainingUnitFiles": 13,
+  "allRemainingFilesMappedExactlyOnce": true,
+  "rows": [
+    {
+      "topic": "公開範囲",
+      "files": [
+        "backend/src/repositories/asset-visibility.test.ts",
+        "packages/shared/src/asset-visibility.test.ts"
+      ],
+      "candidate": "docs/asset-visibility-requirement-candidate-r1-2026-10-08.md",
+      "sha256": "7212806bce83ed53ac4b4a2637fceb91671dd9e7396814548ee737ccd5627127",
+      "state": "step2_first_owner_review_pending",
+      "accepted": false
+    },
+    {
+      "topic": "レーティング",
+      "files": [
+        "backend/src/repositories/characters.test.ts",
+        "backend/src/services/battle-public.test.ts",
+        "backend/src/services/rating-service-transaction.test.ts",
+        "frontend/src/match-rating.test.ts",
+        "packages/shared/src/rating.test.ts"
+      ],
+      "candidate": "docs/battle-rating-requirement-candidate-r1-2026-10-08.md",
+      "sha256": "42e88ad7467afac75199bef9cc83650372cc34a92e19d172c2fe481eedb592a4",
+      "state": "step2_first_owner_review_pending",
+      "accepted": false
+    },
+    {
+      "topic": "再使用待ち/反復",
+      "files": [
+        "packages/shared/src/battle-engine.test.ts",
+        "packages/shared/src/skill-cooldown.test.ts"
+      ],
+      "candidate": "docs/battle-cooldown-repetition-requirement-candidate-r2-2026-10-08.md",
+      "sha256": "817757ab3316e8df01da0f9f049a9c479c6c0eea588134d09f39b43aadf9e0fc",
+      "state": "step2_first_owner_review_pending",
+      "accepted": false
+    },
+    {
+      "topic": "改善分析の利用条件",
+      "files": [
+        "packages/shared/src/character-improvement.test.ts"
+      ],
+      "candidate": "docs/character-improvement-eligibility-requirement-candidate-r1-2026-10-08.md",
+      "sha256": "ce836f4eaa05e914e558b8cd9958658548312625e0291c0121b332d781c7d71b",
+      "state": "step2_first_owner_review_pending",
+      "accepted": false
+    },
+    {
+      "topic": "数値補正",
+      "files": [
+        "packages/shared/src/balance.test.ts"
+      ],
+      "candidate": "docs/battle-balance-normalization-requirement-candidate-r1-2026-10-08.md",
+      "sha256": "69b2abd28e1556aadd339bad41602dd609bb6a3cf2297b90215db57acaf0dd25",
+      "state": "step2_first_owner_review_pending",
+      "accepted": false
+    },
+    {
+      "topic": "provider fallback",
+      "files": [
+        "backend/src/llm/fallback.test.ts"
+      ],
+      "candidate": "docs/fallback-authority-conflict-2026-10-08.md",
+      "sha256": "58b4444e79d0f90992be8a0b8780b9923c3786baed4ac3b3e12c9f5f41345dab",
+      "state": "existing_owner_decision_pending",
+      "accepted": false
+    },
+    {
+      "topic": "完全キャラ候補の採用経路",
+      "files": [
+        "backend/src/routes-structured-character-acceptance.test.ts"
+      ],
+      "candidate": "docs/adr/0059-complete-focused-character-review-payload.think",
+      "sha256": "f017bf581e300044aa7cfbdee18128d07b74a5f7e3e34ae1818acd68a3b612f7",
+      "state": "existing_owner_decision_pending",
+      "accepted": false
+    }
+  ],
+  "independentExecutionAvailable": false,
+  "blockingCondition": "Exact owner contract decisions not yet received; no adoption inferred from goal continuation",
+  "separateOverallGap": "docs/evidence/pacing-production-authority-gap-2026-10-08.json",
+  "goalComplete": false
+}

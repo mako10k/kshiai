@@ -1,0 +1,22 @@
+[
+  {
+    "path": "backend/src/services/awareness-narration-worker.test.ts",
+    "beforeSha256": "4a8770373af0b1d48c5a2de7a7d708a05e7bd0723b816115832ad9e966da53ef",
+    "afterSha256": "49357c9c606e188b12e9bb93d079afd8895107568ff040a8395d18107158a426",
+    "originalAssertions": 111,
+    "currentAssertions": 111,
+    "originalTestCalls": 19,
+    "allOriginalAssertionsPreserved": true,
+    "allOriginalTestCallsPreserved": true
+  },
+  {
+    "path": "backend/src/services/battle-consumer-wiring.test.ts",
+    "beforeSha256": "9d9342e5d0521f30769891079b51e7b2368d192bf7cb1f93a9f888a8cb1683a0",
+    "afterSha256": "879473f6c4379c113c48e8694247f9908a10a65f5f0f7983b13a15ae843beba1",
+    "originalAssertions": 72,
+    "currentAssertions": 72,
+    "originalTestCalls": 8,
+    "allOriginalAssertionsPreserved": true,
+    "allOriginalTestCallsPreserved": true
+  }
+]

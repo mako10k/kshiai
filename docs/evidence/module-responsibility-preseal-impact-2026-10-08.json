@@ -1,0 +1,316 @@
+{
+  "all-tests-20261008/implementation-local-media-store": {
+    "schema": "sealgraph/impact/v2",
+    "source_seal_id": "637edecb93b11419b985df4c5c33b9d5ba32b8e958589a2af8a90df02ad22f06",
+    "assertion_scope": "ALL_OBSERVED",
+    "asserted_by_observer_seal_ids": [],
+    "all_paths": true,
+    "max_paths": 100,
+    "impacts": [
+      {
+        "head_seal_id": "080dee86c76fd39748418936c6bb903d29d55367938338b966cf04b19910ac96",
+        "refs": [
+          "verification/local-media-archive-connected-20261008"
+        ],
+        "paths": [
+          {
+            "cause_seal_ids": [
+              "080dee86c76fd39748418936c6bb903d29d55367938338b966cf04b19910ac96",
+              "ea0f1b545851ccf646289c09e0bc35ca7b2de1d316046d3ac182ce59fa61d203",
+              "637edecb93b11419b985df4c5c33b9d5ba32b8e958589a2af8a90df02ad22f06"
+            ],
+            "matched_revision_seal_id": "637edecb93b11419b985df4c5c33b9d5ba32b8e958589a2af8a90df02ad22f06",
+            "revision_proof": {
+              "seal_ids": [
+                "637edecb93b11419b985df4c5c33b9d5ba32b8e958589a2af8a90df02ad22f06"
+              ],
+              "edges": [],
+              "target_observations": [
+                {
+                  "target_seal": "637edecb93b11419b985df4c5c33b9d5ba32b8e958589a2af8a90df02ad22f06",
+                  "in_scope_previous_states": [
+                    "ASSERTION_SCOPE_NONE_ASSERTED"
+                  ],
+                  "in_scope_assertions": [
+                    {
+                      "observer_seal": "ea0f1b545851ccf646289c09e0bc35ca7b2de1d316046d3ac182ce59fa61d203",
+                      "observer_provenance": "e5dfe2995fa859acd1c1dcdc2338aa53afaafe81a05bee2dd1d573af1df7fecb",
+                      "target_seal": "637edecb93b11419b985df4c5c33b9d5ba32b8e958589a2af8a90df02ad22f06",
+                      "previous_revision_seal_of_target_seal": [],
+                      "messages": [
+                        "Revalidated existing prompt/failure scope after extraction; typed default store preserves production root/logger and wrappers delegate to real local media module. No new image route activation."
+                      ]
+                    }
+                  ],
+                  "structural_previous_seals": []
+                }
+              ]
+            }
+          }
+        ],
+        "paths_truncated": false
+      },
+      {
+        "head_seal_id": "2a7d347e701c2845f8d11d9cdc8eccc63776118e96c104c8a20ba6344935e917",
+        "refs": [
+          "verification/image-prompt-failure-bounded-20261008"
+        ],
+        "paths": [
+          {
+            "cause_seal_ids": [
+              "2a7d347e701c2845f8d11d9cdc8eccc63776118e96c104c8a20ba6344935e917",
+              "ea0f1b545851ccf646289c09e0bc35ca7b2de1d316046d3ac182ce59fa61d203",
+              "637edecb93b11419b985df4c5c33b9d5ba32b8e958589a2af8a90df02ad22f06"
+            ],
+            "matched_revision_seal_id": "637edecb93b11419b985df4c5c33b9d5ba32b8e958589a2af8a90df02ad22f06",
+            "revision_proof": {
+              "seal_ids": [
+                "637edecb93b11419b985df4c5c33b9d5ba32b8e958589a2af8a90df02ad22f06"
+              ],
+              "edges": [],
+              "target_observations": [
+                {
+                  "target_seal": "637edecb93b11419b985df4c5c33b9d5ba32b8e958589a2af8a90df02ad22f06",
+                  "in_scope_previous_states": [
+                    "ASSERTION_SCOPE_NONE_ASSERTED"
+                  ],
+                  "in_scope_assertions": [
+                    {
+                      "observer_seal": "ea0f1b545851ccf646289c09e0bc35ca7b2de1d316046d3ac182ce59fa61d203",
+                      "observer_provenance": "e5dfe2995fa859acd1c1dcdc2338aa53afaafe81a05bee2dd1d573af1df7fecb",
+                      "target_seal": "637edecb93b11419b985df4c5c33b9d5ba32b8e958589a2af8a90df02ad22f06",
+                      "previous_revision_seal_of_target_seal": [],
+                      "messages": [
+                        "Revalidated existing prompt/failure scope after extraction; typed default store preserves production root/logger and wrappers delegate to real local media module. No new image route activation."
+                      ]
+                    }
+                  ],
+                  "structural_previous_seals": []
+                }
+              ]
+            }
+          }
+        ],
+        "paths_truncated": false
+      },
+      {
+        "head_seal_id": "ea0f1b545851ccf646289c09e0bc35ca7b2de1d316046d3ac182ce59fa61d203",
+        "refs": [
+          "all-tests-20261007/implementation-image-prompt-and-failure"
+        ],
+        "paths": [
+          {
+            "cause_seal_ids": [
+              "ea0f1b545851ccf646289c09e0bc35ca7b2de1d316046d3ac182ce59fa61d203",
+              "637edecb93b11419b985df4c5c33b9d5ba32b8e958589a2af8a90df02ad22f06"
+            ],
+            "matched_revision_seal_id": "637edecb93b11419b985df4c5c33b9d5ba32b8e958589a2af8a90df02ad22f06",
+            "revision_proof": {
+              "seal_ids": [
+                "637edecb93b11419b985df4c5c33b9d5ba32b8e958589a2af8a90df02ad22f06"
+              ],
+              "edges": [],
+              "target_observations": [
+                {
+                  "target_seal": "637edecb93b11419b985df4c5c33b9d5ba32b8e958589a2af8a90df02ad22f06",
+                  "in_scope_previous_states": [
+                    "ASSERTION_SCOPE_NONE_ASSERTED"
+                  ],
+                  "in_scope_assertions": [
+                    {
+                      "observer_seal": "ea0f1b545851ccf646289c09e0bc35ca7b2de1d316046d3ac182ce59fa61d203",
+                      "observer_provenance": "e5dfe2995fa859acd1c1dcdc2338aa53afaafe81a05bee2dd1d573af1df7fecb",
+                      "target_seal": "637edecb93b11419b985df4c5c33b9d5ba32b8e958589a2af8a90df02ad22f06",
+                      "previous_revision_seal_of_target_seal": [],
+                      "messages": [
+                        "Revalidated existing prompt/failure scope after extraction; typed default store preserves production root/logger and wrappers delegate to real local media module. No new image route activation."
+                      ]
+                    }
+                  ],
+                  "structural_previous_seals": []
+                }
+              ]
+            }
+          }
+        ],
+        "paths_truncated": false
+      }
+    ]
+  },
+  "all-tests-20261007/implementation-image-prompt-and-failure": {
+    "schema": "sealgraph/impact/v2",
+    "source_seal_id": "ea0f1b545851ccf646289c09e0bc35ca7b2de1d316046d3ac182ce59fa61d203",
+    "assertion_scope": "ALL_OBSERVED",
+    "asserted_by_observer_seal_ids": [],
+    "all_paths": true,
+    "max_paths": 100,
+    "impacts": [
+      {
+        "head_seal_id": "080dee86c76fd39748418936c6bb903d29d55367938338b966cf04b19910ac96",
+        "refs": [
+          "verification/local-media-archive-connected-20261008"
+        ],
+        "paths": [
+          {
+            "cause_seal_ids": [
+              "080dee86c76fd39748418936c6bb903d29d55367938338b966cf04b19910ac96",
+              "ea0f1b545851ccf646289c09e0bc35ca7b2de1d316046d3ac182ce59fa61d203"
+            ],
+            "matched_revision_seal_id": "ea0f1b545851ccf646289c09e0bc35ca7b2de1d316046d3ac182ce59fa61d203",
+            "revision_proof": {
+              "seal_ids": [
+                "ea0f1b545851ccf646289c09e0bc35ca7b2de1d316046d3ac182ce59fa61d203"
+              ],
+              "edges": [],
+              "target_observations": [
+                {
+                  "target_seal": "ea0f1b545851ccf646289c09e0bc35ca7b2de1d316046d3ac182ce59fa61d203",
+                  "in_scope_previous_states": [
+                    "ASSERTION_SCOPE_NONE_ASSERTED",
+                    "ASSERTION_SCOPE_ASSERTED"
+                  ],
+                  "in_scope_assertions": [
+                    {
+                      "observer_seal": "080dee86c76fd39748418936c6bb903d29d55367938338b966cf04b19910ac96",
+                      "observer_provenance": "b166f6d0d125b77531b97291b39b670da2d4e8029e4fb1ba8ab5a77acf1128aa",
+                      "target_seal": "ea0f1b545851ccf646289c09e0bc35ca7b2de1d316046d3ac182ce59fa61d203",
+                      "previous_revision_seal_of_target_seal": [],
+                      "messages": [
+                        "Original two cases/five assertions retained; service wrappers use private real filesystem. Added active revision selection and missing-file behavior. Four cases local helper only, no immutable DB activation or live writer success."
+                      ]
+                    },
+                    {
+                      "observer_seal": "2a7d347e701c2845f8d11d9cdc8eccc63776118e96c104c8a20ba6344935e917",
+                      "observer_provenance": "ed2b26a69786e73fff649a5dc80e3ec85d5e7d0e94d4125d97982665477e8a3d",
+                      "target_seal": "ea0f1b545851ccf646289c09e0bc35ca7b2de1d316046d3ac182ce59fa61d203",
+                      "previous_revision_seal_of_target_seal": [
+                        "2e8080970681f11a359d49612e97b062fd2d5522a31c478f9427666a53c78e63"
+                      ],
+                      "messages": [
+                        "Original four prompt/failure cases re-run after local-media extraction; 11-case focused diagnostic pass, unchanged original test bytes and scope.",
+                        "Whole original four cases/assertions retained. Prompt/omission/revision URL/rejection only; V2 fixture does not authorize V2 mutations or persistence acceptance."
+                      ]
+                    }
+                  ],
+                  "structural_previous_seals": [
+                    "2e8080970681f11a359d49612e97b062fd2d5522a31c478f9427666a53c78e63"
+                  ]
+                }
+              ]
+            }
+          }
+        ],
+        "paths_truncated": false
+      },
+      {
+        "head_seal_id": "2a7d347e701c2845f8d11d9cdc8eccc63776118e96c104c8a20ba6344935e917",
+        "refs": [
+          "verification/image-prompt-failure-bounded-20261008"
+        ],
+        "paths": [
+          {
+            "cause_seal_ids": [
+              "2a7d347e701c2845f8d11d9cdc8eccc63776118e96c104c8a20ba6344935e917",
+              "ea0f1b545851ccf646289c09e0bc35ca7b2de1d316046d3ac182ce59fa61d203"
+            ],
+            "matched_revision_seal_id": "ea0f1b545851ccf646289c09e0bc35ca7b2de1d316046d3ac182ce59fa61d203",
+            "revision_proof": {
+              "seal_ids": [
+                "ea0f1b545851ccf646289c09e0bc35ca7b2de1d316046d3ac182ce59fa61d203"
+              ],
+              "edges": [],
+              "target_observations": [
+                {
+                  "target_seal": "ea0f1b545851ccf646289c09e0bc35ca7b2de1d316046d3ac182ce59fa61d203",
+                  "in_scope_previous_states": [
+                    "ASSERTION_SCOPE_NONE_ASSERTED",
+                    "ASSERTION_SCOPE_ASSERTED"
+                  ],
+                  "in_scope_assertions": [
+                    {
+                      "observer_seal": "080dee86c76fd39748418936c6bb903d29d55367938338b966cf04b19910ac96",
+                      "observer_provenance": "b166f6d0d125b77531b97291b39b670da2d4e8029e4fb1ba8ab5a77acf1128aa",
+                      "target_seal": "ea0f1b545851ccf646289c09e0bc35ca7b2de1d316046d3ac182ce59fa61d203",
+                      "previous_revision_seal_of_target_seal": [],
+                      "messages": [
+                        "Original two cases/five assertions retained; service wrappers use private real filesystem. Added active revision selection and missing-file behavior. Four cases local helper only, no immutable DB activation or live writer success."
+                      ]
+                    },
+                    {
+                      "observer_seal": "2a7d347e701c2845f8d11d9cdc8eccc63776118e96c104c8a20ba6344935e917",
+                      "observer_provenance": "ed2b26a69786e73fff649a5dc80e3ec85d5e7d0e94d4125d97982665477e8a3d",
+                      "target_seal": "ea0f1b545851ccf646289c09e0bc35ca7b2de1d316046d3ac182ce59fa61d203",
+                      "previous_revision_seal_of_target_seal": [
+                        "2e8080970681f11a359d49612e97b062fd2d5522a31c478f9427666a53c78e63"
+                      ],
+                      "messages": [
+                        "Original four prompt/failure cases re-run after local-media extraction; 11-case focused diagnostic pass, unchanged original test bytes and scope.",
+                        "Whole original four cases/assertions retained. Prompt/omission/revision URL/rejection only; V2 fixture does not authorize V2 mutations or persistence acceptance."
+                      ]
+                    }
+                  ],
+                  "structural_previous_seals": [
+                    "2e8080970681f11a359d49612e97b062fd2d5522a31c478f9427666a53c78e63"
+                  ]
+                }
+              ]
+            }
+          }
+        ],
+        "paths_truncated": false
+      }
+    ]
+  },
+  "all-tests-20261008/implementation-sqlite-source-inspection": {
+    "schema": "sealgraph/impact/v2",
+    "source_seal_id": "6019b83c60e92e172f3a8a64a033c3831dc2be774550c81fe9a0d5af8ed0817c",
+    "assertion_scope": "ALL_OBSERVED",
+    "asserted_by_observer_seal_ids": [],
+    "all_paths": true,
+    "max_paths": 100,
+    "impacts": [
+      {
+        "head_seal_id": "154cd3eda7abb6f2c930a630bdaf9f11313c89f5bf88e4dc5ab81854699f3881",
+        "refs": [
+          "verification/sqlite-source-inspection-bounded-20261008"
+        ],
+        "paths": [
+          {
+            "cause_seal_ids": [
+              "154cd3eda7abb6f2c930a630bdaf9f11313c89f5bf88e4dc5ab81854699f3881",
+              "6019b83c60e92e172f3a8a64a033c3831dc2be774550c81fe9a0d5af8ed0817c"
+            ],
+            "matched_revision_seal_id": "6019b83c60e92e172f3a8a64a033c3831dc2be774550c81fe9a0d5af8ed0817c",
+            "revision_proof": {
+              "seal_ids": [
+                "6019b83c60e92e172f3a8a64a033c3831dc2be774550c81fe9a0d5af8ed0817c"
+              ],
+              "edges": [],
+              "target_observations": [
+                {
+                  "target_seal": "6019b83c60e92e172f3a8a64a033c3831dc2be774550c81fe9a0d5af8ed0817c",
+                  "in_scope_previous_states": [
+                    "ASSERTION_SCOPE_NONE_ASSERTED"
+                  ],
+                  "in_scope_assertions": [
+                    {
+                      "observer_seal": "154cd3eda7abb6f2c930a630bdaf9f11313c89f5bf88e4dc5ab81854699f3881",
+                      "observer_provenance": "a5b694c280a794473e351221ca18b39ecdb481085e88d0ad4cfed5a56c24a58e",
+                      "target_seal": "6019b83c60e92e172f3a8a64a033c3831dc2be774550c81fe9a0d5af8ed0817c",
+                      "previous_revision_seal_of_target_seal": [],
+                      "messages": [
+                        "Whole original two cases/all assertions retained; private SQLite JSON/booleans/counts/exact audit IDs/warnings and actual CLI invalid-source exit1. No apply/verify-target/network/import."
+                      ]
+                    }
+                  ],
+                  "structural_previous_seals": []
+                }
+              ]
+            }
+          }
+        ],
+        "paths_truncated": false
+      }
+    ]
+  }
+}

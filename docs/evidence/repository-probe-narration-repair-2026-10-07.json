@@ -1,0 +1,75 @@
+{
+  "schema": "kshiai/repository-probe-narration-repair/v1",
+  "authority": [
+    {
+      "path": "docs/adr/0043-v3-character-updates-with-historical-v2-display.md",
+      "clause": "Decision: current V3 candidate writes, V2 historical reads, no ordinary legacy restore writer; historical imported fixtures retained"
+    },
+    {
+      "path": "docs/adr/0039-v3-battle-lifecycle-and-cutover.md",
+      "clause": "Exact ready V3 participant generation binding at creation"
+    },
+    {
+      "path": "docs/adr/0051-observed-llm-usage-accounting.md",
+      "clause": "Current awareness creation with role dispatch admission and observed unknown accounting"
+    }
+  ],
+  "files": [
+    {
+      "path": "backend/src/repositories/character-assets-v2.test.ts",
+      "sha256": "1f5b846b59218d4792907f01bec524ffcf54f5c80c614e2a74514219023d0c57"
+    },
+    {
+      "path": "backend/src/scripts/semantic-migration-probe-run.test.ts",
+      "sha256": "54d76a822808910d22e2d2208d86cf7f72a72e8090cd52740e353488992fec0f"
+    },
+    {
+      "path": "backend/src/scripts/semantic-migration-probe-fixture.ts",
+      "sha256": "81681738a078eb1b70c9656bde0b82bc5c3880d70a047362ebe5e16d3b274034"
+    },
+    {
+      "path": "backend/src/routes-structured-narration-acceptance.test.ts",
+      "sha256": "36fd98b88fcc37355f94e0069e392b6f18cf98626c0c98d3b81b9bdee675139b"
+    }
+  ],
+  "scope": {
+    "unitFiles": 247,
+    "e2eFiles": 4,
+    "removedFiles": 0,
+    "skipCount": 0,
+    "paidCalls": 0,
+    "remoteChanges": 0
+  },
+  "changes": [
+    "Current character repository scenarios use valid V3 envelopes and reviewed candidate digests; legacy read scenarios remain V2.",
+    "Restore is asserted unavailable without generation mutation. Active revision excludes portrait mutation; a separate explicit fixture transition tests stale candidate CAS rollback.",
+    "Probe source seeding uses the historical fixture writer only after test-mode SQLite and empty database checks; rejection leaves counts unchanged.",
+    "Narration HTTP binding uses ready V3 characters and accounted offline creation; immutable narration generation and privacy assertions remain.",
+    "Eight unchecked response casts replaced by runtime schema validation with passthrough for privacy assertions."
+  ],
+  "results": {
+    "repositoryAndProbe": {
+      "passed": 9,
+      "failed": 0,
+      "skipped": 0,
+      "log": "docs/evidence/repository-and-probe-tests-2026-10-07.tap"
+    },
+    "narrationHttp": {
+      "passed": 5,
+      "failed": 0,
+      "skipped": 0,
+      "latestTypecheck": "passed strict imported path",
+      "log": "docs/evidence/narration-http-current-tests-2026-10-07.tap"
+    },
+    "remainingDiagnosticCohort": {
+      "files": 4,
+      "tests": 28,
+      "passed": 14,
+      "failed": 14,
+      "remaining": "14 cases in routes-structured-character-acceptance.test.ts; not a count of all remaining failures across the repository"
+    },
+    "allWorkspaceAndDeploymentTypecheckExitCode": 0,
+    "allWorkspaceTypecheckLog": "docs/evidence/repo-probe-narration-typecheck-2026-10-07.log"
+  },
+  "formalSeal": "pending full case-to-clause review"
+}

@@ -1,0 +1,14 @@
+domain INTENT_SEAL:
+  description "Register the reviewed action-intent contract test without altering existing history."
+evidence OWNER:
+  "Owner authorizes sealing and the active goal requires verified test Causes and every test passing."
+evidence AUTHORITY:
+  "Accepted ADR-0045 revision1 Decision inherits discriminated unions and common reprojection, preserves free-action and reflect producer values; Verification explicitly requires static missing-field rejection and full projection equality. Its companion think records owner acceptance and supersession of ADR-0044."
+evidence REVIEW:
+  "Read action-intent-contract.test.ts assertions and battle.ts actionIntentVariants, strict schemas, nonempty subject tuple and projectCharacterActionIntent. Four cases verify structural omissions, runtime rejection, exact projection preservation and forbidden branch fields. Shared diagnostic415 passed with no skips, but formal eligibility remains separate."
+premise SCOPE:
+  "Create four new local refs only: adopted authority think as scoped root, ADR text depending on it, battle.ts implementation depending on exact ADR Seal, test depending on both exact implementation and ADR Seals. Register one test inventory entry; leave every old ref unchanged. Free-action subject limit4 and strict unknown-field validation are existing runtime boundary preservation, not new product authority."
+premise LIMIT:
+  "Seals freeze bytes and reviewed named obligations, not every unrelated battle.ts function or completeness of all imports. Existing drafts and stale tests remain unresolved. No external write or production/provider call."
+decision D1 based_on OWNER, AUTHORITY, REVIEW, SCOPE, LIMIT:
+  "Audit this plan, publish only the four reviewed refs with exact byte readback and Cause IDs, append the test mapping, then confirm active/current inventory state and graph integrity. Keep all-tests goal active."

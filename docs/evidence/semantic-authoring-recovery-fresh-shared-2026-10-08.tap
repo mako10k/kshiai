@@ -1,0 +1,327 @@
+TAP version 13
+# Subtest: semantic authoring transport policy
+    # Subtest: requires explicit time-policy identity and values when the route is selected
+    ok 1 - requires explicit time-policy identity and values when the route is selected
+      ---
+      duration_ms: 1.968162
+      type: 'test'
+      ...
+    # Subtest: uses the explicitly supplied provider timeout without a whole-attempt deadline
+    ok 2 - uses the explicitly supplied provider timeout without a whole-attempt deadline
+      ---
+      duration_ms: 0.741652
+      type: 'test'
+      ...
+    # Subtest: fails closed when an unimplemented same-run recovery policy is selected
+    ok 3 - fails closed when an unimplemented same-run recovery policy is selected
+      ---
+      duration_ms: 0.643766
+      type: 'test'
+      ...
+    1..3
+ok 1 - semantic authoring transport policy
+  ---
+  duration_ms: 5.428569
+  type: 'suite'
+  ...
+# Subtest: character V3 semantic authoring adapter
+    # Subtest: preserves the pending-copy digest ordering used by stored candidates
+    ok 1 - preserves the pending-copy digest ordering used by stored candidates
+      ---
+      duration_ms: 10.865281
+      type: 'test'
+      ...
+    # Subtest: rejects deferral when no consumer-scoped obligation is registered
+    ok 2 - rejects deferral when no consumer-scoped obligation is registered
+      ---
+      duration_ms: 4.7282
+      type: 'test'
+      ...
+    # Subtest: copies executable V2 fragments and keeps each changed-role claim unresolved
+    ok 3 - copies executable V2 fragments and keeps each changed-role claim unresolved
+      ---
+      duration_ms: 10.374022
+      type: 'test'
+      ...
+    # Subtest: closes a changed-role source claim only when an exact capsule copy exists
+    ok 4 - closes a changed-role source claim only when an exact capsule copy exists
+      ---
+      duration_ms: 5.677247
+      type: 'test'
+      ...
+    # Subtest: resolves discard-as-nonmaterial only for an exact frozen capsule copy
+    ok 5 - resolves discard-as-nonmaterial only for an exact frozen capsule copy
+      ---
+      duration_ms: 13.001116
+      type: 'test'
+      ...
+    # Subtest: accepts only optional registered legacy meaning deferral and retains it across refresh
+    ok 6 - accepts only optional registered legacy meaning deferral and retains it across refresh
+      ---
+      duration_ms: 9.759548
+      type: 'test'
+      ...
+    # Subtest: rejects pending preservation whose aggregate content exceeds 256 KiB
+    ok 7 - rejects pending preservation whose aggregate content exceeds 256 KiB
+      ---
+      duration_ms: 7.926562
+      type: 'test'
+      ...
+    # Subtest: builds a create baseline and requires skeleton work first
+    ok 8 - builds a create baseline and requires skeleton work first
+      ---
+      duration_ms: 2.433328
+      type: 'test'
+      ...
+    # Subtest: stages a skeleton identity replacement without touching portrait or combat
+    ok 9 - stages a skeleton identity replacement without touching portrait or combat
+      ---
+      duration_ms: 2.646847
+      type: 'test'
+      ...
+    # Subtest: rejects unknown portrait operations at decode
+    ok 10 - rejects unknown portrait operations at decode
+      ---
+      duration_ms: 3.451269
+      type: 'test'
+      ...
+    # Subtest: rejects appearance operations during the skeleton phase
+    ok 11 - rejects appearance operations during the skeleton phase
+      ---
+      duration_ms: 2.096412
+      type: 'test'
+      ...
+    # Subtest: hides the preservation capsule from create and revise tools
+    ok 12 - hides the preservation capsule from create and revise tools
+      ---
+      duration_ms: 2.062574
+      type: 'test'
+      ...
+    # Subtest: exposes the preservation capsule only on migrate ledger work
+    ok 13 - exposes the preservation capsule only on migrate ledger work
+      ---
+      duration_ms: 6.740618
+      type: 'test'
+      ...
+    # Subtest: reruns a compiler lens without changing the candidate
+    ok 14 - reruns a compiler lens without changing the candidate
+      ---
+      duration_ms: 1.867011
+      type: 'test'
+      ...
+    # Subtest: rejects complete_cluster while skeleton work is active
+    ok 15 - rejects complete_cluster while skeleton work is active
+      ---
+      duration_ms: 1.519445
+      type: 'test'
+      ...
+    # Subtest: does not resolve skeleton needs from a self-declared obligation list
+    ok 16 - does not resolve skeleton needs from a self-declared obligation list
+      ---
+      duration_ms: 3.479646
+      type: 'test'
+      ...
+    # Subtest: opens the requested revise cluster instead of finalizing an unchanged character
+    ok 17 - opens the requested revise cluster instead of finalizing an unchanged character
+      ---
+      duration_ms: 2.325984
+      type: 'test'
+      ...
+    # Subtest: repairs a registered action-norm dependant and rejects an unregistered extra field
+    ok 18 - repairs a registered action-norm dependant and rejects an unregistered extra field
+      ---
+      duration_ms: 2.181085
+      type: 'test'
+      ...
+    1..18
+ok 2 - character V3 semantic authoring adapter
+  ---
+  duration_ms: 95.81886
+  type: 'suite'
+  ...
+# Subtest: semantic authoring adapter conformance
+    # Subtest: F1 sparse create starts focused work for every family and completes family adapters
+    ok 1 - F1 sparse create starts focused work for every family and completes family adapters
+      ---
+      duration_ms: 10.099795
+      type: 'test'
+      ...
+    # Subtest: F2 revision of a named family definition does not reopen identity
+    ok 2 - F2 revision of a named family definition does not reopen identity
+      ---
+      duration_ms: 0.664119
+      type: 'test'
+      ...
+    # Subtest: F3 migrate exposes the capsule only on ledger work
+    ok 3 - F3 migrate exposes the capsule only on ledger work
+      ---
+      duration_ms: 0.587113
+      type: 'test'
+      ...
+    # Subtest: F4 focused repair retains prior valid work after a rejected proposal
+    ok 4 - F4 focused repair retains prior valid work after a rejected proposal
+      ---
+      duration_ms: 2.087157
+      type: 'test'
+      ...
+    # Subtest: F5 minor contradiction does not force an owner question
+    ok 5 - F5 minor contradiction does not force an owner question
+      ---
+      duration_ms: 0.616066
+      type: 'test'
+      ...
+    # Subtest: F6 protected contradiction maps to a question, not a silent review
+    ok 6 - F6 protected contradiction maps to a question, not a silent review
+      ---
+      duration_ms: 0.921118
+      type: 'test'
+      ...
+    # Subtest: F7 finalization is schema-gated after focused completion
+    ok 7 - F7 finalization is schema-gated after focused completion
+      ---
+      duration_ms: 4.231403
+      type: 'test'
+      ...
+    # Subtest: F8 restricted preservation is excluded from ordinary create consumers
+    ok 8 - F8 restricted preservation is excluded from ordinary create consumers
+      ---
+      duration_ms: 1.476822
+      type: 'test'
+      ...
+    # Subtest: F9 public attempt statuses stay unchanged during internal adoption
+    ok 9 - F9 public attempt statuses stay unchanged during internal adoption
+      ---
+      duration_ms: 0.893564
+      type: 'test'
+      ...
+    # Subtest: F10 counted steps accumulate across select and staging
+    ok 10 - F10 counted steps accumulate across select and staging
+      ---
+      duration_ms: 3.065047
+      type: 'test'
+      ...
+    # Subtest: F11 no-progress repetition and A-B oscillation are bounded
+    ok 11 - F11 no-progress repetition and A-B oscillation are bounded
+      ---
+      duration_ms: 0.501145
+      type: 'test'
+      ...
+    # Subtest: F12 temporary regression is not treated as mandatory every-step improvement
+    ok 12 - F12 temporary regression is not treated as mandatory every-step improvement
+      ---
+      duration_ms: 0.438379
+      type: 'test'
+      ...
+    # Subtest: F13 invalid proposals retain trusted state and corruption fails closed
+    ok 13 - F13 invalid proposals retain trusted state and corruption fails closed
+      ---
+      duration_ms: 0.853149
+      type: 'test'
+      ...
+    # Subtest: F14 timeout charges the reservation and ignores a late result
+    ok 14 - F14 timeout charges the reservation and ignores a late result
+      ---
+      duration_ms: 0.981057
+      type: 'test'
+      ...
+    # Subtest: records the route timeout through asynchronous execution without replaying the call
+    ok 15 - records the route timeout through asynchronous execution without replaying the call
+      ---
+      duration_ms: 19.283486
+      type: 'test'
+      ...
+    # Subtest: F15 failure receipts support source-based retry without answering a question
+    ok 16 - F15 failure receipts support source-based retry without answering a question
+      ---
+      duration_ms: 1.078919
+      type: 'test'
+      ...
+    1..16
+ok 3 - semantic authoring adapter conformance
+  ---
+  duration_ms: 50.136315
+  type: 'suite'
+  ...
+# Subtest: semantic authoring public mapping
+    # Subtest: does not add statuses to the existing attempt status schema
+    ok 1 - does not add statuses to the existing attempt status schema
+      ---
+      duration_ms: 2.038616
+      type: 'test'
+      ...
+    # Subtest: maps closed internal results onto existing public statuses
+    ok 2 - maps closed internal results onto existing public statuses
+      ---
+      duration_ms: 1.012442
+      type: 'test'
+      ...
+    # Subtest: rejects retry on a question and answer on an ordinary failure
+    ok 3 - rejects retry on a question and answer on an ordinary failure
+      ---
+      duration_ms: 0.689448
+      type: 'test'
+      ...
+    # Subtest: replays the same owner command identity
+    ok 4 - replays the same owner command identity
+      ---
+      duration_ms: 0.432514
+      type: 'test'
+      ...
+    # Subtest: rejects command replay when the digest differs and replays a successful answer
+    ok 5 - rejects command replay when the digest differs and replays a successful answer
+      ---
+      duration_ms: 0.401756
+      type: 'test'
+      ...
+    # Subtest: rejects unknown ownerInteraction on the strict review schema
+    ok 6 - rejects unknown ownerInteraction on the strict review schema
+      ---
+      duration_ms: 0.730154
+      type: 'test'
+      ...
+    1..6
+ok 4 - semantic authoring public mapping
+  ---
+  duration_ms: 11.737347
+  type: 'suite'
+  ...
+# Subtest: character authoring proposal payload
+    # Subtest: rejects set_portrait and whole-candidate replacement
+    ok 1 - rejects set_portrait and whole-candidate replacement
+      ---
+      duration_ms: 3.594817
+      type: 'test'
+      ...
+    # Subtest: admits a focused set_skeleton identity replacement
+    ok 2 - admits a focused set_skeleton identity replacement
+      ---
+      duration_ms: 1.62835
+      type: 'test'
+      ...
+    # Subtest: bridges lossless migration operations and rejects synthesize
+    ok 3 - bridges lossless migration operations and rejects synthesize
+      ---
+      duration_ms: 0.288249
+      type: 'test'
+      ...
+    # Subtest: rejects duplicate lens finding ids
+    ok 4 - rejects duplicate lens finding ids
+      ---
+      duration_ms: 0.965489
+      type: 'test'
+      ...
+    1..4
+ok 5 - character authoring proposal payload
+  ---
+  duration_ms: 8.518817
+  type: 'suite'
+  ...
+1..5
+# tests 47
+# suites 5
+# pass 47
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 731.631957

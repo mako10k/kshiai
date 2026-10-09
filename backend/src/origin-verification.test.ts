@@ -10,6 +10,8 @@ describe("cloud origin verification", () => {
   it("accepts only the exact configured secret", () => {
     assert.equal(verifyOriginSecret("expected-secret", "expected-secret"), true);
     assert.equal(verifyOriginSecret("expected-secret", "wrong-secret"), false);
+    assert.equal(verifyOriginSecret("expected-secret", "expected-secrex"), false);
+    assert.equal(verifyOriginSecret("expected-secret", ""), false);
     assert.equal(verifyOriginSecret("expected-secret", undefined), false);
   });
 });

@@ -2,12 +2,14 @@ import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import {
   createBattleState,
+  CurrentActionEffortPolicyV1,
   defaultParameters,
   deriveBattleProfileStateOverrides,
   deriveBattleSceneStateFacts,
   type BattleState,
   type CharacterSheet,
   type FreeActionCanonicalRoot,
+  type FreeActionAdjudicationProposal,
   type LatentAffordanceProjection,
 } from "@kshiai/shared";
 import { resolveTurn } from "./battle-engine-test-helper.js";
@@ -18,6 +20,7 @@ import {
   type FreeActionTurnPreparation,
 } from "./free-action-service.js";
 import { MockLlmProvider } from "../llm/mock.js";
+import { applyFreeActionPenalty, executableFreeActionChanges, validateFreeActionPenalty } from "./free-action-penalties.js";
 
 function sheet(id: string, displayName: string): CharacterSheet {
   const now = new Date().toISOString();
@@ -112,6 +115,71 @@ function commit(input: {
     preparation: input.preparation,
   });
 }
+
+describe("bound free action effort", () => {
+  it("commits only the selected bodily change and leaves the attempted grab unapplied", async () => {
+    const { state, mine, opp } = battle();
+    state.sideA.actionEffortPolicy = CurrentActionEffortPolicyV1;
+    state.plannedActionA = { kind: "free_action", description: "身を低くして相手をつかむ",
+      subjectRefs: ["actor:a:counterpart"] };
+    state.plannedActionB = { kind: "wait" };
+    const before = structuredClone(state);
+    const preparation = await prepareFreeActionsForTurn({ llm: new MockLlmProvider(), state, mine, opp });
+    const proposal = preparation.adjudication?.proposals[0];
+    assert.ok(proposal?.subject);
+    proposal.changes = [{ target: "actor", path: "/actorState/posture", value: "crouched" },
+      { target: "counterpart", path: "/actorState/restraint", value: "partially_restrained" }];
+    proposal.penalty = { kind: "execution_limit", level: "substantial", reason: "踏み込みが足りない",
+      actionQuote: "相手をつかむ", baseWorldRevision: before.worldState?.revision ?? 0,
+      execution: "partial", executedDescription: "身を低くしたところで止まった", appliedChangeIndexes: [0] };
+    const resolved = resolveTurn({ state, sideASkills: mine.skills, sideBSkills: opp.skills });
+    const result = commit({ before, resolved, preparation });
+    assert.equal(result.state.worldState?.entities["character.a"]?.actorState?.posture, "crouched");
+    assert.equal(result.state.worldState?.entities["character.b"]?.actorState?.restraint, "free");
+    assert.equal(result.state.latestFreeActionReceipts?.[0]?.outcome, "partial");
+    assert.deepEqual(result.state.latestFreeActionReceipts?.[0]?.operationKinds, ["set_actor_state"]);
+  });
+  it("records the unpaid effort and preserves historical actors", () => {
+    const { state } = battle();
+    const proposal = { kind: "extra_stamina", level: "extreme", reason: "重い物を無理に持ち上げた",
+      actionQuote: "持ち上げる", baseWorldRevision: state.worldState?.revision ?? 0 } as const;
+    assert.equal(applyFreeActionPenalty(state, "a", "effort", proposal), undefined);
+    state.sideA.actionEffortPolicy = CurrentActionEffortPolicyV1;
+    state.sideA.parameters.stamina = 1;
+    const receipt = applyFreeActionPenalty(state, "a", "effort", proposal);
+    assert.equal(receipt?.requestedStamina, 8);
+    assert.equal(receipt?.paidStamina, 1);
+    assert.equal(receipt?.unpaidStamina, 7);
+    assert.equal(state.sideA.parameters.stamina, 0);
+    assert.equal(state.sideA.pendingDefenseExposure, undefined);
+  });
+  it("allows only the adjudicated subset and rejects stale or unbound partial changes", () => {
+    const { state } = battle();
+    state.sideA.actionEffortPolicy = CurrentActionEffortPolicyV1;
+    const proposal: FreeActionAdjudicationProposal = { actorSide: "a", outcome: "possible", interpretation: "つかもうとしたが届かない", changes: [
+      { target: "actor", path: "actorState.posture", value: "crouched" },
+      { target: "counterpart", path: "actorState.restraint", value: "partially_restrained" },
+    ], successSummary: "手を伸ばした", failureSummary: "届かない", penalty: {
+      kind: "execution_limit", level: "substantial", reason: "踏み込みが足りない", actionQuote: "つかむ",
+      baseWorldRevision: state.worldState?.revision ?? 0, execution: "partial",
+      executedDescription: "身を低くしたところで止まった", appliedChangeIndexes: [0],
+    } };
+    assert.equal(validateFreeActionPenalty(state, "a", "相手をつかむ", proposal), true);
+    assert.deepEqual(executableFreeActionChanges(proposal), [proposal.changes[0]]);
+    assert.equal(validateFreeActionPenalty(state, "a", "待つ", proposal), false);
+    assert.equal(validateFreeActionPenalty(state, "a", "相手をつかむ", { ...proposal, penalty: undefined }), false);
+    const penalty = proposal.penalty;
+    assert.ok(penalty?.kind === "execution_limit");
+    for (const appliedChangeIndexes of [[0, 1], [0, 0], [2]]) {
+      assert.equal(validateFreeActionPenalty(state, "a", "相手をつかむ", {
+        ...proposal, penalty: { ...penalty, appliedChangeIndexes },
+      }), false);
+    }
+    assert.equal(validateFreeActionPenalty(state, "a", "相手をつかむ", {
+      ...proposal, penalty: { ...penalty, baseWorldRevision: penalty.baseWorldRevision + 1 },
+    }), false);
+  });
+});
 
 describe("free action promotion and adjudication", () => {
   it("classifies a malformed adjudication as an application schema failure", () => {

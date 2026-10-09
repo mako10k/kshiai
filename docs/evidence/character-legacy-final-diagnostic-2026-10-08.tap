@@ -1,0 +1,401 @@
+TAP version 13
+# Subtest: semantic authoring transport policy
+    # Subtest: requires explicit time-policy identity and values when the route is selected
+    ok 1 - requires explicit time-policy identity and values when the route is selected
+      ---
+      duration_ms: 2.793173
+      type: 'test'
+      ...
+    # Subtest: uses the explicitly supplied provider timeout without a whole-attempt deadline
+    ok 2 - uses the explicitly supplied provider timeout without a whole-attempt deadline
+      ---
+      duration_ms: 1.396072
+      type: 'test'
+      ...
+    # Subtest: fails closed when an unimplemented same-run recovery policy is selected
+    ok 3 - fails closed when an unimplemented same-run recovery policy is selected
+      ---
+      duration_ms: 1.104192
+      type: 'test'
+      ...
+    1..3
+ok 1 - semantic authoring transport policy
+  ---
+  duration_ms: 7.849008
+  type: 'suite'
+  ...
+# Subtest: frozen character authoring call budget
+    # Subtest: allows profile and claim calls only for newly registered create/revise policies
+    ok 1 - allows profile and claim calls only for newly registered create/revise policies
+      ---
+      duration_ms: 2.003713
+      type: 'test'
+      ...
+    # Subtest: restores old create/revise runs at eight calls and preserves their accounting identities
+    ok 2 - restores old create/revise runs at eight calls and preserves their accounting identities
+      ---
+      duration_ms: 0.695565
+      type: 'test'
+      ...
+    # Subtest: retains cumulative token and money limits despite the two additional calls
+    ok 3 - retains cumulative token and money limits despite the two additional calls
+      ---
+      duration_ms: 0.64357
+      type: 'test'
+      ...
+    # Subtest: rejects unknown policy identities and a ten-call migration instead of choosing a default
+    ok 4 - rejects unknown policy identities and a ten-call migration instead of choosing a default
+      ---
+      duration_ms: 0.512276
+      type: 'test'
+      ...
+    1..4
+ok 2 - frozen character authoring call budget
+  ---
+  duration_ms: 4.879503
+  type: 'suite'
+  ...
+# Subtest: semantic authoring durable ports
+    # Subtest: upgrades the previous SQLite request constraint before timeout settlement
+    ok 1 - upgrades the previous SQLite request constraint before timeout settlement
+      ---
+      duration_ms: 4.402534
+      type: 'test'
+      ...
+    # Subtest: enforces the frozen family/mode/policy call allowance in SQLite storage
+    ok 2 - enforces the frozen family/mode/policy call allowance in SQLite storage
+      ---
+      duration_ms: 22.061857
+      type: 'test'
+      ...
+    # Subtest: claims a pending run and records a reservation only under the live fence
+    ok 3 - claims a pending run and records a reservation only under the live fence
+      ---
+      duration_ms: 9.932571
+      type: 'test'
+      ...
+    # Subtest: recovers process loss by fencing, charging unknown consumption, and rejecting late application
+    ok 4 - recovers process loss by fencing, charging unknown consumption, and rejecting late application
+      ---
+      duration_ms: 15.932467
+      type: 'test'
+      ...
+    # Subtest: records a transport timeout once and retains unknown usage at the reserved maximum
+    ok 5 - records a transport timeout once and retains unknown usage at the reserved maximum
+      ---
+      duration_ms: 5.394778
+      type: 'test'
+      ...
+    # Subtest: replays the same owner command identity to the same pending run
+    ok 6 - replays the same owner command identity to the same pending run
+      ---
+      duration_ms: 3.801716
+      type: 'test'
+      ...
+    # Subtest: writes a terminal failure under the live fence and closes outstanding requests
+    ok 7 - writes a terminal failure under the live fence and closes outstanding requests
+      ---
+      duration_ms: 11.02215
+      type: 'test'
+      ...
+    # Subtest: stores a ready_for_review family payload reference under the live fence
+    ok 8 - stores a ready_for_review family payload reference under the live fence
+      ---
+      duration_ms: 10.236734
+      type: 'test'
+      ...
+    # Subtest: writes a needs_owner_answer question and keeps the run closed after an answer
+    ok 9 - writes a needs_owner_answer question and keeps the run closed after an answer
+      ---
+      duration_ms: 8.204213
+      type: 'test'
+      ...
+    # Subtest: preserves stored old-policy run identities, request values, and receipts during table upgrade
+    ok 10 - preserves stored old-policy run identities, request values, and receipts during table upgrade
+      ---
+      duration_ms: 656.990839
+      type: 'test'
+      ...
+    1..10
+ok 3 - semantic authoring durable ports
+  ---
+  duration_ms: 753.197879
+  type: 'suite'
+  ...
+# CORRECTION_DIAGNOSTIC {"physicalCalls":7,"preparedBounds":[{"inputTokens":1000,"inputBytes":945,"outputTokens":1500},{"inputTokens":5748,"inputBytes":6134,"outputTokens":1500},{"inputTokens":3112,"inputBytes":3238,"outputTokens":1500},{"inputTokens":3027,"inputBytes":3141,"outputTokens":1500},{"inputTokens":2940,"inputBytes":3042,"outputTokens":1500},{"inputTokens":3317,"inputBytes":3375,"outputTokens":1500},{"inputTokens":3806,"inputBytes":3923,"outputTokens":1500}]}
+# [image] route_hit asset=route-ready-mine
+# Subtest: structured character route acceptance
+    # Subtest: records provider failures without exposing a partial character
+    ok 1 - records provider failures without exposing a partial character
+      ---
+      duration_ms: 199.773771
+      type: 'test'
+      ...
+    # Subtest: uses current V3 attempts for create review confirm and discard routes
+    ok 2 - uses current V3 attempts for create review confirm and discard routes
+      ---
+      duration_ms: 1061.675679
+      type: 'test'
+      ...
+    # Subtest: does not read mutate confirm or delete legacy draft rows
+    ok 3 - does not read mutate confirm or delete legacy draft rows
+      ---
+      duration_ms: 17.608869
+      type: 'test'
+      ...
+    # Subtest: rejects legacy restore and portrait mutations before side effects
+    ok 4 - rejects legacy restore and portrait mutations before side effects
+      ---
+      duration_ms: 7.908281
+      type: 'test'
+      ...
+    # Subtest: commits immutable V3 portrait generations and rejects unavailable restore
+    ok 5 - commits immutable V3 portrait generations and rejects unavailable restore
+      ---
+      duration_ms: 728.77238
+      type: 'test'
+      ...
+    # Subtest: excludes unsupported characters from every selector route
+    ok 6 - excludes unsupported characters from every selector route
+      ---
+      duration_ms: 119.679197
+      type: 'test'
+      ...
+    # Subtest: rejects direct battle creation for either unsupported side
+    ok 7 - rejects direct battle creation for either unsupported side
+      ---
+      duration_ms: 28.862923
+      type: 'test'
+      ...
+    # Subtest: upgrades an existing character only after owner confirmation
+    ok 8 - upgrades an existing character only after owner confirmation
+      ---
+      duration_ms: 260.125062
+      type: 'test'
+      ...
+    # Subtest: exposes in-flight authoring progress while an upgrade is running
+    ok 9 - exposes in-flight authoring progress while an upgrade is running
+      ---
+      duration_ms: 118.031284
+      type: 'test'
+      ...
+    # Subtest: does not surface an older awaiting draft after a later attempt fails
+    ok 10 - does not surface an older awaiting draft after a later attempt fails
+      ---
+      duration_ms: 220.383814
+      type: 'test'
+      ...
+    # Subtest: discards an unclaimed queued attempt before the worker runs
+    ok 11 - discards an unclaimed queued attempt before the worker runs
+      ---
+      duration_ms: 10.996832
+      type: 'test'
+      ...
+    # Subtest: returns a create review without a current character
+    ok 12 - returns a create review without a current character
+      ---
+      duration_ms: 216.552621
+      type: 'test'
+      ...
+    # Subtest: returns a compare review for upgrade and marks an older attempt stale
+    ok 13 - returns a compare review for upgrade and marks an older attempt stale
+      ---
+      duration_ms: 226.53264
+      type: 'test'
+      ...
+    # Subtest: lists characters without deserializing a historical candidate
+    ok 14 - lists characters without deserializing a historical candidate
+      ---
+      duration_ms: 90.890629
+      type: 'test'
+      ...
+    # Subtest: projects ready and failed notifications without duplicating them
+    ok 15 - projects ready and failed notifications without duplicating them
+      ---
+      duration_ms: 238.943867
+      type: 'test'
+      ...
+    1..15
+ok 4 - structured character route acceptance
+  ---
+  duration_ms: 3613.917827
+  type: 'suite'
+  ...
+# Subtest: focused authoring through the real owner command and worker
+    # Subtest: generates a complete owner candidate through HTTP and activates only the explicitly confirmed digest
+    ok 1 - generates a complete owner candidate through HTTP and activates only the explicitly confirmed digest
+      ---
+      duration_ms: 872.53728
+      type: 'test'
+      ...
+    # Subtest: routes a create HTTP command through bounded focused recovery and persists failure without legacy calls
+    ok 2 - routes a create HTTP command through bounded focused recovery and persists failure without legacy calls
+      ---
+      duration_ms: 287.017946
+      type: 'test'
+      ...
+    # Subtest: resumes a previously registered eight-call create without upgrading its frozen allowance
+    ok 3 - resumes a previously registered eight-call create without upgrading its frozen allowance
+      ---
+      duration_ms: 189.829803
+      type: 'test'
+      ...
+    # Subtest: routes an appearance revision from the real owner HTTP command to a non-current review candidate
+    ok 4 - routes an appearance revision from the real owner HTTP command to a non-current review candidate
+      ---
+      duration_ms: 389.843437
+      type: 'test'
+      ...
+    # Subtest: does not generate a candidate for ambiguous, multi-area, or invalid scope
+    ok 5 - does not generate a candidate for ambiguous, multi-area, or invalid scope
+      ---
+      duration_ms: 255.135721
+      type: 'test'
+      ...
+    # Subtest: carries changed-role migration meaning through the real worker into a review candidate
+    ok 6 - carries changed-role migration meaning through the real worker into a review candidate
+      ---
+      duration_ms: 132.556627
+      type: 'test'
+      ...
+    # Subtest: routes an exact ready V2 upgrade command into focused migration without activating it
+    ok 7 - routes an exact ready V2 upgrade command into focused migration without activating it
+      ---
+      duration_ms: 258.030615
+      type: 'test'
+      ...
+    # Subtest: lets the owner accept the exact focused migration candidate for Stage-scoped V3 selection
+    ok 8 - lets the owner accept the exact focused migration candidate for Stage-scoped V3 selection
+      ---
+      duration_ms: 223.47354
+      type: 'test'
+      ...
+    # Subtest: rolls back V3 append when the frozen source pointer drifts before owner acceptance
+    ok 9 - rolls back V3 append when the frozen source pointer drifts before owner acceptance
+      ---
+      duration_ms: 193.337457
+      type: 'test'
+      ...
+    # Subtest: carries an optional legacy meaning deferral through the real upgrade route
+    ok 10 - carries an optional legacy meaning deferral through the real upgrade route
+      ---
+      duration_ms: 152.33769
+      type: 'test'
+      ...
+    # Subtest: retries a failed owner command from the same source with a new attempt and idempotent replay
+    ok 11 - retries a failed owner command from the same source with a new attempt and idempotent replay
+      ---
+      duration_ms: 248.267682
+      type: 'test'
+      ...
+    # Subtest: corrects a verified structural-only legacy review in a new run while preserving its predecessor
+    ok 12 - corrects a verified structural-only legacy review in a new run while preserving its predecessor
+      ---
+      duration_ms: 401.071087
+      type: 'test'
+      ...
+    # Subtest: inherits disclosure from the exact frozen generation when correcting an old revision
+    ok 13 - inherits disclosure from the exact frozen generation when correcting an old revision
+      ---
+      duration_ms: 332.899739
+      type: 'test'
+      ...
+    # Subtest: retries a failed correction from its frozen reviewed candidate without editing the predecessor
+    ok 14 - retries a failed correction from its frozen reviewed candidate without editing the predecessor
+      ---
+      duration_ms: 440.570324
+      type: 'test'
+      ...
+    # Subtest: persists source-drift failure in both lifecycles before any dispatch
+    ok 15 - persists source-drift failure in both lifecycles before any dispatch
+      ---
+      duration_ms: 14.126807
+      type: 'test'
+      ...
+    1..15
+ok 5 - focused authoring through the real owner command and worker
+  ---
+  duration_ms: 4421.571198
+  type: 'suite'
+  ...
+# Subtest: compacts schema constraints without changing bounds or confusing enum strings with JSON literals
+ok 6 - compacts schema constraints without changing bounds or confusing enum strings with JSON literals
+  ---
+  duration_ms: 3.808978
+  type: 'test'
+  ...
+# Subtest: preserves restrictive and preference norm values through the V3 profile adapter
+ok 7 - preserves restrictive and preference norm values through the V3 profile adapter
+  ---
+  duration_ms: 44.067314
+  type: 'test'
+  ...
+# Subtest: keeps previous profile facts exact when guidance has no explicit public permission
+ok 8 - keeps previous profile facts exact when guidance has no explicit public permission
+  ---
+  duration_ms: 20.206687
+  type: 'test'
+  ...
+# Subtest: projects only explicitly public unconditional guidance statements
+ok 9 - projects only explicitly public unconditional guidance statements
+  ---
+  duration_ms: 31.317573
+  type: 'test'
+  ...
+# Subtest: accepts a real V3 candidate with a guidance-backed unchanged public statement
+ok 10 - accepts a real V3 candidate with a guidance-backed unchanged public statement
+  ---
+  duration_ms: 34.779204
+  type: 'test'
+  ...
+# Subtest: requires generated profile and independent claim receipt before a complete focused result
+ok 11 - requires generated profile and independent claim receipt before a complete focused result
+  ---
+  duration_ms: 102.371152
+  type: 'test'
+  ...
+# Subtest: invalidates both profile products when definition or disclosure changes and preserves unchanged state
+ok 12 - invalidates both profile products when definition or disclosure changes and preserves unchanged state
+  ---
+  duration_ms: 67.12365
+  type: 'test'
+  ...
+# Subtest: rejects generated facts without public support and description outside its segments
+ok 13 - rejects generated facts without public support and description outside its segments
+  ---
+  duration_ms: 36.095354
+  type: 'test'
+  ...
+# Subtest: requires exactly one clean independent assessment of every segment
+ok 14 - requires exactly one clean independent assessment of every segment
+  ---
+  duration_ms: 88.819326
+  type: 'test'
+  ...
+# Subtest: gives profile work only approved public facts, with no raw owner source
+ok 15 - gives profile work only approved public facts, with no raw owner source
+  ---
+  duration_ms: 22.79466
+  type: 'test'
+  ...
+# Subtest: rejects restored progress whose digest or claim validation no longer matches its inputs
+ok 16 - rejects restored progress whose digest or claim validation no longer matches its inputs
+  ---
+  duration_ms: 28.344137
+  type: 'test'
+  ...
+# Subtest: preserves structural-only correction sources without inventing profile receipts
+ok 17 - preserves structural-only correction sources without inventing profile receipts
+  ---
+  duration_ms: 45.242847
+  type: 'test'
+  ...
+1..17
+# tests 59
+# suites 5
+# pass 59
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 7528.382324

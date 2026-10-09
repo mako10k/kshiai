@@ -1,0 +1,61 @@
+domain StableAreaIdentityRepairReview:
+  description "Implementation review of initial canonical area identity repair"
+problem P1:
+  "Restore original area identity and adjacent-hop behavior without changing saved world or external contracts."
+premise BOUNDARY:
+  |
+    Current implementation review covers Accepted ADR0012 deterministic stable
+    area/object/effect compiler, ADR0020 D1 one adjacent frozen topology hop,
+    ADR0022 canonical placement ownership. It does not accept new persistence,
+    external API, asset revision migration, sensory effects or actual provider quality.
+evidence E1:
+  |
+    The prior audited RCA and strengthened before-repair TAP show two areas where
+    the declared three-area graph requires three; the first reposition test fails.
+    The original label-only initializer remains unchanged for missing-world legacy
+    reconstruction. No historical root change or production impact is established.
+evidence E2:
+  |
+    structured-battlefield.ts compiles object/effect scene locations using area names.
+    BattlefieldDefinitionV2 permits identical area names but references stable IDs.
+    battlefield-creation.ts now consumes the validated definition and constructs
+    required instance plus exact initialWorldLayout as one structured creation input.
+    This mandatory union rejects omission at compile time. Legacy use of a compiled
+    instance is rejected rather than silently reconstructing it by labels.
+evidence E3:
+  |
+    battle-world.ts validates all layout entity/area references and requires a mapping
+    for each initial scene entity. It preserves all provided area IDs and placements.
+    battle-service.ts passes resolved creation, whose instance is also the existing
+    frozen instance used for manifest binding. battle-engine.ts persists only instance.
+    ensureBattleWorldState returns saved worlds unchanged and its missing-world path
+    continues using the original no-layout initializer.
+evidence E4:
+  |
+    Four core shared files pass71 before the final added reference rejection case.
+    Whole shared package now passes419 with all66 files and no skips. Targeted HTTP
+    creation/public projection29 cases pass. Strict imported repair path also passes.
+    Three-area first hop targets area.2, second targets area.3, and loaded saved world
+    retains the same reference. Duplicate named areas retain distinct actor, object
+    and area-targeted effect placements. Missing/dangling initial references reject.
+evidence E5:
+  |
+    These are local pure or isolated SQLite tests with injected provider transport,
+    not live quality or public acceptance. Existing hidden-object sensory projection,
+    whole malformed legacy input matrix, and saved old worlds that already contain
+    mismatched IDs are not repaired or certified by this placement correction.
+decision D1 based_on P1, BOUNDARY, E1, E2, E3, E4, E5:
+  |
+    The producing condition on current structured creation is corrected: stable
+    definition IDs now cross a mandatory typed creation handoff and validated initial
+    world mapping, instead of being regenerated from labels. The strengthened
+    regression separately closes the demonstrated detection gap. This conclusion is
+    scoped to current new creation and tested graph/duplicate-name fixtures.
+decision D2 based_on D1, BOUNDARY, E4, E5:
+  |
+    INSIDE current obligations are satisfied by source inspection, strict types and
+    local tests; final whole-workspace types and fresh source Seal readback still need
+    terminal results before formal registration is considered verified. OUTSIDE:
+    production/live acceptance and migration of previously saved mismatched worlds
+    require their own scope; neither is claimed here. No boundary dispute or new
+    architectural decision is introduced by this internal lossless projection.

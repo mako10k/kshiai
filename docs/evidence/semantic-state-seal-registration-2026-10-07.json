@@ -1,0 +1,77 @@
+{
+  "review": "docs/evidence/semantic-state-cause-review-2026-10-07.json",
+  "entries": [
+    {
+      "key": "authority-semantic-observation-requirements",
+      "path": "docs/requirements.md",
+      "parents": [],
+      "scope": "Only existing parent requirements F-BTL19/20/21/22/24/25: structured ID maps, atomic validated semantic patches, protected mechanics/private state, pickup and tombstones, current observer snapshot and latest diff, deterministic legacy initialization. Scaffold-parent header is retained; no claim this whole document or every numeric rule is separately owner accepted here.",
+      "test": false,
+      "ref": "all-tests-20261007/authority-semantic-observation-requirements",
+      "sha256": "db31cba32bace76de756e0a2ccb1702e133dc365f8dc8edbadf23d273c2698ad",
+      "sealId": "203e66fc4e30772adab026012c67f1b1ac4ca86ad2ada11b501c639a27a19eac",
+      "causeSealIds": []
+    },
+    {
+      "key": "design-semantic-patch-observation-boundary",
+      "path": "docs/battle-semantic-state.md",
+      "parents": [
+        "authority-semantic-observation-requirements",
+        "authority",
+        "basic"
+      ],
+      "scope": "Existing implemented locally accepted semantic design sections5/6/8.2/9/15: bounded facts, protected roots and source event references, atomic apply, deterministic structured/legacy seed, max32 observation selection and immediate retained previous diff. Legacy semantic character roots still scene; this does not overwrite separate canonical world actor placement or prove every later design proposal adopted.",
+      "test": false,
+      "ref": "all-tests-20261007/design-semantic-patch-observation-boundary",
+      "sha256": "3ba4049584de45f4fb90d42c326a51e799810f26273cdd891d4053eba2439467",
+      "sealId": "6b5d1581434ff8316eb45c2bc9b103d97f48fa42fd958999fe1cf13e15da967e",
+      "causeSealIds": [
+        "203e66fc4e30772adab026012c67f1b1ac4ca86ad2ada11b501c639a27a19eac",
+        "4a236b55e9ad9e4aa54eb2c6bbe9d77e0a318881ba8328363505153d16e151dd",
+        "1adba1d06106cfcc7537dcd2d85aa94f745a4a79ff6b3f5ac4911a11efdf79a8"
+      ]
+    },
+    {
+      "key": "implementation-semantic-state-patch-observation",
+      "path": "packages/shared/src/semantic-state.ts",
+      "parents": [
+        "design-semantic-patch-observation-boundary",
+        "authority"
+      ],
+      "scope": "Only whole24case-tested pure schema, atomic JSON Pointer application, tombstone/protected paths, initialization and A/B/public bounded observation/diff behavior. No actual LLM reconciler, persistence lease, engine consumer delivery or arbitrary privacy matrix certification. Existing generic JSON clone assertion is not changed by this metadata-only sealing; no type-escape repair claim.",
+      "test": false,
+      "ref": "all-tests-20261007/implementation-semantic-state-patch-observation",
+      "sha256": "f3677adab517fb27a5552b4c792dd7b2319a165ffbdc20aaa1fb7057b4d9f968",
+      "sealId": "8534c37b4da9615462035a1428ee6616200614e289efc11a875c91b6a9bca009",
+      "causeSealIds": [
+        "6b5d1581434ff8316eb45c2bc9b103d97f48fa42fd958999fe1cf13e15da967e",
+        "4a236b55e9ad9e4aa54eb2c6bbe9d77e0a318881ba8328363505153d16e151dd"
+      ]
+    },
+    {
+      "key": "semantic-state",
+      "path": "packages/shared/src/semantic-state.test.ts",
+      "parents": [
+        "authority-semantic-observation-requirements",
+        "design-semantic-patch-observation-boundary",
+        "implementation-semantic-state-patch-observation"
+      ],
+      "scope": "All24cases unchanged: pickup/drop both sides, break plus debris timestamps, tombstone no resurrection, stale/cause/late invalid atomic rejection, protected lifecycle, leaf deletion/array denial, missing roots/depth/byte bounds, pointer diff, structured/legacy/empty seed and invalid assembled seed rejection, side visibility, latest changed entity within32, retained previous diff, rejected transition stable observation, hidden attachment parent exclusion, cycles and scene root invariants. No reposition, full battle or live provider proof.",
+      "test": true,
+      "ref": "verification/semantic-state-20261007",
+      "sha256": "ea2b7be949f1d72fe348d047e25200da0f698670f4486e0cc03e6edf63128f68",
+      "sealId": "ab7903dd325752de4ca28afe43daf80091d413a353e15d2a2ed93ddb71e32364",
+      "causeSealIds": [
+        "203e66fc4e30772adab026012c67f1b1ac4ca86ad2ada11b501c639a27a19eac",
+        "6b5d1581434ff8316eb45c2bc9b103d97f48fa42fd958999fe1cf13e15da967e",
+        "8534c37b4da9615462035a1428ee6616200614e289efc11a875c91b6a9bca009"
+      ]
+    }
+  ],
+  "diagnostic": {
+    "pass": 24,
+    "fail": 0,
+    "skipped": 0,
+    "strictTypecheckExit": 0
+  }
+}

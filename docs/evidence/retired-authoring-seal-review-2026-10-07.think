@@ -1,0 +1,12 @@
+domain RETIRED_WRITER_SEAL:
+  description "Seal the current retired-writer regression against AcceptedADR0043, keeping old success obligations in current validators."
+evidence REVIEW:
+  "Read Accepted0043 and its existing non-draft decision/character-v3-write-boundary-20261002 root: exact bytes match, no stale. Four repaired sourceKind tests reject this retired entry with no model calls, progress publication or generated input mutation; adjustment parsing remains covered. Diagnostic five tests pass. Unsupported V3 claim readiness negative added separately, related four tests pass."
+premise SCOPE:
+  "New ADR observer links exact existing owner boundary decision. Implementation binding covers retired builder and retained adjustment parser only; it does not assert all legacy import or conversion conformance. Verification links actual source and exact accepted ADR. No legacy writer is revived; permitted separate migration/historical import is not prohibited by this test."
+premise UNKNOWN:
+  "New source bindings and nine diagnostic passes do not prove whole-test aggregate success, deployment, provider fidelity or route storage atomicity. Other V3 positive/migration coverage remains unchanged and separately reviewed."
+premise ALTERNATIVES:
+  "Keep the existing root/head, avoid creating duplicate owner authority or accepting old incompatible success assertions. Do not register unrelated profile test without its full dependency review."
+decision D1 based_on REVIEW, SCOPE, UNKNOWN, ALTERNATIVES:
+  "Audit then add three exact refs and register only retired service test; verify source/Causes/readback and existing heads."

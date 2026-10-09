@@ -1,0 +1,14 @@
+{
+  "newRefs": 7,
+  "previousHeadsUnchanged": true,
+  "previousHeadCount": 833,
+  "totalRefs": 840,
+  "sourceBytesMatch": true,
+  "stale": 0,
+  "fsck": "ok",
+  "limitations": [
+    "Serializable checkpoint only; no DB durability or observer delivery proof",
+    "Legacy temporal helpers retained for historical interpretation",
+    "No current awareness-v5 dispatch or live provider acceptance"
+  ]
+}

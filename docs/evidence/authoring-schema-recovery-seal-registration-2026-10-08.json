@@ -1,0 +1,145 @@
+{
+  "entries": [
+    {
+      "key": "design-authoring-schema-recovery",
+      "path": "docs/authoring-schema-recovery-test-contract-review-2026-10-08.md",
+      "parents": [
+        "migration",
+        "retained",
+        "immutable"
+      ],
+      "scope": "Existing bounded legacy/migration helper decoding and local adapter regression only; no ordinary V2 authoring, ProposedADR0059 readiness or provider selection/livequality proof.",
+      "ref": "all-tests-20261008/design-authoring-schema-recovery",
+      "test": false,
+      "sha256": "adf83f7b8ecbc8e40744477c7de1df0a798d6a893e502836fa94b4ee20a5301c",
+      "sealId": "ee8924215e59d060f6b884e7963b0c544f4d5d1127a596f46c00c5734e61c27c",
+      "causeSealIds": [
+        "2fb9650ddebe867a978634fea432e65d0611085c8cb823c36a6d6f3f5eaa2962",
+        "480c02403f61dc6a9cd7d54861639b962dbc3bde86673481e02e0defc8415e17",
+        "fdaeaeb9f3694421a8776649f58ec4e89962ae6f95fc3249b8ca4b6a93b6e3ed"
+      ]
+    },
+    {
+      "key": "implementation-provider-response-schema-recovery-bounded",
+      "path": "backend/src/llm/provider-response-schema.ts",
+      "parents": [
+        "design-authoring-schema-recovery"
+      ],
+      "scope": "Existing bounded legacy/migration helper decoding and local adapter regression only; no ordinary V2 authoring, ProposedADR0059 readiness or provider selection/livequality proof.",
+      "ref": "all-tests-20261008/implementation-provider-response-schema-recovery-bounded",
+      "test": false,
+      "sha256": "252d84ebbd83a63c6fd81fab89fcae0faef6b0fd9ab46def4af957e055a1987a",
+      "sealId": "f44e1e324e4106c510863a8af563cce4a7a06bf76e61f271bd54fba33d067bd4",
+      "causeSealIds": [
+        "ee8924215e59d060f6b884e7963b0c544f4d5d1127a596f46c00c5734e61c27c"
+      ]
+    },
+    {
+      "key": "implementation-character-definition-response-schema-recovery-bounded",
+      "path": "backend/src/llm/character-definition-response-schema.ts",
+      "parents": [
+        "design-authoring-schema-recovery"
+      ],
+      "scope": "Existing bounded legacy/migration helper decoding and local adapter regression only; no ordinary V2 authoring, ProposedADR0059 readiness or provider selection/livequality proof.",
+      "ref": "all-tests-20261008/implementation-character-definition-response-schema-recovery-bounded",
+      "test": false,
+      "sha256": "1bde925d3b5326e5af3da3e625432cc1ffec452c119e1f75e0ea55433e087949",
+      "sealId": "68d69f434f5cd13ab2d25f3ad90fe71784dc3fed90e813cfa0f8ff7913e0ef8f",
+      "causeSealIds": [
+        "ee8924215e59d060f6b884e7963b0c544f4d5d1127a596f46c00c5734e61c27c"
+      ]
+    },
+    {
+      "key": "character-definition-response-schema-recovery-bounded-20261008",
+      "path": "backend/src/llm/character-definition-response-schema.test.ts",
+      "parents": [
+        "implementation-character-definition-response-schema-recovery-bounded",
+        "implementation-provider-response-schema-recovery-bounded"
+      ],
+      "scope": "Existing bounded legacy/migration helper decoding and local adapter regression only; no ordinary V2 authoring, ProposedADR0059 readiness or provider selection/livequality proof. Wholeoriginalcases/assertions preserved, no skips.",
+      "ref": "verification/character-definition-response-schema-recovery-bounded-20261008",
+      "test": true,
+      "sha256": "17372875baea26e49c6609a270bdd5dc82ea84f3924a69979acea06e55666f85",
+      "sealId": "435919a76019bae6fe15c51c14676e4a181d40e113a9ae8d5d81ec5b0ab93bb1",
+      "causeSealIds": [
+        "68d69f434f5cd13ab2d25f3ad90fe71784dc3fed90e813cfa0f8ff7913e0ef8f",
+        "f44e1e324e4106c510863a8af563cce4a7a06bf76e61f271bd54fba33d067bd4"
+      ]
+    },
+    {
+      "key": "implementation-openai-compatible-character-definition-recovery-bounded",
+      "path": "backend/src/llm/openai-compatible.ts",
+      "parents": [
+        "design-authoring-schema-recovery"
+      ],
+      "scope": "Existing bounded legacy/migration helper decoding and local adapter regression only; no ordinary V2 authoring, ProposedADR0059 readiness or provider selection/livequality proof.",
+      "ref": "all-tests-20261008/implementation-openai-compatible-character-definition-recovery-bounded",
+      "test": false,
+      "sha256": "8d4be097ddbfcb0da515dd0db402c7dc6dddccb763d625fce16165e7c524d2a5",
+      "sealId": "42b6ff80a71caa184ae9ccec1a087e025eb5e831d7e900d23bb08860ef918df4",
+      "causeSealIds": [
+        "ee8924215e59d060f6b884e7963b0c544f4d5d1127a596f46c00c5734e61c27c"
+      ]
+    },
+    {
+      "key": "openai-compatible-character-definition-recovery-bounded-20261008",
+      "path": "backend/src/llm/openai-compatible-character-definition.test.ts",
+      "parents": [
+        "implementation-openai-compatible-character-definition-recovery-bounded",
+        "implementation-provider-response-schema-recovery-bounded",
+        "implementation-character-definition-response-schema-recovery-bounded"
+      ],
+      "scope": "Existing bounded legacy/migration helper decoding and local adapter regression only; no ordinary V2 authoring, ProposedADR0059 readiness or provider selection/livequality proof. Wholeoriginalcases/assertions preserved, no skips.",
+      "ref": "verification/openai-compatible-character-definition-recovery-bounded-20261008",
+      "test": true,
+      "sha256": "19cac8805bf1830aad7a4405efc0b0fcc6430057363701cebdb76345c0cd6b68",
+      "sealId": "a928e47ef948b5b0a729f767d0496b8013d67103aa1a5389d2da89650922e112",
+      "causeSealIds": [
+        "42b6ff80a71caa184ae9ccec1a087e025eb5e831d7e900d23bb08860ef918df4",
+        "f44e1e324e4106c510863a8af563cce4a7a06bf76e61f271bd54fba33d067bd4",
+        "68d69f434f5cd13ab2d25f3ad90fe71784dc3fed90e813cfa0f8ff7913e0ef8f"
+      ]
+    },
+    {
+      "key": "implementation-character-migration-ollama-provider-recovery-bounded",
+      "path": "backend/src/llm/character-migration-ollama-provider.ts",
+      "parents": [
+        "design-authoring-schema-recovery"
+      ],
+      "scope": "Existing bounded legacy/migration helper decoding and local adapter regression only; no ordinary V2 authoring, ProposedADR0059 readiness or provider selection/livequality proof.",
+      "ref": "all-tests-20261008/implementation-character-migration-ollama-provider-recovery-bounded",
+      "test": false,
+      "sha256": "7cef1a87df486d894ad5848f78c9800c2746f266698e892d04ba85bd47cf5816",
+      "sealId": "f5674ce0bd842ced65b050193b3f11d42bee4f1ebe02940a86737813df9cc702",
+      "causeSealIds": [
+        "ee8924215e59d060f6b884e7963b0c544f4d5d1127a596f46c00c5734e61c27c"
+      ]
+    },
+    {
+      "key": "character-migration-ollama-provider-recovery-bounded-20261008",
+      "path": "backend/src/llm/character-migration-ollama-provider.test.ts",
+      "parents": [
+        "implementation-character-migration-ollama-provider-recovery-bounded"
+      ],
+      "scope": "Existing bounded legacy/migration helper decoding and local adapter regression only; no ordinary V2 authoring, ProposedADR0059 readiness or provider selection/livequality proof. Wholeoriginalcases/assertions preserved, no skips.",
+      "ref": "verification/character-migration-ollama-provider-recovery-bounded-20261008",
+      "test": true,
+      "sha256": "7c42f81dd9c98d9b367e51f8f50061aac1cd6f066678e6628e8b8b83e75153f5",
+      "sealId": "7e49158e2010b3d20eadda5df0caee16ca7a5b35e5ccb8b6ea62805c536d5814",
+      "causeSealIds": [
+        "f5674ce0bd842ced65b050193b3f11d42bee4f1ebe02940a86737813df9cc702"
+      ]
+    }
+  ],
+  "roots": {
+    "migration": "all-tests-20261007/authority-migration-operation-wire",
+    "retained": "all-tests-20261007/authority-v3-writes",
+    "immutable": "all-tests-20261007/authority-selectable-envelope"
+  },
+  "rootSealIds": {
+    "migration": "2fb9650ddebe867a978634fea432e65d0611085c8cb823c36a6d6f3f5eaa2962",
+    "retained": "480c02403f61dc6a9cd7d54861639b962dbc3bde86673481e02e0defc8415e17",
+    "immutable": "fdaeaeb9f3694421a8776649f58ec4e89962ae6f95fc3249b8ca4b6a93b6e3ed"
+  },
+  "elapsedSeconds": 82.754
+}

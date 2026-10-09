@@ -1,0 +1,20 @@
+{
+  "reviewer": "battle_helper_contract_review",
+  "verdict": "INSIDE",
+  "originalCases": 14,
+  "files": {
+    "packages/shared/src/action-feasibility.test.ts": "5e0ab7a50a339ed3e4a1e2986e17a1635edf2230b4f5a85551a5c30cd832102a",
+    "packages/shared/src/action-feasibility.ts": "b36b1a126f1673c4c83ddc252b7ddca26a5c1454c209dce9b8c2a4b7c2fb607f",
+    "docs/battle-action-feasibility.md": "d6b37eef3f08a9798dd011949a8881b27a270869e9459d123a288c449af3057b",
+    "docs/battle-world-model.md": "74e545bb06607fad697c5945730169f6968a2c26fa76edc00d2545bb2ccd5679"
+  },
+  "acceptedAuthority": [
+    "F-BTL49-52",
+    "Accepted ADR0020 rules3/5",
+    "Accepted ADR0022 rules2/3"
+  ],
+  "previousGapCorrected": "No general reason-to-fallback policy table. Fixed self-contained sequence revalidates each candidate. Tested mappings are consequences of canonical feasibility and own resource state.",
+  "newNumericAuthority": false,
+  "diagnosticPass": 14,
+  "scope": "Original wholefile/14 cases; not cooldown arithmetic or broader balance policy adoption."
+}

@@ -1,0 +1,16 @@
+{
+  "cause": "Writer compared ordered cause messages although SealGraph canonicalizes their order",
+  "observed": "Fourth refresh already published before post-seal assertion failed",
+  "correction": "Read back exact published target, previous target revision and message set; resume only unpublished refs; normalize message order only",
+  "preservedChecks": [
+    "exact target seal IDs",
+    "exact previous target revision IDs",
+    "all cause messages",
+    "source hashes",
+    "source binding and status",
+    "old immutable bodies",
+    "untouched heads"
+  ],
+  "resumeBaseline": "docs/evidence/battlefield-stream-resume-baseline-2026-10-08.json",
+  "remainingGoal": "All original247 unit files and4 E2E; no aggregate green claim"
+}

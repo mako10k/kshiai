@@ -54,7 +54,7 @@ describe("historical character view", () => {
     const bound = battle();
     assert.ok(bound.assetManifest);
     for (const snapshot of [null, {}, { ...sheet(), displayName: "" }, { ...sheet(), id: "wrong" }]) {
-      const raw = { ...bound, assetManifest: { characters: {
+      const raw: unknown = { ...bound, assetManifest: { characters: {
         ...bound.assetManifest.characters,
         a: { ...bound.assetManifest.characters.a, snapshot },
       } } };

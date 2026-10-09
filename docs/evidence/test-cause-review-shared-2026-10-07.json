@@ -1,0 +1,2041 @@
+{
+  "scope": "packages/shared/src/**/*.test.ts",
+  "count": 66,
+  "readOnly": true,
+  "audit": {
+    "tool": "llmthink dsl audit",
+    "status": "passed",
+    "fatal": 0,
+    "error": 0,
+    "warning": 0,
+    "pending": "Exact governing source checked per file; unknown where no narrower accepted clause was identified."
+  },
+  "entries": [
+    {
+      "testPath": "packages/shared/src/action-feasibility.test.ts",
+      "obligations": [
+        "observer-safe action feasibility; verify against imported shared implementation",
+        "uses perceived labels and removes an out-of-range counterpart action; verify against imported shared implementation",
+        "reflects restraint and held-object usability without exposing object IDs; verify against imported shared implementation"
+      ],
+      "governingSources": [
+        {
+          "path": "docs/adr/0020-reposition-and-appropriate-range.md",
+          "clause": "Accepted decision: dedicated reposition action and appropriate range bands",
+          "status": "Accepted",
+          "why": "Observer-safe action candidates and out-of-range substitution implement the accepted spacing boundary."
+        }
+      ],
+      "implementationPaths": [
+        "packages/shared/src/action-feasibility.ts",
+        "packages/shared/src/battle-engine.ts",
+        "packages/shared/src/character.ts"
+      ],
+      "fixturePaths": [],
+      "issues": [
+        "inventory state disabled (unsealed); lifecycle evidence, not a semantic failure",
+        "no current verification ref in inventory; result cannot be called sealed current evidence"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "testPath": "packages/shared/src/action-intent-contract.test.ts",
+      "obligations": [
+        "discriminated action intent contracts; verify against imported shared implementation",
+        "rejects incomplete and mixed branches statically; verify against imported shared implementation",
+        "requires the same branch payload at every runtime boundary; verify against imported shared implementation"
+      ],
+      "governingSources": [
+        {
+          "path": "docs/adr/0045-preserve-action-intent-producer-values.md",
+          "clause": "Accepted decision: preserve producer values and reject synthetic fallback",
+          "status": "Accepted",
+          "why": "The test assertions directly exercise this contract boundary."
+        }
+      ],
+      "implementationPaths": [
+        "packages/shared/src/battle.ts"
+      ],
+      "fixturePaths": [],
+      "issues": [
+        "inventory state disabled (unsealed); lifecycle evidence, not a semantic failure",
+        "no current verification ref in inventory; result cannot be called sealed current evidence"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "testPath": "packages/shared/src/action-norm-contract.test.ts",
+      "obligations": [
+        "action norm force contracts; verify against imported shared implementation",
+        "preserves the selected disposition and rejects incompatible force; verify against imported shared implementation"
+      ],
+      "governingSources": [
+        {
+          "path": "docs/adr/0030-llm-assisted-character-semantic-migration.md",
+          "clause": "Accepted decision: strict V3 semantic migration with deterministic validation and owner review",
+          "status": "Accepted",
+          "why": "The test assertions directly exercise this contract boundary."
+        },
+        {
+          "path": "docs/adr/0039-v3-battle-lifecycle-and-cutover.md",
+          "clause": "D1, lines 39-43: bind V3 generation and compiler inputs immutably",
+          "status": "Accepted",
+          "why": "The test assertions directly exercise this contract boundary."
+        }
+      ],
+      "implementationPaths": [
+        "packages/shared/src/character-definition-v3.ts",
+        "packages/shared/src/structured-character.ts"
+      ],
+      "fixturePaths": [],
+      "issues": [
+        "inventory state disabled (unsealed); lifecycle evidence, not a semantic failure",
+        "no current verification ref in inventory; result cannot be called sealed current evidence"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "testPath": "packages/shared/src/asset-visibility.test.ts",
+      "obligations": [
+        "asset visibility; verify against imported shared implementation",
+        "treats omitted or unknown values as public; verify against imported shared implementation",
+        "exposes owner and system assets regardless of visibility; verify against imported shared implementation"
+      ],
+      "governingSources": [
+        {
+          "path": "docs/adr/0010-structured-selectable-asset-envelope.md",
+          "clause": "Accepted decision: shared immutable selectable-asset envelope and visibility",
+          "status": "Accepted",
+          "why": "The test assertions directly exercise this contract boundary."
+        }
+      ],
+      "implementationPaths": [
+        "packages/shared/src/asset-visibility.ts"
+      ],
+      "fixturePaths": [],
+      "issues": [
+        "inventory state disabled (unsealed); lifecycle evidence, not a semantic failure",
+        "no current verification ref in inventory; result cannot be called sealed current evidence"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "testPath": "packages/shared/src/awareness-battle.test.ts",
+      "obligations": [
+        "awareness-v5 battle version boundary; verify against imported shared implementation",
+        "preserves complete V4 tuple and dynamic output semantics; verify against imported shared implementation",
+        "requires frozen V5 policy, prompt/output revisions and both V3 generation compilers; verify against imported shared implementation"
+      ],
+      "governingSources": [
+        {
+          "path": "docs/adr/0054-normal-awareness-waiting-deadlines.md",
+          "clause": "Decision, lines 24-28",
+          "status": "Accepted",
+          "why": "The test assertions directly exercise this contract boundary."
+        },
+        {
+          "path": "docs/adr/0057-awareness-public-observation-accounting.md",
+          "clause": "Decision, lines 21-27",
+          "status": "Accepted",
+          "why": "The test assertions directly exercise this contract boundary."
+        }
+      ],
+      "implementationPaths": [
+        "packages/shared/src/battle.ts",
+        "packages/shared/src/battle-engine.ts",
+        "packages/shared/src/character.ts",
+        "packages/shared/src/structured-character.ts",
+        "packages/shared/src/character-definition-v3.ts",
+        "packages/shared/src/conscious-dynamic.ts",
+        "packages/shared/src/dialogue-pipeline.ts",
+        "packages/shared/src/battlefield.ts",
+        "packages/shared/src/awareness-policy.ts"
+      ],
+      "fixturePaths": [
+        "inline fixture in packages/shared/src/awareness-battle.test.ts"
+      ],
+      "issues": [
+        "inventory state disabled (unsealed); lifecycle evidence, not a semantic failure",
+        "no current verification ref in inventory; result cannot be called sealed current evidence",
+        "contains versioned or historical behavior; preserve older bindings while checking newer trial policy is not inferred"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "testPath": "packages/shared/src/awareness-guidance.test.ts",
+      "obligations": [
+        "evaluated awareness guidance; verify against imported shared implementation",
+        "distinguishes none from missing or empty applicable guidance; verify against imported shared implementation"
+      ],
+      "governingSources": [
+        {
+          "path": "docs/adr/0048-v3-profile-guidance-source-projection.md",
+          "clause": "Accepted decision: profile guidance source projection",
+          "status": "Accepted",
+          "why": "The test assertions directly exercise this contract boundary."
+        }
+      ],
+      "implementationPaths": [
+        "packages/shared/src/awareness-guidance.ts"
+      ],
+      "fixturePaths": [],
+      "issues": [],
+      "confidence": "high"
+    },
+    {
+      "testPath": "packages/shared/src/awareness-pipeline.test.ts",
+      "obligations": [
+        "awareness-v5 authoritative contracts; verify against imported shared implementation",
+        "retains unknown fees and requires scalar budgets to agree with reservations; verify against imported shared implementation",
+        "bounds narration batch coverage and rejects repeated receipt identities; verify against imported shared implementation"
+      ],
+      "governingSources": [
+        {
+          "path": "docs/adr/0054-normal-awareness-waiting-deadlines.md",
+          "clause": "Decision, lines 24-28",
+          "status": "Accepted",
+          "why": "The test assertions directly exercise this contract boundary."
+        },
+        {
+          "path": "docs/adr/0057-awareness-public-observation-accounting.md",
+          "clause": "Decision, lines 21-27",
+          "status": "Accepted",
+          "why": "The test assertions directly exercise this contract boundary."
+        }
+      ],
+      "implementationPaths": [
+        "packages/shared/src/awareness-pipeline.ts",
+        "packages/shared/src/awareness-state.ts",
+        "packages/shared/src/awareness-narration-contract.ts"
+      ],
+      "fixturePaths": [],
+      "issues": [
+        "inventory state disabled (unsealed); lifecycle evidence, not a semantic failure",
+        "no current verification ref in inventory; result cannot be called sealed current evidence",
+        "contains versioned or historical behavior; preserve older bindings while checking newer trial policy is not inferred",
+        "trial/accounting bounds are current only where the accepted awareness policy clause applies; no paid/provider execution is implied"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "testPath": "packages/shared/src/awareness-policy.test.ts",
+      "obligations": [
+        "immutable trial accounting policy; verify against imported shared implementation",
+        "binds adequate normal timing to usage-v2 without rewriting existing policies; verify against imported shared implementation",
+        "correlates isolated measurement deadlines with their immutable revision; verify against imported shared implementation"
+      ],
+      "governingSources": [
+        {
+          "path": "docs/adr/0054-normal-awareness-waiting-deadlines.md",
+          "clause": "Decision, lines 24-28",
+          "status": "Accepted",
+          "why": "The test assertions directly exercise this contract boundary."
+        },
+        {
+          "path": "docs/adr/0057-awareness-public-observation-accounting.md",
+          "clause": "Decision, lines 21-27",
+          "status": "Accepted",
+          "why": "The test assertions directly exercise this contract boundary."
+        }
+      ],
+      "implementationPaths": [
+        "packages/shared/src/awareness-policy.ts",
+        "packages/shared/src/awareness-state.ts",
+        "packages/shared/src/awareness-pipeline.ts"
+      ],
+      "fixturePaths": [],
+      "issues": [
+        "inventory state disabled (unsealed); lifecycle evidence, not a semantic failure",
+        "no current verification ref in inventory; result cannot be called sealed current evidence",
+        "contains versioned or historical behavior; preserve older bindings while checking newer trial policy is not inferred",
+        "trial/accounting bounds are current only where the accepted awareness policy clause applies; no paid/provider execution is implied"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "testPath": "packages/shared/src/awareness-state.test.ts",
+      "obligations": [
+        "awareness-v5 pure state transitions; verify against imported shared implementation",
+        "accepts current observer-safe latent input and rejects history or the other observer; verify against imported shared implementation",
+        "uses strength without source precedence, then accepted identity, then lexical id; verify against imported shared implementation"
+      ],
+      "governingSources": [
+        {
+          "path": "docs/adr/0054-normal-awareness-waiting-deadlines.md",
+          "clause": "Decision, lines 24-28",
+          "status": "Accepted",
+          "why": "The test assertions directly exercise this contract boundary."
+        },
+        {
+          "path": "docs/adr/0057-awareness-public-observation-accounting.md",
+          "clause": "Decision, lines 21-27",
+          "status": "Accepted",
+          "why": "The test assertions directly exercise this contract boundary."
+        }
+      ],
+      "implementationPaths": [
+        "packages/shared/src/character.ts",
+        "packages/shared/src/awareness-pipeline.ts",
+        "packages/shared/src/awareness-state.ts"
+      ],
+      "fixturePaths": [],
+      "issues": [
+        "inventory state disabled (unsealed); lifecycle evidence, not a semantic failure",
+        "no current verification ref in inventory; result cannot be called sealed current evidence",
+        "contains versioned or historical behavior; preserve older bindings while checking newer trial policy is not inferred"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "testPath": "packages/shared/src/balance-observe.test.ts",
+      "obligations": [
+        "balance-observe; verify against imported shared implementation",
+        "flags one-shot and early KO from HP deltas; verify against imported shared implementation",
+        "computes sheet sharpness higher for peaked builds; verify against imported shared implementation"
+      ],
+      "governingSources": [
+        {
+          "path": "docs/adr/0021-engine-live-continuation-and-type-escapes.md",
+          "clause": "Accepted decision: engine-owned continuation and semantic non-clobber",
+          "status": "Accepted",
+          "why": "The test assertions directly exercise this contract boundary."
+        },
+        {
+          "path": "docs/adr/0009-separate-adjudication-from-judgment-presentation.md",
+          "clause": "Accepted decision: adjudication commits mechanically; presentation is derived",
+          "status": "Accepted",
+          "why": "The test assertions directly exercise this contract boundary."
+        }
+      ],
+      "implementationPaths": [
+        "packages/shared/src/balance-observe.ts"
+      ],
+      "fixturePaths": [],
+      "issues": [
+        "inventory state disabled (unsealed); lifecycle evidence, not a semantic failure",
+        "no current verification ref in inventory; result cannot be called sealed current evidence"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "testPath": "packages/shared/src/balance.test.ts",
+      "obligations": [
+        "balance; verify against imported shared implementation",
+        "soft-caps extreme parameters; verify against imported shared implementation",
+        "caps peaked mechanics without rewriting LLM-authored prose; verify against imported shared implementation"
+      ],
+      "governingSources": [
+        {
+          "path": "docs/adr/0021-engine-live-continuation-and-type-escapes.md",
+          "clause": "Accepted decision: engine-owned continuation and semantic non-clobber",
+          "status": "Accepted",
+          "why": "The test assertions directly exercise this contract boundary."
+        },
+        {
+          "path": "docs/adr/0009-separate-adjudication-from-judgment-presentation.md",
+          "clause": "Accepted decision: adjudication commits mechanically; presentation is derived",
+          "status": "Accepted",
+          "why": "The test assertions directly exercise this contract boundary."
+        }
+      ],
+      "implementationPaths": [
+        "packages/shared/src/balance.ts",
+        "packages/shared/src/character.ts"
+      ],
+      "fixturePaths": [],
+      "issues": [
+        "inventory state disabled (unsealed); lifecycle evidence, not a semantic failure",
+        "no current verification ref in inventory; result cannot be called sealed current evidence"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "testPath": "packages/shared/src/battle-action-norm-gate.test.ts",
+      "obligations": [
+        "engine character norm gate; verify against imported shared implementation",
+        "retains a legal exact skill and rejects a different skill; verify against imported shared implementation",
+        "uses the recorded wait fallback for an unresolved empty set; verify against imported shared implementation"
+      ],
+      "governingSources": [
+        {
+          "path": "docs/adr/0030-llm-assisted-character-semantic-migration.md",
+          "clause": "Accepted decision: strict V3 semantic migration with deterministic validation and owner review",
+          "status": "Accepted",
+          "why": "The test assertions directly exercise this contract boundary."
+        },
+        {
+          "path": "docs/adr/0039-v3-battle-lifecycle-and-cutover.md",
+          "clause": "D1, lines 39-43: bind V3 generation and compiler inputs immutably",
+          "status": "Accepted",
+          "why": "The test assertions directly exercise this contract boundary."
+        }
+      ],
+      "implementationPaths": [
+        "packages/shared/src/battle-action-norm-gate.ts"
+      ],
+      "fixturePaths": [],
+      "issues": [
+        "contains versioned or historical behavior; preserve older bindings while checking newer trial policy is not inferred"
+      ],
+      "confidence": "high"
+    },
+    {
+      "testPath": "packages/shared/src/battle-asset-manifest.test.ts",
+      "obligations": [
+        "battle character asset bindings; verify against imported shared implementation",
+        "rejects missing basicAttack at the current battle boundary; verify against imported shared implementation",
+        "labels a version-one compatibility default with its source generation; verify against imported shared implementation"
+      ],
+      "governingSources": [
+        {
+          "path": "docs/adr/0039-v3-battle-lifecycle-and-cutover.md",
+          "clause": "D1, lines 39-43: immutable manifest/binding",
+          "status": "Accepted",
+          "why": "The test assertions directly exercise this contract boundary."
+        }
+      ],
+      "implementationPaths": [
+        "packages/shared/src/battle.ts",
+        "packages/shared/src/character.ts"
+      ],
+      "fixturePaths": [],
+      "issues": [
+        "inventory state disabled (unsealed); lifecycle evidence, not a semantic failure",
+        "no current verification ref in inventory; result cannot be called sealed current evidence"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "testPath": "packages/shared/src/battle-causal-execution.test.ts",
+      "obligations": [
+        "causal turn execution; verify against imported shared implementation",
+        "persists the initiative order receipt before decisions; verify against imported shared implementation",
+        "makes the later sequential bucket available only after a durable first commit; verify against imported shared implementation"
+      ],
+      "governingSources": [
+        {
+          "path": "docs/adr/0001-turn-initiative-and-simultaneous-resolution.md",
+          "clause": "Accepted decision: sequential ordinary turns and persisted equal-initiative draw",
+          "status": "Accepted",
+          "why": "The test assertions directly exercise this contract boundary."
+        }
+      ],
+      "implementationPaths": [
+        "packages/shared/src/battle-causal-execution.ts",
+        "packages/shared/src/battle-temporal-rules.ts"
+      ],
+      "fixturePaths": [],
+      "issues": [
+        "inventory state disabled (unsealed); lifecycle evidence, not a semantic failure",
+        "no current verification ref in inventory; result cannot be called sealed current evidence"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "testPath": "packages/shared/src/battle-causality.test.ts",
+      "obligations": [
+        "structured battle causality; verify against imported shared implementation",
+        "combines character, area, and attached effects into one effective state; verify against imported shared implementation",
+        "applies the same cover coefficient after swapping A and B; verify against imported shared implementation"
+      ],
+      "governingSources": [
+        {
+          "path": "docs/adr/0022-canonical-world-and-observer-cognition.md",
+          "clause": "Accepted decision: viewpoint-free canonical world and separate observer frames",
+          "status": "Accepted",
+          "why": "The test assertions directly exercise this contract boundary."
+        },
+        {
+          "path": "docs/adr/0023-pair-channels-are-not-unique-cognition.md",
+          "clause": "Accepted decision: LOS/projection derive from organs, exposure, and placement",
+          "status": "Accepted",
+          "why": "The test assertions directly exercise this contract boundary."
+        }
+      ],
+      "implementationPaths": [
+        "packages/shared/src/battle-causality.ts",
+        "packages/shared/src/battle-engine.ts",
+        "packages/shared/src/battle-engine-test-helper.ts",
+        "packages/shared/src/battle-world.ts",
+        "packages/shared/src/character.ts",
+        "packages/shared/src/perception-quantization.ts",
+        "packages/shared/src/perception-projection.ts"
+      ],
+      "fixturePaths": [],
+      "issues": [
+        "inventory state disabled (unsealed); lifecycle evidence, not a semantic failure",
+        "no current verification ref in inventory; result cannot be called sealed current evidence"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "testPath": "packages/shared/src/battle-contract-types.test.ts",
+      "obligations": [
+        "battle contract types; verify against imported shared implementation",
+        "keeps Battle state and continuation contracts closed; verify against imported shared implementation"
+      ],
+      "governingSources": [
+        {
+          "path": "docs/adr/0021-engine-live-continuation-and-type-escapes.md",
+          "clause": "Accepted decision: engine-owned live continuation and closed contract types",
+          "status": "Accepted",
+          "why": "The test assertions directly exercise this contract boundary."
+        }
+      ],
+      "implementationPaths": [
+        "packages/shared/src/battle.ts"
+      ],
+      "fixturePaths": [],
+      "issues": [
+        "inventory state disabled (unsealed); lifecycle evidence, not a semantic failure",
+        "no current verification ref in inventory; result cannot be called sealed current evidence"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "testPath": "packages/shared/src/battle-effects.test.ts",
+      "obligations": [
+        "bounded pending effect schedule; verify against imported shared implementation",
+        "resolves a due effect once and produces scheduled-effect provenance; verify against imported shared implementation",
+        "holds a condition until true and bounds cancellation and expiry; verify against imported shared implementation"
+      ],
+      "governingSources": [
+        {
+          "path": "docs/adr/0021-engine-live-continuation-and-type-escapes.md",
+          "clause": "Accepted decision: engine-owned continuation and semantic non-clobber",
+          "status": "Accepted",
+          "why": "The test assertions directly exercise this contract boundary."
+        },
+        {
+          "path": "docs/adr/0009-separate-adjudication-from-judgment-presentation.md",
+          "clause": "Accepted decision: adjudication commits mechanically; presentation is derived",
+          "status": "Accepted",
+          "why": "The test assertions directly exercise this contract boundary."
+        }
+      ],
+      "implementationPaths": [
+        "packages/shared/src/battle-engine.ts",
+        "packages/shared/src/battle-engine-test-helper.ts",
+        "packages/shared/src/battle-effects.ts",
+        "packages/shared/src/character.ts"
+      ],
+      "fixturePaths": [
+        "inline fixture in packages/shared/src/battle-effects.test.ts"
+      ],
+      "issues": [
+        "inventory state disabled (unsealed); lifecycle evidence, not a semantic failure",
+        "no current verification ref in inventory; result cannot be called sealed current evidence"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "testPath": "packages/shared/src/battle-engine-absence.test.ts",
+      "obligations": [
+        "awareness absence in deterministic engine; verify against imported shared implementation",
+        "advances a full temporal turn with no chosen actions, damage, recovery, or stance event; verify against imported shared implementation",
+        "lets the other actor attack without selecting any substitute for an absent actor; verify against imported shared implementation"
+      ],
+      "governingSources": [
+        {
+          "path": "docs/adr/0021-engine-live-continuation-and-type-escapes.md",
+          "clause": "Accepted decision: engine-owned continuation and semantic non-clobber",
+          "status": "Accepted",
+          "why": "The test assertions directly exercise this contract boundary."
+        },
+        {
+          "path": "docs/adr/0009-separate-adjudication-from-judgment-presentation.md",
+          "clause": "Accepted decision: adjudication commits mechanically; presentation is derived",
+          "status": "Accepted",
+          "why": "The test assertions directly exercise this contract boundary."
+        }
+      ],
+      "implementationPaths": [
+        "packages/shared/src/battle.ts",
+        "packages/shared/src/battle-engine.ts",
+        "packages/shared/src/character.ts"
+      ],
+      "fixturePaths": [],
+      "issues": [
+        "inventory state disabled (unsealed); lifecycle evidence, not a semantic failure",
+        "no current verification ref in inventory; result cannot be called sealed current evidence",
+        "contains versioned or historical behavior; preserve older bindings while checking newer trial policy is not inferred"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "testPath": "packages/shared/src/battle-engine.test.ts",
+      "obligations": [
+        "battle engine; verify against imported shared implementation",
+        "resolves reflect as a full-turn pause that preserves analysis fields; verify against imported shared implementation",
+        "unlocks special skills on turn 10 and scales finish pressure to turn 20; verify against imported shared implementation"
+      ],
+      "governingSources": [
+        {
+          "path": "docs/adr/0021-engine-live-continuation-and-type-escapes.md",
+          "clause": "Accepted decision: engine-owned continuation and semantic non-clobber",
+          "status": "Accepted",
+          "why": "The test assertions directly exercise this contract boundary."
+        },
+        {
+          "path": "docs/adr/0009-separate-adjudication-from-judgment-presentation.md",
+          "clause": "Accepted decision: adjudication commits mechanically; presentation is derived",
+          "status": "Accepted",
+          "why": "The test assertions directly exercise this contract boundary."
+        }
+      ],
+      "implementationPaths": [
+        "packages/shared/src/battle-engine.ts",
+        "packages/shared/src/battle-engine-test-helper.ts",
+        "packages/shared/src/character.ts",
+        "packages/shared/src/battle.ts",
+        "packages/shared/src/perception-quantization.ts",
+        "packages/shared/src/battle-world.ts"
+      ],
+      "fixturePaths": [],
+      "issues": [
+        "inventory state disabled (unsealed); lifecycle evidence, not a semantic failure",
+        "no current verification ref in inventory; result cannot be called sealed current evidence"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "testPath": "packages/shared/src/battle-pacing.test.ts",
+      "obligations": [
+        "battle pacing policy; verify against imported shared implementation",
+        "keeps all pacing thresholds in one validated snapshot; verify against imported shared implementation",
+        "produces reproducible local measurements without speech generation; verify against imported shared implementation"
+      ],
+      "governingSources": [
+        {
+          "path": "docs/adr/0021-engine-live-continuation-and-type-escapes.md",
+          "clause": "Accepted decision: engine-owned continuation and semantic non-clobber",
+          "status": "Accepted",
+          "why": "The test assertions directly exercise this contract boundary."
+        },
+        {
+          "path": "docs/adr/0009-separate-adjudication-from-judgment-presentation.md",
+          "clause": "Accepted decision: adjudication commits mechanically; presentation is derived",
+          "status": "Accepted",
+          "why": "The test assertions directly exercise this contract boundary."
+        }
+      ],
+      "implementationPaths": [
+        "packages/shared/src/battle-pacing.ts",
+        "packages/shared/src/battle-pacing-observe.ts",
+        "packages/shared/src/battle-engine.ts",
+        "packages/shared/src/battle-engine-test-helper.ts",
+        "packages/shared/src/character.ts"
+      ],
+      "fixturePaths": [],
+      "issues": [
+        "inventory state disabled (unsealed); lifecycle evidence, not a semantic failure",
+        "no current verification ref in inventory; result cannot be called sealed current evidence"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "testPath": "packages/shared/src/battle-policy.test.ts",
+      "obligations": [
+        "battle policy perspectives; verify against imported shared implementation",
+        "keeps at most one selected choice per perspective; verify against imported shared implementation",
+        "preserves an empty selection as unspecified; verify against imported shared implementation"
+      ],
+      "governingSources": [
+        {
+          "path": "docs/adr/0021-engine-live-continuation-and-type-escapes.md",
+          "clause": "Accepted decision: engine-owned continuation and semantic non-clobber",
+          "status": "Accepted",
+          "why": "The test assertions directly exercise this contract boundary."
+        },
+        {
+          "path": "docs/adr/0009-separate-adjudication-from-judgment-presentation.md",
+          "clause": "Accepted decision: adjudication commits mechanically; presentation is derived",
+          "status": "Accepted",
+          "why": "The test assertions directly exercise this contract boundary."
+        }
+      ],
+      "implementationPaths": [
+        "packages/shared/src/battle.ts"
+      ],
+      "fixturePaths": [],
+      "issues": [
+        "inventory state disabled (unsealed); lifecycle evidence, not a semantic failure",
+        "no current verification ref in inventory; result cannot be called sealed current evidence"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "testPath": "packages/shared/src/battle-receipt-zero-net.test.ts",
+      "obligations": [
+        "zero net consequence ownership; verify against imported shared implementation",
+        "retains both cancelling action contributions and an explicit aggregate zero; verify against imported shared implementation"
+      ],
+      "governingSources": [
+        {
+          "path": "docs/adr/0021-engine-live-continuation-and-type-escapes.md",
+          "clause": "Accepted decision: engine-owned continuation and semantic non-clobber",
+          "status": "Accepted",
+          "why": "The test assertions directly exercise this contract boundary."
+        },
+        {
+          "path": "docs/adr/0009-separate-adjudication-from-judgment-presentation.md",
+          "clause": "Accepted decision: adjudication commits mechanically; presentation is derived",
+          "status": "Accepted",
+          "why": "The test assertions directly exercise this contract boundary."
+        }
+      ],
+      "implementationPaths": [
+        "packages/shared/src/battle-engine.ts",
+        "packages/shared/src/character.ts",
+        "packages/shared/src/battle.ts",
+        "packages/shared/src/perception.ts"
+      ],
+      "fixturePaths": [],
+      "issues": [],
+      "confidence": "high"
+    },
+    {
+      "testPath": "packages/shared/src/battle-social.test.ts",
+      "obligations": [
+        "battle encounter and narrator continuity; verify against imported shared implementation",
+        "rejects incomplete encounter proposals before deterministic fallback; verify against imported shared implementation",
+        "validates battle-label collisions and profile-backed self references; verify against imported shared implementation"
+      ],
+      "governingSources": [
+        {
+          "path": "docs/adr/0021-engine-live-continuation-and-type-escapes.md",
+          "clause": "Accepted decision: engine-owned continuation and semantic non-clobber",
+          "status": "Accepted",
+          "why": "The test assertions directly exercise this contract boundary."
+        },
+        {
+          "path": "docs/adr/0009-separate-adjudication-from-judgment-presentation.md",
+          "clause": "Accepted decision: adjudication commits mechanically; presentation is derived",
+          "status": "Accepted",
+          "why": "The test assertions directly exercise this contract boundary."
+        }
+      ],
+      "implementationPaths": [
+        "packages/shared/src/index.ts"
+      ],
+      "fixturePaths": [],
+      "issues": [
+        "inventory state disabled (unsealed); lifecycle evidence, not a semantic failure",
+        "no current verification ref in inventory; result cannot be called sealed current evidence",
+        "contains versioned or historical behavior; preserve older bindings while checking newer trial policy is not inferred"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "testPath": "packages/shared/src/battle-stream.test.ts",
+      "obligations": [
+        "extractStreamingNarrator; verify against imported shared implementation",
+        "returns nothing before the narrator array starts; verify against imported shared implementation",
+        "extracts completed lines and an open draft; verify against imported shared implementation"
+      ],
+      "governingSources": [
+        {
+          "path": "docs/adr/0006-terminal-snapshot-narration-delivery.md",
+          "clause": "Accepted decision: terminal-snapshot narration with durable phase receipts",
+          "status": "Accepted",
+          "why": "The test assertions directly exercise this contract boundary."
+        },
+        {
+          "path": "docs/adr/0016-scene-beats-batched-narration.md",
+          "clause": "Accepted decision: scene beats batch narration and reserved action sequences",
+          "status": "Accepted",
+          "why": "The test assertions directly exercise this contract boundary."
+        }
+      ],
+      "implementationPaths": [
+        "packages/shared/src/battle-stream.ts"
+      ],
+      "fixturePaths": [],
+      "issues": [
+        "inventory state disabled (unsealed); lifecycle evidence, not a semantic failure",
+        "no current verification ref in inventory; result cannot be called sealed current evidence",
+        "the extractor exposes an open streaming draft; ADR-0005 is Superseded by ADR-0006, so this is a retired-stream mechanical helper unless its caller is explicitly historical"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "testPath": "packages/shared/src/battle-temporal-rules.test.ts",
+      "obligations": [
+        "selectSequentialInitiativeOrder; verify against imported shared implementation",
+        "orders unequal initiative without consuming a draw; verify against imported shared implementation",
+        "reuses the previous order when initiative is equal; verify against imported shared implementation"
+      ],
+      "governingSources": [
+        {
+          "path": "docs/adr/0001-turn-initiative-and-simultaneous-resolution.md",
+          "clause": "Accepted decision: sequential ordinary turns and persisted equal-initiative draw",
+          "status": "Accepted",
+          "why": "The test assertions directly exercise this contract boundary."
+        }
+      ],
+      "implementationPaths": [
+        "packages/shared/src/battle-temporal-rules.ts"
+      ],
+      "fixturePaths": [],
+      "issues": [
+        "inventory state disabled (unsealed); lifecycle evidence, not a semantic failure",
+        "no current verification ref in inventory; result cannot be called sealed current evidence"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "testPath": "packages/shared/src/battle-turn-causal-receipt.test.ts",
+      "obligations": [
+        "battle turn causal receipt; verify against imported shared implementation",
+        "assembles explicit action, event, mechanics, semantic, and carry-forward owners; verify against imported shared implementation",
+        "keeps absent links unknown and never mines an event summary; verify against imported shared implementation"
+      ],
+      "governingSources": [
+        {
+          "path": "docs/adr/0021-engine-live-continuation-and-type-escapes.md",
+          "clause": "Accepted decision: engine-owned continuation and semantic non-clobber",
+          "status": "Accepted",
+          "why": "The test assertions directly exercise this contract boundary."
+        },
+        {
+          "path": "docs/adr/0009-separate-adjudication-from-judgment-presentation.md",
+          "clause": "Accepted decision: adjudication commits mechanically; presentation is derived",
+          "status": "Accepted",
+          "why": "The test assertions directly exercise this contract boundary."
+        }
+      ],
+      "implementationPaths": [
+        "packages/shared/src/battle-turn-causal-receipt.ts",
+        "packages/shared/src/battle-engine.ts",
+        "packages/shared/src/battle-engine-test-helper.ts",
+        "packages/shared/src/character.ts",
+        "packages/shared/src/semantic-state.ts",
+        "packages/shared/src/perception.ts"
+      ],
+      "fixturePaths": [
+        "inline fixture in packages/shared/src/battle-turn-causal-receipt.test.ts"
+      ],
+      "issues": [
+        "inventory state disabled (unsealed); lifecycle evidence, not a semantic failure",
+        "no current verification ref in inventory; result cannot be called sealed current evidence"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "testPath": "packages/shared/src/battle-world.test.ts",
+      "obligations": [
+        "server-owned battle world; verify against imported shared implementation",
+        "starts exposed opponents near each other with working senses; verify against imported shared implementation",
+        "commits sensory mental object and pair changes atomically; verify against imported shared implementation"
+      ],
+      "governingSources": [
+        {
+          "path": "docs/adr/0022-canonical-world-and-observer-cognition.md",
+          "clause": "Accepted decision: viewpoint-free canonical world and separate observer frames",
+          "status": "Accepted",
+          "why": "The test assertions directly exercise this contract boundary."
+        },
+        {
+          "path": "docs/adr/0023-pair-channels-are-not-unique-cognition.md",
+          "clause": "Accepted decision: LOS/projection derive from organs, exposure, and placement",
+          "status": "Accepted",
+          "why": "The test assertions directly exercise this contract boundary."
+        }
+      ],
+      "implementationPaths": [
+        "packages/shared/src/battle-world.ts",
+        "packages/shared/src/semantic-state.ts"
+      ],
+      "fixturePaths": [],
+      "issues": [
+        "inventory state disabled (unsealed); lifecycle evidence, not a semantic failure",
+        "no current verification ref in inventory; result cannot be called sealed current evidence"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "testPath": "packages/shared/src/battlefield-definition-check.test.ts",
+      "obligations": [
+        "battlefield definition upgrade fills; verify against imported shared implementation",
+        "lists empty enrichment sections on a legacy conversion; verify against imported shared implementation",
+        "accepts a natural string-description fill and keeps coefficients; verify against imported shared implementation"
+      ],
+      "governingSources": [
+        {
+          "path": "docs/adr/0012-structured-battlefield-definition.md",
+          "clause": "Accepted decision: separate presets, compiled instances, and live world state",
+          "status": "Accepted",
+          "why": "The test assertions directly exercise this contract boundary."
+        }
+      ],
+      "implementationPaths": [
+        "packages/shared/src/battlefield-definition-check.ts",
+        "packages/shared/src/structured-battlefield.ts",
+        "packages/shared/src/battlefield.ts"
+      ],
+      "fixturePaths": [],
+      "issues": [
+        "inventory state disabled (unsealed); lifecycle evidence, not a semantic failure",
+        "no current verification ref in inventory; result cannot be called sealed current evidence",
+        "contains versioned or historical behavior; preserve older bindings while checking newer trial policy is not inferred"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "testPath": "packages/shared/src/character-battle-compiler-v4.test.ts",
+      "obligations": [
+        "V3 immutable battle compiler; verify against imported shared implementation",
+        "evaluates V3 norms without converting them to V2 and records a legal fallback; verify against imported shared implementation",
+        "compiles generic V4 inputs from V3 without treating action norms as conscious text; verify against imported shared implementation"
+      ],
+      "governingSources": [
+        {
+          "path": "docs/adr/0030-llm-assisted-character-semantic-migration.md",
+          "clause": "Accepted decision: strict V3 semantic migration with deterministic validation and owner review",
+          "status": "Accepted",
+          "why": "The test assertions directly exercise this contract boundary."
+        },
+        {
+          "path": "docs/adr/0039-v3-battle-lifecycle-and-cutover.md",
+          "clause": "D1, lines 39-43: bind V3 generation and compiler inputs immutably",
+          "status": "Accepted",
+          "why": "The test assertions directly exercise this contract boundary."
+        }
+      ],
+      "implementationPaths": [
+        "packages/shared/src/index.ts"
+      ],
+      "fixturePaths": [],
+      "issues": [
+        "contains versioned or historical behavior; preserve older bindings while checking newer trial policy is not inferred"
+      ],
+      "confidence": "high"
+    },
+    {
+      "testPath": "packages/shared/src/character-definition-check.test.ts",
+      "obligations": [
+        "character definition upgrade checks; verify against imported shared implementation",
+        "lists empty structured sections on a legacy conversion; verify against imported shared implementation",
+        "fills only upgrade gaps and drops exact character targets; verify against imported shared implementation"
+      ],
+      "governingSources": [
+        {
+          "path": "docs/adr/0030-llm-assisted-character-semantic-migration.md",
+          "clause": "Accepted decision: strict V3 semantic migration with deterministic validation and owner review",
+          "status": "Accepted",
+          "why": "The test assertions directly exercise this contract boundary."
+        },
+        {
+          "path": "docs/adr/0039-v3-battle-lifecycle-and-cutover.md",
+          "clause": "D1, lines 39-43: bind V3 generation and compiler inputs immutably",
+          "status": "Accepted",
+          "why": "The test assertions directly exercise this contract boundary."
+        }
+      ],
+      "implementationPaths": [
+        "packages/shared/src/character-definition-check.ts",
+        "packages/shared/src/character.ts",
+        "packages/shared/src/structured-character.ts"
+      ],
+      "fixturePaths": [],
+      "issues": [
+        "inventory state disabled (unsealed); lifecycle evidence, not a semantic failure",
+        "no current verification ref in inventory; result cannot be called sealed current evidence",
+        "contains versioned or historical behavior; preserve older bindings while checking newer trial policy is not inferred"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "testPath": "packages/shared/src/character-definition-rules.test.ts",
+      "obligations": [
+        "CharacterDefinitionV2 deterministic rule compilers; verify against imported shared implementation",
+        "rejects an unstructured legacy principle instead of inventing mechanics; verify against imported shared implementation",
+        "defers legacy principles only through the explicit structured-generation preparation; verify against imported shared implementation"
+      ],
+      "governingSources": [
+        {
+          "path": "docs/adr/0030-llm-assisted-character-semantic-migration.md",
+          "clause": "Accepted decision: strict V3 semantic migration with deterministic validation and owner review",
+          "status": "Accepted",
+          "why": "The test assertions directly exercise this contract boundary."
+        },
+        {
+          "path": "docs/adr/0039-v3-battle-lifecycle-and-cutover.md",
+          "clause": "D1, lines 39-43: bind V3 generation and compiler inputs immutably",
+          "status": "Accepted",
+          "why": "The test assertions directly exercise this contract boundary."
+        }
+      ],
+      "implementationPaths": [
+        "packages/shared/src/index.ts"
+      ],
+      "fixturePaths": [],
+      "issues": [
+        "inventory state disabled (unsealed); lifecycle evidence, not a semantic failure",
+        "no current verification ref in inventory; result cannot be called sealed current evidence",
+        "contains versioned or historical behavior; preserve older bindings while checking newer trial policy is not inferred"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "testPath": "packages/shared/src/character-definition-v3.test.ts",
+      "obligations": [
+        "ADR-0030 V3 character semantic boundaries; verify against imported shared implementation",
+        "keeps V2 readable but rejects selectorless V3 action norms; verify against imported shared implementation",
+        "separates conscious guidance, executable norms, and mechanical fallback; verify against imported shared implementation"
+      ],
+      "governingSources": [
+        {
+          "path": "docs/adr/0030-llm-assisted-character-semantic-migration.md",
+          "clause": "Accepted decision: strict V3 semantic migration with deterministic validation and owner review",
+          "status": "Accepted",
+          "why": "The test assertions directly exercise this contract boundary."
+        },
+        {
+          "path": "docs/adr/0039-v3-battle-lifecycle-and-cutover.md",
+          "clause": "D1, lines 39-43: bind V3 generation and compiler inputs immutably",
+          "status": "Accepted",
+          "why": "The test assertions directly exercise this contract boundary."
+        }
+      ],
+      "implementationPaths": [
+        "packages/shared/src/index.ts"
+      ],
+      "fixturePaths": [],
+      "issues": [
+        "contains versioned or historical behavior; preserve older bindings while checking newer trial policy is not inferred"
+      ],
+      "confidence": "high"
+    },
+    {
+      "testPath": "packages/shared/src/character-focus-policy.test.ts",
+      "obligations": [
+        "deterministic character focus policy V1; verify against imported shared implementation",
+        "passes the twelve frozen observer-relative scenarios at every focus band; verify against imported shared implementation",
+        "is replay deterministic and does not score observation prose; verify against imported shared implementation"
+      ],
+      "governingSources": [
+        {
+          "path": "docs/adr/0022-canonical-world-and-observer-cognition.md",
+          "clause": "Accepted decision: viewpoint-free canonical world and separate observer frames",
+          "status": "Accepted",
+          "why": "The test assertions directly exercise this contract boundary."
+        },
+        {
+          "path": "docs/adr/0023-pair-channels-are-not-unique-cognition.md",
+          "clause": "Accepted decision: LOS/projection derive from organs, exposure, and placement",
+          "status": "Accepted",
+          "why": "The test assertions directly exercise this contract boundary."
+        }
+      ],
+      "implementationPaths": [
+        "packages/shared/src/battle.ts",
+        "packages/shared/src/character-focus-policy.ts",
+        "packages/shared/src/character-focus-policy.fixtures.ts",
+        "packages/shared/src/perception.ts"
+      ],
+      "fixturePaths": [
+        "packages/shared/src/character-focus-policy.fixtures.ts"
+      ],
+      "issues": [
+        "inventory state disabled (unsealed); lifecycle evidence, not a semantic failure",
+        "no current verification ref in inventory; result cannot be called sealed current evidence"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "testPath": "packages/shared/src/character-improvement.test.ts",
+      "obligations": [
+        "improvement analysis eligibility; verify against imported shared implementation",
+        "blocks until the first threshold; verify against imported shared implementation",
+        "allows the first analysis at 5 finished battles; verify against imported shared implementation"
+      ],
+      "governingSources": [
+        {
+          "path": "docs/adr/0003-revision-editable-assets-and-bind-battles.md",
+          "clause": "Accepted decision: revisioned editable assets and immutable battle bindings",
+          "status": "Accepted",
+          "why": "The test assertions directly exercise this contract boundary."
+        }
+      ],
+      "implementationPaths": [
+        "packages/shared/src/character-improvement.ts"
+      ],
+      "fixturePaths": [],
+      "issues": [
+        "inventory state disabled (unsealed); lifecycle evidence, not a semantic failure",
+        "no current verification ref in inventory; result cannot be called sealed current evidence"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "testPath": "packages/shared/src/character-manifestation.test.ts",
+      "obligations": [
+        "structured character manifestation boundary; verify against imported shared implementation",
+        "drops a private proposal that is not grounded in the observer packet; verify against imported shared implementation",
+        "keeps a proposal invisible until a carrier expression commits; verify against imported shared implementation"
+      ],
+      "governingSources": [
+        {
+          "path": "docs/adr/0027-unified-conscious-agency-and-psyche-boundary.md",
+          "clause": "Accepted decision: reaction-only psyche, unified conscious judgment, separate engine adjudication",
+          "status": "Accepted",
+          "why": "The test assertions directly exercise this contract boundary."
+        },
+        {
+          "path": "docs/adr/0025-expression-state-and-utterance-actuals.md",
+          "clause": "Accepted decision: separate Compact expression state from utterance history",
+          "status": "Accepted",
+          "why": "The test assertions directly exercise this contract boundary."
+        }
+      ],
+      "implementationPaths": [
+        "packages/shared/src/index.ts"
+      ],
+      "fixturePaths": [],
+      "issues": [
+        "inventory state disabled (unsealed); lifecycle evidence, not a semantic failure",
+        "no current verification ref in inventory; result cannot be called sealed current evidence"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "testPath": "packages/shared/src/character-semantic-authoring.test.ts",
+      "obligations": [
+        "character authoring proposal payload; verify against imported shared implementation",
+        "rejects set_portrait and whole-candidate replacement; verify against imported shared implementation",
+        "admits a focused set_skeleton identity replacement; verify against imported shared implementation"
+      ],
+      "governingSources": [
+        {
+          "path": "docs/adr/0030-llm-assisted-character-semantic-migration.md",
+          "clause": "Accepted decision: bounded semantic change sets, deterministic validation, owner review, append/CAS",
+          "status": "Accepted",
+          "why": "The test assertions directly exercise this contract boundary."
+        },
+        {
+          "path": "docs/adr/0032-separate-authoring-time-boundaries.md",
+          "clause": "Accepted decision: separate provider, worker, semantic-progress, cumulative-resource boundaries",
+          "status": "Accepted",
+          "why": "The test assertions directly exercise this contract boundary."
+        }
+      ],
+      "implementationPaths": [
+        "packages/shared/src/character-semantic-authoring.ts",
+        "packages/shared/src/character-semantic-change-set.ts"
+      ],
+      "fixturePaths": [],
+      "issues": [
+        "inventory state disabled (stale); lifecycle evidence, not a semantic failure",
+        "inventory reference stale; refresh current authority/readback before treating as current"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "testPath": "packages/shared/src/character-semantic-change-set.test.ts",
+      "obligations": [
+        "semantic migration response contracts; verify against imported shared implementation",
+        "requires explicit provenance and does not accept invented operation/control fields; verify against imported shared implementation",
+        "rejects prototype traversal and JSON pointers outside the registered path grammar; verify against imported shared implementation"
+      ],
+      "governingSources": [
+        {
+          "path": "docs/adr/0030-llm-assisted-character-semantic-migration.md",
+          "clause": "Accepted decision: bounded semantic change sets, deterministic validation, owner review, append/CAS",
+          "status": "Accepted",
+          "why": "The test assertions directly exercise this contract boundary."
+        },
+        {
+          "path": "docs/adr/0032-separate-authoring-time-boundaries.md",
+          "clause": "Accepted decision: separate provider, worker, semantic-progress, cumulative-resource boundaries",
+          "status": "Accepted",
+          "why": "The test assertions directly exercise this contract boundary."
+        }
+      ],
+      "implementationPaths": [
+        "packages/shared/src/character-semantic-change-set.ts"
+      ],
+      "fixturePaths": [],
+      "issues": [
+        "inventory state disabled (source_diverged); lifecycle evidence, not a semantic failure",
+        "inventory reference source_diverged; refresh current authority/readback before treating as current"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "testPath": "packages/shared/src/character.test.ts",
+      "obligations": [
+        "coalesceNonEmptyList; verify against imported shared implementation",
+        "keeps current when patch is empty, null, or undefined; verify against imported shared implementation",
+        "uses a non-empty patch; verify against imported shared implementation"
+      ],
+      "governingSources": [
+        {
+          "path": "docs/adr/0003-revision-editable-assets-and-bind-battles.md",
+          "clause": "Accepted decision: revisioned editable assets and immutable bindings",
+          "status": "Accepted",
+          "why": "Character patch, portrait, and revision snapshot behavior preserves revisioned mutable asset semantics."
+        }
+      ],
+      "implementationPaths": [
+        "packages/shared/src/character.ts"
+      ],
+      "fixturePaths": [],
+      "issues": [
+        "inventory state disabled (unsealed); lifecycle evidence, not a semantic failure",
+        "no current verification ref in inventory; result cannot be called sealed current evidence"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "testPath": "packages/shared/src/compact-psyche-decode.test.ts",
+      "obligations": [
+        "compact psyche decoder; verify against imported shared implementation",
+        "accepts a successful JSON object that carries unknown envelope keys; verify against imported shared implementation",
+        "lifts legacy cost strings into consequence objects; verify against imported shared implementation"
+      ],
+      "governingSources": [
+        {
+          "path": "docs/adr/0027-unified-conscious-agency-and-psyche-boundary.md",
+          "clause": "Accepted decision: reaction-only psyche, unified conscious judgment, separate engine adjudication",
+          "status": "Accepted",
+          "why": "The test assertions directly exercise this contract boundary."
+        },
+        {
+          "path": "docs/adr/0025-expression-state-and-utterance-actuals.md",
+          "clause": "Accepted decision: separate Compact expression state from utterance history",
+          "status": "Accepted",
+          "why": "The test assertions directly exercise this contract boundary."
+        }
+      ],
+      "implementationPaths": [
+        "packages/shared/src/battle.ts",
+        "packages/shared/src/compact-psyche-decode.ts"
+      ],
+      "fixturePaths": [],
+      "issues": [
+        "inventory state disabled (unsealed); lifecycle evidence, not a semantic failure",
+        "no current verification ref in inventory; result cannot be called sealed current evidence",
+        "contains versioned or historical behavior; preserve older bindings while checking newer trial policy is not inferred"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "testPath": "packages/shared/src/compiler-phase-contract.test.ts",
+      "obligations": [
+        "uses the registered compiler pairs as one static and runtime registry; verify against imported shared implementation",
+        "restricts skeleton operations without changing their original fields; verify against imported shared implementation"
+      ],
+      "governingSources": [
+        {
+          "path": "docs/adr/0030-llm-assisted-character-semantic-migration.md",
+          "clause": "Accepted decision: bounded semantic change sets, deterministic validation, owner review, append/CAS",
+          "status": "Accepted",
+          "why": "The test assertions directly exercise this contract boundary."
+        },
+        {
+          "path": "docs/adr/0032-separate-authoring-time-boundaries.md",
+          "clause": "Accepted decision: separate provider, worker, semantic-progress, cumulative-resource boundaries",
+          "status": "Accepted",
+          "why": "The test assertions directly exercise this contract boundary."
+        }
+      ],
+      "implementationPaths": [
+        "packages/shared/src/character-definition-v3.ts",
+        "packages/shared/src/character-semantic-authoring.ts"
+      ],
+      "fixturePaths": [],
+      "issues": [
+        "inventory state disabled (unsealed); lifecycle evidence, not a semantic failure",
+        "no current verification ref in inventory; result cannot be called sealed current evidence"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "testPath": "packages/shared/src/conscious-agency.test.ts",
+      "obligations": [
+        "ADR-0028 closed conscious state and partial acceptance; verify against imported shared implementation",
+        "preserves legacy absence without injecting a new goal; verify against imported shared implementation",
+        "initializes and returns typed goal/decision without mutating previous state; verify against imported shared implementation"
+      ],
+      "governingSources": [
+        {
+          "path": "docs/adr/0027-unified-conscious-agency-and-psyche-boundary.md",
+          "clause": "Accepted decision: reaction-only psyche, unified conscious judgment, separate engine adjudication",
+          "status": "Accepted",
+          "why": "The test assertions directly exercise this contract boundary."
+        },
+        {
+          "path": "docs/adr/0025-expression-state-and-utterance-actuals.md",
+          "clause": "Accepted decision: separate Compact expression state from utterance history",
+          "status": "Accepted",
+          "why": "The test assertions directly exercise this contract boundary."
+        }
+      ],
+      "implementationPaths": [
+        "packages/shared/src/battle.ts",
+        "packages/shared/src/conscious-agency.ts"
+      ],
+      "fixturePaths": [],
+      "issues": [
+        "inventory state disabled (unsealed); lifecycle evidence, not a semantic failure",
+        "no current verification ref in inventory; result cannot be called sealed current evidence",
+        "contains versioned or historical behavior; preserve older bindings while checking newer trial policy is not inferred",
+        "the test title cites ADR-0028, whose file is Superseded by ADR-0047 for new dynamic-v4 battles; retain this only for historical pinned V3 behavior and do not use it as current dynamic-v4 authority"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "testPath": "packages/shared/src/conscious-dynamic.test.ts",
+      "obligations": [
+        "ADR-0047 versioned mechanical completion; verify against imported shared implementation",
+        "initializes only from real supplied goal, never from omission or null; verify against imported shared implementation",
+        "keeps goal and old decision without creating new intent for omissions; verify against imported shared implementation"
+      ],
+      "governingSources": [
+        {
+          "path": "docs/adr/0047-phase-scoped-conscious-output-and-mechanical-completion.md",
+          "clause": "Decision, lines 28-38: phase-scoped output, omission/null compatibility, typed restoration, and no semantic synthesis",
+          "status": "Accepted",
+          "why": "The test names ADR-0047 and directly checks its dynamic completion decoder."
+        }
+      ],
+      "implementationPaths": [
+        "packages/shared/src/conscious-dynamic.ts",
+        "packages/shared/src/conscious-agency.ts",
+        "packages/shared/src/battle.ts"
+      ],
+      "fixturePaths": [],
+      "issues": [
+        "inventory state disabled (unsealed); lifecycle evidence, not a semantic failure",
+        "no current verification ref in inventory; result cannot be called sealed current evidence"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "testPath": "packages/shared/src/dialogue-context.test.ts",
+      "obligations": [
+        "dialogue context contracts; verify against imported shared implementation",
+        "bounds observer packet material without accepting an ambiguous side; verify against imported shared implementation",
+        "keeps expression guidance compact and private; verify against imported shared implementation"
+      ],
+      "governingSources": [
+        {
+          "path": "docs/adr/0027-unified-conscious-agency-and-psyche-boundary.md",
+          "clause": "Accepted decision: reaction-only psyche, unified conscious judgment, separate engine adjudication",
+          "status": "Accepted",
+          "why": "The test assertions directly exercise this contract boundary."
+        },
+        {
+          "path": "docs/adr/0025-expression-state-and-utterance-actuals.md",
+          "clause": "Accepted decision: separate Compact expression state from utterance history",
+          "status": "Accepted",
+          "why": "The test assertions directly exercise this contract boundary."
+        }
+      ],
+      "implementationPaths": [
+        "packages/shared/src/index.ts"
+      ],
+      "fixturePaths": [],
+      "issues": [
+        "inventory state disabled (unsealed); lifecycle evidence, not a semantic failure",
+        "no current verification ref in inventory; result cannot be called sealed current evidence"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "testPath": "packages/shared/src/drama.test.ts",
+      "obligations": [
+        "drama progression; verify against imported shared implementation",
+        "parses action signatures for variety avoidance; verify against imported shared implementation",
+        "flags stuck loops only, not ordinary turns; verify against imported shared implementation"
+      ],
+      "governingSources": [
+        {
+          "path": "docs/adr/0009-separate-adjudication-from-judgment-presentation.md",
+          "clause": "Accepted decision: mechanics remain separate from derived presentation",
+          "status": "Accepted",
+          "why": "The test assertions directly exercise this contract boundary."
+        }
+      ],
+      "implementationPaths": [
+        "packages/shared/src/drama.ts"
+      ],
+      "fixturePaths": [],
+      "issues": [
+        "inventory state disabled (unsealed); lifecycle evidence, not a semantic failure",
+        "no current verification ref in inventory; result cannot be called sealed current evidence"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "testPath": "packages/shared/src/narration-composer.test.ts",
+      "obligations": [
+        "composeNarratorTurn; verify against imported shared implementation",
+        "writes narrator-shaped prose without engine event summaries or outcomes; verify against imported shared implementation"
+      ],
+      "governingSources": [
+        {
+          "path": "docs/adr/0006-terminal-snapshot-narration-delivery.md",
+          "clause": "Accepted decision: terminal-snapshot narration with durable phase receipts",
+          "status": "Accepted",
+          "why": "The test assertions directly exercise this contract boundary."
+        },
+        {
+          "path": "docs/adr/0016-scene-beats-batched-narration.md",
+          "clause": "Accepted decision: scene beats batch narration and reserved action sequences",
+          "status": "Accepted",
+          "why": "The test assertions directly exercise this contract boundary."
+        }
+      ],
+      "implementationPaths": [
+        "packages/shared/src/index.ts",
+        "packages/shared/src/narration-composer.ts",
+        "packages/shared/src/narration-perception.ts"
+      ],
+      "fixturePaths": [],
+      "issues": [
+        "inventory state disabled (unsealed); lifecycle evidence, not a semantic failure",
+        "no current verification ref in inventory; result cannot be called sealed current evidence"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "testPath": "packages/shared/src/narration-perception.test.ts",
+      "obligations": [
+        "narration perception views; verify against imported shared implementation",
+        "marks the player and opponent viewpoint subjects explicitly; verify against imported shared implementation",
+        "offers only stable view subjects for narrator recognition updates; verify against imported shared implementation"
+      ],
+      "governingSources": [
+        {
+          "path": "docs/adr/0022-canonical-world-and-observer-cognition.md",
+          "clause": "Accepted decision: viewpoint-free canonical world and separate observer frames",
+          "status": "Accepted",
+          "why": "The test assertions directly exercise this contract boundary."
+        },
+        {
+          "path": "docs/adr/0023-pair-channels-are-not-unique-cognition.md",
+          "clause": "Accepted decision: LOS/projection derive from organs, exposure, and placement",
+          "status": "Accepted",
+          "why": "The test assertions directly exercise this contract boundary."
+        }
+      ],
+      "implementationPaths": [
+        "packages/shared/src/semantic-state.ts",
+        "packages/shared/src/perception.ts",
+        "packages/shared/src/narration-perception.ts",
+        "packages/shared/src/narration-perspective.ts",
+        "packages/shared/src/profile-grounding.ts",
+        "packages/shared/src/battle-turn-causal-receipt.ts"
+      ],
+      "fixturePaths": [],
+      "issues": [
+        "inventory state disabled (unsealed); lifecycle evidence, not a semantic failure",
+        "no current verification ref in inventory; result cannot be called sealed current evidence"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "testPath": "packages/shared/src/narration-perspective.test.ts",
+      "obligations": [
+        "narration perspective digests; verify against imported shared implementation",
+        "maps locked perspectives to focus; verify against imported shared implementation",
+        "summary digests omit private detail; verify against imported shared implementation"
+      ],
+      "governingSources": [
+        {
+          "path": "docs/adr/0022-canonical-world-and-observer-cognition.md",
+          "clause": "Accepted decision: viewpoint-free canonical world and separate observer frames",
+          "status": "Accepted",
+          "why": "The test assertions directly exercise this contract boundary."
+        },
+        {
+          "path": "docs/adr/0023-pair-channels-are-not-unique-cognition.md",
+          "clause": "Accepted decision: LOS/projection derive from organs, exposure, and placement",
+          "status": "Accepted",
+          "why": "The test assertions directly exercise this contract boundary."
+        }
+      ],
+      "implementationPaths": [
+        "packages/shared/src/narration-perspective.ts",
+        "packages/shared/src/battle.ts",
+        "packages/shared/src/perception.ts"
+      ],
+      "fixturePaths": [],
+      "issues": [
+        "inventory state disabled (unsealed); lifecycle evidence, not a semantic failure",
+        "no current verification ref in inventory; result cannot be called sealed current evidence"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "testPath": "packages/shared/src/narrative.test.ts",
+      "obligations": [
+        "character speech reactions; verify against imported shared implementation",
+        "accepts free narrator display labels and rejects only invalid formatting; verify against imported shared implementation",
+        "never returns empty speech; falls back to watching or ellipsis; verify against imported shared implementation"
+      ],
+      "governingSources": [
+        {
+          "path": "docs/adr/0006-terminal-snapshot-narration-delivery.md",
+          "clause": "Accepted decision: terminal-snapshot narration with durable phase receipts",
+          "status": "Accepted",
+          "why": "The test assertions directly exercise this contract boundary."
+        },
+        {
+          "path": "docs/adr/0016-scene-beats-batched-narration.md",
+          "clause": "Accepted decision: scene beats batch narration and reserved action sequences",
+          "status": "Accepted",
+          "why": "The test assertions directly exercise this contract boundary."
+        }
+      ],
+      "implementationPaths": [
+        "packages/shared/src/narrative.ts"
+      ],
+      "fixturePaths": [],
+      "issues": [
+        "inventory state disabled (unsealed); lifecycle evidence, not a semantic failure",
+        "no current verification ref in inventory; result cannot be called sealed current evidence"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "testPath": "packages/shared/src/perception-projection.test.ts",
+      "obligations": [
+        "observer perception projection; verify against imported shared implementation",
+        "starts with visible counterpart presence and retains it without new evidence; verify against imported shared implementation",
+        "separates canonical identity from witnessed and unwitnessed apparent forms; verify against imported shared implementation"
+      ],
+      "governingSources": [
+        {
+          "path": "docs/adr/0022-canonical-world-and-observer-cognition.md",
+          "clause": "Accepted decision: viewpoint-free canonical world and separate observer frames",
+          "status": "Accepted",
+          "why": "The test assertions directly exercise this contract boundary."
+        },
+        {
+          "path": "docs/adr/0023-pair-channels-are-not-unique-cognition.md",
+          "clause": "Accepted decision: LOS/projection derive from organs, exposure, and placement",
+          "status": "Accepted",
+          "why": "The test assertions directly exercise this contract boundary."
+        }
+      ],
+      "implementationPaths": [
+        "packages/shared/src/semantic-state.ts",
+        "packages/shared/src/battle-world.ts",
+        "packages/shared/src/perception.ts",
+        "packages/shared/src/perception-projection.ts"
+      ],
+      "fixturePaths": [],
+      "issues": [
+        "inventory state disabled (unsealed); lifecycle evidence, not a semantic failure",
+        "no current verification ref in inventory; result cannot be called sealed current evidence"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "testPath": "packages/shared/src/perception-quantization.test.ts",
+      "obligations": [
+        "deterministic perception quantization; verify against imported shared implementation",
+        "keeps every absolute threshold monotonic and inclusive at its upper bound; verify against imported shared implementation",
+        "calculates absolute and target-relative axes independently; verify against imported shared implementation"
+      ],
+      "governingSources": [
+        {
+          "path": "docs/adr/0022-canonical-world-and-observer-cognition.md",
+          "clause": "Accepted decision: viewpoint-free canonical world and separate observer frames",
+          "status": "Accepted",
+          "why": "The test assertions directly exercise this contract boundary."
+        },
+        {
+          "path": "docs/adr/0023-pair-channels-are-not-unique-cognition.md",
+          "clause": "Accepted decision: LOS/projection derive from organs, exposure, and placement",
+          "status": "Accepted",
+          "why": "The test assertions directly exercise this contract boundary."
+        }
+      ],
+      "implementationPaths": [
+        "packages/shared/src/character.ts",
+        "packages/shared/src/perception-quantization.ts",
+        "packages/shared/src/perception.ts"
+      ],
+      "fixturePaths": [],
+      "issues": [
+        "inventory state disabled (unsealed); lifecycle evidence, not a semantic failure",
+        "no current verification ref in inventory; result cannot be called sealed current evidence"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "testPath": "packages/shared/src/perception.test.ts",
+      "obligations": [
+        "observer-relative perception schemas; verify against imported shared implementation",
+        "accepts explicit self and an inaccessible unidentified counterpart; verify against imported shared implementation",
+        "rejects hidden canonical source mappings in character-facing percepts; verify against imported shared implementation"
+      ],
+      "governingSources": [
+        {
+          "path": "docs/adr/0022-canonical-world-and-observer-cognition.md",
+          "clause": "Accepted decision: viewpoint-free canonical world and separate observer frames",
+          "status": "Accepted",
+          "why": "The test assertions directly exercise this contract boundary."
+        },
+        {
+          "path": "docs/adr/0023-pair-channels-are-not-unique-cognition.md",
+          "clause": "Accepted decision: LOS/projection derive from organs, exposure, and placement",
+          "status": "Accepted",
+          "why": "The test assertions directly exercise this contract boundary."
+        }
+      ],
+      "implementationPaths": [
+        "packages/shared/src/perception.ts"
+      ],
+      "fixturePaths": [],
+      "issues": [
+        "inventory state disabled (unsealed); lifecycle evidence, not a semantic failure",
+        "no current verification ref in inventory; result cannot be called sealed current evidence"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "testPath": "packages/shared/src/profile-grounding.test.ts",
+      "obligations": [
+        "profile grounding; verify against imported shared implementation",
+        "freezes a complete mechanics-free own-profile anchor; verify against imported shared implementation",
+        "keeps null identity facts unknown instead of inventing them; verify against imported shared implementation"
+      ],
+      "governingSources": [
+        {
+          "path": "docs/adr/0022-canonical-world-and-observer-cognition.md",
+          "clause": "Accepted decision: viewpoint-free canonical world and separate observer frames",
+          "status": "Accepted",
+          "why": "The test assertions directly exercise this contract boundary."
+        },
+        {
+          "path": "docs/adr/0023-pair-channels-are-not-unique-cognition.md",
+          "clause": "Accepted decision: LOS/projection derive from organs, exposure, and placement",
+          "status": "Accepted",
+          "why": "The test assertions directly exercise this contract boundary."
+        }
+      ],
+      "implementationPaths": [
+        "packages/shared/src/character.ts",
+        "packages/shared/src/battle-world.ts",
+        "packages/shared/src/semantic-state.ts",
+        "packages/shared/src/profile-grounding.ts"
+      ],
+      "fixturePaths": [],
+      "issues": [
+        "inventory state disabled (unsealed); lifecycle evidence, not a semantic failure",
+        "no current verification ref in inventory; result cannot be called sealed current evidence"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "testPath": "packages/shared/src/psyche-reaction-policy.test.ts",
+      "obligations": [
+        "deterministic psyche reaction policy V1; verify against imported shared implementation",
+        "projects repeatedly without advancing state and retains the transition projection formula; verify against imported shared implementation",
+        "is deterministic and uses only structured certainty and source IDs; verify against imported shared implementation"
+      ],
+      "governingSources": [
+        {
+          "path": "docs/adr/0022-canonical-world-and-observer-cognition.md",
+          "clause": "Accepted decision: viewpoint-free canonical world and separate observer frames",
+          "status": "Accepted",
+          "why": "The test assertions directly exercise this contract boundary."
+        },
+        {
+          "path": "docs/adr/0023-pair-channels-are-not-unique-cognition.md",
+          "clause": "Accepted decision: LOS/projection derive from organs, exposure, and placement",
+          "status": "Accepted",
+          "why": "The test assertions directly exercise this contract boundary."
+        }
+      ],
+      "implementationPaths": [
+        "packages/shared/src/psyche-reaction-policy.ts"
+      ],
+      "fixturePaths": [],
+      "issues": [
+        "inventory state disabled (unsealed); lifecycle evidence, not a semantic failure",
+        "no current verification ref in inventory; result cannot be called sealed current evidence"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "testPath": "packages/shared/src/rating.test.ts",
+      "obligations": [
+        "rating; verify against imported shared implementation",
+        "marks provisional until threshold; verify against imported shared implementation",
+        "gives underdog more points on upset; verify against imported shared implementation"
+      ],
+      "governingSources": [
+        {
+          "path": "docs/adr/0003-revision-editable-assets-and-bind-battles.md",
+          "clause": "Accepted decision: revisioned editable assets and immutable battle bindings",
+          "status": "Accepted",
+          "why": "The test assertions directly exercise this contract boundary."
+        }
+      ],
+      "implementationPaths": [
+        "packages/shared/src/rating.ts"
+      ],
+      "fixturePaths": [],
+      "issues": [
+        "inventory state disabled (unsealed); lifecycle evidence, not a semantic failure",
+        "no current verification ref in inventory; result cannot be called sealed current evidence"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "testPath": "packages/shared/src/reposition-transition.test.ts",
+      "obligations": [
+        "reposition transition; verify against imported shared implementation",
+        "hops one adjacent area toward the counterpart; verify against imported shared implementation",
+        "opens an in-area rank when too close; verify against imported shared implementation"
+      ],
+      "governingSources": [
+        {
+          "path": "docs/adr/0021-engine-live-continuation-and-type-escapes.md",
+          "clause": "Accepted decision: engine-owned continuation and semantic non-clobber",
+          "status": "Accepted",
+          "why": "The test assertions directly exercise this contract boundary."
+        },
+        {
+          "path": "docs/adr/0009-separate-adjudication-from-judgment-presentation.md",
+          "clause": "Accepted decision: adjudication commits mechanically; presentation is derived",
+          "status": "Accepted",
+          "why": "The test assertions directly exercise this contract boundary."
+        }
+      ],
+      "implementationPaths": [
+        "packages/shared/src/battle-engine.ts",
+        "packages/shared/src/battle-world.ts",
+        "packages/shared/src/reposition-transition.ts",
+        "packages/shared/src/character.ts"
+      ],
+      "fixturePaths": [],
+      "issues": [
+        "inventory state disabled (unsealed); lifecycle evidence, not a semantic failure",
+        "no current verification ref in inventory; result cannot be called sealed current evidence"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "testPath": "packages/shared/src/scene-beat.test.ts",
+      "obligations": [
+        "scene beats; verify against imported shared implementation",
+        "treats missing beat state as one-receipt legacy narration; verify against imported shared implementation",
+        "holds the public turn across intra-turn beats and increments on a new turn; verify against imported shared implementation"
+      ],
+      "governingSources": [
+        {
+          "path": "docs/adr/0006-terminal-snapshot-narration-delivery.md",
+          "clause": "Accepted decision: terminal-snapshot narration with durable phase receipts",
+          "status": "Accepted",
+          "why": "The test assertions directly exercise this contract boundary."
+        },
+        {
+          "path": "docs/adr/0016-scene-beats-batched-narration.md",
+          "clause": "Accepted decision: scene beats batch narration and reserved action sequences",
+          "status": "Accepted",
+          "why": "The test assertions directly exercise this contract boundary."
+        }
+      ],
+      "implementationPaths": [
+        "packages/shared/src/scene-beat.ts"
+      ],
+      "fixturePaths": [],
+      "issues": [
+        "inventory state disabled (unsealed); lifecycle evidence, not a semantic failure",
+        "no current verification ref in inventory; result cannot be called sealed current evidence",
+        "contains versioned or historical behavior; preserve older bindings while checking newer trial policy is not inferred"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "testPath": "packages/shared/src/semantic-authoring.test.ts",
+      "obligations": [
+        "semantic authoring kernel contracts; verify against imported shared implementation",
+        "keeps resolver results closed and distinct from cancel or expiry; verify against imported shared implementation",
+        "omits provider settlement fields from outstanding reservations and kernel state; verify against imported shared implementation"
+      ],
+      "governingSources": [
+        {
+          "path": "docs/adr/0030-llm-assisted-character-semantic-migration.md",
+          "clause": "Accepted decision: bounded semantic change sets, deterministic validation, owner review, append/CAS",
+          "status": "Accepted",
+          "why": "The test assertions directly exercise this contract boundary."
+        },
+        {
+          "path": "docs/adr/0032-separate-authoring-time-boundaries.md",
+          "clause": "Accepted decision: separate provider, worker, semantic-progress, cumulative-resource boundaries",
+          "status": "Accepted",
+          "why": "The test assertions directly exercise this contract boundary."
+        }
+      ],
+      "implementationPaths": [
+        "packages/shared/src/semantic-authoring.ts"
+      ],
+      "fixturePaths": [],
+      "issues": [],
+      "confidence": "high"
+    },
+    {
+      "testPath": "packages/shared/src/semantic-state.test.ts",
+      "obligations": [
+        "battle semantic state; verify against imported shared implementation",
+        "moves a field entity to a holder with an auditable revision; verify against imported shared implementation",
+        "applies pickup and drop symmetrically for both character sides; verify against imported shared implementation"
+      ],
+      "governingSources": [
+        {
+          "path": "docs/adr/0022-canonical-world-and-observer-cognition.md",
+          "clause": "Accepted decision: canonical world state and explicit semantic/world transitions",
+          "status": "Accepted",
+          "why": "Semantic pickup, drop, breakage, and debris are canonical world transitions with auditable revisions."
+        }
+      ],
+      "implementationPaths": [
+        "packages/shared/src/semantic-state.ts"
+      ],
+      "fixturePaths": [],
+      "issues": [
+        "inventory state disabled (unsealed); lifecycle evidence, not a semantic failure",
+        "no current verification ref in inventory; result cannot be called sealed current evidence"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "testPath": "packages/shared/src/skill-cooldown.test.ts",
+      "obligations": [
+        "skill cooldown; verify against imported shared implementation",
+        "maps power into 1–9 turns monotonically; verify against imported shared implementation",
+        "blocks reuse until the cooldown window elapses; verify against imported shared implementation"
+      ],
+      "governingSources": [
+        {
+          "path": "docs/adr/0021-engine-live-continuation-and-type-escapes.md",
+          "clause": "Accepted decision: engine-owned continuation and semantic non-clobber",
+          "status": "Accepted",
+          "why": "The test assertions directly exercise this contract boundary."
+        },
+        {
+          "path": "docs/adr/0009-separate-adjudication-from-judgment-presentation.md",
+          "clause": "Accepted decision: adjudication commits mechanically; presentation is derived",
+          "status": "Accepted",
+          "why": "The test assertions directly exercise this contract boundary."
+        }
+      ],
+      "implementationPaths": [
+        "packages/shared/src/skill-cooldown.ts"
+      ],
+      "fixturePaths": [],
+      "issues": [
+        "inventory state disabled (unsealed); lifecycle evidence, not a semantic failure",
+        "no current verification ref in inventory; result cannot be called sealed current evidence"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "testPath": "packages/shared/src/structured-assets.test.ts",
+      "obligations": [
+        "asset authoring progress; verify against imported shared implementation",
+        "maps in-flight statuses to labeled steps; verify against imported shared implementation"
+      ],
+      "governingSources": [
+        {
+          "path": "docs/adr/0014-queue-asset-authoring.md",
+          "clause": "Accepted decision: queued authoring and dedicated review acceptance",
+          "status": "Accepted",
+          "why": "The test assertions directly exercise this contract boundary."
+        }
+      ],
+      "implementationPaths": [
+        "packages/shared/src/structured-assets.ts"
+      ],
+      "fixturePaths": [],
+      "issues": [
+        "inventory state disabled (unsealed); lifecycle evidence, not a semantic failure",
+        "no current verification ref in inventory; result cannot be called sealed current evidence"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "testPath": "packages/shared/src/structured-battlefield.test.ts",
+      "obligations": [
+        "BattlefieldDefinitionV2; verify against imported shared implementation",
+        "maps legacy fields deterministically and drops unknown coefficient keys; verify against imported shared implementation",
+        "rejects dangling references, reserved ids, and cross-section duplicates; verify against imported shared implementation"
+      ],
+      "governingSources": [
+        {
+          "path": "docs/adr/0012-structured-battlefield-definition.md",
+          "clause": "Accepted decision: separate presets, compiled instances, and live world state",
+          "status": "Accepted",
+          "why": "The test assertions directly exercise this contract boundary."
+        }
+      ],
+      "implementationPaths": [
+        "packages/shared/src/index.ts"
+      ],
+      "fixturePaths": [
+        "inline fixture in packages/shared/src/structured-battlefield.test.ts"
+      ],
+      "issues": [
+        "inventory state disabled (unsealed); lifecycle evidence, not a semantic failure",
+        "no current verification ref in inventory; result cannot be called sealed current evidence",
+        "contains versioned or historical behavior; preserve older bindings while checking newer trial policy is not inferred"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "testPath": "packages/shared/src/structured-character.test.ts",
+      "obligations": [
+        "CharacterDefinitionV2 projections; verify against imported shared implementation",
+        "requires an authored basic action in every modern definition; verify against imported shared implementation",
+        "keeps restricted dynamics out of public and private descriptive projections; verify against imported shared implementation"
+      ],
+      "governingSources": [
+        {
+          "path": "docs/adr/0030-llm-assisted-character-semantic-migration.md",
+          "clause": "Accepted decision: strict V3 semantic migration with deterministic validation and owner review",
+          "status": "Accepted",
+          "why": "The test assertions directly exercise this contract boundary."
+        },
+        {
+          "path": "docs/adr/0039-v3-battle-lifecycle-and-cutover.md",
+          "clause": "D1, lines 39-43: bind V3 generation and compiler inputs immutably",
+          "status": "Accepted",
+          "why": "The test assertions directly exercise this contract boundary."
+        }
+      ],
+      "implementationPaths": [
+        "packages/shared/src/index.ts"
+      ],
+      "fixturePaths": [],
+      "issues": [
+        "inventory state disabled (unsealed); lifecycle evidence, not a semantic failure",
+        "no current verification ref in inventory; result cannot be called sealed current evidence"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "testPath": "packages/shared/src/structured-narration.test.ts",
+      "obligations": [
+        "NarrationDefinitionV2; verify against imported shared implementation",
+        "rejects unknown phases, duplicate stable ids, and authority markers; verify against imported shared implementation",
+        "keeps rhetoric, examples, and compiler controls out of the public projection; verify against imported shared implementation"
+      ],
+      "governingSources": [
+        {
+          "path": "docs/adr/0013-structured-narration-definition.md",
+          "clause": "Accepted decision: narration styles compile into phase-specific policy",
+          "status": "Accepted",
+          "why": "The test assertions directly exercise this contract boundary."
+        }
+      ],
+      "implementationPaths": [
+        "packages/shared/src/index.ts"
+      ],
+      "fixturePaths": [],
+      "issues": [
+        "inventory state disabled (unsealed); lifecycle evidence, not a semantic failure",
+        "no current verification ref in inventory; result cannot be called sealed current evidence"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "testPath": "packages/shared/src/supervisor.test.ts",
+      "obligations": [
+        "battle supervisor; verify against imported shared implementation",
+        "detects quiet turns with little HP swing; verify against imported shared implementation",
+        "does not call heavy exchanges quiet; verify against imported shared implementation"
+      ],
+      "governingSources": [
+        {
+          "path": "docs/adr/0021-engine-live-continuation-and-type-escapes.md",
+          "clause": "Accepted decision: engine-owned continuation and semantic non-clobber",
+          "status": "Accepted",
+          "why": "The test assertions directly exercise this contract boundary."
+        },
+        {
+          "path": "docs/adr/0009-separate-adjudication-from-judgment-presentation.md",
+          "clause": "Accepted decision: adjudication commits mechanically; presentation is derived",
+          "status": "Accepted",
+          "why": "The test assertions directly exercise this contract boundary."
+        }
+      ],
+      "implementationPaths": [
+        "packages/shared/src/supervisor.ts",
+        "packages/shared/src/battle.ts"
+      ],
+      "fixturePaths": [],
+      "issues": [
+        "inventory state disabled (unsealed); lifecycle evidence, not a semantic failure",
+        "no current verification ref in inventory; result cannot be called sealed current evidence"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "testPath": "packages/shared/src/turn-event-contract.test.ts",
+      "obligations": [
+        "turn event conditional contracts; verify against imported shared implementation",
+        "rejects missing expression payloads and mixed source ownership; verify against imported shared implementation",
+        "preserves producer expression and source fields; verify against imported shared implementation"
+      ],
+      "governingSources": [
+        {
+          "path": "docs/adr/0045-preserve-action-intent-producer-values.md",
+          "clause": "Accepted decision: preserve producer values and reject synthetic fallback",
+          "status": "Accepted",
+          "why": "The test assertions directly exercise this contract boundary."
+        }
+      ],
+      "implementationPaths": [
+        "packages/shared/src/battle.ts"
+      ],
+      "fixturePaths": [],
+      "issues": [
+        "inventory state disabled (unsealed); lifecycle evidence, not a semantic failure",
+        "no current verification ref in inventory; result cannot be called sealed current evidence"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "testPath": "packages/shared/src/utterance-perception.test.ts",
+      "obligations": [
+        "committed utterance perception; verify against imported shared implementation",
+        "commits character-authored speech and projects exact hearing without identity leakage; verify against imported shared implementation",
+        "projects partial, misunderstood, unattributed, and unheard speech separately; verify against imported shared implementation"
+      ],
+      "governingSources": [
+        {
+          "path": "docs/adr/0022-canonical-world-and-observer-cognition.md",
+          "clause": "Accepted decision: viewpoint-free canonical world and separate observer frames",
+          "status": "Accepted",
+          "why": "The test assertions directly exercise this contract boundary."
+        },
+        {
+          "path": "docs/adr/0023-pair-channels-are-not-unique-cognition.md",
+          "clause": "Accepted decision: LOS/projection derive from organs, exposure, and placement",
+          "status": "Accepted",
+          "why": "The test assertions directly exercise this contract boundary."
+        }
+      ],
+      "implementationPaths": [
+        "packages/shared/src/semantic-state.ts",
+        "packages/shared/src/battle-world.ts",
+        "packages/shared/src/perception-projection.ts",
+        "packages/shared/src/utterance-perception.ts"
+      ],
+      "fixturePaths": [],
+      "issues": [
+        "inventory state disabled (unsealed); lifecycle evidence, not a semantic failure",
+        "no current verification ref in inventory; result cannot be called sealed current evidence"
+      ],
+      "confidence": "medium"
+    }
+  ]
+}

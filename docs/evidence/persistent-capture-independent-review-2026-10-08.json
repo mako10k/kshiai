@@ -1,0 +1,17 @@
+{
+  "reviewer": "battle_helper_contract_review",
+  "classification": "INSIDE",
+  "originalCases": 18,
+  "pass": 18,
+  "fail": 0,
+  "skip": 0,
+  "files": {
+    "backend/src/scripts/persistent-battle-e2e.test.ts": "f66c6844461bb0c4b3c25851ed0beeddab1c28b4f284e795d2822259861df8d7",
+    "backend/src/scripts/character-authoring-a2-freeze.test.ts": "0e4bdd3c7bb781b9b5d3a55dd5fd8cdc9efb90c8eff2ad557ce4e08f26402180"
+  },
+  "boundaries": [
+    "Private observationclient/guard, historical arithmetic not normalpolicy",
+    "Historical A2 capture-only, no transport/write/activation"
+  ],
+  "forbiddenTypeEscapes": []
+}

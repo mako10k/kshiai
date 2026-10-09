@@ -1,0 +1,16 @@
+domain RESUME:
+  description "Resume preparation for actual Google V3 play using existing authentication."
+evidence SOURCE:
+  "Fresh worktree and remote branch7a4d417 are clean/current; main933e6ae; canonicalcheck/analyze/next/velocity succeed. RC2 source4ab has prior CI4/prepare36857282507."
+evidence CLOUD:
+  "Fresh CloudRun job andArtifactRegistry reads both failedReauthenticationRequired before data observation. Jobabsence anddigest are only previous-day evidence. No cloud mutation attempted."
+premise AUTHORITY:
+  "Goalresumed; ownerpreviousapproval covers CI/RC/prepare, not new jobcreation/execution or live stop/disposal/deploy. Preserve frozenRC2 andcurrent gameauth."
+evidence CONFIG:
+  "Prepared imageNODE_ENV=production; imported config otherwise requiresmedia/taskqueue runtimebindings. For readonly operator CLI only, exactjobenvNODE_ENV=development withAUTH_PROVIDER=supabase/SUPABASE_URL existingproject avoidsunusedservicebindings. This probe does not serveHTTP orproveordinaryproductionstartup; currentgameauthsettings unchanged."
+pending UNKNOWN:
+  "Currentjobexistence/image availability,GCP runtimeDIRECT_URL reachability,actualGoogleV3 proof unavailable. Canonicalvt104 unfinished; no usablecompletedvt104 effortvelocity."
+premise OPTIONS:
+  "Restore same-account GCPsession withowner interactive reauthentication; then freshlyread before exact readonlyprobejob proposal. Do not reuse stalecloudbaselines as current or rebuild successfulRC2. IndependentGitHubreadback andlocalreviewpacket mayproceed."
+decision PREPARE based_on SOURCE, CLOUD, AUTHORITY, UNKNOWN, OPTIONS:
+  "Author concrete Japanesejobproposal withimmutableimage/current existingcredentialrefs,max1deploy/max1execute/retries0/timeout120s. Askowner for reauthentication andexactjobapproval afterpacketready; keep runtimeandDBunchanged."

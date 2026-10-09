@@ -7,9 +7,20 @@ import type {
 import { NARRATION_PRESENTATION_FOCUS_MODE_V1 } from "@kshiai/shared";
 import { OpenAiCompatibleProvider } from "./openai-compatible.js";
 
+// Override the protected transport seam while preserving the domain provider contract.
+class NarrationProbeProvider extends OpenAiCompatibleProvider {
+  respond: (system: string, user: string) => Promise<unknown> = async () => {
+    throw new Error("Test response not configured");
+  };
+
+  protected override chatJson(system: string, user: string): Promise<unknown> {
+    return this.respond(system, user);
+  }
+}
+
 describe("OpenAI-compatible narrator speech rendering", () => {
   it("hides canonical speaker names, accepts free labels, and keeps scene speech", async () => {
-    const provider = new OpenAiCompatibleProvider({
+    const provider = new NarrationProbeProvider({
       name: "xai",
       apiKey: "test-only",
       baseUrl: "https://example.invalid/v1",
@@ -19,10 +30,7 @@ describe("OpenAI-compatible narrator speech rendering", () => {
     let observedSystem = "";
     let observedUser = "";
     let callCount = 0;
-    const privateProvider = provider as unknown as {
-      chatJson(system: string, user: string): Promise<unknown>;
-    };
-    privateProvider.chatJson = async (system, user) => {
+    provider.respond = async (system, user) => {
       callCount += 1;
       observedSystem = system;
       observedUser = user;
@@ -112,7 +120,7 @@ describe("OpenAI-compatible narrator speech rendering", () => {
 
 describe("OpenAI-compatible causal narration input", () => {
   it("sends a role-labelled brief and adds causal facts only with a projection", async () => {
-    const provider = new OpenAiCompatibleProvider({
+    const provider = new NarrationProbeProvider({
       name: "xai",
       apiKey: "test-only",
       baseUrl: "https://example.invalid/v1",
@@ -121,10 +129,7 @@ describe("OpenAI-compatible causal narration input", () => {
     });
     const systems: string[] = [];
     const users: string[] = [];
-    const privateProvider = provider as unknown as {
-      chatJson(system: string, user: string): Promise<unknown>;
-    };
-    privateProvider.chatJson = async (system, user) => {
+    provider.respond = async (system, user) => {
       systems.push(system);
       users.push(user);
       return { narrator: ["確定した一手が次の攻防へ残る。"], speeches: [] };
@@ -261,7 +266,7 @@ describe("OpenAI-compatible causal narration input", () => {
 
 describe("OpenAI-compatible judgment presentation input", () => {
   it("admits the public projection but not raw adjudication prose", async () => {
-    const provider = new OpenAiCompatibleProvider({
+    const provider = new NarrationProbeProvider({
       name: "xai",
       apiKey: "test-only",
       baseUrl: "https://example.invalid/v1",
@@ -270,10 +275,7 @@ describe("OpenAI-compatible judgment presentation input", () => {
     });
     let observedSystem = "";
     let observedUser = "";
-    const privateProvider = provider as unknown as {
-      chatJson(system: string, user: string): Promise<unknown>;
-    };
-    privateProvider.chatJson = async (system, user) => {
+    provider.respond = async (system, user) => {
       observedSystem = system;
       observedUser = user;
       return { before: ["宣告の時が来る。"], after: ["余韻が残る。"] };
@@ -293,7 +295,7 @@ describe("OpenAI-compatible judgment presentation input", () => {
         basisLines: ["アオは場の流れをより強く動かした。"],
       },
       recentPublicNarration: [],
-      ...({ adjudicationReason: "INTERNAL_REASON_MUST_NOT_LEAK" } as Record<string, string>),
+      ...{ adjudicationReason: "INTERNAL_REASON_MUST_NOT_LEAK" },
     });
 
     assert.match(observedSystem, /audience-safe projection/);

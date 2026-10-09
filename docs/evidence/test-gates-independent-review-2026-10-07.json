@@ -1,0 +1,20 @@
+{
+  "reviewer": "/root/llm_boundary_seal_audit",
+  "readOnly": true,
+  "wholeFiles": 2,
+  "cases": 8,
+  "hashes": {
+    "scripts/sealgraph-runtime-dirs.test.mjs": "87012df79f51840e8a2852e72a1c2db40244544e7bca9e00fdfd30f3f99caf6d",
+    "scripts/test-authority-empty.test.mjs": "a9eec7067e7b89db53d06a2248cc3e938d8ca1654896b7b46b58db889b7b43ba",
+    "scripts/test-authority.mjs": "3b724f7c9ab0cca87f770d2bbdccd5d2f4724a3521c3f2ac46d96cf83e90862a",
+    "scripts/sealgraph-runtime-dirs.mjs": "787baa8a4bc14356dd532891da7a8e72c8e789d05aa969e1529479036af79e7a"
+  },
+  "authority": "Accepted0058 inherits other0034 conditions",
+  "insideContradictions": [],
+  "limits": [
+    "local gate helpers, not standalone full251 live execution",
+    "preserves accepted stale/provisional policy",
+    "config bytes assertion only, not full object tree equality"
+  ],
+  "nextAction": "runtime directories test still unmapped; execution gate already mapped, preserve its current Seal"
+}

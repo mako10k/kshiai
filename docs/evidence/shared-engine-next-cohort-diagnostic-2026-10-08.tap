@@ -1,0 +1,337 @@
+TAP version 13
+# Subtest: structured battle causality
+    # Subtest: combines character, area, and attached effects into one effective state
+    ok 1 - combines character, area, and attached effects into one effective state
+      ---
+      duration_ms: 34.879727
+      type: 'test'
+      ...
+    # Subtest: applies the same cover coefficient after swapping A and B
+    ok 2 - applies the same cover coefficient after swapping A and B
+      ---
+      duration_ms: 5.095481
+      type: 'test'
+      ...
+    # Subtest: changes canonical damage without leaking an unperceived cause
+    ok 3 - changes canonical damage without leaking an unperceived cause
+      ---
+      duration_ms: 27.577801
+      type: 'test'
+      ...
+    1..3
+ok 1 - structured battle causality
+  ---
+  duration_ms: 68.87789
+  type: 'suite'
+  ...
+# Subtest: bounded pending effect schedule
+    # Subtest: resolves a due effect once and produces scheduled-effect provenance
+    ok 1 - resolves a due effect once and produces scheduled-effect provenance
+      ---
+      duration_ms: 32.440323
+      type: 'test'
+      ...
+    # Subtest: holds a condition until true and bounds cancellation and expiry
+    ok 2 - holds a condition until true and bounds cancellation and expiry
+      ---
+      duration_ms: 4.95365
+      type: 'test'
+      ...
+    1..2
+ok 2 - bounded pending effect schedule
+  ---
+  duration_ms: 38.761283
+  type: 'suite'
+  ...
+# Subtest: battle engine
+    # Subtest: resolves reflect as a full-turn pause that preserves analysis fields
+    ok 1 - resolves reflect as a full-turn pause that preserves analysis fields
+      ---
+      duration_ms: 28.636951
+      type: 'test'
+      ...
+    # Subtest: unlocks special skills on turn 10 and scales finish pressure to turn 20
+    ok 2 - unlocks special skills on turn 10 and scales finish pressure to turn 20
+      ---
+      duration_ms: 16.242786
+      type: 'test'
+      ...
+    # Subtest: lets a character spend one derived finisher and rejects repeat activation
+    ok 3 - lets a character spend one derived finisher and rejects repeat activation
+      ---
+      duration_ms: 16.005378
+      type: 'test'
+      ...
+    # Subtest: creates private agent continuity and perspective-aware turn records
+    ok 4 - creates private agent continuity and perspective-aware turn records
+      ---
+      duration_ms: 21.742704
+      type: 'test'
+      ...
+    # Subtest: applies damage without exposing raw numbers in events
+    ok 5 - applies damage without exposing raw numbers in events
+      ---
+      duration_ms: 9.407258
+      type: 'test'
+      ...
+    # Subtest: grounds environment mechanics in targeted committed events
+    ok 6 - grounds environment mechanics in targeted committed events
+      ---
+      duration_ms: 7.381789
+      type: 'test'
+      ...
+    # Subtest: puts used skills on power-based cooldown so they cannot be spammed next turn
+    ok 7 - puts used skills on power-based cooldown so they cannot be spammed next turn
+      ---
+      duration_ms: 13.303857
+      type: 'test'
+      ...
+    # Subtest: penalizes consecutive basic attacks with fatigue and readable reduced effect
+    ok 8 - penalizes consecutive basic attacks with fatigue and readable reduced effect
+      ---
+      duration_ms: 10.144265
+      type: 'test'
+      ...
+    # Subtest: emphasizes finishing blows instead of a bare hit line
+    ok 9 - emphasizes finishing blows instead of a bare hit line
+      ---
+      duration_ms: 4.584604
+      type: 'test'
+      ...
+    # Subtest: defers finish for aftermath after HP reaches zero
+    ok 10 - defers finish for aftermath after HP reaches zero
+      ---
+      duration_ms: 3.546675
+      type: 'test'
+      ...
+    # Subtest: clamps wild coefficients
+    ok 11 - clamps wild coefficients
+      ---
+      duration_ms: 4.256522
+      type: 'test'
+      ...
+    # Subtest: applies battlefield base coefficients at creation
+    ok 12 - applies battlefield base coefficients at creation
+      ---
+      duration_ms: 4.449258
+      type: 'test'
+      ...
+    # Subtest: auto-resolves a turn from stance without player action
+    ok 13 - auto-resolves a turn from stance without player action
+      ---
+      duration_ms: 3.221665
+      type: 'test'
+      ...
+    # Subtest: auto-resolves from multi-selected case policies
+    ok 14 - auto-resolves from multi-selected case policies
+      ---
+      duration_ms: 5.045384
+      type: 'test'
+      ...
+    # Subtest: falls back to a basic attack when offensive skills are unaffordable
+    ok 15 - falls back to a basic attack when offensive skills are unaffordable
+      ---
+      duration_ms: 3.545954
+      type: 'test'
+      ...
+    # Subtest: records repeated planned-action fallback without hidden opponent input
+    ok 16 - records repeated planned-action fallback without hidden opponent input
+      ---
+      duration_ms: 3.610012
+      type: 'test'
+      ...
+    # Subtest: rests and restores resources when even a basic attack is exhausted
+    ok 17 - rests and restores resources when even a basic attack is exhausted
+      ---
+      duration_ms: 3.323936
+      type: 'test'
+      ...
+    # Subtest: forces both fighters into basic attacks after two passive turns
+    ok 18 - forces both fighters into basic attacks after two passive turns
+      ---
+      duration_ms: 3.585603
+      type: 'test'
+      ...
+    # Subtest: forces reserved passive agent actions into basic attacks after two passive turns
+    ok 19 - forces reserved passive agent actions into basic attacks after two passive turns
+      ---
+      duration_ms: 3.074583
+      type: 'test'
+      ...
+    # Subtest: retains an explicit player action when forcing the agent opponent to attack
+    ok 20 - retains an explicit player action when forcing the agent opponent to attack
+      ---
+      duration_ms: 5.800568
+      type: 'test'
+      ...
+    # Subtest: announces the final turn and explains the turn-limit decision
+    ok 21 - announces the final turn and explains the turn-limit decision
+      ---
+      duration_ms: 3.751986
+      type: 'test'
+      ...
+    # Subtest: allows a basic attack to damage stamina instead of HP
+    ok 22 - allows a basic attack to damage stamina instead of HP
+      ---
+      duration_ms: 3.857825
+      type: 'test'
+      ...
+    # Subtest: records an ineffective offensive attempt without inventing a change
+    ok 23 - records an ineffective offensive attempt without inventing a change
+      ---
+      duration_ms: 2.838769
+      type: 'test'
+      ...
+    # Subtest: records capped recovery as no effect for each resource
+    ok 24 - records capped recovery as no effect for each resource
+      ---
+      duration_ms: 3.211666
+      type: 'test'
+      ...
+    # Subtest: applies status skill tradeoffs and reverts them toward base each turn
+    ok 25 - applies status skill tradeoffs and reverts them toward base each turn
+      ---
+      duration_ms: 4.05279
+      type: 'test'
+      ...
+    # Subtest: restores maximum HP without restoring lost current HP
+    ok 26 - restores maximum HP without restoring lost current HP
+      ---
+      duration_ms: 5.661908
+      type: 'test'
+      ...
+    # Subtest: applies equipment changes at battle start and lets them decay
+    ok 27 - applies equipment changes at battle start and lets them decay
+      ---
+      duration_ms: 3.355285
+      type: 'test'
+      ...
+    # Subtest: initializes selected new battles with identified counterpart identity
+    ok 28 - initializes selected new battles with identified counterpart identity
+      ---
+      duration_ms: 2.470006
+      type: 'test'
+      ...
+    # Subtest: seeds active legacy battles with identified counterpart knowledge
+    ok 29 - seeds active legacy battles with identified counterpart knowledge
+      ---
+      duration_ms: 2.779828
+      type: 'test'
+      ...
+    # Subtest: deterministically supplies a coarse world to legacy battles
+    ok 30 - deterministically supplies a coarse world to legacy battles
+      ---
+      duration_ms: 2.616969
+      type: 'test'
+      ...
+    # Subtest: migrates legacy authority without turning public prose into cognition
+    ok 31 - migrates legacy authority without turning public prose into cognition
+      ---
+      duration_ms: 4.144006
+      type: 'test'
+      ...
+    # Subtest: records canonical revalidation and an observer-safe substitute
+    ok 32 - records canonical revalidation and an observer-safe substitute
+      ---
+      duration_ms: 4.662512
+      type: 'test'
+      ...
+    # Subtest: keeps a hopped world across a durable bucket resume
+    ok 33 - keeps a hopped world across a durable bucket resume
+      ---
+      duration_ms: 12.151353
+      type: 'test'
+      ...
+    # Subtest: keeps defend substitution when spacing schema is unbound
+    ok 34 - keeps defend substitution when spacing schema is unbound
+      ---
+      duration_ms: 3.227045
+      type: 'test'
+      ...
+    # Subtest: prepares initiative from a cloned post-restoration snapshot
+    ok 35 - prepares initiative from a cloned post-restoration snapshot
+      ---
+      duration_ms: 3.191103
+      type: 'test'
+      ...
+    # Subtest: prepares and retains ADR-0001 order before action resolution
+    ok 36 - prepares and retains ADR-0001 order before action resolution
+      ---
+      duration_ms: 3.470015
+      type: 'test'
+      ...
+    # Subtest: resumes the later bucket without replaying the committed predecessor
+    ok 37 - resumes the later bucket without replaying the committed predecessor
+      ---
+      duration_ms: 19.338563
+      type: 'test'
+      ...
+    # Subtest: keeps explicit prepare, bucket, and finalize stages equivalent to resolveTurn
+    ok 38 - keeps explicit prepare, bucket, and finalize stages equivalent to resolveTurn
+      ---
+      duration_ms: 8.787241
+      type: 'test'
+      ...
+    # Subtest: atomically preserves equal-speed mutual incapacitation
+    ok 39 - atomically preserves equal-speed mutual incapacitation
+      ---
+      duration_ms: 6.154215
+      type: 'test'
+      ...
+    # Subtest: lets the faster side interrupt and revalidates the slower bucket
+    ok 40 - lets the faster side interrupt and revalidates the slower bucket
+      ---
+      duration_ms: 4.519049
+      type: 'test'
+      ...
+    # Subtest: applies same-bucket defense before either attack is evaluated
+    ok 41 - applies same-bucket defense before either attack is evaluated
+      ---
+      duration_ms: 8.518163
+      type: 'test'
+      ...
+    # Subtest: keeps mechanics invariant when simultaneous side labels are swapped
+    ok 42 - keeps mechanics invariant when simultaneous side labels are swapped
+      ---
+      duration_ms: 6.510158
+      type: 'test'
+      ...
+    # Subtest: keeps faster-side interruption invariant when side labels are swapped
+    ok 43 - keeps faster-side interruption invariant when side labels are swapped
+      ---
+      duration_ms: 8.121643
+      type: 'test'
+      ...
+    # Subtest: merges same-snapshot healing, damage, and mutual effects additively
+    ok 44 - merges same-snapshot healing, damage, and mutual effects additively
+      ---
+      duration_ms: 6.267972
+      type: 'test'
+      ...
+    # Subtest: does not feed narration style into temporal or mechanical resolution
+    ok 45 - does not feed narration style into temporal or mechanical resolution
+      ---
+      duration_ms: 5.362059
+      type: 'test'
+      ...
+    # Subtest: applies bounded held-object benefits to later attacks and defenses
+    ok 46 - applies bounded held-object benefits to later attacks and defenses
+      ---
+      duration_ms: 13.759974
+      type: 'test'
+      ...
+    1..46
+ok 3 - battle engine
+  ---
+  duration_ms: 327.420769
+  type: 'suite'
+  ...
+1..3
+# tests 51
+# suites 3
+# pass 51
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 737.834873

@@ -1,0 +1,47 @@
+TAP version 13
+# Subtest: compact whole-output examples retain feelings, learned reactions and both desire sources
+ok 1 - compact whole-output examples retain feelings, learned reactions and both desire sources
+  ---
+  duration_ms: 11.770154
+  type: 'test'
+  ...
+# Subtest: budget guidance supplies an intact compact example without imposing state item caps
+ok 2 - budget guidance supplies an intact compact example without imposing state item caps
+  ---
+  duration_ms: 0.876614
+  type: 'test'
+  ...
+# Subtest: existing awareness output contract guidance
+    # Subtest: uses schema-valid examples for every supported action kind
+    ok 1 - uses schema-valid examples for every supported action kind
+      ---
+      duration_ms: 2.890241
+      type: 'test'
+      ...
+    # Subtest: explains why string actions and copied legal-option objects are invalid
+    ok 2 - explains why string actions and copied legal-option objects are invalid
+      ---
+      duration_ms: 7.264013
+      type: 'test'
+      ...
+    # Subtest: retains latent ambiguity while separating conscious thought and source roles
+    ok 3 - retains latent ambiguity while separating conscious thought and source roles
+      ---
+      duration_ms: 1.590657
+      type: 'test'
+      ...
+    1..3
+ok 3 - existing awareness output contract guidance
+  ---
+  duration_ms: 13.387449
+  type: 'suite'
+  ...
+1..3
+# tests 5
+# suites 1
+# pass 5
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 474.317824

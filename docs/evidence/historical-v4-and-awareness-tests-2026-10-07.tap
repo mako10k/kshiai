@@ -1,0 +1,61 @@
+TAP version 13
+# [battles] advance start v3-battle-bound
+# [battles] advance ok v3-battle-bound turn=1 102ms aft=0
+# [battles] advance stream start v3-battle-bound
+# [battles] advance stream ok v3-battle-bound turn=2 62ms aft=0
+# [balance] battle ok v3-battle-bound turns=12 maxHit=15% earlyKo=0 oneShot=0 winner=a
+# [battles] startBattle failed MY_CHARACTER_V3_CAPABILITY_BLOCKED Error: MY_CHARACTER_V3_CAPABILITY_BLOCKED
+#     at resolveBattleParticipants (/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/battle-service.ts:620:49)
+#     at async startBattle (/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/battle-service.ts:649:7)
+#     at async <anonymous> (/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/routes.ts:2611:11)
+#     at async dispatch (file:///home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/node_modules/hono/dist/compose.js:22:17)
+#     at async requireUser (/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/auth.ts:227:3)
+#     at async dispatch (file:///home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/node_modules/hono/dist/compose.js:22:17)
+#     at async dispatch (file:///home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/node_modules/hono/dist/compose.js:22:17)
+#     at async file:///home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/node_modules/hono/dist/hono-base.js:308:25
+#     at async TestContext.<anonymous> (/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/v3-battle-creation.test.ts:345:27)
+#     at async Test.run (node:internal/test_runner/test:1054:7)
+# [battles] advance start btl_15badb7f34869b37514b401ec1f94efb
+# [battles] advance ok btl_15badb7f34869b37514b401ec1f94efb turn=0 114ms aft=0
+# [battles] advance stream start btl_15badb7f34869b37514b401ec1f94efb
+# [battles] advance stream ok btl_15badb7f34869b37514b401ec1f94efb turn=1 1081ms aft=0
+# Subtest: ADR-0039 V3 character battle binding
+    # Subtest: continues a historical V4 battle and keeps exact V3 character generations after pointer changes and reload
+    ok 1 - continues a historical V4 battle and keeps exact V3 character generations after pointer changes and reload
+      ---
+      duration_ms: 4304.71462
+      type: 'test'
+      ...
+    # Subtest: creates awareness-v5 with V3 characters and keeps their exact generations after pointer changes
+    ok 2 - creates awareness-v5 with V3 characters and keeps their exact generations after pointer changes
+      ---
+      duration_ms: 146.66581
+      type: 'test'
+      ...
+    # Subtest: advances a V4 battle whose frozen norms allow only free actions
+    ok 3 - advances a V4 battle whose frozen norms allow only free actions
+      ---
+      duration_ms: 118.29902
+      type: 'test'
+      ...
+    # Subtest: reserves repair durably without committing unfinished phase state and does not reset on reload
+    ok 4 - reserves repair durably without committing unfinished phase state and does not reset on reload
+      ---
+      duration_ms: 190.155186
+      type: 'test'
+      ...
+    1..4
+ok 1 - ADR-0039 V3 character battle binding
+  ---
+  duration_ms: 4761.321215
+  type: 'suite'
+  ...
+1..1
+# tests 4
+# suites 1
+# pass 4
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 5798.503547

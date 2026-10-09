@@ -1,0 +1,2727 @@
+[
+  {
+    "testPath": "backend/src/services/authoring-task-dispatch.test.ts",
+    "obligations": [
+      "authoring task dispatch",
+      "uses a deterministic global-queue task with an authoring-specific audience"
+    ],
+    "governingSources": [
+      {
+        "path": "docs/adr/0030-llm-assisted-character-semantic-migration.md",
+        "clause": "Decision: versioned semantic migration, bounded semantic-closure repair, preserve history",
+        "status": "Accepted",
+        "why": "Applies to migration/authoring lifecycle and preservation tests."
+      }
+    ],
+    "implementationPaths": [
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../config.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/authoring-task-dispatch.ts",
+      "backend/src/services/../config.ts",
+      "backend/src/services/authoring-task-dispatch.ts"
+    ],
+    "fixturePaths": [],
+    "issues": [
+      "test-authority inventory: state=active, reason=current, ref=verification/vt104-authoring-task-dispatch-20260930"
+    ],
+    "confidence": 0.82
+  },
+  {
+    "testPath": "backend/src/services/awareness-adjudication-guard.test.ts",
+    "obligations": [
+      "persisted adjudication dispatch guard",
+      "quotes the exact request and persists its reservation before the physical send",
+      "dispatches nothing without a verified proof and creates no reservation",
+      "retains the maximum reservation and physical slot when dispatch completion is unknown",
+      "releases the physical slot after completion while retaining unknown dollar cost",
+      "refuses a proof that returns after the global deadline without sending or reserving",
+      "rejects a late completed judgment while retaining its maximum cost and releasing its physical slot",
+      "keeps failure sticky even if a caller catches it and tries another dispatch",
+      "observed adjudication retains an unpriced reservation and scoped role without a quote"
+    ],
+    "governingSources": [
+      {
+        "path": "docs/adr/0007-provider-operation-ledger-and-observation-ceilings.md",
+        "clause": "Decision: distinguish logical calls, physical attempts, retries and unknown outcomes; enforce ceilings",
+        "status": "Accepted",
+        "why": "Applies to reservations, retries, unknown completion and provider ledger tests."
+      }
+    ],
+    "implementationPaths": [
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../db.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../llm/awareness-dispatch-admission.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../llm/llm-usage-context.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../repositories/battle-awareness-schema.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../repositories/battle-awareness.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../repositories/battles.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/awareness-adjudication-guard.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/awareness-test-fixture.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/distributed-guard.ts",
+      "backend/src/services/../db.ts",
+      "backend/src/services/../llm/awareness-dispatch-admission.ts",
+      "backend/src/services/../llm/llm-usage-context.ts",
+      "backend/src/services/../repositories/battle-awareness-schema.ts",
+      "backend/src/services/../repositories/battle-awareness.ts",
+      "backend/src/services/../repositories/battles.ts",
+      "backend/src/services/awareness-adjudication-guard.ts",
+      "backend/src/services/awareness-test-fixture.ts",
+      "backend/src/services/distributed-guard.ts"
+    ],
+    "fixturePaths": [
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/awareness-test-fixture.ts",
+      "backend/src/services/awareness-test-fixture.ts"
+    ],
+    "issues": [
+      "test-authority inventory: state=disabled, reason=unsealed"
+    ],
+    "confidence": 0.82
+  },
+  {
+    "testPath": "backend/src/services/awareness-battle-creation.test.ts",
+    "obligations": [
+      "actual awareness battle creation and advancement",
+      "binds immutable V5 assets, adopts encounter accounting and replays without duplicate dispatch"
+    ],
+    "governingSources": [
+      {
+        "path": "docs/adr/0007-provider-operation-ledger-and-observation-ceilings.md",
+        "clause": "Decision: distinguish logical calls, physical attempts, retries and unknown outcomes; enforce ceilings",
+        "status": "Accepted",
+        "why": "Applies to reservations, retries, unknown completion and provider ledger tests."
+      }
+    ],
+    "implementationPaths": [
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../db.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../llm/awareness-dispatch-admission.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../llm/awareness-provider-factory.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../llm/openai-compatible.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../llm/types.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../repositories/battle-awareness.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../repositories/battles.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../repositories/dialogue-pipeline-settings.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../repositories/llm-usage.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../repositories/narration-styles.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../testing/historical-asset-generations.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../testing/historical-character-fixtures.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/battle-service.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/character-authoring-service.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/conscious-agency.fixtures.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/distributed-guard.ts",
+      "backend/src/services/../db.ts",
+      "backend/src/services/../llm/awareness-dispatch-admission.ts",
+      "backend/src/services/../llm/awareness-provider-factory.ts",
+      "backend/src/services/../llm/openai-compatible.ts",
+      "backend/src/services/../llm/types.ts",
+      "backend/src/services/../repositories/battle-awareness.ts",
+      "backend/src/services/../repositories/battles.ts",
+      "backend/src/services/../repositories/dialogue-pipeline-settings.ts",
+      "backend/src/services/../repositories/llm-usage.ts",
+      "backend/src/services/../repositories/narration-styles.ts",
+      "backend/src/services/../testing/historical-asset-generations.ts",
+      "backend/src/services/../testing/historical-character-fixtures.ts",
+      "backend/src/services/battle-service.ts",
+      "backend/src/services/character-authoring-service.ts",
+      "backend/src/services/conscious-agency.fixtures.ts",
+      "backend/src/services/distributed-guard.ts"
+    ],
+    "fixturePaths": [
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../testing/historical-character-fixtures.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/conscious-agency.fixtures.ts"
+    ],
+    "issues": [
+      "test-authority inventory: state=disabled, reason=unsealed"
+    ],
+    "confidence": 0.82
+  },
+  {
+    "testPath": "backend/src/services/awareness-battle-service.test.ts",
+    "obligations": [
+      "public advance stops incomplete with ${configured ? ",
+      "public configured prologue then combat preserves absent body intents without legacy agent calls",
+      "public KO commits terminal combat and aftermath together without starting post-KO thoughts",
+      "failed required semantic judgment preserves the last world instead of saving an earlier engine bucket"
+    ],
+    "governingSources": [
+      {
+        "path": "docs/adr/0007-provider-operation-ledger-and-observation-ceilings.md",
+        "clause": "Decision: distinguish logical calls, physical attempts, retries and unknown outcomes; enforce ceilings",
+        "status": "Accepted",
+        "why": "Applies to reservations, retries, unknown completion and provider ledger tests."
+      }
+    ],
+    "implementationPaths": [
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../db.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../llm/awareness-dispatch-admission.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../llm/awareness-provider-factory.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../llm/mock.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../llm/types.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../repositories/asset-generations.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../repositories/battle-awareness.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../repositories/battles.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/awareness-test-fixture.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/battle-service.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/character-authoring-service.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/distributed-guard.ts",
+      "backend/src/services/../db.ts",
+      "backend/src/services/../llm/awareness-dispatch-admission.ts",
+      "backend/src/services/../llm/awareness-provider-factory.ts",
+      "backend/src/services/../llm/mock.ts",
+      "backend/src/services/../llm/types.ts",
+      "backend/src/services/../repositories/asset-generations.ts",
+      "backend/src/services/../repositories/battle-awareness.ts",
+      "backend/src/services/../repositories/battles.ts",
+      "backend/src/services/awareness-test-fixture.ts",
+      "backend/src/services/battle-service.ts",
+      "backend/src/services/character-authoring-service.ts",
+      "backend/src/services/distributed-guard.ts"
+    ],
+    "fixturePaths": [
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/awareness-test-fixture.ts",
+      "backend/src/services/awareness-test-fixture.ts"
+    ],
+    "issues": [
+      "test-authority inventory: state=disabled, reason=unsealed"
+    ],
+    "confidence": 0.82
+  },
+  {
+    "testPath": "backend/src/services/awareness-clock.test.ts",
+    "obligations": [
+      "an elapsed deadline rejects waiting but does not cancel the physical promise",
+      "a result before the deadline completes the wait"
+    ],
+    "governingSources": [
+      {
+        "path": "docs/adr/0007-provider-operation-ledger-and-observation-ceilings.md",
+        "clause": "Decision: distinguish logical calls, physical attempts, retries and unknown outcomes; enforce ceilings",
+        "status": "Accepted",
+        "why": "Applies to reservations, retries, unknown completion and provider ledger tests."
+      },
+      {
+        "path": "docs/adr/0054-normal-awareness-waiting-deadlines.md",
+        "clause": "Decision drivers: consistent SDK/execution/canonical/narration deadlines while retaining retry limits",
+        "status": "Accepted",
+        "why": "Applies to bound awareness/narration wait windows."
+      }
+    ],
+    "implementationPaths": [
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/awareness-clock.ts",
+      "backend/src/services/awareness-clock.ts"
+    ],
+    "fixturePaths": [],
+    "issues": [
+      "test-authority inventory: state=disabled, reason=unsealed"
+    ],
+    "confidence": 0.82
+  },
+  {
+    "testPath": "backend/src/services/awareness-context.test.ts",
+    "obligations": [
+      "awareness immutable context projection",
+      "includes hidden latent traits and background while conscious context uses only its aware compiler",
+      "rejects missing or unevaluated guidance instead of treating it as no applicable principle",
+      "rejects mismatched asset, generation, digest, and missing immutable compiler",
+      "rejects a perception frame belonging to the other observer",
+      "makes stimuli only from changed current percepts and does not synthesize missing or removed history",
+      "preserves a full valid V3 description without rejecting it on the smaller emotion bound"
+    ],
+    "governingSources": [
+      {
+        "path": "docs/adr/0007-provider-operation-ledger-and-observation-ceilings.md",
+        "clause": "Decision: distinguish logical calls, physical attempts, retries and unknown outcomes; enforce ceilings",
+        "status": "Accepted",
+        "why": "Applies to reservations, retries, unknown completion and provider ledger tests."
+      }
+    ],
+    "implementationPaths": [
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../repositories/asset-generations.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/awareness-context.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/awareness-test-fixture.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/character-authoring-service.ts",
+      "backend/src/services/../repositories/asset-generations.ts",
+      "backend/src/services/awareness-context.ts",
+      "backend/src/services/awareness-test-fixture.ts",
+      "backend/src/services/character-authoring-service.ts"
+    ],
+    "fixturePaths": [
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/awareness-test-fixture.ts",
+      "backend/src/services/awareness-test-fixture.ts"
+    ],
+    "issues": [
+      "test-authority inventory: state=active, reason=current, ref=awareness-guidance-20261007/verification-context"
+    ],
+    "confidence": 0.82
+  },
+  {
+    "testPath": "backend/src/services/awareness-creation-encounter.test.ts",
+    "obligations": [
+      "admitted creation encounter through actual compatible SDK",
+      "preserves V5 world and perceptions without synthesizing legacy subjective agents",
+      "quotes the full prose engine request capped at 1500 and reuses the durable ready result",
+      "makes zero HTTP calls without verified billing proof and creates no canonical battle",
+      "persists an invalid provider proposal as failure and never retries transmission",
+      "adopts the reserved encounter runtime atomically in actual canonical insertNewBattle",
+      "observed creation sends one scoped SDK call without a pricing contract"
+    ],
+    "governingSources": [
+      {
+        "path": "docs/adr/0007-provider-operation-ledger-and-observation-ceilings.md",
+        "clause": "Decision: distinguish logical calls, physical attempts, retries and unknown outcomes; enforce ceilings",
+        "status": "Accepted",
+        "why": "Applies to reservations, retries, unknown completion and provider ledger tests."
+      }
+    ],
+    "implementationPaths": [
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../db.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../llm/awareness-dispatch-admission.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../llm/awareness-provider-factory.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../llm/llm-usage-context.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../llm/openai-compatible.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../llm/types.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../repositories/battle-awareness-creation.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../repositories/battle-awareness.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../repositories/battles.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/awareness-creation-encounter.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/awareness-test-fixture.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/distributed-guard.ts",
+      "backend/src/services/../db.ts",
+      "backend/src/services/../llm/awareness-dispatch-admission.ts",
+      "backend/src/services/../llm/awareness-provider-factory.ts",
+      "backend/src/services/../llm/llm-usage-context.ts",
+      "backend/src/services/../llm/openai-compatible.ts",
+      "backend/src/services/../llm/types.ts",
+      "backend/src/services/../repositories/battle-awareness-creation.ts",
+      "backend/src/services/../repositories/battle-awareness.ts",
+      "backend/src/services/../repositories/battles.ts",
+      "backend/src/services/awareness-creation-encounter.ts",
+      "backend/src/services/awareness-test-fixture.ts",
+      "backend/src/services/distributed-guard.ts"
+    ],
+    "fixturePaths": [
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/awareness-test-fixture.ts",
+      "backend/src/services/awareness-test-fixture.ts"
+    ],
+    "issues": [
+      "test-authority inventory: state=disabled, reason=unsealed"
+    ],
+    "confidence": 0.82
+  },
+  {
+    "testPath": "backend/src/services/awareness-execution.test.ts",
+    "obligations": [
+      "awareness execution",
+      "launches frozen A jobs before latent work, advances three ticks, and merges only at a later boundary",
+      "restarts without resending outstanding jobs and reuses an already accepted latent tick",
+      "stops an incomplete tick after required failure without fabricating world results",
+      "requires verified full-input token and charge proof before any physical dispatch",
+      "does not leak the counterpart",
+      "keeps unaware tendencies and training on the latent side of the model boundary",
+      "delivers live self-aware guidance from frozen assets through the actual decision and execution to the rendered prompt",
+      "rejects a missing guidance transfer before dispatching either character",
+      "ends when an initial physical thought remains unknown past its deadline",
+      "does not free unknown physical slots after logical results and bounds their grace window",
+      "waits for a tick interval and retries the same target without duplicate model calls",
+      "merges results ready before the durable latent cutoff without a fixed tick delay",
+      "does not merge a post-cutoff result during a retry of the prepared tick",
+      "admits combat tick 36 and rejects tick 37 without extra model dispatch",
+      "observed execution accepts explicit null-cost proofs and retains role/physical limits",
+      "keeps unknown thought failure slots reserved but closes observed late validation failures without applying them"
+    ],
+    "governingSources": [
+      {
+        "path": "docs/adr/0007-provider-operation-ledger-and-observation-ceilings.md",
+        "clause": "Decision: distinguish logical calls, physical attempts, retries and unknown outcomes; enforce ceilings",
+        "status": "Accepted",
+        "why": "Applies to reservations, retries, unknown completion and provider ledger tests."
+      }
+    ],
+    "implementationPaths": [
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../config.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../db.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../llm/awareness-request.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../llm/llm-physical-completion.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../repositories/battle-awareness-schema.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../repositories/battle-awareness.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/awareness-battle-boundary.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/awareness-execution-storage.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/awareness-execution.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/awareness-guidance-test-fixture.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/battle-service.ts",
+      "backend/src/services/../config.ts",
+      "backend/src/services/../db.ts",
+      "backend/src/services/../llm/awareness-request.ts",
+      "backend/src/services/../llm/llm-physical-completion.ts",
+      "backend/src/services/../repositories/battle-awareness-schema.ts",
+      "backend/src/services/../repositories/battle-awareness.ts",
+      "backend/src/services/awareness-battle-boundary.ts",
+      "backend/src/services/awareness-execution-storage.ts",
+      "backend/src/services/awareness-execution.ts",
+      "backend/src/services/awareness-guidance-test-fixture.ts",
+      "backend/src/services/battle-service.ts"
+    ],
+    "fixturePaths": [
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/awareness-guidance-test-fixture.ts"
+    ],
+    "issues": [
+      "test-authority inventory: state=active, reason=current, ref=awareness-guidance-20261007/verification-execution"
+    ],
+    "confidence": 0.82
+  },
+  {
+    "testPath": "backend/src/services/awareness-expression-commit.test.ts",
+    "obligations": [
+      "awareness physically committed expressions",
+      "commits selected reflex and conscious speech exactly and lets the other observer hear it",
+      "does not manufacture utterances, narrator sources or heard evidence when no voice was selected",
+      "suppresses physically blocked or absent voice and unconscious or incapacitated speakers",
+      "preserves canonical speech when the recipient cannot hear while withholding their sound percept",
+      "assigns distinct utterance event IDs across ticks of the same public turn"
+    ],
+    "governingSources": [
+      {
+        "path": "docs/adr/0007-provider-operation-ledger-and-observation-ceilings.md",
+        "clause": "Decision: distinguish logical calls, physical attempts, retries and unknown outcomes; enforce ceilings",
+        "status": "Accepted",
+        "why": "Applies to reservations, retries, unknown completion and provider ledger tests."
+      },
+      {
+        "path": "docs/adr/0022-canonical-world-and-observer-cognition.md",
+        "clause": "Decision: canonical world is unique and observer cognition receives safe projections",
+        "status": "Accepted",
+        "why": "Applies to canonical/perception/public projection boundaries."
+      },
+      {
+        "path": "docs/adr/0025-expression-state-and-utterance-actuals.md",
+        "clause": "Verification: expression state is separate from utterance history; closed utterance contract",
+        "status": "Accepted",
+        "why": "Applies to speech commitment, repetition, and heard-evidence tests."
+      }
+    ],
+    "implementationPaths": [
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/awareness-expression-commit.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/awareness-test-fixture.ts",
+      "backend/src/services/awareness-expression-commit.ts",
+      "backend/src/services/awareness-test-fixture.ts"
+    ],
+    "fixturePaths": [
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/awareness-test-fixture.ts",
+      "backend/src/services/awareness-test-fixture.ts"
+    ],
+    "issues": [
+      "test-authority inventory: state=disabled, reason=unsealed"
+    ],
+    "confidence": 0.82
+  },
+  {
+    "testPath": "backend/src/services/awareness-narration-claim-snapshot.test.ts",
+    "obligations": [
+      "narration claim statement read order",
+      "captures old entries before an interleaved atomic commit and validates them against the newer battle",
+      "includes a newly committed receipt when its atomic commit precedes entry capture",
+      "leaves a receipt arriving after an empty capture for the next capture",
+      "preserves missing battle acknowledgement and missing runtime errors even for empty entries",
+      "does not repair or discard a corrupted material before the strict material validator sees it"
+    ],
+    "governingSources": [
+      {
+        "path": "docs/adr/0007-provider-operation-ledger-and-observation-ceilings.md",
+        "clause": "Decision: distinguish logical calls, physical attempts, retries and unknown outcomes; enforce ceilings",
+        "status": "Accepted",
+        "why": "Applies to reservations, retries, unknown completion and provider ledger tests."
+      }
+    ],
+    "implementationPaths": [
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/awareness-narration-claim-snapshot.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/awareness-narration-worker-contract.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/awareness-narration-worker-material.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/awareness-test-fixture.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/distributed-guard.ts",
+      "backend/src/services/awareness-narration-claim-snapshot.ts",
+      "backend/src/services/awareness-narration-worker-contract.ts",
+      "backend/src/services/awareness-narration-worker-material.ts",
+      "backend/src/services/awareness-test-fixture.ts",
+      "backend/src/services/distributed-guard.ts"
+    ],
+    "fixturePaths": [
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/awareness-test-fixture.ts",
+      "backend/src/services/awareness-test-fixture.ts"
+    ],
+    "issues": [
+      "test-authority inventory: state=disabled, reason=unsealed"
+    ],
+    "confidence": 0.82
+  },
+  {
+    "testPath": "backend/src/services/awareness-narration-continuation.test.ts",
+    "obligations": [
+      "continues every phase and retained prompt revision through current transport publication"
+    ],
+    "governingSources": [
+      {
+        "path": "docs/adr/0007-provider-operation-ledger-and-observation-ceilings.md",
+        "clause": "Decision: distinguish logical calls, physical attempts, retries and unknown outcomes; enforce ceilings",
+        "status": "Accepted",
+        "why": "Applies to reservations, retries, unknown completion and provider ledger tests."
+      }
+    ],
+    "implementationPaths": [
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../config.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../db.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../llm/awareness-narration.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../llm/awareness-provider-contract.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../llm/narration-prompt-contract.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../llm/narration-receipt-contract.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../repositories/battle-awareness.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../repositories/battles.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/awareness-narration-worker.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/awareness-test-fixture.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/distributed-guard.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/narration-worker.ts",
+      "backend/src/services/../config.ts",
+      "backend/src/services/../db.ts",
+      "backend/src/services/../llm/awareness-narration.ts",
+      "backend/src/services/../llm/awareness-provider-contract.ts",
+      "backend/src/services/../llm/narration-prompt-contract.ts",
+      "backend/src/services/../llm/narration-receipt-contract.ts",
+      "backend/src/services/../repositories/battle-awareness.ts",
+      "backend/src/services/../repositories/battles.ts",
+      "backend/src/services/awareness-narration-worker.ts",
+      "backend/src/services/awareness-test-fixture.ts",
+      "backend/src/services/distributed-guard.ts",
+      "backend/src/services/narration-worker.ts"
+    ],
+    "fixturePaths": [
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/awareness-test-fixture.ts",
+      "backend/src/services/awareness-test-fixture.ts"
+    ],
+    "issues": [
+      "test-authority inventory: state=disabled, reason=unsealed"
+    ],
+    "confidence": 0.82
+  },
+  {
+    "testPath": "backend/src/services/awareness-narration-event-storage.test.ts",
+    "obligations": [
+      "SQLite appends exact public IDs and continues above the retained floor after full pruning",
+      "rollback publishes no event and permits reuse of its unpublished sequence"
+    ],
+    "governingSources": [
+      {
+        "path": "docs/adr/0007-provider-operation-ledger-and-observation-ceilings.md",
+        "clause": "Decision: distinguish logical calls, physical attempts, retries and unknown outcomes; enforce ceilings",
+        "status": "Accepted",
+        "why": "Applies to reservations, retries, unknown completion and provider ledger tests."
+      }
+    ],
+    "implementationPaths": [
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../db.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../repositories/battles.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/awareness-test-fixture.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/narration-event-storage.ts",
+      "backend/src/services/../db.ts",
+      "backend/src/services/../repositories/battles.ts",
+      "backend/src/services/awareness-test-fixture.ts",
+      "backend/src/services/narration-event-storage.ts"
+    ],
+    "fixturePaths": [
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/awareness-test-fixture.ts"
+    ],
+    "issues": [
+      "test-authority inventory: state=disabled, reason=unsealed"
+    ],
+    "confidence": 0.82
+  },
+  {
+    "testPath": "backend/src/services/awareness-narration-queue.test.ts",
+    "obligations": [
+      "awareness narration queue policy",
+      "uses the bound long measurement window while preserving legacy timing defaults",
+      "flushes three ordered receipts in one batch and blocks a second physical call",
+      "uses oldest six-second flush and immediate urgent or terminal flush",
+      "retains a copied immutable source and idempotent exact receipt admission",
+      "rejects a thirteenth pending beat and retains already published receipts",
+      "stops on oldest publication deadline even while a physical call remains outstanding",
+      "shortens terminal drain to the earliest global or receipt deadline",
+      "publishes whole single-attempt coverage in receipt order and keeps later queued work",
+      "rejects incomplete, reordered or stale result coverage without partial publication",
+      "keeps unknown physical termination occupied after logical failure"
+    ],
+    "governingSources": [
+      {
+        "path": "docs/adr/0007-provider-operation-ledger-and-observation-ceilings.md",
+        "clause": "Decision: distinguish logical calls, physical attempts, retries and unknown outcomes; enforce ceilings",
+        "status": "Accepted",
+        "why": "Applies to reservations, retries, unknown completion and provider ledger tests."
+      },
+      {
+        "path": "docs/adr/0054-normal-awareness-waiting-deadlines.md",
+        "clause": "Decision drivers: consistent SDK/execution/canonical/narration deadlines while retaining retry limits",
+        "status": "Accepted",
+        "why": "Applies to bound awareness/narration wait windows."
+      }
+    ],
+    "implementationPaths": [
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../llm/awareness-narration.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/awareness-narration-queue.ts",
+      "backend/src/services/../llm/awareness-narration.ts",
+      "backend/src/services/awareness-narration-queue.ts"
+    ],
+    "fixturePaths": [],
+    "issues": [
+      "test-authority inventory: state=disabled, reason=unsealed"
+    ],
+    "confidence": 0.82
+  },
+  {
+    "testPath": "backend/src/services/awareness-narration-urgency.test.ts",
+    "obligations": [
+      "keeps a normal movement or ordinary world revision batchable",
+      "flushes an actual <parameter> impairment without a speech event"
+    ],
+    "governingSources": [
+      {
+        "path": "docs/adr/0007-provider-operation-ledger-and-observation-ceilings.md",
+        "clause": "Decision: distinguish logical calls, physical attempts, retries and unknown outcomes; enforce ceilings",
+        "status": "Accepted",
+        "why": "Applies to reservations, retries, unknown completion and provider ledger tests."
+      },
+      {
+        "path": "docs/adr/0054-normal-awareness-waiting-deadlines.md",
+        "clause": "Decision drivers: consistent SDK/execution/canonical/narration deadlines while retaining retry limits",
+        "status": "Accepted",
+        "why": "Applies to bound awareness/narration wait windows."
+      }
+    ],
+    "implementationPaths": [
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/awareness-narration-urgency.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/awareness-test-fixture.ts",
+      "backend/src/services/awareness-narration-urgency.ts",
+      "backend/src/services/awareness-test-fixture.ts"
+    ],
+    "fixturePaths": [
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/awareness-test-fixture.ts",
+      "backend/src/services/awareness-test-fixture.ts"
+    ],
+    "issues": [
+      "test-authority inventory: state=disabled, reason=unsealed"
+    ],
+    "confidence": 0.82
+  },
+  {
+    "testPath": "backend/src/services/awareness-narration-worker.test.ts",
+    "obligations": [
+      "uses a bound 60-second narration request and publishes beyond the old 36-second window",
+      "missing verified proof sends zero calls and never fabricates a presentation or changes world",
+      "publishes one batch while the world lease remains held",
+      "publishes a selected receipt and requeues an unselected input while the world lease remains held",
+      "requeues a preclaim flush wait and accepts only the fresh delivery generation",
+      "requeues an outstanding batch input without a second provider call",
+      "requeues an unselected input after successful publication without touching its successor",
+      "publishes three frozen receipts atomically with one call and one retained fee reservation",
+      "tampered frozen input is rejected before dispatch",
+      "rejects partial batch coverage without publishing any receipt",
+      "expired publication window sends zero calls",
+      "initial prologue uses its frozen typed phase and publishes through the V5 worker",
+      "logical timeout retains physical occupancy and late completion only closes accounting",
+      "closes a completed physical response rejected during validation while retaining unknown transport failures",
+      "closes late observed response rejection after logical timeout without publishing its rejected result",
+      "persists recognition only with publication and quotes the next batch",
+      "history-inclusive token admission rejects a second call without advancing narrator cognition",
+      "splits mixed recognition targets so one subjective context never enters the other side",
+      "immutable observed policy dispatches without a price quote while retaining unknown cost"
+    ],
+    "governingSources": [
+      {
+        "path": "docs/adr/0007-provider-operation-ledger-and-observation-ceilings.md",
+        "clause": "Decision: distinguish logical calls, physical attempts, retries and unknown outcomes; enforce ceilings",
+        "status": "Accepted",
+        "why": "Applies to reservations, retries, unknown completion and provider ledger tests."
+      },
+      {
+        "path": "docs/adr/0054-normal-awareness-waiting-deadlines.md",
+        "clause": "Decision drivers: consistent SDK/execution/canonical/narration deadlines while retaining retry limits",
+        "status": "Accepted",
+        "why": "Applies to bound awareness/narration wait windows."
+      }
+    ],
+    "implementationPaths": [
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../db.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../llm/awareness-frozen-narration.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../llm/awareness-narration-phase.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../llm/awareness-narration.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../repositories/battle-awareness.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../repositories/battles.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../repositories/llm-usage-observation.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/awareness-narration-worker.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/awareness-test-fixture.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/distributed-guard.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/narration-worker.ts",
+      "backend/src/services/../db.ts",
+      "backend/src/services/../llm/awareness-frozen-narration.ts",
+      "backend/src/services/../llm/awareness-narration-phase.ts",
+      "backend/src/services/../llm/awareness-narration.ts",
+      "backend/src/services/../repositories/battle-awareness.ts",
+      "backend/src/services/../repositories/battles.ts",
+      "backend/src/services/../repositories/llm-usage-observation.ts",
+      "backend/src/services/awareness-narration-worker.ts",
+      "backend/src/services/awareness-test-fixture.ts",
+      "backend/src/services/distributed-guard.ts",
+      "backend/src/services/narration-worker.ts"
+    ],
+    "fixturePaths": [
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/awareness-test-fixture.ts",
+      "backend/src/services/awareness-test-fixture.ts"
+    ],
+    "issues": [
+      "test-authority inventory: state=disabled, reason=unsealed"
+    ],
+    "confidence": 0.82
+  },
+  {
+    "testPath": "backend/src/services/awareness-trial-harness.test.ts",
+    "obligations": [
+      "rejects changed candidate input before execution",
+      "defaults to offline validation and ignores inherited normal database targets",
+      "runs exactly three combat ticks and drains narration with fixed actual SDK routes",
+      "retains failed encounter usage without creating another battle or sending later ticks",
+      "stops new combat ticks after narration fails and preserves failed readback",
+      "binds long measurement timing to the new trial and counts actual wire input without retaining prompts",
+      "releases completed SDK slots after invalid latent and late conscious shapes while retaining unknown cost",
+      "closes SDK-completed narration format rejection without inventing a narrative or zero cost"
+    ],
+    "governingSources": [
+      {
+        "path": "docs/adr/0007-provider-operation-ledger-and-observation-ceilings.md",
+        "clause": "Decision: distinguish logical calls, physical attempts, retries and unknown outcomes; enforce ceilings",
+        "status": "Accepted",
+        "why": "Applies to reservations, retries, unknown completion and provider ledger tests."
+      },
+      {
+        "path": "docs/adr/0042-unreleased-v3-trial-scope.md",
+        "clause": "Decision: unreleased V3 trial scope is bounded and does not imply general release",
+        "status": "Accepted",
+        "why": "Applies to trial harness/smoke-only evidence."
+      }
+    ],
+    "implementationPaths": [
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/awareness-trial-candidate.ts",
+      "backend/src/services/awareness-trial-candidate.ts"
+    ],
+    "fixturePaths": [],
+    "issues": [
+      "test-authority inventory: state=disabled, reason=unsealed"
+    ],
+    "confidence": 0.82
+  },
+  {
+    "testPath": "backend/src/services/awareness-world-commit.test.ts",
+    "obligations": [
+      "atomic awareness world commit",
+      "rolls back all writes when the actual clock crosses the deadline inside the transaction",
+      "rejects a prepared world commit at the global deadline without writing either store",
+      "requires the exact prepared boundary and leaves both stores unchanged on mismatch",
+      "rejects an early prepared marker before the latent cutoff has committed",
+      "rolls back the sidecar update when canonical revision CAS fails",
+      "preserves a ready thought and accounting that arrive after subjective preparation",
+      "persists technical incomplete without advancing canonical turn or assigning a winner",
+      "rejects <parameter> mutation disguised as technical incomplete and preserves both stores",
+      "invalidates outstanding thought generations on canonical terminal completion"
+    ],
+    "governingSources": [
+      {
+        "path": "docs/adr/0007-provider-operation-ledger-and-observation-ceilings.md",
+        "clause": "Decision: distinguish logical calls, physical attempts, retries and unknown outcomes; enforce ceilings",
+        "status": "Accepted",
+        "why": "Applies to reservations, retries, unknown completion and provider ledger tests."
+      }
+    ],
+    "implementationPaths": [
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../db.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../repositories/battle-awareness-schema.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../repositories/battle-awareness.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../repositories/battles.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/awareness-test-fixture.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/awareness-world-commit.ts",
+      "backend/src/services/../db.ts",
+      "backend/src/services/../repositories/battle-awareness-schema.ts",
+      "backend/src/services/../repositories/battle-awareness.ts",
+      "backend/src/services/../repositories/battles.ts",
+      "backend/src/services/awareness-test-fixture.ts",
+      "backend/src/services/awareness-world-commit.ts"
+    ],
+    "fixturePaths": [
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/awareness-test-fixture.ts",
+      "backend/src/services/awareness-test-fixture.ts"
+    ],
+    "issues": [
+      "test-authority inventory: state=disabled, reason=unsealed"
+    ],
+    "confidence": 0.82
+  },
+  {
+    "testPath": "backend/src/services/battle-causal-narration.test.ts",
+    "obligations": [
+      "guarded narration causal projection wiring",
+      "omits the projection in off mode without changing the turn",
+      "builds one narrator-only projection in guarded mode",
+      "falls back to the legacy narrator input when committed evidence is invalid"
+    ],
+    "governingSources": [
+      {
+        "path": "docs/adr/0007-provider-operation-ledger-and-observation-ceilings.md",
+        "clause": "Decision: distinguish logical calls, physical attempts, retries and unknown outcomes; enforce ceilings",
+        "status": "Accepted",
+        "why": "Applies to reservations, retries, unknown completion and provider ledger tests."
+      },
+      {
+        "path": "docs/adr/0009-separate-adjudication-from-judgment-presentation.md",
+        "clause": "Decision: immutable adjudication remains separate from server-owned public presentation projection",
+        "status": "Accepted",
+        "why": "Applies to causal/judgment and narrator/public projection tests."
+      }
+    ],
+    "implementationPaths": [
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/battle-engine-test-helper.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/battle-service.ts",
+      "backend/src/services/battle-engine-test-helper.ts",
+      "backend/src/services/battle-service.ts"
+    ],
+    "fixturePaths": [],
+    "issues": [
+      "test-authority inventory: state=disabled, reason=unsealed"
+    ],
+    "confidence": 0.82
+  },
+  {
+    "testPath": "backend/src/services/battle-consumer-wiring.test.ts",
+    "obligations": [
+      "battle perception consumer wiring",
+      "applies battle-bound action norms without exposing internal receipts",
+      "wires A and B only to their own frozen perception frame",
+      "grounds each agent in a frozen complete own profile",
+      "filters prologue and aftermath rendering anchors by narration focus",
+      "selects static narrator context by focus and only carries committed manifestations",
+      "wires canonical profile and scene projections without mutating the sheet",
+      "reveals counterpart name and condition only at the frame",
+      "gives legacy-seeded consumers the visible setup counterpart"
+    ],
+    "governingSources": [
+      {
+        "path": "docs/adr/0022-canonical-world-and-observer-cognition.md",
+        "clause": "Decision: canonical world is unique and observer cognition receives safe projections",
+        "status": "Accepted",
+        "why": "Applies to canonical/perception/public projection boundaries."
+      }
+    ],
+    "implementationPaths": [
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/battle-service.ts"
+    ],
+    "fixturePaths": [],
+    "issues": [
+      "test-authority inventory: state=disabled, reason=unsealed"
+    ],
+    "confidence": 0.82
+  },
+  {
+    "testPath": "backend/src/services/battle-create-idempotency.test.ts",
+    "obligations": [
+      "battle create idempotency",
+      "reads back one deterministic battle without repeating encounter LLM work"
+    ],
+    "governingSources": [
+      {
+        "path": "docs/adr/0003-revision-editable-assets-and-bind-battles.md",
+        "clause": "Decision: bind immutable asset revisions/snapshots at battle creation",
+        "status": "Accepted",
+        "why": "Applies to generation/digest binding and historical battle continuity."
+      }
+    ],
+    "implementationPaths": [
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../db.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../llm/fallback.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../llm/mock.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../repositories/dialogue-pipeline-settings.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../repositories/narration-styles.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../testing/historical-asset-generations.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../testing/historical-character-fixtures.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/battle-service.ts",
+      "backend/src/services/../db.ts",
+      "backend/src/services/../llm/fallback.ts",
+      "backend/src/services/../llm/mock.ts",
+      "backend/src/services/../repositories/dialogue-pipeline-settings.ts",
+      "backend/src/services/../repositories/narration-styles.ts",
+      "backend/src/services/../testing/historical-asset-generations.ts",
+      "backend/src/services/../testing/historical-character-fixtures.ts",
+      "backend/src/services/battle-service.ts"
+    ],
+    "fixturePaths": [
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../testing/historical-character-fixtures.ts"
+    ],
+    "issues": [
+      "test-authority inventory: state=disabled, reason=unsealed"
+    ],
+    "confidence": 0.7
+  },
+  {
+    "testPath": "backend/src/services/battle-participation-eligibility.test.ts",
+    "obligations": [
+      "shared battle participation eligibility",
+      "admits immutable V3 using only battle-mechanics@3",
+      "rejects legacy, missing and capability-blocked generations",
+      "rejects digest, asset identity and deletion violations"
+    ],
+    "governingSources": [
+      {
+        "path": "docs/adr/0003-revision-editable-assets-and-bind-battles.md",
+        "clause": "Decision: bind immutable asset revisions/snapshots at battle creation",
+        "status": "Accepted",
+        "why": "Applies to generation/digest binding and historical battle continuity."
+      }
+    ],
+    "implementationPaths": [
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../repositories/asset-generations.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/battle-participation-eligibility.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/character-authoring-service.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/conscious-agency.fixtures.ts",
+      "backend/src/services/../repositories/asset-generations.ts",
+      "backend/src/services/battle-participation-eligibility.ts",
+      "backend/src/services/character-authoring-service.ts",
+      "backend/src/services/conscious-agency.fixtures.ts"
+    ],
+    "fixturePaths": [
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/conscious-agency.fixtures.ts",
+      "backend/src/services/conscious-agency.fixtures.ts"
+    ],
+    "issues": [
+      "test-authority inventory: state=active, reason=current, ref=verification/vt110-eligibility-20260930"
+    ],
+    "confidence": 0.7
+  },
+  {
+    "testPath": "backend/src/services/battle-public.test.ts",
+    "obligations": [
+      "public battle semantic projection",
+      "projects only explicitly visible pending effects without raw deltas",
+      "exposes observable semantic state without mechanics or private agents",
+      "centers settled ratings independently for each visible track",
+      "keeps the committed state when a provider patch is invalid",
+      "commits structured semantic location changes through the world boundary",
+      "skips semantic mutation when the provider fails",
+      "commits an accepted environment proposal only through semantic and world state",
+      "drops a rejected environment proposal without a public fact or effect",
+      "rejects a structured environment operation outside the selected affordance",
+      "gives the happening provider one deterministic authored affordance",
+      "records an unavailable environment adjudication as skipped",
+      "freezes side-specific frames and keeps unknown source ids registry-private",
+      "projects engine cues normally after invalid sensory evidence is rejected",
+      "does not normalize an invalid prior perception registry",
+      "keeps only the latest transition and side-specific observations"
+    ],
+    "governingSources": [
+      {
+        "path": "docs/adr/0022-canonical-world-and-observer-cognition.md",
+        "clause": "Decision: canonical world is unique and observer cognition receives safe projections",
+        "status": "Accepted",
+        "why": "Applies to canonical/perception/public projection boundaries."
+      }
+    ],
+    "implementationPaths": [
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../llm/mock.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/battle-engine-test-helper.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/battle-service.ts",
+      "backend/src/services/../llm/mock.ts",
+      "backend/src/services/battle-engine-test-helper.ts"
+    ],
+    "fixturePaths": [],
+    "issues": [
+      "test-authority inventory: state=disabled, reason=unsealed"
+    ],
+    "confidence": 0.82
+  },
+  {
+    "testPath": "backend/src/services/battle-speech-wiring.test.ts",
+    "obligations": [
+      "character-authored public speech",
+      "persists internal character-rule receipts outside provider input",
+      "runs only the selected isolated character context",
+      "binds normal settings authority and isolated override provenance",
+      "persists narrator recognition only for subjects in the selected view",
+      "commits accepted character speech before narration and projects it to each frame",
+      "commits a grounded manifestation only after the expression realizes it",
+      "projects deterministic psyche and no-effect focus shadow without another model call",
+      "separates V2 Compact state from consumed utterance history",
+      "keeps matchup memory separate from compact battle-private memory",
+      "clears inherited compact private memory when prologue psyche is unavailable",
+      "records deep-psyche schema rejection as an application defect",
+      "records fulfilled speech with a rejected action as application rejection",
+      "uses initial perception for prologue decisions and reaction-only aftermath",
+      "applies the administrator history window only to character context",
+      "does not publish or remember an agent line that the world blocks",
+      "continues the eligible side when the other side has no self-directed action",
+      "carries committed utterances into the next agent perception without a provider",
+      "keeps committed speech within the perception limit and continues from the current registry",
+      "rejects expression commit atomically when current projection continuity is invalid",
+      "keeps character facts authoritative while accepting placement and punctuation",
+      "accepts narrator-authored display labels without changing canonical speech",
+      "keeps scene-grounded third-party speech without treating it as canonical A/B speech",
+      "keeps actual speech in private continuity regardless of public rendering",
+      "accepts a V2 utterance while rejecting only its invalid action",
+      "accepts actual speech but rejects an action outside the server list",
+      "records action proposal acceptance and targeted rejection reasons",
+      "writes reflect analysis into battle-volatile memory only",
+      "keeps valid state and speech when an OpenAI-compatible action proposal is invalid",
+      "overrides contradictory continuity with canonical self names",
+      "bounds invalid or out-of-range narrator placement",
+      "builds turn-limit input only from committed records",
+      "persists one canonical adjudication independent of presentation inputs",
+      "commits ordered combat and judgment receipts from frozen canonical facts",
+      "projects only factor identity and discards raw adjudication prose",
+      "projects draw and inconsistent winner facts without exposing internals",
+      "keeps only the exact outcome immutable across narration styles",
+      "inserts one immutable aftermath result and rejects invented outcomes or speech"
+    ],
+    "governingSources": [
+      {
+        "path": "docs/adr/0022-canonical-world-and-observer-cognition.md",
+        "clause": "Decision: canonical world is unique and observer cognition receives safe projections",
+        "status": "Accepted",
+        "why": "Applies to canonical/perception/public projection boundaries."
+      },
+      {
+        "path": "docs/adr/0025-expression-state-and-utterance-actuals.md",
+        "clause": "Verification: expression state is separate from utterance history; closed utterance contract",
+        "status": "Accepted",
+        "why": "Applies to speech commitment, repetition, and heard-evidence tests."
+      }
+    ],
+    "implementationPaths": [
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../llm/mock.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../llm/openai-compatible.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../llm/provider-errors.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/battle-service.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/dialogue-pipeline-activation.ts",
+      "backend/src/services/../llm/mock.ts",
+      "backend/src/services/../llm/provider-errors.ts",
+      "backend/src/services/dialogue-pipeline-activation.ts"
+    ],
+    "fixturePaths": [],
+    "issues": [
+      "test-authority inventory: state=disabled, reason=unsealed"
+    ],
+    "confidence": 0.82
+  },
+  {
+    "testPath": "backend/src/services/character-action-fallback.test.ts",
+    "obligations": [
+      "complete deterministic action fallback",
+      "does not synthesize a free attempt from a capability or borrow capability prose",
+      "does not invent reflection content when only the reflect capability is available",
+      "preserves attack and spacing preferences without spending finishers"
+    ],
+    "governingSources": [
+      {
+        "path": "docs/adr/0030-llm-assisted-character-semantic-migration.md",
+        "clause": "Decision: versioned semantic migration, bounded semantic-closure repair, preserve history",
+        "status": "Accepted",
+        "why": "Applies to migration/authoring lifecycle and preservation tests."
+      }
+    ],
+    "implementationPaths": [
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/character-action-fallback.ts",
+      "backend/src/services/character-action-fallback.ts"
+    ],
+    "fixturePaths": [],
+    "issues": [
+      "test-authority inventory: state=disabled, reason=unsealed"
+    ],
+    "confidence": 0.82
+  },
+  {
+    "testPath": "backend/src/services/character-agency-inventory.test.ts",
+    "obligations": [
+      "CA-00 existing agency boundary inventory (not model quality)",
+      "records <parameter>/<parameter> provider routing without network",
+      "retains the old unbound turn psyche call",
+      "F01/F02 projects personality and known relationship without changing the fallback victory objective",
+      "F03/F04 removes unavailable skill and out-of-range basic action from the actual decision input",
+      "F05 changes conscious ability knowledge but not deterministic reaction",
+      "F06 saves and reloads the old goal, rejects stale revisions, but still omits it from conscious input",
+      "F07 records the later action adapter input without attributing an engine redecision to this helper test",
+      "F08 preserves repeated speech and keeps the private goal out of public projection"
+    ],
+    "governingSources": [
+      {
+        "path": "docs/adr/0030-llm-assisted-character-semantic-migration.md",
+        "clause": "Decision: versioned semantic migration, bounded semantic-closure repair, preserve history",
+        "status": "Accepted",
+        "why": "Applies to migration/authoring lifecycle and preservation tests."
+      },
+      {
+        "path": "docs/adr/0027-unified-conscious-agency-and-psyche-boundary.md",
+        "clause": "Decision D1-D3: separate psyche reaction, conscious decision, engine result and speech",
+        "status": "Accepted",
+        "why": "Applies to conscious agency ownership and privacy boundaries."
+      }
+    ],
+    "implementationPaths": [
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../db.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../repositories/battles.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/battle-service.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/character-agency-inventory.fixtures.ts",
+      "backend/src/services/../db.ts",
+      "backend/src/services/../repositories/battles.ts",
+      "backend/src/services/battle-service.ts",
+      "backend/src/services/character-agency-inventory.fixtures.ts"
+    ],
+    "fixturePaths": [
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/character-agency-inventory.fixtures.ts",
+      "backend/src/services/character-agency-inventory.fixtures.ts"
+    ],
+    "issues": [
+      "test-authority inventory: state=disabled, reason=unsealed"
+    ],
+    "confidence": 0.82
+  },
+  {
+    "testPath": "backend/src/services/character-authoring-candidate.test.ts",
+    "obligations": [
+      "V3 persisted candidate owner review",
+      "preserves plain revision instructions and displays the frozen baseline for changed and unchanged fields",
+      "keeps the full fixed-create source and candidate disclosure"
+    ],
+    "governingSources": [
+      {
+        "path": "docs/adr/0030-llm-assisted-character-semantic-migration.md",
+        "clause": "Decision: versioned semantic migration, bounded semantic-closure repair, preserve history",
+        "status": "Accepted",
+        "why": "Applies to migration/authoring lifecycle and preservation tests."
+      }
+    ],
+    "implementationPaths": [
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../fixtures/neva-v3.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/character-authoring-candidate.ts",
+      "backend/src/services/../fixtures/neva-v3.ts",
+      "backend/src/services/character-authoring-candidate.ts"
+    ],
+    "fixturePaths": [
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../fixtures/neva-v3.ts",
+      "backend/src/services/../fixtures/neva-v3.ts"
+    ],
+    "issues": [
+      "test-authority inventory: state=active, reason=current, ref=verification/vt103-owner-review-20260930"
+    ],
+    "confidence": 0.82
+  },
+  {
+    "testPath": "backend/src/services/character-authoring-jobs.test.ts",
+    "obligations": [
+      "character authoring jobs",
+      "rejects ordinary V2 job registration before creating a queued attempt",
+      "does not invoke legacy character generation without a V3 authoring source",
+      "queues explicit V3 attempts and persists failure without legacy fallback or a candidate",
+      "does not claim a second job for the same character",
+      "delivers one exact job from the environment-global queue",
+      "rejects a stale worker after the exact job is reclaimed",
+      "re-arms only stale deliveries without an active lease",
+      "serializes concurrent exact claims against the environment-global cap",
+      "uses the same exact delivery contract for every authoring family"
+    ],
+    "governingSources": [
+      {
+        "path": "docs/adr/0030-llm-assisted-character-semantic-migration.md",
+        "clause": "Decision: versioned semantic migration, bounded semantic-closure repair, preserve history",
+        "status": "Accepted",
+        "why": "Applies to migration/authoring lifecycle and preservation tests."
+      }
+    ],
+    "implementationPaths": [
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../db.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../llm/mock.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../llm/types.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../repositories/battlefield-assets-v2.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../repositories/character-assets-v2.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../repositories/family-authoring-jobs.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../repositories/narration-style-assets-v2.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../testing/historical-character-fixtures.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/character-authoring-jobs.ts",
+      "backend/src/services/../db.ts",
+      "backend/src/services/../llm/mock.ts",
+      "backend/src/services/../llm/types.ts",
+      "backend/src/services/../repositories/battlefield-assets-v2.ts",
+      "backend/src/services/../repositories/character-assets-v2.ts",
+      "backend/src/services/../repositories/family-authoring-jobs.ts",
+      "backend/src/services/../repositories/narration-style-assets-v2.ts",
+      "backend/src/services/../testing/historical-character-fixtures.ts",
+      "backend/src/services/character-authoring-jobs.ts"
+    ],
+    "fixturePaths": [
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../testing/historical-character-fixtures.ts"
+    ],
+    "issues": [
+      "test-authority inventory: state=active, reason=current, ref=verification/vt104-character-authoring-jobs-20260930"
+    ],
+    "confidence": 0.82
+  },
+  {
+    "testPath": "backend/src/services/character-authoring-service.test.ts",
+    "obligations": [
+      "structured character authoring claim validation",
+      "runs after profile generation with only the public projection and candidate",
+      "does not produce an activatable envelope for an unsupported material claim",
+      "does not elevate first-stage prose principles into persisted action-norm authority",
+      "upgrades from the existing sheet and restores drifted mechanics",
+      "applies a self-review fill and fails closed when checks still fail",
+      "lastAuthoringAdjustment",
+      "reads the last 追加調整 suffix"
+    ],
+    "governingSources": [
+      {
+        "path": "docs/adr/0030-llm-assisted-character-semantic-migration.md",
+        "clause": "Decision: versioned semantic migration, bounded semantic-closure repair, preserve history",
+        "status": "Accepted",
+        "why": "Applies to migration/authoring lifecycle and preservation tests."
+      }
+    ],
+    "implementationPaths": [
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../llm/mock.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../llm/types.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/character-authoring-service.ts",
+      "backend/src/services/../llm/mock.ts",
+      "backend/src/services/../llm/types.ts",
+      "backend/src/services/character-authoring-service.ts"
+    ],
+    "fixturePaths": [],
+    "issues": [
+      "test-authority inventory: state=disabled, reason=unsealed"
+    ],
+    "confidence": 0.82
+  },
+  {
+    "testPath": "backend/src/services/character-focused-authoring.test.ts",
+    "obligations": [
+      "focused authoring through the real owner command and worker",
+      "generates from source through HTTP, exposes the stored owner candidate, and does not activate it",
+      "routes a create HTTP command through bounded focused recovery and persists failure without legacy calls",
+      "routes an appearance revision from the real owner HTTP command to a non-current review candidate",
+      "does not generate a candidate for ambiguous, multi-area, or invalid scope",
+      "carries changed-role migration meaning through the real worker into a review candidate",
+      "routes an exact ready V2 upgrade command into focused migration without activating it",
+      "lets the owner accept the exact focused migration candidate for Stage-scoped V3 selection",
+      "rolls back V3 append when the frozen source pointer drifts before owner acceptance",
+      "carries an optional legacy meaning deferral through the real upgrade route",
+      "retries a failed owner command from the same source with a new attempt and idempotent replay",
+      "persists source-drift failure in both lifecycles before any dispatch"
+    ],
+    "governingSources": [
+      {
+        "path": "docs/adr/0030-llm-assisted-character-semantic-migration.md",
+        "clause": "Decision: versioned semantic migration, bounded semantic-closure repair, preserve history",
+        "status": "Accepted",
+        "why": "Applies to migration/authoring lifecycle and preservation tests."
+      },
+      {
+        "path": "docs/adr/0032-separate-authoring-time-boundaries.md",
+        "clause": "Decision: separate transport/worker/semantic time boundaries; retain bounded call/cost controls",
+        "status": "Accepted",
+        "why": "Applies to semantic-authoring execution policy and lifecycle controls."
+      }
+    ],
+    "implementationPaths": [
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../db.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../fixtures/neva-v3.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../llm/mock.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../llm/semantic-authoring-provider.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../repositories/character-assets-v2.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../repositories/character-generation-reader.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../repositories/semantic-authoring.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../routes.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../testing/historical-asset-generations.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../testing/historical-character-fixtures.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/character-authoring-jobs.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/character-authoring-service.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/semantic-authoring/adapters/character-v3.ts",
+      "backend/src/services/../db.ts",
+      "backend/src/services/../fixtures/neva-v3.ts",
+      "backend/src/services/../llm/mock.ts",
+      "backend/src/services/../llm/semantic-authoring-provider.ts",
+      "backend/src/services/../repositories/character-assets-v2.ts",
+      "backend/src/services/../repositories/character-generation-reader.ts",
+      "backend/src/services/../repositories/semantic-authoring.ts",
+      "backend/src/services/../routes.ts",
+      "backend/src/services/../testing/historical-asset-generations.ts",
+      "backend/src/services/../testing/historical-character-fixtures.ts",
+      "backend/src/services/character-authoring-jobs.ts",
+      "backend/src/services/character-authoring-service.ts",
+      "backend/src/services/character-focused-authoring.ts",
+      "backend/src/services/semantic-authoring/adapters/character-v3.ts"
+    ],
+    "fixturePaths": [
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../fixtures/neva-v3.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../testing/historical-character-fixtures.ts"
+    ],
+    "issues": [
+      "test-authority inventory: state=active, reason=current, ref=verification/character-focused-authoring-current-20260925"
+    ],
+    "confidence": 0.82
+  },
+  {
+    "testPath": "backend/src/services/character-historical-view.test.ts",
+    "obligations": [
+      "historical character view",
+      "reads validated frozen profiles without interpreting obsolete compiler fields",
+      "rejects malformed stored profiles without supplying current-character replacements",
+      "returns the old V2 snapshot despite a later current migration",
+      "rejects missing manifests and unrelated characters",
+      "rejects mismatched binding and snapshot identities"
+    ],
+    "governingSources": [
+      {
+        "path": "docs/adr/0030-llm-assisted-character-semantic-migration.md",
+        "clause": "Decision: versioned semantic migration, bounded semantic-closure repair, preserve history",
+        "status": "Accepted",
+        "why": "Applies to migration/authoring lifecycle and preservation tests."
+      },
+      {
+        "path": "docs/adr/0003-revision-editable-assets-and-bind-battles.md",
+        "clause": "Decision: bind immutable asset revisions/snapshots at battle creation",
+        "status": "Accepted",
+        "why": "Applies to generation/digest binding and historical battle continuity."
+      }
+    ],
+    "implementationPaths": [
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/character-historical-view.ts",
+      "backend/src/services/character-historical-view.ts"
+    ],
+    "fixturePaths": [],
+    "issues": [
+      "test-authority inventory: state=active, reason=current, ref=verification/character-historical-view-20261002"
+    ],
+    "confidence": 0.82
+  },
+  {
+    "testPath": "backend/src/services/character-migration-diagnostics.test.ts",
+    "obligations": [
+      "semantic migration repair diagnostics",
+      "reconstructs historical v2 initial payload and final draft exactly",
+      "retains all path-valid real findings without endorsing their semantic truth",
+      "permits complete-envelope diagnostics without permitting metadata writes",
+      "keeps structurally valid findings and never turns malformed review into approval",
+      "surfaces V2 keys in the rejected real replacement without applying it",
+      "preserves displaced source without retirement and strictly rejects V2 replacement shape",
+      "supplies separate review scope and explicit unknown availability only on v3",
+      "accepts a strict source-supported mixed migration with archival and no retirement"
+    ],
+    "governingSources": [
+      {
+        "path": "docs/adr/0030-llm-assisted-character-semantic-migration.md",
+        "clause": "Decision: versioned semantic migration, bounded semantic-closure repair, preserve history",
+        "status": "Accepted",
+        "why": "Applies to migration/authoring lifecycle and preservation tests."
+      }
+    ],
+    "implementationPaths": [
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/character-migration-context.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/character-migration-diagnostics.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/character-migration-merge.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/character-migration-prompts.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/character-migration-validation.ts",
+      "backend/src/services/character-migration-diagnostics.ts",
+      "backend/src/services/character-migration-prompts.ts",
+      "backend/src/services/character-migration-validation.ts"
+    ],
+    "fixturePaths": [],
+    "issues": [
+      "test-authority inventory: state=disabled, reason=source_diverged, ref=verification/character-migration-diagnostics",
+      "Existing verification reference is not current authority for this source; refresh source-aligned evidence before sealing."
+    ],
+    "confidence": 0.82
+  },
+  {
+    "testPath": "backend/src/services/character-portrait-v3.test.ts",
+    "obligations": [
+      "V3 portrait owner lifecycle",
+      "generates an immutable V3 revision, keeps definition/profile and replays without provider work",
+      "rejects stale and non-owner activation without moving the pointer, then switches only the portrait",
+      "rejects active authoring and provider failure without appending a generation"
+    ],
+    "governingSources": [
+      {
+        "path": "docs/adr/0030-llm-assisted-character-semantic-migration.md",
+        "clause": "Decision: versioned semantic migration, bounded semantic-closure repair, preserve history",
+        "status": "Accepted",
+        "why": "Applies to migration/authoring lifecycle and preservation tests."
+      },
+      {
+        "path": "docs/adr/0003-revision-editable-assets-and-bind-battles.md",
+        "clause": "Decision: bind immutable asset revisions/snapshots at battle creation",
+        "status": "Accepted",
+        "why": "Applies to generation/digest binding and historical battle continuity."
+      }
+    ],
+    "implementationPaths": [
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../db.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../fixtures/neva-v3.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../llm/mock.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../repositories/asset-generations.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../repositories/character-assets-v2.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../repositories/characters.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../repositories/local-v3-trial-characters.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../routes.ts",
+      "backend/src/services/../db.ts",
+      "backend/src/services/../fixtures/neva-v3.ts",
+      "backend/src/services/../llm/mock.ts",
+      "backend/src/services/../repositories/asset-generations.ts",
+      "backend/src/services/../repositories/character-assets-v2.ts",
+      "backend/src/services/../repositories/characters.ts",
+      "backend/src/services/../repositories/local-v3-trial-characters.ts",
+      "backend/src/services/../routes.ts"
+    ],
+    "fixturePaths": [
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../fixtures/neva-v3.ts"
+    ],
+    "issues": [
+      "test-authority inventory: state=disabled, reason=unsealed"
+    ],
+    "confidence": 0.82
+  },
+  {
+    "testPath": "backend/src/services/character-semantic-migration.test.ts",
+    "obligations": [
+      "B5 bounded semantic migration",
+      "turns every retained paid V3 response into an executable V4 failure corpus",
+      "v3 carries valid review feedback through bounded repair and replays without calls",
+      "v4 preserves an uncorroborated review claim without letting it drive repair",
+      "v4 keeps review-expanded closure while a server finding drives repair",
+      "versions corrected grammar without changing historical v1 payload construction",
+      "splits a selectorless principle and fallback, preserves history and replays without calls",
+      "repairs schema-valid semantic dependants and reruns the complete independent review",
+      "repairs a structural error even when the reviewer incorrectly says consistent",
+      "keeps valid operations when a sibling violates the response schema",
+      "rejects non-ready/missing-state input before requesting the provider",
+      "stops after two failed repairs and exactly six distinct receipted requests",
+      "does not resend a request with an ambiguous transport outcome",
+      "records explicit provider failure/accounting and does not retry it automatically",
+      "routes malformed review output into bounded repair rather than treating it as approval",
+      "reports unavailable required compilers without inventing support or paying for repairs",
+      "B5 structural operation boundary",
+      "rejects invented IDs, mechanics, unsafe targets and concealed source removal",
+      "versions pre-apply fragment rejection without changing consumed V3 merge semantics",
+      "supports verbatim copy/move, explicit retirement and optional deferred values",
+      "does not allow private input to widen public text or consumer access",
+      "v4 carries exact public text per leaf without treating private awareness as a grant",
+      "v4 detects missing executable norms and cross-norm repair provenance",
+      "synthesizes new private structured content with server IDs and explicit model-created provenance",
+      "does not let a deferred field evade its required consumers",
+      "supports move/retire at nullable slots without retaining an active duplicate",
+      "resolves name/support references instead of treating arbitrary strings as proof"
+    ],
+    "governingSources": [
+      {
+        "path": "docs/adr/0030-llm-assisted-character-semantic-migration.md",
+        "clause": "Decision: versioned semantic migration, bounded semantic-closure repair, preserve history",
+        "status": "Accepted",
+        "why": "Applies to migration/authoring lifecycle and preservation tests."
+      }
+    ],
+    "implementationPaths": [
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../db.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../llm/provider-response-schema.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../repositories/character-semantic-migration.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../testing/historical-asset-generations.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/character-authoring-service.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/character-migration-context.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/character-migration-merge.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/character-migration-prompts.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/character-migration-requests.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/character-migration-validation.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/character-semantic-migration.ts",
+      "backend/src/services/../db.ts",
+      "backend/src/services/../llm/provider-response-schema.ts",
+      "backend/src/services/../repositories/character-semantic-migration.ts",
+      "backend/src/services/../testing/historical-asset-generations.ts",
+      "backend/src/services/character-authoring-service.ts",
+      "backend/src/services/character-migration-context.ts",
+      "backend/src/services/character-migration-merge.ts",
+      "backend/src/services/character-migration-prompts.ts",
+      "backend/src/services/character-migration-requests.ts",
+      "backend/src/services/character-migration-validation.ts",
+      "backend/src/services/character-semantic-migration.ts"
+    ],
+    "fixturePaths": [],
+    "issues": [
+      "test-authority inventory: state=disabled, reason=source_diverged, ref=verification/character-semantic-migration-generation",
+      "Existing verification reference is not current authority for this source; refresh source-aligned evidence before sealing."
+    ],
+    "confidence": 0.82
+  },
+  {
+    "testPath": "backend/src/services/character-update-policy.test.ts",
+    "obligations": [
+      "ordinary character write version admission",
+      "rejects an old generation even if its row is otherwise ready",
+      "rejects an old candidate before it can replace a current V3 generation",
+      "admits a valid V3 target and candidate"
+    ],
+    "governingSources": [
+      {
+        "path": "docs/adr/0030-llm-assisted-character-semantic-migration.md",
+        "clause": "Decision: versioned semantic migration, bounded semantic-closure repair, preserve history",
+        "status": "Accepted",
+        "why": "Applies to migration/authoring lifecycle and preservation tests."
+      },
+      {
+        "path": "docs/adr/0003-revision-editable-assets-and-bind-battles.md",
+        "clause": "Decision: bind immutable asset revisions/snapshots at battle creation",
+        "status": "Accepted",
+        "why": "Applies to generation/digest binding and historical battle continuity."
+      }
+    ],
+    "implementationPaths": [
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../fixtures/neva-v3.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../testing/historical-asset-generations.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/character-update-policy.ts",
+      "backend/src/services/../fixtures/neva-v3.ts",
+      "backend/src/services/../testing/historical-asset-generations.ts",
+      "backend/src/services/character-update-policy.ts"
+    ],
+    "fixturePaths": [
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../fixtures/neva-v3.ts",
+      "backend/src/services/../fixtures/neva-v3.ts"
+    ],
+    "issues": [
+      "test-authority inventory: state=active, reason=current, ref=verification/character-v3-update-policy-20261002"
+    ],
+    "confidence": 0.82
+  },
+  {
+    "testPath": "backend/src/services/character-v2-update-boundary.test.ts",
+    "obligations": [
+      "V2 display without ordinary writes",
+      "serves the bound old profile despite invalid executable battle data and retains access controls",
+      "keeps current old-version display available",
+      "does not advertise unavailable migration or create an attempt when it is requested",
+      "rejects every ordinary owner mutation before creating attempts or changing the row",
+      "rejects programmatic V2 creation and updates without changing stored rows",
+      "retires dormant V2 provider generation before touching the provider or reporting work",
+      "rejects V2 portrait writes and keeps full restore unavailable",
+      "rejects legacy generation writes through the real generic repository",
+      "keeps historical fixture writes outside the runtime dependency graph",
+      "preserves the legacy definition when saving bound battle accounting facts",
+      "does not fall back to V2 creation or migration when no V3 authoring provider exists",
+      "rejects confirmation of a previously stored V2 candidate without changing its generation",
+      "retains direct validated V3 candidate preparation and activation",
+      "keeps a bound V2 profile independent of the owner"
+    ],
+    "governingSources": [
+      {
+        "path": "docs/adr/0030-llm-assisted-character-semantic-migration.md",
+        "clause": "Decision: versioned semantic migration, bounded semantic-closure repair, preserve history",
+        "status": "Accepted",
+        "why": "Applies to migration/authoring lifecycle and preservation tests."
+      },
+      {
+        "path": "docs/adr/0003-revision-editable-assets-and-bind-battles.md",
+        "clause": "Decision: bind immutable asset revisions/snapshots at battle creation",
+        "status": "Accepted",
+        "why": "Applies to generation/digest binding and historical battle continuity."
+      }
+    ],
+    "implementationPaths": [
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../db.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../fixtures/neva-v3.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../llm/mock.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../repositories/asset-generations.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../repositories/character-assets-v2.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../repositories/character-battle-accounting.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../repositories/characters.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../repositories/local-v3-trial-characters.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../routes.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../testing/historical-character-fixtures.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/character-authoring-service.ts",
+      "backend/src/services/../db.ts",
+      "backend/src/services/../fixtures/neva-v3.ts",
+      "backend/src/services/../llm/mock.ts",
+      "backend/src/services/../repositories/asset-generations.ts",
+      "backend/src/services/../repositories/character-assets-v2.ts",
+      "backend/src/services/../repositories/character-battle-accounting.ts",
+      "backend/src/services/../repositories/characters.ts",
+      "backend/src/services/../repositories/local-v3-trial-characters.ts",
+      "backend/src/services/../routes.ts",
+      "backend/src/services/../testing/historical-character-fixtures.ts",
+      "backend/src/services/character-authoring-service.ts"
+    ],
+    "fixturePaths": [
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../fixtures/neva-v3.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../testing/historical-character-fixtures.ts"
+    ],
+    "issues": [
+      "test-authority inventory: state=disabled, reason=source_diverged, ref=verification/character-v2-write-retirement-20261002",
+      "Existing verification reference is not current authority for this source; refresh source-aligned evidence before sealing."
+    ],
+    "confidence": 0.82
+  },
+  {
+    "testPath": "backend/src/services/character-v3-profile-adapter.test.ts",
+    "obligations": [
+      "preserves restrictive and preference norm values through the V3 profile adapter",
+      "keeps previous profile facts exact when guidance has no explicit public permission",
+      "projects only explicitly public unconditional guidance statements",
+      "accepts a real V3 candidate with a guidance-backed unchanged public statement"
+    ],
+    "governingSources": [
+      {
+        "path": "docs/adr/0030-llm-assisted-character-semantic-migration.md",
+        "clause": "Decision: versioned semantic migration, bounded semantic-closure repair, preserve history",
+        "status": "Accepted",
+        "why": "Applies to migration/authoring lifecycle and preservation tests."
+      },
+      {
+        "path": "docs/adr/0003-revision-editable-assets-and-bind-battles.md",
+        "clause": "Decision: bind immutable asset revisions/snapshots at battle creation",
+        "status": "Accepted",
+        "why": "Applies to generation/digest binding and historical battle continuity."
+      }
+    ],
+    "implementationPaths": [
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../fixtures/neva-v3.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../repositories/asset-generations.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/character-authoring-candidate.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/character-v3-profile-adapter.ts",
+      "backend/src/services/../fixtures/neva-v3.ts",
+      "backend/src/services/../repositories/asset-generations.ts",
+      "backend/src/services/character-authoring-candidate.ts",
+      "backend/src/services/character-v3-profile-adapter.ts"
+    ],
+    "fixturePaths": [
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../fixtures/neva-v3.ts",
+      "backend/src/services/../fixtures/neva-v3.ts"
+    ],
+    "issues": [
+      "test-authority inventory: state=disabled, reason=unsealed"
+    ],
+    "confidence": 0.82
+  },
+  {
+    "testPath": "backend/src/services/conscious-agency-binding.test.ts",
+    "obligations": [
+      "ADR-0028 immutable V3 tuple",
+      "binds existing character generations without author-origin metadata",
+      "requires complete compiler inputs and matching bound generation",
+      "rejects missing/mixed dialogue generation and reaction policy",
+      "keeps override identity paired and rejects legacy override snapshots",
+      "supports explicit complete V3 without changing the default"
+    ],
+    "governingSources": [
+      {
+        "path": "docs/adr/0027-unified-conscious-agency-and-psyche-boundary.md",
+        "clause": "Decision D1-D3: separate psyche reaction, conscious decision, engine result and speech",
+        "status": "Accepted",
+        "why": "Applies to conscious agency ownership and privacy boundaries."
+      }
+    ],
+    "implementationPaths": [
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/character-agency-inventory.fixtures.ts",
+      "backend/src/services/character-agency-inventory.fixtures.ts"
+    ],
+    "fixturePaths": [
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/character-agency-inventory.fixtures.ts",
+      "backend/src/services/character-agency-inventory.fixtures.ts"
+    ],
+    "issues": [
+      "test-authority inventory: state=disabled, reason=unsealed"
+    ],
+    "confidence": 0.82
+  },
+  {
+    "testPath": "backend/src/services/conscious-agency-persistence.test.ts",
+    "obligations": [
+      "ADR-0028 private agency state persistence",
+      "keeps retired legacy characters blocked from new battle creation",
+      "runs V3 service acceptance, SQLite reload, second judgment and stale-save rejection together",
+      "persists initial and second accepted decisions via real SQLite and rejects stale CAS"
+    ],
+    "governingSources": [
+      {
+        "path": "docs/adr/0027-unified-conscious-agency-and-psyche-boundary.md",
+        "clause": "Decision D1-D3: separate psyche reaction, conscious decision, engine result and speech",
+        "status": "Accepted",
+        "why": "Applies to conscious agency ownership and privacy boundaries."
+      },
+      {
+        "path": "docs/adr/0003-revision-editable-assets-and-bind-battles.md",
+        "clause": "Decision: bind immutable asset revisions/snapshots at battle creation",
+        "status": "Accepted",
+        "why": "Applies to generation/digest binding and historical battle continuity."
+      }
+    ],
+    "implementationPaths": [
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../db.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../llm/mock.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../repositories/battles.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../repositories/dialogue-pipeline-settings.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../repositories/narration-styles.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../testing/historical-character-fixtures.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/battle-service.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/character-agency-inventory.fixtures.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/conscious-agency.fixtures.ts",
+      "backend/src/services/../db.ts",
+      "backend/src/services/../llm/mock.ts",
+      "backend/src/services/../repositories/battles.ts",
+      "backend/src/services/../repositories/dialogue-pipeline-settings.ts",
+      "backend/src/services/../repositories/narration-styles.ts",
+      "backend/src/services/../testing/historical-character-fixtures.ts",
+      "backend/src/services/battle-service.ts",
+      "backend/src/services/character-agency-inventory.fixtures.ts",
+      "backend/src/services/conscious-agency.fixtures.ts"
+    ],
+    "fixturePaths": [
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../testing/historical-character-fixtures.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/character-agency-inventory.fixtures.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/conscious-agency.fixtures.ts"
+    ],
+    "issues": [
+      "test-authority inventory: state=disabled, reason=unsealed"
+    ],
+    "confidence": 0.82
+  },
+  {
+    "testPath": "backend/src/services/conscious-agency-runtime.test.ts",
+    "obligations": [
+      "ADR-0028 V3 runtime routing (network replaced, not model-quality evidence)",
+      "<parameter>: one conscious request, no psyche request, no old free-text input",
+      "passes the accepted prior decision to the next call, permits repeated speech, and keeps private goal out of public DTO",
+      "retains valid speech independently of rejected goal/intent/action",
+      "rejects tuple drift before dispatch and never silently falls back",
+      "disabled and missing observation do not dispatch, missing input holds reaction",
+      "later reuses agency/reaction without ticking and excludes private/extra envelope keys",
+      "rejects V3 legacy override before activation"
+    ],
+    "governingSources": [
+      {
+        "path": "docs/adr/0027-unified-conscious-agency-and-psyche-boundary.md",
+        "clause": "Decision D1-D3: separate psyche reaction, conscious decision, engine result and speech",
+        "status": "Accepted",
+        "why": "Applies to conscious agency ownership and privacy boundaries."
+      }
+    ],
+    "implementationPaths": [
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../llm/conscious-agency.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../llm/openai-compatible.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../llm/types.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/battle-service.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/conscious-agency.fixtures.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/dialogue-pipeline-activation.ts",
+      "backend/src/services/../llm/conscious-agency.ts",
+      "backend/src/services/../llm/openai-compatible.ts",
+      "backend/src/services/../llm/types.ts",
+      "backend/src/services/battle-service.ts",
+      "backend/src/services/conscious-agency.fixtures.ts",
+      "backend/src/services/dialogue-pipeline-activation.ts"
+    ],
+    "fixturePaths": [
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/conscious-agency.fixtures.ts",
+      "backend/src/services/conscious-agency.fixtures.ts"
+    ],
+    "issues": [
+      "test-authority inventory: state=disabled, reason=unsealed"
+    ],
+    "confidence": 0.82
+  },
+  {
+    "testPath": "backend/src/services/cutover-admission.test.ts",
+    "obligations": [
+      "fails closed before initialization and prevents background callbacks without writes",
+      "holds an admitted confirmation until completion and retains failed work for reconciliation"
+    ],
+    "governingSources": [
+      {
+        "path": "docs/adr/0039-v3-battle-lifecycle-and-cutover.md",
+        "clause": "Decision: V3 lifecycle/cutover gates and closed legacy routes",
+        "status": "Accepted",
+        "why": "Applies to cutover admission, background dispatch and HTTP closure tests."
+      }
+    ],
+    "implementationPaths": [
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../db.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../repositories/cutover-control.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/cutover-admission.ts",
+      "backend/src/services/../db.ts",
+      "backend/src/services/../repositories/cutover-control.ts",
+      "backend/src/services/cutover-admission.ts"
+    ],
+    "fixturePaths": [],
+    "issues": [
+      "test-authority inventory: state=active, reason=current, ref=verification/vt104-cutover-admission-20260930"
+    ],
+    "confidence": 0.82
+  },
+  {
+    "testPath": "backend/src/services/cutover-background-dispatch.test.ts",
+    "obligations": [
+      "configured cutover background closure",
+      "keeps closed dispatch, enqueue, wake, and workers free of side effects"
+    ],
+    "governingSources": [
+      {
+        "path": "docs/adr/0039-v3-battle-lifecycle-and-cutover.md",
+        "clause": "Decision: V3 lifecycle/cutover gates and closed legacy routes",
+        "status": "Accepted",
+        "why": "Applies to cutover admission, background dispatch and HTTP closure tests."
+      }
+    ],
+    "implementationPaths": [
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../config.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../db.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../llm/mock.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../repositories/cutover-control.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/authoring-task-dispatch.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/character-authoring-jobs.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/narration-task-dispatch.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/narration-worker.ts",
+      "backend/src/services/../config.ts",
+      "backend/src/services/../db.ts",
+      "backend/src/services/../llm/mock.ts",
+      "backend/src/services/../repositories/cutover-control.ts",
+      "backend/src/services/authoring-task-dispatch.ts",
+      "backend/src/services/character-authoring-jobs.ts",
+      "backend/src/services/narration-task-dispatch.ts",
+      "backend/src/services/narration-worker.ts"
+    ],
+    "fixturePaths": [],
+    "issues": [
+      "test-authority inventory: state=active, reason=current, ref=verification/vt104-cutover-background-dispatch-20260930"
+    ],
+    "confidence": 0.82
+  },
+  {
+    "testPath": "backend/src/services/cutover-http-admission.test.ts",
+    "obligations": [
+      "only the exact character review and confirm paths are review surfaces",
+      "closed confirm admission binds owner, attempt, path, and candidate digest"
+    ],
+    "governingSources": [
+      {
+        "path": "docs/adr/0039-v3-battle-lifecycle-and-cutover.md",
+        "clause": "Decision: V3 lifecycle/cutover gates and closed legacy routes",
+        "status": "Accepted",
+        "why": "Applies to cutover admission, background dispatch and HTTP closure tests."
+      }
+    ],
+    "implementationPaths": [
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../repositories/cutover-control.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/cutover-http-admission.ts",
+      "backend/src/services/../repositories/cutover-control.ts",
+      "backend/src/services/cutover-http-admission.ts"
+    ],
+    "fixturePaths": [],
+    "issues": [
+      "test-authority inventory: state=active, reason=current, ref=verification/vt104-cutover-http-admission-20260930"
+    ],
+    "confidence": 0.82
+  },
+  {
+    "testPath": "backend/src/services/cutover-stage-smoke.test.ts",
+    "obligations": [
+      "blocks closed, admits one exact trial smoke, and rejects replay and changed resource",
+      "does not send above the per-step limit and keeps failed execution indeterminate",
+      "cannot settle skipped readback or a caught uncertain external failure",
+      "retains narration fencing for arbitrary background work",
+      "verifies an existing email account without a provision or asset API callback",
+      "keeps a wrong authentication subject unresolved instead of accepting its mapping",
+      "reads only the exact R2 object and requires its public route to succeed",
+      "checks same-revision health and rejects a healthy response from another revision",
+      "requires the authenticated ownership response to match the fixed owner",
+      "treats unauthenticated 401/403 as direct protection and rejects a generic 503"
+    ],
+    "governingSources": [
+      {
+        "path": "docs/adr/0039-v3-battle-lifecycle-and-cutover.md",
+        "clause": "Decision: V3 lifecycle/cutover gates and closed legacy routes",
+        "status": "Accepted",
+        "why": "Applies to cutover admission, background dispatch and HTTP closure tests."
+      }
+    ],
+    "implementationPaths": [
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../db.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../repositories/cutover-control.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/cutover-admission.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/cutover-stage-smoke.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/stage-auth-smoke.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/stage-http-smoke.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/stage-r2-smoke.ts",
+      "backend/src/services/../db.ts",
+      "backend/src/services/../repositories/cutover-control.ts",
+      "backend/src/services/cutover-admission.ts",
+      "backend/src/services/cutover-stage-smoke.ts",
+      "backend/src/services/stage-auth-smoke.ts",
+      "backend/src/services/stage-http-smoke.ts",
+      "backend/src/services/stage-r2-smoke.ts"
+    ],
+    "fixturePaths": [],
+    "issues": [
+      "test-authority inventory: state=active, reason=current, ref=verification/vt104-stage-smoke-20260930"
+    ],
+    "confidence": 0.82
+  },
+  {
+    "testPath": "backend/src/services/distributed-guard.test.ts",
+    "obligations": [
+      "multi-instance battle leases",
+      "allows one owner at a time and permits takeover after expiry",
+      "rejects a checkpoint write after the lease fencing token changes",
+      "shared idempotency records",
+      "replays a completed response and rejects key reuse with another request"
+    ],
+    "governingSources": [
+      {
+        "path": "docs/adr/0007-provider-operation-ledger-and-observation-ceilings.md",
+        "clause": "Decision: distinguish logical calls, physical attempts, retries and unknown outcomes; enforce ceilings",
+        "status": "Accepted",
+        "why": "Applies to reservations, retries, unknown completion and provider ledger tests."
+      }
+    ],
+    "implementationPaths": [
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../db.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../repositories/battles.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/distributed-guard.ts",
+      "backend/src/services/../db.ts",
+      "backend/src/services/../repositories/battles.ts",
+      "backend/src/services/distributed-guard.ts"
+    ],
+    "fixturePaths": [],
+    "issues": [
+      "test-authority inventory: state=disabled, reason=unsealed"
+    ],
+    "confidence": 0.7
+  },
+  {
+    "testPath": "backend/src/services/e2e-session.test.ts",
+    "obligations": [
+      "e2e session mint",
+      "allows only administrators and developers to mint",
+      "rotates a new password, keeps the fixture identity, and writes a non-secret audit",
+      "fails closed when the fixture application user is missing"
+    ],
+    "governingSources": [],
+    "implementationPaths": [
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../db.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../e2e-observer.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/e2e-session.ts",
+      "backend/src/services/../db.ts",
+      "backend/src/services/../e2e-observer.ts",
+      "backend/src/services/e2e-session.ts"
+    ],
+    "fixturePaths": [],
+    "issues": [
+      "test-authority inventory: state=disabled, reason=unsealed",
+      "No specific Accepted ADR was identified from the current test contract; preserve this authority as unknown until an upstream requirement/design is linked."
+    ],
+    "confidence": 0.7
+  },
+  {
+    "testPath": "backend/src/services/free-action-service.test.ts",
+    "obligations": [
+      "free action promotion and adjudication",
+      "classifies a malformed adjudication as an application schema failure",
+      "persists provider failure subtype without changing canonical state",
+      "adds no adjudication call for standard turns and one batched call for free actions",
+      "can apply a plausible direct action to the canonical counterpart",
+      "fails the same ordinary grab when the canonical counterpart is far away",
+      "does not create an object when a believed stone has no canonical root",
+      "promotes the real ball while preserving the actor",
+      "promotes a profile hat and leaves it in canonical scene state after removal",
+      "can promote on a failed manipulation and concretize the same entity later"
+    ],
+    "governingSources": [
+      {
+        "path": "docs/adr/0022-canonical-world-and-observer-cognition.md",
+        "clause": "Decision: canonical world is unique and observer cognition receives safe projections",
+        "status": "Accepted",
+        "why": "Applies to canonical/perception/public projection boundaries."
+      }
+    ],
+    "implementationPaths": [
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../llm/mock.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/battle-engine-test-helper.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/free-action-service.ts",
+      "backend/src/services/../llm/mock.ts",
+      "backend/src/services/battle-engine-test-helper.ts",
+      "backend/src/services/free-action-service.ts"
+    ],
+    "fixturePaths": [],
+    "issues": [
+      "test-authority inventory: state=disabled, reason=unsealed"
+    ],
+    "confidence": 0.82
+  },
+  {
+    "testPath": "backend/src/services/image-archive.test.ts",
+    "obligations": [
+      "character portrait archive helpers",
+      "archives active primary file into the previous slot",
+      "resolveMediaFile pattern accepts .prev.jpg names"
+    ],
+    "governingSources": [],
+    "implementationPaths": [
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/image-service.ts",
+      "backend/src/services/image-service.ts"
+    ],
+    "fixturePaths": [],
+    "issues": [
+      "test-authority inventory: state=disabled, reason=unsealed",
+      "No specific Accepted ADR was identified from the current test contract; preserve this authority as unknown until an upstream requirement/design is linked."
+    ],
+    "confidence": 0.7
+  },
+  {
+    "testPath": "backend/src/services/image-service.test.ts",
+    "obligations": [
+      "battlefield image prompts",
+      "synthesizes the visual field state without combat coefficients",
+      "character image failure",
+      "uses only the V2 appearance brief and explicit visual adjustment",
+      "builds an immutable local URL for a V2 media revision",
+      "rejects instead of returning a persisted placeholder URL"
+    ],
+    "governingSources": [],
+    "implementationPaths": [
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../image/index.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/image-service.ts",
+      "backend/src/services/../image/index.ts",
+      "backend/src/services/image-service.ts"
+    ],
+    "fixturePaths": [],
+    "issues": [
+      "test-authority inventory: state=disabled, reason=unsealed",
+      "No specific Accepted ADR was identified from the current test contract; preserve this authority as unknown until an upstream requirement/design is linked."
+    ],
+    "confidence": 0.7
+  },
+  {
+    "testPath": "backend/src/services/internal-observability.test.ts",
+    "obligations": [
+      "internal battle observability",
+      "lists retained battles and exposes raw and canonical turn data"
+    ],
+    "governingSources": [],
+    "implementationPaths": [
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../db.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/internal-observability.ts",
+      "backend/src/services/../db.ts",
+      "backend/src/services/internal-observability.ts"
+    ],
+    "fixturePaths": [],
+    "issues": [
+      "test-authority inventory: state=disabled, reason=unsealed",
+      "No specific Accepted ADR was identified from the current test contract; preserve this authority as unknown until an upstream requirement/design is linked."
+    ],
+    "confidence": 0.7
+  },
+  {
+    "testPath": "backend/src/services/llm-usage-cost-report.test.ts",
+    "obligations": [
+      "estimated usage cost report",
+      "splits cached input and does not add reasoning twice",
+      "retains known output subtotal while identifying unknown usage and missing prices",
+      "reports known token subtotals and unknown counts without requiring a price file",
+      "rejects impossible overlapping categories and reprices without mutating observations"
+    ],
+    "governingSources": [
+      {
+        "path": "docs/adr/0051-observed-llm-usage-accounting.md",
+        "clause": "Decision: record every physical observation; preserve missing usage/prices as unknown",
+        "status": "Accepted",
+        "why": "Applies to actual provider usage and price uncertainty."
+      }
+    ],
+    "implementationPaths": [
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../repositories/llm-usage.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/llm-usage-cost-report.ts",
+      "backend/src/services/../repositories/llm-usage.ts",
+      "backend/src/services/llm-usage-cost-report.ts"
+    ],
+    "fixturePaths": [],
+    "issues": [
+      "test-authority inventory: state=disabled, reason=unsealed"
+    ],
+    "confidence": 0.82
+  },
+  {
+    "testPath": "backend/src/services/narration-task-dispatch.test.ts",
+    "obligations": [
+      "narration task dispatch",
+      "uses a deterministic Cloud Task with OIDC and accepts duplicate enqueue"
+    ],
+    "governingSources": [
+      {
+        "path": "docs/adr/0007-provider-operation-ledger-and-observation-ceilings.md",
+        "clause": "Decision: distinguish logical calls, physical attempts, retries and unknown outcomes; enforce ceilings",
+        "status": "Accepted",
+        "why": "Applies to reservations, retries, unknown completion and provider ledger tests."
+      }
+    ],
+    "implementationPaths": [
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../config.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/narration-task-dispatch.ts",
+      "backend/src/services/../config.ts",
+      "backend/src/services/narration-task-dispatch.ts"
+    ],
+    "fixturePaths": [],
+    "issues": [
+      "test-authority inventory: state=active, reason=current, ref=verification/vt104-narration-task-dispatch-20260930"
+    ],
+    "confidence": 0.82
+  },
+  {
+    "testPath": "backend/src/services/narration-worker-accounting.test.ts",
+    "obligations": [
+      "retains returned provider usage when its token ceiling rejects publication",
+      "retains thrown provider usage and stops retries at the HTTP ceiling"
+    ],
+    "governingSources": [
+      {
+        "path": "docs/adr/0007-provider-operation-ledger-and-observation-ceilings.md",
+        "clause": "Decision: distinguish logical calls, physical attempts, retries and unknown outcomes; enforce ceilings",
+        "status": "Accepted",
+        "why": "Applies to reservations, retries, unknown completion and provider ledger tests."
+      },
+      {
+        "path": "docs/adr/0051-observed-llm-usage-accounting.md",
+        "clause": "Decision: record every physical observation; preserve missing usage/prices as unknown",
+        "status": "Accepted",
+        "why": "Applies to actual provider usage and price uncertainty."
+      },
+      {
+        "path": "docs/adr/0054-normal-awareness-waiting-deadlines.md",
+        "clause": "Decision drivers: consistent SDK/execution/canonical/narration deadlines while retaining retry limits",
+        "status": "Accepted",
+        "why": "Applies to bound awareness/narration wait windows."
+      }
+    ],
+    "implementationPaths": [
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../db.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/narration-worker.ts",
+      "backend/src/services/../db.ts",
+      "backend/src/services/narration-worker.ts"
+    ],
+    "fixturePaths": [],
+    "issues": [
+      "test-authority inventory: state=active, reason=current, ref=verification/vt104-narration-accounting-20261001"
+    ],
+    "confidence": 0.82
+  },
+  {
+    "testPath": "backend/src/services/narration-worker.test.ts",
+    "obligations": [
+      "ordered narration worker",
+      "claims only the exact receipt generation and defers successors without provider work",
+      "generates the earliest receipt first and publishes only terminal prose",
+      "invokes the phase-specific provider only from the worker generator",
+      "deduplicates enqueue and fails closed on input digest drift",
+      "bounds retries and releases the successor with a terminal fallback",
+      "does not retry an observation accounting stop",
+      "does not hold the battle transaction while narration is generating",
+      "rejects a stale worker after its fencing lease is replaced",
+      "redelivers an outbox item until authenticated dispatch succeeds",
+      "re-arms a stale dispatched outbox with a new delivery generation",
+      "filters trial dispatch and stale recovery before touching unrelated outbox rows",
+      "does not recover generating work while its fenced lease is active",
+      "selects the oldest ready battle and permits a fenced heartbeat",
+      "provides opaque cursor replay and terminal-only public snapshots"
+    ],
+    "governingSources": [
+      {
+        "path": "docs/adr/0007-provider-operation-ledger-and-observation-ceilings.md",
+        "clause": "Decision: distinguish logical calls, physical attempts, retries and unknown outcomes; enforce ceilings",
+        "status": "Accepted",
+        "why": "Applies to reservations, retries, unknown completion and provider ledger tests."
+      },
+      {
+        "path": "docs/adr/0054-normal-awareness-waiting-deadlines.md",
+        "clause": "Decision drivers: consistent SDK/execution/canonical/narration deadlines while retaining retry limits",
+        "status": "Accepted",
+        "why": "Applies to bound awareness/narration wait windows."
+      }
+    ],
+    "implementationPaths": [
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../db.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../llm/types.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/narration-worker.ts",
+      "backend/src/services/../db.ts",
+      "backend/src/services/../llm/types.ts",
+      "backend/src/services/narration-worker.ts"
+    ],
+    "fixturePaths": [],
+    "issues": [
+      "test-authority inventory: state=active, reason=current, ref=verification/vt104-narration-worker-20260930"
+    ],
+    "confidence": 0.82
+  },
+  {
+    "testPath": "backend/src/services/normal-awareness-policy.test.ts",
+    "obligations": [
+      "persists usage-v2 for default creation and overrides a legacy provider"
+    ],
+    "governingSources": [
+      {
+        "path": "docs/adr/0007-provider-operation-ledger-and-observation-ceilings.md",
+        "clause": "Decision: distinguish logical calls, physical attempts, retries and unknown outcomes; enforce ceilings",
+        "status": "Accepted",
+        "why": "Applies to reservations, retries, unknown completion and provider ledger tests."
+      },
+      {
+        "path": "docs/adr/0054-normal-awareness-waiting-deadlines.md",
+        "clause": "Decision drivers: consistent SDK/execution/canonical/narration deadlines while retaining retry limits",
+        "status": "Accepted",
+        "why": "Applies to bound awareness/narration wait windows."
+      }
+    ],
+    "implementationPaths": [
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../db.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../llm/index.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../repositories/battle-awareness.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../repositories/battles.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../testing/awareness-trial-http-fixture.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/awareness-trial-candidate.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/awareness-trial-seed.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/battle-service.ts",
+      "backend/src/services/../db.ts",
+      "backend/src/services/../llm/index.ts",
+      "backend/src/services/../repositories/battle-awareness.ts",
+      "backend/src/services/../repositories/battles.ts",
+      "backend/src/services/../testing/awareness-trial-http-fixture.ts",
+      "backend/src/services/awareness-trial-candidate.ts",
+      "backend/src/services/awareness-trial-seed.ts",
+      "backend/src/services/battle-service.ts"
+    ],
+    "fixturePaths": [
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../testing/awareness-trial-http-fixture.ts"
+    ],
+    "issues": [
+      "test-authority inventory: state=disabled, reason=unsealed"
+    ],
+    "confidence": 0.82
+  },
+  {
+    "testPath": "backend/src/services/r2-storage.test.ts",
+    "obligations": [
+      "R2 media object naming",
+      "uses immutable per-generation keys shared by every backend instance",
+      "rejects IDs that could escape the object prefix",
+      "writes a private S3 object and returns its shared public URL"
+    ],
+    "governingSources": [],
+    "implementationPaths": [
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/r2-storage.ts",
+      "backend/src/services/r2-storage.ts"
+    ],
+    "fixturePaths": [],
+    "issues": [
+      "test-authority inventory: state=disabled, reason=unsealed",
+      "No specific Accepted ADR was identified from the current test contract; preserve this authority as unknown until an upstream requirement/design is linked."
+    ],
+    "confidence": 0.7
+  },
+  {
+    "testPath": "backend/src/services/rating-service-transaction.test.ts",
+    "obligations": [
+      "atomic dual-track rating settlement",
+      "rolls back both character tracks when canonical CAS fails (${sameOwner ? ",
+      "commits the existing accounting rules and returns the settled public state (${sameOwner ? ",
+      "never mutates accounting for an incomplete match"
+    ],
+    "governingSources": [],
+    "implementationPaths": [
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../db.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../repositories/battles.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/awareness-test-fixture.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/rating-service.ts",
+      "backend/src/services/../db.ts",
+      "backend/src/services/../repositories/battles.ts",
+      "backend/src/services/awareness-test-fixture.ts",
+      "backend/src/services/rating-service.ts"
+    ],
+    "fixturePaths": [
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/awareness-test-fixture.ts",
+      "backend/src/services/awareness-test-fixture.ts"
+    ],
+    "issues": [
+      "test-authority inventory: state=disabled, reason=unsealed",
+      "No specific Accepted ADR was identified from the current test contract; preserve this authority as unknown until an upstream requirement/design is linked."
+    ],
+    "confidence": 0.7
+  },
+  {
+    "testPath": "backend/src/services/scene-beat-wiring.test.ts",
+    "obligations": [
+      "scene beat narration deferral",
+      "does not enqueue a combat narration job while the beat is open",
+      "freezes a 3-micro-turn beat on new battles",
+      "advances past turn 5 on a new scene-beat battle",
+      "holds the public turn across the first three combat beats",
+      "persists a rejected later-bucket proposal and its deterministic choice",
+      "saves the first skip turn after a beat-close semantic patch",
+      "adopts an orphaned active advance instead of conflicting"
+    ],
+    "governingSources": [
+      {
+        "path": "docs/adr/0007-provider-operation-ledger-and-observation-ceilings.md",
+        "clause": "Decision: distinguish logical calls, physical attempts, retries and unknown outcomes; enforce ceilings",
+        "status": "Accepted",
+        "why": "Applies to reservations, retries, unknown completion and provider ledger tests."
+      }
+    ],
+    "implementationPaths": [
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../db.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../llm/mock.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../repositories/battles.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../repositories/narration-styles.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../testing/historical-character-fixtures.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/battle-service.ts",
+      "backend/src/services/../db.ts",
+      "backend/src/services/../llm/mock.ts",
+      "backend/src/services/../repositories/battles.ts",
+      "backend/src/services/../repositories/narration-styles.ts",
+      "backend/src/services/../testing/historical-character-fixtures.ts",
+      "backend/src/services/battle-service.ts"
+    ],
+    "fixturePaths": [
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../testing/historical-character-fixtures.ts"
+    ],
+    "issues": [
+      "test-authority inventory: state=disabled, reason=unsealed"
+    ],
+    "confidence": 0.82
+  },
+  {
+    "testPath": "backend/src/services/semantic-authoring/adapters/character-v3.test.ts",
+    "obligations": [
+      "character V3 semantic authoring adapter",
+      "preserves the pending-copy digest ordering used by stored candidates",
+      "rejects deferral when no consumer-scoped obligation is registered",
+      "copies executable V2 fragments and keeps each changed-role claim unresolved",
+      "closes a changed-role source claim only when an exact capsule copy exists",
+      "resolves discard-as-nonmaterial only for an exact frozen capsule copy",
+      "accepts only optional registered legacy meaning deferral and retains it across refresh",
+      "rejects pending preservation whose aggregate content exceeds 256 KiB",
+      "builds a create baseline and requires skeleton work first",
+      "stages a skeleton identity replacement without touching portrait or combat",
+      "rejects unknown portrait operations at decode",
+      "rejects appearance operations during the skeleton phase",
+      "hides the preservation capsule from create and revise tools",
+      "exposes the preservation capsule only on migrate ledger work",
+      "reruns a compiler lens without changing the candidate",
+      "rejects complete_cluster while skeleton work is active",
+      "does not resolve skeleton needs from a self-declared obligation list",
+      "opens the requested revise cluster instead of finalizing an unchanged character",
+      "repairs a registered action-norm dependant and rejects an unregistered extra field"
+    ],
+    "governingSources": [
+      {
+        "path": "docs/adr/0030-llm-assisted-character-semantic-migration.md",
+        "clause": "Decision: versioned semantic migration, bounded semantic-closure repair, preserve history",
+        "status": "Accepted",
+        "why": "Applies to migration/authoring lifecycle and preservation tests."
+      }
+    ],
+    "implementationPaths": [
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/semantic-authoring/adapters/character-source-ledger.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/semantic-authoring/adapters/character-v3.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/semantic-authoring/adapters/pending-preservation-json.ts",
+      "backend/src/services/semantic-authoring/adapters/character-source-ledger.ts",
+      "backend/src/services/semantic-authoring/adapters/character-v3.ts",
+      "backend/src/services/semantic-authoring/adapters/pending-preservation-json.ts"
+    ],
+    "fixturePaths": [],
+    "issues": [
+      "test-authority inventory: state=disabled, reason=source_diverged, ref=verification/character-v3-migrate-preservation-bound-current-20260925",
+      "Existing verification reference is not current authority for this source; refresh source-aligned evidence before sealing."
+    ],
+    "confidence": 0.82
+  },
+  {
+    "testPath": "backend/src/services/semantic-authoring/conformance.test.ts",
+    "obligations": [
+      "semantic authoring adapter conformance",
+      "F1 sparse create starts focused work for every family and completes family adapters",
+      "F2 revision of a named family definition does not reopen identity",
+      "F3 migrate exposes the capsule only on ledger work",
+      "F4 focused repair retains prior valid work after a rejected proposal",
+      "F5 minor contradiction does not force an owner question",
+      "F6 protected contradiction maps to a question, not a silent review",
+      "F7 finalization is schema-gated after focused completion",
+      "F8 restricted preservation is excluded from ordinary create consumers",
+      "F9 public attempt statuses stay unchanged during internal adoption",
+      "F10 counted steps accumulate across select and staging",
+      "F11 no-progress repetition and A-B oscillation are bounded",
+      "F12 temporary regression is not treated as mandatory every-step improvement",
+      "F13 invalid proposals retain trusted state and corruption fails closed",
+      "F14 timeout charges the reservation and ignores a late result",
+      "records the route timeout through asynchronous execution without replaying the call",
+      "F15 failure receipts support source-based retry without answering a question"
+    ],
+    "governingSources": [
+      {
+        "path": "docs/adr/0032-separate-authoring-time-boundaries.md",
+        "clause": "Decision: separate transport/worker/semantic time boundaries; retain bounded call/cost controls",
+        "status": "Accepted",
+        "why": "Applies to semantic-authoring execution policy and lifecycle controls."
+      },
+      {
+        "path": "docs/adr/0030-llm-assisted-character-semantic-migration.md",
+        "clause": "Decision: versioned semantic migration, bounded semantic-closure repair, preserve history",
+        "status": "Accepted",
+        "why": "Applies to migration/authoring lifecycle and preservation tests."
+      }
+    ],
+    "implementationPaths": [
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/semantic-authoring/adapters/battlefield-conformance.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/semantic-authoring/adapters/character-v3.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/semantic-authoring/adapters/family-conformance.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/semantic-authoring/adapters/narration-conformance.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/semantic-authoring/execution.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/semantic-authoring/orchestration.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/semantic-authoring/ports.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/semantic-authoring/progress-monitor.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/semantic-authoring/public-mapping.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/semantic-authoring/scripted-ports.ts",
+      "backend/src/services/semantic-authoring/adapters/battlefield-conformance.ts",
+      "backend/src/services/semantic-authoring/adapters/character-v3.ts",
+      "backend/src/services/semantic-authoring/adapters/narration-conformance.ts",
+      "backend/src/services/semantic-authoring/execution.ts",
+      "backend/src/services/semantic-authoring/progress-monitor.ts",
+      "backend/src/services/semantic-authoring/scripted-ports.ts"
+    ],
+    "fixturePaths": [],
+    "issues": [
+      "test-authority inventory: state=provisional, reason=draft_basis, ref=verification/semantic-authoring-conformance-current-provisional-20260918",
+      "Provisional draft basis cannot establish product acceptance or release authority."
+    ],
+    "confidence": 0.7
+  },
+  {
+    "testPath": "backend/src/services/semantic-authoring/kernel-foundation.test.ts",
+    "obligations": [
+      "semantic authoring resource admission",
+      "admits a reservation that fits all per-call and cumulative maxima",
+      "charges settled accounting before admitting another call",
+      "does not reinterpret measured elapsed time as a whole-attempt budget",
+      "allows only one outstanding provider request by default",
+      "rejects an oversized individual response before cumulative admission",
+      "counts through the last permitted step and preserves state after exhaustion",
+      "semantic authoring progress monitor",
+      "appends observations and drops the oldest past the policy window",
+      "keeps adapter-supplied materialProgress and does not treat prose-only drift as progress",
+      "classifies stall from the retained window after dropping an older progress marker",
+      "requires recovery after four steps and fails after three more",
+      "detects repeated and alternating state cycles without intervening progress",
+      "uses material progress as the history boundary",
+      "fails only when a detected cycle repeats after cycle recovery",
+      "semantic authoring proposal transaction",
+      "atomically replaces staged state only after every hard check passes",
+      "retains the trusted candidate and deduplicates a failed hard check",
+      "does not let a rejecting stage mutate trusted ledgers in place",
+      "rejects a stale base revision before staging",
+      "semantic authoring capability session",
+      "exposes only query and the work-item mutation tool",
+      "revokes the complete session after one successful mutation",
+      "revokes an expired session without invoking a tool",
+      "rejects mismatched bindings before consuming an invocation",
+      "semantic authoring kernel state and resolver results",
+      "holds zero or one resolver result and at most one outstanding reservation",
+      "keeps owner questions and failures as resolver results, not cancel or expiry",
+      "semantic authoring run state",
+      "allows one claim followed by one terminal transition",
+      "does not reopen or relabel a terminal run",
+      "semantic authoring proposal decoding",
+      "decodes an exact adapter-owned proposal envelope",
+      "rejects unknown members and an unregistered schema identity",
+      "rejects duplicate identifiers and an oversized encoded response",
+      "semantic authoring focused tool schemas",
+      "admits only adapter-registered selectors and unique bounded claim IDs",
+      "bounds strict focused response segments without exposing arbitrary roles",
+      "keeps rejected-submission feedback compact and adapter-code closed",
+      "semantic authoring pure orchestration",
+      "selects work, applies a proposal, reconciles, and finalizes ready_for_review",
+      "retains disposition batches through finalization and JSON terminal persistence",
+      "retains the trusted candidate when staging is rejected",
+      "asks an owner question when finalization fails and the five conditions are evidenced",
+      "fails closed on trusted-state corruption and resource exhaustion",
+      "stops after a no-progress window instead of repeating work",
+      "does not apply a late proposal after a terminal result",
+      "does not apply a fourth proposal after three session mutations",
+      "consumes one recovery at four no-progress steps and fails after three more",
+      "finalizes remaining-work-empty candidates instead of stalling",
+      "does not ask an owner question when evidence is incomplete or unreferenced"
+    ],
+    "governingSources": [
+      {
+        "path": "docs/adr/0032-separate-authoring-time-boundaries.md",
+        "clause": "Decision: separate transport/worker/semantic time boundaries; retain bounded call/cost controls",
+        "status": "Accepted",
+        "why": "Applies to semantic-authoring execution policy and lifecycle controls."
+      }
+    ],
+    "implementationPaths": [
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/semantic-authoring/accounting.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/semantic-authoring/capability-session.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/semantic-authoring/kernel.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/semantic-authoring/orchestration.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/semantic-authoring/progress-monitor.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/semantic-authoring/proposal-decoder.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/semantic-authoring/run-state.ts",
+      "backend/src/services/semantic-authoring/kernel.ts",
+      "backend/src/services/semantic-authoring/proposal-decoder.ts"
+    ],
+    "fixturePaths": [],
+    "issues": [
+      "test-authority inventory: state=active, reason=current, ref=verification/semantic-authoring-kernel-foundation-v1-current"
+    ],
+    "confidence": 0.7
+  },
+  {
+    "testPath": "backend/src/services/semantic-authoring/public-mapping.test.ts",
+    "obligations": [
+      "semantic authoring public mapping",
+      "does not add statuses to the existing attempt status schema",
+      "maps closed internal results onto existing public statuses",
+      "rejects retry on a question and answer on an ordinary failure",
+      "replays the same owner command identity",
+      "rejects command replay when the digest differs and replays a successful answer",
+      "rejects unknown ownerInteraction on the strict review schema"
+    ],
+    "governingSources": [
+      {
+        "path": "docs/adr/0032-separate-authoring-time-boundaries.md",
+        "clause": "Decision: separate transport/worker/semantic time boundaries; retain bounded call/cost controls",
+        "status": "Accepted",
+        "why": "Applies to semantic-authoring execution policy and lifecycle controls."
+      }
+    ],
+    "implementationPaths": [
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/semantic-authoring/public-mapping.ts",
+      "backend/src/services/semantic-authoring/public-mapping.ts"
+    ],
+    "fixturePaths": [],
+    "issues": [
+      "test-authority inventory: state=disabled, reason=stale, ref=verification/semantic-authoring-public-mapping-v1",
+      "Existing verification reference is not current authority for this source; refresh source-aligned evidence before sealing."
+    ],
+    "confidence": 0.7
+  },
+  {
+    "testPath": "backend/src/services/semantic-authoring/revision-scope-evaluation.test.ts",
+    "obligations": [
+      "character revision scope evaluation",
+      "classifies the existing focused appearance revision as one cluster",
+      "preserves both parts of a controlled cross-cluster revision",
+      "keeps materially different interpretations ambiguous",
+      "rejects strict-schema violations and duplicate clusters",
+      "reports a scope that exceeds the trusted corpus label",
+      "rejects a single-cluster result that drops part of the trusted request",
+      "rejects evidence that is not quoted from the request",
+      "grounds a lexical quote across Japanese decorative quotation marks",
+      "rejects certainty when the trusted corpus requires an owner choice",
+      "rejects ambiguity when the trusted request has one safe scope"
+    ],
+    "governingSources": [
+      {
+        "path": "docs/adr/0030-llm-assisted-character-semantic-migration.md",
+        "clause": "Decision: versioned semantic migration, bounded semantic-closure repair, preserve history",
+        "status": "Accepted",
+        "why": "Applies to migration/authoring lifecycle and preservation tests."
+      },
+      {
+        "path": "docs/adr/0032-separate-authoring-time-boundaries.md",
+        "clause": "Decision: separate transport/worker/semantic time boundaries; retain bounded call/cost controls",
+        "status": "Accepted",
+        "why": "Applies to semantic-authoring execution policy and lifecycle controls."
+      }
+    ],
+    "implementationPaths": [
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/semantic-authoring/revision-scope-evaluation.ts",
+      "backend/src/services/semantic-authoring/revision-scope-evaluation.ts"
+    ],
+    "fixturePaths": [],
+    "issues": [
+      "test-authority inventory: state=disabled, reason=unsealed"
+    ],
+    "confidence": 0.82
+  },
+  {
+    "testPath": "backend/src/services/semantic-authoring/revision-scope-ollama.test.ts",
+    "obligations": [
+      "local character revision scope replay adapter",
+      "freezes a local strict-output request without credentials",
+      "changes only the selected system contract for the Japanese replay",
+      "changes only the selected system contract for the disjoint few-shot replay",
+      "performs exactly one request and decodes the strict result",
+      "retains raw content and validation issues for an invalid structured result"
+    ],
+    "governingSources": [
+      {
+        "path": "docs/adr/0030-llm-assisted-character-semantic-migration.md",
+        "clause": "Decision: versioned semantic migration, bounded semantic-closure repair, preserve history",
+        "status": "Accepted",
+        "why": "Applies to migration/authoring lifecycle and preservation tests."
+      },
+      {
+        "path": "docs/adr/0032-separate-authoring-time-boundaries.md",
+        "clause": "Decision: separate transport/worker/semantic time boundaries; retain bounded call/cost controls",
+        "status": "Accepted",
+        "why": "Applies to semantic-authoring execution policy and lifecycle controls."
+      }
+    ],
+    "implementationPaths": [
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/semantic-authoring/revision-scope-ollama.ts",
+      "backend/src/services/semantic-authoring/revision-scope-ollama.ts"
+    ],
+    "fixturePaths": [],
+    "issues": [
+      "test-authority inventory: state=disabled, reason=unsealed"
+    ],
+    "confidence": 0.82
+  },
+  {
+    "testPath": "backend/src/services/semantic-authoring/scripted-ports.test.ts",
+    "obligations": [
+      "scripted semantic authoring ports",
+      "rejects a reservation that would exhaust cost before dispatch",
+      "uses the route timeout, charges the reservation, and ignores a late result",
+      "accepts an in-time delivery only while the same fence owns the outstanding request",
+      "fails trusted-state corruption before dispatch or delivery",
+      "charges an outstanding reservation when expire hits step exhaustion"
+    ],
+    "governingSources": [],
+    "implementationPaths": [
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/semantic-authoring/ports.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/semantic-authoring/scripted-ports.ts",
+      "backend/src/services/semantic-authoring/scripted-ports.ts"
+    ],
+    "fixturePaths": [],
+    "issues": [
+      "test-authority inventory: state=active, reason=current, ref=verification/semantic-authoring-scripted-port-boundary-20260918",
+      "No specific Accepted ADR was identified from the current test contract; preserve this authority as unknown until an upstream requirement/design is linked."
+    ],
+    "confidence": 0.7
+  },
+  {
+    "testPath": "backend/src/services/supabase-identity.test.ts",
+    "obligations": [
+      "extracts a signed identity without any application database dependency",
+      "rejects wrong issuer, audience, role and absent subject",
+      "rejects a token signed by a different key and missing configuration"
+    ],
+    "governingSources": [],
+    "implementationPaths": [
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/supabase-identity.ts",
+      "backend/src/services/supabase-identity.ts"
+    ],
+    "fixturePaths": [],
+    "issues": [
+      "test-authority inventory: state=active, reason=current, ref=verification/vt104-supabase-identity-20260930",
+      "No specific Accepted ADR was identified from the current test contract; preserve this authority as unknown until an upstream requirement/design is linked."
+    ],
+    "confidence": 0.7
+  },
+  {
+    "testPath": "backend/src/services/v3-battle-creation.test.ts",
+    "obligations": [
+      "ADR-0039 V3 character battle binding",
+      "creates an all-V3 battle and keeps exact character generations after pointer changes and reload",
+      "advances a V4 battle whose frozen norms allow only free actions",
+      "reserves repair durably without committing unfinished phase state and does not reset on reload"
+    ],
+    "governingSources": [
+      {
+        "path": "docs/adr/0003-revision-editable-assets-and-bind-battles.md",
+        "clause": "Decision: bind immutable asset revisions/snapshots at battle creation",
+        "status": "Accepted",
+        "why": "Applies to generation/digest binding and historical battle continuity."
+      },
+      {
+        "path": "docs/adr/0047-phase-scoped-conscious-output-and-mechanical-completion.md",
+        "clause": "Decision: phase-scoped output, immutable snapshots and bounded repair/completion",
+        "status": "Accepted",
+        "why": "Applies to dynamic-v4 action/speech repair and phase contracts."
+      }
+    ],
+    "implementationPaths": [
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../db.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../llm/conscious-agency.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../llm/conscious-dynamic.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../llm/mock.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../repositories/battle-cutover.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../repositories/battles.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../repositories/dialogue-pipeline-settings.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../repositories/narration-styles.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../routes.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../testing/historical-asset-generations.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../testing/historical-character-fixtures.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/battle-service.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/character-authoring-service.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/conscious-agency.fixtures.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/distributed-guard.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/narration-worker.ts",
+      "backend/src/services/../db.ts",
+      "backend/src/services/../llm/conscious-agency.ts",
+      "backend/src/services/../llm/conscious-dynamic.ts",
+      "backend/src/services/../llm/mock.ts",
+      "backend/src/services/../repositories/battle-cutover.ts",
+      "backend/src/services/../repositories/battles.ts",
+      "backend/src/services/../repositories/dialogue-pipeline-settings.ts",
+      "backend/src/services/../repositories/narration-styles.ts",
+      "backend/src/services/../routes.ts",
+      "backend/src/services/../testing/historical-asset-generations.ts",
+      "backend/src/services/../testing/historical-character-fixtures.ts",
+      "backend/src/services/battle-service.ts",
+      "backend/src/services/character-authoring-service.ts",
+      "backend/src/services/conscious-agency.fixtures.ts",
+      "backend/src/services/distributed-guard.ts",
+      "backend/src/services/narration-worker.ts"
+    ],
+    "fixturePaths": [
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/../testing/historical-character-fixtures.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/conscious-agency.fixtures.ts"
+    ],
+    "issues": [
+      "test-authority inventory: state=disabled, reason=source_diverged, ref=verification/vt102-v3-battle-paths-20260930",
+      "Existing verification reference is not current authority for this source; refresh source-aligned evidence before sealing."
+    ],
+    "confidence": 0.7
+  },
+  {
+    "testPath": "backend/src/routes-cutover-http.test.ts",
+    "obligations": [
+      "closed HTTP routes block public auth/media and preserve owner /api/me auth"
+    ],
+    "governingSources": [
+      {
+        "path": "docs/adr/0039-v3-battle-lifecycle-and-cutover.md",
+        "clause": "Decision: V3 lifecycle/cutover gates and closed legacy routes",
+        "status": "Accepted",
+        "why": "Applies to cutover admission, background dispatch and HTTP closure tests."
+      }
+    ],
+    "implementationPaths": [
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/auth.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/db.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/repositories/cutover-control.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/routes.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/cutover-admission.ts",
+      "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/cutover-http-admission.ts",
+      "backend/src/auth.ts",
+      "backend/src/db.ts",
+      "backend/src/repositories/cutover-control.ts",
+      "backend/src/routes.ts",
+      "backend/src/services/cutover-admission.ts",
+      "backend/src/services/cutover-http-admission.ts"
+    ],
+    "fixturePaths": [],
+    "issues": [
+      "test-authority inventory: state=disabled, reason=source_diverged, ref=verification/vt104-routes-cutover-http-20260930",
+      "Existing verification reference is not current authority for this source; refresh source-aligned evidence before sealing.",
+      "HTTP assertions cover closure/readback behavior; public deployment acceptance remains a separate gate."
+    ],
+    "confidence": 0.82
+  }
+]

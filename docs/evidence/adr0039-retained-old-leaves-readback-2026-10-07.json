@@ -1,0 +1,1796 @@
+{
+  "retainedOldLeaves": [
+    {
+      "seal_id": "06e0b0932b0a397a9afe5bb462d4a46f2c861d5045759e8b35b271b011be6f72",
+      "material_id": "17ef67964746f425dcd8ab565ac804212aab261c4fbce5243861e839ce9fad2c",
+      "provenance_id": "19eec3f4e6cb8666bc1fe68866615fb370c8a8bbf1d6e2897f27977b1c697966",
+      "content_blob_id": "7557591248156eddedf5fd987b4ea7cf8c697b5843e3d0743cbe24591d02d201",
+      "content_bytes": 5557,
+      "attachments": [],
+      "root": false,
+      "draft": false,
+      "cause_links": [
+        {
+          "target_seal": "3dda5458b64147276f32c0182a0d2c8f0bd85932fa7b3c072198d0ba3ac2393e",
+          "previous_revision_seal_of_target_seal": [],
+          "messages": [
+            "Whole unchanged 2 cases native pg Client private tables and actual lock/query behavior; URL guard loopback/exact testDB,zero skip in recorded run. Not production17 or whole app acceptance."
+          ]
+        },
+        {
+          "target_seal": "d24c7a6b78a2b96c237fd7ca7258221909dd2f7bc892c4c65c7409950fc13e61",
+          "previous_revision_seal_of_target_seal": [],
+          "messages": [
+            "Whole unchanged 2 cases native pg Client private tables and actual lock/query behavior; URL guard loopback/exact testDB,zero skip in recorded run. Not production17 or whole app acceptance."
+          ]
+        }
+      ]
+    },
+    {
+      "seal_id": "08d31046f7e4d1c616a6bbeaff886937b4cfbc234ca07454136717f35381be64",
+      "material_id": "1c95586d045b1922db5d9af5a80f28caed7bbff03f001a5f6fd4af7eb811f904",
+      "provenance_id": "b5654ca697d8c254af94c9e213d1795860ece049166fb0731182c722d5986c76",
+      "content_blob_id": "17ec5edc6be8bcd1f1308d620a316d73fd4f3dc45e4b4d0b54d7f3cf47943a6d",
+      "content_bytes": 1371,
+      "attachments": [],
+      "root": false,
+      "draft": false,
+      "cause_links": [
+        {
+          "target_seal": "8e1131fe8870b0a714b2374945b17701dff660942d63152583e195d1d8d399a6",
+          "previous_revision_seal_of_target_seal": [],
+          "messages": []
+        }
+      ]
+    },
+    {
+      "seal_id": "093f66ce885eec3eac145975c864cc8f7e36b0ce3afa9112b1b2d3fba273e4c0",
+      "material_id": "eaf7211c1e75350644c38208fd0dac0d821d3e1b97321773a3c3fdc7d7bd5b8c",
+      "provenance_id": "91ec35b8e84ea8307dffb9754d9271ef617672b413636b35f438dad2b27ebc36",
+      "content_blob_id": "8d985d254fac25cc29257430337b790cb3aa351824de1131bdb45a18c8aae216",
+      "content_bytes": 16846,
+      "attachments": [],
+      "root": false,
+      "draft": false,
+      "cause_links": [
+        {
+          "target_seal": "24b2f5a035a699c2e2236ef6d901f0dc6c554b9075d99627195be79a3fc328ce",
+          "previous_revision_seal_of_target_seal": [
+            "2d0cde5df910b7f8bb1f249887a1434ad8573fa72c4263e1861f03e15646edf9"
+          ],
+          "messages": []
+        }
+      ]
+    },
+    {
+      "seal_id": "138e3dec2f18ca9fdd4f4a9b6b8da91bdc1d6aeb05e26b4648e0d90e486fb25b",
+      "material_id": "eeb77fd3d0e84fd08f19e22f7e2f78248ec706375e0a4bd7ade570f41f01411b",
+      "provenance_id": "203444568d0ccdab6bb6f4987731e2359b0bc425f8048e0fa5b4c9d56c6e8b21",
+      "content_blob_id": "35c054461a0d220d7c4893567a7f2abff1c421d9fe1e2220f7b871f63ef2d948",
+      "content_bytes": 11626,
+      "attachments": [],
+      "root": false,
+      "draft": false,
+      "cause_links": [
+        {
+          "target_seal": "69e82fdca805afbd8bb4e1988e51b8c47fe773bb00f24fa9b79bad4e21359484",
+          "previous_revision_seal_of_target_seal": [],
+          "messages": [
+            "Whole original 5 cases retained. Local SQLite/offline/fakeSDK bounded proof only; proof refusal is historical certified binding, no paid/live/current pricing acceptance."
+          ]
+        },
+        {
+          "target_seal": "6ac6f7936f62bf30134d2c26620c335f7b71357945f0713f35f4635a70754a31",
+          "previous_revision_seal_of_target_seal": [],
+          "messages": [
+            "Whole original 5 cases retained. Local SQLite/offline/fakeSDK bounded proof only; proof refusal is historical certified binding, no paid/live/current pricing acceptance."
+          ]
+        },
+        {
+          "target_seal": "cea338023663fcb0df2f08b3e889a61b0033e7d60008a6301090ccac8a3fe50a",
+          "previous_revision_seal_of_target_seal": [],
+          "messages": [
+            "Whole original 5 cases retained. Local SQLite/offline/fakeSDK bounded proof only; proof refusal is historical certified binding, no paid/live/current pricing acceptance."
+          ]
+        }
+      ]
+    },
+    {
+      "seal_id": "17ac63e32b19fab4233af83f6e67a0e3610516157fc5e2d411b02452cc74349d",
+      "material_id": "98776fad4bdbc9f03d6eb6f35b7838dbd47e486edb6ce998b627f89a28bef9ff",
+      "provenance_id": "ab29929545faa61e49433186566b5cd743a0d9da4f540e4f41c749f395cb2ac6",
+      "content_blob_id": "ea48dc31870d520c054a9e4b634a361ea87e7aa4952b864b184445dfe025629a",
+      "content_bytes": 5039,
+      "attachments": [],
+      "root": false,
+      "draft": false,
+      "cause_links": [
+        {
+          "target_seal": "645e178be9a4b4662822f09d79c5977797a0830e072ee816510a4a62aa5b8e52",
+          "previous_revision_seal_of_target_seal": [],
+          "messages": [
+            "Entire unchanged three-case file using isolatedSQLite, settings defaults/source/CAS/V3 omission/compact rejection/explicitV2. Retain stored numericdefaults as regression only; not newpolicy, immutable receipt, generationcontents, adminHTTP or liveoperator writes."
+          ]
+        },
+        {
+          "target_seal": "6b23aca081e9f87055fdbe8ef961da8d6c9daf2653973e33e5b9e713a7947333",
+          "previous_revision_seal_of_target_seal": [],
+          "messages": [
+            "Entire unchanged three-case file using isolatedSQLite, settings defaults/source/CAS/V3 omission/compact rejection/explicitV2. Retain stored numericdefaults as regression only; not newpolicy, immutable receipt, generationcontents, adminHTTP or liveoperator writes."
+          ]
+        },
+        {
+          "target_seal": "c5d59684dfff6971230679ca47d4cfb13d5feea09daa91bd86f0fbf8787062d4",
+          "previous_revision_seal_of_target_seal": [],
+          "messages": [
+            "Entire unchanged three-case file using isolatedSQLite, settings defaults/source/CAS/V3 omission/compact rejection/explicitV2. Retain stored numericdefaults as regression only; not newpolicy, immutable receipt, generationcontents, adminHTTP or liveoperator writes."
+          ]
+        },
+        {
+          "target_seal": "d593d2fc8a2f959aa2bc71a87f492d5e34a9390c1089bdaed1d843483755adcd",
+          "previous_revision_seal_of_target_seal": [],
+          "messages": [
+            "Entire unchanged three-case file using isolatedSQLite, settings defaults/source/CAS/V3 omission/compact rejection/explicitV2. Retain stored numericdefaults as regression only; not newpolicy, immutable receipt, generationcontents, adminHTTP or liveoperator writes."
+          ]
+        },
+        {
+          "target_seal": "e50094ff1bdb2512626cd7a8c563ef14d24d5a3411838b15738ac0ee936b9390",
+          "previous_revision_seal_of_target_seal": [],
+          "messages": [
+            "Entire unchanged three-case file using isolatedSQLite, settings defaults/source/CAS/V3 omission/compact rejection/explicitV2. Retain stored numericdefaults as regression only; not newpolicy, immutable receipt, generationcontents, adminHTTP or liveoperator writes."
+          ]
+        }
+      ]
+    },
+    {
+      "seal_id": "1dde1664a2f036312eadf2c8fe70d0630d2eec99422a7df51e69bba20b2180ef",
+      "material_id": "3da26f53851e69d4c85da96e6520dd55a4421ec40157e209d68377ee910b2cf2",
+      "provenance_id": "91ec35b8e84ea8307dffb9754d9271ef617672b413636b35f438dad2b27ebc36",
+      "content_blob_id": "046593fc38ea88ce328840c897b97c3fee5ed3afbd1bcd805410dbd0ecd9f282",
+      "content_bytes": 25200,
+      "attachments": [],
+      "root": false,
+      "draft": false,
+      "cause_links": [
+        {
+          "target_seal": "24b2f5a035a699c2e2236ef6d901f0dc6c554b9075d99627195be79a3fc328ce",
+          "previous_revision_seal_of_target_seal": [
+            "2d0cde5df910b7f8bb1f249887a1434ad8573fa72c4263e1861f03e15646edf9"
+          ],
+          "messages": []
+        }
+      ]
+    },
+    {
+      "seal_id": "23010342c60715d1d367ced05b9d727e92f0897a0eb14572e6c49904a1a04d1d",
+      "material_id": "534d6a8818429f7287a38f1bbc14e378b7ea698f1c77f75ac1bc8cf4c9d64e13",
+      "provenance_id": "7457751d7a945b8583708c31a7a34bd888e968113833584fcc6c9c634cd3c5f0",
+      "content_blob_id": "aac6ab2d33854c187205106534fa3e748f3422b3fec91a0a4599a1229f4d475e",
+      "content_bytes": 6751,
+      "attachments": [],
+      "root": false,
+      "draft": false,
+      "cause_links": [
+        {
+          "target_seal": "3aed68d44713782e7c1b6bd96ded8f20bc91524ac0c2cd0a6af648359f510774",
+          "previous_revision_seal_of_target_seal": [],
+          "messages": [
+            "Entire unchanged three cases, local SQLite capability/admission/CAS/rollback, single receipt and literal digest."
+          ]
+        },
+        {
+          "target_seal": "8c03873ba349ed1531f1dc6adf2d11b86b8e525c3cf6e501e38ff6ff2bf25cef",
+          "previous_revision_seal_of_target_seal": [],
+          "messages": [
+            "Entire unchanged three cases, local SQLite capability/admission/CAS/rollback, single receipt and literal digest."
+          ]
+        }
+      ]
+    },
+    {
+      "seal_id": "2321ef9ba3dd4e9644a8b459d16e079f707de6ea66ea23b4f602180a9ffc8a3c",
+      "material_id": "269554211ffddb9d1795aa8a5efc020e7e9244ca6fba99bbbbcc002a83af1fd1",
+      "provenance_id": "91ec35b8e84ea8307dffb9754d9271ef617672b413636b35f438dad2b27ebc36",
+      "content_blob_id": "eb084646e654c753580c4b0a5f4466714284514aacbb91baf647cbb9a37629dc",
+      "content_bytes": 6305,
+      "attachments": [],
+      "root": false,
+      "draft": false,
+      "cause_links": [
+        {
+          "target_seal": "24b2f5a035a699c2e2236ef6d901f0dc6c554b9075d99627195be79a3fc328ce",
+          "previous_revision_seal_of_target_seal": [
+            "2d0cde5df910b7f8bb1f249887a1434ad8573fa72c4263e1861f03e15646edf9"
+          ],
+          "messages": []
+        }
+      ]
+    },
+    {
+      "seal_id": "239512a47c0e9434b53d75a80327c326d068ba7b3b4880525d3210baeb2d22f2",
+      "material_id": "968af1f8b1fc83f54ebb44fbc42d2a525ad02a4cd4872867a3603d06e7e51834",
+      "provenance_id": "88bb5ec3ba8e54807d57ff608be798622a2feb63aaa954a22859596dfe230c36",
+      "content_blob_id": "bb0418e60b798d025542444aaa68075324827a66426f8c82a7331c2ebac11425",
+      "content_bytes": 3505,
+      "attachments": [],
+      "root": false,
+      "draft": false,
+      "cause_links": [
+        {
+          "target_seal": "2992d83ef799f6b170c4347d161625df9faae38975138323f7c200d0880e73b2",
+          "previous_revision_seal_of_target_seal": [],
+          "messages": [
+            "Entire unchanged three-case file: admin/dev predicate, explicit others deny; injected mint twice generates distinct format-checked passwords, same fixture identity/kind and non-secret audit rows; missing fixture rejects before callback. No actual Supabase password rotation, prior-password rejection or normal login acceptance."
+          ]
+        },
+        {
+          "target_seal": "54c010fd692b4b8dc89d16772a127671ad8f4b54859e40d7e9b3781b3bb6281e",
+          "previous_revision_seal_of_target_seal": [],
+          "messages": [
+            "Entire unchanged three-case file: admin/dev predicate, explicit others deny; injected mint twice generates distinct format-checked passwords, same fixture identity/kind and non-secret audit rows; missing fixture rejects before callback. No actual Supabase password rotation, prior-password rejection or normal login acceptance."
+          ]
+        },
+        {
+          "target_seal": "9a193a751c31ca13af8d4258564fadf6bab164f38170c1fd72e8ee6f9d61f990",
+          "previous_revision_seal_of_target_seal": [],
+          "messages": [
+            "Entire unchanged three-case file: admin/dev predicate, explicit others deny; injected mint twice generates distinct format-checked passwords, same fixture identity/kind and non-secret audit rows; missing fixture rejects before callback. No actual Supabase password rotation, prior-password rejection or normal login acceptance."
+          ]
+        },
+        {
+          "target_seal": "d6463a653199ea704da4f1650362c2482e32be0f8df859cf40d14ba5c94b26c7",
+          "previous_revision_seal_of_target_seal": [],
+          "messages": [
+            "Entire unchanged three-case file: admin/dev predicate, explicit others deny; injected mint twice generates distinct format-checked passwords, same fixture identity/kind and non-secret audit rows; missing fixture rejects before callback. No actual Supabase password rotation, prior-password rejection or normal login acceptance."
+          ]
+        }
+      ]
+    },
+    {
+      "seal_id": "24e1b5078b1a3153cf3ba2028a0349aeb8355fca9d890ac8827f8efe5ad6a812",
+      "material_id": "0e946334ed5a1c3ba7c2d4aaeee9a93cc52b3291856169b2ea460f0281d9384b",
+      "provenance_id": "59da6e6d60e689ec504bff0861d4f952e7d67e693f55f442dc92b4f702ee68cb",
+      "content_blob_id": "7f2d007168e73ec52d1ba028c5b32659949564fef925da69ca1f8b9c7cc02ff0",
+      "content_bytes": 4785,
+      "attachments": [],
+      "root": false,
+      "draft": false,
+      "cause_links": [
+        {
+          "target_seal": "29f8c4e12b07b449473dc30f4a32d9b580001da28438bde3c77b88d86a17bbac",
+          "previous_revision_seal_of_target_seal": [],
+          "messages": [
+            "Whole unchanged3cases off no mutation, guarded consequences/scene projection, rejected evidence absence; no full balance or model quality."
+          ]
+        },
+        {
+          "target_seal": "380ac8824e9b71cb1f886088318ac2d539db126fe347c9a7467f3bcf9aec60b5",
+          "previous_revision_seal_of_target_seal": [],
+          "messages": [
+            "Whole unchanged3cases off no mutation, guarded consequences/scene projection, rejected evidence absence; no full balance or model quality."
+          ]
+        },
+        {
+          "target_seal": "e9798badf954b488acf2089320db3628f278704b7190cb2729200a46e428f467",
+          "previous_revision_seal_of_target_seal": [],
+          "messages": [
+            "Whole unchanged3cases off no mutation, guarded consequences/scene projection, rejected evidence absence; no full balance or model quality."
+          ]
+        }
+      ]
+    },
+    {
+      "seal_id": "26b4c06a6713d7d33d2e51c4843a5af32a612484244b6d841daa37330d3a2510",
+      "material_id": "cfeca933a61d09ecb3e9926e76d9e058aa623f9485b48fbeac8cc1f21fcb007f",
+      "provenance_id": "91ec35b8e84ea8307dffb9754d9271ef617672b413636b35f438dad2b27ebc36",
+      "content_blob_id": "5dd6d609d3447ad9537cd58d84440f91396f9fcb033790eb1822cb6e4aab5529",
+      "content_bytes": 3352,
+      "attachments": [],
+      "root": false,
+      "draft": false,
+      "cause_links": [
+        {
+          "target_seal": "24b2f5a035a699c2e2236ef6d901f0dc6c554b9075d99627195be79a3fc328ce",
+          "previous_revision_seal_of_target_seal": [
+            "2d0cde5df910b7f8bb1f249887a1434ad8573fa72c4263e1861f03e15646edf9"
+          ],
+          "messages": []
+        }
+      ]
+    },
+    {
+      "seal_id": "27320d02e1bd5c534cfdaed10449145c8205cfe9f66e7520b6c9b4a894d635d6",
+      "material_id": "ad0e2355ea908a370e0065838d19b1f1329bcce1e49fb670305ee747dd2f538c",
+      "provenance_id": "903ce9714bad00b032b61d819733dbc4a7033d604207c70805c6b6751b70a2f1",
+      "content_blob_id": "827e02b2c2f53b978f8cb2d8affac79f3a357545f6733245238aa2a6a31d9066",
+      "content_bytes": 2907,
+      "attachments": [],
+      "root": false,
+      "draft": false,
+      "cause_links": [
+        {
+          "target_seal": "6ac6f7936f62bf30134d2c26620c335f7b71357945f0713f35f4635a70754a31",
+          "previous_revision_seal_of_target_seal": [],
+          "messages": [
+            "Entire unchanged two SQLite cases: event sequence, prune floor and rollback. Not SSE/read cursors/PG/concurrency."
+          ]
+        },
+        {
+          "target_seal": "d064bd9b7b5a1cff846d2c79b56f213876e6157d0afede6f913f17fda0474e19",
+          "previous_revision_seal_of_target_seal": [],
+          "messages": [
+            "Entire unchanged two SQLite cases: event sequence, prune floor and rollback. Not SSE/read cursors/PG/concurrency."
+          ]
+        }
+      ]
+    },
+    {
+      "seal_id": "2bf463ce45ce703a3d62f07c88daf4745cc8757d83c0b31c291a419a7e858909",
+      "material_id": "b65e0e24ab974512c4e45e39fdf29737a60a16d23b8ca0f12485135f25f5e8de",
+      "provenance_id": "91ec35b8e84ea8307dffb9754d9271ef617672b413636b35f438dad2b27ebc36",
+      "content_blob_id": "5e56b7af50418345c0eefbc41ec3ce4368432e660861b55909214d66ca79da2a",
+      "content_bytes": 6110,
+      "attachments": [],
+      "root": false,
+      "draft": false,
+      "cause_links": [
+        {
+          "target_seal": "24b2f5a035a699c2e2236ef6d901f0dc6c554b9075d99627195be79a3fc328ce",
+          "previous_revision_seal_of_target_seal": [
+            "2d0cde5df910b7f8bb1f249887a1434ad8573fa72c4263e1861f03e15646edf9"
+          ],
+          "messages": []
+        }
+      ]
+    },
+    {
+      "seal_id": "2cca6c702e8b9acd9b2a935dd25a220b6f05d41fd5519ec5d9ab1345069f8c5b",
+      "material_id": "affc88b2d2c247ce5a142b3f7149c38e84523fc1b88a6758e2a2c324a6ecf9db",
+      "provenance_id": "4a9aea01de5b303c07abc8ceebc9e698afa7d903e90be677dbbb966ef7612ec0",
+      "content_blob_id": "316144e50ad8dd761405e59b9990df0a67436613bd9a7182a4af0a5c05061c3b",
+      "content_bytes": 2926,
+      "attachments": [],
+      "root": false,
+      "draft": false,
+      "cause_links": [
+        {
+          "target_seal": "2992d83ef799f6b170c4347d161625df9faae38975138323f7c200d0880e73b2",
+          "previous_revision_seal_of_target_seal": [],
+          "messages": [
+            "Entire unchanged one-case minimum-app file: injected general/test/e2e identities return identical404 and developer returns200 with observer email/e2e kind through fake mint. Does not import production routes registration or assert admin route/real authentication/request/headers."
+          ]
+        },
+        {
+          "target_seal": "43772fe4aeb302b23e8c295d6ad22430e77d4fc544be53ad098ad0e807557808",
+          "previous_revision_seal_of_target_seal": [],
+          "messages": [
+            "Entire unchanged one-case minimum-app file: injected general/test/e2e identities return identical404 and developer returns200 with observer email/e2e kind through fake mint. Does not import production routes registration or assert admin route/real authentication/request/headers."
+          ]
+        },
+        {
+          "target_seal": "9a193a751c31ca13af8d4258564fadf6bab164f38170c1fd72e8ee6f9d61f990",
+          "previous_revision_seal_of_target_seal": [],
+          "messages": [
+            "Entire unchanged one-case minimum-app file: injected general/test/e2e identities return identical404 and developer returns200 with observer email/e2e kind through fake mint. Does not import production routes registration or assert admin route/real authentication/request/headers."
+          ]
+        },
+        {
+          "target_seal": "d6463a653199ea704da4f1650362c2482e32be0f8df859cf40d14ba5c94b26c7",
+          "previous_revision_seal_of_target_seal": [],
+          "messages": [
+            "Entire unchanged one-case minimum-app file: injected general/test/e2e identities return identical404 and developer returns200 with observer email/e2e kind through fake mint. Does not import production routes registration or assert admin route/real authentication/request/headers."
+          ]
+        }
+      ]
+    },
+    {
+      "seal_id": "2d4572e907ca67e06e01169f731871c91ecbada93252e3a200e5c0a06d0dd64b",
+      "material_id": "b93a7edb6a68453d48e14bd24c6f7bf600ec408c47c1bc7c3ef05875d6baf335",
+      "provenance_id": "622b337804350e4a5c958c0c4be54ba3f02a51922be5a825bdcc43b71cf969e3",
+      "content_blob_id": "99514081bca0b74dd84028ae774fe42166dc40248ecb925f885b0b8e7e86ec04",
+      "content_bytes": 4120,
+      "attachments": [],
+      "root": false,
+      "draft": false,
+      "cause_links": [
+        {
+          "target_seal": "29f8c4e12b07b449473dc30f4a32d9b580001da28438bde3c77b88d86a17bbac",
+          "previous_revision_seal_of_target_seal": [],
+          "messages": [
+            "Whole unchanged1case actualSDKrole forwarding and frozen normal usage-v2/prompt4/runtime600s through privateSQLite/fakeHTTP; no real trial/complete battle."
+          ]
+        },
+        {
+          "target_seal": "646bb467ac7254071e722cbf78de03a051041bbe250f0435a738b11bac9ab3ca",
+          "previous_revision_seal_of_target_seal": [],
+          "messages": [
+            "Whole unchanged1case actualSDKrole forwarding and frozen normal usage-v2/prompt4/runtime600s through privateSQLite/fakeHTTP; no real trial/complete battle."
+          ]
+        },
+        {
+          "target_seal": "ae27a3a0d74786dd4155d2ab94eaa17bea2c220e9ca916477e395189f00ae030",
+          "previous_revision_seal_of_target_seal": [],
+          "messages": [
+            "Whole unchanged1case actualSDKrole forwarding and frozen normal usage-v2/prompt4/runtime600s through privateSQLite/fakeHTTP; no real trial/complete battle."
+          ]
+        },
+        {
+          "target_seal": "c07d69401886c8b5745234a9c4e9502a38c11eedfe043d3475bee6458d788b9d",
+          "previous_revision_seal_of_target_seal": [],
+          "messages": [
+            "Whole unchanged1case actualSDKrole forwarding and frozen normal usage-v2/prompt4/runtime600s through privateSQLite/fakeHTTP; no real trial/complete battle."
+          ]
+        }
+      ]
+    },
+    {
+      "seal_id": "33dfa952fd82004670e4f57e61f6de107861ef9f0db681f40508964407ba79f5",
+      "material_id": "a319bd8fdbbd47ba5de7ec45312798843b4c885e9701e874129232a469c9d1cc",
+      "provenance_id": "362f62c6d757914fd1ac372b374f9caa2474b1888ed14fd73a17660c65ab1fdc",
+      "content_blob_id": "6688c8792c70a2bbe7b989e896c8d5792444f1f491acae4aa6c5be8628142245",
+      "content_bytes": 35067,
+      "attachments": [],
+      "root": false,
+      "draft": false,
+      "cause_links": [
+        {
+          "target_seal": "3e3d68c7042ed2fede7acc127dcdc9fe321a480cb43f8bf506605fde4dcae03e",
+          "previous_revision_seal_of_target_seal": [],
+          "messages": [
+            "All20cases/111assertions preserved; only2declared parameter annotations. Local SQLite worker/fake provider bounded contract proof."
+          ]
+        },
+        {
+          "target_seal": "6ac6f7936f62bf30134d2c26620c335f7b71357945f0713f35f4635a70754a31",
+          "previous_revision_seal_of_target_seal": [],
+          "messages": [
+            "All20cases/111assertions preserved; only2declared parameter annotations. Local SQLite worker/fake provider bounded contract proof."
+          ]
+        },
+        {
+          "target_seal": "8c03873ba349ed1531f1dc6adf2d11b86b8e525c3cf6e501e38ff6ff2bf25cef",
+          "previous_revision_seal_of_target_seal": [],
+          "messages": [
+            "All20cases/111assertions preserved; only2declared parameter annotations. Local SQLite worker/fake provider bounded contract proof."
+          ]
+        },
+        {
+          "target_seal": "baf4bd284d37bd6516d76d8bf29e9d34279cf93e6abc314c3daeee8be73348c4",
+          "previous_revision_seal_of_target_seal": [],
+          "messages": [
+            "All20cases/111assertions preserved; only2declared parameter annotations. Local SQLite worker/fake provider bounded contract proof."
+          ]
+        }
+      ]
+    },
+    {
+      "seal_id": "351baa6d9b7466ad5e947d4ba7388d4c6be5d6eb5cd831c965be250b8d38366d",
+      "material_id": "c81623bf1747066a47a868d909f2d4dd56c61413e5919e69c0c64509925e1f06",
+      "provenance_id": "f8d72d2797e120f3f0bc382a58b11a496b7a7a00f1b9039953792d662766820a",
+      "content_blob_id": "f4587b05cc8f24ce39c39456335058b95d8429e1b5da98edcc077dc39b3ed02b",
+      "content_bytes": 6467,
+      "attachments": [],
+      "root": false,
+      "draft": false,
+      "cause_links": [
+        {
+          "target_seal": "6343f08bfd235396b9c7dedeb191cd24f5e766d79b32590663743890e0576403",
+          "previous_revision_seal_of_target_seal": [],
+          "messages": [
+            "Entire unchanged five fake-port cases, ordered snapshots, missing battle/runtime and unchanged corrupt material refusal. Not actual DB transaction isolation."
+          ]
+        },
+        {
+          "target_seal": "6ac6f7936f62bf30134d2c26620c335f7b71357945f0713f35f4635a70754a31",
+          "previous_revision_seal_of_target_seal": [],
+          "messages": [
+            "Entire unchanged five fake-port cases, ordered snapshots, missing battle/runtime and unchanged corrupt material refusal. Not actual DB transaction isolation."
+          ]
+        },
+        {
+          "target_seal": "c391faa470d5e149ef6e6403509f6f837177c3f25e13caa3915ec4f1b621fa1b",
+          "previous_revision_seal_of_target_seal": [],
+          "messages": [
+            "Entire unchanged five fake-port cases, ordered snapshots, missing battle/runtime and unchanged corrupt material refusal. Not actual DB transaction isolation."
+          ]
+        }
+      ]
+    },
+    {
+      "seal_id": "40dd2bf0972b237e05c36163e24ecac230b7a56627d4b5b4a41dbeb0fb091915",
+      "material_id": "f3653079c3759c33693240063f91c8eeafaa9c790e453608cbe4aa8e4f8386c4",
+      "provenance_id": "91b9eea507524ad67883f8376caac152666b3eccad9ab301612096b2ed2f0d23",
+      "content_blob_id": "33f9638b29ed2a5248490e253092b7a994afac4c2ae913a80e5ae2e39e037651",
+      "content_bytes": 4911,
+      "attachments": [],
+      "root": false,
+      "draft": false,
+      "cause_links": [
+        {
+          "target_seal": "203e66fc4e30772adab026012c67f1b1ac4ca86ad2ada11b501c639a27a19eac",
+          "previous_revision_seal_of_target_seal": [],
+          "messages": [
+            "Entire original three-case file retained, added valid/non-string classification assertions. Isolated synthetic SQL identities prove general/test realm separation, admin override, selected owner checks, role mapping and injected-user middleware general404/developer200. Auth is supplied by test middleware; no JWT authenticity or end-to-end authorization-chain proof."
+          ]
+        },
+        {
+          "target_seal": "4ab3d24cbe88cf5312d76e7476ea441e974b6a28a67833eeb1491b7451262191",
+          "previous_revision_seal_of_target_seal": [],
+          "messages": [
+            "Entire original three-case file retained, added valid/non-string classification assertions. Isolated synthetic SQL identities prove general/test realm separation, admin override, selected owner checks, role mapping and injected-user middleware general404/developer200. Auth is supplied by test middleware; no JWT authenticity or end-to-end authorization-chain proof."
+          ]
+        },
+        {
+          "target_seal": "4ea52a357e72328f2c5e136344aa945c23078b1c6957fc150f77a6153663ebee",
+          "previous_revision_seal_of_target_seal": [],
+          "messages": [
+            "Entire original three-case file retained, added valid/non-string classification assertions. Isolated synthetic SQL identities prove general/test realm separation, admin override, selected owner checks, role mapping and injected-user middleware general404/developer200. Auth is supplied by test middleware; no JWT authenticity or end-to-end authorization-chain proof."
+          ]
+        },
+        {
+          "target_seal": "92475a5ff880b77b09bc22657dcf0a3227ff28f93848ffbf349add56ed54580c",
+          "previous_revision_seal_of_target_seal": [],
+          "messages": [
+            "Entire original three-case file retained, added valid/non-string classification assertions. Isolated synthetic SQL identities prove general/test realm separation, admin override, selected owner checks, role mapping and injected-user middleware general404/developer200. Auth is supplied by test middleware; no JWT authenticity or end-to-end authorization-chain proof."
+          ]
+        },
+        {
+          "target_seal": "9a193a751c31ca13af8d4258564fadf6bab164f38170c1fd72e8ee6f9d61f990",
+          "previous_revision_seal_of_target_seal": [],
+          "messages": [
+            "Entire original three-case file retained, added valid/non-string classification assertions. Isolated synthetic SQL identities prove general/test realm separation, admin override, selected owner checks, role mapping and injected-user middleware general404/developer200. Auth is supplied by test middleware; no JWT authenticity or end-to-end authorization-chain proof."
+          ]
+        },
+        {
+          "target_seal": "a12956c0df410246eaae8f94f6b0a7e773dcd4f79f7c9d623f67975ea6e39b11",
+          "previous_revision_seal_of_target_seal": [],
+          "messages": [
+            "Entire original three-case file retained, added valid/non-string classification assertions. Isolated synthetic SQL identities prove general/test realm separation, admin override, selected owner checks, role mapping and injected-user middleware general404/developer200. Auth is supplied by test middleware; no JWT authenticity or end-to-end authorization-chain proof."
+          ]
+        }
+      ]
+    },
+    {
+      "seal_id": "5a1d9733b1bce56f548f5d8ba71f13ca584285d7d9bc3e3dda319aa134aff268",
+      "material_id": "94c5d9383c6dc3a8517a3a0c2e5976957fc472f638b494392894dc40f0acfa39",
+      "provenance_id": "9d4a61b9a288fc8bacf1e1448471c9c292fdee0d653dfe73bbda22fe8d86e908",
+      "content_blob_id": "2315930ac6b3ca0c049e40b7a327d0c9ed06bfc9f78477fdf38cdc305d469945",
+      "content_bytes": 7749,
+      "attachments": [],
+      "root": false,
+      "draft": false,
+      "cause_links": [
+        {
+          "target_seal": "6ac6f7936f62bf30134d2c26620c335f7b71357945f0713f35f4635a70754a31",
+          "previous_revision_seal_of_target_seal": [],
+          "messages": [
+            "Whole unchanged outer1case with12phase/revision paths, fake transport/SQLite current output contract despite retained input revision."
+          ]
+        },
+        {
+          "target_seal": "baf4bd284d37bd6516d76d8bf29e9d34279cf93e6abc314c3daeee8be73348c4",
+          "previous_revision_seal_of_target_seal": [],
+          "messages": [
+            "Whole unchanged outer1case with12phase/revision paths, fake transport/SQLite current output contract despite retained input revision."
+          ]
+        },
+        {
+          "target_seal": "e2947758c2d961f4547d77ef7e166ac4e4af9639a8d93de682ce5cede88a71bc",
+          "previous_revision_seal_of_target_seal": [],
+          "messages": [
+            "Whole unchanged outer1case with12phase/revision paths, fake transport/SQLite current output contract despite retained input revision."
+          ]
+        },
+        {
+          "target_seal": "f457c669375c1681fdf7277a8abd6f7e05848f33abb595d21df018b75b78866d",
+          "previous_revision_seal_of_target_seal": [],
+          "messages": [
+            "Whole unchanged outer1case with12phase/revision paths, fake transport/SQLite current output contract despite retained input revision."
+          ]
+        }
+      ]
+    },
+    {
+      "seal_id": "63dfc2a73f15a19b21042d9aa667d62155a4599894bef6eb4f545d59f3238e61",
+      "material_id": "d87cdb57c7f3b051573fc0e742f06c9df577722c4480b1ed7d75dc85ee642ca2",
+      "provenance_id": "91ec35b8e84ea8307dffb9754d9271ef617672b413636b35f438dad2b27ebc36",
+      "content_blob_id": "fffbe4aaff07c0edcc6033cf05ad30fe9be6aacf4f96186b676b1595e0d04e79",
+      "content_bytes": 841,
+      "attachments": [],
+      "root": false,
+      "draft": false,
+      "cause_links": [
+        {
+          "target_seal": "24b2f5a035a699c2e2236ef6d901f0dc6c554b9075d99627195be79a3fc328ce",
+          "previous_revision_seal_of_target_seal": [
+            "2d0cde5df910b7f8bb1f249887a1434ad8573fa72c4263e1861f03e15646edf9"
+          ],
+          "messages": []
+        }
+      ]
+    },
+    {
+      "seal_id": "688f265575540954312a939ffba8867509d4ecd23d3d3cccb00209e6435e31c0",
+      "material_id": "d92ae302c41c89cd1cbc9cb7d1da467d2346278674cbfaa0faa66f637fffdc7c",
+      "provenance_id": "062780a8e2aac269a4df300c08b39e5d4874dbf2d207a3045ae273016fed2ac0",
+      "content_blob_id": "ad7bf97b1c0601d4c0fa6faedbbef42158f2d40419dafb58284b0d3c366a8e06",
+      "content_bytes": 8872,
+      "attachments": [],
+      "root": false,
+      "draft": false,
+      "cause_links": [
+        {
+          "target_seal": "1440b7b10330cdeb4563200b59c17cc83df897acfd22b02abd936e8d567ff52c",
+          "previous_revision_seal_of_target_seal": [],
+          "messages": [
+            "Whole unchanged8cases exact synthetic quote, no-send/unknown/late/sticky/observed role scope withSQLite. No network or price verification."
+          ]
+        },
+        {
+          "target_seal": "6ac6f7936f62bf30134d2c26620c335f7b71357945f0713f35f4635a70754a31",
+          "previous_revision_seal_of_target_seal": [],
+          "messages": [
+            "Whole unchanged8cases exact synthetic quote, no-send/unknown/late/sticky/observed role scope withSQLite. No network or price verification."
+          ]
+        }
+      ]
+    },
+    {
+      "seal_id": "6c33054a7ecb1f1edfa67738e77f35da8f94265291b033060bf486cdc167e3fc",
+      "material_id": "e2a0cd4ad54e58de5d721f3738d97a25144dc41d0a03348bd15df39c1b96c8f8",
+      "provenance_id": "67679959535f274674ed8ebac5d0b16fd8afbb5b460d15cbabfe15bc6ff2953d",
+      "content_blob_id": "0e3e52b748924e09dfd008b1bced2a0b10dd792d901d8b7b3d0fa0ce9ee71953",
+      "content_bytes": 4082,
+      "attachments": [],
+      "root": false,
+      "draft": false,
+      "cause_links": [
+        {
+          "target_seal": "645e178be9a4b4662822f09d79c5977797a0830e072ee816510a4a62aa5b8e52",
+          "previous_revision_seal_of_target_seal": [],
+          "messages": [
+            "Entire unchanged5case file; schema/compiler/gen/policy/dialogue/override/default fixture constraints. Not actual successful battlecreation or allconsumer immutable binding proof."
+          ]
+        },
+        {
+          "target_seal": "6b7b9634d4b8729ba3cfdeffded746ba4f7b588cfacfaa271bff7b0763b3762e",
+          "previous_revision_seal_of_target_seal": [],
+          "messages": [
+            "Entire unchanged5case file; schema/compiler/gen/policy/dialogue/override/default fixture constraints. Not actual successful battlecreation or allconsumer immutable binding proof."
+          ]
+        },
+        {
+          "target_seal": "7ed5f6b59fb21bfee662c9b29ac29e7fe915d4576b3bdd5d735e90248124c3cc",
+          "previous_revision_seal_of_target_seal": [],
+          "messages": [
+            "Entire unchanged5case file; schema/compiler/gen/policy/dialogue/override/default fixture constraints. Not actual successful battlecreation or allconsumer immutable binding proof."
+          ]
+        },
+        {
+          "target_seal": "aa60b589cfa4e1490aa8bfe09fb3635599e12fda778806e815fe4e4fd8763547",
+          "previous_revision_seal_of_target_seal": [],
+          "messages": [
+            "Entire unchanged5case file; schema/compiler/gen/policy/dialogue/override/default fixture constraints. Not actual successful battlecreation or allconsumer immutable binding proof."
+          ]
+        },
+        {
+          "target_seal": "fd2692da29f2deaf81b6567e5499276f95ece18dfd67f0a669fd1a2077292209",
+          "previous_revision_seal_of_target_seal": [],
+          "messages": [
+            "Entire unchanged5case file; schema/compiler/gen/policy/dialogue/override/default fixture constraints. Not actual successful battlecreation or allconsumer immutable binding proof."
+          ]
+        },
+        {
+          "target_seal": "ffa16af3f341c2b25cf2e64dce646c61cc10f5fe95bed4784b619f8017931be2",
+          "previous_revision_seal_of_target_seal": [],
+          "messages": [
+            "Entire unchanged5case file; schema/compiler/gen/policy/dialogue/override/default fixture constraints. Not actual successful battlecreation or allconsumer immutable binding proof."
+          ]
+        }
+      ]
+    },
+    {
+      "seal_id": "7006b5b5826a7bef532187df431ab8c8b9cac5954f3497138d0c5f4bb30ef3f1",
+      "material_id": "4feea09188d8fd28b46ebab0112747e073653aa91a8d24396c707b7bdcbfc898",
+      "provenance_id": "91ec35b8e84ea8307dffb9754d9271ef617672b413636b35f438dad2b27ebc36",
+      "content_blob_id": "1eaa3bcb41dd74331b80945e85d46c27ee2333dc97b51b6e2a1fc37395e73c5c",
+      "content_bytes": 11657,
+      "attachments": [],
+      "root": false,
+      "draft": false,
+      "cause_links": [
+        {
+          "target_seal": "24b2f5a035a699c2e2236ef6d901f0dc6c554b9075d99627195be79a3fc328ce",
+          "previous_revision_seal_of_target_seal": [
+            "2d0cde5df910b7f8bb1f249887a1434ad8573fa72c4263e1861f03e15646edf9"
+          ],
+          "messages": []
+        }
+      ]
+    },
+    {
+      "seal_id": "7df1f8a490b2ba2ab43d5d415ea9253a4d7118b81bc415abfc0b0f3e4d13b2e1",
+      "material_id": "5eb70977f19c543c61ebfaea79ed85bf7aa4ecd5c113286f3f9f92ce4131d49b",
+      "provenance_id": "5b3797f9f746d782e3784afc6fa192386397ccf7680c44a13c15e68fd8b34a1a",
+      "content_blob_id": "5c1328764e0908ec20cc8e0c2762a204eccf09b40b6beb097274922b9555388c",
+      "content_bytes": 3772,
+      "attachments": [],
+      "root": false,
+      "draft": false,
+      "cause_links": [
+        {
+          "target_seal": "6396326c4db3a821cc7105084829855cf99b629253ef7f7e565c3b3da9e49f40",
+          "previous_revision_seal_of_target_seal": [
+            "30aae1751f5104a7421fd0e840825906a7bde73fd550f5eb937d60bc56d4ffb5"
+          ],
+          "messages": []
+        }
+      ]
+    },
+    {
+      "seal_id": "7e51aa543579e6d4f6d649a76d96a9f460eccbec5ee408bed815ab0cfd7a6dbe",
+      "material_id": "5ac2e134b043c2684bf66e83373871a42708fb184fcd77f8a18e13a1645a98b3",
+      "provenance_id": "2a01ed13ce8c6fe7e7d2c27232b50e40f0a9eb99ac8874894f9f42cc0d76d013",
+      "content_blob_id": "713803135f27b55ff4a4d05fa6a56d6daa1e6df29fba764e6b3c865b37df3cff",
+      "content_bytes": 10653,
+      "attachments": [],
+      "root": false,
+      "draft": false,
+      "cause_links": [
+        {
+          "target_seal": "11ad190b10415f87aaf38a9598ec3ac3e05031fd2c03800aac12da69ae178d91",
+          "previous_revision_seal_of_target_seal": [],
+          "messages": [
+            "Whole original 1 cases retained. Local SQLite/offline/fakeSDK bounded proof only; proof refusal is historical certified binding, no paid/live/current pricing acceptance."
+          ]
+        },
+        {
+          "target_seal": "69e82fdca805afbd8bb4e1988e51b8c47fe773bb00f24fa9b79bad4e21359484",
+          "previous_revision_seal_of_target_seal": [],
+          "messages": [
+            "Whole original 1 cases retained. Local SQLite/offline/fakeSDK bounded proof only; proof refusal is historical certified binding, no paid/live/current pricing acceptance."
+          ]
+        },
+        {
+          "target_seal": "a716bc3b8e2473ca01d2cf7408bdc93dc769f8556428f493d9ee803dd7859619",
+          "previous_revision_seal_of_target_seal": [],
+          "messages": [
+            "Whole original 1 cases retained. Local SQLite/offline/fakeSDK bounded proof only; proof refusal is historical certified binding, no paid/live/current pricing acceptance."
+          ]
+        },
+        {
+          "target_seal": "ae27a3a0d74786dd4155d2ab94eaa17bea2c220e9ca916477e395189f00ae030",
+          "previous_revision_seal_of_target_seal": [],
+          "messages": [
+            "Whole original 1 cases retained. Local SQLite/offline/fakeSDK bounded proof only; proof refusal is historical certified binding, no paid/live/current pricing acceptance."
+          ]
+        },
+        {
+          "target_seal": "c8b0ffded33bafbc8743d8b941fa6a3be202f7abf2f52f02b6ff8abd0bca9de1",
+          "previous_revision_seal_of_target_seal": [],
+          "messages": [
+            "Whole original 1 cases retained. Local SQLite/offline/fakeSDK bounded proof only; proof refusal is historical certified binding, no paid/live/current pricing acceptance."
+          ]
+        }
+      ]
+    },
+    {
+      "seal_id": "8040ca4074520f679981e6dcf596df6ce82ebf5ba50a7eedcb9c22db573c6f45",
+      "material_id": "0625281ffc53129f3108c4808f8325653751f648b29b64911d6bba5a3e975884",
+      "provenance_id": "54f41665a7881dc84a064821c28b434193a387acbd4128af5a0198da17193fdd",
+      "content_blob_id": "65a965f5fc2233f52a5bb343239cd192cc29edb7bd77c7fe01652b45d9cb2c2c",
+      "content_bytes": 10446,
+      "attachments": [],
+      "root": false,
+      "draft": false,
+      "cause_links": [
+        {
+          "target_seal": "6ac6f7936f62bf30134d2c26620c335f7b71357945f0713f35f4635a70754a31",
+          "previous_revision_seal_of_target_seal": [],
+          "messages": [
+            "Whole original 7 cases retained. Local SQLite/offline/fakeSDK bounded proof only; proof refusal is historical certified binding, no paid/live/current pricing acceptance."
+          ]
+        },
+        {
+          "target_seal": "c064db895ea9f010d2f6fb28360b243285cbe93156c19f8286e161ec2d0d731a",
+          "previous_revision_seal_of_target_seal": [],
+          "messages": [
+            "Whole original 7 cases retained. Local SQLite/offline/fakeSDK bounded proof only; proof refusal is historical certified binding, no paid/live/current pricing acceptance."
+          ]
+        },
+        {
+          "target_seal": "dd290d037c8a794b9f498c642b56322f832f349b05d4e8324cc4432a51a6a859",
+          "previous_revision_seal_of_target_seal": [],
+          "messages": [
+            "Whole original 7 cases retained. Local SQLite/offline/fakeSDK bounded proof only; proof refusal is historical certified binding, no paid/live/current pricing acceptance."
+          ]
+        }
+      ]
+    },
+    {
+      "seal_id": "8184a6247197a11d86d421f37f33200b2265486732ba8733e490deec2bf0f591",
+      "material_id": "551c910cf547c6d76ba191f044ce979e034e8359a1924f89406637678cb66b32",
+      "provenance_id": "2cc6200d4efdbbc09d3b3af592e76a38553ec94e36134462a53d8d31422a5bcd",
+      "content_blob_id": "8ee84cc0fc343996fe27bd5a7cb44aff51973ecdb6e2fbbb5e060aded03a1423",
+      "content_bytes": 10709,
+      "attachments": [],
+      "root": false,
+      "draft": false,
+      "cause_links": [
+        {
+          "target_seal": "1c34e06ab8d2273a0eb86a3cc40d7c29d753199bfb121896fe6d455826c9eae0",
+          "previous_revision_seal_of_target_seal": [],
+          "messages": [
+            "Whole original 1 cases retained. Local SQLite/offline/fakeSDK bounded proof only; proof refusal is historical certified binding, no paid/live/current pricing acceptance."
+          ]
+        },
+        {
+          "target_seal": "645e178be9a4b4662822f09d79c5977797a0830e072ee816510a4a62aa5b8e52",
+          "previous_revision_seal_of_target_seal": [],
+          "messages": [
+            "Whole original 1 cases retained. Local SQLite/offline/fakeSDK bounded proof only; proof refusal is historical certified binding, no paid/live/current pricing acceptance."
+          ]
+        },
+        {
+          "target_seal": "69e82fdca805afbd8bb4e1988e51b8c47fe773bb00f24fa9b79bad4e21359484",
+          "previous_revision_seal_of_target_seal": [],
+          "messages": [
+            "Whole original 1 cases retained. Local SQLite/offline/fakeSDK bounded proof only; proof refusal is historical certified binding, no paid/live/current pricing acceptance."
+          ]
+        },
+        {
+          "target_seal": "c8b0ffded33bafbc8743d8b941fa6a3be202f7abf2f52f02b6ff8abd0bca9de1",
+          "previous_revision_seal_of_target_seal": [],
+          "messages": [
+            "Whole original 1 cases retained. Local SQLite/offline/fakeSDK bounded proof only; proof refusal is historical certified binding, no paid/live/current pricing acceptance."
+          ]
+        },
+        {
+          "target_seal": "ffa16af3f341c2b25cf2e64dce646c61cc10f5fe95bed4784b619f8017931be2",
+          "previous_revision_seal_of_target_seal": [],
+          "messages": [
+            "Whole original 1 cases retained. Local SQLite/offline/fakeSDK bounded proof only; proof refusal is historical certified binding, no paid/live/current pricing acceptance."
+          ]
+        }
+      ]
+    },
+    {
+      "seal_id": "8192d4a22809e725bd1a844164b8f8d0108b667930bdb7b741d7193781dc5154",
+      "material_id": "3f0bef8f0af74a6675c29b55b37e4765895e54af43115f70c000067fa2e03c49",
+      "provenance_id": "5b3797f9f746d782e3784afc6fa192386397ccf7680c44a13c15e68fd8b34a1a",
+      "content_blob_id": "5a1b2a85763f1a25d7b4a4004e4311c15438d1b9e6470cfa523f46edf6616bdd",
+      "content_bytes": 2822,
+      "attachments": [],
+      "root": false,
+      "draft": false,
+      "cause_links": [
+        {
+          "target_seal": "6396326c4db3a821cc7105084829855cf99b629253ef7f7e565c3b3da9e49f40",
+          "previous_revision_seal_of_target_seal": [
+            "30aae1751f5104a7421fd0e840825906a7bde73fd550f5eb937d60bc56d4ffb5"
+          ],
+          "messages": []
+        }
+      ]
+    },
+    {
+      "seal_id": "83e827dfc1b1e7fbf7b9032de6ca8f5652e074181a4f520ed9aeaf9f43c5a761",
+      "material_id": "03e9a923499a22b8f2915717d74e87280509353fe70853d87f8cce3a8c247a82",
+      "provenance_id": "91ec35b8e84ea8307dffb9754d9271ef617672b413636b35f438dad2b27ebc36",
+      "content_blob_id": "b084420795515476339ead1befd3c67faaa89a2f49804f16a089ebbefb6992ad",
+      "content_bytes": 2112,
+      "attachments": [],
+      "root": false,
+      "draft": false,
+      "cause_links": [
+        {
+          "target_seal": "24b2f5a035a699c2e2236ef6d901f0dc6c554b9075d99627195be79a3fc328ce",
+          "previous_revision_seal_of_target_seal": [
+            "2d0cde5df910b7f8bb1f249887a1434ad8573fa72c4263e1861f03e15646edf9"
+          ],
+          "messages": []
+        }
+      ]
+    },
+    {
+      "seal_id": "850fe5669b8ae3ce1338eb380a4274ce6f11e316be1bc46dfcae1b0f48751b89",
+      "material_id": "4f0941ce3fb50ca6af1e8a541d763dfef44d3eda9e4dd27cf60129cdf09b5223",
+      "provenance_id": "64c109caded8d1c73b5e2d290c6032c0bc1a0f7f795f2f809b29c5398b9a98a4",
+      "content_blob_id": "2a3477e498d5e66a6cd29c607354fb7ec4eb2d1c88eefb6843b98cd4bec26ab8",
+      "content_bytes": 22350,
+      "attachments": [],
+      "root": false,
+      "draft": false,
+      "cause_links": [
+        {
+          "target_seal": "29f8c4e12b07b449473dc30f4a32d9b580001da28438bde3c77b88d86a17bbac",
+          "previous_revision_seal_of_target_seal": [],
+          "messages": [
+            "All8cases/72assertions preserved; replace2manifest casts/events-only record cast/redundant clone cast with complete parsed synthetic retainedV2 fixture. No runtime/schema/authoring policy change."
+          ]
+        },
+        {
+          "target_seal": "6a27811e1eb660c9de4c5c7f4a1adf9f8561c4af42d15847c3e0f2f622787c1b",
+          "previous_revision_seal_of_target_seal": [],
+          "messages": [
+            "All8cases/72assertions preserved; replace2manifest casts/events-only record cast/redundant clone cast with complete parsed synthetic retainedV2 fixture. No runtime/schema/authoring policy change."
+          ]
+        },
+        {
+          "target_seal": "b6683e212b1c82e07a5b341859a78be13b3a62470a32ee4dbfefdf68f0d302a9",
+          "previous_revision_seal_of_target_seal": [],
+          "messages": [
+            "All8cases/72assertions preserved; replace2manifest casts/events-only record cast/redundant clone cast with complete parsed synthetic retainedV2 fixture. No runtime/schema/authoring policy change."
+          ]
+        }
+      ]
+    },
+    {
+      "seal_id": "853363cdb6298f7dda73e4913a8ed990e48e387dd39525aff9d640b556bf78f4",
+      "material_id": "ad0f61291f76e05fa8a57a2284414a3fb6ad97db89c2a4661438afbb4cf25a84",
+      "provenance_id": "fb104d2e1c52d197ad9bf0a00e8ef353a60cf48cd4f8d47bf40ee159165ade2e",
+      "content_blob_id": "5a8e029ec65f8a50f25a832177ab795c0138e53aa52151f3f1efad3f4c333358",
+      "content_bytes": 7570,
+      "attachments": [],
+      "root": false,
+      "draft": false,
+      "cause_links": [
+        {
+          "target_seal": "01a97ac99ebd726ac84945cb319e02e598df6ec9435df2f721703c30fddce360",
+          "previous_revision_seal_of_target_seal": [],
+          "messages": [
+            "Entire unchanged3case file: actual blocked legacy startBattle plus syntheticV3 service/reload/secondjudgment/staleCAS and direct state/publicmarker roundtrip. Directinsert bypasses publiccreation; lastSpeech assertion not entire service semantics. No discardedcutover trial or live DB/provider."
+          ]
+        },
+        {
+          "target_seal": "0ad461d8ec0885e685b39dde48308dbad3c71e481f37c4113a06d71495d9255a",
+          "previous_revision_seal_of_target_seal": [],
+          "messages": [
+            "Entire unchanged3case file: actual blocked legacy startBattle plus syntheticV3 service/reload/secondjudgment/staleCAS and direct state/publicmarker roundtrip. Directinsert bypasses publiccreation; lastSpeech assertion not entire service semantics. No discardedcutover trial or live DB/provider."
+          ]
+        },
+        {
+          "target_seal": "163805fe6d05356c0aa47121b2c4b2b91d42d56469022f43fefb383f92830543",
+          "previous_revision_seal_of_target_seal": [],
+          "messages": [
+            "Entire unchanged3case file: actual blocked legacy startBattle plus syntheticV3 service/reload/secondjudgment/staleCAS and direct state/publicmarker roundtrip. Directinsert bypasses publiccreation; lastSpeech assertion not entire service semantics. No discardedcutover trial or live DB/provider."
+          ]
+        },
+        {
+          "target_seal": "203e66fc4e30772adab026012c67f1b1ac4ca86ad2ada11b501c639a27a19eac",
+          "previous_revision_seal_of_target_seal": [],
+          "messages": [
+            "Entire unchanged3case file: actual blocked legacy startBattle plus syntheticV3 service/reload/secondjudgment/staleCAS and direct state/publicmarker roundtrip. Directinsert bypasses publiccreation; lastSpeech assertion not entire service semantics. No discardedcutover trial or live DB/provider."
+          ]
+        },
+        {
+          "target_seal": "210915fd53b85a68ab26d80dc400685e1645b2b2de93f0f5c6adc558f95c88ba",
+          "previous_revision_seal_of_target_seal": [],
+          "messages": [
+            "Entire unchanged3case file: actual blocked legacy startBattle plus syntheticV3 service/reload/secondjudgment/staleCAS and direct state/publicmarker roundtrip. Directinsert bypasses publiccreation; lastSpeech assertion not entire service semantics. No discardedcutover trial or live DB/provider."
+          ]
+        },
+        {
+          "target_seal": "4ea52a357e72328f2c5e136344aa945c23078b1c6957fc150f77a6153663ebee",
+          "previous_revision_seal_of_target_seal": [],
+          "messages": [
+            "Entire unchanged3case file: actual blocked legacy startBattle plus syntheticV3 service/reload/secondjudgment/staleCAS and direct state/publicmarker roundtrip. Directinsert bypasses publiccreation; lastSpeech assertion not entire service semantics. No discardedcutover trial or live DB/provider."
+          ]
+        },
+        {
+          "target_seal": "53ab40da81f03223ec4343a4e8625508fd888aabab496dd62e02f1b75d784d2c",
+          "previous_revision_seal_of_target_seal": [],
+          "messages": [
+            "Entire unchanged3case file: actual blocked legacy startBattle plus syntheticV3 service/reload/secondjudgment/staleCAS and direct state/publicmarker roundtrip. Directinsert bypasses publiccreation; lastSpeech assertion not entire service semantics. No discardedcutover trial or live DB/provider."
+          ]
+        },
+        {
+          "target_seal": "6b23aca081e9f87055fdbe8ef961da8d6c9daf2653973e33e5b9e713a7947333",
+          "previous_revision_seal_of_target_seal": [],
+          "messages": [
+            "Entire unchanged3case file: actual blocked legacy startBattle plus syntheticV3 service/reload/secondjudgment/staleCAS and direct state/publicmarker roundtrip. Directinsert bypasses publiccreation; lastSpeech assertion not entire service semantics. No discardedcutover trial or live DB/provider."
+          ]
+        },
+        {
+          "target_seal": "6b7b9634d4b8729ba3cfdeffded746ba4f7b588cfacfaa271bff7b0763b3762e",
+          "previous_revision_seal_of_target_seal": [],
+          "messages": [
+            "Entire unchanged3case file: actual blocked legacy startBattle plus syntheticV3 service/reload/secondjudgment/staleCAS and direct state/publicmarker roundtrip. Directinsert bypasses publiccreation; lastSpeech assertion not entire service semantics. No discardedcutover trial or live DB/provider."
+          ]
+        },
+        {
+          "target_seal": "81389d85ee06ca066cee54272d9767e0d40a09768509b62446f10ff65f359a5c",
+          "previous_revision_seal_of_target_seal": [],
+          "messages": [
+            "Entire unchanged3case file: actual blocked legacy startBattle plus syntheticV3 service/reload/secondjudgment/staleCAS and direct state/publicmarker roundtrip. Directinsert bypasses publiccreation; lastSpeech assertion not entire service semantics. No discardedcutover trial or live DB/provider."
+          ]
+        },
+        {
+          "target_seal": "c3f9ddc328fd22dca1b890122a77611353390c78e32ffecfe55f5ff59f21a7d4",
+          "previous_revision_seal_of_target_seal": [],
+          "messages": [
+            "Entire unchanged3case file: actual blocked legacy startBattle plus syntheticV3 service/reload/secondjudgment/staleCAS and direct state/publicmarker roundtrip. Directinsert bypasses publiccreation; lastSpeech assertion not entire service semantics. No discardedcutover trial or live DB/provider."
+          ]
+        },
+        {
+          "target_seal": "c82d0c1de4eeda2352b6cbc75bb931434f1bbff955f69d4e002f08e7950f3540",
+          "previous_revision_seal_of_target_seal": [],
+          "messages": [
+            "Entire unchanged3case file: actual blocked legacy startBattle plus syntheticV3 service/reload/secondjudgment/staleCAS and direct state/publicmarker roundtrip. Directinsert bypasses publiccreation; lastSpeech assertion not entire service semantics. No discardedcutover trial or live DB/provider."
+          ]
+        },
+        {
+          "target_seal": "ee029be3724cc1282b70df3a9a1b81886565d3a9f223d024beaaf2bbabdcfca3",
+          "previous_revision_seal_of_target_seal": [],
+          "messages": [
+            "Entire unchanged3case file: actual blocked legacy startBattle plus syntheticV3 service/reload/secondjudgment/staleCAS and direct state/publicmarker roundtrip. Directinsert bypasses publiccreation; lastSpeech assertion not entire service semantics. No discardedcutover trial or live DB/provider."
+          ]
+        },
+        {
+          "target_seal": "f09f7e2e5eae9da983979783a5f430dbf5372ce31ae52deaeac5da3c79ffa192",
+          "previous_revision_seal_of_target_seal": [],
+          "messages": [
+            "Entire unchanged3case file: actual blocked legacy startBattle plus syntheticV3 service/reload/secondjudgment/staleCAS and direct state/publicmarker roundtrip. Directinsert bypasses publiccreation; lastSpeech assertion not entire service semantics. No discardedcutover trial or live DB/provider."
+          ]
+        }
+      ]
+    },
+    {
+      "seal_id": "86cc5603f00c1d19fc5707b45c206466d910cf082c9ed2729d90bc7e537902a9",
+      "material_id": "25cc6ceecd9d1179be38e7883a25697f7bf04127d79f97ea428467e85ac853db",
+      "provenance_id": "b179217277246a5282de21688260d3be8f109ec35da5d799731e286d222da2c8",
+      "content_blob_id": "9f3a51e5124e9b50014ae625af847057e4fae134f3fc7f353d013287d7a53833",
+      "content_bytes": 2420,
+      "attachments": [],
+      "root": false,
+      "draft": false,
+      "cause_links": [
+        {
+          "target_seal": "203e66fc4e30772adab026012c67f1b1ac4ca86ad2ada11b501c639a27a19eac",
+          "previous_revision_seal_of_target_seal": [],
+          "messages": [
+            "Entire unchanged four-case file: local register/password verification/session destruction, concurrent supplied identity stable mapping, SQLite username uniqueness classification, empty admin lists deny and normalized email match. No live Supabase call, production legacy auth, every admin-id path or PostgreSQL concurrency proof."
+          ]
+        },
+        {
+          "target_seal": "4ea52a357e72328f2c5e136344aa945c23078b1c6957fc150f77a6153663ebee",
+          "previous_revision_seal_of_target_seal": [],
+          "messages": [
+            "Entire unchanged four-case file: local register/password verification/session destruction, concurrent supplied identity stable mapping, SQLite username uniqueness classification, empty admin lists deny and normalized email match. No live Supabase call, production legacy auth, every admin-id path or PostgreSQL concurrency proof."
+          ]
+        },
+        {
+          "target_seal": "8c72d6d55a0336c244414d1226e7406bd88bdc8d4f698cb7978f7575ebd603f2",
+          "previous_revision_seal_of_target_seal": [],
+          "messages": [
+            "Entire unchanged four-case file: local register/password verification/session destruction, concurrent supplied identity stable mapping, SQLite username uniqueness classification, empty admin lists deny and normalized email match. No live Supabase call, production legacy auth, every admin-id path or PostgreSQL concurrency proof."
+          ]
+        },
+        {
+          "target_seal": "92475a5ff880b77b09bc22657dcf0a3227ff28f93848ffbf349add56ed54580c",
+          "previous_revision_seal_of_target_seal": [],
+          "messages": [
+            "Entire unchanged four-case file: local register/password verification/session destruction, concurrent supplied identity stable mapping, SQLite username uniqueness classification, empty admin lists deny and normalized email match. No live Supabase call, production legacy auth, every admin-id path or PostgreSQL concurrency proof."
+          ]
+        },
+        {
+          "target_seal": "a12956c0df410246eaae8f94f6b0a7e773dcd4f79f7c9d623f67975ea6e39b11",
+          "previous_revision_seal_of_target_seal": [],
+          "messages": [
+            "Entire unchanged four-case file: local register/password verification/session destruction, concurrent supplied identity stable mapping, SQLite username uniqueness classification, empty admin lists deny and normalized email match. No live Supabase call, production legacy auth, every admin-id path or PostgreSQL concurrency proof."
+          ]
+        },
+        {
+          "target_seal": "ee29b011f89e02e034d9bea8df091bdf02117f53d8ec2943b85592d918c78f57",
+          "previous_revision_seal_of_target_seal": [],
+          "messages": [
+            "Entire unchanged four-case file: local register/password verification/session destruction, concurrent supplied identity stable mapping, SQLite username uniqueness classification, empty admin lists deny and normalized email match. No live Supabase call, production legacy auth, every admin-id path or PostgreSQL concurrency proof."
+          ]
+        }
+      ]
+    },
+    {
+      "seal_id": "8f07cc0fd68fda59395296ee12d83368fe210318b0fae94c6ca21ef1be3adfcf",
+      "material_id": "0a1d7992e26af9e0e3a36c503ff74546f757759fad66c75d66eb2446123c47e0",
+      "provenance_id": "afa9c21b620d27cca3c651d93e12b017c22ce7e06889b5a7b324c59067af61ae",
+      "content_blob_id": "ce8a94c09a10c38d44b46712862557a7e482ee67de6c6367af657b77df53ae52",
+      "content_bytes": 7332,
+      "attachments": [],
+      "root": false,
+      "draft": false,
+      "cause_links": [
+        {
+          "target_seal": "3dda5458b64147276f32c0182a0d2c8f0bd85932fa7b3c072198d0ba3ac2393e",
+          "previous_revision_seal_of_target_seal": [],
+          "messages": [
+            "Whole unchanged 1 cases native pg Client private tables and actual lock/query behavior; URL guard loopback/exact testDB,zero skip in recorded run. Not production17 or whole app acceptance."
+          ]
+        },
+        {
+          "target_seal": "5fed489bd5fc866e1f0a0271cb5195fe349a9516c695764e022cb8f11af6f9d1",
+          "previous_revision_seal_of_target_seal": [],
+          "messages": [
+            "Whole unchanged 1 cases native pg Client private tables and actual lock/query behavior; URL guard loopback/exact testDB,zero skip in recorded run. Not production17 or whole app acceptance."
+          ]
+        }
+      ]
+    },
+    {
+      "seal_id": "8fa76ba1d15b60440b432a794ddbaad609c33c7f8e4f7bf94f68de5cf72393f7",
+      "material_id": "e78dd1150ab3f7d40ae545d7d0a6188b7ba6a8fa0d1ad1d6473574a14a657bd5",
+      "provenance_id": "bbc49107f29fc70b4e5081236b7bbf28334dcdd477fba3a3d7468f505904d0ab",
+      "content_blob_id": "8112b2c2531c160b7d746344184ddcdfef2b032830d223db7eb7a715d97a42bd",
+      "content_bytes": 4004,
+      "attachments": [],
+      "root": false,
+      "draft": false,
+      "cause_links": [
+        {
+          "target_seal": "2992d83ef799f6b170c4347d161625df9faae38975138323f7c200d0880e73b2",
+          "previous_revision_seal_of_target_seal": [],
+          "messages": [
+            "Entire unchanged one-case SQLite file: E2E-owned field/style hidden from general listing/direct resolution and allowed to test/admin. Real list/resolve functions, imported ready V2 style fixture; no all account-kind cases, browser, HTTP registration, public authoring or migration acceptance."
+          ]
+        },
+        {
+          "target_seal": "3a397aa8602cd59d4dabfa99044a7c3d3895df0dd1134eaaaa5abb807ada2868",
+          "previous_revision_seal_of_target_seal": [],
+          "messages": [
+            "Entire unchanged one-case SQLite file: E2E-owned field/style hidden from general listing/direct resolution and allowed to test/admin. Real list/resolve functions, imported ready V2 style fixture; no all account-kind cases, browser, HTTP registration, public authoring or migration acceptance."
+          ]
+        },
+        {
+          "target_seal": "4ab3d24cbe88cf5312d76e7476ea441e974b6a28a67833eeb1491b7451262191",
+          "previous_revision_seal_of_target_seal": [],
+          "messages": [
+            "Entire unchanged one-case SQLite file: E2E-owned field/style hidden from general listing/direct resolution and allowed to test/admin. Real list/resolve functions, imported ready V2 style fixture; no all account-kind cases, browser, HTTP registration, public authoring or migration acceptance."
+          ]
+        },
+        {
+          "target_seal": "53c7ef07ebdba02dfbae61de9c47f73f8b94ebcf01872b1a527f0b45bf682b49",
+          "previous_revision_seal_of_target_seal": [],
+          "messages": [
+            "Entire unchanged one-case SQLite file: E2E-owned field/style hidden from general listing/direct resolution and allowed to test/admin. Real list/resolve functions, imported ready V2 style fixture; no all account-kind cases, browser, HTTP registration, public authoring or migration acceptance."
+          ]
+        },
+        {
+          "target_seal": "9a63b5e031f3ca89944c74ec4b3034ca95fe12921f7c628b68beb9a9b4dcec76",
+          "previous_revision_seal_of_target_seal": [],
+          "messages": [
+            "Entire unchanged one-case SQLite file: E2E-owned field/style hidden from general listing/direct resolution and allowed to test/admin. Real list/resolve functions, imported ready V2 style fixture; no all account-kind cases, browser, HTTP registration, public authoring or migration acceptance."
+          ]
+        },
+        {
+          "target_seal": "b5d994be6d213058541cb20240ae3e13ae9db1d0bd44df1a4961c738f21077e8",
+          "previous_revision_seal_of_target_seal": [],
+          "messages": [
+            "Entire unchanged one-case SQLite file: E2E-owned field/style hidden from general listing/direct resolution and allowed to test/admin. Real list/resolve functions, imported ready V2 style fixture; no all account-kind cases, browser, HTTP registration, public authoring or migration acceptance."
+          ]
+        },
+        {
+          "target_seal": "c6ae9384dbe1557c3adb9d94530a4ce2e5f3e025c14cca05f418fd9879f1745c",
+          "previous_revision_seal_of_target_seal": [],
+          "messages": [
+            "Entire unchanged one-case SQLite file: E2E-owned field/style hidden from general listing/direct resolution and allowed to test/admin. Real list/resolve functions, imported ready V2 style fixture; no all account-kind cases, browser, HTTP registration, public authoring or migration acceptance."
+          ]
+        }
+      ]
+    },
+    {
+      "seal_id": "a363e08cb9aef61c7c464eaa28189c92602542da73e9aa8ce7af6ed52149876e",
+      "material_id": "2d0f23c28f853c4e332c06fe05f6f4384c3a5c185d998d70f0ea8716ec93b5fa",
+      "provenance_id": "7026fb68377d95d9a4b117ce4eca30a1e2df3dcd43ffa2624bd5f05358baaa5b",
+      "content_blob_id": "30539638e17718699c53d66763f4d46be60e786935aefd2cd7f22b3cf9bdfde4",
+      "content_bytes": 12429,
+      "attachments": [],
+      "root": false,
+      "draft": false,
+      "cause_links": [
+        {
+          "target_seal": "2eadf15f7ef9403f0aad82beb796200ae5dced7a0ab82693f5b2c80536d41bd5",
+          "previous_revision_seal_of_target_seal": [],
+          "messages": [
+            "Whole unchanged10cases, actualSQLite rollback/prepared/time/late ready preservation/incomplete/terminal state, not numeric ratings/PG races."
+          ]
+        },
+        {
+          "target_seal": "6ac6f7936f62bf30134d2c26620c335f7b71357945f0713f35f4635a70754a31",
+          "previous_revision_seal_of_target_seal": [],
+          "messages": [
+            "Whole unchanged10cases, actualSQLite rollback/prepared/time/late ready preservation/incomplete/terminal state, not numeric ratings/PG races."
+          ]
+        }
+      ]
+    },
+    {
+      "seal_id": "a68d8555b0618e8731157637794118fb914286ce511b0268096fd74cd2544a70",
+      "material_id": "1c1d18c1d09f661d153b47c1f08e093cdc994974d51edddd44ac950c0ee7c1cc",
+      "provenance_id": "018faae252eadb6b335b4afe63887e3f918dce04f6b93890923db34520a51241",
+      "content_blob_id": "1cfae46e7effc1c529265aa63cb6dea7cbacc3aa2174cdd40baadbc646e345b4",
+      "content_bytes": 3039,
+      "attachments": [],
+      "root": false,
+      "draft": false,
+      "cause_links": [
+        {
+          "target_seal": "2bb4f69f1e8be4176a337798da73e71336d20744dad624903b89adee8d66fb1d",
+          "previous_revision_seal_of_target_seal": [],
+          "messages": [
+            "Entire unchanged single case: A projection, private B exclusion, recognition persistence, no reseed, reader exclusion and stale watermark rejection."
+          ]
+        },
+        {
+          "target_seal": "6ac6f7936f62bf30134d2c26620c335f7b71357945f0713f35f4635a70754a31",
+          "previous_revision_seal_of_target_seal": [],
+          "messages": [
+            "Entire unchanged single case: A projection, private B exclusion, recognition persistence, no reseed, reader exclusion and stale watermark rejection."
+          ]
+        }
+      ]
+    },
+    {
+      "seal_id": "b0e17f7b4c8fbb33329fa1be5f66ac45b0d0d844756afa0c552f438d23fe8967",
+      "material_id": "b20d5fce5e17342482e05a9b994f344059aacae4839f1bec063bcad17bc232cd",
+      "provenance_id": "b5654ca697d8c254af94c9e213d1795860ece049166fb0731182c722d5986c76",
+      "content_blob_id": "31983e809e8affbca324dc45a1702c22e8c585859d731e2512970892f1aba05f",
+      "content_bytes": 10177,
+      "attachments": [],
+      "root": false,
+      "draft": false,
+      "cause_links": [
+        {
+          "target_seal": "8e1131fe8870b0a714b2374945b17701dff660942d63152583e195d1d8d399a6",
+          "previous_revision_seal_of_target_seal": [],
+          "messages": []
+        }
+      ]
+    },
+    {
+      "seal_id": "b7908918f1b7f5c542cd96be5e2b20cb47db9454c8b22870ddae293ead80c1ab",
+      "material_id": "061f76836e23ac636c6b5ff8318e26da11bf70dac6bda590f0090833aaa3089e",
+      "provenance_id": "91ec35b8e84ea8307dffb9754d9271ef617672b413636b35f438dad2b27ebc36",
+      "content_blob_id": "f91ef8f515114047dd16e05b0b04ef06a90657b4d0dd5108c1c6e9dcd0e9d38d",
+      "content_bytes": 3904,
+      "attachments": [],
+      "root": false,
+      "draft": false,
+      "cause_links": [
+        {
+          "target_seal": "24b2f5a035a699c2e2236ef6d901f0dc6c554b9075d99627195be79a3fc328ce",
+          "previous_revision_seal_of_target_seal": [
+            "2d0cde5df910b7f8bb1f249887a1434ad8573fa72c4263e1861f03e15646edf9"
+          ],
+          "messages": []
+        }
+      ]
+    },
+    {
+      "seal_id": "ba1d35d91099b1703edbfde2cf4e5eac6b56f5872b8dfee647090a68580e920c",
+      "material_id": "03f8ab0a98348307b85cf185b5802e13270fdffe221195219c6f59ad5f188c07",
+      "provenance_id": "91ec35b8e84ea8307dffb9754d9271ef617672b413636b35f438dad2b27ebc36",
+      "content_blob_id": "64519c02689a03c318e1ca397359d8be8d9c06d83bee2f9f6f485be9057c2355",
+      "content_bytes": 2483,
+      "attachments": [],
+      "root": false,
+      "draft": false,
+      "cause_links": [
+        {
+          "target_seal": "24b2f5a035a699c2e2236ef6d901f0dc6c554b9075d99627195be79a3fc328ce",
+          "previous_revision_seal_of_target_seal": [
+            "2d0cde5df910b7f8bb1f249887a1434ad8573fa72c4263e1861f03e15646edf9"
+          ],
+          "messages": []
+        }
+      ]
+    },
+    {
+      "seal_id": "ba767624a6df2dc60f7fb1ba4fc4dd68a7712865b44ae95e39c66658b0bb24cd",
+      "material_id": "cbd63edd286b1cec1ca8d3cbb54403942b73f626d93f2d2c1f9c59efbd706603",
+      "provenance_id": "b422bfdbd8b202666cd6085bdbc9b3c677db574f1e518fcfab6ec8dbaf34fa4b",
+      "content_blob_id": "66e6cd6fcee7484950f4b4abe229472f38d0fd6a8431974768e805959bfff82a",
+      "content_bytes": 23623,
+      "attachments": [],
+      "root": false,
+      "draft": false,
+      "cause_links": [
+        {
+          "target_seal": "2432d6aa7c1374fc5d1f2cd36936454f77529e4750bf3177a7a239232f37da78",
+          "previous_revision_seal_of_target_seal": [
+            "d2efb94d5241f39f3228b1c628b659a66ba1cc8af91ca0df9b0eff21eaac6bb2"
+          ],
+          "messages": [
+            "Only3line local type refinement; earlier scope and original14HTTP cases preserved and rerun. No runtime or policy change."
+          ]
+        },
+        {
+          "target_seal": "7a8b93dcb2e8101713ce91646b5d4fd4221f80a15a43f69d70a800a764ae89fc",
+          "previous_revision_seal_of_target_seal": [],
+          "messages": [
+            "All6existing isolated HTTP cases retained: structure failure, legacy selector block, creation/upgrade confirm replay zero style regeneration, immutable narrator revision and phase rules at current battle creation, expiry/drift rejection and corrupt stored style replay/activation refusal. No full battle or actual narration quality."
+          ]
+        },
+        {
+          "target_seal": "7ed5f6b59fb21bfee662c9b29ac29e7fe915d4576b3bdd5d735e90248124c3cc",
+          "previous_revision_seal_of_target_seal": [],
+          "messages": [
+            "All6existing isolated HTTP cases retained: structure failure, legacy selector block, creation/upgrade confirm replay zero style regeneration, immutable narrator revision and phase rules at current battle creation, expiry/drift rejection and corrupt stored style replay/activation refusal. No full battle or actual narration quality."
+          ]
+        },
+        {
+          "target_seal": "9a63b5e031f3ca89944c74ec4b3034ca95fe12921f7c628b68beb9a9b4dcec76",
+          "previous_revision_seal_of_target_seal": [],
+          "messages": [
+            "All6existing isolated HTTP cases retained: structure failure, legacy selector block, creation/upgrade confirm replay zero style regeneration, immutable narrator revision and phase rules at current battle creation, expiry/drift rejection and corrupt stored style replay/activation refusal. No full battle or actual narration quality."
+          ]
+        },
+        {
+          "target_seal": "ab1413f458bb6178b7ca245e788c82d85325d9abbd7e0da59ae2a3bd10f9f9e8",
+          "previous_revision_seal_of_target_seal": [
+            "046b127d623138820b0ba14d0b15b619609d36a448b83a9e7e41e548fb0d01cb"
+          ],
+          "messages": [
+            "Only3line local type refinement; earlier scope and original14HTTP cases preserved and rerun. No runtime or policy change."
+          ]
+        },
+        {
+          "target_seal": "b5d994be6d213058541cb20240ae3e13ae9db1d0bd44df1a4961c738f21077e8",
+          "previous_revision_seal_of_target_seal": [],
+          "messages": [
+            "All6existing isolated HTTP cases retained: structure failure, legacy selector block, creation/upgrade confirm replay zero style regeneration, immutable narrator revision and phase rules at current battle creation, expiry/drift rejection and corrupt stored style replay/activation refusal. No full battle or actual narration quality."
+          ]
+        }
+      ]
+    },
+    {
+      "seal_id": "c1eab360da712fdc31245031e91b7f9cd538e60e0f5a77dbbb5f36fcba118875",
+      "material_id": "9478882ea3edf07798d35b1ca22fe74718e1dddaf78b98e9d1bfe59ac84fd10f",
+      "provenance_id": "4d34725854f4ecc76be0eedffffac6a9688aeb9e0a85e263c7c2f1a0ab6cf45c",
+      "content_blob_id": "74172e9eef95e166d088a790c67fa254d3299ce27aaf8bb0551fc1a73c009d15",
+      "content_bytes": 6262,
+      "attachments": [],
+      "root": false,
+      "draft": false,
+      "cause_links": [
+        {
+          "target_seal": "3dda5458b64147276f32c0182a0d2c8f0bd85932fa7b3c072198d0ba3ac2393e",
+          "previous_revision_seal_of_target_seal": [],
+          "messages": [
+            "Whole unchanged 1 cases native pg Client private tables and actual lock/query behavior; URL guard loopback/exact testDB,zero skip in recorded run. Not production17 or whole app acceptance."
+          ]
+        },
+        {
+          "target_seal": "8de47fa96e70d8aeb0a135473368257cef348017a31fb0dcf474304a5851a660",
+          "previous_revision_seal_of_target_seal": [],
+          "messages": [
+            "Whole unchanged 1 cases native pg Client private tables and actual lock/query behavior; URL guard loopback/exact testDB,zero skip in recorded run. Not production17 or whole app acceptance."
+          ]
+        }
+      ]
+    },
+    {
+      "seal_id": "d3c751c29a411de4346b89e816d54e795103a088c2b3939c16e2b67873243689",
+      "material_id": "08002626f7438ecec057213410939255dc8320138fd5191121a83ee0c2357fb0",
+      "provenance_id": "16cb0c39d47f7f55a0b4c4e3525aea65c08106273c785d016b41be80ce3503d9",
+      "content_blob_id": "f7bde0a8d76b9b32245740114696d3f0bb0bc619302ad275a5ae929080b73f13",
+      "content_bytes": 22005,
+      "attachments": [],
+      "root": false,
+      "draft": false,
+      "cause_links": [
+        {
+          "target_seal": "3e3d68c7042ed2fede7acc127dcdc9fe321a480cb43f8bf506605fde4dcae03e",
+          "previous_revision_seal_of_target_seal": [],
+          "messages": [
+            "All twelve temporary SQLite/mocked SDK tests: closed transport refusal, known failure settled, ambiguous timeout indeterminate, accounting failure pending, physical retry capture, current taxonomy/historical layers, old v2 snapshot identity, fake retry unknown usage, idempotence, pre-send ceiling refusal, unknown/drift/inactive/rebinding refusal and bounded private-data-free metadata. No paid/public/PG or old cutover trial execution."
+          ]
+        },
+        {
+          "target_seal": "4a236b55e9ad9e4aa54eb2c6bbe9d77e0a318881ba8328363505153d16e151dd",
+          "previous_revision_seal_of_target_seal": [],
+          "messages": [
+            "All twelve temporary SQLite/mocked SDK tests: closed transport refusal, known failure settled, ambiguous timeout indeterminate, accounting failure pending, physical retry capture, current taxonomy/historical layers, old v2 snapshot identity, fake retry unknown usage, idempotence, pre-send ceiling refusal, unknown/drift/inactive/rebinding refusal and bounded private-data-free metadata. No paid/public/PG or old cutover trial execution."
+          ]
+        },
+        {
+          "target_seal": "4ae57d3d00b2485210aa3c0ee7c312fe26fed6fad7548d40d51af25b3316c7bf",
+          "previous_revision_seal_of_target_seal": [],
+          "messages": [
+            "All twelve temporary SQLite/mocked SDK tests: closed transport refusal, known failure settled, ambiguous timeout indeterminate, accounting failure pending, physical retry capture, current taxonomy/historical layers, old v2 snapshot identity, fake retry unknown usage, idempotence, pre-send ceiling refusal, unknown/drift/inactive/rebinding refusal and bounded private-data-free metadata. No paid/public/PG or old cutover trial execution."
+          ]
+        },
+        {
+          "target_seal": "4ea52a357e72328f2c5e136344aa945c23078b1c6957fc150f77a6153663ebee",
+          "previous_revision_seal_of_target_seal": [],
+          "messages": [
+            "All twelve temporary SQLite/mocked SDK tests: closed transport refusal, known failure settled, ambiguous timeout indeterminate, accounting failure pending, physical retry capture, current taxonomy/historical layers, old v2 snapshot identity, fake retry unknown usage, idempotence, pre-send ceiling refusal, unknown/drift/inactive/rebinding refusal and bounded private-data-free metadata. No paid/public/PG or old cutover trial execution."
+          ]
+        },
+        {
+          "target_seal": "5ffd398315f200640d9f18b45ef7fdcb431c6f2ff542cdb4c18148b2b093cfdc",
+          "previous_revision_seal_of_target_seal": [],
+          "messages": [
+            "All twelve temporary SQLite/mocked SDK tests: closed transport refusal, known failure settled, ambiguous timeout indeterminate, accounting failure pending, physical retry capture, current taxonomy/historical layers, old v2 snapshot identity, fake retry unknown usage, idempotence, pre-send ceiling refusal, unknown/drift/inactive/rebinding refusal and bounded private-data-free metadata. No paid/public/PG or old cutover trial execution."
+          ]
+        },
+        {
+          "target_seal": "63f18912b67987a5c8c31b6af4a38e1e51044e6dcebfd522a0bae9fde890481c",
+          "previous_revision_seal_of_target_seal": [],
+          "messages": [
+            "All twelve temporary SQLite/mocked SDK tests: closed transport refusal, known failure settled, ambiguous timeout indeterminate, accounting failure pending, physical retry capture, current taxonomy/historical layers, old v2 snapshot identity, fake retry unknown usage, idempotence, pre-send ceiling refusal, unknown/drift/inactive/rebinding refusal and bounded private-data-free metadata. No paid/public/PG or old cutover trial execution."
+          ]
+        },
+        {
+          "target_seal": "6a551488cdc83fcd78916fb69d9cc9f11533ad4a545fd5c96cee39584f8b2226",
+          "previous_revision_seal_of_target_seal": [],
+          "messages": [
+            "All twelve temporary SQLite/mocked SDK tests: closed transport refusal, known failure settled, ambiguous timeout indeterminate, accounting failure pending, physical retry capture, current taxonomy/historical layers, old v2 snapshot identity, fake retry unknown usage, idempotence, pre-send ceiling refusal, unknown/drift/inactive/rebinding refusal and bounded private-data-free metadata. No paid/public/PG or old cutover trial execution."
+          ]
+        },
+        {
+          "target_seal": "71f66465100d9d1b01533c37f03aee8554b204825a8aa3b3fc51ee5c7af2dbc2",
+          "previous_revision_seal_of_target_seal": [],
+          "messages": [
+            "All twelve temporary SQLite/mocked SDK tests: closed transport refusal, known failure settled, ambiguous timeout indeterminate, accounting failure pending, physical retry capture, current taxonomy/historical layers, old v2 snapshot identity, fake retry unknown usage, idempotence, pre-send ceiling refusal, unknown/drift/inactive/rebinding refusal and bounded private-data-free metadata. No paid/public/PG or old cutover trial execution."
+          ]
+        },
+        {
+          "target_seal": "8c5c86d6669841955ae7ddca134e76d66c91a983e6364535405f7546b73972c3",
+          "previous_revision_seal_of_target_seal": [],
+          "messages": [
+            "All twelve temporary SQLite/mocked SDK tests: closed transport refusal, known failure settled, ambiguous timeout indeterminate, accounting failure pending, physical retry capture, current taxonomy/historical layers, old v2 snapshot identity, fake retry unknown usage, idempotence, pre-send ceiling refusal, unknown/drift/inactive/rebinding refusal and bounded private-data-free metadata. No paid/public/PG or old cutover trial execution."
+          ]
+        },
+        {
+          "target_seal": "f37d62dd130cf26f48ced720565c4fad035b93a3f3ad1c3e98943cdc9bf585d1",
+          "previous_revision_seal_of_target_seal": [],
+          "messages": [
+            "All twelve temporary SQLite/mocked SDK tests: closed transport refusal, known failure settled, ambiguous timeout indeterminate, accounting failure pending, physical retry capture, current taxonomy/historical layers, old v2 snapshot identity, fake retry unknown usage, idempotence, pre-send ceiling refusal, unknown/drift/inactive/rebinding refusal and bounded private-data-free metadata. No paid/public/PG or old cutover trial execution."
+          ]
+        }
+      ]
+    },
+    {
+      "seal_id": "d45913564476b4dca8cd3a7bea97b45de1f0979480a3c4f8cc5faab3b372b7e6",
+      "material_id": "81c1a40182557192462ce3794261bccd557fbaa4af20b01bfb703a529b07c809",
+      "provenance_id": "91ec35b8e84ea8307dffb9754d9271ef617672b413636b35f438dad2b27ebc36",
+      "content_blob_id": "e3a5d2bb30661663d4d536cd7e585c1c6dd0a2a0bfe26b75ba27a25fb4056a36",
+      "content_bytes": 5986,
+      "attachments": [],
+      "root": false,
+      "draft": false,
+      "cause_links": [
+        {
+          "target_seal": "24b2f5a035a699c2e2236ef6d901f0dc6c554b9075d99627195be79a3fc328ce",
+          "previous_revision_seal_of_target_seal": [
+            "2d0cde5df910b7f8bb1f249887a1434ad8573fa72c4263e1861f03e15646edf9"
+          ],
+          "messages": []
+        }
+      ]
+    },
+    {
+      "seal_id": "d56e7a35e3092c9a1327c95a60d4d3ac599df81d3bc4d162f95ca351e59c59a4",
+      "material_id": "b5c24a3a962fde1de26343a221a341735ef066b58aba73bdccd7b60730407326",
+      "provenance_id": "5e91976044e60c37c2a90e645076ab746e95d9466f2369c7e9a605f0b4b930c2",
+      "content_blob_id": "a2729e35359e23702dd2ea45049cff3934e7320a17b50dab1eb0b637306d4290",
+      "content_bytes": 18015,
+      "attachments": [],
+      "root": false,
+      "draft": false,
+      "cause_links": [
+        {
+          "target_seal": "24b2f5a035a699c2e2236ef6d901f0dc6c554b9075d99627195be79a3fc328ce",
+          "previous_revision_seal_of_target_seal": [
+            "2d0cde5df910b7f8bb1f249887a1434ad8573fa72c4263e1861f03e15646edf9"
+          ],
+          "messages": []
+        },
+        {
+          "target_seal": "a1c688a46b255e61a935098665e31e0e6f368cc259b72b0b81d87a4ec1552c3a",
+          "previous_revision_seal_of_target_seal": [],
+          "messages": [
+            "Reviewed retained worker and fixture assertions under the accepted V3 write boundary"
+          ]
+        }
+      ]
+    },
+    {
+      "seal_id": "de31fb06946a1d489d9c2f48e85d67f09b7cfab81dbf29a5d57c986185cec8e4",
+      "material_id": "e79c4fc21e2e7ace9bf1a5328a3c7f75f123896780dabab8bbce8dca52932871",
+      "provenance_id": "0a2acfba1ca7cbd62c338c2ec079def866ac990f93aa1a3b7948c7c0d620eb00",
+      "content_blob_id": "e45ab1833836956387b15236acf90867cfbe161c4fd61b88b402f8d70651aa82",
+      "content_bytes": 2450,
+      "attachments": [],
+      "root": false,
+      "draft": false,
+      "cause_links": [
+        {
+          "target_seal": "6990a7ae051484cc5c2272c849b193080dc290af67c9120190f87464a69276c4",
+          "previous_revision_seal_of_target_seal": [
+            "058be1059547c7fc9e86790b7de7be5caa36d99308bfe432bb9ca4e353540a2d"
+          ],
+          "messages": []
+        }
+      ]
+    },
+    {
+      "seal_id": "e213649ee62c5ec771f04e628ba62c69a0b5ea58b81651ade610ee80a2366c28",
+      "material_id": "acc25453db6bd79b0005d7f8768f7ba58ef1fb305ede9a6ad567386b43575bd2",
+      "provenance_id": "83bf9c3f65832466549493ab9706228269d2a1d795eb70e997306f721df979f3",
+      "content_blob_id": "46c5ae792083493d1375dbabe26bb1c546838d7363fc961eb5e105bc9632f045",
+      "content_bytes": 8728,
+      "attachments": [],
+      "root": false,
+      "draft": false,
+      "cause_links": [
+        {
+          "target_seal": "01a97ac99ebd726ac84945cb319e02e598df6ec9435df2f721703c30fddce360",
+          "previous_revision_seal_of_target_seal": [],
+          "messages": [
+            "Entire unchanged9cases including3phases: no psyche/current-privateinput/priorstate/repeatedspeech/independentexpression/tupleguard/disabled missingobservation hold/later no tick/overrideguard. OverriddenchatJson, no network/modelquality/current awareness-v5 proof."
+          ]
+        },
+        {
+          "target_seal": "203e66fc4e30772adab026012c67f1b1ac4ca86ad2ada11b501c639a27a19eac",
+          "previous_revision_seal_of_target_seal": [],
+          "messages": [
+            "Entire unchanged9cases including3phases: no psyche/current-privateinput/priorstate/repeatedspeech/independentexpression/tupleguard/disabled missingobservation hold/later no tick/overrideguard. OverriddenchatJson, no network/modelquality/current awareness-v5 proof."
+          ]
+        },
+        {
+          "target_seal": "53ab40da81f03223ec4343a4e8625508fd888aabab496dd62e02f1b75d784d2c",
+          "previous_revision_seal_of_target_seal": [],
+          "messages": [
+            "Entire unchanged9cases including3phases: no psyche/current-privateinput/priorstate/repeatedspeech/independentexpression/tupleguard/disabled missingobservation hold/later no tick/overrideguard. OverriddenchatJson, no network/modelquality/current awareness-v5 proof."
+          ]
+        },
+        {
+          "target_seal": "6b7b9634d4b8729ba3cfdeffded746ba4f7b588cfacfaa271bff7b0763b3762e",
+          "previous_revision_seal_of_target_seal": [],
+          "messages": [
+            "Entire unchanged9cases including3phases: no psyche/current-privateinput/priorstate/repeatedspeech/independentexpression/tupleguard/disabled missingobservation hold/later no tick/overrideguard. OverriddenchatJson, no network/modelquality/current awareness-v5 proof."
+          ]
+        },
+        {
+          "target_seal": "860e2bd9904b29efbcc0d1ed682da79f90dc8e592ba0e752cd46cf5507eb0911",
+          "previous_revision_seal_of_target_seal": [],
+          "messages": [
+            "Entire unchanged9cases including3phases: no psyche/current-privateinput/priorstate/repeatedspeech/independentexpression/tupleguard/disabled missingobservation hold/later no tick/overrideguard. OverriddenchatJson, no network/modelquality/current awareness-v5 proof."
+          ]
+        },
+        {
+          "target_seal": "aa60b589cfa4e1490aa8bfe09fb3635599e12fda778806e815fe4e4fd8763547",
+          "previous_revision_seal_of_target_seal": [],
+          "messages": [
+            "Entire unchanged9cases including3phases: no psyche/current-privateinput/priorstate/repeatedspeech/independentexpression/tupleguard/disabled missingobservation hold/later no tick/overrideguard. OverriddenchatJson, no network/modelquality/current awareness-v5 proof."
+          ]
+        },
+        {
+          "target_seal": "f2548da2d6bd9be335c5fbd52df5c722f78148570f87c3da208f57db4eec4845",
+          "previous_revision_seal_of_target_seal": [],
+          "messages": [
+            "Entire unchanged9cases including3phases: no psyche/current-privateinput/priorstate/repeatedspeech/independentexpression/tupleguard/disabled missingobservation hold/later no tick/overrideguard. OverriddenchatJson, no network/modelquality/current awareness-v5 proof."
+          ]
+        },
+        {
+          "target_seal": "ffa16af3f341c2b25cf2e64dce646c61cc10f5fe95bed4784b619f8017931be2",
+          "previous_revision_seal_of_target_seal": [],
+          "messages": [
+            "Entire unchanged9cases including3phases: no psyche/current-privateinput/priorstate/repeatedspeech/independentexpression/tupleguard/disabled missingobservation hold/later no tick/overrideguard. OverriddenchatJson, no network/modelquality/current awareness-v5 proof."
+          ]
+        }
+      ]
+    },
+    {
+      "seal_id": "e2e7cccb45af2afb0376078546414eb2b4cc18e67c3b936f7cd3e759afb4bc6a",
+      "material_id": "eb6148295b8f02d70bdc6c3963cf94c5c27002d48f325ea40b260dbcd77a0b71",
+      "provenance_id": "b41a1bedeecb7ac95116dac1d2fd3d465e743b9fb33bd33760937f8736ba0078",
+      "content_blob_id": "1e28d308d576d94c98d5b85137400815f2bd6de13f6a4ca020f60c82ad3fcc48",
+      "content_bytes": 14606,
+      "attachments": [],
+      "root": false,
+      "draft": false,
+      "cause_links": [
+        {
+          "target_seal": "104b75473d4236887e586474778688398b1ebe3f49681ba9d7c633e221b8ffc9",
+          "previous_revision_seal_of_target_seal": [],
+          "messages": [
+            "Whole original 9 cases retained. Local SQLite/offline/fakeSDK bounded proof only; proof refusal is historical certified binding, no paid/live/current pricing acceptance."
+          ]
+        },
+        {
+          "target_seal": "3e99d5c91a92a2de7ce63f1a3d09d84df9743e9e7c6866fc6d27efe0768b25a9",
+          "previous_revision_seal_of_target_seal": [],
+          "messages": [
+            "Whole original 9 cases retained. Local SQLite/offline/fakeSDK bounded proof only; proof refusal is historical certified binding, no paid/live/current pricing acceptance."
+          ]
+        },
+        {
+          "target_seal": "6ac6f7936f62bf30134d2c26620c335f7b71357945f0713f35f4635a70754a31",
+          "previous_revision_seal_of_target_seal": [],
+          "messages": [
+            "Whole original 9 cases retained. Local SQLite/offline/fakeSDK bounded proof only; proof refusal is historical certified binding, no paid/live/current pricing acceptance."
+          ]
+        }
+      ]
+    },
+    {
+      "seal_id": "e4fa90ba7757ceefcca625db6aa65243205a3ac1bb742cd0e4007fae1b0f3bed",
+      "material_id": "7431bdcc94fa19dd3c083bf52e7fa3d6152238114f56b9e017e26424ccedbdb8",
+      "provenance_id": "5b3797f9f746d782e3784afc6fa192386397ccf7680c44a13c15e68fd8b34a1a",
+      "content_blob_id": "34bc896b78bdd98011519ddef46e1d697caf09490a64f2c7057a0e3a2576c069",
+      "content_bytes": 15676,
+      "attachments": [],
+      "root": false,
+      "draft": false,
+      "cause_links": [
+        {
+          "target_seal": "6396326c4db3a821cc7105084829855cf99b629253ef7f7e565c3b3da9e49f40",
+          "previous_revision_seal_of_target_seal": [
+            "30aae1751f5104a7421fd0e840825906a7bde73fd550f5eb937d60bc56d4ffb5"
+          ],
+          "messages": []
+        }
+      ]
+    },
+    {
+      "seal_id": "e662c1f52256d165fc5abe43532dbcb44afe9a52b81ba777519246bf6c8bb2d4",
+      "material_id": "71751b81c5a314d1a2dcddd2fd30dcc7b0a7c751277167a0cfe4e95cc52aefc1",
+      "provenance_id": "dfc1ef50195f5fac42fdcd1b5da7255f2e779f1c872cab7fc999a8c4e9d53a18",
+      "content_blob_id": "36cf64c8a9ef24cd301bafc120ac5a0bd52b2b92d4343348b0fb9bade6ec639b",
+      "content_bytes": 9230,
+      "attachments": [],
+      "root": false,
+      "draft": false,
+      "cause_links": [
+        {
+          "target_seal": "422c8aab7cae0d26a5734530d3a31765fce0437d2032e164019401550dfb9476",
+          "previous_revision_seal_of_target_seal": [],
+          "messages": [
+            "Whole original 6 cases retained. Local SQLite/offline/fakeSDK bounded proof only; proof refusal is historical certified binding, no paid/live/current pricing acceptance."
+          ]
+        },
+        {
+          "target_seal": "8abba1a9c8979c938c12dd7bfb72af72c43496dbb487ff827477c7ff5951482f",
+          "previous_revision_seal_of_target_seal": [],
+          "messages": [
+            "Whole original 6 cases retained. Local SQLite/offline/fakeSDK bounded proof only; proof refusal is historical certified binding, no paid/live/current pricing acceptance."
+          ]
+        },
+        {
+          "target_seal": "a716bc3b8e2473ca01d2cf7408bdc93dc769f8556428f493d9ee803dd7859619",
+          "previous_revision_seal_of_target_seal": [],
+          "messages": [
+            "Whole original 6 cases retained. Local SQLite/offline/fakeSDK bounded proof only; proof refusal is historical certified binding, no paid/live/current pricing acceptance."
+          ]
+        }
+      ]
+    },
+    {
+      "seal_id": "e683553900d5123d800b81b668a96f946946601f73e694dc3b19bf4c2681d6be",
+      "material_id": "05c8ed5a228293169bd7e3db0818aeb705c2387d9bd8707d38c2e0fa2ed5e2c7",
+      "provenance_id": "768a2c2310a2122458cfa38401ac3b07c4898ae9697d47f110b99fbe8d76a490",
+      "content_blob_id": "78ced7ceee623fa50623fa413a6a1f70b21c757c29aaf58140fa9568132ee23f",
+      "content_bytes": 26999,
+      "attachments": [],
+      "root": false,
+      "draft": false,
+      "cause_links": [
+        {
+          "target_seal": "08e378322bfc5c7d21c1df48e50b51713fdf7cc429f0e2229de8ff2eba6bd8fb",
+          "previous_revision_seal_of_target_seal": [],
+          "messages": [
+            "All8existing actual isolated HTTP/persistence cases remain positive: structure failure no partial, legacy excluded, explicit upgrade owner adoption, compare review, expiry and stale pointer no append, immutable create/revise/image, exact preset/compiled instance binding. Mock provider/media only, no natural provider quality/deployment."
+          ]
+        },
+        {
+          "target_seal": "2432d6aa7c1374fc5d1f2cd36936454f77529e4750bf3177a7a239232f37da78",
+          "previous_revision_seal_of_target_seal": [
+            "d2efb94d5241f39f3228b1c628b659a66ba1cc8af91ca0df9b0eff21eaac6bb2"
+          ],
+          "messages": [
+            "Only3line local type refinement; earlier scope and original14HTTP cases preserved and rerun. No runtime or policy change."
+          ]
+        },
+        {
+          "target_seal": "54f969c54c0489a5a5b7f3cb3fd3d97c4af5833c1d71d0e4d26649e4886db6d5",
+          "previous_revision_seal_of_target_seal": [],
+          "messages": [
+            "All8existing actual isolated HTTP/persistence cases remain positive: structure failure no partial, legacy excluded, explicit upgrade owner adoption, compare review, expiry and stale pointer no append, immutable create/revise/image, exact preset/compiled instance binding. Mock provider/media only, no natural provider quality/deployment."
+          ]
+        },
+        {
+          "target_seal": "ab1413f458bb6178b7ca245e788c82d85325d9abbd7e0da59ae2a3bd10f9f9e8",
+          "previous_revision_seal_of_target_seal": [
+            "046b127d623138820b0ba14d0b15b619609d36a448b83a9e7e41e548fb0d01cb"
+          ],
+          "messages": [
+            "Only3line local type refinement; earlier scope and original14HTTP cases preserved and rerun. No runtime or policy change."
+          ]
+        },
+        {
+          "target_seal": "b4c3e3bc530e4707194dbdbebead357c1ba366ce7e24ab1f4a8b5440b6686459",
+          "previous_revision_seal_of_target_seal": [],
+          "messages": [
+            "All8existing actual isolated HTTP/persistence cases remain positive: structure failure no partial, legacy excluded, explicit upgrade owner adoption, compare review, expiry and stale pointer no append, immutable create/revise/image, exact preset/compiled instance binding. Mock provider/media only, no natural provider quality/deployment."
+          ]
+        },
+        {
+          "target_seal": "b6f48bb19b9fc3a71a5c0dd0371df7841f1f4bf52f0c80fe63136be3966bcce5",
+          "previous_revision_seal_of_target_seal": [],
+          "messages": [
+            "All8existing actual isolated HTTP/persistence cases remain positive: structure failure no partial, legacy excluded, explicit upgrade owner adoption, compare review, expiry and stale pointer no append, immutable create/revise/image, exact preset/compiled instance binding. Mock provider/media only, no natural provider quality/deployment."
+          ]
+        },
+        {
+          "target_seal": "c6ae9384dbe1557c3adb9d94530a4ce2e5f3e025c14cca05f418fd9879f1745c",
+          "previous_revision_seal_of_target_seal": [],
+          "messages": [
+            "All8existing actual isolated HTTP/persistence cases remain positive: structure failure no partial, legacy excluded, explicit upgrade owner adoption, compare review, expiry and stale pointer no append, immutable create/revise/image, exact preset/compiled instance binding. Mock provider/media only, no natural provider quality/deployment."
+          ]
+        }
+      ]
+    },
+    {
+      "seal_id": "fb881307c0733a90ab8fd970d25dd7e13710c09e1cc9e43a489f47192f236da0",
+      "material_id": "057455c8abb33051fcecaf993f20c11a81fe3dba076266a3b38acafb1edb7f2a",
+      "provenance_id": "2426a62f8f1b78032f85f1ea50bafad8f7e56beafe17d6db34975d57473cd9c6",
+      "content_blob_id": "256cfe18176e941bce44cd25dc49197ffcfcd57042b51f4a3d77f193d3e40f41",
+      "content_bytes": 5874,
+      "attachments": [],
+      "root": false,
+      "draft": false,
+      "cause_links": [
+        {
+          "target_seal": "0c4348cef5ad7b65ce5ac75ae5408a5428cd6133ee752eaf168432e19c315f8b",
+          "previous_revision_seal_of_target_seal": [],
+          "messages": [
+            "Whole unchanged3cases SQLite owner/expiry/fence and idempotency replay/conflict, not alltransaction receipt replay/heartbeat/PG."
+          ]
+        },
+        {
+          "target_seal": "4ea52a357e72328f2c5e136344aa945c23078b1c6957fc150f77a6153663ebee",
+          "previous_revision_seal_of_target_seal": [],
+          "messages": [
+            "Whole unchanged3cases SQLite owner/expiry/fence and idempotency replay/conflict, not alltransaction receipt replay/heartbeat/PG."
+          ]
+        },
+        {
+          "target_seal": "f09f7e2e5eae9da983979783a5f430dbf5372ce31ae52deaeac5da3c79ffa192",
+          "previous_revision_seal_of_target_seal": [],
+          "messages": [
+            "Whole unchanged3cases SQLite owner/expiry/fence and idempotency replay/conflict, not alltransaction receipt replay/heartbeat/PG."
+          ]
+        },
+        {
+          "target_seal": "f32a6e8815e72a3186332393e8182c1fe1f096b30fc5cf3e9715593fafebaaba",
+          "previous_revision_seal_of_target_seal": [],
+          "messages": [
+            "Whole unchanged3cases SQLite owner/expiry/fence and idempotency replay/conflict, not alltransaction receipt replay/heartbeat/PG."
+          ]
+        }
+      ]
+    },
+    {
+      "seal_id": "fea0d8da2e02bc42d61d5914570e53cd60cd1f4073b1e3ff32f802cd88faf3eb",
+      "material_id": "2857293f88460825a0a44c2f876937063feaafa50e9b0fafe9b685bbbbbc397a",
+      "provenance_id": "91ec35b8e84ea8307dffb9754d9271ef617672b413636b35f438dad2b27ebc36",
+      "content_blob_id": "903ac2e139beae7261371042f64eb5f1fac76152f7f66090f2b7d0f5373ab850",
+      "content_bytes": 2519,
+      "attachments": [],
+      "root": false,
+      "draft": false,
+      "cause_links": [
+        {
+          "target_seal": "24b2f5a035a699c2e2236ef6d901f0dc6c554b9075d99627195be79a3fc328ce",
+          "previous_revision_seal_of_target_seal": [
+            "2d0cde5df910b7f8bb1f249887a1434ad8573fa72c4263e1861f03e15646edf9"
+          ],
+          "messages": []
+        }
+      ]
+    }
+  ],
+  "currentGraphExcludedCount": 52,
+  "method": "Exact public CLI show for historical leaf Seals outside current observed graph; no repository migration"
+}

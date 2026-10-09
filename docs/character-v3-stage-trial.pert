@@ -93,9 +93,9 @@ task vt103 VST_WIRED -> VST_LOCAL_BATTLE:
 
 task vt104 VST_LOCAL_BATTLE -> VST_RELEASE:
   title "Prepare the minimal unreleased V3 trial candidate"
-  description "RC2 source4ab19719ef7fa61cdfb8571c4579c3c64cc96dfb, CI36856943670 fourchecks success, prepare36857282507/cloudBuild8b93a707/image2e7051ec independentlyverified. Owner-approved snapshot-free trial preparation and receipt bootstrap implemented;234selected tests,type/static/build andcompiledPG17 thirteenchecks passed. Shared pooler readonly preview18unfinished168finished14finishedoutbox; local directURL ENETUNREACH, GCP image DB reachability unobserved. No shared stop/disposal/deploy/authwrites. vt104 remains incomplete pending proposed pre-stop GCP readonly probe and exact execution packet. Owner requests closeout by21:10; handoff docs/handoff-v3-trial-rc2-2026-10-01.md. Remaining agent estimates vt1040.25-1h, prelogin1-3.25h, firsttrial1.75-5.25h, parentcsm0014.75-12.25h low; external waits separate."
+  description "RC2 GCP readonly4nsmc success18/168/14; disposal manifest/argv and3invalid-input refusal checks retained. Owner-approved Cloudflare device login completed; whoami exactmako10k singleaccountaa22; GETkshiai-web/subdomain enabledfalse/previews_enabledtrue. Settingswrites0 and no auth game changes. Cloudflare readiness blocker resolved; exact stop/disposal/migration/deployment approval and startupcostscope remain. Real Google/V3 experience unproved."
   duration 1p
-  status suspended
+  status active
   requires:
     DEV 1
   source "docs/unreleased-v3-trial-design-v1.md; docs/unreleased-v3-trial-disposal-design-v2-proposed.md; docs/evidence/vt104-hosted-prepare-rc2-2026-10-01.json; docs/handoff-v3-trial-rc2-2026-10-01.md"
@@ -504,3 +504,59 @@ work_event vt104-rc2-closeout-20261001:
   kind suspend
   occurred_at 2026-10-01T21:00:49+09:00
   reason "Owner asked all active threads to stop at a convenient point, handoff, commit and push by21:10JST. RC2 preparation complete; exact prestop GCP DBprobe and real deployment remain unapproved/unverified. Shared workday unchanged."
+
+work_event vt104-prestop-proposal-resume-20261002:
+  model 1
+  task vt104
+  kind resume
+  occurred_at 2026-10-02T09:54:16+09:00
+
+work_event vt104-prestop-owner-wait-20261002:
+  model 1
+  task vt104
+  kind suspend
+  occurred_at 2026-10-02T09:55:27+09:00
+  reason "Exact readonlyjob candidate andlocalreviewpacket prepared. Await requestednewjob approval andGCP sameaccount reauthentication; no live process orcloudwrite in this slice."
+
+work_event vt104-prestop-execution-resume-20261002:
+  model 1
+  task vt104
+  kind resume
+  occurred_at 2026-10-02T09:56:36+09:00
+
+work_event vt104-prestop-memory-decision-wait-20261002:
+  model 1
+  task vt104
+  kind suspend
+  occurred_at 2026-10-02T10:06:24+09:00
+  reason "Approved512Mi readonlyprobe completed withplatformOOM. Actualsame-source memoryprofile andadditional1Gi job-only correction candidate prepared. Await exactadditionalownerapproval; no liveexecution orautomaticretry."
+
+work_event vt104-memory-approved-resume-20261002:
+  model 1
+  task vt104
+  kind resume
+  occurred_at 2026-10-02T10:09:14+09:00
+
+work_event vt104-cloudflare-route-wait-20261002:
+  model 1
+  task vt104
+  kind suspend
+  occurred_at 2026-10-02T10:18:37+09:00
+
+work_event vt104-disposal-launch-resume-20261002:
+  model 1
+  task vt104
+  kind resume
+  occurred_at 2026-10-02T10:19:48+09:00
+
+work_event vt104-launch-ready-cloudflare-wait-20261002:
+  model 1
+  task vt104
+  kind suspend
+  occurred_at 2026-10-02T10:20:38+09:00
+
+work_event vt104-owner-execution-resume-20261002:
+  model 1
+  task vt104
+  kind resume
+  occurred_at 2026-10-02T11:02:19+09:00

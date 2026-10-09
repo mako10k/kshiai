@@ -1,0 +1,101 @@
+{
+  "schema": "kshiai/retained-test-inputs/v1",
+  "entries": [
+    {
+      "path": "docs/evidence/semantic-migration-grok-2026-09-10-v2/prepare-proof.json",
+      "sha256": "ddc9c2271a57297645b05314b1f7eb80dfc77aa738a3d5c1b53f298e98db2cae",
+      "bytes": 261789
+    },
+    {
+      "path": "docs/evidence/semantic-migration-grok-2026-09-10-v2/live-result.json",
+      "sha256": "41f73a6997750760b8d4b5d9864f35d73a33a6b3f25022860133659bea094e2b",
+      "bytes": 2598942
+    },
+    {
+      "path": "docs/evidence/semantic-migration-grok-2026-09-10-v2/call-1-before.json",
+      "sha256": "89d9d0e46db986b2f87884a9a24e482db73e02d1ee08070879460f4646cb0aad",
+      "bytes": 369904
+    },
+    {
+      "path": "docs/evidence/semantic-migration-grok-2026-09-10-v2/call-3-before.json",
+      "sha256": "669790f616c2074e1121b602e1cd4ce490160634246a53473175ed82e2b9327c",
+      "bytes": 380745
+    },
+    {
+      "path": "docs/evidence/semantic-migration-grok-2026-09-10-v2/call-5-before.json",
+      "sha256": "22038ecd7f950b79833fddd71ce7a61885690bf897bf8ad6a64a3ed9ac01fd9b",
+      "bytes": 389260
+    },
+    {
+      "path": "docs/evidence/semantic-migration-grok-2026-09-10-v2/call-1-response.json",
+      "sha256": "9f85eed47e280947f7fb525324738bd42d2b6bf063aea1d5454278bf1a1c38d2",
+      "bytes": 3481
+    },
+    {
+      "path": "docs/evidence/semantic-migration-grok-2026-09-10-v2/call-2-response.json",
+      "sha256": "5f691c9db17fca5210b7511c5f31bcb0d849828222390183c3fc2534077ba1ea",
+      "bytes": 2698
+    },
+    {
+      "path": "docs/evidence/semantic-migration-grok-2026-09-10-v2/call-3-response.json",
+      "sha256": "ed2ccd4b88de9fea3ae214efc584dfcf160c27b63ef29afba2bc6ae500f3ec52",
+      "bytes": 4567
+    },
+    {
+      "path": "docs/evidence/semantic-migration-grok-2026-09-10-v2/call-5-response.json",
+      "sha256": "a82a1a98f56ad7452d065441741dee60344ff6d630bbf6cb0d99c86946df3239",
+      "bytes": 4113
+    },
+    {
+      "path": "docs/evidence/semantic-migration-grok-2026-09-11-v3/prepare-proof.json",
+      "sha256": "eac8fb56226e98f088bf7007f3767111027bda6afd9887eb8cb3a8bee2364d1c",
+      "bytes": 277975
+    },
+    {
+      "path": "docs/evidence/semantic-migration-grok-2026-09-11-v3/call-1-receipt.json",
+      "sha256": "b9d92979a6a6784f0613c3410fdfa7f5f7a3b75925cdd0fb149327e8a4691980",
+      "bytes": 5439
+    },
+    {
+      "path": "docs/evidence/semantic-migration-grok-2026-09-11-v3/call-2-receipt.json",
+      "sha256": "6090b77eb2130c3d22dc44b67db806da08b729f321a65685d9c23f229272d165",
+      "bytes": 2720
+    },
+    {
+      "path": "docs/evidence/semantic-migration-grok-2026-09-11-v3/call-3-receipt.json",
+      "sha256": "4e65e2bc9bcd0b49fbf6036fc8b8e60057161bd7541ce5ea4716a01830c205ae",
+      "bytes": 2351
+    },
+    {
+      "path": "docs/evidence/semantic-migration-grok-2026-09-11-v3/call-4-receipt.json",
+      "sha256": "6b44f703548de7fc9460a4db81d9094d1e0d61b6a797048c699f81e7b9f8b949",
+      "bytes": 2627
+    },
+    {
+      "path": "docs/evidence/semantic-migration-grok-2026-09-11-v3/call-5-receipt.json",
+      "sha256": "6605e8ed8be6e4f7ad5645308674d145ecf87fb3726444114bfde60a417af011",
+      "bytes": 1551
+    },
+    {
+      "path": "docs/evidence/semantic-migration-grok-2026-09-11-v3/call-6-receipt.json",
+      "sha256": "c9687293d5e8f09787cbc83017095ea86e7ec9c5e646d888fb8b9579d06b4556",
+      "bytes": 3456
+    },
+    {
+      "path": "docs/evidence/semantic-migration-grok-2026-09-11-v3/call-1-before.json",
+      "sha256": "48863d967994bac5a8610bebfd9b9d25930405ab823f3ad99bdc77948aa07994",
+      "bytes": 403575
+    },
+    {
+      "path": "docs/evidence/semantic-migration-grok-2026-09-11-v3/call-3-before.json",
+      "sha256": "937f1527b3fbf7461e41449328a304014a306cc21f60c369d9a5c30ab087bbbd",
+      "bytes": 426926
+    },
+    {
+      "path": "docs/evidence/semantic-migration-grok-2026-09-11-v3/call-5-before.json",
+      "sha256": "062d21c0f5b2323be9698fb1e434fc5e3e7a2c856b69f0ecc385eae064a78415",
+      "bytes": 434092
+    }
+  ],
+  "scope": "All retained JSON files read by the diagnostic and B5 generation test files. Hash identity is not factual endorsement, current paid authority or live provider acceptance."
+}

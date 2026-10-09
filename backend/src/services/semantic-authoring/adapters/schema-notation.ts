@@ -29,9 +29,20 @@ function wrappedSchemaNotation(schema: z.ZodTypeAny): string | undefined {
 function primitiveSchemaNotation(schema: z.ZodTypeAny): string | undefined {
   if (schema instanceof z.ZodLiteral) return JSON.stringify(schema.value);
   if (schema instanceof z.ZodEnum) {
-    return schema.options.map((value: string) => JSON.stringify(value)).join("|");
+    return schema.options.map((value: string) => /^[a-z][a-z0-9-]*$/.test(value)
+      && !["true", "false", "null", "str", "int", "num", "string", "number", "boolean"].includes(value)
+      ? value : JSON.stringify(value)).join("|");
   }
   if (schema instanceof z.ZodString || schema instanceof z.ZodNumber) {
+    const minimum = schema._def.checks.find((check) => check.kind === "min");
+    const maximum = schema._def.checks.find((check) => check.kind === "max");
+    const integer = schema._def.checks.some((check) => check.kind === "int");
+    const simple = schema._def.checks.every((check) => check.kind === "int"
+      || ((check.kind === "min" || check.kind === "max") && (!("inclusive" in check) || check.inclusive)));
+    if (simple) {
+      const type = schema instanceof z.ZodString ? "str" : integer ? "int" : "num";
+      return `${type}[${minimum && "value" in minimum ? minimum.value : "_"},${maximum && "value" in maximum ? maximum.value : "_"}]`;
+    }
     const limits = schema._def.checks.map((check) => {
       if (check.kind === "min") return `>=${check.value}`;
       if (check.kind === "max") return `<=${check.value}`;

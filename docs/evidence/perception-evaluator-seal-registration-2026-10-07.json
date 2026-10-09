@@ -1,0 +1,140 @@
+{
+  "entries": [
+    {
+      "key": "design-perception-evaluator-fixture-types",
+      "path": "docs/perception-prompt-test-fixture-types-2026-10-07.md",
+      "parents": [
+        "requirements",
+        "design",
+        "materials"
+      ],
+      "scope": "Local fixture type construction under AGENTS: replace three direct schema/response assertions with targeted Zod validation; preserve all eleven original cases/assertions, add exact validated-payload parity. No production algorithm, threshold, topology, model default or call-count changes.",
+      "ref": "all-tests-20261007/design-perception-evaluator-fixture-types",
+      "test": false,
+      "sha256": "554cb044236dee9aefb4095fb894192dbd7c2265de496ad4b37be7192f17389d",
+      "sealId": "928076b37913fec3fa95919a84aa3b36d9f2ad1848aa1596f452c3a21c65c980",
+      "causeSealIds": [
+        "203e66fc4e30772adab026012c67f1b1ac4ca86ad2ada11b501c639a27a19eac",
+        "8fcf782dd2cc070b868cda0ce065d86440a4c38a7e8ce5dc6928eb2583733cdd",
+        "3e55a3ffb470d3a6ccc397366b15cd9889707b2b96909b2f4f2bf8c16ee068db"
+      ]
+    },
+    {
+      "key": "design-retained-perception-evaluation-matrix",
+      "path": "docs/perception-prompt-evaluation.md",
+      "parents": [
+        "requirements",
+        "design",
+        "design-perception-evaluator-fixture-types"
+      ],
+      "scope": "Retained evaluation harness clauses only: Purpose/authority, XAI strict response-format boundary, Fixed matrix and Metrics/floors; saved exact reviewed registry strings. Historical commands, live model capabilities/prices, provider promotion, previous live receipts and current awareness-v5 topology are not adopted/proven by this local evaluation seal.",
+      "ref": "all-tests-20261007/design-retained-perception-evaluation-matrix",
+      "test": false,
+      "sha256": "9fceea2046a9c6e14d148c9d8657d6d87c84955a2987909bac68fcc0894f2614",
+      "sealId": "d60aaf8a3be5c2a28922ca9735108e69943f67cc3f2bc0988b0be384362129b8",
+      "causeSealIds": [
+        "203e66fc4e30772adab026012c67f1b1ac4ca86ad2ada11b501c639a27a19eac",
+        "8fcf782dd2cc070b868cda0ce065d86440a4c38a7e8ce5dc6928eb2583733cdd",
+        "928076b37913fec3fa95919a84aa3b36d9f2ad1848aa1596f452c3a21c65c980"
+      ]
+    },
+    {
+      "key": "implementation-perception-evaluation-scoring",
+      "path": "backend/src/llm/perception-prompt-strategy.ts",
+      "parents": [
+        "requirements",
+        "design",
+        "wire",
+        "semantic",
+        "materials",
+        "design-retained-perception-evaluation-matrix",
+        "design-perception-evaluator-fixture-types"
+      ],
+      "scope": "Eleven-case exercised materials/reference/scoring/aggregation/recommendation boundary: three valid fixed fixtures, responsibility prompts/strict schema enums, independent world/sensory scoring, attribution/identity leakage, insufficient sample/quality floor selection, measured-only usage and fake reference measurements. Schema and operation comparison are not semantic runtime commit validation or actual provider accuracy.",
+      "ref": "all-tests-20261007/implementation-perception-evaluation-scoring",
+      "test": false,
+      "sha256": "88e0b2107da52b58e4cca8cc66b754256d947e8fa132dd3652178eec155b8b01",
+      "sealId": "69dd46f4733de53d3b76824b1e980d4aed079736d1c8c9829ca7f485b044756f",
+      "causeSealIds": [
+        "203e66fc4e30772adab026012c67f1b1ac4ca86ad2ada11b501c639a27a19eac",
+        "8fcf782dd2cc070b868cda0ce065d86440a4c38a7e8ce5dc6928eb2583733cdd",
+        "635dddb9346372392eefec016dc989a0bcf82d8dd14f049bb771d910c1a924ae",
+        "8534c37b4da9615462035a1428ee6616200614e289efc11a875c91b6a9bca009",
+        "3e55a3ffb470d3a6ccc397366b15cd9889707b2b96909b2f4f2bf8c16ee068db",
+        "d60aaf8a3be5c2a28922ca9735108e69943f67cc3f2bc0988b0be384362129b8",
+        "928076b37913fec3fa95919a84aa3b36d9f2ad1848aa1596f452c3a21c65c980"
+      ]
+    },
+    {
+      "key": "implementation-retained-perception-topology-registry",
+      "path": "backend/src/llm/perception-topology.ts",
+      "parents": [
+        "design-retained-perception-evaluation-matrix",
+        "implementation-perception-evaluation-scoring"
+      ],
+      "scope": "Existing exact provider/model/fixtureVersion lookup and saved four-row registry; current-v10 lookup excludes historical v8 OpenAI row. Tests prove stored labels/reference lookup only; not current external alias facts, provider order, availability, live performance or awareness-v5 default selection.",
+      "ref": "all-tests-20261007/implementation-retained-perception-topology-registry",
+      "test": false,
+      "sha256": "cb1f44d221021f5e5bf241995d5e4aa06565f69ba724eb5040deb427a2249958",
+      "sealId": "922c0cd5ebd3b2cb26d6868c0741ba419b31bba79556011563e68b55779bc123",
+      "causeSealIds": [
+        "d60aaf8a3be5c2a28922ca9735108e69943f67cc3f2bc0988b0be384362129b8",
+        "69dd46f4733de53d3b76824b1e980d4aed079736d1c8c9829ca7f485b044756f"
+      ]
+    },
+    {
+      "key": "implementation-perception-fixed-matrix-runner",
+      "path": "backend/src/llm/perception-prompt-runner.ts",
+      "parents": [
+        "design-retained-perception-evaluation-matrix",
+        "implementation-perception-evaluation-scoring"
+      ],
+      "scope": "Injected completion harness three-fixture three-repetition matrix: combined nine samples and split nine paired samples, split parallelism two, fixed 27 mock calls/no adaptive retry, recorded supplied usage/time and empty error list. No actual billed execution; error recovery and real latency/model validity not proven by success-only fake client.",
+      "ref": "all-tests-20261007/implementation-perception-fixed-matrix-runner",
+      "test": false,
+      "sha256": "228393d7856b51b6fae492a2b991b796b734527011756e50125abb74c4fd9239",
+      "sealId": "4961b478d08e323a25f270e2d501ef777c329257d2a50abcfff746bf8efb52b5",
+      "causeSealIds": [
+        "d60aaf8a3be5c2a28922ca9735108e69943f67cc3f2bc0988b0be384362129b8",
+        "69dd46f4733de53d3b76824b1e980d4aed079736d1c8c9829ca7f485b044756f"
+      ]
+    },
+    {
+      "key": "perception-fixed-evaluation-current",
+      "path": "backend/src/llm/perception-prompt-strategy.test.ts",
+      "parents": [
+        "requirements",
+        "design",
+        "implementation-perception-evaluation-scoring",
+        "implementation-retained-perception-topology-registry",
+        "implementation-perception-fixed-matrix-runner",
+        "design-perception-evaluator-fixture-types"
+      ],
+      "scope": "Entire eleven-case file retains fixtures, responsibility statements, generated strict enums, perfect references, world/sensory failure independence, attribution/leakage detection, floors/insufficient samples, incomplete usage aggregation, exact retained registry lookup, fixed parallel fake matrix. Three unchecked type assertions removed; existing assertions retained. Local harness not live/provider/current-pipeline acceptance.",
+      "ref": "verification/perception-fixed-evaluation-current-20261007",
+      "test": true,
+      "sha256": "2a99ec675907bae7ef155765378bb01928b696aeeb7166ab824fe328d8aa8737",
+      "sealId": "3578230167f5cbfbc8689898d837bee383c89e3cc414f1c74f5e1ad19a2b791f",
+      "causeSealIds": [
+        "203e66fc4e30772adab026012c67f1b1ac4ca86ad2ada11b501c639a27a19eac",
+        "8fcf782dd2cc070b868cda0ce065d86440a4c38a7e8ce5dc6928eb2583733cdd",
+        "69dd46f4733de53d3b76824b1e980d4aed079736d1c8c9829ca7f485b044756f",
+        "922c0cd5ebd3b2cb26d6868c0741ba419b31bba79556011563e68b55779bc123",
+        "4961b478d08e323a25f270e2d501ef777c329257d2a50abcfff746bf8efb52b5",
+        "928076b37913fec3fa95919a84aa3b36d9f2ad1848aa1596f452c3a21c65c980"
+      ]
+    }
+  ],
+  "diagnostic": {
+    "focusedPass": 11,
+    "fail": 0,
+    "skipped": 0,
+    "strictTypecheckExit": 0,
+    "workspaceTypecheckExit": 0
+  },
+  "limitations": [
+    "Original eleven cases/assertions retained; test-only validated fixture construction",
+    "27 fake calls, no external API; stored model strings not current provider specifications or primary selection proof",
+    "Schema/operation comparison not runtime semantic commit or real provider quality"
+  ]
+}

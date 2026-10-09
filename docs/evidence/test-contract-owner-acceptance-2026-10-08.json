@@ -1,0 +1,12 @@
+{
+  "acceptedAt": "2026-10-08T07:05:24.183840+00:00",
+  "source": "Direct user message 2026-10-08",
+  "requirement": {
+    "path": "docs/battle-test-contract-owner-decisions-2026-10-08.md",
+    "sha256": "99a61a47d32112f76c04d3aa319c3722501fbb44ab730bd11c0274b05df36f47"
+  },
+  "adr0059Accepted": true,
+  "improvementEligibilityAccepted": false,
+  "penaltyKindsDecided": false,
+  "paidOrDeployAuthorized": false
+}

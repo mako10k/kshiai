@@ -1,0 +1,14 @@
+domain NamesConfigSeal:
+  description "Seal original helper/parser tests within accepted scope"
+problem P1:
+  "Two original test files remain unsealed; passing them does not establish upstream authority."
+evidence E1:
+  "F-CHR-03c requires normalized display/real-name collision checks. Three original cases exercise normalization, collision/non-collision and internal mock suffix allocation, not complete saving or regeneration."
+evidence E2:
+  "ADR0008 bounds shadow side effects. ADR0018 governs ordinary persisted settings and isolated immutable override identities. Four original cases only parse names and deployment identity syntax; they do not activate a policy or grant Stage authority."
+evidence E3:
+  "Independent read-only review permits both whole files within helper/parser regression scope. Original seven-case local diagnosis passed with no skipped cases; test and implementation bytes were unchanged."
+decision D1 based_on P1, E1, E2, E3:
+  "Bind a scoped design to existing normative sources, two implementations to their scoped design, and each entire unchanged test file to its implementation. Preserve all original cases, assertions and limitations. No new policy adoption or external execution authority follows."
+decision D2 based_on D1, E1, E2, E3:
+  "Read back exact source hashes and Cause links after normal Seal; retain all existing heads except explicitly registered new refs. Keep full251 goal incomplete and require the formal aggregate to stop while any unit remains unsealed."

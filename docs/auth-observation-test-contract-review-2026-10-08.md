@@ -1,0 +1,11 @@
+# 認証smokeと実利用量照合の局所契約
+
+原3wholefile/7ケース/全assertionを変更しない。read-surface2、authenticated-sse3、awareness-public-observation2。Node22と専用SQLiteで7pass/0fail/0skip。独立レビュー /root/battle_helper_contract_review はproducer/caller/Accepted根拠と型経路を照合しPASS。修正は不要であり新ADRやAPI契約は追加しない。
+
+read-surface: Accepted ADR0043のimmutable historical read維持と通常V2writer退役に沿う。実smoke helperへfetchを注入し、13GETのpath/query順、Bearer付与、fixtureIDのURL encode、最小response shape、失敗endpointの識別を確認する。routes/auth/SQLite/13serverendpointや本番の保持データを実行・検証したとは扱わない。
+
+authenticated-sse: Accepted ADR0057が維持するAPI/SSEとADR0043の内部履歴fixture境界。原case1は実buildRoutes/Hono app.requestとprivate SQLiteのlegacy-cookie認証を使い、404/403、ownerのstream-openとBATTLE_FINISHED terminal error、3table cleanup、provider0を確認する。原case2/3は注入503とJSON content-typeの拒否およびfinally cleanup。Bearer/origin headerは注入境界で渡すことを確認するが、本物のSupabase JWT・origin検証・ネットワークを証明しない。故意にfinishedなfixtureは新規V5試合の完走や最新版実況成功の代用品にしない。旧cutover試行の破棄を維持する。
+
+awareness-public-observation: Accepted ADR0051/0057のSDK実token記録と不明値保存、束縛policyの終端・物理試行未解決なし・台帳件数/identity照合に基づく。typed terminal runtimeとSchemaでparsed済み台帳のpure verifyだけを実行する。3receiptに対するnarration physical1、既知token合計、nullのunknownAttempts、価格なしmonetary unknown、rawUsageの省略、missing runtime・outstanding budget・started/cross-battle/count不足を検証する。関数にある他のrole/policy/incomplete判定を網羅したとは言わない。inspect wrapperの実DB読み取り/drain、実SDK使用保存、最新版prompt本文、公開完走・実況・課金価格は別検証のまま。
+
+Causeは各Accepted根拠→責務別design→実producer→原whole-testとする。実routes/DBはSSEの依存として呼ばれるが、その全機能を本7ケースが検証したとするsource Sealは追加しない。ソースのwholefile bindingは、当該ファイルのすべての関数がこのテストで成立した意味ではない。元247単体＋4E2E全体の完了目標とunsealed実行前停止を維持する。

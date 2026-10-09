@@ -1,0 +1,13 @@
+{
+  "reviewer": "battle_helper_contract_review",
+  "verdict": "INSIDE",
+  "originalCases": 5,
+  "files": {
+    "packages/shared/src/battle-causality.test.ts": "4d7024d3cda2c34dcdcd52dfeaefd32e0fd804ddead4269105d0e752d6d6a8f5",
+    "packages/shared/src/battle-effects.test.ts": "8da7c6add1f5d158bd18b7ddc88bb933745b0463b044a64f091069e809773bdb",
+    "packages/shared/src/battle-causality.ts": "a3748c02f1a2eef130300df51805eeca5a07c3f83e7e7670fc7c090b281a6bdd",
+    "packages/shared/src/battle-effects.ts": "da972f848699331de1a1537900ed4ae44f76d289308742b1d8263e7654f31b94"
+  },
+  "engineVerdict": "BOUNDARY_DISPUTE",
+  "engineSealed": false
+}

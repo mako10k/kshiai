@@ -1,0 +1,9 @@
+# 潜在・顕在計測ハーネスの契約レビュー
+
+独立レビュー battle_helper_contract_review は元8ケースをINSIDEと判定。診断pass8/fail0/skip0、122.142秒。失敗待機・遅延形状のケースを保持し、省略しない。
+
+Accepted ADR0051の実SDK試行の利用量記録・不明コスト保持・秘密やprompt非保存、ADR0052の隔離measurement-v1・600秒global期限・3tick・retry/fallbackなし、ADR0054の旧固定candidate/hash保持、ADR0056が継承するphysical完成とlogical棄却の区別がCauseとなる。
+
+全executeケースはHTTP fixtureを事前importしfetchを完全に置換。鍵はtest-only、DBはfresh tmp SQLite、引継ぎDBのsentinel bytesを保持。defaultはoffline validate。実SDKアダプタをローカル応答で確認するだけで、実provider品質・有料計測・公開配備・試合完走の証明ではない。
+
+破棄済みOLD_CUTOVER_TRIALとは独立した既存計測ハーネス。旧切替試行を復活・完了扱いにせず、bare --executeや外部呼び出しを許可しない。ケースはcandidate digest、default隔離、3tickとSDK route、遭遇・実況失敗停止、長期限のmanifest/runtime一致と入力サイズ記録、schema棄却後の物理slot解放とunknown cost保持を確認する。

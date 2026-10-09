@@ -1,0 +1,326 @@
+{
+  "review": "docs/evidence/dispatch-adjudication-cause-review-2026-10-07.json",
+  "entries": [
+    {
+      "key": "design-adjudication-prose",
+      "path": "docs/adjudication-input-compression-2026-10-06.md",
+      "parents": [
+        "authority",
+        "basic"
+      ],
+      "scope": "Owner accepted representation-only compression: retain keys, types, numerical values, negation, references, empty values and order. No semantic selection, extra LLM, model/timing change or new token savings measurement.",
+      "test": false,
+      "ref": "all-tests-20261007/design-adjudication-prose",
+      "sha256": "06f125cd35662184cb537c341e0d69098e9a8518bba103e399d27785b1c4bf4c",
+      "sealId": "b55b82f4a4db793526000b9f44cc2d859a077bf01b318c73b5a58e0b04899149",
+      "causeSealIds": [
+        "4a236b55e9ad9e4aa54eb2c6bbe9d77e0a318881ba8328363505153d16e151dd",
+        "1adba1d06106cfcc7537dcd2d85aa94f745a4a79ff6b3f5ac4911a11efdf79a8"
+      ]
+    },
+    {
+      "key": "contract-adjudication-referee-wire",
+      "path": "packages/shared/src/battle.ts",
+      "parents": [
+        "authority",
+        "current"
+      ],
+      "scope": "Only picked BattleAdjudication wire fields: bounded reason, enum winner/factor/favored side, nonempty bounded rationale facts. No all battle schema/runtime semantics or public rationale isolation claim.",
+      "test": false,
+      "ref": "all-tests-20261007/contract-adjudication-referee-wire",
+      "sha256": "fc5d492df5fd5252b66e12017b265a4697cc3f798acc2811434b3c33d23b0752",
+      "sealId": "3e03f05f493e0cd591a3f6a02a88f7d9f1dcfd540893edb757fd3989bf6eee7f",
+      "causeSealIds": [
+        "4a236b55e9ad9e4aa54eb2c6bbe9d77e0a318881ba8328363505153d16e151dd",
+        "2c6888e9d07a676d4b429b041b241e1631845b18fac4fb4cda280a4a29670d50"
+      ]
+    },
+    {
+      "key": "contract-adjudication-semantic-wire",
+      "path": "packages/shared/src/semantic-state.ts",
+      "parents": [
+        "authority",
+        "current"
+      ],
+      "scope": "Only TurnSemanticPatch structure and operation grammar imported by strict decoder, server owned base revision/turn/source event references. No actual semantic world application or all state migration acceptance.",
+      "test": false,
+      "ref": "all-tests-20261007/contract-adjudication-semantic-wire",
+      "sha256": "f3677adab517fb27a5552b4c792dd7b2319a165ffbdc20aaa1fb7057b4d9f968",
+      "sealId": "dce107f59177be59fec704680461fb377ad1211e05fd35db9e654b94c0691b59",
+      "causeSealIds": [
+        "4a236b55e9ad9e4aa54eb2c6bbe9d77e0a318881ba8328363505153d16e151dd",
+        "2c6888e9d07a676d4b429b041b241e1631845b18fac4fb4cda280a4a29670d50"
+      ]
+    },
+    {
+      "key": "contract-adjudication-perception-wire",
+      "path": "packages/shared/src/perception.ts",
+      "parents": [
+        "authority",
+        "current"
+      ],
+      "scope": "Only PerceptionEvidenceSet structure imported by semantic decoder, strict sensory evidence validation. No evidence meaning truth or actual cognition compilation acceptance.",
+      "test": false,
+      "ref": "all-tests-20261007/contract-adjudication-perception-wire",
+      "sha256": "10c4f51c03e43764656e3da50b0af068ad877c91a5d7a4a356d6ffd6d8c2b92c",
+      "sealId": "635dddb9346372392eefec016dc989a0bcf82d8dd14f049bb771d910c1a924ae",
+      "causeSealIds": [
+        "4a236b55e9ad9e4aa54eb2c6bbe9d77e0a318881ba8328363505153d16e151dd",
+        "2c6888e9d07a676d4b429b041b241e1631845b18fac4fb4cda280a4a29670d50"
+      ]
+    },
+    {
+      "key": "contract-adjudication-free-action-wire",
+      "path": "packages/shared/src/free-action.ts",
+      "parents": [
+        "authority",
+        "current"
+      ],
+      "scope": "Only FreeActionAdjudicationBatch schema with zero proposals permitted structurally, hence input coverage separately enforced. No all action feasibility/intent/engine contracts certified.",
+      "test": false,
+      "ref": "all-tests-20261007/contract-adjudication-free-action-wire",
+      "sha256": "95d35c04ee0510aa6d6133a2306ed243f19723fdf272eef2f02fa0b222c1431f",
+      "sealId": "b872fc34e9268f23ed69589e254cbcee22c49e0711f41598d3dcdff5b349475a",
+      "causeSealIds": [
+        "4a236b55e9ad9e4aa54eb2c6bbe9d77e0a318881ba8328363505153d16e151dd",
+        "2c6888e9d07a676d4b429b041b241e1631845b18fac4fb4cda280a4a29670d50"
+      ]
+    },
+    {
+      "key": "implementation-adjudication-prose",
+      "path": "backend/src/llm/adjudication-prompt-prose.ts",
+      "parents": [
+        "design-adjudication-prose"
+      ],
+      "scope": "Pure typed outline preserves complete JSON-compatible data, index/order/types/null/empty values and escaped strings; rejects cycles, unsupported and oversized data. No actual token savings or model interpretation claim.",
+      "test": false,
+      "ref": "all-tests-20261007/implementation-adjudication-prose",
+      "sha256": "8fd1d0c125eb65dea5d615f5b7c70d15736b12a9bfaf45f98d0292f100011a93",
+      "sealId": "471266c8f0c5f2461e79fb2f8375f9bb852e53d796282cc6c7bbd6ecb35c2323",
+      "causeSealIds": [
+        "b55b82f4a4db793526000b9f44cc2d859a077bf01b318c73b5a58e0b04899149"
+      ]
+    },
+    {
+      "key": "implementation-awareness-request-digest",
+      "path": "backend/src/services/distributed-guard.ts",
+      "parents": [
+        "authority",
+        "policy"
+      ],
+      "scope": "Only requestDigest SHA256(JSON.stringify(value)) used to identify exact prepared structured material, including schema format; not canonical equivalent-object hashing, distributed lease or idempotency certification.",
+      "test": false,
+      "ref": "all-tests-20261007/implementation-awareness-request-digest",
+      "sha256": "e0a248101fd14555a3aca0dd371c9d6ab2965290064358f88b23aa48aac8ac3c",
+      "sealId": "0c4348cef5ad7b65ce5ac75ae5408a5428cd6133ee752eaf168432e19c315f8b",
+      "causeSealIds": [
+        "4a236b55e9ad9e4aa54eb2c6bbe9d77e0a318881ba8328363505153d16e151dd",
+        "c064db895ea9f010d2f6fb28360b243285cbe93156c19f8286e161ec2d0d731a"
+      ]
+    },
+    {
+      "key": "implementation-awareness-dispatch-admission",
+      "path": "backend/src/llm/awareness-dispatch-admission.ts",
+      "parents": [
+        "authority",
+        "policy",
+        "request",
+        "implementation-awareness-request-digest"
+      ],
+      "scope": "Current exact request proof check and observed-mode admission: provider/model identity, positive bounded deadline/exact output cap, full-prompt safe token count, complete charge flags and digest; quote errors/unavailable/ambiguous contracts fail closed for certified mode, observed skips quote and preserves unknown token/cost. Does not certify quote service truth, price availability or reservation persistence.",
+      "test": false,
+      "ref": "all-tests-20261007/implementation-awareness-dispatch-admission",
+      "sha256": "a6df626e1c9d7f4df5a72e29357e1a00f5fd0057f15cc3e2c552bba65f487248",
+      "sealId": "8abba1a9c8979c938c12dd7bfb72af72c43496dbb487ff827477c7ff5951482f",
+      "causeSealIds": [
+        "4a236b55e9ad9e4aa54eb2c6bbe9d77e0a318881ba8328363505153d16e151dd",
+        "c064db895ea9f010d2f6fb28360b243285cbe93156c19f8286e161ec2d0d731a",
+        "bb7112ff39b462e2759e46e8fb60b5cbfb395412bb163c9beefe6e8f8c3e7be1",
+        "0c4348cef5ad7b65ce5ac75ae5408a5428cd6133ee752eaf168432e19c315f8b"
+      ]
+    },
+    {
+      "key": "implementation-awareness-dispatch-context",
+      "path": "backend/src/llm/awareness-dispatch-context.ts",
+      "parents": [
+        "authority",
+        "policy"
+      ],
+      "scope": "Typed async scope of caller-owned admission guard; request+physical usage returned through guard, scope cleanup. No guard reservation/persistence or concurrent nested-context behavior certification.",
+      "test": false,
+      "ref": "all-tests-20261007/implementation-awareness-dispatch-context",
+      "sha256": "fd309621d2bcfd31b7ce2fa8cb55a1aca358295f909cf83bc74b137e6b4202bd",
+      "sealId": "18615b042fb44a5a2e1de6560cc29be0e544c11a501bd909f9a080b248097434",
+      "causeSealIds": [
+        "4a236b55e9ad9e4aa54eb2c6bbe9d77e0a318881ba8328363505153d16e151dd",
+        "c064db895ea9f010d2f6fb28360b243285cbe93156c19f8286e161ec2d0d731a"
+      ]
+    },
+    {
+      "key": "implementation-awareness-adjudication-decoder",
+      "path": "backend/src/llm/awareness-adjudication-result.ts",
+      "parents": [
+        "current",
+        "contract-adjudication-referee-wire",
+        "contract-adjudication-semantic-wire",
+        "contract-adjudication-perception-wire"
+      ],
+      "scope": "Strict referee and semantic decoders: no fabricated winner/reason/coerced situation/invalid operation, combined evidence required; server owned revision/turn/event refs preserved. Environment decision scope and happening grammar not exercised by this cohort.",
+      "test": false,
+      "ref": "all-tests-20261007/implementation-awareness-adjudication-decoder",
+      "sha256": "e5077a022406f0c01db609ccd9bf9b5ca4871c704b343dfe647ba9925ac66492",
+      "sealId": "4f58829cb7484d0427f8419361af8b256803343e007acdd361ba4f5b0bead046",
+      "causeSealIds": [
+        "2c6888e9d07a676d4b429b041b241e1631845b18fac4fb4cda280a4a29670d50",
+        "3e03f05f493e0cd591a3f6a02a88f7d9f1dcfd540893edb757fd3989bf6eee7f",
+        "dce107f59177be59fec704680461fb377ad1211e05fd35db9e654b94c0691b59",
+        "635dddb9346372392eefec016dc989a0bcf82d8dd14f049bb771d910c1a924ae"
+      ]
+    },
+    {
+      "key": "implementation-sdk-awareness-dispatch",
+      "path": "backend/src/llm/openai-compatible.ts",
+      "parents": [
+        "authority",
+        "policy",
+        "sdk-options",
+        "accounting",
+        "implementation-awareness-dispatch-context",
+        "implementation-awareness-dispatch-admission",
+        "implementation-adjudication-prose"
+      ],
+      "scope": "Only guarded JSON SDK dispatch: exact prose/schema/options supplied to caller guard and physical request, configured Grok engine override, absolute deadline clipped, token caps unchanged, retry none, tool/stream/route refusal before sending; frozen narration strict format forwarded via requestJson. No full SDK domain behavior or paid provider proof.",
+      "test": false,
+      "ref": "all-tests-20261007/implementation-sdk-awareness-dispatch",
+      "sha256": "8d4be097ddbfcb0da515dd0db402c7dc6dddccb763d625fce16165e7c524d2a5",
+      "sealId": "11ad190b10415f87aaf38a9598ec3ac3e05031fd2c03800aac12da69ae178d91",
+      "causeSealIds": [
+        "4a236b55e9ad9e4aa54eb2c6bbe9d77e0a318881ba8328363505153d16e151dd",
+        "c064db895ea9f010d2f6fb28360b243285cbe93156c19f8286e161ec2d0d731a",
+        "7fafa0e59a17475925224cbda6d3d97f05930a271c05d81a2026404546024fb7",
+        "3f3dd4c5984778043e1a692b58d89c536c9af360c6a2b4881b76deb10c9e19a2",
+        "18615b042fb44a5a2e1de6560cc29be0e544c11a501bd909f9a080b248097434",
+        "8abba1a9c8979c938c12dd7bfb72af72c43496dbb487ff827477c7ff5951482f",
+        "471266c8f0c5f2461e79fb2f8375f9bb852e53d796282cc6c7bbd6ecb35c2323"
+      ]
+    },
+    {
+      "key": "implementation-sdk-awareness-adjudication-result",
+      "path": "backend/src/llm/openai-compatible.ts",
+      "parents": [
+        "current",
+        "implementation-sdk-awareness-dispatch",
+        "implementation-awareness-adjudication-decoder",
+        "contract-adjudication-free-action-wire"
+      ],
+      "scope": "Only awareness guarded result boundary: semantic malformed response throws after physical guard completes; schema-valid empty free-action proposals fail expected actor coverage. No fallback or substitute free action returned in tested fallback-disabled route. Other success semantics/referee dispatch and all fallback configuration branches outside scope.",
+      "test": false,
+      "ref": "all-tests-20261007/implementation-sdk-awareness-adjudication-result",
+      "sha256": "8d4be097ddbfcb0da515dd0db402c7dc6dddccb763d625fce16165e7c524d2a5",
+      "sealId": "aa08f46a5ae70bccacc4b43e1621aaf341a26c873111dd15b6ee091836cdf3a2",
+      "causeSealIds": [
+        "2c6888e9d07a676d4b429b041b241e1631845b18fac4fb4cda280a4a29670d50",
+        "11ad190b10415f87aaf38a9598ec3ac3e05031fd2c03800aac12da69ae178d91",
+        "4f58829cb7484d0427f8419361af8b256803343e007acdd361ba4f5b0bead046",
+        "b872fc34e9268f23ed69589e254cbcee22c49e0711f41598d3dcdff5b349475a"
+      ]
+    },
+    {
+      "key": "adjudication-prose",
+      "path": "backend/src/llm/adjudication-prompt-prose.test.ts",
+      "parents": [
+        "design-adjudication-prose",
+        "implementation-adjudication-prose"
+      ],
+      "scope": "Three local tests: complete typed data/negation/value/index/order preservation, smaller synthetic representation versus verbose renderer, fail closed on cycle/non-JSON/depth/entry overflow. No paid/live token savings.",
+      "test": true,
+      "ref": "verification/adjudication-prose-20261007",
+      "sha256": "48e0b68a75325ca10353edae71b65d4f44ad1595c8b297ef283c8166a537d9ce",
+      "sealId": "c7005e56015792e083c2eca785b4bab9e5ac1ae4f131e9018ef1900e75ba5dd6",
+      "causeSealIds": [
+        "b55b82f4a4db793526000b9f44cc2d859a077bf01b318c73b5a58e0b04899149",
+        "471266c8f0c5f2461e79fb2f8375f9bb852e53d796282cc6c7bbd6ecb35c2323"
+      ]
+    },
+    {
+      "key": "awareness-dispatch-admission",
+      "path": "backend/src/llm/awareness-dispatch-admission.test.ts",
+      "parents": [
+        "authority",
+        "implementation-awareness-dispatch-admission"
+      ],
+      "scope": "Eight typed tests: exact verified request proof, missing/cross-model quote refusal, invalid digest/cap/framing/token/cost refusal, asynchronous quote mutation isolation/error refusal, ambiguous configured contracts refuse; explicit observed policy no quote/unknown values, latest request hash for supported labels, output/deadline enforcement. Default certified helper does not become current normal observed policy.",
+      "test": true,
+      "ref": "verification/awareness-dispatch-admission-20261007",
+      "sha256": "702c77c494da1d79e4c5203f4d593791a581713d24a33182712bfb9d07033691",
+      "sealId": "c5b5c0c8c87899ea9484378b595faa560cadfedc42a4b2ad09cc61113cb97375",
+      "causeSealIds": [
+        "4a236b55e9ad9e4aa54eb2c6bbe9d77e0a318881ba8328363505153d16e151dd",
+        "8abba1a9c8979c938c12dd7bfb72af72c43496dbb487ff827477c7ff5951482f"
+      ]
+    },
+    {
+      "key": "awareness-dispatch-context",
+      "path": "backend/src/llm/awareness-dispatch-context.test.ts",
+      "parents": [
+        "authority",
+        "frozen",
+        "implementation-sdk-awareness-dispatch",
+        "implementation-awareness-dispatch-context",
+        "implementation-awareness-dispatch-admission"
+      ],
+      "scope": "Six temporary SQLite/mocked HTTP tests: exact final prose/schema/cap/model/physical usage and async scope cleanup, absolute time clipping/pre-send expiration, bound long deadline/cap mismatch refusal, no tools/stream/wrong model, rejected admission no HTTP/retry, synthetic verified frozen schema hash matches physical SDK wire. No actual pricing or narration-result validity proof in empty receipts wire-only test.",
+      "test": true,
+      "ref": "verification/awareness-dispatch-context-20261007",
+      "sha256": "c07e444968c6952867c4ad0d0c14e7d0c29b3cee65f9540091a541926ddf1370",
+      "sealId": "a8bd77581a0e475618eb1a02af79dc7e24c3b7cdf4959fa3264c6098f4cc4ae7",
+      "causeSealIds": [
+        "4a236b55e9ad9e4aa54eb2c6bbe9d77e0a318881ba8328363505153d16e151dd",
+        "3ce85102892804dcfeb7df194b5e93d477ab783cef102356d02ed300e993ea69",
+        "11ad190b10415f87aaf38a9598ec3ac3e05031fd2c03800aac12da69ae178d91",
+        "18615b042fb44a5a2e1de6560cc29be0e544c11a501bd909f9a080b248097434",
+        "8abba1a9c8979c938c12dd7bfb72af72c43496dbb487ff827477c7ff5951482f"
+      ]
+    },
+    {
+      "key": "awareness-adjudication-result",
+      "path": "backend/src/llm/awareness-adjudication-result.test.ts",
+      "parents": [
+        "current",
+        "implementation-awareness-adjudication-decoder",
+        "implementation-sdk-awareness-adjudication-result"
+      ],
+      "scope": "Five strict local tests: invalid/missing referee facts reject, malformed/coerced semantic/evidence reject, server owned valid refs preserved, actual fake HTTP empty proposals reject rather than invent free actions, invalid semantic content throws after guard physical completion. Mock guard counts completion but does not certify durable ledger accounting or actual world application.",
+      "test": true,
+      "ref": "verification/awareness-adjudication-result-20261007",
+      "sha256": "c8b7b4f7ad6589ec1c73a2d3162009639ab999744f88582beb9a85b833db2de2",
+      "sealId": "6d6e0ceb41bec054864136538c5964cc4ab61c11a4f1c0f4ea9cf19b0314fcec",
+      "causeSealIds": [
+        "2c6888e9d07a676d4b429b041b241e1631845b18fac4fb4cda280a4a29670d50",
+        "4f58829cb7484d0427f8419361af8b256803343e007acdd361ba4f5b0bead046",
+        "aa08f46a5ae70bccacc4b43e1621aaf341a26c873111dd15b6ee091836cdf3a2"
+      ]
+    }
+  ],
+  "diagnostic": {
+    "pass": 22,
+    "fail": 0,
+    "skipped": 0,
+    "strictTypecheckExit": 0
+  },
+  "readback": {
+    "newRefs": 16,
+    "sourceMatch": true,
+    "stale": 0,
+    "previousHeadsChanged": 0,
+    "previousRefs": 686,
+    "totalRefs": 702,
+    "fsck": "ok",
+    "unitEligibility": {
+      "active": 73,
+      "provisional": 1,
+      "disabled": 173,
+      "unsealed": 157
+    }
+  }
+}

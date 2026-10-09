@@ -1,0 +1,19 @@
+# プロバイダ設定テストの因果契約
+
+全テスト成立・因果整理・Sealの指示に基づき、既存provider-config.test.tsをそのまま検証する。モデル設定、環境、配備、fallback動作を変更しない。
+
+## 検証対象と権威の区別
+
+requirements F-CFG-06は、mockを明示的な開発・テスト用選択に限定し、実provider末尾へ暗黙追加しないことを要求する。既存3ケースは、明示的mock選択を非productionで許すこと、productionではopt-inしても許さないこと、real providerの後ろでは明示opt-inが必要なことを純粋な関数引数で検証する。production起動や実provider故障時のdispatch検証ではない。
+
+同ファイルのmodule-level assertionはDEFAULT_XAI_FAST_MODELが既存のgrok-4.3文字列であることを確かめる。残る1ケースはparseBattleCausalNarrationModeの既存off既定値、trim/case正規化、narration_guarded値の許可、未知enabled値の拒否を確かめる。
+
+正確なモデル既定値とmode allowlistを指定したAccepted上位条項は、今回の独立点検で確認されなかった。この2点は現在の実装定数・parserの回帰証拠としてだけSealに記録し、受領済みプロダクト要件への適合や現在の実モデル能力・名称の保証に読み替えない。これは新しいモデル選択やmode仕様を制定する処理ではない。現在のawareness-v5のrole factoryやモデル選択は別の契約・検証を必要とする。
+
+F-CFG-05のrate-limit fallbackとawareness no-fallbackの未整理な関係は、このテストでは解決しない。このファイルの合格をfallback.test.tsや全provider切替仕様の根拠にしない。
+
+## 検証方法
+
+Node22、隔離DB、NODE_ENV=testのmodule初期化で全4ケースとmodule-level assertionを実行する。productionという引数だけで判定関数を検証する。API・実LLM・課金・本番の設定読取りや更新は行わない。strict型検査を行い、source bytes、exact cause IDs、Seal読み戻しとfsckを確認する。
+
+元の4ケース・全assertionと未解決の上位条項探索結果を保持する。未Sealが残る正式全体テストは引き続き実行前に停止する。このSealだけで全体の仕様適合を宣言しない。

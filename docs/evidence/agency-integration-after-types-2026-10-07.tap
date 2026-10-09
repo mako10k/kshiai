@@ -1,0 +1,241 @@
+TAP version 13
+# Subtest: structured battlefield route acceptance
+    # Subtest: records structure-stage failure without exposing a partial battlefield
+    ok 1 - records structure-stage failure without exposing a partial battlefield
+      ---
+      duration_ms: 137.684984
+      type: 'test'
+      ...
+    # Subtest: keeps legacy battlefields visible to management but out of every match binding
+    ok 2 - keeps legacy battlefields visible to management but out of every match binding
+      ---
+      duration_ms: 215.085664
+      type: 'test'
+      ...
+    # Subtest: upgrades a legacy battlefield only after explicit owner confirmation
+    ok 3 - upgrades a legacy battlefield only after explicit owner confirmation
+      ---
+      duration_ms: 119.712815
+      type: 'test'
+      ...
+    # Subtest: returns a compare review and list mark for an awaiting battlefield upgrade
+    ok 4 - returns a compare review and list mark for an awaiting battlefield upgrade
+      ---
+      duration_ms: 78.555739
+      type: 'test'
+      ...
+    # Subtest: expires an upgrade candidate without creating or selecting a generation
+    ok 5 - expires an upgrade candidate without creating or selecting a generation
+      ---
+      duration_ms: 31.312295
+      type: 'test'
+      ...
+    # Subtest: rejects a stale revision candidate after concurrent current-pointer drift
+    ok 6 - rejects a stale revision candidate after concurrent current-pointer drift
+      ---
+      duration_ms: 58.121124
+      type: 'test'
+      ...
+    # Subtest: commits create revision and image changes only as confirmed immutable generations
+    ok 7 - commits create revision and image changes only as confirmed immutable generations
+      ---
+      duration_ms: 154.57244
+      type: 'test'
+      ...
+    # Subtest: binds an exact preset revision and deterministic compiler without mutating it
+    ok 8 - binds an exact preset revision and deterministic compiler without mutating it
+      ---
+      duration_ms: 375.54369
+      type: 'test'
+      ...
+    1..8
+ok 1 - structured battlefield route acceptance
+  ---
+  duration_ms: 1429.251209
+  type: 'suite'
+  ...
+# Subtest: structured narration route acceptance
+    # Subtest: records structure failure without exposing a partial style
+    ok 1 - records structure failure without exposing a partial style
+      ---
+      duration_ms: 195.429703
+      type: 'test'
+      ...
+    # Subtest: keeps legacy styles manageable but outside selectors and direct binding
+    ok 2 - keeps legacy styles manageable but outside selectors and direct binding
+      ---
+      duration_ms: 252.749004
+      type: 'test'
+      ...
+    # Subtest: creates and upgrades only after owner confirmation with idempotent readback
+    ok 3 - creates and upgrades only after owner confirmation with idempotent readback
+      ---
+      duration_ms: 133.122412
+      type: 'test'
+      ...
+    # Subtest: binds the exact ready generation and never appends one at battle start
+    ok 4 - binds the exact ready generation and never appends one at battle start
+      ---
+      duration_ms: 291.6305
+      type: 'test'
+      ...
+    # Subtest: persists expiry and rejects a candidate after current-pointer drift
+    ok 5 - persists expiry and rejects a candidate after current-pointer drift
+      ---
+      duration_ms: 32.156071
+      type: 'test'
+      ...
+    # Subtest: rejects corrupt stored styles on confirmation and completed replay without appending a generation
+    ok 6 - rejects corrupt stored styles on confirmation and completed replay without appending a generation
+      ---
+      duration_ms: 78.021979
+      type: 'test'
+      ...
+    1..6
+ok 2 - structured narration route acceptance
+  ---
+  duration_ms: 1213.75284
+  type: 'suite'
+  ...
+# Subtest: ADR-0028 immutable V3 tuple
+    # Subtest: binds existing character generations without author-origin metadata
+    ok 1 - binds existing character generations without author-origin metadata
+      ---
+      duration_ms: 116.342286
+      type: 'test'
+      ...
+    # Subtest: requires complete compiler inputs and matching bound generation
+    ok 2 - requires complete compiler inputs and matching bound generation
+      ---
+      duration_ms: 39.257194
+      type: 'test'
+      ...
+    # Subtest: rejects missing/mixed dialogue generation and reaction policy
+    ok 3 - rejects missing/mixed dialogue generation and reaction policy
+      ---
+      duration_ms: 53.598037
+      type: 'test'
+      ...
+    # Subtest: keeps override identity paired and rejects legacy override snapshots
+    ok 4 - keeps override identity paired and rejects legacy override snapshots
+      ---
+      duration_ms: 26.037974
+      type: 'test'
+      ...
+    # Subtest: supports explicit complete V3 without changing the default
+    ok 5 - supports explicit complete V3 without changing the default
+      ---
+      duration_ms: 45.610776
+      type: 'test'
+      ...
+    1..5
+ok 3 - ADR-0028 immutable V3 tuple
+  ---
+  duration_ms: 287.821937
+  type: 'suite'
+  ...
+# Subtest: ADR-0028 private agency state persistence
+    # Subtest: keeps retired legacy characters blocked from new battle creation
+    ok 1 - keeps retired legacy characters blocked from new battle creation
+      ---
+      duration_ms: 352.093475
+      type: 'test'
+      ...
+    # Subtest: runs V3 service acceptance, SQLite reload, second judgment and stale-save rejection together
+    ok 2 - runs V3 service acceptance, SQLite reload, second judgment and stale-save rejection together
+      ---
+      duration_ms: 223.863211
+      type: 'test'
+      ...
+    # Subtest: persists initial and second accepted decisions via real SQLite and rejects stale CAS
+    ok 3 - persists initial and second accepted decisions via real SQLite and rejects stale CAS
+      ---
+      duration_ms: 100.299057
+      type: 'test'
+      ...
+    1..3
+ok 4 - ADR-0028 private agency state persistence
+  ---
+  duration_ms: 681.727587
+  type: 'suite'
+  ...
+# [llm] agency-fixture ready engine=fixture fast=fixture
+# [llm] agency-fixture ready engine=fixture fast=fixture
+# [llm] agency-fixture ready engine=fixture fast=fixture
+# [llm] agency-fixture ready engine=fixture fast=fixture
+# [llm] agency-fixture ready engine=fixture fast=fixture
+# [llm] agency-fixture ready engine=fixture fast=fixture
+# [llm] agency-fixture ready engine=fixture fast=fixture
+# [battle] character agents skipped: no observer-safe action available
+# [battle] character agents skipped: no observer-safe action available
+# [llm] agency-fixture ready engine=fixture fast=fixture
+# Subtest: ADR-0028 V3 runtime routing (network replaced, not model-quality evidence)
+    # Subtest: prologue: one conscious request, no psyche request, no old free-text input
+    ok 1 - prologue: one conscious request, no psyche request, no old free-text input
+      ---
+      duration_ms: 230.775194
+      type: 'test'
+      ...
+    # Subtest: turn: one conscious request, no psyche request, no old free-text input
+    ok 2 - turn: one conscious request, no psyche request, no old free-text input
+      ---
+      duration_ms: 96.012116
+      type: 'test'
+      ...
+    # Subtest: aftermath: one conscious request, no psyche request, no old free-text input
+    ok 3 - aftermath: one conscious request, no psyche request, no old free-text input
+      ---
+      duration_ms: 57.094321
+      type: 'test'
+      ...
+    # Subtest: passes the accepted prior decision to the next call, permits repeated speech, and keeps private goal out of public DTO
+    ok 4 - passes the accepted prior decision to the next call, permits repeated speech, and keeps private goal out of public DTO
+      ---
+      duration_ms: 104.960881
+      type: 'test'
+      ...
+    # Subtest: retains valid speech independently of rejected goal/intent/action
+    ok 5 - retains valid speech independently of rejected goal/intent/action
+      ---
+      duration_ms: 69.707747
+      type: 'test'
+      ...
+    # Subtest: rejects tuple drift before dispatch and never silently falls back
+    ok 6 - rejects tuple drift before dispatch and never silently falls back
+      ---
+      duration_ms: 39.144682
+      type: 'test'
+      ...
+    # Subtest: disabled and missing observation do not dispatch, missing input holds reaction
+    ok 7 - disabled and missing observation do not dispatch, missing input holds reaction
+      ---
+      duration_ms: 97.178821
+      type: 'test'
+      ...
+    # Subtest: later reuses agency/reaction without ticking and excludes private/extra envelope keys
+    ok 8 - later reuses agency/reaction without ticking and excludes private/extra envelope keys
+      ---
+      duration_ms: 82.154155
+      type: 'test'
+      ...
+    # Subtest: rejects V3 legacy override before activation
+    ok 9 - rejects V3 legacy override before activation
+      ---
+      duration_ms: 22.123849
+      type: 'test'
+      ...
+    1..9
+ok 5 - ADR-0028 V3 runtime routing (network replaced, not model-quality evidence)
+  ---
+  duration_ms: 805.244052
+  type: 'suite'
+  ...
+1..5
+# tests 31
+# suites 5
+# pass 31
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 5240.663337

@@ -1,0 +1,33 @@
+{
+  "reviewer": "/root/llm_boundary_seal_audit",
+  "sourceHashes": {
+    "infra/cloudflare-worker/src/index.test.ts": "aeb049eb06feb0667f6502c63526dc3f4f573bda17b1203e6da3772c6f5542ca",
+    "infra/cloudflare-worker/src/index.ts": "b7987b341f53a64f223e5e124db81434418fb5b30c03f237a56ccc59c987fb57",
+    "scripts/adr-historical-exceptions.test.mjs": "2b49360fdd6744fcc92be4fc51bd547fb17fac911531fb0f9d4ec7191f28bb98",
+    "scripts/adr-historical-exceptions.mjs": "b41c8054e0360758024f0f6a9aedcfcf53bb2ee0c78d60ae7b19752eea6dfb31",
+    "scripts/check-adrs.mjs": "bd959cc59d245e609904f6e6d75fcd340d1cbf0b3a63b20e2eb57a56a8691b6f",
+    "docs/adr/README.md": "e6ec9395b1a5e6b582be149c91542972b6b09e5aa4bdca6414b8d3f1b8d8fb0b"
+  },
+  "worker": {
+    "wholeCases": 3,
+    "decision": "seal local contract only",
+    "roots": [
+      "docs/release_process.md",
+      "docs/cloud_runtime.md"
+    ],
+    "limits": [
+      "injected fetch/static binding, not actual deployment/direct backend verifier"
+    ]
+  },
+  "historicalAdrExceptions": {
+    "wholeCases": 5,
+    "decision": "hold authority seal",
+    "reason": "No primary owner acceptance of classifier exception policy found; implementation provenance and README are not adoption",
+    "limits": [
+      "fixed hash/status checks pass",
+      "0019 remains Proposed",
+      "ordinary classifier return does not prove full checker integration"
+    ]
+  },
+  "noSourceEdits": true
+}

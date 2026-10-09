@@ -1,0 +1,186 @@
+TAP version 13
+# Subtest: an elapsed deadline rejects waiting but does not cancel the physical promise
+ok 1 - an elapsed deadline rejects waiting but does not cancel the physical promise
+  ---
+  duration_ms: 3.26785
+  type: 'test'
+  ...
+# Subtest: a result before the deadline completes the wait
+ok 2 - a result before the deadline completes the wait
+  ---
+  duration_ms: 0.740143
+  type: 'test'
+  ...
+# Subtest: tick waiting rechecks a backward clock and an early timer wake
+ok 3 - tick waiting rechecks a backward clock and an early timer wake
+  ---
+  duration_ms: 2.957552
+  type: 'test'
+  ...
+# Subtest: tick waiting stops at the global deadline instead of admitting the boundary
+ok 4 - tick waiting stops at the global deadline instead of admitting the boundary
+  ---
+  duration_ms: 0.790195
+  type: 'test'
+  ...
+# Subtest: an already reached tick boundary requires no sleep
+ok 5 - an already reached tick boundary requires no sleep
+  ---
+  duration_ms: 0.771715
+  type: 'test'
+  ...
+# Subtest: awareness immutable context projection
+    # Subtest: includes hidden latent traits and background while conscious context uses only its aware compiler
+    ok 1 - includes hidden latent traits and background while conscious context uses only its aware compiler
+      ---
+      duration_ms: 85.894002
+      type: 'test'
+      ...
+    # Subtest: rejects missing or unevaluated guidance instead of treating it as no applicable principle
+    ok 2 - rejects missing or unevaluated guidance instead of treating it as no applicable principle
+      ---
+      duration_ms: 42.654862
+      type: 'test'
+      ...
+    # Subtest: rejects mismatched asset, generation, digest, and missing immutable compiler
+    ok 3 - rejects mismatched asset, generation, digest, and missing immutable compiler
+      ---
+      duration_ms: 108.158562
+      type: 'test'
+      ...
+    # Subtest: rejects a perception frame belonging to the other observer
+    ok 4 - rejects a perception frame belonging to the other observer
+      ---
+      duration_ms: 20.112079
+      type: 'test'
+      ...
+    # Subtest: makes stimuli only from changed current percepts and does not synthesize missing or removed history
+    ok 5 - makes stimuli only from changed current percepts and does not synthesize missing or removed history
+      ---
+      duration_ms: 20.020795
+      type: 'test'
+      ...
+    # Subtest: preserves a full valid V3 description without rejecting it on the smaller emotion bound
+    ok 6 - preserves a full valid V3 description without rejecting it on the smaller emotion bound
+      ---
+      duration_ms: 30.209573
+      type: 'test'
+      ...
+    1..6
+ok 6 - awareness immutable context projection
+  ---
+  duration_ms: 310.490432
+  type: 'suite'
+  ...
+# Subtest: awareness execution
+    # Subtest: launches frozen A jobs before latent work, advances three ticks, and merges only at a later boundary
+    ok 1 - launches frozen A jobs before latent work, advances three ticks, and merges only at a later boundary
+      ---
+      duration_ms: 353.078234
+      type: 'test'
+      ...
+    # Subtest: restarts without resending outstanding jobs and reuses an already accepted latent tick
+    ok 2 - restarts without resending outstanding jobs and reuses an already accepted latent tick
+      ---
+      duration_ms: 83.796297
+      type: 'test'
+      ...
+    # Subtest: stops an incomplete tick after required failure without fabricating world results
+    ok 3 - stops an incomplete tick after required failure without fabricating world results
+      ---
+      duration_ms: 55.610785
+      type: 'test'
+      ...
+    # Subtest: requires verified full-input token and charge proof before any physical dispatch
+    ok 4 - requires verified full-input token and charge proof before any physical dispatch
+      ---
+      duration_ms: 9.889534
+      type: 'test'
+      ...
+    # Subtest: does not leak the counterpart's private felt projection into a frozen input
+    ok 5 - does not leak the counterpart's private felt projection into a frozen input
+      ---
+      duration_ms: 53.244698
+      type: 'test'
+      ...
+    # Subtest: keeps unaware tendencies and training on the latent side of the model boundary
+    ok 6 - keeps unaware tendencies and training on the latent side of the model boundary
+      ---
+      duration_ms: 50.846661
+      type: 'test'
+      ...
+    # Subtest: delivers live self-aware guidance from frozen assets through the actual decision and execution to the rendered prompt
+    ok 7 - delivers live self-aware guidance from frozen assets through the actual decision and execution to the rendered prompt
+      ---
+      duration_ms: 210.408062
+      type: 'test'
+      ...
+    # Subtest: rejects a missing guidance transfer before dispatching either character
+    ok 8 - rejects a missing guidance transfer before dispatching either character
+      ---
+      duration_ms: 14.758856
+      type: 'test'
+      ...
+    # Subtest: ends when an initial physical thought remains unknown past its deadline
+    ok 9 - ends when an initial physical thought remains unknown past its deadline
+      ---
+      duration_ms: 107.442348
+      type: 'test'
+      ...
+    # Subtest: does not free unknown physical slots after logical results and bounds their grace window
+    ok 10 - does not free unknown physical slots after logical results and bounds their grace window
+      ---
+      duration_ms: 201.333176
+      type: 'test'
+      ...
+    # Subtest: waits for a tick interval and retries the same target without duplicate model calls
+    ok 11 - waits for a tick interval and retries the same target without duplicate model calls
+      ---
+      duration_ms: 112.858584
+      type: 'test'
+      ...
+    # Subtest: merges results ready before the durable latent cutoff without a fixed tick delay
+    ok 12 - merges results ready before the durable latent cutoff without a fixed tick delay
+      ---
+      duration_ms: 78.224403
+      type: 'test'
+      ...
+    # Subtest: does not merge a post-cutoff result during a retry of the prepared tick
+    ok 13 - does not merge a post-cutoff result during a retry of the prepared tick
+      ---
+      duration_ms: 112.929821
+      type: 'test'
+      ...
+    # Subtest: admits combat tick 36 and rejects tick 37 without extra model dispatch
+    ok 14 - admits combat tick 36 and rejects tick 37 without extra model dispatch
+      ---
+      duration_ms: 57.447503
+      type: 'test'
+      ...
+    1..14
+ok 7 - awareness execution
+  ---
+  duration_ms: 1507.13278
+  type: 'suite'
+  ...
+# Subtest: observed execution accepts explicit null-cost proofs and retains role/physical limits
+ok 8 - observed execution accepts explicit null-cost proofs and retains role/physical limits
+  ---
+  duration_ms: 52.710051
+  type: 'test'
+  ...
+# Subtest: keeps unknown thought failure slots reserved but closes observed late validation failures without applying them
+ok 9 - keeps unknown thought failure slots reserved but closes observed late validation failures without applying them
+  ---
+  duration_ms: 81.893175
+  type: 'test'
+  ...
+1..9
+# tests 27
+# suites 2
+# pass 27
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 3792.329967

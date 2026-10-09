@@ -1,0 +1,18 @@
+{
+  "schema": "kshiai/formal-execution-seal-readback/v1",
+  "driverRef": "all-tests-20261009/formal-execution/driver",
+  "driverSealId": "18bec5a467b9d588210760d328ca92accdb4389ec084b9e083e3f5514b00f83f",
+  "resultRef": "all-tests-20261009/formal-execution/original-251-result",
+  "resultSealId": "4335ddd900d57976bf554c7b799d776f22b0c020aac4be00734737b6efcc7f1f",
+  "causeCount": 253,
+  "testCauseCount": 251,
+  "testPreviousCount": 130,
+  "priorHeadsUnchanged": true,
+  "sourceCohortUnchanged": true,
+  "inventoryUnchanged": true,
+  "all251HeadsActiveAndClean": true,
+  "resultSourceMatch": true,
+  "repairChanges": 178,
+  "repairElapsedSeconds": 719.726,
+  "CIAndDeploymentAccepted": false
+}

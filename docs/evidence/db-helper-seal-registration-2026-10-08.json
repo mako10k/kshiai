@@ -1,0 +1,146 @@
+{
+  "entries": [
+    {
+      "key": "design-postgres-ca-path",
+      "path": "docs/db-helper-test-contract-review-2026-10-08.md",
+      "parents": [
+        "requirements"
+      ],
+      "scope": "Current PostgreSQL target preparation, existing CA override/file-read helper only. Not CAtrust/TLS/Supabase/PG17 acceptance.",
+      "ref": "all-tests-20261008/design-postgres-ca-path",
+      "test": false,
+      "sha256": "78391946c606d6f583375623254568f7d18b6bf74b7f7e3e08fc0842088d5211",
+      "sealId": "1e29f4465d9d8f7edc23ab9339271f153a5d2e78276b7f16df96207dae058b05",
+      "causeSealIds": [
+        "203e66fc4e30772adab026012c67f1b1ac4ca86ad2ada11b501c639a27a19eac"
+      ]
+    },
+    {
+      "key": "design-postgres-migration-discovery",
+      "path": "docs/db-helper-test-contract-review-2026-10-08.md",
+      "parents": [
+        "requirements"
+      ],
+      "scope": "Deterministic local SQL file discovery/content checksum preparation only; no applied migrations/check/rollback or hosted execution.",
+      "ref": "all-tests-20261008/design-postgres-migration-discovery",
+      "test": false,
+      "sha256": "78391946c606d6f583375623254568f7d18b6bf74b7f7e3e08fc0842088d5211",
+      "sealId": "d0266378d76a8f4cbcdf01b5172f097c82be720cb79296cec6d2707a946d4c23",
+      "causeSealIds": [
+        "203e66fc4e30772adab026012c67f1b1ac4ca86ad2ada11b501c639a27a19eac"
+      ]
+    },
+    {
+      "key": "design-sqlite-source-inspection",
+      "path": "docs/db-helper-test-contract-review-2026-10-08.md",
+      "parents": [
+        "requirements"
+      ],
+      "scope": "SQLite source/local-only boundary: private legacy fixture normalization, audit ID retention, invalidJSON CLI preflight rejection. No target import or current domain schema acceptance.",
+      "ref": "all-tests-20261008/design-sqlite-source-inspection",
+      "test": false,
+      "sha256": "78391946c606d6f583375623254568f7d18b6bf74b7f7e3e08fc0842088d5211",
+      "sealId": "16b54f679aa310b13ecd0a081a2decfcd603fa55d77bacbab1e41b686e7e2cf3",
+      "causeSealIds": [
+        "203e66fc4e30772adab026012c67f1b1ac4ca86ad2ada11b501c639a27a19eac"
+      ]
+    },
+    {
+      "key": "implementation-postgres-ca-path",
+      "path": "backend/src/postgres-config.ts",
+      "parents": [
+        "design-postgres-ca-path"
+      ],
+      "scope": "Configured CA path resolution/file-read and ClientConfig construction; tests observe no-throw/throw outcomes only, no connection/handshake.",
+      "ref": "all-tests-20261008/implementation-postgres-ca-path",
+      "test": false,
+      "sha256": "d7d4548434eef8685dc1caa2afc725595d7b1b05010db46a97b5b382b456e347",
+      "sealId": "ce3b853765b10eabe85c01818ff03df230b8bd9829cf1f04ba44f537d3a506ce",
+      "causeSealIds": [
+        "1e29f4465d9d8f7edc23ab9339271f153a5d2e78276b7f16df96207dae058b05"
+      ]
+    },
+    {
+      "key": "implementation-postgres-migration-discovery",
+      "path": "backend/src/scripts/postgres-migrations.ts",
+      "parents": [
+        "design-postgres-migration-discovery"
+      ],
+      "scope": "listMigrationFiles local selection/order/content SHA256. Whole file binding does not verify migration application/check/rollback functions.",
+      "ref": "all-tests-20261008/implementation-postgres-migration-discovery",
+      "test": false,
+      "sha256": "7e1bff3fa02c75299d4f9e17a37746221114c06236c1ba97fef96768b9fd3e2e",
+      "sealId": "683b43d5f655247761cee55863cd98dba9afc683308dd7e5b69fcf2cc285e594",
+      "causeSealIds": [
+        "d0266378d76a8f4cbcdf01b5172f097c82be720cb79296cec6d2707a946d4c23"
+      ]
+    },
+    {
+      "key": "implementation-sqlite-source-inspection",
+      "path": "backend/src/scripts/sqlite-to-postgres.ts",
+      "parents": [
+        "design-sqlite-source-inspection"
+      ],
+      "scope": "Typed fixed/dynamic SQL reads retain readonly/deferred/close behavior; private legacy normalization and real CLI preflight before target mode. No apply/import/upsert acceptance.",
+      "ref": "all-tests-20261008/implementation-sqlite-source-inspection",
+      "test": false,
+      "sha256": "76f9ff7ffc9e286681d3b24122994c939dc4eb80e8996079bd62cbcdf81f977d",
+      "sealId": "6019b83c60e92e172f3a8a64a033c3831dc2be774550c81fe9a0d5af8ed0817c",
+      "causeSealIds": [
+        "16b54f679aa310b13ecd0a081a2decfcd603fa55d77bacbab1e41b686e7e2cf3"
+      ]
+    },
+    {
+      "key": "postgres-ca-path-bounded-20261008",
+      "path": "backend/src/postgres-config.test.ts",
+      "parents": [
+        "implementation-postgres-ca-path"
+      ],
+      "scope": "Whole original four CA environment/path cases retained; fallback no-throw and explicit missing-path throw only, no TLS/PG/live claim.",
+      "ref": "verification/postgres-ca-path-bounded-20261008",
+      "test": true,
+      "sha256": "f1459e2994c6934d8ca25e4e4fbe8659929472b3a203844a834b2d6b49553a19",
+      "sealId": "f3110c18db1f5fcb4572f5a367b76dd13df82d47fa241097e4ab10e3304dfbed",
+      "causeSealIds": [
+        "ce3b853765b10eabe85c01818ff03df230b8bd9829cf1f04ba44f537d3a506ce"
+      ]
+    },
+    {
+      "key": "postgres-migration-discovery-bounded-20261008",
+      "path": "backend/src/scripts/postgres-migrations.test.ts",
+      "parents": [
+        "implementation-postgres-migration-discovery"
+      ],
+      "scope": "Whole original one discovery case and all assertions retained, strengthened with exact SQL and two known SHA256 digests. Private files only; no migration application.",
+      "ref": "verification/postgres-migration-discovery-bounded-20261008",
+      "test": true,
+      "sha256": "e3b41f8d8d5acff6e2859cf56fea0de0b842ae956b46db6d8450ff9b631a524d",
+      "sealId": "b4a63fe7e8f599f18c1d94eaf94d8cfbcecfa392d3f218e925c7f6a3b0208be6",
+      "causeSealIds": [
+        "683b43d5f655247761cee55863cd98dba9afc683308dd7e5b69fcf2cc285e594"
+      ]
+    },
+    {
+      "key": "sqlite-source-inspection-bounded-20261008",
+      "path": "backend/src/scripts/sqlite-to-postgres.test.ts",
+      "parents": [
+        "implementation-sqlite-source-inspection"
+      ],
+      "scope": "Whole original two cases/all assertions retained; private SQLite JSON/booleans/counts/exact audit IDs/warnings and actual CLI invalid-source exit1. No apply/verify-target/network/import.",
+      "ref": "verification/sqlite-source-inspection-bounded-20261008",
+      "test": true,
+      "sha256": "ee644bb4ede42f337c0d6a882fceb8e83ba3e4cce9170b721e54840b251bac49",
+      "sealId": "154cd3eda7abb6f2c930a630bdaf9f11313c89f5bf88e4dc5ab81854699f3881",
+      "causeSealIds": [
+        "6019b83c60e92e172f3a8a64a033c3831dc2be774550c81fe9a0d5af8ed0817c"
+      ]
+    }
+  ],
+  "roots": {
+    "requirements": "all-tests-20261007/authority-semantic-observation-requirements"
+  },
+  "rootSealIds": {
+    "requirements": "203e66fc4e30772adab026012c67f1b1ac4ca86ad2ada11b501c639a27a19eac"
+  },
+  "elapsedSeconds": 86.84
+}

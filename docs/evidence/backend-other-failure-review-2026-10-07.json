@@ -1,0 +1,673 @@
+{
+  "schema": "kshiai/backend-other-failure-review/v1",
+  "source": "/tmp/kshiai-backend-other-diagnostic.tap",
+  "observed": {
+    "tests": 201,
+    "passed": 171,
+    "failed": 30,
+    "skipped": 0,
+    "reproduced": false
+  },
+  "readOnly": true,
+  "basis": [
+    {
+      "path": "docs/adr/0043-v3-character-updates-with-historical-v2-display.md",
+      "clause": "Decision; Consequences; Verification",
+      "status": "Accepted",
+      "why": "Ordinary owner mutations/candidate activation require a valid V3 envelope; V2 schemas, immutable generations, display projections, migration readers and historical views remain readable. V2 mutation routes must reject before provider/data side effects; valid V3 activation remains possible."
+    },
+    {
+      "path": "docs/adr/0039-v3-battle-lifecycle-and-cutover.md",
+      "clause": "D1; D2",
+      "status": "Accepted",
+      "why": "New battles require V3 participants and battle-mechanics@3, exact immutable binding, creation INSERT, and progress UPDATE. A historical/V2 participant cannot be made current by changing an expected error."
+    },
+    {
+      "path": "docs/adr/0054-normal-awareness-waiting-deadlines.md",
+      "clause": "Decision; Compatibility and migration",
+      "status": "Accepted",
+      "why": "New ordinary awareness battles bind awareness-v5-usage-v2; existing policies remain exact and immutable."
+    },
+    {
+      "path": "backend/src/services/character-update-policy.ts",
+      "clause": "legacy mutation gate",
+      "status": "Current implementation",
+      "why": "Rejects legacy character metadata/update paths with character_v3_update_required."
+    },
+    {
+      "path": "backend/src/services/battle-service.ts",
+      "clause": "resolveBattleParticipants/startBattle",
+      "status": "Current implementation",
+      "why": "Rejects participants without ready V3 generation/required consumer with my_character_v3_capability_blocked before battle binding."
+    },
+    {
+      "path": "backend/src/repositories/character-assets-v2.ts",
+      "clause": "beginCharacterAuthoringAttempt",
+      "status": "Current implementation",
+      "why": "The V2 authoring API is retired and rejects with CHARACTER_V3_AUTHORING_REQUIRED."
+    },
+    {
+      "path": "backend/src/repositories/battles.ts",
+      "clause": "insertNewBattle vs saveBattleWithNarrationOutbox",
+      "status": "Current implementation",
+      "why": "Creation inserts a new row; progress save is UPDATE-only and returns BATTLE_NOT_FOUND for a missing row."
+    }
+  ],
+  "preservationRule": "Do not replace historical V2 positive tests with rejection-only expectations. Keep explicit V2 GET/display, immutable historical snapshot, legacy manageability, selector exclusion, and no-side-effect rejection positives under ADR-0043. Current creation/update/battle success must use a valid V3 fixture (named generation/consumer battle-mechanics@3 and, for new ordinary awareness, awareness-v5-usage-v2). A V2 positive must remain where its beneficiary is historical read/manageability; a current V3 positive must be added or migrated separately, not obtained by reviving a V2 writer.",
+  "classificationKey": {
+    "old_expectation": "Assertion names/statuses describe retired V2 writer or pre-cutover error; preserve the behavioral obligation and update only after intent is separated.",
+    "fixture_deficiency": "Current V3 route is fed historical/V2 fixture or creation is attempted through UPDATE-only path.",
+    "implementation_defect": "Observed behavior contradicts an Accepted current contract after a valid current V3 fixture and correct INSERT/UPDATE phase; none can be proven from this TAP alone.",
+    "undecided": "Owner must decide whether a legacy capability gets a future V3 implementation; do not infer it from a red test."
+  },
+  "failures": [
+    {
+      "n": 1,
+      "testPath": "backend/src/repositories/character-assets-v2.test.ts",
+      "test": "requires owner acceptance and atomically activates one V2 generation",
+      "observed": "CHARACTER_V3_AUTHORING_REQUIRED from beginCharacterAuthoringAttempt",
+      "classification": "old_expectation + fixture_deficiency",
+      "beneficiary": "owner authoring flow and historical-data safety",
+      "obligation": "retire V2 authoring, preserve atomic V3 acceptance and historical reads",
+      "governing": "ADR-0043 Decision/Verification",
+      "implementationPaths": [
+        "backend/src/repositories/character-assets-v2.ts:beginCharacterAuthoringAttempt",
+        "backend/src/repositories/character-assets.ts V3 write/activation"
+      ],
+      "fixturePaths": [
+        "backend/src/testing/historical-character-fixtures.ts"
+      ],
+      "minimalFix": "Retain a V2 rejection/no-side-effect assertion; move owner-acceptance/atomic-activation scenario to the focused V3 authoring fixture and assert V3 generation. Do not expect V2 activation.",
+      "confidence": "high"
+    },
+    {
+      "n": 2,
+      "testPath": "backend/src/repositories/character-assets-v2.test.ts",
+      "test": "leaves existing legacy row unsupported without explicit upgrade",
+      "observed": "CHARACTER_V3_AUTHORING_REQUIRED",
+      "classification": "old_expectation",
+      "beneficiary": "owner and compatibility readers",
+      "obligation": "legacy row is readable but unsupported as an ordinary writer without explicit V3 migration",
+      "governing": "ADR-0043 Decision/Verification",
+      "implementationPaths": [
+        "backend/src/repositories/character-assets-v2.ts",
+        "backend/src/services/character-update-policy.ts"
+      ],
+      "fixturePaths": [
+        "backend/src/testing/historical-character-fixtures.ts"
+      ],
+      "minimalFix": "Keep this as rejection/no-data-change, but assert the current error code and separately cover an explicit V2-read-to-V3 migration if/when the owner-authorized route exists.",
+      "confidence": "high"
+    },
+    {
+      "n": 3,
+      "testPath": "backend/src/repositories/character-assets-v2.test.ts",
+      "test": "persists expiry without activation/upgrade hold",
+      "observed": "CHARACTER_V3_AUTHORING_REQUIRED",
+      "classification": "old_expectation + fixture_deficiency",
+      "beneficiary": "authoring queue and owner",
+      "obligation": "expiry/hold semantics belong to current V3 authoring; retired V2 path cannot create a candidate",
+      "governing": "ADR-0043 Decision",
+      "implementationPaths": [
+        "backend/src/repositories/character-assets-v2.ts",
+        "current V3 authoring repository"
+      ],
+      "fixturePaths": [
+        "backend/src/testing/historical-character-fixtures.ts"
+      ],
+      "minimalFix": "Preserve V2 rejection and no candidate assertion; port expiry/hold assertions to a valid V3 authoring attempt only if that route is the accepted owner path.",
+      "confidence": "high"
+    },
+    {
+      "n": 4,
+      "testPath": "backend/src/repositories/character-assets-v2.test.ts",
+      "test": "rolls back stale revision candidate after pointer drift",
+      "observed": "CHARACTER_V3_AUTHORING_REQUIRED",
+      "classification": "fixture_deficiency",
+      "beneficiary": "owner and CAS integrity",
+      "obligation": "CAS rollback is proven on V3 current-generation candidate path; V2 historical rows remain immutable",
+      "governing": "ADR-0043; ADR-0010 immutable generation/CAS guarantee",
+      "implementationPaths": [
+        "backend/src/repositories/character-assets.ts V3 activation/CAS"
+      ],
+      "fixturePaths": [
+        "backend/src/testing/historical-character-fixtures.ts"
+      ],
+      "minimalFix": "Use V3 candidate/revision fixtures and exercise pointer drift there; keep a separate V2 immutable-read test.",
+      "confidence": "high"
+    },
+    {
+      "n": 5,
+      "testPath": "backend/src/repositories/character-assets-v2.test.ts",
+      "test": "excludes pre-validator V2 generation until explicit update",
+      "observed": "expected generation count 2, actual 3",
+      "classification": "old_expectation",
+      "beneficiary": "selector/read consumers",
+      "obligation": "unsupported V2 generation stays excluded from current selectors while historical display remains possible",
+      "governing": "ADR-0043 Verification (unsupported V2 mutation/selector boundary)",
+      "implementationPaths": [
+        "backend/src/repositories/character-assets-v2.ts selectors",
+        "character update policy"
+      ],
+      "fixturePaths": [
+        "V2 generation fixture plus current generations"
+      ],
+      "minimalFix": "Reconcile count with current fixture setup and assert identity/eligibility rather than a stale total; retain explicit exclusion and historical read positives.",
+      "confidence": "medium"
+    },
+    {
+      "n": 6,
+      "testPath": "backend/src/repositories/character-assets-v2.test.ts",
+      "test": "reads but does not select selectorless V2",
+      "observed": "passed",
+      "classification": "passing_control",
+      "beneficiary": "historical readers and selector consumers",
+      "obligation": "V2 read works; selector does not choose selectorless V2",
+      "governing": "ADR-0043",
+      "implementationPaths": [
+        "V2 reader/selector"
+      ],
+      "fixturePaths": [
+        "historical V2 fixture"
+      ],
+      "minimalFix": "No change; preserve as the required V2 positive/control.",
+      "confidence": "high"
+    },
+    {
+      "n": 7,
+      "testPath": "backend/src/repositories/characters.test.ts",
+      "test": "auto-matches nearest rating/combat profile",
+      "observed": "expected char-b, actual undefined",
+      "classification": "undecided",
+      "beneficiary": "rating/profile matching consumer",
+      "obligation": "Only if the current accepted contract still promises nearest matching; ADR-0043 does not decide this matching rule",
+      "governing": "No identified Accepted ADR clause; current characters repository matching code",
+      "implementationPaths": [
+        "backend/src/repositories/characters.ts matching query",
+        "rating/combat profile repository"
+      ],
+      "fixturePaths": [
+        "characters.test.ts rating/profile fixtures"
+      ],
+      "minimalFix": "Owner/design must confirm matching rule and tie/threshold. Then repair fixture or implementation based on that decision; do not alter expected ID merely to pass.",
+      "confidence": "low"
+    },
+    {
+      "n": 8,
+      "testPath": "backend/src/repositories/characters.test.ts",
+      "test": "centers active ratings without compensating deletion",
+      "observed": "CHARACTER_V3_UPDATE_REQUIRED from softDeleteCharacter",
+      "classification": "fixture_deficiency",
+      "beneficiary": "rating/accounting history",
+      "obligation": "Metadata mutation must use current V3 character; preserve historical rows and accounting semantics",
+      "governing": "ADR-0043 Consequences (metadata mutations admitted only for current V3)",
+      "implementationPaths": [
+        "backend/src/services/character-update-policy.ts",
+        "backend/src/repositories/characters.ts:softDeleteCharacter"
+      ],
+      "fixturePaths": [
+        "characters.test.ts legacy character fixture"
+      ],
+      "minimalFix": "Use a valid V3 character for deletion/centering test; add separate V2 rejection/no-side-effect assertion.",
+      "confidence": "high"
+    },
+    {
+      "n": 9,
+      "testPath": "backend/src/repositories/characters.test.ts",
+      "test": "isolates test characters and rating populations",
+      "observed": "expected true, actual false",
+      "classification": "undecided",
+      "beneficiary": "test isolation/rating population correctness",
+      "obligation": "Isolation semantics need a current source contract; likely fixture contamination or query mismatch",
+      "governing": "No identified Accepted ADR clause",
+      "implementationPaths": [
+        "characters repository queries",
+        "rating population setup"
+      ],
+      "fixturePaths": [
+        "characters.test.ts setup"
+      ],
+      "minimalFix": "Inspect IDs/ownership and intended population boundary, then decide fixture or query repair; leave unknown until owner contract is identified.",
+      "confidence": "low"
+    },
+    {
+      "n": 10,
+      "testPath": "backend/src/routes-authoring-read-purity.test.ts",
+      "test": "keeps all six draft reads free of claims writes/provider calls",
+      "observed": "CHARACTER_V3_AUTHORING_REQUIRED",
+      "classification": "fixture_deficiency",
+      "beneficiary": "read-surface users and billing/provider safety",
+      "obligation": "Reads have no claims write/provider call; fixture must be readable under current V3 boundary",
+      "governing": "ADR-0043 read/purity boundary",
+      "implementationPaths": [
+        "authoring routes",
+        "backend/src/repositories/character-assets-v2.ts"
+      ],
+      "fixturePaths": [
+        "route test V2 draft fixture"
+      ],
+      "minimalFix": "Keep no-side-effect instrumentation and seed a valid readable V3/historical draft; do not make reads call the retired V2 authoring path.",
+      "confidence": "high"
+    },
+    {
+      "n": 11,
+      "testPath": "backend/src/routes-structured-asset-integration.test.ts",
+      "test": "keeps selection/binding/replay/history/deletion on immutable generations",
+      "observed": "expected selected Set to contain mine id, actual empty",
+      "classification": "fixture_deficiency",
+      "beneficiary": "battle/history users and immutable asset consumers",
+      "obligation": "Valid current V3 generations select/bind; historical V2 remains read-only and not selected",
+      "governing": "ADR-0043; ADR-0039 D1",
+      "implementationPaths": [
+        "structured asset routes",
+        "battle binding/replay",
+        "generation selector"
+      ],
+      "fixturePaths": [
+        "route test asset fixtures"
+      ],
+      "minimalFix": "Mark the intended fixture current V3 with required consumer, and keep a distinct historical V2 row for read/replay/deletion assertions; investigate selector only after that.",
+      "confidence": "high"
+    },
+    {
+      "n": 12,
+      "testPath": "backend/src/routes-structured-asset-integration.test.ts",
+      "test": "freezes legacy character rows without appending V1 generations",
+      "observed": "CHARACTER_V3_UPDATE_REQUIRED",
+      "classification": "old_expectation",
+      "beneficiary": "legacy data owners",
+      "obligation": "Legacy row must remain frozen; no V1 append or mutation",
+      "governing": "ADR-0043",
+      "implementationPaths": [
+        "structured asset update route",
+        "character-update-policy.ts"
+      ],
+      "fixturePaths": [
+        "legacy row fixture"
+      ],
+      "minimalFix": "Assert current rejection code and unchanged row/generation count; keep current-V3 mutation success in a separate test.",
+      "confidence": "high"
+    },
+    {
+      "n": 13,
+      "testPath": "backend/src/routes-structured-battlefield-acceptance.test.ts",
+      "test": "keeps legacy battlefields manageable but outside selectors/direct binding",
+      "observed": "expected battlefield_upgrade_required, actual my_character_v3_capability_blocked",
+      "classification": "fixture_deficiency + old_expectation",
+      "beneficiary": "legacy battlefield owners and current battle admission",
+      "obligation": "Legacy battlefield manageability and exclusion are separate from character participant admission",
+      "governing": "ADR-0043 historical/manageability boundary; ADR-0039 D1",
+      "implementationPaths": [
+        "battlefield route",
+        "battle-service.ts:resolveBattleParticipants"
+      ],
+      "fixturePaths": [
+        "legacy battlefield plus V2 character fixture"
+      ],
+      "minimalFix": "Test battlefield legacy error in an endpoint that reaches battlefield validation, or provide V3 participant when testing battle admission; assert the first applicable guard without requiring a downstream error.",
+      "confidence": "high"
+    },
+    {
+      "n": 14,
+      "testPath": "backend/src/routes-structured-battlefield-acceptance.test.ts",
+      "test": "binds exact preset revision/deterministic compiler without mutating",
+      "observed": "request fails before expected 200 at participant capability guard",
+      "classification": "fixture_deficiency",
+      "beneficiary": "battle creator and immutable compiler binding",
+      "obligation": "Valid V3 participants and named preset revision bind exactly without mutation",
+      "governing": "ADR-0039 D1/D2",
+      "implementationPaths": [
+        "battle route",
+        "battle-service.ts",
+        "battle compiler/preset resolver"
+      ],
+      "fixturePaths": [
+        "battlefield acceptance V2/legacy participant fixture"
+      ],
+      "minimalFix": "Use valid V3 participants with battle-mechanics@3 and the accepted preset revision; then verify 200/exact binding/no append. Keep legacy rejection as a separate boundary test.",
+      "confidence": "high"
+    },
+    {
+      "n": 15,
+      "testPath": "backend/src/routes-structured-character-acceptance.test.ts",
+      "test": "records provider failures without exposing a partial character",
+      "observed": "expected 202, actual 409",
+      "classification": "fixture_deficiency",
+      "beneficiary": "owner and billing/provider safety",
+      "obligation": "Current accepted V3 create/review may enqueue and record provider failure without partial character; legacy path must reject before provider work",
+      "governing": "ADR-0043 Verification (missing-provider create/migrate no fallback)",
+      "implementationPaths": [
+        "structured character route",
+        "current V3 authoring/worker path"
+      ],
+      "fixturePaths": [
+        "route test legacy/V2 create fixture"
+      ],
+      "minimalFix": "Run the provider-failure scenario through the accepted V3 create route/fixture with provider mocked; retain a V2 pre-provider 409/no-side-effect test.",
+      "confidence": "high"
+    },
+    {
+      "n": 16,
+      "testPath": "backend/src/routes-structured-character-acceptance.test.ts",
+      "test": "uses only V2 attempts for create review confirm and discard routes",
+      "observed": "expected 202, actual 409",
+      "classification": "old_expectation + fixture_deficiency",
+      "beneficiary": "authoring lifecycle owner",
+      "obligation": "Current lifecycle must be V3; retired V2 attempts are not accepted for ordinary authoring",
+      "governing": "ADR-0043 Decision",
+      "implementationPaths": [
+        "structured character routes",
+        "V3 authoring repository"
+      ],
+      "fixturePaths": [
+        "V2 attempt fixtures"
+      ],
+      "minimalFix": "Rename/reframe as retired-V2 rejection/no mutation, and add lifecycle success coverage using V3 attempts if owner has accepted that route.",
+      "confidence": "high"
+    },
+    {
+      "n": 17,
+      "testPath": "backend/src/routes-structured-character-acceptance.test.ts",
+      "test": "does not read mutate confirm or delete legacy draft rows",
+      "observed": "passed",
+      "classification": "passing_control",
+      "beneficiary": "legacy data owner",
+      "obligation": "Legacy drafts remain untouched by ordinary read/confirm/delete paths",
+      "governing": "ADR-0043",
+      "implementationPaths": [
+        "structured character routes"
+      ],
+      "fixturePaths": [
+        "legacy draft fixture"
+      ],
+      "minimalFix": "No change; preserve as V2 read/no-side-effect positive.",
+      "confidence": "high"
+    },
+    {
+      "n": 18,
+      "testPath": "backend/src/routes-structured-character-acceptance.test.ts",
+      "test": "rejects legacy restore and portrait mutations before side effects",
+      "observed": "expected character_upgrade_required, actual character_v3_update_required",
+      "classification": "old_expectation",
+      "beneficiary": "legacy character owner and provider/billing safety",
+      "obligation": "Reject before side effects; exact legacy error label changed under ADR-0043",
+      "governing": "ADR-0043 Consequences/Verification",
+      "implementationPaths": [
+        "structured character route",
+        "character-update-policy.ts"
+      ],
+      "fixturePaths": [
+        "legacy character fixture"
+      ],
+      "minimalFix": "Assert current character_v3_update_required plus no provider/DB mutation. Do not implement old character_upgrade_required alias unless owner explicitly requires compatibility.",
+      "confidence": "high"
+    },
+    {
+      "n": 19,
+      "testPath": "backend/src/routes-structured-character-acceptance.test.ts",
+      "test": "commits image toggle and restore routes only as immutable V2 generations",
+      "observed": "expected 200, actual 409",
+      "classification": "old_expectation",
+      "beneficiary": "character owner and immutable-generation safety",
+      "obligation": "Ordinary V2 restore/toggle writer is retired; valid V3 mutations must create immutable V3 generation",
+      "governing": "ADR-0043 Decision/Consequences",
+      "implementationPaths": [
+        "structured character image routes",
+        "character generation writer"
+      ],
+      "fixturePaths": [
+        "V2 image/restore fixture"
+      ],
+      "minimalFix": "Preserve V2 reject/no-change assertion; add a V3-capable route test only if implementation/owner contract exists. Never make this V2 success by changing expected status.",
+      "confidence": "high"
+    },
+    {
+      "n": 20,
+      "testPath": "backend/src/routes-structured-character-acceptance.test.ts",
+      "test": "excludes unsupported characters from every selector route",
+      "observed": "expected true, actual false",
+      "classification": "fixture_deficiency or implementation_defect",
+      "beneficiary": "battle selector and owner privacy",
+      "obligation": "Unsupported V2 is excluded from current selectors while historical GET remains available",
+      "governing": "ADR-0043 Verification; ADR-0039 admission boundary",
+      "implementationPaths": [
+        "character list/selectors",
+        "battle participant resolver"
+      ],
+      "fixturePaths": [
+        "unsupported character fixture and selector route setup"
+      ],
+      "minimalFix": "First verify fixture has unsupported schema/consumer and query is hitting the intended owner. If so, repair selector (implementation defect); otherwise repair fixture. Preserve historical GET positive.",
+      "confidence": "medium"
+    },
+    {
+      "n": 21,
+      "testPath": "backend/src/routes-structured-character-acceptance.test.ts",
+      "test": "rejects direct battle creation for either unsupported side",
+      "observed": "expected my_character_upgrade_required, actual my_character_v3_capability_blocked",
+      "classification": "old_expectation",
+      "beneficiary": "battle creator and current participant safety",
+      "obligation": "Unsupported participant is rejected before creation; current capability error is the accepted guard",
+      "governing": "ADR-0039 D1; ADR-0043",
+      "implementationPaths": [
+        "battle-service.ts:resolveBattleParticipants/startBattle"
+      ],
+      "fixturePaths": [
+        "legacy/V2 participant fixture"
+      ],
+      "minimalFix": "Assert my_character_v3_capability_blocked and no battle/provider side effect; preserve legacy error only if an owner compatibility contract exists.",
+      "confidence": "high"
+    },
+    {
+      "n": 22,
+      "testPath": "backend/src/routes-structured-character-acceptance.test.ts",
+      "test": "upgrades an existing character only after owner confirmation",
+      "observed": "expected generation 2, actual 3",
+      "classification": "old_expectation",
+      "beneficiary": "owner-confirmed immutable update",
+      "obligation": "Owner confirmation creates the next valid generation; schema/version numbering must reflect current V3 history",
+      "governing": "ADR-0043 Decision; ADR-0010 immutable generations",
+      "implementationPaths": [
+        "structured character confirm route",
+        "generation writer"
+      ],
+      "fixturePaths": [
+        "existing character plus upgrade fixture"
+      ],
+      "minimalFix": "Assert exact generation identity/revision and reason for current count 3, or reset fixture to a known baseline. Do not force count 2; ensure V3 envelope and owner confirmation remain asserted.",
+      "confidence": "medium"
+    },
+    {
+      "n": 23,
+      "testPath": "backend/src/routes-structured-character-acceptance.test.ts",
+      "test": "exposes in-flight authoring progress while an upgrade is running",
+      "observed": "expected 202, actual 409",
+      "classification": "fixture_deficiency",
+      "beneficiary": "owner waiting/status UI",
+      "obligation": "In-flight behavior must be tested on accepted V3 authoring route; V2 attempt is rejected before queueing",
+      "governing": "ADR-0043 Decision",
+      "implementationPaths": [
+        "V3 authoring enqueue/status routes"
+      ],
+      "fixturePaths": [
+        "legacy/V2 upgrade fixture"
+      ],
+      "minimalFix": "Use V3 authoring request and mocked worker for 202/status; retain V2 pre-queue 409 and no-side-effect control.",
+      "confidence": "high"
+    },
+    {
+      "n": 24,
+      "testPath": "backend/src/routes-structured-character-acceptance.test.ts",
+      "test": "does not surface an older awaiting draft after a later attempt fails",
+      "observed": "expected 202, actual 409",
+      "classification": "fixture_deficiency",
+      "beneficiary": "owner draft/status consumer",
+      "obligation": "Attempt ordering/failure visibility belongs to V3 lifecycle; legacy attempts remain hidden/rejected",
+      "governing": "ADR-0043",
+      "implementationPaths": [
+        "V3 authoring attempt status/list routes"
+      ],
+      "fixturePaths": [
+        "V2 attempt fixtures"
+      ],
+      "minimalFix": "Port ordering scenario to V3 attempt fixtures; keep explicit legacy hidden/no-side-effect assertion.",
+      "confidence": "high"
+    },
+    {
+      "n": 25,
+      "testPath": "backend/src/routes-structured-character-acceptance.test.ts",
+      "test": "discards an unclaimed queued attempt before the worker runs",
+      "observed": "expected 202, actual 409",
+      "classification": "fixture_deficiency",
+      "beneficiary": "owner and queue/provider cost control",
+      "obligation": "Discard/queue race is proven for V3 attempts; V2 cannot enqueue",
+      "governing": "ADR-0043",
+      "implementationPaths": [
+        "V3 authoring queue/discard route"
+      ],
+      "fixturePaths": [
+        "V2 queued attempt fixture"
+      ],
+      "minimalFix": "Use V3 queued attempt and assert discard before worker/provider; keep V2 rejection before enqueue.",
+      "confidence": "high"
+    },
+    {
+      "n": 26,
+      "testPath": "backend/src/routes-structured-character-acceptance.test.ts",
+      "test": "returns a create review without a current character",
+      "observed": "expected 202, actual 409",
+      "classification": "fixture_deficiency",
+      "beneficiary": "new character owner",
+      "obligation": "Create review must use current V3 create contract; absence of current character is valid only in that route",
+      "governing": "ADR-0043 Decision",
+      "implementationPaths": [
+        "V3 create/review route"
+      ],
+      "fixturePaths": [
+        "V2 create review fixture"
+      ],
+      "minimalFix": "Use accepted V3 create review path and assert 202; preserve retired V2 route rejection.",
+      "confidence": "high"
+    },
+    {
+      "n": 27,
+      "testPath": "backend/src/routes-structured-character-acceptance.test.ts",
+      "test": "returns a compare review for upgrade and marks an older attempt stale",
+      "observed": "expected 202, actual 409",
+      "classification": "fixture_deficiency",
+      "beneficiary": "owner upgrade review",
+      "obligation": "Compare/stale semantics belong to V3 owner-confirmed upgrade",
+      "governing": "ADR-0043 Decision",
+      "implementationPaths": [
+        "V3 compare review/stale attempt route"
+      ],
+      "fixturePaths": [
+        "V2 upgrade attempts"
+      ],
+      "minimalFix": "Port to V3 generation/attempt fixtures; assert stale transition and no duplicate activation. Keep V2 rejection.",
+      "confidence": "high"
+    },
+    {
+      "n": 28,
+      "testPath": "backend/src/routes-structured-character-acceptance.test.ts",
+      "test": "lists characters without deserializing a historical candidate",
+      "observed": "expected 202, actual 409",
+      "classification": "fixture_deficiency",
+      "beneficiary": "character list/read consumer",
+      "obligation": "Listing must not deserialize/mutate historical candidate; V2 listing/read remains available",
+      "governing": "ADR-0043 historical read boundary",
+      "implementationPaths": [
+        "character listing route",
+        "historical candidate reader"
+      ],
+      "fixturePaths": [
+        "V2 candidate fixture used through create path"
+      ],
+      "minimalFix": "Separate list/read fixture from authoring attempt; assert successful list and no deserialization side effect, while current V2 authoring route rejects.",
+      "confidence": "high"
+    },
+    {
+      "n": 29,
+      "testPath": "backend/src/routes-structured-character-acceptance.test.ts",
+      "test": "projects ready and failed notifications without duplicating them",
+      "observed": "expected 202, actual 409",
+      "classification": "fixture_deficiency",
+      "beneficiary": "owner notification consumer and provider-cost accounting",
+      "obligation": "Notification idempotency is proven for V3 authoring lifecycle; V2 cannot create attempts",
+      "governing": "ADR-0043",
+      "implementationPaths": [
+        "V3 notification projection/authoring worker"
+      ],
+      "fixturePaths": [
+        "V2 attempt/notification fixture"
+      ],
+      "minimalFix": "Use V3 attempts and mocked worker/provider outcomes; retain V2 pre-queue rejection and no notifications.",
+      "confidence": "high"
+    },
+    {
+      "n": 30,
+      "testPath": "backend/src/routes-structured-narration-acceptance.test.ts",
+      "test": "keeps legacy styles manageable but outside selectors and direct binding",
+      "observed": "expected narration_style_upgrade_required, actual my_character_v3_capability_blocked",
+      "classification": "fixture_deficiency + old_expectation",
+      "beneficiary": "legacy style owner and battle admission",
+      "obligation": "Legacy style manageability/exclusion is distinct from character participant eligibility",
+      "governing": "ADR-0043 historical/manageability boundary; ADR-0039 D1",
+      "implementationPaths": [
+        "narration style route",
+        "battle-service.ts participant guard"
+      ],
+      "fixturePaths": [
+        "legacy style plus V2 character fixture"
+      ],
+      "minimalFix": "Test legacy style error at style endpoint or supply valid V3 participant for battle admission; assert first applicable guard, not a downstream legacy-style code.",
+      "confidence": "high"
+    },
+    {
+      "n": 31,
+      "testPath": "backend/src/routes-structured-narration-acceptance.test.ts",
+      "test": "binds the exact ready generation and never appends one at battle start",
+      "observed": "expected 200, actual 409 from participant capability guard",
+      "classification": "fixture_deficiency",
+      "beneficiary": "battle creator and narration immutable binding",
+      "obligation": "A valid V3 participant and ready style generation bind exact persisted revisions; battle start must not append",
+      "governing": "ADR-0039 D1/D2; ADR-0043",
+      "implementationPaths": [
+        "battle-service.ts",
+        "narration binding/start route"
+      ],
+      "fixturePaths": [
+        "ready narration plus legacy/V2 participant fixture"
+      ],
+      "minimalFix": "Use V3 participant with battle-mechanics@3 and ready named style generation; assert 200/exact binding/no append. Keep legacy rejection separately.",
+      "confidence": "high"
+    },
+    {
+      "n": 32,
+      "testPath": "backend/src/scripts/semantic-migration-probe-run.test.ts",
+      "test": "binds new run/corrected prompt without consumed v1 identity",
+      "observed": "CHARACTER_V3_WRITE_REQUIRED from writeAssetGeneration",
+      "classification": "fixture_deficiency + undecided",
+      "beneficiary": "semantic migration probe/operator",
+      "obligation": "Probe must use an accepted V3 write route or be explicitly historical/diagnostic; retired V2 writer cannot seed current data",
+      "governing": "ADR-0043; ADR-0042 retired trial scope",
+      "implementationPaths": [
+        "backend/src/scripts/semantic-migration-probe-run.test.ts",
+        "backend/src/testing/semantic-migration-probe-fixture.ts",
+        "writeAssetGeneration"
+      ],
+      "fixturePaths": [
+        "semantic-migration-probe-fixture.ts seedSemanticMigrationProbe"
+      ],
+      "minimalFix": "Owner must classify probe as historical trial or current V3 migration. For current probe, seed via valid V3 envelope and named revision; for historical probe, preserve immutable fixture and assert it does not write through runtime V2 path. Do not bypass guard.",
+      "confidence": "medium"
+    }
+  ],
+  "countCheck": {
+    "caseEntries": 32,
+    "failureEntries": 30,
+    "preservedPassingControls": 2,
+    "note": "Controls n=6 and n=17 are passing positives retained to prevent accidental loss of valid V2 read/no-side-effect coverage; the remaining 30 entries are the TAP failures."
+  },
+  "conclusion": "The TAP demonstrates a coherent cutover mismatch: legacy/V2 fixtures and retired expectations are being exercised against current V3 admission gates. It does not demonstrate an implementation defect in the accepted path because no valid V3 fixture plus correct phase was shown for the failing success cases. The only candidate requiring follow-up after fixture correction is selector isolation/matching (cases 7,9,20), and semantic probe ownership (case 32)."
+}

@@ -13,7 +13,7 @@ export function budgetSnapshot(reservations: AwarenessReservation[]) {
   } satisfies AwarenessPipelineState["budget"];
 }
 
-function roleGroup(role: AwarenessRole): "required" | AwarenessRole {
+function roleGroup(role: AwarenessRole): keyof AwarenessPipelineState["policy"]["budgetShares"] {
   return role === "subconscious" || role === "adjudication" ? "required" : role;
 }
 

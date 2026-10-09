@@ -1,0 +1,252 @@
+TAP version 13
+# Subtest: pre-battle encounter ledger
+    # Subtest: binds observed creation and unknown maximum without weakening a stored certified policy
+    ok 1 - binds observed creation and unknown maximum without weakening a stored certified policy
+      ---
+      duration_ms: 122.438414
+      type: 'test'
+      ...
+    # Subtest: reserves a concurrent same-id dispatch exactly once and never resends after restart
+    ok 2 - reserves a concurrent same-id dispatch exactly once and never resends after restart
+      ---
+      duration_ms: 40.726851
+      type: 'test'
+      ...
+    # Subtest: rejects missing proof, expensive quotes and expired original deadline without dispatch
+    ok 3 - rejects missing proof, expensive quotes and expired original deadline without dispatch
+      ---
+      duration_ms: 33.521935
+      type: 'test'
+      ...
+    # Subtest: rolls back canonical insertion and adoption together, then transfers the original clock and expense
+    ok 4 - rolls back canonical insertion and adoption together, then transfers the original clock and expense
+      ---
+      duration_ms: 79.955089
+      type: 'test'
+      ...
+    # Subtest: retains unknown physical cost through adoption and routes a late actual receipt into runtime
+    ok 5 - retains unknown physical cost through adoption and routes a late actual receipt into runtime
+      ---
+      duration_ms: 77.407807
+      type: 'test'
+      ...
+    # Subtest: does not adopt failed or deadline-expired encounter results
+    ok 6 - does not adopt failed or deadline-expired encounter results
+      ---
+      duration_ms: 39.097826
+      type: 'test'
+      ...
+    # Subtest: preserves a timely logical result during late fee settlement and rejects actual overspend
+    ok 7 - preserves a timely logical result during late fee settlement and rejects actual overspend
+      ---
+      duration_ms: 51.553107
+      type: 'test'
+      ...
+    1..7
+ok 1 - pre-battle encounter ledger
+  ---
+  duration_ms: 451.098744
+  type: 'suite'
+  ...
+# Subtest: durable awareness runtime
+    # Subtest: keeps observed unknown maxima explicit while retaining physical limits and old certified refusal
+    ok 1 - keeps observed unknown maxima explicit while retaining physical limits and old certified refusal
+      ---
+      duration_ms: 94.937687
+      type: 'test'
+      ...
+    # Subtest: initializes once and rejects stale revisions without replacing accepted state
+    ok 2 - initializes once and rejects stale revisions without replacing accepted state
+      ---
+      duration_ms: 44.247082
+      type: 'test'
+      ...
+    # Subtest: rejects superseded and expired leases while allowing the current owner
+    ok 3 - rejects superseded and expired leases while allowing the current owner
+      ---
+      duration_ms: 104.718325
+      type: 'test'
+      ...
+    # Subtest: rolls back sidecar and canonical writes together when the outer transaction fails
+    ok 4 - rolls back sidecar and canonical writes together when the outer transaction fails
+      ---
+      duration_ms: 29.280401
+      type: 'test'
+      ...
+    # Subtest: rejects mismatched scope before invoking a transition
+    ok 5 - rejects mismatched scope before invoking a transition
+      ---
+      duration_ms: 24.864996
+      type: 'test'
+      ...
+    # Subtest: keeps unknown and cancelled maximum cost reserved and never reuses send IDs
+    ok 6 - keeps unknown and cancelled maximum cost reserved and never reuses send IDs
+      ---
+      duration_ms: 181.049292
+      type: 'test'
+      ...
+    # Subtest: reserves concurrent sends atomically and rejects admission beyond a role's physical limit
+    ok 7 - reserves concurrent sends atomically and rejects admission beyond a role's physical limit
+      ---
+      duration_ms: 91.806277
+      type: 'test'
+      ...
+    # Subtest: accepts a frozen thought once after world lease release and settles cancelled late replies without application
+    ok 8 - accepts a frozen thought once after world lease release and settles cancelled late replies without application
+      ---
+      duration_ms: 256.14038
+      type: 'test'
+      ...
+    # Subtest: admits only terminal narration inside the immutable drain and global deadlines
+    ok 9 - admits only terminal narration inside the immutable drain and global deadlines
+      ---
+      duration_ms: 156.604999
+      type: 'test'
+      ...
+    1..9
+ok 2 - durable awareness runtime
+  ---
+  duration_ms: 995.614337
+  type: 'suite'
+  ...
+# [llm] openai ready engine=gpt-6-luna fast=gpt-6-luna
+# [llm] xai ready engine=grok-engine fast=grok-fast
+# [llm] xai ready engine=grok-engine fast=grok-fast
+# [llm] xai/prepareBattleEncounter model=grok-engine ok 158ms
+# [llm] xai/awareness-v5:conscious model=grok-engine ok 85ms
+# [llm] xai/awareness-v5:conscious model=grok-engine ok 201ms
+# [llm] openai/awareness-v5:subconscious model=gpt-6-luna ok 111ms
+# [llm] openai/awareness-v5:subconscious model=gpt-6-luna ok 53ms
+# [llm] openai ready engine=gpt-6-luna fast=gpt-6-luna
+# [llm] xai ready engine=grok-engine fast=grok-fast
+# [llm] xai ready engine=grok-engine fast=grok-fast
+# [llm] xai/prepareBattleEncounter model=grok-engine ok 64ms
+# Subtest: actual awareness battle creation and advancement
+    # Subtest: binds immutable V5 assets, adopts encounter accounting and replays without duplicate dispatch
+    ok 1 - binds immutable V5 assets, adopts encounter accounting and replays without duplicate dispatch
+      ---
+      duration_ms: 3422.382899
+      type: 'test'
+      ...
+    1..1
+ok 3 - actual awareness battle creation and advancement
+  ---
+  duration_ms: 3425.892296
+  type: 'suite'
+  ...
+# Subtest: public advance stops incomplete with missing awareness route and preserves canonical facts
+ok 4 - public advance stops incomplete with missing awareness route and preserves canonical facts
+  ---
+  duration_ms: 688.36845
+  type: 'test'
+  ...
+# Subtest: public advance stops incomplete with missing billing proof and preserves canonical facts
+ok 5 - public advance stops incomplete with missing billing proof and preserves canonical facts
+  ---
+  duration_ms: 244.554317
+  type: 'test'
+  ...
+# [balance] battle ⚠ awareness-public-ko turns=1 maxHit=1% earlyKo=1 oneShot=0 winner=a
+# Subtest: public configured prologue then combat preserves absent body intents without legacy agent calls
+ok 6 - public configured prologue then combat preserves absent body intents without legacy agent calls
+  ---
+  duration_ms: 2422.38304
+  type: 'test'
+  ...
+# Subtest: public KO commits terminal combat and aftermath together without starting post-KO thoughts
+ok 7 - public KO commits terminal combat and aftermath together without starting post-KO thoughts
+  ---
+  duration_ms: 699.13789
+  type: 'test'
+  ...
+# Subtest: failed required semantic judgment preserves the last world instead of saving an earlier engine bucket
+ok 8 - failed required semantic judgment preserves the last world instead of saving an earlier engine bucket
+  ---
+  duration_ms: 735.923118
+  type: 'test'
+  ...
+# [llm] openai ready engine=gpt-6-luna fast=gpt-6-luna
+# [llm] xai ready engine=grok-engine fast=grok-fast
+# [llm] xai ready engine=grok-engine fast=grok-fast
+# [llm] xai/prepareBattleEncounter model=grok-engine ok 254ms
+# [llm] openai ready engine=gpt-6-luna fast=gpt-6-luna
+# [llm] xai ready engine=grok-engine fast=grok-fast
+# [llm] xai ready engine=grok-engine fast=grok-fast
+# [llm] xai/prepareBattleEncounter model=grok-engine fail 52ms: AWARENESS_VERIFIED_ADMISSION_REQUIRED
+# [llm] openai ready engine=gpt-6-luna fast=gpt-6-luna
+# [llm] xai ready engine=grok-engine fast=grok-fast
+# [llm] xai ready engine=grok-engine fast=grok-fast
+# [llm] xai/prepareBattleEncounter model=grok-engine ok 53ms
+# [llm] openai ready engine=gpt-6-luna fast=gpt-6-luna
+# [llm] xai ready engine=grok-engine fast=grok-fast
+# [llm] xai ready engine=grok-engine fast=grok-fast
+# [llm] xai/prepareBattleEncounter model=grok-engine ok 22ms
+# [llm] openai ready engine=gpt-6-luna fast=gpt-6-luna
+# [llm] xai ready engine=grok-engine fast=grok-fast
+# [llm] xai ready engine=grok-engine fast=grok-fast
+# [llm] xai/prepareBattleEncounter model=grok-engine ok 28ms
+# Subtest: admitted creation encounter through actual compatible SDK
+    # Subtest: preserves V5 world and perceptions without synthesizing legacy subjective agents
+    ok 1 - preserves V5 world and perceptions without synthesizing legacy subjective agents
+      ---
+      duration_ms: 172.815314
+      type: 'test'
+      ...
+    # Subtest: quotes the full prose engine request capped at 1500 and reuses the durable ready result
+    ok 2 - quotes the full prose engine request capped at 1500 and reuses the durable ready result
+      ---
+      duration_ms: 769.503068
+      type: 'test'
+      ...
+    # Subtest: makes zero HTTP calls without verified billing proof and creates no canonical battle
+    ok 3 - makes zero HTTP calls without verified billing proof and creates no canonical battle
+      ---
+      duration_ms: 108.253888
+      type: 'test'
+      ...
+    # Subtest: persists an invalid provider proposal as failure and never retries transmission
+    ok 4 - persists an invalid provider proposal as failure and never retries transmission
+      ---
+      duration_ms: 118.172151
+      type: 'test'
+      ...
+    # Subtest: adopts the reserved encounter runtime atomically in actual canonical insertNewBattle
+    ok 5 - adopts the reserved encounter runtime atomically in actual canonical insertNewBattle
+      ---
+      duration_ms: 376.264536
+      type: 'test'
+      ...
+    1..5
+ok 9 - admitted creation encounter through actual compatible SDK
+  ---
+  duration_ms: 1551.548122
+  type: 'suite'
+  ...
+# Subtest: observed creation sends one scoped SDK call without a pricing contract
+ok 10 - observed creation sends one scoped SDK call without a pricing contract
+  ---
+  duration_ms: 69.696157
+  type: 'test'
+  ...
+# Subtest: battle create idempotency
+    # Subtest: reads back one deterministic battle without repeating encounter LLM work
+    ok 1 - reads back one deterministic battle without repeating encounter LLM work
+      ---
+      duration_ms: 4566.121163
+      type: 'test'
+      ...
+    1..1
+ok 11 - battle create idempotency
+  ---
+  duration_ms: 4569.235621
+  type: 'suite'
+  ...
+1..11
+# tests 29
+# suites 5
+# pass 29
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 12060.797711

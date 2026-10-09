@@ -1,0 +1,92 @@
+domain KshiaiCharacterCreateBoundary:
+  description "Bounded investigation of two current offline character-create route failures"
+
+problem P1:
+  |
+    All original test files must become current and pass without removing cases,
+    weakening functional creation or activation, or accepting an unvalidated profile.
+    The current structured-character HTTP suite has 13 passing and two failing cases.
+
+evidence E1:
+  |
+    /tmp/kshiai-character-create-current-failures.tap records13 passes and2 failures.
+    uses current V3 attempts for create review confirm and discard routes receives
+    404 instead of202 at POST character-drafts/:id/chat. returns a create review
+    without a current character receives canAccept false with
+    FOCUSED_CHARACTER_MIGRATION_NOT_READY despite a complete semantic review.
+    This offline suite uses injected fake transport, not real provider execution.
+
+evidence E2:
+  |
+    backend/src/services/semantic-authoring/adapters/character-v3.ts
+    finalizeCharacterCandidate returns CharacterDefinitionV3 or a wrapped migration
+    review candidate, not CharacterGenerationEnvelopeV3. orchestration.ts
+    finalizeOrAsk marks this result ready_for_review. In character-focused-authoring.ts,
+    persistFamilyResult stores result_json and marks the family attempt
+    awaiting_owner_acceptance, but does not persist candidate_json with a profile.
+    The generic semantic terminal result and complete activation envelope differ.
+
+evidence E3:
+  |
+    backend/src/routes.ts focusedReviewAcceptance uses the migration trial flag and
+    readCharacterFocusedMigrationActivationV3 for any awaiting semantic review.
+    The latter explicitly throws FOCUSED_CHARACTER_MIGRATION_NOT_READY when
+    row.mode is not migrate. Ordinary create is thus rejected by that branch.
+    POST character-drafts/:id/chat only returns409 when structured.candidate exists
+    and otherwise404; it has no focused ready-semantic candidate correction branch.
+
+evidence E4:
+  |
+    character-authoring-candidate.ts assertCharacterCandidateReady requires a V3
+    envelope, ready compiler compatibility, projection digest agreement and validated
+    publicPresentation.claimValidation. Accepted ADR0011 public-profile section
+    requires generated public profile and supported material claims before activation.
+    character-v3-authoring-requirements-v5.md R18 requires complete safe final review
+    and exact candidate/receipt binding; R21 forbids an independent budget reset.
+    execution-policy.ts maxLlmCalls is8. The observed fixture consumed eight semantic
+    calls, so blindly adding profile calls after terminal status is not a valid repair.
+
+evidence E5:
+  |
+    Accepted ADR0030 D10 persistence clause, retained by foundation revision3 prior-contract disposition, states a different semantic result creates a
+    new attempt. routes-structured-character-acceptance.test.ts currently requests
+    cautious behavior via chat then expects the original attempt ID and confirms it.
+    Updating that test must preserve successful correction and activation, using a
+    new immutable attempt if supported, rather than simply expecting rejection.
+
+evidence E6:
+  |
+    Competing explanations: a test-only outdated same-attempt expectation explains
+    that identity mismatch but does not explain the independent create-review
+    canAccept false result. A provider timeout does not explain a stored ready
+    semantic candidate and the explicit mode guard. The source-producing historical
+    change, prior review escape and full intended finalization architecture remain
+    unknown. No paid run or production observation is evidence here.
+
+decision D1 based_on P1, E1, E2, E3, E4, E6:
+  |
+    The demonstrated local mechanism is an incomplete create handoff: semantic
+    readiness is promoted to family owner-ready status, while the consumer has only
+    a migration activation reader and no complete create envelope. This produces
+    the observed false create acceptance. Do not remove profile validation or treat
+    semantic definition readiness as complete activation readiness.
+    The historical root change and detection escape remain unknown; this conclusion
+    is limited to the current offline code path, not actual provider reliability.
+
+decision D2 based_on E1, E3, E5, E6:
+  |
+    The draft-correction failure has both a missing implementation branch and a
+    same-attempt test expectation inconsistent with immutable semantic-result history.
+    A rejection-only test edit would not fulfill successful owner correction.
+    The exact successor command/source contract must be read before an implementation
+    choice; no same-attempt mutation or fabricated active generation is selected here.
+
+decision D3 based_on D1, D2, E4:
+  |
+    Next collect accepted focused-finalization and successor-source contracts and
+    determine a complete envelope production path within the existing eight-call
+    shared budget. Choose a typed required handoff only after that comparison.
+    If this requires a changed budget or source/activation ownership contract, obtain
+    an owner decision on a concrete design before dependent mutation. No code fix,
+    broader quality conclusion, budget increase or new model calls are authorized by
+    this reasoning artifact itself. Preserve all15 assertions' functional coverage.

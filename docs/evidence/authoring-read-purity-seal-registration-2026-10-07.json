@@ -1,0 +1,97 @@
+{
+  "scope": "ADR-0024 D1: three repetitions of six pending draft GETs; eighteen authoring/pointer/notification tables unchanged; nine mocked authoring ports unused; V3 character fixture under ADR-0043",
+  "evidence": {
+    "typecheck": "/tmp/kshiai-authoring-read-purity-types.log",
+    "test": "/tmp/kshiai-authoring-read-purity-strengthened.tap",
+    "passed": 1,
+    "failed": 0
+  },
+  "entries": [
+    {
+      "ref": "all-tests-20261007/authority-read-purity-adoption",
+      "path": "docs/adr/0024-detach-authoring-from-read-traffic.think",
+      "sealId": "3d5d1e8e4ec99ffe6fdef1851bbe1ba54593c86e365b620af601c1d97747fe8c",
+      "sha256": "7c48b07d1776ca841984a37e4ea776dbbce81d6d06197637a854a626ef936f0d",
+      "causeSealIds": []
+    },
+    {
+      "ref": "all-tests-20261007/authority-read-purity",
+      "path": "docs/adr/0024-detach-authoring-from-read-traffic.md",
+      "sealId": "3370270f447018a919b99948b0e1d5f7525ff601f076c92ba39a19eee664a5f0",
+      "sha256": "eb7ab630122a633302fe79062581ec3210ba09ea37924cb924f695ce1c167b30",
+      "causeSealIds": [
+        "3d5d1e8e4ec99ffe6fdef1851bbe1ba54593c86e365b620af601c1d97747fe8c"
+      ]
+    },
+    {
+      "ref": "all-tests-20261007/implementation-draft-read-routes",
+      "path": "backend/src/routes.ts",
+      "sealId": "bde4435dc99839ad7440be3006c1a589532213b5228148ed6be2121c24f4e5ed",
+      "sha256": "1eb38c2f6f60364a423c81f3346116d8f4db68e5aaf67374604fdd54ff5dece4",
+      "causeSealIds": [
+        "3370270f447018a919b99948b0e1d5f7525ff601f076c92ba39a19eee664a5f0",
+        "480c02403f61dc6a9cd7d54861639b962dbc3bde86673481e02e0defc8415e17"
+      ]
+    },
+    {
+      "ref": "all-tests-20261007/implementation-character-attempt-reads",
+      "path": "backend/src/repositories/character-assets-v2.ts",
+      "sealId": "71a3806f51ddb38886b2de44719b17f973c4d263a4257613274dfa1862a50ef4",
+      "sha256": "4a9f1360a3197fb2971acc6612a2328d33f41fe23d832927ac445ba0992c27a1",
+      "causeSealIds": [
+        "3370270f447018a919b99948b0e1d5f7525ff601f076c92ba39a19eee664a5f0",
+        "480c02403f61dc6a9cd7d54861639b962dbc3bde86673481e02e0defc8415e17"
+      ]
+    },
+    {
+      "ref": "all-tests-20261007/implementation-battlefield-attempt-reads",
+      "path": "backend/src/repositories/battlefield-assets-v2.ts",
+      "sealId": "8fbfa4e7ad1ba73da9443dd233cc2e5fcb470e1a1390f212694b9cdd21f73997",
+      "sha256": "21d2057b5613317783667c4ce4fcf1b1c0ae3d634d2e2c593ec5f0f303ce36cf",
+      "causeSealIds": [
+        "3370270f447018a919b99948b0e1d5f7525ff601f076c92ba39a19eee664a5f0"
+      ]
+    },
+    {
+      "ref": "all-tests-20261007/implementation-narration-attempt-reads",
+      "path": "backend/src/repositories/narration-style-assets-v2.ts",
+      "sealId": "9ac65d968f209831d78d430ba254515bbdd410d35730f7c72af780c26174e708",
+      "sha256": "70b0415a625049bb2828c9506c8a73afc27fec63aa06dfdcaef3fa8af03b3cd0",
+      "causeSealIds": [
+        "3370270f447018a919b99948b0e1d5f7525ff601f076c92ba39a19eee664a5f0"
+      ]
+    },
+    {
+      "ref": "all-tests-20261007/implementation-focused-character-review-reads",
+      "path": "backend/src/services/character-focused-authoring.ts",
+      "sealId": "02cff3aa82b9540318bcf089c96c4e8686d05438b1d686de6472f0a9307d526a",
+      "sha256": "86a8f7889e5c0bf06e35b1e381bd4c32866080224ad1a2b2c207f24244596bf2",
+      "causeSealIds": [
+        "3370270f447018a919b99948b0e1d5f7525ff601f076c92ba39a19eee664a5f0",
+        "480c02403f61dc6a9cd7d54861639b962dbc3bde86673481e02e0defc8415e17"
+      ]
+    },
+    {
+      "ref": "verification/authoring-read-purity-20261007",
+      "path": "backend/src/routes-authoring-read-purity.test.ts",
+      "sealId": "483846c7eda6b673a6e31c00780ad125f93731754eb3014cc026b1c0902a693f",
+      "sha256": "9b6a4162be627690488c80299eb1d4877ef98fc55b4f7a978d8d5e9314346be0",
+      "causeSealIds": [
+        "02cff3aa82b9540318bcf089c96c4e8686d05438b1d686de6472f0a9307d526a",
+        "3370270f447018a919b99948b0e1d5f7525ff601f076c92ba39a19eee664a5f0",
+        "480c02403f61dc6a9cd7d54861639b962dbc3bde86673481e02e0defc8415e17",
+        "71a3806f51ddb38886b2de44719b17f973c4d263a4257613274dfa1862a50ef4",
+        "8fbfa4e7ad1ba73da9443dd233cc2e5fcb470e1a1390f212694b9cdd21f73997",
+        "9ac65d968f209831d78d430ba254515bbdd410d35730f7c72af780c26174e708",
+        "bde4435dc99839ad7440be3006c1a589532213b5228148ed6be2121c24f4e5ed"
+      ]
+    }
+  ],
+  "existingUpstreamSeals": [
+    {
+      "ref": "all-tests-20261007/authority-v3-writes",
+      "path": "docs/adr/0043-v3-character-updates-with-historical-v2-display.md",
+      "sealId": "480c02403f61dc6a9cd7d54861639b962dbc3bde86673481e02e0defc8415e17"
+    }
+  ]
+}

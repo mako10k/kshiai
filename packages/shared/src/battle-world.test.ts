@@ -682,3 +682,16 @@ describe("server-owned battle world", () => {
     }
   });
 });
+
+it("rejects an inherited object property as an undeclared canonical area", () => {
+  const invalid = world();
+  invalid.entities["character.b"]!.placement = { type: "scene", areaId: "toString" };
+  invalid.pairRelations[0]!.distance = "separate_area";
+  invalid.pairRelations[0]!.sight = "blocked";
+  invalid.pairRelations[0]!.sound = "blocked";
+  const parsed = BattleWorldStateSchema.safeParse(invalid);
+  assert.equal(parsed.success, false);
+  if (!parsed.success) {
+    assert.ok(parsed.error.issues.some((issue) => issue.message === "missing world area toString"));
+  }
+});

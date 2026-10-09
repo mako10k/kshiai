@@ -1,0 +1,145 @@
+[
+  {
+    "key": "design-dialogue-quality-helper",
+    "path": "docs/script-helper-test-contract-review-2026-10-08.md",
+    "parents": [
+      "utterance",
+      "closure"
+    ],
+    "scope": "Pure actualutterance textshape observation/extraction/empty cohort; not qualitythreshold or semantic/model certification.",
+    "ref": "all-tests-20261008/design-dialogue-quality-helper",
+    "test": false,
+    "sha256": "3208f038728d6ba12a4e41a46f878a4ddc97b9b515c4de204b111306e79e2fa9",
+    "sealId": "7e4443426d70118b72aa5304d5ecd9e3723bad6f55ce9eb9d7bee5a399427ff2",
+    "causeSealIds": [
+      "81c85423654dba4a056b6ca9844f1bf5569fbaff36621c3b9e05efabd9dcdc36",
+      "c78380a91ca246910ea6d9293cdda86e877d36ca34590a73e1d76ccb026ce855"
+    ]
+  },
+  {
+    "key": "implementation-dialogue-quality-helper",
+    "path": "backend/src/scripts/dialogue-quality.ts",
+    "parents": [
+      "design-dialogue-quality-helper"
+    ],
+    "scope": "Pure actualutterance textshape observation/extraction/empty cohort; not qualitythreshold or semantic/model certification.",
+    "ref": "all-tests-20261008/implementation-dialogue-quality-helper",
+    "test": false,
+    "sha256": "a493c3c850b35edd0456d62a510a57842fc554640a2933ea7f249fb3634fb951",
+    "sealId": "142bd037c11a2534f968a4bf02fc4346e19d8edb284b61a9ab5ba964455598cd",
+    "causeSealIds": [
+      "7e4443426d70118b72aa5304d5ecd9e3723bad6f55ce9eb9d7bee5a399427ff2"
+    ]
+  },
+  {
+    "key": "dialogue-quality-helper-bounded-20261008",
+    "path": "backend/src/scripts/dialogue-quality.test.ts",
+    "parents": [
+      "implementation-dialogue-quality-helper"
+    ],
+    "scope": "Pure actualutterance textshape observation/extraction/empty cohort; not qualitythreshold or semantic/model certification. Whole originalcases/assertions unchanged, no skips.",
+    "ref": "verification/dialogue-quality-helper-bounded-20261008",
+    "test": true,
+    "sha256": "0b25b468ed443b0ca4f1dfac639b5c5c3a98d55e72f7dc6d01be491c1441c18a",
+    "sealId": "33fde13e943800ce703f40de84ec258d1b32fc29abc11111e70cb8a3681bb44d",
+    "causeSealIds": [
+      "142bd037c11a2534f968a4bf02fc4346e19d8edb284b61a9ab5ba964455598cd"
+    ]
+  },
+  {
+    "key": "design-migrate-legacy-account-helper",
+    "path": "docs/script-helper-test-contract-review-2026-10-08.md",
+    "parents": [
+      "retained",
+      "envelope"
+    ],
+    "scope": "Pure existing operatortransform identity/media/category regression; historicalboundary only, no permission/proof tolinkaccount/auth/writecloud/execute migration.",
+    "ref": "all-tests-20261008/design-migrate-legacy-account-helper",
+    "test": false,
+    "sha256": "3208f038728d6ba12a4e41a46f878a4ddc97b9b515c4de204b111306e79e2fa9",
+    "sealId": "35192c4d0c1733b32c27401ecc2509529fb88ed39b3263655c70c15f12b67f18",
+    "causeSealIds": [
+      "480c02403f61dc6a9cd7d54861639b962dbc3bde86673481e02e0defc8415e17",
+      "fdaeaeb9f3694421a8776649f58ec4e89962ae6f95fc3249b8ca4b6a93b6e3ed"
+    ]
+  },
+  {
+    "key": "implementation-migrate-legacy-account-helper",
+    "path": "backend/src/scripts/migrate-legacy-account.ts",
+    "parents": [
+      "design-migrate-legacy-account-helper"
+    ],
+    "scope": "Pure existing operatortransform identity/media/category regression; historicalboundary only, no permission/proof tolinkaccount/auth/writecloud/execute migration.",
+    "ref": "all-tests-20261008/implementation-migrate-legacy-account-helper",
+    "test": false,
+    "sha256": "7d6de2faa35f84ec7caaa40258b3de6b1c868ce662207fa1cd7414dfa0b97e63",
+    "sealId": "5b9c7fc9c261eb13bfdf4f0b252c8435b01aa41f5db213cffcc7af20fb820819",
+    "causeSealIds": [
+      "35192c4d0c1733b32c27401ecc2509529fb88ed39b3263655c70c15f12b67f18"
+    ]
+  },
+  {
+    "key": "migrate-legacy-account-helper-bounded-20261008",
+    "path": "backend/src/scripts/migrate-legacy-account.test.ts",
+    "parents": [
+      "implementation-migrate-legacy-account-helper"
+    ],
+    "scope": "Pure existing operatortransform identity/media/category regression; historicalboundary only, no permission/proof tolinkaccount/auth/writecloud/execute migration. Whole originalcases/assertions unchanged, no skips.",
+    "ref": "verification/migrate-legacy-account-helper-bounded-20261008",
+    "test": true,
+    "sha256": "a8ed9bbc264676345fdea46ee135ff18d155dfeb00265829a5afe88548ffd340",
+    "sealId": "ce4d44e6acae36036701a69c359bd546751af60e16b4c90e8c3fec89501251bd",
+    "causeSealIds": [
+      "5b9c7fc9c261eb13bfdf4f0b252c8435b01aa41f5db213cffcc7af20fb820819"
+    ]
+  },
+  {
+    "key": "design-supabase-auth-smoke-helper",
+    "path": "docs/script-helper-test-contract-review-2026-10-08.md",
+    "parents": [
+      "envelope",
+      "migration",
+      "retained"
+    ],
+    "scope": "PrivateSQLite legacyauth retainedV2/stagedV3 read/resume oneattempt, zero providerrequests/currentpointerV2. Not SupabaseJWT/live/modelmigration/activation or discardedcutovertrial.",
+    "ref": "all-tests-20261008/design-supabase-auth-smoke-helper",
+    "test": false,
+    "sha256": "3208f038728d6ba12a4e41a46f878a4ddc97b9b515c4de204b111306e79e2fa9",
+    "sealId": "47bd0c18ca6594deeafa6510449fce745b749368e277e59fc7048efe795a5aea",
+    "causeSealIds": [
+      "fdaeaeb9f3694421a8776649f58ec4e89962ae6f95fc3249b8ca4b6a93b6e3ed",
+      "2fb9650ddebe867a978634fea432e65d0611085c8cb823c36a6d6f3f5eaa2962",
+      "480c02403f61dc6a9cd7d54861639b962dbc3bde86673481e02e0defc8415e17"
+    ]
+  },
+  {
+    "key": "implementation-supabase-auth-smoke-helper",
+    "path": "backend/src/scripts/supabase-auth-smoke.ts",
+    "parents": [
+      "design-supabase-auth-smoke-helper"
+    ],
+    "scope": "PrivateSQLite legacyauth retainedV2/stagedV3 read/resume oneattempt, zero providerrequests/currentpointerV2. Not SupabaseJWT/live/modelmigration/activation or discardedcutovertrial.",
+    "ref": "all-tests-20261008/implementation-supabase-auth-smoke-helper",
+    "test": false,
+    "sha256": "93aaed4f15fed5efe4a88250a06500986854b9b970e8de8def50393b0a75a08c",
+    "sealId": "1ed8a7982917a116ae2df4f73a898d6a71dc2db77b187ecbfb873c4653bc088c",
+    "causeSealIds": [
+      "47bd0c18ca6594deeafa6510449fce745b749368e277e59fc7048efe795a5aea"
+    ]
+  },
+  {
+    "key": "supabase-auth-smoke-helper-bounded-20261008",
+    "path": "backend/src/scripts/supabase-auth-smoke.test.ts",
+    "parents": [
+      "implementation-supabase-auth-smoke-helper"
+    ],
+    "scope": "PrivateSQLite legacyauth retainedV2/stagedV3 read/resume oneattempt, zero providerrequests/currentpointerV2. Not SupabaseJWT/live/modelmigration/activation or discardedcutovertrial. Whole originalcases/assertions unchanged, no skips.",
+    "ref": "verification/supabase-auth-smoke-helper-bounded-20261008",
+    "test": true,
+    "sha256": "fd6ee6d6987d13df9fa9c7fac26505fb7ad4d3e904447a5981a08478dd0fa1ee",
+    "sealId": "c28f9d37d91f63838cf59555ffe23c05dfe221c11caf4e8aa5a51f9ba342a37f",
+    "causeSealIds": [
+      "1ed8a7982917a116ae2df4f73a898d6a71dc2db77b187ecbfb873c4653bc088c"
+    ]
+  }
+]

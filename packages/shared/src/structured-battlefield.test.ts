@@ -1,3 +1,4 @@
+import { prepareStructuredBattlefieldCreationV2, type BattlefieldCreation } from "./battlefield-creation.js";
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import {
@@ -171,13 +172,12 @@ describe("BattlefieldDefinitionV2", () => {
 
   it("places both semantic character roots at their exact authored entry areas", () => {
     const value = definition();
-    const instance = compileBattlefieldInstanceV2(value, "field-ready");
     const state = createBattleState({
       id: "battle-entry-areas",
       sideA: character("entry-a"),
       sideB: character("entry-b"),
       turnLimit: 20,
-      battlefield: instance,
+      battlefield: prepareStructuredBattlefieldCreationV2(value, "field-ready"),
       prologuePending: false,
     });
     const areaNames = new Map(value.areas.map((area) => [area.id, area.name]));
@@ -189,6 +189,70 @@ describe("BattlefieldDefinitionV2", () => {
       type: "scene",
       area: areaNames.get(value.entryAreas.b),
     });
+    assert.deepEqual(Object.keys(state.worldState!.areas).sort(), value.areas.map((area) => area.id).sort());
+    assert.deepEqual(state.worldState?.entities["character.a"]?.placement,
+      { type: "scene", areaId: value.entryAreas.a });
+    assert.deepEqual(state.worldState?.entities["character.b"]?.placement,
+      { type: "scene", areaId: value.entryAreas.b });
+    assert.deepEqual(state.battlefield, compileBattlefieldInstanceV2(value, "field-ready"));
+  });
+
+  it("preserves distinct area and entity placements when display names are identical", () => {
+    const original = definition();
+    const lastAreaId = original.areas.at(-1)!.id;
+    const areaEffect = { ...original.effects[0]!, target: { kind: "area" as const, areaId: lastAreaId } };
+    const value = BattlefieldDefinitionV2Schema.parse({
+      ...original,
+      areas: original.areas.map((area) => ({ ...area, name: "同じ名前の場" })),
+      effects: [areaEffect],
+      objects: original.objects.map((object) => ({ ...object, areaId: lastAreaId })),
+    });
+    const creation = prepareStructuredBattlefieldCreationV2(value, "duplicate-area-names");
+    const state = createBattleState({
+      id: "duplicate-area-world", sideA: character("duplicate-a"), sideB: character("duplicate-b"),
+      turnLimit: 12, battlefield: creation, prologuePending: false,
+    });
+    assert.deepEqual(Object.keys(state.worldState!.areas).sort(), value.areas.map((area) => area.id).sort());
+    assert.deepEqual(state.worldState?.entities["character.a"]?.placement,
+      { type: "scene", areaId: value.entryAreas.a });
+    assert.deepEqual(state.worldState?.entities["character.b"]?.placement,
+      { type: "scene", areaId: value.entryAreas.b });
+    for (const object of value.objects.filter((entry) => entry.presence === "present")) {
+      assert.deepEqual(state.worldState?.entities[object.id]?.placement,
+        { type: "scene", areaId: lastAreaId });
+    }
+    assert.deepEqual(state.worldState?.entities[areaEffect.id]?.placement,
+      { type: "scene", areaId: lastAreaId });
+    assert.deepEqual(state.worldState?.pairRelations[0]?.distance, "separate_area");
+    assert.equal("worldLayout" in state.battlefield!, false);
+  });
+
+  it("rejects missing or dangling initial scene placement references", () => {
+    const creation = prepareStructuredBattlefieldCreationV2(definition(), "invalid-layout");
+    const missing = structuredClone(creation);
+    delete missing.worldLayout.sceneAreaIds["character.b"];
+    assert.throws(() => createBattleState({
+      id: "missing-placement", sideA: character("reference-a"), sideB: character("reference-b"),
+      turnLimit: 12, battlefield: missing,
+    }), /BATTLE_WORLD_INITIAL_LAYOUT_PLACEMENT_REQUIRED/);
+    const dangling = structuredClone(creation);
+    dangling.worldLayout.sceneAreaIds["character.b"] = "area.not-defined";
+    assert.throws(() => createBattleState({
+      id: "dangling-placement", sideA: character("reference-a"), sideB: character("reference-b"),
+      turnLimit: 12, battlefield: dangling,
+    }), /BATTLE_WORLD_INITIAL_LAYOUT_REFERENCE_INVALID/);
+    dangling.worldLayout.sceneAreaIds["character.b"] = "toString";
+    assert.throws(() => createBattleState({
+      id: "inherited-area-reference", sideA: character("reference-a"), sideB: character("reference-b"),
+      turnLimit: 12, battlefield: dangling,
+    }), /BATTLE_WORLD_INITIAL_LAYOUT_REFERENCE_INVALID/);
+  });
+
+  it("rejects using a structured instance without its required creation layout", () => {
+    assert.throws(() => createBattleState({
+      id: "missing-structured-world", sideA: character("missing-a"), sideB: character("missing-b"),
+      turnLimit: 12, battlefield: { kind: "legacy", instance: compileBattlefieldInstanceV2(definition(), "missing-layout") },
+    }), /STRUCTURED_BATTLEFIELD_INITIAL_LAYOUT_REQUIRED/);
   });
 
   it("keeps mechanics, hidden objects, and evolution controls out of public projections", () => {
@@ -258,4 +322,13 @@ describe("BattlefieldDefinitionV2", () => {
       /BATTLEFIELD_REQUIRED_COMPILER_MISSING/,
     );
   });
+});
+
+type IsBattlefieldCreation<T> = T extends BattlefieldCreation ? true : false;
+const missingCreationLayout: IsBattlefieldCreation<{
+  kind: "structured";
+  instance: ReturnType<typeof compileBattlefieldInstanceV2>;
+}> = false;
+it("requires structured placement handoff at compile time", () => {
+  assert.equal(missingCreationLayout, false);
 });

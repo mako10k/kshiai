@@ -1,0 +1,85 @@
+[
+  {
+    "key": "design-revision-scope-bounded",
+    "path": "docs/revision-scope-test-contract-review-2026-10-08.md",
+    "parents": [
+      "scope",
+      "character",
+      "foundation"
+    ],
+    "scope": "Pure controlled corpus scope evaluation and injected-fetch local replay adapter only. Experimental fixed model/options are not production selection. No livecalls, productionquality, multi-cluster product progression, ownerQ&A or ProposedADR0059.",
+    "ref": "all-tests-20261008/design-revision-scope-bounded",
+    "test": false,
+    "sha256": "b7e1e19cb8e669e185518530a5a7fe8ed829f71dcded2806aa33daa9ad639f51",
+    "sealId": "b7f066921f1ffd4469ddfdfc891b1026260329b2b80148768bcc1591979dca95",
+    "causeSealIds": [
+      "137fb216bdd17be1b005ed6ec66c949dceed3b262a93daedc66a512128db5a1a",
+      "3942057ff54a50c9ba7330f8069242d637aa62302b067be0d9796198f1932f01",
+      "2a779ad74cb7e11bbc803024ea90c3ba6fc8ec57a0c6701b441a449a9440587a"
+    ]
+  },
+  {
+    "key": "implementation-revision-scope-evaluation-bounded",
+    "path": "backend/src/services/semantic-authoring/revision-scope-evaluation.ts",
+    "parents": [
+      "design-revision-scope-bounded"
+    ],
+    "scope": "Pure controlled corpus scope evaluation and injected-fetch local replay adapter only. Experimental fixed model/options are not production selection. No livecalls, productionquality, multi-cluster product progression, ownerQ&A or ProposedADR0059.",
+    "ref": "all-tests-20261008/implementation-revision-scope-evaluation-bounded",
+    "test": false,
+    "sha256": "97ed2c1009a1e589e4688f61eb2d14f4fb18a42f6cb1d08763b725ad0e133a3a",
+    "sealId": "19148f36600865ecb1a5c2b38ea892c021ebe106a306ea576cf9dbf928c7c5aa",
+    "causeSealIds": [
+      "b7f066921f1ffd4469ddfdfc891b1026260329b2b80148768bcc1591979dca95"
+    ]
+  },
+  {
+    "key": "implementation-revision-scope-ollama-bounded",
+    "path": "backend/src/services/semantic-authoring/revision-scope-ollama.ts",
+    "parents": [
+      "implementation-revision-scope-evaluation-bounded",
+      "design-revision-scope-bounded"
+    ],
+    "scope": "Pure controlled corpus scope evaluation and injected-fetch local replay adapter only. Experimental fixed model/options are not production selection. No livecalls, productionquality, multi-cluster product progression, ownerQ&A or ProposedADR0059.",
+    "ref": "all-tests-20261008/implementation-revision-scope-ollama-bounded",
+    "test": false,
+    "sha256": "07fdf87d44d07bd413b59c1196fecca17f6052c216fe074987040833451e555d",
+    "sealId": "6c52d73312c8884ae0d6d508cc95f4be9ea9893489ff2ae2a5bde9d3224803bf",
+    "causeSealIds": [
+      "19148f36600865ecb1a5c2b38ea892c021ebe106a306ea576cf9dbf928c7c5aa",
+      "b7f066921f1ffd4469ddfdfc891b1026260329b2b80148768bcc1591979dca95"
+    ]
+  },
+  {
+    "key": "revision-scope-evaluation-bounded-20261008",
+    "path": "backend/src/services/semantic-authoring/revision-scope-evaluation.test.ts",
+    "parents": [
+      "implementation-revision-scope-evaluation-bounded"
+    ],
+    "scope": "Pure controlled corpus scope evaluation and injected-fetch local replay adapter only. Experimental fixed model/options are not production selection. No livecalls, productionquality, multi-cluster product progression, ownerQ&A or ProposedADR0059.",
+    "ref": "verification/revision-scope-evaluation-bounded-20261008",
+    "test": true,
+    "sha256": "0c65e651a1ed72151d6c570f5caf0befabf26bb182305a9eca1c7958a2742d6f",
+    "sealId": "028c3ccd50f29c77b4cd51d3434c66bf85499e0f82445658d4380ffc5d894194",
+    "causeSealIds": [
+      "19148f36600865ecb1a5c2b38ea892c021ebe106a306ea576cf9dbf928c7c5aa"
+    ]
+  },
+  {
+    "key": "revision-scope-ollama-bounded-20261008",
+    "path": "backend/src/services/semantic-authoring/revision-scope-ollama.test.ts",
+    "parents": [
+      "implementation-revision-scope-ollama-bounded",
+      "implementation-revision-scope-evaluation-bounded"
+    ],
+    "scope": "Pure controlled corpus scope evaluation and injected-fetch local replay adapter only. Experimental fixed model/options are not production selection. No livecalls, productionquality, multi-cluster product progression, ownerQ&A or ProposedADR0059.",
+    "ref": "verification/revision-scope-ollama-bounded-20261008",
+    "test": true,
+    "sha256": "58f843892d35eed50dfcb11c925d229afc60977f420c333767d378631f0ad1c7",
+    "sealId": "5a9f61a3a053d790c0f4bc84bb07b8d8664e95db4e7e246bbb71cc3ea2eacbff",
+    "causeSealIds": [
+      "6c52d73312c8884ae0d6d508cc95f4be9ea9893489ff2ae2a5bde9d3224803bf",
+      "19148f36600865ecb1a5c2b38ea892c021ebe106a306ea576cf9dbf928c7c5aa"
+    ]
+  }
+]

@@ -7,9 +7,14 @@ import {
 } from "./asset-visibility.js";
 
 describe("asset visibility", () => {
-  it("treats omitted or unknown values as public", () => {
-    assert.equal(assetVisibilityOf(undefined), "public");
-    assert.equal(assetVisibilityOf("secret"), "public");
+  it("treats omitted or unknown values as private under ADR0060", () => {
+    assert.equal(assetVisibilityOf(undefined), "private");
+    assert.equal(assetVisibilityOf("secret"), "private");
+    assert.equal(assetVisibilityOf(null), "private");
+    assert.equal(canExposeAssetByVisibility({
+      isOwner: false,
+      viewerIsFriendOfOwner: true,
+    }), false);
     assert.equal(assetVisibilityOf("friends"), "friends");
   });
 

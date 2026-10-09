@@ -1,0 +1,1398 @@
+[
+  {
+    "testPath": "backend/src/llm/adjudication-prompt-prose.test.ts",
+    "obligations": [
+      "preserve all JSON-like scalar/container facts and ordering in compact adjudication prompt; reject cycles, unsupported values and depth/size overflow"
+    ],
+    "governingSources": [
+      {
+        "path": "docs/adr/0058-stop-test-runs-with-unsealed-tests.md",
+        "clause": "Decision D1-D2: unsealed tests are not executable authority; stop aggregate runs",
+        "status": "Accepted",
+        "why": "Governs whether this test may be run or sealed, not its behavioral meaning."
+      }
+    ],
+    "implementationPaths": [
+      "backend/src/llm/adjudication-prompt-prose.ts",
+      "backend/src/llm/prompt-prose.ts"
+    ],
+    "fixturePaths": [],
+    "issues": [
+      "test-authority inventory: state=disabled, reason=unsealed",
+      "No dedicated accepted ADR specifies serializer limits; ADR0009 supports preserving internal adjudication facts but not exact compact format."
+    ],
+    "confidence": 0.82
+  },
+  {
+    "testPath": "backend/src/llm/awareness-adjudication-result.test.ts",
+    "obligations": [
+      "validate winner/reason facts, typed world patch and sensory evidence; bind server revision/event IDs; reject empty proposal coverage and invalid post-HTTP semantics"
+    ],
+    "governingSources": [
+      {
+        "path": "docs/adr/0022-canonical-world-and-observer-cognition.md",
+        "clause": "Decision: canonical world is unique/viewpoint-free; observer cognition receives safe projections",
+        "status": "Accepted",
+        "why": "Governs sensory/world evidence boundaries."
+      },
+      {
+        "path": "docs/adr/0009-separate-adjudication-from-judgment-presentation.md",
+        "clause": "Decision: immutable internal adjudication and server-owned public projection remain separate",
+        "status": "Accepted",
+        "why": "Governs separation of referee facts/verdict from generated presentation."
+      },
+      {
+        "path": "docs/adr/0058-stop-test-runs-with-unsealed-tests.md",
+        "clause": "Decision D1-D2: unsealed tests are not executable authority; stop aggregate runs",
+        "status": "Accepted",
+        "why": "Governs whether this test may be run or sealed, not its behavioral meaning."
+      }
+    ],
+    "implementationPaths": [
+      "backend/src/llm/awareness-adjudication-result.ts",
+      "backend/src/llm/awareness-dispatch-context.ts"
+    ],
+    "fixturePaths": [],
+    "issues": [
+      "test-authority inventory: state=disabled, reason=unsealed",
+      "Exact proposal coverage and sensory-evidence thresholds are implementation contracts; current accepted ADRs do not spell every field."
+    ],
+    "confidence": 0.88
+  },
+  {
+    "testPath": "backend/src/llm/awareness-dispatch-admission.test.ts",
+    "obligations": [
+      "admit only exact prompt/model/cap quote or immutable observed policy; hash latest request; fail closed on quote errors/mismatch; never invent usage or price"
+    ],
+    "governingSources": [
+      {
+        "path": "docs/adr/0007-provider-operation-ledger-and-observation-ceilings.md",
+        "clause": "Decision: distinguish logical calls from physical attempts; reserve/count failures and retries; preserve unknown usage/cost",
+        "status": "Accepted",
+        "why": "Directly governs provider attempt and accounting assertions."
+      },
+      {
+        "path": "docs/adr/0051-observed-llm-usage-accounting.md",
+        "clause": "Decision: record every physical provider observation; absent usage/prices remain explicit unknowns",
+        "status": "Accepted",
+        "why": "Governs observed accounting and no fabricated usage assertions."
+      },
+      {
+        "path": "docs/adr/0058-stop-test-runs-with-unsealed-tests.md",
+        "clause": "Decision D1-D2: unsealed tests are not executable authority; stop aggregate runs",
+        "status": "Accepted",
+        "why": "Governs whether this test may be run or sealed, not its behavioral meaning."
+      }
+    ],
+    "implementationPaths": [
+      "backend/src/llm/awareness-dispatch-admission.ts",
+      "backend/src/services/distributed-guard.ts"
+    ],
+    "fixturePaths": [],
+    "issues": [
+      "test-authority inventory: state=disabled, reason=unsealed",
+      "Observed mode is accepted by ADR0051, but exact quote schema and role admissibility lack a single upstream requirement."
+    ],
+    "confidence": 0.9
+  },
+  {
+    "testPath": "backend/src/llm/awareness-dispatch-context.test.ts",
+    "obligations": [
+      "send exact rendered prose/schema/cap/model with no streaming/tools; clip timeout to battle deadline; do not dispatch or retry after admission rejection"
+    ],
+    "governingSources": [
+      {
+        "path": "docs/adr/0007-provider-operation-ledger-and-observation-ceilings.md",
+        "clause": "Decision: distinguish logical calls from physical attempts; reserve/count failures and retries; preserve unknown usage/cost",
+        "status": "Accepted",
+        "why": "Directly governs provider attempt and accounting assertions."
+      },
+      {
+        "path": "docs/adr/0054-normal-awareness-waiting-deadlines.md",
+        "clause": "Decision drivers: consistent SDK/execution/canonical/narration deadlines; retain retry and pricing limits",
+        "status": "Accepted",
+        "why": "Governs bound timeout assertions."
+      },
+      {
+        "path": "docs/adr/0056-latest-prompt-contract-until-completion.md",
+        "clause": "Decision: run latest output contract through normal completion, including existing battles",
+        "status": "Accepted",
+        "why": "Governs current prompt/strict output contract assertions."
+      },
+      {
+        "path": "docs/adr/0058-stop-test-runs-with-unsealed-tests.md",
+        "clause": "Decision D1-D2: unsealed tests are not executable authority; stop aggregate runs",
+        "status": "Accepted",
+        "why": "Governs whether this test may be run or sealed, not its behavioral meaning."
+      }
+    ],
+    "implementationPaths": [
+      "backend/src/llm/awareness-dispatch-context.ts",
+      "backend/src/llm/openai-compatible.ts",
+      "backend/src/llm/awareness-frozen-narration.ts"
+    ],
+    "fixturePaths": [],
+    "issues": [
+      "test-authority inventory: state=disabled, reason=unsealed",
+      "Exact wire options are detailed implementation evidence; full-path provider acceptance remains separate."
+    ],
+    "confidence": 0.9
+  },
+  {
+    "testPath": "backend/src/llm/awareness-frozen-narration.test.ts",
+    "obligations": [
+      "reuse frozen prepared material per phase without interpretation; enforce receipt identity, phase batching and deadlines; keep canonical verdict out of generated framing; validate strict schema"
+    ],
+    "governingSources": [
+      {
+        "path": "docs/adr/0009-separate-adjudication-from-judgment-presentation.md",
+        "clause": "Decision: immutable internal adjudication and server-owned public projection remain separate",
+        "status": "Accepted",
+        "why": "Governs separation of referee facts/verdict from generated presentation."
+      },
+      {
+        "path": "docs/adr/0054-normal-awareness-waiting-deadlines.md",
+        "clause": "Decision drivers: consistent SDK/execution/canonical/narration deadlines; retain retry and pricing limits",
+        "status": "Accepted",
+        "why": "Governs bound timeout assertions."
+      },
+      {
+        "path": "docs/adr/0056-latest-prompt-contract-until-completion.md",
+        "clause": "Decision: run latest output contract through normal completion, including existing battles",
+        "status": "Accepted",
+        "why": "Governs current prompt/strict output contract assertions."
+      },
+      {
+        "path": "docs/adr/0058-stop-test-runs-with-unsealed-tests.md",
+        "clause": "Decision D1-D2: unsealed tests are not executable authority; stop aggregate runs",
+        "status": "Accepted",
+        "why": "Governs whether this test may be run or sealed, not its behavioral meaning."
+      }
+    ],
+    "implementationPaths": [
+      "backend/src/llm/awareness-frozen-narration.ts",
+      "backend/src/llm/awareness-narration-phase.ts",
+      "backend/src/llm/awareness-narration-response-schema.ts"
+    ],
+    "fixturePaths": [],
+    "issues": [
+      "test-authority inventory: state=disabled, reason=unsealed",
+      "ADR0056 governs latest contract, but exact phase batch counts and prologue source fields are detailed design only."
+    ],
+    "confidence": 0.88
+  },
+  {
+    "testPath": "backend/src/llm/awareness-latent-output-guidance.test.ts",
+    "obligations": [
+      "retain feelings, learned reactions, reflex/subconscious desires in compact examples; guidance states token budget without item-count cap"
+    ],
+    "governingSources": [
+      {
+        "path": "docs/adr/0027-unified-conscious-agency-and-psyche-boundary.md",
+        "clause": "Decision D1-D3 and Verification: psyche, conscious decision, engine result, and speech responsibilities stay distinct",
+        "status": "Accepted",
+        "why": "Governs conscious/dynamic prompt and action boundary assertions."
+      },
+      {
+        "path": "docs/adr/0058-stop-test-runs-with-unsealed-tests.md",
+        "clause": "Decision D1-D2: unsealed tests are not executable authority; stop aggregate runs",
+        "status": "Accepted",
+        "why": "Governs whether this test may be run or sealed, not its behavioral meaning."
+      }
+    ],
+    "implementationPaths": [
+      "backend/src/llm/awareness-latent-output-guidance.ts"
+    ],
+    "fixturePaths": [],
+    "issues": [
+      "test-authority inventory: state=disabled, reason=unsealed",
+      "ADR0050 is superseded and does not authorize a production rollout; exact 600-token prose has no accepted source identified."
+    ],
+    "confidence": 0.78
+  },
+  {
+    "testPath": "backend/src/llm/awareness-narration.test.ts",
+    "obligations": [
+      "produce ordered receipt-complete batch from one capped call; use bound long timeout; reject missing/duplicate/swapped identities, unsupported subjects and expired deadlines without retry"
+    ],
+    "governingSources": [
+      {
+        "path": "docs/adr/0054-normal-awareness-waiting-deadlines.md",
+        "clause": "Decision drivers: consistent SDK/execution/canonical/narration deadlines; retain retry and pricing limits",
+        "status": "Accepted",
+        "why": "Governs bound timeout assertions."
+      },
+      {
+        "path": "docs/adr/0056-latest-prompt-contract-until-completion.md",
+        "clause": "Decision: run latest output contract through normal completion, including existing battles",
+        "status": "Accepted",
+        "why": "Governs current prompt/strict output contract assertions."
+      },
+      {
+        "path": "docs/adr/0007-provider-operation-ledger-and-observation-ceilings.md",
+        "clause": "Decision: distinguish logical calls from physical attempts; reserve/count failures and retries; preserve unknown usage/cost",
+        "status": "Accepted",
+        "why": "Directly governs provider attempt and accounting assertions."
+      },
+      {
+        "path": "docs/adr/0058-stop-test-runs-with-unsealed-tests.md",
+        "clause": "Decision D1-D2: unsealed tests are not executable authority; stop aggregate runs",
+        "status": "Accepted",
+        "why": "Governs whether this test may be run or sealed, not its behavioral meaning."
+      }
+    ],
+    "implementationPaths": [
+      "backend/src/llm/awareness-narration.ts"
+    ],
+    "fixturePaths": [],
+    "issues": [
+      "test-authority inventory: state=disabled, reason=unsealed",
+      "Batch size/coverage rules are local contracts; ADR0057 public completion evidence is not established by unit tests."
+    ],
+    "confidence": 0.9
+  },
+  {
+    "testPath": "backend/src/llm/awareness-output-contract.test.ts",
+    "obligations": [
+      "provide schema-valid action examples; reject string/copied option actions; separate conscious thought from latent ambiguity and source roles"
+    ],
+    "governingSources": [
+      {
+        "path": "docs/adr/0027-unified-conscious-agency-and-psyche-boundary.md",
+        "clause": "Decision D1-D3 and Verification: psyche, conscious decision, engine result, and speech responsibilities stay distinct",
+        "status": "Accepted",
+        "why": "Governs conscious/dynamic prompt and action boundary assertions."
+      },
+      {
+        "path": "docs/adr/0047-phase-scoped-conscious-output-and-mechanical-completion.md",
+        "clause": "Decision: phase-scoped dynamic output, immutable snapshots, bounded mechanical completion/repair",
+        "status": "Accepted",
+        "why": "Governs dynamic output selection/repair assertions for new battles."
+      },
+      {
+        "path": "docs/adr/0058-stop-test-runs-with-unsealed-tests.md",
+        "clause": "Decision D1-D2: unsealed tests are not executable authority; stop aggregate runs",
+        "status": "Accepted",
+        "why": "Governs whether this test may be run or sealed, not its behavioral meaning."
+      }
+    ],
+    "implementationPaths": [
+      "backend/src/llm/awareness-output-contract.ts"
+    ],
+    "fixturePaths": [],
+    "issues": [
+      "test-authority inventory: state=disabled, reason=unsealed",
+      "ADR0044 is superseded; current action contract authority is ADR0047 plus shared schema, so exact wording needs current requirement linkage."
+    ],
+    "confidence": 0.86
+  },
+  {
+    "testPath": "backend/src/llm/awareness-provider-factory.test.ts",
+    "obligations": [
+      "construct only configured Luna/Grok roles with immutable identities, no fallback/retry; pass bound measurement policy; reject model/url drift"
+    ],
+    "governingSources": [
+      {
+        "path": "docs/adr/0054-normal-awareness-waiting-deadlines.md",
+        "clause": "Decision drivers: consistent SDK/execution/canonical/narration deadlines; retain retry and pricing limits",
+        "status": "Accepted",
+        "why": "Governs bound timeout assertions."
+      },
+      {
+        "path": "docs/adr/0007-provider-operation-ledger-and-observation-ceilings.md",
+        "clause": "Decision: distinguish logical calls from physical attempts; reserve/count failures and retries; preserve unknown usage/cost",
+        "status": "Accepted",
+        "why": "Directly governs provider attempt and accounting assertions."
+      },
+      {
+        "path": "docs/adr/0058-stop-test-runs-with-unsealed-tests.md",
+        "clause": "Decision D1-D2: unsealed tests are not executable authority; stop aggregate runs",
+        "status": "Accepted",
+        "why": "Governs whether this test may be run or sealed, not its behavioral meaning."
+      }
+    ],
+    "implementationPaths": [
+      "backend/src/llm/awareness-provider-factory.ts",
+      "backend/src/llm/openai-compatible.ts"
+    ],
+    "fixturePaths": [],
+    "issues": [
+      "test-authority inventory: state=disabled, reason=unsealed",
+      "Provider/model allowlist is implementation policy; no accepted ADR names every allowed model string."
+    ],
+    "confidence": 0.86
+  },
+  {
+    "testPath": "backend/src/llm/awareness-provider.test.ts",
+    "obligations": [
+      "one Luna call updates latent reflex/affect at cap; pass battle-bound deadlines; send only owner-facing feelings to Grok; select immutable prompt revision; reject stale output and implicit cross-provider route"
+    ],
+    "governingSources": [
+      {
+        "path": "docs/adr/0027-unified-conscious-agency-and-psyche-boundary.md",
+        "clause": "Decision D1-D3 and Verification: psyche, conscious decision, engine result, and speech responsibilities stay distinct",
+        "status": "Accepted",
+        "why": "Governs conscious/dynamic prompt and action boundary assertions."
+      },
+      {
+        "path": "docs/adr/0048-v3-profile-guidance-source-projection.md",
+        "clause": "Decision: project public guidance while excluding private source and executable action norms",
+        "status": "Accepted",
+        "why": "Governs profile/source projection and privacy assertions."
+      },
+      {
+        "path": "docs/adr/0056-latest-prompt-contract-until-completion.md",
+        "clause": "Decision: run latest output contract through normal completion, including existing battles",
+        "status": "Accepted",
+        "why": "Governs current prompt/strict output contract assertions."
+      },
+      {
+        "path": "docs/adr/0054-normal-awareness-waiting-deadlines.md",
+        "clause": "Decision drivers: consistent SDK/execution/canonical/narration deadlines; retain retry and pricing limits",
+        "status": "Accepted",
+        "why": "Governs bound timeout assertions."
+      },
+      {
+        "path": "docs/adr/0058-stop-test-runs-with-unsealed-tests.md",
+        "clause": "Decision D1-D2: unsealed tests are not executable authority; stop aggregate runs",
+        "status": "Accepted",
+        "why": "Governs whether this test may be run or sealed, not its behavioral meaning."
+      }
+    ],
+    "implementationPaths": [
+      "backend/src/llm/awareness-provider.ts",
+      "backend/src/llm/awareness-request.ts"
+    ],
+    "fixturePaths": [],
+    "issues": [
+      "test-authority inventory: state=disabled, reason=unsealed",
+      "ADR0050 is superseded; current acceptance of awareness runtime and public completion remains separately gated."
+    ],
+    "confidence": 0.85
+  },
+  {
+    "testPath": "backend/src/llm/awareness-request.test.ts",
+    "obligations": [
+      "render complete deterministic system/data input; apply latest guidance by prompt identity; preserve owner projections/source ticks; reject observer mismatch"
+    ],
+    "governingSources": [
+      {
+        "path": "docs/adr/0027-unified-conscious-agency-and-psyche-boundary.md",
+        "clause": "Decision D1-D3 and Verification: psyche, conscious decision, engine result, and speech responsibilities stay distinct",
+        "status": "Accepted",
+        "why": "Governs conscious/dynamic prompt and action boundary assertions."
+      },
+      {
+        "path": "docs/adr/0048-v3-profile-guidance-source-projection.md",
+        "clause": "Decision: project public guidance while excluding private source and executable action norms",
+        "status": "Accepted",
+        "why": "Governs profile/source projection and privacy assertions."
+      },
+      {
+        "path": "docs/adr/0056-latest-prompt-contract-until-completion.md",
+        "clause": "Decision: run latest output contract through normal completion, including existing battles",
+        "status": "Accepted",
+        "why": "Governs current prompt/strict output contract assertions."
+      },
+      {
+        "path": "docs/adr/0058-stop-test-runs-with-unsealed-tests.md",
+        "clause": "Decision D1-D2: unsealed tests are not executable authority; stop aggregate runs",
+        "status": "Accepted",
+        "why": "Governs whether this test may be run or sealed, not its behavioral meaning."
+      }
+    ],
+    "implementationPaths": [
+      "backend/src/llm/awareness-request.ts",
+      "backend/src/llm/awareness-output-contract.ts"
+    ],
+    "fixturePaths": [],
+    "issues": [
+      "test-authority inventory: state=disabled, reason=unsealed",
+      "Prompt revision matrix is detailed implementation evidence; exact current revision authority should be linked."
+    ],
+    "confidence": 0.86
+  },
+  {
+    "testPath": "backend/src/llm/character-definition-response-schema.test.ts",
+    "obligations": [
+      "repair exactly five aliases/defaults without mutating input; do not reinterpret unrelated self-reference"
+    ],
+    "governingSources": [
+      {
+        "path": "docs/adr/0030-llm-assisted-character-semantic-migration.md",
+        "clause": "Decision: versioned provider migration, semantic-closure repair, bounded attempts, preserve historical bytes",
+        "status": "Accepted",
+        "why": "Governs migration adapter/schema and bounded repair assertions."
+      },
+      {
+        "path": "docs/adr/0058-stop-test-runs-with-unsealed-tests.md",
+        "clause": "Decision D1-D2: unsealed tests are not executable authority; stop aggregate runs",
+        "status": "Accepted",
+        "why": "Governs whether this test may be run or sealed, not its behavioral meaning."
+      }
+    ],
+    "implementationPaths": [
+      "backend/src/llm/character-definition-response-schema.ts",
+      "backend/src/llm/provider-response-schema.ts"
+    ],
+    "fixturePaths": [],
+    "issues": [
+      "test-authority inventory: state=disabled, reason=source_diverged",
+      "Inventory marks source_diverged; existing verification ref cannot be reused until regenerated against current source."
+    ],
+    "confidence": 0.84
+  },
+  {
+    "testPath": "backend/src/llm/character-expression-contract.test.ts",
+    "obligations": [
+      "decode nextUtterance with closed result schema while retaining valid utterance despite invalid action"
+    ],
+    "governingSources": [
+      {
+        "path": "docs/adr/0025-expression-state-and-utterance-actuals.md",
+        "clause": "Verification: closed nextUtterance schema; expression state separated from utterance history",
+        "status": "Accepted",
+        "why": "Governs compact expression and repeated speech assertions."
+      },
+      {
+        "path": "docs/adr/0058-stop-test-runs-with-unsealed-tests.md",
+        "clause": "Decision D1-D2: unsealed tests are not executable authority; stop aggregate runs",
+        "status": "Accepted",
+        "why": "Governs whether this test may be run or sealed, not its behavioral meaning."
+      }
+    ],
+    "implementationPaths": [
+      "backend/src/llm/openai-compatible.ts"
+    ],
+    "fixturePaths": [],
+    "issues": [
+      "test-authority inventory: state=disabled, reason=unsealed",
+      "Test name says Compact V2 but exact source contract is only ADR0025 verification; no separate current schema authority identified."
+    ],
+    "confidence": 0.87
+  },
+  {
+    "testPath": "backend/src/llm/character-focus-ablation-report.test.ts",
+    "obligations": [
+      "require two complete eligibility-correct blinded reviews and reconciliation before aggregating frozen thresholds"
+    ],
+    "governingSources": [
+      {
+        "path": "docs/adr/0058-stop-test-runs-with-unsealed-tests.md",
+        "clause": "Decision D1-D2: unsealed tests are not executable authority; stop aggregate runs",
+        "status": "Accepted",
+        "why": "Governs whether this test may be run or sealed, not its behavioral meaning."
+      }
+    ],
+    "implementationPaths": [
+      "backend/src/llm/character-focus-ablation-report.ts",
+      "backend/src/llm/character-focus-ablation.ts"
+    ],
+    "fixturePaths": [],
+    "issues": [
+      "test-authority inventory: state=disabled, reason=unsealed",
+      "Experimental protocol has no Accepted ADR; should remain draft evidence and must not be treated as product acceptance."
+    ],
+    "confidence": 0.8
+  },
+  {
+    "testPath": "backend/src/llm/character-focus-ablation.test.ts",
+    "obligations": [
+      "freeze randomized 144-call balanced blinded protocol; isolate treatment focus/state/prompt order and export immutable serializable material"
+    ],
+    "governingSources": [
+      {
+        "path": "docs/adr/0058-stop-test-runs-with-unsealed-tests.md",
+        "clause": "Decision D1-D2: unsealed tests are not executable authority; stop aggregate runs",
+        "status": "Accepted",
+        "why": "Governs whether this test may be run or sealed, not its behavioral meaning."
+      }
+    ],
+    "implementationPaths": [
+      "backend/src/llm/character-focus-ablation.ts",
+      "backend/src/llm/character-expression-prompt.ts"
+    ],
+    "fixturePaths": [],
+    "issues": [
+      "test-authority inventory: state=disabled, reason=unsealed",
+      "No accepted authority found for sample size/arms; protocol tests prove reproducibility only."
+    ],
+    "confidence": 0.8
+  },
+  {
+    "testPath": "backend/src/llm/character-migration-ollama-provider.test.ts",
+    "obligations": [
+      "translate common migration request to Ollama schema; restore generic JSON only at adapter boundary; map content/usage; fail known invalid JSON without resend; reject route/model drift"
+    ],
+    "governingSources": [
+      {
+        "path": "docs/adr/0030-llm-assisted-character-semantic-migration.md",
+        "clause": "Decision: versioned provider migration, semantic-closure repair, bounded attempts, preserve historical bytes",
+        "status": "Accepted",
+        "why": "Governs migration adapter/schema and bounded repair assertions."
+      },
+      {
+        "path": "docs/adr/0007-provider-operation-ledger-and-observation-ceilings.md",
+        "clause": "Decision: distinguish logical calls from physical attempts; reserve/count failures and retries; preserve unknown usage/cost",
+        "status": "Accepted",
+        "why": "Directly governs provider attempt and accounting assertions."
+      },
+      {
+        "path": "docs/adr/0058-stop-test-runs-with-unsealed-tests.md",
+        "clause": "Decision D1-D2: unsealed tests are not executable authority; stop aggregate runs",
+        "status": "Accepted",
+        "why": "Governs whether this test may be run or sealed, not its behavioral meaning."
+      }
+    ],
+    "implementationPaths": [
+      "backend/src/llm/character-migration-ollama-provider.ts",
+      "backend/src/services/character-migration-requests.ts"
+    ],
+    "fixturePaths": [],
+    "issues": [
+      "test-authority inventory: state=provisional, reason=draft_basis",
+      "Inventory provisional draft_basis; Ollama route needs explicit acceptance before sealing as product authority."
+    ],
+    "confidence": 0.82
+  },
+  {
+    "testPath": "backend/src/llm/character-migration-probe-provider.test.ts",
+    "obligations": [
+      "require consumed-run grammar and before-send evidence; send exact schema; record actual accounting; fail closed/no resend on invalid JSON, HTTP, usage or route evidence failure; cap six attempts"
+    ],
+    "governingSources": [
+      {
+        "path": "docs/adr/0030-llm-assisted-character-semantic-migration.md",
+        "clause": "Decision: versioned provider migration, semantic-closure repair, bounded attempts, preserve historical bytes",
+        "status": "Accepted",
+        "why": "Governs migration adapter/schema and bounded repair assertions."
+      },
+      {
+        "path": "docs/adr/0007-provider-operation-ledger-and-observation-ceilings.md",
+        "clause": "Decision: distinguish logical calls from physical attempts; reserve/count failures and retries; preserve unknown usage/cost",
+        "status": "Accepted",
+        "why": "Directly governs provider attempt and accounting assertions."
+      },
+      {
+        "path": "docs/adr/0058-stop-test-runs-with-unsealed-tests.md",
+        "clause": "Decision D1-D2: unsealed tests are not executable authority; stop aggregate runs",
+        "status": "Accepted",
+        "why": "Governs whether this test may be run or sealed, not its behavioral meaning."
+      }
+    ],
+    "implementationPaths": [
+      "backend/src/llm/character-migration-probe-provider.ts",
+      "backend/src/services/character-migration-requests.ts"
+    ],
+    "fixturePaths": [
+      "docs/evidence/semantic-migration-grok-2026-09-10-v1/call-1-before.json"
+    ],
+    "issues": [
+      "test-authority inventory: state=disabled, reason=stale",
+      "Inventory marks stale; historical evidence cannot govern current implementation without refreshed source-aligned evidence."
+    ],
+    "confidence": 0.9
+  },
+  {
+    "testPath": "backend/src/llm/character-migration-response-schema.test.ts",
+    "obligations": [
+      "retain typed nested values while changing only generic JSON recursion; reject non-JSON values"
+    ],
+    "governingSources": [
+      {
+        "path": "docs/adr/0030-llm-assisted-character-semantic-migration.md",
+        "clause": "Decision: versioned provider migration, semantic-closure repair, bounded attempts, preserve historical bytes",
+        "status": "Accepted",
+        "why": "Governs migration adapter/schema and bounded repair assertions."
+      },
+      {
+        "path": "docs/adr/0058-stop-test-runs-with-unsealed-tests.md",
+        "clause": "Decision D1-D2: unsealed tests are not executable authority; stop aggregate runs",
+        "status": "Accepted",
+        "why": "Governs whether this test may be run or sealed, not its behavioral meaning."
+      }
+    ],
+    "implementationPaths": [
+      "backend/src/llm/character-migration-response-schema.ts",
+      "backend/src/llm/provider-response-schema.ts"
+    ],
+    "fixturePaths": [],
+    "issues": [
+      "test-authority inventory: state=disabled, reason=source_diverged",
+      "Inventory source_diverged; schema behavior must be resealed from current source."
+    ],
+    "confidence": 0.88
+  },
+  {
+    "testPath": "backend/src/llm/conscious-dynamic.test.ts",
+    "obligations": [
+      "request only current phase fields and bound skill; accept speech/silence independently; repair bounded semantic gaps without transport retry; preserve valid action/intent; reject missing free-action content and out-of-target overwrites"
+    ],
+    "governingSources": [
+      {
+        "path": "docs/adr/0047-phase-scoped-conscious-output-and-mechanical-completion.md",
+        "clause": "Decision: phase-scoped dynamic output, immutable snapshots, bounded mechanical completion/repair",
+        "status": "Accepted",
+        "why": "Governs dynamic output selection/repair assertions for new battles."
+      },
+      {
+        "path": "docs/adr/0027-unified-conscious-agency-and-psyche-boundary.md",
+        "clause": "Decision D1-D3 and Verification: psyche, conscious decision, engine result, and speech responsibilities stay distinct",
+        "status": "Accepted",
+        "why": "Governs conscious/dynamic prompt and action boundary assertions."
+      },
+      {
+        "path": "docs/adr/0058-stop-test-runs-with-unsealed-tests.md",
+        "clause": "Decision D1-D2: unsealed tests are not executable authority; stop aggregate runs",
+        "status": "Accepted",
+        "why": "Governs whether this test may be run or sealed, not its behavioral meaning."
+      }
+    ],
+    "implementationPaths": [
+      "backend/src/llm/conscious-dynamic.ts",
+      "backend/src/llm/conscious-agency.ts",
+      "backend/src/llm/conscious-prompt-input.ts",
+      "backend/src/llm/openai-compatible.ts"
+    ],
+    "fixturePaths": [
+      "backend/src/services/conscious-agency.fixtures.ts"
+    ],
+    "issues": [
+      "test-authority inventory: state=disabled, reason=unsealed",
+      "ADR0047 authorizes new dynamic-v4 local contract, but historical V3 contract remains distinct; unit tests do not prove live model quality."
+    ],
+    "confidence": 0.92
+  },
+  {
+    "testPath": "backend/src/llm/fallback.test.ts",
+    "obligations": [
+      "fallback only for DNS/billing unavailable; apply cooldown; never fallback timeout/429/503/operation errors; preserve routing receipts"
+    ],
+    "governingSources": [
+      {
+        "path": "docs/adr/0007-provider-operation-ledger-and-observation-ceilings.md",
+        "clause": "Decision: distinguish logical calls from physical attempts; reserve/count failures and retries; preserve unknown usage/cost",
+        "status": "Accepted",
+        "why": "Directly governs provider attempt and accounting assertions."
+      },
+      {
+        "path": "docs/adr/0058-stop-test-runs-with-unsealed-tests.md",
+        "clause": "Decision D1-D2: unsealed tests are not executable authority; stop aggregate runs",
+        "status": "Accepted",
+        "why": "Governs whether this test may be run or sealed, not its behavioral meaning."
+      }
+    ],
+    "implementationPaths": [
+      "backend/src/llm/fallback.ts",
+      "backend/src/llm/mock.ts"
+    ],
+    "fixturePaths": [],
+    "issues": [
+      "test-authority inventory: state=disabled, reason=unsealed",
+      "No current ADR was found that fully defines fallback classification; ADR0007 supports receipt/accounting boundaries only."
+    ],
+    "confidence": 0.82
+  },
+  {
+    "testPath": "backend/src/llm/llm-physical-completion.test.ts",
+    "obligations": [
+      "mark validation rejection after complete response as complete with cause; keep unsent/incomplete/partial retry unknown; isolate concurrent calls; preserve successful identity"
+    ],
+    "governingSources": [
+      {
+        "path": "docs/adr/0007-provider-operation-ledger-and-observation-ceilings.md",
+        "clause": "Decision: distinguish logical calls from physical attempts; reserve/count failures and retries; preserve unknown usage/cost",
+        "status": "Accepted",
+        "why": "Directly governs provider attempt and accounting assertions."
+      },
+      {
+        "path": "docs/adr/0058-stop-test-runs-with-unsealed-tests.md",
+        "clause": "Decision D1-D2: unsealed tests are not executable authority; stop aggregate runs",
+        "status": "Accepted",
+        "why": "Governs whether this test may be run or sealed, not its behavioral meaning."
+      }
+    ],
+    "implementationPaths": [
+      "backend/src/llm/llm-physical-completion.ts"
+    ],
+    "fixturePaths": [],
+    "issues": [
+      "test-authority inventory: state=disabled, reason=unsealed",
+      "Physical completion semantics are implementation evidence; ADR0007 distinguishes physical attempts but does not define every completion state."
+    ],
+    "confidence": 0.88
+  },
+  {
+    "testPath": "backend/src/llm/mock.test.ts",
+    "obligations": [
+      "preserve natural-language identity/self-reference and private humane priority; do not alter combat fields via keywords or reuse reserved names; tool-based battle analysis and bounded policy perspectives"
+    ],
+    "governingSources": [
+      {
+        "path": "docs/adr/0027-unified-conscious-agency-and-psyche-boundary.md",
+        "clause": "Decision D1-D3 and Verification: psyche, conscious decision, engine result, and speech responsibilities stay distinct",
+        "status": "Accepted",
+        "why": "Governs conscious/dynamic prompt and action boundary assertions."
+      },
+      {
+        "path": "docs/adr/0048-v3-profile-guidance-source-projection.md",
+        "clause": "Decision: project public guidance while excluding private source and executable action norms",
+        "status": "Accepted",
+        "why": "Governs profile/source projection and privacy assertions."
+      },
+      {
+        "path": "docs/adr/0058-stop-test-runs-with-unsealed-tests.md",
+        "clause": "Decision D1-D2: unsealed tests are not executable authority; stop aggregate runs",
+        "status": "Accepted",
+        "why": "Governs whether this test may be run or sealed, not its behavioral meaning."
+      }
+    ],
+    "implementationPaths": [
+      "backend/src/llm/mock.ts"
+    ],
+    "fixturePaths": [],
+    "issues": [
+      "test-authority inventory: state=disabled, reason=unsealed",
+      "Mock behavior is a test double; no accepted ADR authorizes it as production semantic authority."
+    ],
+    "confidence": 0.78
+  },
+  {
+    "testPath": "backend/src/llm/model-request-options.test.ts",
+    "obligations": [
+      "use native reasoning/temperature behavior by model; reject invalid generation ceilings instead of clipping"
+    ],
+    "governingSources": [
+      {
+        "path": "docs/adr/0058-stop-test-runs-with-unsealed-tests.md",
+        "clause": "Decision D1-D2: unsealed tests are not executable authority; stop aggregate runs",
+        "status": "Accepted",
+        "why": "Governs whether this test may be run or sealed, not its behavioral meaning."
+      }
+    ],
+    "implementationPaths": [
+      "backend/src/llm/model-request-options.ts"
+    ],
+    "fixturePaths": [],
+    "issues": [
+      "test-authority inventory: state=disabled, reason=unsealed",
+      "Exact model capability matrix lacks an identified accepted requirement; test is implementation compatibility evidence."
+    ],
+    "confidence": 0.8
+  },
+  {
+    "testPath": "backend/src/llm/narration-prompt-contract.test.ts",
+    "obligations": [
+      "preserve committed speech and exact-speech instructions; use strict receipt grammar for each phase; maintain style/observation rules and repaired historical permissions"
+    ],
+    "governingSources": [
+      {
+        "path": "docs/adr/0025-expression-state-and-utterance-actuals.md",
+        "clause": "Verification: closed nextUtterance schema; expression state separated from utterance history",
+        "status": "Accepted",
+        "why": "Governs compact expression and repeated speech assertions."
+      },
+      {
+        "path": "docs/adr/0056-latest-prompt-contract-until-completion.md",
+        "clause": "Decision: run latest output contract through normal completion, including existing battles",
+        "status": "Accepted",
+        "why": "Governs current prompt/strict output contract assertions."
+      },
+      {
+        "path": "docs/adr/0009-separate-adjudication-from-judgment-presentation.md",
+        "clause": "Decision: immutable internal adjudication and server-owned public projection remain separate",
+        "status": "Accepted",
+        "why": "Governs separation of referee facts/verdict from generated presentation."
+      },
+      {
+        "path": "docs/adr/0058-stop-test-runs-with-unsealed-tests.md",
+        "clause": "Decision D1-D2: unsealed tests are not executable authority; stop aggregate runs",
+        "status": "Accepted",
+        "why": "Governs whether this test may be run or sealed, not its behavioral meaning."
+      }
+    ],
+    "implementationPaths": [
+      "backend/src/llm/narration-prompt-contract.ts",
+      "backend/src/llm/awareness-narration-phase.ts",
+      "backend/src/llm/awareness-frozen-narration.ts",
+      "backend/src/llm/narration-receipt-contract.ts"
+    ],
+    "fixturePaths": [],
+    "issues": [
+      "test-authority inventory: state=disabled, reason=unsealed",
+      "ADR0056 supersedes ADR0053/55 for current execution; historical grammar cases need explicit version binding."
+    ],
+    "confidence": 0.9
+  },
+  {
+    "testPath": "backend/src/llm/narrator-presentation-focus-evaluation.test.ts",
+    "obligations": [
+      "freeze eight paired blinded focus scenarios, change only structured focus prompt, preserve no-op case, hide arm/sample identity"
+    ],
+    "governingSources": [
+      {
+        "path": "docs/adr/0058-stop-test-runs-with-unsealed-tests.md",
+        "clause": "Decision D1-D2: unsealed tests are not executable authority; stop aggregate runs",
+        "status": "Accepted",
+        "why": "Governs whether this test may be run or sealed, not its behavioral meaning."
+      }
+    ],
+    "implementationPaths": [
+      "backend/src/llm/narrator-presentation-focus-evaluation.ts"
+    ],
+    "fixturePaths": [],
+    "issues": [
+      "test-authority inventory: state=disabled, reason=unsealed",
+      "Pilot protocol has no Accepted ADR; evidence cannot establish product quality or acceptance."
+    ],
+    "confidence": 0.8
+  },
+  {
+    "testPath": "backend/src/llm/openai-compatible-agent.test.ts",
+    "obligations": [
+      "separate action context from speech/psyche; enforce mutually exclusive action shapes; include runtime admin context/private psyche; exclude owner/restricted source; fail closed without fallback"
+    ],
+    "governingSources": [
+      {
+        "path": "docs/adr/0027-unified-conscious-agency-and-psyche-boundary.md",
+        "clause": "Decision D1-D3 and Verification: psyche, conscious decision, engine result, and speech responsibilities stay distinct",
+        "status": "Accepted",
+        "why": "Governs conscious/dynamic prompt and action boundary assertions."
+      },
+      {
+        "path": "docs/adr/0048-v3-profile-guidance-source-projection.md",
+        "clause": "Decision: project public guidance while excluding private source and executable action norms",
+        "status": "Accepted",
+        "why": "Governs profile/source projection and privacy assertions."
+      },
+      {
+        "path": "docs/adr/0047-phase-scoped-conscious-output-and-mechanical-completion.md",
+        "clause": "Decision: phase-scoped dynamic output, immutable snapshots, bounded mechanical completion/repair",
+        "status": "Accepted",
+        "why": "Governs dynamic output selection/repair assertions for new battles."
+      },
+      {
+        "path": "docs/adr/0058-stop-test-runs-with-unsealed-tests.md",
+        "clause": "Decision D1-D2: unsealed tests are not executable authority; stop aggregate runs",
+        "status": "Accepted",
+        "why": "Governs whether this test may be run or sealed, not its behavioral meaning."
+      }
+    ],
+    "implementationPaths": [
+      "backend/src/llm/openai-compatible.ts"
+    ],
+    "fixturePaths": [],
+    "issues": [
+      "test-authority inventory: state=disabled, reason=unsealed",
+      "ADR0047 is new dynamic contract; historical agent route compatibility needs explicit version scope."
+    ],
+    "confidence": 0.88
+  },
+  {
+    "testPath": "backend/src/llm/openai-compatible-character-definition.test.ts",
+    "obligations": [
+      "decode/repair character definition once with bounded receipt; fail closed on auth/second failure; keep malformed text bounded; require owner source; preserve complete base; enforce strict response format and battlefield fill rules"
+    ],
+    "governingSources": [
+      {
+        "path": "docs/adr/0030-llm-assisted-character-semantic-migration.md",
+        "clause": "Decision: versioned provider migration, semantic-closure repair, bounded attempts, preserve historical bytes",
+        "status": "Accepted",
+        "why": "Governs migration adapter/schema and bounded repair assertions."
+      },
+      {
+        "path": "docs/adr/0058-stop-test-runs-with-unsealed-tests.md",
+        "clause": "Decision D1-D2: unsealed tests are not executable authority; stop aggregate runs",
+        "status": "Accepted",
+        "why": "Governs whether this test may be run or sealed, not its behavioral meaning."
+      }
+    ],
+    "implementationPaths": [
+      "backend/src/llm/openai-compatible.ts",
+      "backend/src/llm/provider-response-schema.ts",
+      "backend/src/llm/provider-json.ts"
+    ],
+    "fixturePaths": [],
+    "issues": [
+      "test-authority inventory: state=disabled, reason=source_diverged",
+      "Inventory source_diverged; current repair implementation must be reconciled before authority can be sealed."
+    ],
+    "confidence": 0.9
+  },
+  {
+    "testPath": "backend/src/llm/openai-compatible-model-options.test.ts",
+    "obligations": [
+      "send model-specific reasoning and explicit generation cap on wire"
+    ],
+    "governingSources": [
+      {
+        "path": "docs/adr/0058-stop-test-runs-with-unsealed-tests.md",
+        "clause": "Decision D1-D2: unsealed tests are not executable authority; stop aggregate runs",
+        "status": "Accepted",
+        "why": "Governs whether this test may be run or sealed, not its behavioral meaning."
+      }
+    ],
+    "implementationPaths": [
+      "backend/src/llm/openai-compatible.ts"
+    ],
+    "fixturePaths": [],
+    "issues": [
+      "test-authority inventory: state=disabled, reason=unsealed",
+      "No accepted ADR names this wire matrix; provider documentation/config evidence is required for sealing."
+    ],
+    "confidence": 0.8
+  },
+  {
+    "testPath": "backend/src/llm/openai-compatible-narration.test.ts",
+    "obligations": [
+      "hide canonical speaker names while allowing free labels; include role-labelled causal projection only when available; send public judgment projection without raw adjudication prose"
+    ],
+    "governingSources": [
+      {
+        "path": "docs/adr/0009-separate-adjudication-from-judgment-presentation.md",
+        "clause": "Decision: immutable internal adjudication and server-owned public projection remain separate",
+        "status": "Accepted",
+        "why": "Governs separation of referee facts/verdict from generated presentation."
+      },
+      {
+        "path": "docs/adr/0048-v3-profile-guidance-source-projection.md",
+        "clause": "Decision: project public guidance while excluding private source and executable action norms",
+        "status": "Accepted",
+        "why": "Governs profile/source projection and privacy assertions."
+      },
+      {
+        "path": "docs/adr/0058-stop-test-runs-with-unsealed-tests.md",
+        "clause": "Decision D1-D2: unsealed tests are not executable authority; stop aggregate runs",
+        "status": "Accepted",
+        "why": "Governs whether this test may be run or sealed, not its behavioral meaning."
+      }
+    ],
+    "implementationPaths": [
+      "backend/src/llm/openai-compatible.ts"
+    ],
+    "fixturePaths": [],
+    "issues": [
+      "test-authority inventory: state=disabled, reason=unsealed",
+      "ADR0009 directly supports judgment projection separation; exact causal brief fields are implementation detail."
+    ],
+    "confidence": 0.9
+  },
+  {
+    "testPath": "backend/src/llm/openai-compatible-perception.test.ts",
+    "obligations": [
+      "reconcile environment proposals to representable canonical transitions; preserve valid world patch independently of invalid sensory section and vice versa"
+    ],
+    "governingSources": [
+      {
+        "path": "docs/adr/0022-canonical-world-and-observer-cognition.md",
+        "clause": "Decision: canonical world is unique/viewpoint-free; observer cognition receives safe projections",
+        "status": "Accepted",
+        "why": "Governs sensory/world evidence boundaries."
+      },
+      {
+        "path": "docs/adr/0058-stop-test-runs-with-unsealed-tests.md",
+        "clause": "Decision D1-D2: unsealed tests are not executable authority; stop aggregate runs",
+        "status": "Accepted",
+        "why": "Governs whether this test may be run or sealed, not its behavioral meaning."
+      }
+    ],
+    "implementationPaths": [
+      "backend/src/llm/openai-compatible.ts",
+      "backend/src/llm/perception-prompt-strategy.ts"
+    ],
+    "fixturePaths": [],
+    "issues": [
+      "test-authority inventory: state=disabled, reason=unsealed",
+      "ADR0022 supports canonical world/observer split; combined-output partial acceptance needs current detailed design linkage."
+    ],
+    "confidence": 0.88
+  },
+  {
+    "testPath": "backend/src/llm/openai-compatible-psyche-repair.test.ts",
+    "obligations": [
+      "accept valid psyche result in one call; repair complete semantic closure once; preserve unrelated state; reject unauthorized root/schema group and repeated repair; allow explicit empty cue clear"
+    ],
+    "governingSources": [
+      {
+        "path": "docs/adr/0030-llm-assisted-character-semantic-migration.md",
+        "clause": "Decision: versioned provider migration, semantic-closure repair, bounded attempts, preserve historical bytes",
+        "status": "Accepted",
+        "why": "Governs migration adapter/schema and bounded repair assertions."
+      },
+      {
+        "path": "docs/adr/0027-unified-conscious-agency-and-psyche-boundary.md",
+        "clause": "Decision D1-D3 and Verification: psyche, conscious decision, engine result, and speech responsibilities stay distinct",
+        "status": "Accepted",
+        "why": "Governs conscious/dynamic prompt and action boundary assertions."
+      },
+      {
+        "path": "docs/adr/0058-stop-test-runs-with-unsealed-tests.md",
+        "clause": "Decision D1-D2: unsealed tests are not executable authority; stop aggregate runs",
+        "status": "Accepted",
+        "why": "Governs whether this test may be run or sealed, not its behavioral meaning."
+      }
+    ],
+    "implementationPaths": [
+      "backend/src/llm/openai-compatible.ts"
+    ],
+    "fixturePaths": [],
+    "issues": [
+      "test-authority inventory: state=disabled, reason=unsealed",
+      "ADR0026 is the semantic-closure source but should be checked for current status; exact repair-root set is implementation contract."
+    ],
+    "confidence": 0.88
+  },
+  {
+    "testPath": "backend/src/llm/openai-compatible-routing.test.ts",
+    "obligations": [
+      "route provider/model tiers and reasoning correctly; retry 429 twice/503 once same provider; do not retry aborted timeout"
+    ],
+    "governingSources": [
+      {
+        "path": "docs/adr/0007-provider-operation-ledger-and-observation-ceilings.md",
+        "clause": "Decision: distinguish logical calls from physical attempts; reserve/count failures and retries; preserve unknown usage/cost",
+        "status": "Accepted",
+        "why": "Directly governs provider attempt and accounting assertions."
+      },
+      {
+        "path": "docs/adr/0054-normal-awareness-waiting-deadlines.md",
+        "clause": "Decision drivers: consistent SDK/execution/canonical/narration deadlines; retain retry and pricing limits",
+        "status": "Accepted",
+        "why": "Governs bound timeout assertions."
+      },
+      {
+        "path": "docs/adr/0058-stop-test-runs-with-unsealed-tests.md",
+        "clause": "Decision D1-D2: unsealed tests are not executable authority; stop aggregate runs",
+        "status": "Accepted",
+        "why": "Governs whether this test may be run or sealed, not its behavioral meaning."
+      }
+    ],
+    "implementationPaths": [
+      "backend/src/llm/openai-compatible.ts"
+    ],
+    "fixturePaths": [],
+    "issues": [
+      "test-authority inventory: state=disabled, reason=unsealed",
+      "Retry count/status policy is not fully stated in one accepted ADR; ADR0007 governs attempt accounting and ADR0054 preserves retry limits."
+    ],
+    "confidence": 0.86
+  },
+  {
+    "testPath": "backend/src/llm/perception-evidence.test.ts",
+    "obligations": [
+      "accept mechanics only from committed action/event/semantic targets; derive qualitative cue structurally; omit unstructured parameters; reject uncommitted sensory source"
+    ],
+    "governingSources": [
+      {
+        "path": "docs/adr/0022-canonical-world-and-observer-cognition.md",
+        "clause": "Decision: canonical world is unique/viewpoint-free; observer cognition receives safe projections",
+        "status": "Accepted",
+        "why": "Governs sensory/world evidence boundaries."
+      },
+      {
+        "path": "docs/adr/0058-stop-test-runs-with-unsealed-tests.md",
+        "clause": "Decision D1-D2: unsealed tests are not executable authority; stop aggregate runs",
+        "status": "Accepted",
+        "why": "Governs whether this test may be run or sealed, not its behavioral meaning."
+      }
+    ],
+    "implementationPaths": [
+      "backend/src/llm/perception-evidence.ts",
+      "backend/src/llm/perception-prompt-strategy.ts"
+    ],
+    "fixturePaths": [],
+    "issues": [
+      "test-authority inventory: state=disabled, reason=unsealed",
+      "ADR0022 governs canonical/observer boundary; exact committed-source predicate needs current detailed contract."
+    ],
+    "confidence": 0.9
+  },
+  {
+    "testPath": "backend/src/llm/perception-prompt-strategy.test.ts",
+    "obligations": [
+      "keep canonical/sensory responsibilities distinct; constrain combined output without repair; select topology only after deterministic quality floors and exact reviewed provider/model; aggregate latency/tokens without inventing usage; no adaptive retries"
+    ],
+    "governingSources": [
+      {
+        "path": "docs/adr/0022-canonical-world-and-observer-cognition.md",
+        "clause": "Decision: canonical world is unique/viewpoint-free; observer cognition receives safe projections",
+        "status": "Accepted",
+        "why": "Governs sensory/world evidence boundaries."
+      },
+      {
+        "path": "docs/adr/0051-observed-llm-usage-accounting.md",
+        "clause": "Decision: record every physical provider observation; absent usage/prices remain explicit unknowns",
+        "status": "Accepted",
+        "why": "Governs observed accounting and no fabricated usage assertions."
+      },
+      {
+        "path": "docs/adr/0007-provider-operation-ledger-and-observation-ceilings.md",
+        "clause": "Decision: distinguish logical calls from physical attempts; reserve/count failures and retries; preserve unknown usage/cost",
+        "status": "Accepted",
+        "why": "Directly governs provider attempt and accounting assertions."
+      },
+      {
+        "path": "docs/adr/0058-stop-test-runs-with-unsealed-tests.md",
+        "clause": "Decision D1-D2: unsealed tests are not executable authority; stop aggregate runs",
+        "status": "Accepted",
+        "why": "Governs whether this test may be run or sealed, not its behavioral meaning."
+      }
+    ],
+    "implementationPaths": [
+      "backend/src/llm/perception-prompt-strategy.ts",
+      "backend/src/llm/perception-topology.ts",
+      "backend/src/llm/perception-prompt-runner.ts"
+    ],
+    "fixturePaths": [
+      "backend/src/services/perception-prompt-strategy.fixtures.ts"
+    ],
+    "issues": [
+      "test-authority inventory: state=disabled, reason=unsealed",
+      "Inventory does not establish accepted experimental thresholds; provider/model review evidence and actual usage remain separate gates."
+    ],
+    "confidence": 0.88
+  },
+  {
+    "testPath": "backend/src/llm/prompt-prose.test.ts",
+    "obligations": [
+      "preserve order/null/false/zero/references/multiline text; reject cyclic/nonfinite/non-data input; allow shared acyclic objects and omit absent repair section"
+    ],
+    "governingSources": [
+      {
+        "path": "docs/adr/0058-stop-test-runs-with-unsealed-tests.md",
+        "clause": "Decision D1-D2: unsealed tests are not executable authority; stop aggregate runs",
+        "status": "Accepted",
+        "why": "Governs whether this test may be run or sealed, not its behavioral meaning."
+      }
+    ],
+    "implementationPaths": [
+      "backend/src/llm/prompt-prose.ts"
+    ],
+    "fixturePaths": [],
+    "issues": [
+      "test-authority inventory: state=disabled, reason=unsealed",
+      "No accepted ADR specifies serializer exact format or limits; this is local safety/contract evidence."
+    ],
+    "confidence": 0.82
+  },
+  {
+    "testPath": "backend/src/llm/provider-accounting.test.ts",
+    "obligations": [
+      "reject closed/unclassified/rebound operations before transport; settle HTTP/retry outcomes; leave ambiguous timeout and persistence failure indeterminate; enforce ceilings/idempotency; preserve historical v2 ledger and bounded metadata"
+    ],
+    "governingSources": [
+      {
+        "path": "docs/adr/0007-provider-operation-ledger-and-observation-ceilings.md",
+        "clause": "Decision: distinguish logical calls from physical attempts; reserve/count failures and retries; preserve unknown usage/cost",
+        "status": "Accepted",
+        "why": "Directly governs provider attempt and accounting assertions."
+      },
+      {
+        "path": "docs/adr/0051-observed-llm-usage-accounting.md",
+        "clause": "Decision: record every physical provider observation; absent usage/prices remain explicit unknowns",
+        "status": "Accepted",
+        "why": "Governs observed accounting and no fabricated usage assertions."
+      },
+      {
+        "path": "docs/adr/0058-stop-test-runs-with-unsealed-tests.md",
+        "clause": "Decision D1-D2: unsealed tests are not executable authority; stop aggregate runs",
+        "status": "Accepted",
+        "why": "Governs whether this test may be run or sealed, not its behavioral meaning."
+      }
+    ],
+    "implementationPaths": [
+      "backend/src/llm/provider-accounting.ts",
+      "backend/src/llm/openai-compatible.ts"
+    ],
+    "fixturePaths": [],
+    "issues": [
+      "test-authority inventory: state=disabled, reason=source_diverged",
+      "Inventory source_diverged; verification ref must be refreshed. ADR0007/0051 govern intent but not necessarily current ledger schema."
+    ],
+    "confidence": 0.94
+  },
+  {
+    "testPath": "backend/src/llm/provider-config.test.ts",
+    "obligations": [
+      "allow mock only explicit outside production; require opt-in behind real providers; default causal narration off and accept only guarded reversible mode"
+    ],
+    "governingSources": [
+      {
+        "path": "docs/adr/0058-stop-test-runs-with-unsealed-tests.md",
+        "clause": "Decision D1-D2: unsealed tests are not executable authority; stop aggregate runs",
+        "status": "Accepted",
+        "why": "Governs whether this test may be run or sealed, not its behavioral meaning."
+      }
+    ],
+    "implementationPaths": [
+      "backend/src/config.ts",
+      "backend/src/llm/provider-config.ts"
+    ],
+    "fixturePaths": [],
+    "issues": [
+      "test-authority inventory: state=disabled, reason=unsealed",
+      "Causal narration mode authority is not identified in an accepted ADR; production safety is config policy evidence."
+    ],
+    "confidence": 0.82
+  },
+  {
+    "testPath": "backend/src/llm/provider-errors.test.ts",
+    "obligations": [
+      "classify retryable versus unavailable errors; do not treat 403 rate limit as billing exhaustion; cap requested retry delay"
+    ],
+    "governingSources": [
+      {
+        "path": "docs/adr/0007-provider-operation-ledger-and-observation-ceilings.md",
+        "clause": "Decision: distinguish logical calls from physical attempts; reserve/count failures and retries; preserve unknown usage/cost",
+        "status": "Accepted",
+        "why": "Directly governs provider attempt and accounting assertions."
+      },
+      {
+        "path": "docs/adr/0058-stop-test-runs-with-unsealed-tests.md",
+        "clause": "Decision D1-D2: unsealed tests are not executable authority; stop aggregate runs",
+        "status": "Accepted",
+        "why": "Governs whether this test may be run or sealed, not its behavioral meaning."
+      }
+    ],
+    "implementationPaths": [
+      "backend/src/llm/provider-errors.ts"
+    ],
+    "fixturePaths": [],
+    "issues": [
+      "test-authority inventory: state=disabled, reason=unsealed",
+      "Exact error taxonomy/delay ceiling lacks a cited accepted requirement; only accounting/retry boundary is supported."
+    ],
+    "confidence": 0.82
+  },
+  {
+    "testPath": "backend/src/llm/provider-json.test.ts",
+    "obligations": [
+      "settle actual HTTP usage before malformed/empty JSON rejection and never retry parsing failures"
+    ],
+    "governingSources": [
+      {
+        "path": "docs/adr/0007-provider-operation-ledger-and-observation-ceilings.md",
+        "clause": "Decision: distinguish logical calls from physical attempts; reserve/count failures and retries; preserve unknown usage/cost",
+        "status": "Accepted",
+        "why": "Directly governs provider attempt and accounting assertions."
+      },
+      {
+        "path": "docs/adr/0051-observed-llm-usage-accounting.md",
+        "clause": "Decision: record every physical provider observation; absent usage/prices remain explicit unknowns",
+        "status": "Accepted",
+        "why": "Governs observed accounting and no fabricated usage assertions."
+      },
+      {
+        "path": "docs/adr/0058-stop-test-runs-with-unsealed-tests.md",
+        "clause": "Decision D1-D2: unsealed tests are not executable authority; stop aggregate runs",
+        "status": "Accepted",
+        "why": "Governs whether this test may be run or sealed, not its behavioral meaning."
+      }
+    ],
+    "implementationPaths": [
+      "backend/src/llm/provider-json.ts",
+      "backend/src/llm/openai-compatible.ts"
+    ],
+    "fixturePaths": [],
+    "issues": [
+      "test-authority inventory: state=disabled, reason=source_diverged",
+      "Inventory source_diverged; provider-json authority must be regenerated."
+    ],
+    "confidence": 0.9
+  },
+  {
+    "testPath": "backend/src/llm/provider-response-schema.test.ts",
+    "obligations": [
+      "accept strict perception formats; reject direct/transitive/root/escaped-pointer cycles; resolve local pointers; reject at xAI boundary before fetch; do not impose xAI recursion on other providers"
+    ],
+    "governingSources": [
+      {
+        "path": "docs/adr/0022-canonical-world-and-observer-cognition.md",
+        "clause": "Decision: canonical world is unique/viewpoint-free; observer cognition receives safe projections",
+        "status": "Accepted",
+        "why": "Governs sensory/world evidence boundaries."
+      },
+      {
+        "path": "docs/adr/0058-stop-test-runs-with-unsealed-tests.md",
+        "clause": "Decision D1-D2: unsealed tests are not executable authority; stop aggregate runs",
+        "status": "Accepted",
+        "why": "Governs whether this test may be run or sealed, not its behavioral meaning."
+      }
+    ],
+    "implementationPaths": [
+      "backend/src/llm/provider-response-schema.ts",
+      "backend/src/llm/openai-compatible.ts"
+    ],
+    "fixturePaths": [],
+    "issues": [
+      "test-authority inventory: state=disabled, reason=unsealed",
+      "Exact recursion policy is provider-specific implementation evidence; no current ADR identified for pointer algorithm."
+    ],
+    "confidence": 0.9
+  },
+  {
+    "testPath": "backend/src/llm/provider-retry.test.ts",
+    "obligations": [
+      "retry 429 twice and 503 once same provider; never retry timeout/billing/DNS/parsing or after stream starts"
+    ],
+    "governingSources": [
+      {
+        "path": "docs/adr/0007-provider-operation-ledger-and-observation-ceilings.md",
+        "clause": "Decision: distinguish logical calls from physical attempts; reserve/count failures and retries; preserve unknown usage/cost",
+        "status": "Accepted",
+        "why": "Directly governs provider attempt and accounting assertions."
+      },
+      {
+        "path": "docs/adr/0054-normal-awareness-waiting-deadlines.md",
+        "clause": "Decision drivers: consistent SDK/execution/canonical/narration deadlines; retain retry and pricing limits",
+        "status": "Accepted",
+        "why": "Governs bound timeout assertions."
+      },
+      {
+        "path": "docs/adr/0058-stop-test-runs-with-unsealed-tests.md",
+        "clause": "Decision D1-D2: unsealed tests are not executable authority; stop aggregate runs",
+        "status": "Accepted",
+        "why": "Governs whether this test may be run or sealed, not its behavioral meaning."
+      }
+    ],
+    "implementationPaths": [
+      "backend/src/llm/provider-retry.ts"
+    ],
+    "fixturePaths": [],
+    "issues": [
+      "test-authority inventory: state=disabled, reason=unsealed",
+      "Exact status retry matrix lacks a single upstream accepted clause; must remain implementation-draft basis until linked."
+    ],
+    "confidence": 0.86
+  },
+  {
+    "testPath": "backend/src/llm/semantic-authoring-provider.test.ts",
+    "obligations": [
+      "require explicit time-policy identity/values; use supplied provider timeout without whole-attempt deadline; fail closed for unimplemented recovery policy"
+    ],
+    "governingSources": [
+      {
+        "path": "docs/adr/0030-llm-assisted-character-semantic-migration.md",
+        "clause": "Decision: versioned provider migration, semantic-closure repair, bounded attempts, preserve historical bytes",
+        "status": "Accepted",
+        "why": "Governs migration adapter/schema and bounded repair assertions."
+      },
+      {
+        "path": "docs/adr/0058-stop-test-runs-with-unsealed-tests.md",
+        "clause": "Decision D1-D2: unsealed tests are not executable authority; stop aggregate runs",
+        "status": "Accepted",
+        "why": "Governs whether this test may be run or sealed, not its behavioral meaning."
+      }
+    ],
+    "implementationPaths": [
+      "backend/src/llm/semantic-authoring-provider.ts",
+      "backend/src/services/semantic-authoring/execution-policy.ts"
+    ],
+    "fixturePaths": [],
+    "issues": [
+      "test-authority inventory: state=disabled, reason=stale",
+      "ADR0032 is accepted but says exact time values still need acceptance; test cannot authorize an unaccepted policy."
+    ],
+    "confidence": 0.88
+  }
+]

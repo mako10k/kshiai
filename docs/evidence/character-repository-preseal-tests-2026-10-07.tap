@@ -1,0 +1,53 @@
+TAP version 13
+# Subtest: current V3 authoring and historical V2 reads
+    # Subtest: requires owner acceptance and atomically activates one V3 generation
+    ok 1 - requires owner acceptance and atomically activates one V3 generation
+      ---
+      duration_ms: 184.192952
+      type: 'test'
+      ...
+    # Subtest: leaves an existing legacy row unsupported without an explicit upgrade
+    ok 2 - leaves an existing legacy row unsupported without an explicit upgrade
+      ---
+      duration_ms: 3.145503
+      type: 'test'
+      ...
+    # Subtest: persists expiry without activating a candidate or retaining an upgrade hold
+    ok 3 - persists expiry without activating a candidate or retaining an upgrade hold
+      ---
+      duration_ms: 19.583502
+      type: 'test'
+      ...
+    # Subtest: rolls back a stale revision candidate after concurrent pointer drift
+    ok 4 - rolls back a stale revision candidate after concurrent pointer drift
+      ---
+      duration_ms: 49.479328
+      type: 'test'
+      ...
+    # Subtest: excludes a pre-validator V2 generation until explicit update
+    ok 5 - excludes a pre-validator V2 generation until explicit update
+      ---
+      duration_ms: 19.237076
+      type: 'test'
+      ...
+    # Subtest: reads but does not select a V2 generation with selectorless action norms
+    ok 6 - reads but does not select a V2 generation with selectorless action norms
+      ---
+      duration_ms: 27.529455
+      type: 'test'
+      ...
+    1..6
+ok 1 - current V3 authoring and historical V2 reads
+  ---
+  duration_ms: 305.147498
+  type: 'suite'
+  ...
+1..1
+# tests 6
+# suites 1
+# pass 6
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 891.990051

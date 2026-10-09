@@ -1,0 +1,374 @@
+
+> kshiai@0.23.0 test
+> node scripts/test-authority.mjs
+
+TEST_SELECTION suite=unit active=55 provisional=1 disabled=191
+DISABLED backend/src/account-access.test.ts ref=null reason=unsealed
+DISABLED backend/src/auth.test.ts ref=null reason=unsealed
+DISABLED backend/src/character-name-uniqueness.test.ts ref=null reason=unsealed
+DISABLED backend/src/config-pacing.test.ts ref=null reason=unsealed
+DISABLED backend/src/image/openai-compatible.test.ts ref=null reason=unsealed
+DISABLED backend/src/llm/adjudication-prompt-prose.test.ts ref=null reason=unsealed
+DISABLED backend/src/llm/awareness-adjudication-result.test.ts ref=null reason=unsealed
+DISABLED backend/src/llm/awareness-dispatch-admission.test.ts ref=null reason=unsealed
+DISABLED backend/src/llm/awareness-dispatch-context.test.ts ref=null reason=unsealed
+DISABLED backend/src/llm/awareness-frozen-narration.test.ts ref=null reason=unsealed
+DISABLED backend/src/llm/awareness-latent-output-guidance.test.ts ref=null reason=unsealed
+DISABLED backend/src/llm/awareness-narration.test.ts ref=null reason=unsealed
+DISABLED backend/src/llm/awareness-output-contract.test.ts ref=null reason=unsealed
+DISABLED backend/src/llm/awareness-provider-factory.test.ts ref=null reason=unsealed
+DISABLED backend/src/llm/awareness-provider.test.ts ref=null reason=unsealed
+DISABLED backend/src/llm/awareness-request.test.ts ref=null reason=unsealed
+DISABLED backend/src/llm/character-definition-response-schema.test.ts ref=verification/character-definition-response-schema reason=source_diverged
+DISABLED backend/src/llm/character-expression-contract.test.ts ref=null reason=unsealed
+DISABLED backend/src/llm/character-focus-ablation-report.test.ts ref=null reason=unsealed
+DISABLED backend/src/llm/character-focus-ablation.test.ts ref=null reason=unsealed
+DISABLED backend/src/llm/character-migration-ollama-provider.test.ts ref=verification/character-migration-ollama-adapter reason=source_diverged
+DISABLED backend/src/llm/character-migration-probe-provider.test.ts ref=verification/semantic-probe-provider reason=stale
+DISABLED backend/src/llm/character-migration-response-schema.test.ts ref=verification/character-migration-response-schema reason=source_diverged
+DISABLED backend/src/llm/conscious-dynamic.test.ts ref=null reason=unsealed
+DISABLED backend/src/llm/fallback.test.ts ref=null reason=unsealed
+DISABLED backend/src/llm/llm-physical-completion.test.ts ref=null reason=unsealed
+DISABLED backend/src/llm/mock.test.ts ref=null reason=unsealed
+DISABLED backend/src/llm/model-request-options.test.ts ref=null reason=unsealed
+DISABLED backend/src/llm/narration-prompt-contract.test.ts ref=null reason=unsealed
+DISABLED backend/src/llm/narrator-presentation-focus-evaluation.test.ts ref=null reason=unsealed
+DISABLED backend/src/llm/openai-compatible-agent.test.ts ref=null reason=unsealed
+DISABLED backend/src/llm/openai-compatible-character-definition.test.ts ref=verification/character-authoring-response-schema reason=source_diverged
+DISABLED backend/src/llm/openai-compatible-model-options.test.ts ref=null reason=unsealed
+DISABLED backend/src/llm/openai-compatible-narration.test.ts ref=null reason=unsealed
+DISABLED backend/src/llm/openai-compatible-perception.test.ts ref=null reason=unsealed
+DISABLED backend/src/llm/openai-compatible-psyche-repair.test.ts ref=null reason=unsealed
+DISABLED backend/src/llm/openai-compatible-routing.test.ts ref=null reason=unsealed
+DISABLED backend/src/llm/perception-evidence.test.ts ref=null reason=unsealed
+DISABLED backend/src/llm/perception-prompt-strategy.test.ts ref=null reason=unsealed
+DISABLED backend/src/llm/prompt-prose.test.ts ref=null reason=unsealed
+DISABLED backend/src/llm/provider-accounting.test.ts ref=verification/vt104-provider-accounting-20260930 reason=source_diverged
+DISABLED backend/src/llm/provider-config.test.ts ref=null reason=unsealed
+DISABLED backend/src/llm/provider-errors.test.ts ref=null reason=unsealed
+DISABLED backend/src/llm/provider-json.test.ts ref=verification/provider-json-v1 reason=source_diverged
+DISABLED backend/src/llm/provider-response-schema.test.ts ref=null reason=unsealed
+DISABLED backend/src/llm/provider-retry.test.ts ref=null reason=unsealed
+DISABLED backend/src/llm/semantic-authoring-provider.test.ts ref=verification/semantic-authoring-provider-v1 reason=stale
+DISABLED backend/src/origin-verification.test.ts ref=null reason=unsealed
+DISABLED backend/src/postgres-config.test.ts ref=null reason=unsealed
+DISABLED backend/src/repositories/asset-visibility.test.ts ref=null reason=unsealed
+DISABLED backend/src/repositories/battle-awareness-creation.test.ts ref=null reason=unsealed
+DISABLED backend/src/repositories/battle-awareness-narration-events-postgres.test.ts ref=null reason=unsealed
+DISABLED backend/src/repositories/battle-awareness-narration-reservation-postgres.test.ts ref=null reason=unsealed
+DISABLED backend/src/repositories/battle-awareness-narration-reservation.test.ts ref=null reason=unsealed
+DISABLED backend/src/repositories/battle-awareness-narrator.test.ts ref=null reason=unsealed
+DISABLED backend/src/repositories/battle-awareness-postgres.test.ts ref=null reason=unsealed
+DISABLED backend/src/repositories/battle-awareness.test.ts ref=null reason=unsealed
+DISABLED backend/src/repositories/battle-presentations.test.ts ref=null reason=unsealed
+DISABLED backend/src/repositories/battles-improvement.test.ts ref=null reason=unsealed
+DISABLED backend/src/repositories/character-generation-reader.test.ts ref=null reason=unsealed
+DISABLED backend/src/repositories/character-semantic-migration.test.ts ref=verification/character-semantic-migration-persistence reason=source_diverged
+DISABLED backend/src/repositories/characters.test.ts ref=null reason=unsealed
+DISABLED backend/src/repositories/dialogue-pipeline-settings.test.ts ref=null reason=unsealed
+DISABLED backend/src/repositories/llm-usage.test.ts ref=null reason=unsealed
+DISABLED backend/src/repositories/test-realm-assets.test.ts ref=null reason=unsealed
+DISABLED backend/src/routes-cutover-http.test.ts ref=verification/vt104-routes-cutover-http-20260930 reason=source_diverged
+DISABLED backend/src/routes-e2e-session.test.ts ref=null reason=unsealed
+DISABLED backend/src/routes-structured-asset-integration.test.ts ref=null reason=unsealed
+DISABLED backend/src/routes-structured-character-acceptance.test.ts ref=null reason=unsealed
+DISABLED backend/src/routes-structured-narration-acceptance.test.ts ref=null reason=unsealed
+DISABLED backend/src/scripts/authenticated-read-surface-smoke.test.ts ref=null reason=unsealed
+DISABLED backend/src/scripts/authenticated-sse-smoke.test.ts ref=null reason=unsealed
+DISABLED backend/src/scripts/awareness-narration-convergence.test.ts ref=null reason=unsealed
+DISABLED backend/src/scripts/awareness-public-observation.test.ts ref=null reason=unsealed
+DISABLED backend/src/scripts/character-authoring-a2-freeze.test.ts ref=null reason=unsealed
+DISABLED backend/src/scripts/dialogue-quality.test.ts ref=null reason=unsealed
+DISABLED backend/src/scripts/migrate-legacy-account.test.ts ref=null reason=unsealed
+DISABLED backend/src/scripts/persistent-battle-e2e.test.ts ref=null reason=unsealed
+DISABLED backend/src/scripts/persistent-e2e-workflow.test.ts ref=null reason=unsealed
+DISABLED backend/src/scripts/postgres-migrations.test.ts ref=null reason=unsealed
+DISABLED backend/src/scripts/semantic-migration-probe-fixture.test.ts ref=null reason=unsealed
+DISABLED backend/src/scripts/semantic-migration-probe-run.test.ts ref=null reason=unsealed
+DISABLED backend/src/scripts/sqlite-to-postgres.test.ts ref=null reason=unsealed
+DISABLED backend/src/scripts/supabase-auth-smoke.test.ts ref=null reason=unsealed
+DISABLED backend/src/services/awareness-adjudication-guard.test.ts ref=null reason=unsealed
+DISABLED backend/src/services/awareness-battle-creation.test.ts ref=null reason=unsealed
+DISABLED backend/src/services/awareness-battle-service.test.ts ref=null reason=unsealed
+DISABLED backend/src/services/awareness-creation-encounter.test.ts ref=null reason=unsealed
+DISABLED backend/src/services/awareness-expression-commit.test.ts ref=null reason=unsealed
+DISABLED backend/src/services/awareness-narration-claim-snapshot.test.ts ref=null reason=unsealed
+DISABLED backend/src/services/awareness-narration-continuation.test.ts ref=null reason=unsealed
+DISABLED backend/src/services/awareness-narration-event-storage.test.ts ref=null reason=unsealed
+DISABLED backend/src/services/awareness-narration-queue.test.ts ref=null reason=unsealed
+DISABLED backend/src/services/awareness-narration-urgency.test.ts ref=null reason=unsealed
+DISABLED backend/src/services/awareness-narration-worker.test.ts ref=null reason=unsealed
+DISABLED backend/src/services/awareness-trial-harness.test.ts ref=null reason=unsealed
+DISABLED backend/src/services/awareness-world-commit.test.ts ref=null reason=unsealed
+DISABLED backend/src/services/battle-causal-narration.test.ts ref=null reason=unsealed
+DISABLED backend/src/services/battle-consumer-wiring.test.ts ref=null reason=unsealed
+DISABLED backend/src/services/battle-create-idempotency.test.ts ref=null reason=unsealed
+DISABLED backend/src/services/battle-public.test.ts ref=null reason=unsealed
+DISABLED backend/src/services/battle-speech-wiring.test.ts ref=null reason=unsealed
+DISABLED backend/src/services/character-agency-inventory.test.ts ref=null reason=unsealed
+DISABLED backend/src/services/character-migration-diagnostics.test.ts ref=verification/character-migration-diagnostics reason=source_diverged
+DISABLED backend/src/services/character-portrait-v3.test.ts ref=null reason=unsealed
+DISABLED backend/src/services/character-semantic-migration.test.ts ref=verification/character-semantic-migration-generation reason=source_diverged
+DISABLED backend/src/services/character-v2-update-boundary.test.ts ref=verification/character-v2-write-retirement-20261002 reason=source_diverged
+DISABLED backend/src/services/conscious-agency-binding.test.ts ref=null reason=unsealed
+DISABLED backend/src/services/conscious-agency-persistence.test.ts ref=null reason=unsealed
+DISABLED backend/src/services/conscious-agency-runtime.test.ts ref=null reason=unsealed
+DISABLED backend/src/services/distributed-guard.test.ts ref=null reason=unsealed
+DISABLED backend/src/services/e2e-session.test.ts ref=null reason=unsealed
+DISABLED backend/src/services/free-action-service.test.ts ref=null reason=unsealed
+DISABLED backend/src/services/image-archive.test.ts ref=null reason=unsealed
+DISABLED backend/src/services/image-service.test.ts ref=null reason=unsealed
+DISABLED backend/src/services/internal-observability.test.ts ref=null reason=unsealed
+DISABLED backend/src/services/normal-awareness-policy.test.ts ref=null reason=unsealed
+DISABLED backend/src/services/r2-storage.test.ts ref=null reason=unsealed
+DISABLED backend/src/services/rating-service-transaction.test.ts ref=null reason=unsealed
+DISABLED backend/src/services/scene-beat-wiring.test.ts ref=null reason=unsealed
+DISABLED backend/src/services/semantic-authoring/adapters/character-v3.test.ts ref=verification/character-v3-migrate-preservation-bound-current-20260925 reason=source_diverged
+DISABLED backend/src/services/semantic-authoring/public-mapping.test.ts ref=verification/semantic-authoring-public-mapping-v1 reason=stale
+DISABLED backend/src/services/semantic-authoring/revision-scope-evaluation.test.ts ref=null reason=unsealed
+DISABLED backend/src/services/semantic-authoring/revision-scope-ollama.test.ts ref=null reason=unsealed
+DISABLED backend/src/services/v3-battle-creation.test.ts ref=verification/vt102-v3-battle-paths-20260930 reason=source_diverged
+DISABLED frontend/src/authenticated-fetch.test.ts ref=null reason=unsealed
+DISABLED frontend/src/battle-narration.test.ts ref=null reason=unsealed
+DISABLED frontend/src/battle-screen.test.ts ref=null reason=unsealed
+DISABLED frontend/src/battle-scroll.test.ts ref=null reason=unsealed
+DISABLED frontend/src/match-rating.test.ts ref=null reason=unsealed
+DISABLED frontend/src/match-selection-preferences.test.ts ref=null reason=unsealed
+DISABLED packages/shared/src/action-feasibility.test.ts ref=null reason=unsealed
+DISABLED packages/shared/src/action-norm-contract.test.ts ref=null reason=unsealed
+DISABLED packages/shared/src/asset-visibility.test.ts ref=null reason=unsealed
+DISABLED packages/shared/src/awareness-battle.test.ts ref=null reason=unsealed
+DISABLED packages/shared/src/balance-observe.test.ts ref=null reason=unsealed
+DISABLED packages/shared/src/balance.test.ts ref=null reason=unsealed
+DISABLED packages/shared/src/battle-asset-manifest.test.ts ref=null reason=unsealed
+DISABLED packages/shared/src/battle-causal-execution.test.ts ref=null reason=unsealed
+DISABLED packages/shared/src/battle-causality.test.ts ref=null reason=unsealed
+DISABLED packages/shared/src/battle-effects.test.ts ref=null reason=unsealed
+DISABLED packages/shared/src/battle-engine-absence.test.ts ref=null reason=unsealed
+DISABLED packages/shared/src/battle-engine.test.ts ref=null reason=unsealed
+DISABLED packages/shared/src/battle-pacing.test.ts ref=null reason=unsealed
+DISABLED packages/shared/src/battle-policy.test.ts ref=null reason=unsealed
+DISABLED packages/shared/src/battle-social.test.ts ref=null reason=unsealed
+DISABLED packages/shared/src/battle-stream.test.ts ref=null reason=unsealed
+DISABLED packages/shared/src/battle-temporal-rules.test.ts ref=null reason=unsealed
+DISABLED packages/shared/src/battle-turn-causal-receipt.test.ts ref=null reason=unsealed
+DISABLED packages/shared/src/battle-world.test.ts ref=null reason=unsealed
+DISABLED packages/shared/src/battlefield-definition-check.test.ts ref=null reason=unsealed
+DISABLED packages/shared/src/character-definition-check.test.ts ref=null reason=unsealed
+DISABLED packages/shared/src/character-definition-rules.test.ts ref=null reason=unsealed
+DISABLED packages/shared/src/character-focus-policy.test.ts ref=null reason=unsealed
+DISABLED packages/shared/src/character-improvement.test.ts ref=null reason=unsealed
+DISABLED packages/shared/src/character-manifestation.test.ts ref=null reason=unsealed
+DISABLED packages/shared/src/character-semantic-authoring.test.ts ref=verification/semantic-authoring-character-contracts-v1 reason=stale
+DISABLED packages/shared/src/character-semantic-change-set.test.ts ref=verification/character-semantic-change-set-current-20260918 reason=source_diverged
+DISABLED packages/shared/src/character.test.ts ref=null reason=unsealed
+DISABLED packages/shared/src/compact-psyche-decode.test.ts ref=null reason=unsealed
+DISABLED packages/shared/src/compiler-phase-contract.test.ts ref=null reason=unsealed
+DISABLED packages/shared/src/conscious-agency.test.ts ref=null reason=unsealed
+DISABLED packages/shared/src/conscious-dynamic.test.ts ref=null reason=unsealed
+DISABLED packages/shared/src/dialogue-context.test.ts ref=null reason=unsealed
+DISABLED packages/shared/src/drama.test.ts ref=null reason=unsealed
+DISABLED packages/shared/src/narration-composer.test.ts ref=null reason=unsealed
+DISABLED packages/shared/src/narration-perception.test.ts ref=null reason=unsealed
+DISABLED packages/shared/src/narration-perspective.test.ts ref=null reason=unsealed
+DISABLED packages/shared/src/narrative.test.ts ref=null reason=unsealed
+DISABLED packages/shared/src/perception-projection.test.ts ref=null reason=unsealed
+DISABLED packages/shared/src/perception-quantization.test.ts ref=null reason=unsealed
+DISABLED packages/shared/src/perception.test.ts ref=null reason=unsealed
+DISABLED packages/shared/src/profile-grounding.test.ts ref=null reason=unsealed
+DISABLED packages/shared/src/psyche-reaction-policy.test.ts ref=null reason=unsealed
+DISABLED packages/shared/src/rating.test.ts ref=null reason=unsealed
+DISABLED packages/shared/src/reposition-transition.test.ts ref=null reason=unsealed
+DISABLED packages/shared/src/scene-beat.test.ts ref=null reason=unsealed
+DISABLED packages/shared/src/semantic-state.test.ts ref=null reason=unsealed
+DISABLED packages/shared/src/skill-cooldown.test.ts ref=null reason=unsealed
+DISABLED packages/shared/src/structured-assets.test.ts ref=null reason=unsealed
+DISABLED packages/shared/src/structured-character.test.ts ref=null reason=unsealed
+DISABLED packages/shared/src/structured-narration.test.ts ref=null reason=unsealed
+DISABLED packages/shared/src/supervisor.test.ts ref=null reason=unsealed
+DISABLED packages/shared/src/turn-event-contract.test.ts ref=null reason=unsealed
+DISABLED packages/shared/src/utterance-perception.test.ts ref=null reason=unsealed
+DISABLED infra/cloudflare-worker/src/index.test.ts ref=null reason=unsealed
+DISABLED scripts/adr-historical-exceptions.test.mjs ref=null reason=unsealed
+DISABLED scripts/r2-smoke-startup.test.mjs ref=null reason=unsealed
+DISABLED scripts/sealgraph-runtime-dirs.test.mjs ref=null reason=unsealed
+DISABLED scripts/select-release-rollback-target.test.mjs ref=null reason=unsealed
+DISABLED scripts/smoke-deployment.test.mjs ref=null reason=unsealed
+PROVISIONAL backend/src/services/semantic-authoring/conformance.test.ts ref=verification/semantic-authoring-conformance-current-provisional-20260918 reason=draft_basis
+Error: Unsealed unit tests block execution (173); inspect npm run test:inventory:
+backend/src/account-access.test.ts (unsealed)
+backend/src/auth.test.ts (unsealed)
+backend/src/character-name-uniqueness.test.ts (unsealed)
+backend/src/config-pacing.test.ts (unsealed)
+backend/src/image/openai-compatible.test.ts (unsealed)
+backend/src/llm/adjudication-prompt-prose.test.ts (unsealed)
+backend/src/llm/awareness-adjudication-result.test.ts (unsealed)
+backend/src/llm/awareness-dispatch-admission.test.ts (unsealed)
+backend/src/llm/awareness-dispatch-context.test.ts (unsealed)
+backend/src/llm/awareness-frozen-narration.test.ts (unsealed)
+backend/src/llm/awareness-latent-output-guidance.test.ts (unsealed)
+backend/src/llm/awareness-narration.test.ts (unsealed)
+backend/src/llm/awareness-output-contract.test.ts (unsealed)
+backend/src/llm/awareness-provider-factory.test.ts (unsealed)
+backend/src/llm/awareness-provider.test.ts (unsealed)
+backend/src/llm/awareness-request.test.ts (unsealed)
+backend/src/llm/character-expression-contract.test.ts (unsealed)
+backend/src/llm/character-focus-ablation-report.test.ts (unsealed)
+backend/src/llm/character-focus-ablation.test.ts (unsealed)
+backend/src/llm/conscious-dynamic.test.ts (unsealed)
+backend/src/llm/fallback.test.ts (unsealed)
+backend/src/llm/llm-physical-completion.test.ts (unsealed)
+backend/src/llm/mock.test.ts (unsealed)
+backend/src/llm/model-request-options.test.ts (unsealed)
+backend/src/llm/narration-prompt-contract.test.ts (unsealed)
+backend/src/llm/narrator-presentation-focus-evaluation.test.ts (unsealed)
+backend/src/llm/openai-compatible-agent.test.ts (unsealed)
+backend/src/llm/openai-compatible-model-options.test.ts (unsealed)
+backend/src/llm/openai-compatible-narration.test.ts (unsealed)
+backend/src/llm/openai-compatible-perception.test.ts (unsealed)
+backend/src/llm/openai-compatible-psyche-repair.test.ts (unsealed)
+backend/src/llm/openai-compatible-routing.test.ts (unsealed)
+backend/src/llm/perception-evidence.test.ts (unsealed)
+backend/src/llm/perception-prompt-strategy.test.ts (unsealed)
+backend/src/llm/prompt-prose.test.ts (unsealed)
+backend/src/llm/provider-config.test.ts (unsealed)
+backend/src/llm/provider-errors.test.ts (unsealed)
+backend/src/llm/provider-response-schema.test.ts (unsealed)
+backend/src/llm/provider-retry.test.ts (unsealed)
+backend/src/origin-verification.test.ts (unsealed)
+backend/src/postgres-config.test.ts (unsealed)
+backend/src/repositories/asset-visibility.test.ts (unsealed)
+backend/src/repositories/battle-awareness-creation.test.ts (unsealed)
+backend/src/repositories/battle-awareness-narration-events-postgres.test.ts (unsealed)
+backend/src/repositories/battle-awareness-narration-reservation-postgres.test.ts (unsealed)
+backend/src/repositories/battle-awareness-narration-reservation.test.ts (unsealed)
+backend/src/repositories/battle-awareness-narrator.test.ts (unsealed)
+backend/src/repositories/battle-awareness-postgres.test.ts (unsealed)
+backend/src/repositories/battle-awareness.test.ts (unsealed)
+backend/src/repositories/battle-presentations.test.ts (unsealed)
+backend/src/repositories/battles-improvement.test.ts (unsealed)
+backend/src/repositories/character-generation-reader.test.ts (unsealed)
+backend/src/repositories/characters.test.ts (unsealed)
+backend/src/repositories/dialogue-pipeline-settings.test.ts (unsealed)
+backend/src/repositories/llm-usage.test.ts (unsealed)
+backend/src/repositories/test-realm-assets.test.ts (unsealed)
+backend/src/routes-e2e-session.test.ts (unsealed)
+backend/src/routes-structured-asset-integration.test.ts (unsealed)
+backend/src/routes-structured-character-acceptance.test.ts (unsealed)
+backend/src/routes-structured-narration-acceptance.test.ts (unsealed)
+backend/src/scripts/authenticated-read-surface-smoke.test.ts (unsealed)
+backend/src/scripts/authenticated-sse-smoke.test.ts (unsealed)
+backend/src/scripts/awareness-narration-convergence.test.ts (unsealed)
+backend/src/scripts/awareness-public-observation.test.ts (unsealed)
+backend/src/scripts/character-authoring-a2-freeze.test.ts (unsealed)
+backend/src/scripts/dialogue-quality.test.ts (unsealed)
+backend/src/scripts/migrate-legacy-account.test.ts (unsealed)
+backend/src/scripts/persistent-battle-e2e.test.ts (unsealed)
+backend/src/scripts/persistent-e2e-workflow.test.ts (unsealed)
+backend/src/scripts/postgres-migrations.test.ts (unsealed)
+backend/src/scripts/semantic-migration-probe-fixture.test.ts (unsealed)
+backend/src/scripts/semantic-migration-probe-run.test.ts (unsealed)
+backend/src/scripts/sqlite-to-postgres.test.ts (unsealed)
+backend/src/scripts/supabase-auth-smoke.test.ts (unsealed)
+backend/src/services/awareness-adjudication-guard.test.ts (unsealed)
+backend/src/services/awareness-battle-creation.test.ts (unsealed)
+backend/src/services/awareness-battle-service.test.ts (unsealed)
+backend/src/services/awareness-creation-encounter.test.ts (unsealed)
+backend/src/services/awareness-expression-commit.test.ts (unsealed)
+backend/src/services/awareness-narration-claim-snapshot.test.ts (unsealed)
+backend/src/services/awareness-narration-continuation.test.ts (unsealed)
+backend/src/services/awareness-narration-event-storage.test.ts (unsealed)
+backend/src/services/awareness-narration-queue.test.ts (unsealed)
+backend/src/services/awareness-narration-urgency.test.ts (unsealed)
+backend/src/services/awareness-narration-worker.test.ts (unsealed)
+backend/src/services/awareness-trial-harness.test.ts (unsealed)
+backend/src/services/awareness-world-commit.test.ts (unsealed)
+backend/src/services/battle-causal-narration.test.ts (unsealed)
+backend/src/services/battle-consumer-wiring.test.ts (unsealed)
+backend/src/services/battle-create-idempotency.test.ts (unsealed)
+backend/src/services/battle-public.test.ts (unsealed)
+backend/src/services/battle-speech-wiring.test.ts (unsealed)
+backend/src/services/character-agency-inventory.test.ts (unsealed)
+backend/src/services/character-portrait-v3.test.ts (unsealed)
+backend/src/services/conscious-agency-binding.test.ts (unsealed)
+backend/src/services/conscious-agency-persistence.test.ts (unsealed)
+backend/src/services/conscious-agency-runtime.test.ts (unsealed)
+backend/src/services/distributed-guard.test.ts (unsealed)
+backend/src/services/e2e-session.test.ts (unsealed)
+backend/src/services/free-action-service.test.ts (unsealed)
+backend/src/services/image-archive.test.ts (unsealed)
+backend/src/services/image-service.test.ts (unsealed)
+backend/src/services/internal-observability.test.ts (unsealed)
+backend/src/services/normal-awareness-policy.test.ts (unsealed)
+backend/src/services/r2-storage.test.ts (unsealed)
+backend/src/services/rating-service-transaction.test.ts (unsealed)
+backend/src/services/scene-beat-wiring.test.ts (unsealed)
+backend/src/services/semantic-authoring/revision-scope-evaluation.test.ts (unsealed)
+backend/src/services/semantic-authoring/revision-scope-ollama.test.ts (unsealed)
+frontend/src/authenticated-fetch.test.ts (unsealed)
+frontend/src/battle-narration.test.ts (unsealed)
+frontend/src/battle-screen.test.ts (unsealed)
+frontend/src/battle-scroll.test.ts (unsealed)
+frontend/src/match-rating.test.ts (unsealed)
+frontend/src/match-selection-preferences.test.ts (unsealed)
+packages/shared/src/action-feasibility.test.ts (unsealed)
+packages/shared/src/action-norm-contract.test.ts (unsealed)
+packages/shared/src/asset-visibility.test.ts (unsealed)
+packages/shared/src/awareness-battle.test.ts (unsealed)
+packages/shared/src/balance-observe.test.ts (unsealed)
+packages/shared/src/balance.test.ts (unsealed)
+packages/shared/src/battle-asset-manifest.test.ts (unsealed)
+packages/shared/src/battle-causal-execution.test.ts (unsealed)
+packages/shared/src/battle-causality.test.ts (unsealed)
+packages/shared/src/battle-effects.test.ts (unsealed)
+packages/shared/src/battle-engine-absence.test.ts (unsealed)
+packages/shared/src/battle-engine.test.ts (unsealed)
+packages/shared/src/battle-pacing.test.ts (unsealed)
+packages/shared/src/battle-policy.test.ts (unsealed)
+packages/shared/src/battle-social.test.ts (unsealed)
+packages/shared/src/battle-stream.test.ts (unsealed)
+packages/shared/src/battle-temporal-rules.test.ts (unsealed)
+packages/shared/src/battle-turn-causal-receipt.test.ts (unsealed)
+packages/shared/src/battle-world.test.ts (unsealed)
+packages/shared/src/battlefield-definition-check.test.ts (unsealed)
+packages/shared/src/character-definition-check.test.ts (unsealed)
+packages/shared/src/character-definition-rules.test.ts (unsealed)
+packages/shared/src/character-focus-policy.test.ts (unsealed)
+packages/shared/src/character-improvement.test.ts (unsealed)
+packages/shared/src/character-manifestation.test.ts (unsealed)
+packages/shared/src/character.test.ts (unsealed)
+packages/shared/src/compact-psyche-decode.test.ts (unsealed)
+packages/shared/src/compiler-phase-contract.test.ts (unsealed)
+packages/shared/src/conscious-agency.test.ts (unsealed)
+packages/shared/src/conscious-dynamic.test.ts (unsealed)
+packages/shared/src/dialogue-context.test.ts (unsealed)
+packages/shared/src/drama.test.ts (unsealed)
+packages/shared/src/narration-composer.test.ts (unsealed)
+packages/shared/src/narration-perception.test.ts (unsealed)
+packages/shared/src/narration-perspective.test.ts (unsealed)
+packages/shared/src/narrative.test.ts (unsealed)
+packages/shared/src/perception-projection.test.ts (unsealed)
+packages/shared/src/perception-quantization.test.ts (unsealed)
+packages/shared/src/perception.test.ts (unsealed)
+packages/shared/src/profile-grounding.test.ts (unsealed)
+packages/shared/src/psyche-reaction-policy.test.ts (unsealed)
+packages/shared/src/rating.test.ts (unsealed)
+packages/shared/src/reposition-transition.test.ts (unsealed)
+packages/shared/src/scene-beat.test.ts (unsealed)
+packages/shared/src/semantic-state.test.ts (unsealed)
+packages/shared/src/skill-cooldown.test.ts (unsealed)
+packages/shared/src/structured-assets.test.ts (unsealed)
+packages/shared/src/structured-character.test.ts (unsealed)
+packages/shared/src/structured-narration.test.ts (unsealed)
+packages/shared/src/supervisor.test.ts (unsealed)
+packages/shared/src/turn-event-contract.test.ts (unsealed)
+packages/shared/src/utterance-perception.test.ts (unsealed)
+infra/cloudflare-worker/src/index.test.ts (unsealed)
+scripts/adr-historical-exceptions.test.mjs (unsealed)
+scripts/r2-smoke-startup.test.mjs (unsealed)
+scripts/sealgraph-runtime-dirs.test.mjs (unsealed)
+scripts/select-release-rollback-target.test.mjs (unsealed)
+scripts/smoke-deployment.test.mjs (unsealed)
+    at requireSealedTests (file:///home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/scripts/test-authority.mjs:156:11)
+    at main (file:///home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/scripts/test-authority.mjs:188:3)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)

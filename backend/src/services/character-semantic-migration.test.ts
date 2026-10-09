@@ -1,3 +1,4 @@
+// R: Verify bounded semantic migration, repair scope and versioned request grammar.
 import assert from "node:assert/strict";
 import { after, before, describe, it } from "node:test";
 import { mkdtempSync, readFileSync, rmSync } from "node:fs";
@@ -395,8 +396,8 @@ describe("B5 bounded semantic migration", () => {
     assert.throws(() => assertXaiResponseSchema(payload(old).responseSchema), /circular reference/);
     assert.doesNotThrow(() => assertXaiResponseSchema(payload(current).responseSchema));
     assert.notDeepEqual(payload(old).responseSchema, payload(current).responseSchema);
-    assert.throws(() => assertXaiResponseSchema(migrationRead(payload(old).input, "targetDefinitionSchema")),
-      /circular reference/);
+    // Generic operation values require recursive JSON; the target definition need not.
+    assert.doesNotThrow(() => assertXaiResponseSchema(migrationRead(payload(old).input, "targetDefinitionSchema")));
     assert.doesNotThrow(() => assertXaiResponseSchema(migrationRead(payload(current).input, "targetDefinitionSchema")));
   });
   it("splits a selectorless principle and fallback, preserves history and replays without calls", async () => {

@@ -1,0 +1,72 @@
+TAP version 13
+# Subtest: migration provider projection without recursive grammar
+    # Subtest: reproduces the retained failing schema, then changes only generic JSON's representation
+    ok 1 - reproduces the retained failing schema, then changes only generic JSON's representation
+      ---
+      duration_ms: 15.903492
+      type: 'test'
+      ...
+    # Subtest: keeps deeply nested typed values, while still rejecting non-JSON values
+    ok 2 - keeps deeply nested typed values, while still rejecting non-JSON values
+      ---
+      duration_ms: 32.22112
+      type: 'test'
+      ...
+    1..2
+ok 1 - migration provider projection without recursive grammar
+  ---
+  duration_ms: 49.32577
+  type: 'suite'
+  ...
+# Subtest: semantic migration response contracts
+    # Subtest: requires explicit provenance and does not accept invented operation/control fields
+    ok 1 - requires explicit provenance and does not accept invented operation/control fields
+      ---
+      duration_ms: 6.87547
+      type: 'test'
+      ...
+    # Subtest: rejects prototype traversal and JSON pointers outside the registered path grammar
+    ok 2 - rejects prototype traversal and JSON pointers outside the registered path grammar
+      ---
+      duration_ms: 0.746105
+      type: 'test'
+      ...
+    # Subtest: requires copy/move values to come from source instead of trusting an echoed value
+    ok 3 - requires copy/move values to come from source instead of trusting an echoed value
+      ---
+      duration_ms: 1.012719
+      type: 'test'
+      ...
+    # Subtest: can defer a genuinely new field without inventing a source
+    ok 4 - can defer a genuinely new field without inventing a source
+      ---
+      duration_ms: 0.716111
+      type: 'test'
+      ...
+    # Subtest: bounds the number of operations and requires an honest consistent verdict
+    ok 5 - bounds the number of operations and requires an honest consistent verdict
+      ---
+      duration_ms: 36.813893
+      type: 'test'
+      ...
+    1..5
+ok 2 - semantic migration response contracts
+  ---
+  duration_ms: 47.48834
+  type: 'suite'
+  ...
+# Subtest: preserves operation values and statically excludes invalid payload/provenance combinations
+ok 3 - preserves operation values and statically excludes invalid payload/provenance combinations
+  ---
+  duration_ms: 1.518117
+  type: 'test'
+  ...
+1..3
+# tests 8
+# suites 2
+# pass 8
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 476.900686

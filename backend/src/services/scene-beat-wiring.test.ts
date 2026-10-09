@@ -1,9 +1,11 @@
+// R: Verify canonical beat transitions retain deferred narration and ordered receipts.
 import assert from "node:assert/strict";
 import { after, describe, it } from "node:test";
 import { mkdtempSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import {
+  CharacterGenerationEnvelopeV3Schema,
   BattleStateSchema,
   createBattleState,
   defaultParameters,
@@ -19,10 +21,16 @@ process.env.AUTH_PROVIDER = "legacy";
 process.env.DATABASE_PATH = join(temporaryDirectory, "scene-beat.db");
 
 const { saveHistoricalCharacterFixture } = await import("../testing/historical-character-fixtures.js");
+const generationRepo = await import("../testing/historical-asset-generations.js");
+const { createV3StageTrialCandidate } = await import("../fixtures/neva-v3.js");
+const { buildImportedCharacterEnvelopeV2 } = await import("./character-authoring-service.js");
 const { closeDatabase, query } = await import("../db.js");
 const { advanceTurn, completeAdvancePhases, startBattle } = await import("./battle-service.js");
-const { saveBattleWithNarrationOutbox } = await import("../repositories/battles.js");
-const { MockLlmProvider } = await import("../llm/mock.js");
+const { insertNewBattle, saveBattleWithNarrationOutbox } = await import("../repositories/battles.js");
+const { createOfflineAwarenessProvider } = await import("../testing/offline-awareness-provider.js");
+const settingsRepo = await import("../repositories/dialogue-pipeline-settings.js");
+const { createConsciousFixture } = await import("./conscious-agency.fixtures.js");
+const { createInventoryFixture } = await import("./character-agency-inventory.fixtures.js");
 const { ensureSystemNarrationStyles } = await import(
   "../repositories/narration-styles.js"
 );
@@ -58,6 +66,49 @@ function sheet(
   };
 }
 
+function envelopeV3(value: CharacterSheet) {
+  const source = buildImportedCharacterEnvelopeV2({ sheet: value,
+    attemptId: `scene-beat-test-v3-${value.id}` });
+  const trial = createV3StageTrialCandidate();
+  const { schemaVersion: _schemaVersion, actionNorms: _actionNorms, ...stable } = source.definition;
+  const basicActionId = stable.capabilities.basicAction.id;
+  const actionNorms = trial.definition.actionNorms.map((norm, index) => ({
+    ...norm,
+    ...(index === 0 ? { when: { match: "all" as const,
+      clauses: [{ kind: "always" as const, operator: "is" as const, value: "true" as const }] } } : {}),
+    response: { ...norm.response, actionRefs: [basicActionId] },
+  }));
+  const mechanicalConflictFallbacks = trial.definition.mechanicalConflictFallbacks.map((fallback) => ({
+    ...fallback, orderedActionRefs: [basicActionId],
+  }));
+  return CharacterGenerationEnvelopeV3Schema.parse({
+    ...source, definitionSchema: { family: "character", version: 3 },
+    definition: { ...stable, schemaVersion: 3, actionNorms,
+      consciousGuidance: trial.definition.consciousGuidance,
+      mechanicalConflictFallbacks },
+    compilerCompatibility: trial.compilerCompatibility, deferredValues: trial.deferredValues,
+  });
+}
+
+async function activateV3(value: CharacterSheet) {
+  await generationRepo.createAssetGeneration({
+    assetType: "character",
+    assetId: value.id,
+    schemaVersion: 3,
+    content: envelopeV3(value),
+  });
+}
+
+async function ensureV3DialoguePipeline(userId: string) {
+  const values = createConsciousFixture().settings;
+  const current = await settingsRepo.getDialoguePipelineSettings();
+  const updated = await settingsRepo.updateDialoguePipelineSettings({
+    userId,
+    patch: { ...values, schemaVersion: 3, expectedRevision: current.revision },
+  });
+  assert.ok(updated);
+}
+
 describe("scene beat narration deferral", () => {
   it("does not enqueue a combat narration job while the beat is open", async () => {
     const now = new Date().toISOString();
@@ -82,6 +133,11 @@ describe("scene beat narration deferral", () => {
         receiptIds: [],
       },
     };
+    assert.equal(await insertNewBattle(state, {
+      sideAUserId: "user-a",
+      sideACharacterId: "chr_a",
+      sideBCharacterId: "chr_b",
+    }), "created");
     const deferred = completeAdvancePhases({
       state,
       operationId: "op-open",
@@ -95,6 +151,7 @@ describe("scene beat narration deferral", () => {
       sideAUserId: "user-a",
       sideACharacterId: "chr_a",
       sideBCharacterId: "chr_b",
+      expectedRevision: state.battleRevision,
     });
     const queued = await query<{ count: string | number }>(
       `SELECT count(*) AS count FROM battle_narration_outbox WHERE battle_id = $1`,
@@ -114,7 +171,9 @@ describe("scene beat narration deferral", () => {
     const sideB = sheet("beat-b", "beat-owner", "乙");
     for (const character of [sideA, sideB]) {
       await saveHistoricalCharacterFixture(character);
+      await activateV3(character);
     }
+    await ensureV3DialoguePipeline("beat-owner");
     await ensureSystemNarrationStyles();
     const created = await startBattle({
       userId: "beat-owner",
@@ -122,15 +181,13 @@ describe("scene beat narration deferral", () => {
       myCharacterId: sideA.id,
       opponentCharacterId: sideB.id,
       battlefieldMode: "random",
-      llm: new MockLlmProvider(),
+      llm: createOfflineAwarenessProvider(),
     });
     const stored = await query<{ state_json: string }>(
       `SELECT state_json FROM battles WHERE id = $1`,
       [created.id],
     );
-    const state = JSON.parse(stored.rows[0]?.state_json ?? "{}") as {
-      sceneBeat?: { k?: number };
-    };
+    const state = BattleStateSchema.parse(JSON.parse(stored.rows[0]?.state_json ?? "{}"));
     assert.equal(state.sceneBeat?.k, 3);
   });
 
@@ -145,9 +202,11 @@ describe("scene beat narration deferral", () => {
     const sideB = sheet("beat-adv-b", "beat-adv-owner", "乙");
     for (const character of [sideA, sideB]) {
       await saveHistoricalCharacterFixture(character);
+      await activateV3(character);
     }
+    await ensureV3DialoguePipeline("beat-adv-owner");
     await ensureSystemNarrationStyles();
-    const llm = new MockLlmProvider();
+    const llm = createOfflineAwarenessProvider();
     const created = await startBattle({
       userId: "beat-adv-owner",
       battleId: "btl_scene_beat_advance",
@@ -182,9 +241,11 @@ describe("scene beat narration deferral", () => {
     const sideB = sheet("beat-clock-b", "beat-clock-owner", "乙", 10_000);
     for (const character of [sideA, sideB]) {
       await saveHistoricalCharacterFixture(character);
+      await activateV3(character);
     }
+    await ensureV3DialoguePipeline("beat-clock-owner");
     await ensureSystemNarrationStyles();
-    const llm = new MockLlmProvider();
+    const llm = createOfflineAwarenessProvider();
     const created = await startBattle({
       userId: "beat-clock-owner",
       battleId: "btl_scene_beat_clock",
@@ -243,52 +304,68 @@ describe("scene beat narration deferral", () => {
        VALUES ($1, $2, $3, $4)`,
       ["later-fallback-owner", "later-fallback-owner", "hash", now],
     );
-    const sideA = sheet("later-fallback-a", "later-fallback-owner", "甲", 10_000);
-    const sideB = sheet("later-fallback-b", "later-fallback-owner", "乙", 10_000);
-    sideA.parameters.spd = 20;
-    sideB.parameters.spd = 5;
-    for (const character of [sideA, sideB]) {
-      await saveHistoricalCharacterFixture(character);
-    }
-    await ensureSystemNarrationStyles();
-    const llm = new MockLlmProvider();
-    llm.decideCharacterAction = async () => ({
-      proposedAction: { kind: "skill", skillId: "not-listed" },
+    // Q06 preserves existing dynamic-v4 and earlier generations. This fixture
+    // enters through persistence, so current new-battle creation stays awareness-v5.
+    const historical = createInventoryFixture("control");
+    const sideA = { ...historical.mine, ownerUserId: "later-fallback-owner" };
+    const sideB = { ...historical.opp, ownerUserId: "later-fallback-owner" };
+    await saveHistoricalCharacterFixture(sideA);
+    await saveHistoricalCharacterFixture(sideB);
+    const state = BattleStateSchema.parse({
+      ...historical.state,
+      id: "btl_later_bucket_fallback",
+      dialoguePipelineSnapshot: historical.state.assetManifest?.dialoguePipeline.snapshot,
+      sideA: { ...historical.state.sideA,
+        parameters: { ...historical.state.sideA.parameters, spd: 20 } },
+      sideB: { ...historical.state.sideB,
+        parameters: { ...historical.state.sideB.parameters, spd: 5 } },
     });
-    const created = await startBattle({
-      userId: "later-fallback-owner",
-      battleId: "btl_later_bucket_fallback",
-      myCharacterId: sideA.id,
-      opponentCharacterId: sideB.id,
-      battlefieldMode: "random",
-      llm,
-    });
+    assert.equal(state.assetManifest?.schemaVersion, 2);
+    assert.equal(await insertNewBattle(state, {
+      sideAUserId: "later-fallback-owner",
+      sideACharacterId: sideA.id,
+      sideBCharacterId: sideB.id,
+    }), "created");
+    const llm = createOfflineAwarenessProvider();
+    let laterCalls = 0;
+    llm.decideCharacterAction = async (input) => {
+      laterCalls += 1;
+      assert.ok(input.decision.availableActions.some((action) => action.kind === "basic_attack"));
+      assert.equal(input.decision.availableActions.some((action) => action.skillId === "not-listed"), false);
+      return { proposedAction: { kind: "skill", skillId: "not-listed" } };
+    };
+    const created = { id: state.id };
 
     let observed: BattleCausalLaterDecision | null = null;
-    for (let step = 1; step <= 6 && observed === null; step += 1) {
-      await advanceTurn({
-        userId: "later-fallback-owner",
-        battleId: created.id,
-        operationId: `op-later-fallback-${step}`,
-        llm,
-      });
+    for (let step = 1; step <= 30 && observed === null; step += 1) {
+      try {
+        await advanceTurn({
+          userId: "later-fallback-owner",
+          battleId: created.id,
+          operationId: `op-later-fallback-${step}`,
+          llm,
+        });
+      } catch (error) {
+        if (error instanceof Error && error.message === "BATTLE_FINISHED") break;
+        throw error;
+      }
       const stored = await query<{ state_json: string }>(
         `SELECT state_json FROM battles WHERE id = $1`,
         [created.id],
       );
-      observed = BattleStateSchema.parse(
-        JSON.parse(stored.rows[0]?.state_json ?? "{}"),
-      ).causalLaterDecision ?? null;
+      const parsed = BattleStateSchema.parse(JSON.parse(stored.rows[0]?.state_json ?? "{}"));
+      observed = parsed.causalLaterDecision ?? null;
     }
 
     assert.ok(observed);
     assert.equal(observed.status, "fallback");
     assert.equal(observed.validation.status, "rejected");
     assert.equal(observed.validation.reason, "unavailable_action");
-    assert.equal(observed.acceptedAction?.kind, "defend");
+    assert.equal(observed.acceptedAction?.kind, "basic_attack");
     assert.equal(observed.fallbackReason, "unavailable_action");
     assert.equal(observed.provider, "mock");
     assert.equal(observed.callCount, 1);
+    assert.equal(laterCalls, 1);
   });
 
   it("saves the first skip turn after a beat-close semantic patch", async () => {
@@ -298,13 +375,15 @@ describe("scene beat narration deferral", () => {
        VALUES ($1, $2, $3, $4)`,
       ["beat-patch-owner", "beat-patch-owner", "hash", now],
     );
-    const sideA = sheet("beat-patch-a", "beat-patch-owner", "甲", 10_000);
-    const sideB = sheet("beat-patch-b", "beat-patch-owner", "乙", 10_000);
+    const sideA = sheet("beat-patch-a", "beat-patch-owner", "甲", 1_000_000_000);
+    const sideB = sheet("beat-patch-b", "beat-patch-owner", "乙", 1_000_000_000);
     for (const character of [sideA, sideB]) {
       await saveHistoricalCharacterFixture(character);
+      await activateV3(character);
     }
+    await ensureV3DialoguePipeline("beat-patch-owner");
     await ensureSystemNarrationStyles();
-    const llm = new MockLlmProvider();
+    const llm = createOfflineAwarenessProvider();
     llm.reconcileTurnSemanticState = async (input) => ({
       patch: {
         baseRevision: input.before.revision,
@@ -345,12 +424,7 @@ describe("scene beat narration deferral", () => {
       `SELECT state_json FROM battles WHERE id = $1`,
       [created.id],
     );
-    const state = JSON.parse(stored.rows[0]?.state_json ?? "{}") as {
-      turnRecords?: Array<{
-        turn: number;
-        canonicalTransition?: { semantic?: { status?: string } };
-      }>;
-    };
+    const state = BattleStateSchema.parse(JSON.parse(stored.rows[0]?.state_json ?? "{}"));
     const records = state.turnRecords ?? [];
     assert.ok(
       records.some((record) =>
@@ -376,9 +450,11 @@ describe("scene beat narration deferral", () => {
     const sideB = sheet("beat-orphan-b", "beat-orphan-owner", "乙");
     for (const character of [sideA, sideB]) {
       await saveHistoricalCharacterFixture(character);
+      await activateV3(character);
     }
+    await ensureV3DialoguePipeline("beat-orphan-owner");
     await ensureSystemNarrationStyles();
-    const llm = new MockLlmProvider();
+    const llm = createOfflineAwarenessProvider();
     const created = await startBattle({
       userId: "beat-orphan-owner",
       battleId: "btl_scene_beat_orphan",
@@ -391,19 +467,7 @@ describe("scene beat narration deferral", () => {
       `SELECT state_json FROM battles WHERE id = $1`,
       [created.id],
     );
-    const state = JSON.parse(stored.rows[0]?.state_json ?? "{}") as {
-      battleRevision?: number;
-      advanceOperation?: {
-        schemaVersion: 1;
-        operationId: string;
-        expectedRevision: number;
-        status: "active";
-        phase: "prologue" | "combat";
-        startedAt: string;
-        completedAt: null;
-        receiptIds: [];
-      };
-    };
+    const state = BattleStateSchema.parse(JSON.parse(stored.rows[0]?.state_json ?? "{}"));
     state.advanceOperation = {
       schemaVersion: 1,
       operationId: "op-orphaned",

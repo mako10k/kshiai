@@ -1,0 +1,66 @@
+{
+  "scope": "current offline create review and draft correction only",
+  "audit": "fatal0 error0 warning0, informational proximity hints retained",
+  "diagnostic": {
+    "passed": 13,
+    "failed": 2,
+    "skipped": 0
+  },
+  "sources": [
+    {
+      "path": "backend/src/routes.ts",
+      "sha256": "c62c1c59bfbd373480e43fd60b4f32c0a3ea73a051329bee3aa048da98ab209f"
+    },
+    {
+      "path": "backend/src/services/character-focused-authoring.ts",
+      "sha256": "d666c45e7522d5c659c51fa698a784ff0f9c780e1e8a9ed659bfe6f026ca7c2d"
+    },
+    {
+      "path": "backend/src/services/character-authoring-candidate.ts",
+      "sha256": "f6d4fac8387502507d30f4fc428bb0963f451a2154a1506f093122357af2a0ba"
+    },
+    {
+      "path": "backend/src/services/semantic-authoring/adapters/character-v3.ts",
+      "sha256": "988dd3ea8184d3bd9b36ada67be0ada1a76e144d5bbf26b7806d09f0ca204231"
+    },
+    {
+      "path": "backend/src/services/semantic-authoring/orchestration.ts",
+      "sha256": "a2d936cac5b11329ac050a4476a957cea6c4ff9f12d90d24b5a15c502550b29b"
+    },
+    {
+      "path": "backend/src/services/semantic-authoring/execution-policy.ts",
+      "sha256": "1b42f3118f0d8632ee155566412a35097b120140c1c653f7a2d71b84edd48b6b"
+    },
+    {
+      "path": "backend/src/routes-structured-character-acceptance.test.ts",
+      "sha256": "14f2c20407c2f008c0ea0bc1f87f996e88aafebfd86448ab980e78350cf5e97a"
+    },
+    {
+      "path": "docs/character-v3-authoring-requirements-v5.md",
+      "sha256": "17596f17d6514d5ada160b9d95453ab2bcb9cee9e4b2d2991acb8238b55ee27b"
+    },
+    {
+      "path": "docs/structured-semantic-authoring-foundation-requirements-v3.md",
+      "sha256": "b5693f6d47e975ea1cb78adaa686185630db5ffc6d52c74f3481ac77511c99da"
+    },
+    {
+      "path": "docs/structured-semantic-authoring-kernel-implementation-design-v1.md",
+      "sha256": "900a98f123f89e2ebbcdde6c8edeaa0ecb2015aaf4b93a41f56b8b02eabaf246"
+    },
+    {
+      "path": "docs/adr/0011-structured-character-definition.md",
+      "sha256": "60611d35bd03be6e8ee37e855841b7d6f857198abdbbf7bb4f3bd2f72fb0d31d"
+    },
+    {
+      "path": "docs/adr/0030-llm-assisted-character-semantic-migration.think",
+      "sha256": "80da2d64cf9436d178815fe44ed7ec58592e5d7923dc62f31a59f540bc3cc9e4"
+    }
+  ],
+  "unknowns": [
+    "historical producing change and detection escape",
+    "complete focused public profile completion within8 calls",
+    "exact successor draft source command contract"
+  ],
+  "productionCodeChanged": false,
+  "newProviderCalls": 0
+}

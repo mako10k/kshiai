@@ -1,0 +1,14 @@
+{
+  "newRefs": 6,
+  "previousHeadsUnchanged": true,
+  "previousHeadCount": 869,
+  "totalRefs": 875,
+  "sourceBytesMatch": true,
+  "stale": 0,
+  "fsck": "ok",
+  "limitations": [
+    "Pure synthetic DTO helper tests only; no provider, persistence, browser, reset/reconnect or full pipeline acceptance",
+    "Original six cases/assertions retained; no runtime or test code changes",
+    "Current public narration remains terminal-only; superseded ADR0005 not direct authority"
+  ]
+}

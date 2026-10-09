@@ -1,0 +1,7 @@
+{
+  "inheritsActualBackendConfig": true,
+  "untypedExit": 2,
+  "untypedDiagnostic": "../../../../../tmp/kshiai-implicit-any-control-_osudvip/probe.ts(1,26): error TS7006: Parameter 'value' implicitly has an 'any' type.\n",
+  "typedExit": 0,
+  "temporaryOnly": true
+}

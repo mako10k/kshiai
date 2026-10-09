@@ -1,0 +1,730 @@
+TAP version 13
+# Subtest: structured battlefield route acceptance
+    # Subtest: records structure-stage failure without exposing a partial battlefield
+    ok 1 - records structure-stage failure without exposing a partial battlefield
+      ---
+      duration_ms: 65.032075
+      type: 'test'
+      ...
+    # Subtest: keeps legacy battlefields visible to management but out of every match binding
+    ok 2 - keeps legacy battlefields visible to management but out of every match binding
+      ---
+      duration_ms: 88.512024
+      type: 'test'
+      ...
+    # Subtest: upgrades a legacy battlefield only after explicit owner confirmation
+    ok 3 - upgrades a legacy battlefield only after explicit owner confirmation
+      ---
+      duration_ms: 58.417254
+      type: 'test'
+      ...
+    # Subtest: returns a compare review and list mark for an awaiting battlefield upgrade
+    ok 4 - returns a compare review and list mark for an awaiting battlefield upgrade
+      ---
+      duration_ms: 54.685344
+      type: 'test'
+      ...
+    # Subtest: expires an upgrade candidate without creating or selecting a generation
+    ok 5 - expires an upgrade candidate without creating or selecting a generation
+      ---
+      duration_ms: 13.047261
+      type: 'test'
+      ...
+    # Subtest: rejects a stale revision candidate after concurrent current-pointer drift
+    ok 6 - rejects a stale revision candidate after concurrent current-pointer drift
+      ---
+      duration_ms: 23.773013
+      type: 'test'
+      ...
+    # Subtest: commits create revision and image changes only as confirmed immutable generations
+    ok 7 - commits create revision and image changes only as confirmed immutable generations
+      ---
+      duration_ms: 69.264625
+      type: 'test'
+      ...
+    # Subtest: binds an exact preset revision and deterministic compiler without mutating it
+    ok 8 - binds an exact preset revision and deterministic compiler without mutating it
+      ---
+      duration_ms: 201.020446
+      type: 'test'
+      ...
+    1..8
+ok 1 - structured battlefield route acceptance
+  ---
+  duration_ms: 687.517055
+  type: 'suite'
+  ...
+# Subtest: structured narration route acceptance
+    # Subtest: records structure failure without exposing a partial style
+    ok 1 - records structure failure without exposing a partial style
+      ---
+      duration_ms: 66.974765
+      type: 'test'
+      ...
+    # Subtest: keeps legacy styles manageable but outside selectors and direct binding
+    ok 2 - keeps legacy styles manageable but outside selectors and direct binding
+      ---
+      duration_ms: 128.092077
+      type: 'test'
+      ...
+    # Subtest: creates and upgrades only after owner confirmation with idempotent readback
+    ok 3 - creates and upgrades only after owner confirmation with idempotent readback
+      ---
+      duration_ms: 79.017893
+      type: 'test'
+      ...
+    # Subtest: binds the exact ready generation and never appends one at battle start
+    ok 4 - binds the exact ready generation and never appends one at battle start
+      ---
+      duration_ms: 137.092615
+      type: 'test'
+      ...
+    # Subtest: persists expiry and rejects a candidate after current-pointer drift
+    ok 5 - persists expiry and rejects a candidate after current-pointer drift
+      ---
+      duration_ms: 17.409517
+      type: 'test'
+      ...
+    # Subtest: rejects corrupt stored styles on confirmation and completed replay without appending a generation
+    ok 6 - rejects corrupt stored styles on confirmation and completed replay without appending a generation
+      ---
+      duration_ms: 73.01507
+      type: 'test'
+      ...
+    1..6
+ok 2 - structured narration route acceptance
+  ---
+  duration_ms: 600.143082
+  type: 'suite'
+  ...
+# [battle] semantic patch rejected protected_path: entities are tombstoned and cannot be replaced or removed
+# [battle] semantic reconciliation skipped provider unavailable
+# [battle] semantic reconciliation skipped provider unavailable
+# [battle] sensory evidence rejected evidence.bad: basis event missing.event is not committed
+# Subtest: public battle semantic projection
+    # Subtest: projects only explicitly visible pending effects without raw deltas
+    ok 1 - projects only explicitly visible pending effects without raw deltas
+      ---
+      duration_ms: 30.240747
+      type: 'test'
+      ...
+    # Subtest: exposes observable semantic state without mechanics or private agents
+    ok 2 - exposes observable semantic state without mechanics or private agents
+      ---
+      duration_ms: 7.980092
+      type: 'test'
+      ...
+    # Subtest: centers settled ratings independently for each visible track
+    ok 3 - centers settled ratings independently for each visible track
+      ---
+      duration_ms: 12.78788
+      type: 'test'
+      ...
+    # Subtest: keeps the committed state when a provider patch is invalid
+    ok 4 - keeps the committed state when a provider patch is invalid
+      ---
+      duration_ms: 21.628688
+      type: 'test'
+      ...
+    # Subtest: commits structured semantic location changes through the world boundary
+    ok 5 - commits structured semantic location changes through the world boundary
+      ---
+      duration_ms: 19.699947
+      type: 'test'
+      ...
+    # Subtest: skips semantic mutation when the provider fails
+    ok 6 - skips semantic mutation when the provider fails
+      ---
+      duration_ms: 23.310931
+      type: 'test'
+      ...
+    # Subtest: commits an accepted environment proposal only through semantic and world state
+    ok 7 - commits an accepted environment proposal only through semantic and world state
+      ---
+      duration_ms: 17.444952
+      type: 'test'
+      ...
+    # Subtest: drops a rejected environment proposal without a public fact or effect
+    ok 8 - drops a rejected environment proposal without a public fact or effect
+      ---
+      duration_ms: 19.44404
+      type: 'test'
+      ...
+    # Subtest: rejects a structured environment operation outside the selected affordance
+    ok 9 - rejects a structured environment operation outside the selected affordance
+      ---
+      duration_ms: 32.366956
+      type: 'test'
+      ...
+    # Subtest: gives the happening provider one deterministic authored affordance
+    ok 10 - gives the happening provider one deterministic authored affordance
+      ---
+      duration_ms: 20.847722
+      type: 'test'
+      ...
+    # Subtest: records an unavailable environment adjudication as skipped
+    ok 11 - records an unavailable environment adjudication as skipped
+      ---
+      duration_ms: 7.025822
+      type: 'test'
+      ...
+    # Subtest: freezes side-specific frames and keeps unknown source ids registry-private
+    ok 12 - freezes side-specific frames and keeps unknown source ids registry-private
+      ---
+      duration_ms: 13.131553
+      type: 'test'
+      ...
+    # Subtest: projects engine cues normally after invalid sensory evidence is rejected
+    ok 13 - projects engine cues normally after invalid sensory evidence is rejected
+      ---
+      duration_ms: 14.792223
+      type: 'test'
+      ...
+    # Subtest: does not normalize an invalid prior perception registry
+    ok 14 - does not normalize an invalid prior perception registry
+      ---
+      duration_ms: 10.901447
+      type: 'test'
+      ...
+    # Subtest: keeps only the latest transition and side-specific observations
+    ok 15 - keeps only the latest transition and side-specific observations
+      ---
+      duration_ms: 11.841907
+      type: 'test'
+      ...
+    1..15
+ok 3 - public battle semantic projection
+  ---
+  duration_ms: 266.899987
+  type: 'suite'
+  ...
+# Subtest: awareness-v5 battle version boundary
+    # Subtest: preserves complete V4 tuple and dynamic output semantics
+    ok 1 - preserves complete V4 tuple and dynamic output semantics
+      ---
+      duration_ms: 102.587339
+      type: 'test'
+      ...
+    # Subtest: requires frozen V5 policy, prompt/output revisions and both V3 generation compilers
+    ok 2 - requires frozen V5 policy, prompt/output revisions and both V3 generation compilers
+      ---
+      duration_ms: 52.58096
+      type: 'test'
+      ...
+    # Subtest: technical incomplete preserves the last committed world without a winner
+    ok 3 - technical incomplete preserves the last committed world without a winner
+      ---
+      duration_ms: 42.686953
+      type: 'test'
+      ...
+    # Subtest: requires an incomplete reason
+    ok 4 - requires an incomplete reason
+      ---
+      duration_ms: 34.427415
+      type: 'test'
+      ...
+    # Subtest: forbids an invented winner
+    ok 5 - forbids an invented winner
+      ---
+      duration_ms: 41.586151
+      type: 'test'
+      ...
+    # Subtest: forbids a canonical finish reason
+    ok 6 - forbids a canonical finish reason
+      ---
+      duration_ms: 39.557158
+      type: 'test'
+      ...
+    # Subtest: forbids old conscious agency
+    ok 7 - forbids old conscious agency
+      ---
+      duration_ms: 21.915168
+      type: 'test'
+      ...
+    # Subtest: does not add technical incomplete to older frozen V4 contracts
+    ok 8 - does not add technical incomplete to older frozen V4 contracts
+      ---
+      duration_ms: 22.362268
+      type: 'test'
+      ...
+    # Subtest: does not settle ratings on a technical incomplete
+    ok 9 - does not settle ratings on a technical incomplete
+      ---
+      duration_ms: 28.756395
+      type: 'test'
+      ...
+    1..9
+ok 4 - awareness-v5 battle version boundary
+  ---
+  duration_ms: 391.399793
+  type: 'suite'
+  ...
+# Subtest: battle engine
+    # Subtest: resolves reflect as a full-turn pause that preserves analysis fields
+    ok 1 - resolves reflect as a full-turn pause that preserves analysis fields
+      ---
+      duration_ms: 59.577375
+      type: 'test'
+      ...
+    # Subtest: unlocks special skills on turn 10 and scales finish pressure to turn 20
+    ok 2 - unlocks special skills on turn 10 and scales finish pressure to turn 20
+      ---
+      duration_ms: 30.18184
+      type: 'test'
+      ...
+    # Subtest: lets a character spend one derived finisher and rejects repeat activation
+    ok 3 - lets a character spend one derived finisher and rejects repeat activation
+      ---
+      duration_ms: 38.301899
+      type: 'test'
+      ...
+    # Subtest: creates private agent continuity and perspective-aware turn records
+    ok 4 - creates private agent continuity and perspective-aware turn records
+      ---
+      duration_ms: 71.499402
+      type: 'test'
+      ...
+    # Subtest: applies damage without exposing raw numbers in events
+    ok 5 - applies damage without exposing raw numbers in events
+      ---
+      duration_ms: 19.23491
+      type: 'test'
+      ...
+    # Subtest: grounds environment mechanics in targeted committed events
+    ok 6 - grounds environment mechanics in targeted committed events
+      ---
+      duration_ms: 34.040651
+      type: 'test'
+      ...
+    # Subtest: puts used skills on power-based cooldown so they cannot be spammed next turn
+    ok 7 - puts used skills on power-based cooldown so they cannot be spammed next turn
+      ---
+      duration_ms: 48.089148
+      type: 'test'
+      ...
+    # Subtest: penalizes consecutive basic attacks with fatigue and readable reduced effect
+    ok 8 - penalizes consecutive basic attacks with fatigue and readable reduced effect
+      ---
+      duration_ms: 20.983273
+      type: 'test'
+      ...
+    # Subtest: emphasizes finishing blows instead of a bare hit line
+    ok 9 - emphasizes finishing blows instead of a bare hit line
+      ---
+      duration_ms: 13.148578
+      type: 'test'
+      ...
+    # Subtest: defers finish for aftermath after HP reaches zero
+    ok 10 - defers finish for aftermath after HP reaches zero
+      ---
+      duration_ms: 11.093091
+      type: 'test'
+      ...
+    # Subtest: clamps wild coefficients
+    ok 11 - clamps wild coefficients
+      ---
+      duration_ms: 10.902296
+      type: 'test'
+      ...
+    # Subtest: applies battlefield base coefficients at creation
+    ok 12 - applies battlefield base coefficients at creation
+      ---
+      duration_ms: 8.936149
+      type: 'test'
+      ...
+    # Subtest: auto-resolves a turn from stance without player action
+    ok 13 - auto-resolves a turn from stance without player action
+      ---
+      duration_ms: 8.768733
+      type: 'test'
+      ...
+    # Subtest: auto-resolves from multi-selected case policies
+    ok 14 - auto-resolves from multi-selected case policies
+      ---
+      duration_ms: 6.578326
+      type: 'test'
+      ...
+    # Subtest: falls back to a basic attack when offensive skills are unaffordable
+    ok 15 - falls back to a basic attack when offensive skills are unaffordable
+      ---
+      duration_ms: 11.350129
+      type: 'test'
+      ...
+    # Subtest: records repeated planned-action fallback without hidden opponent input
+    ok 16 - records repeated planned-action fallback without hidden opponent input
+      ---
+      duration_ms: 7.124473
+      type: 'test'
+      ...
+    # Subtest: rests and restores resources when even a basic attack is exhausted
+    ok 17 - rests and restores resources when even a basic attack is exhausted
+      ---
+      duration_ms: 6.257258
+      type: 'test'
+      ...
+    # Subtest: forces both fighters into basic attacks after two passive turns
+    ok 18 - forces both fighters into basic attacks after two passive turns
+      ---
+      duration_ms: 6.6036
+      type: 'test'
+      ...
+    # Subtest: forces reserved passive agent actions into basic attacks after two passive turns
+    ok 19 - forces reserved passive agent actions into basic attacks after two passive turns
+      ---
+      duration_ms: 6.601619
+      type: 'test'
+      ...
+    # Subtest: retains an explicit player action when forcing the agent opponent to attack
+    ok 20 - retains an explicit player action when forcing the agent opponent to attack
+      ---
+      duration_ms: 7.993696
+      type: 'test'
+      ...
+    # Subtest: announces the final turn and explains the turn-limit decision
+    ok 21 - announces the final turn and explains the turn-limit decision
+      ---
+      duration_ms: 9.556076
+      type: 'test'
+      ...
+    # Subtest: allows a basic attack to damage stamina instead of HP
+    ok 22 - allows a basic attack to damage stamina instead of HP
+      ---
+      duration_ms: 6.81233
+      type: 'test'
+      ...
+    # Subtest: records an ineffective offensive attempt without inventing a change
+    ok 23 - records an ineffective offensive attempt without inventing a change
+      ---
+      duration_ms: 5.429967
+      type: 'test'
+      ...
+    # Subtest: records capped recovery as no effect for each resource
+    ok 24 - records capped recovery as no effect for each resource
+      ---
+      duration_ms: 4.953427
+      type: 'test'
+      ...
+    # Subtest: applies status skill tradeoffs and reverts them toward base each turn
+    ok 25 - applies status skill tradeoffs and reverts them toward base each turn
+      ---
+      duration_ms: 7.490111
+      type: 'test'
+      ...
+    # Subtest: restores maximum HP without restoring lost current HP
+    ok 26 - restores maximum HP without restoring lost current HP
+      ---
+      duration_ms: 8.69921
+      type: 'test'
+      ...
+    # Subtest: applies equipment changes at battle start and lets them decay
+    ok 27 - applies equipment changes at battle start and lets them decay
+      ---
+      duration_ms: 9.479552
+      type: 'test'
+      ...
+    # Subtest: initializes selected new battles with identified counterpart identity
+    ok 28 - initializes selected new battles with identified counterpart identity
+      ---
+      duration_ms: 4.351482
+      type: 'test'
+      ...
+    # Subtest: seeds active legacy battles with identified counterpart knowledge
+    ok 29 - seeds active legacy battles with identified counterpart knowledge
+      ---
+      duration_ms: 5.338617
+      type: 'test'
+      ...
+    # Subtest: deterministically supplies a coarse world to legacy battles
+    ok 30 - deterministically supplies a coarse world to legacy battles
+      ---
+      duration_ms: 3.775113
+      type: 'test'
+      ...
+    # Subtest: migrates legacy authority without turning public prose into cognition
+    ok 31 - migrates legacy authority without turning public prose into cognition
+      ---
+      duration_ms: 7.867191
+      type: 'test'
+      ...
+    # Subtest: records canonical revalidation and an observer-safe substitute
+    ok 32 - records canonical revalidation and an observer-safe substitute
+      ---
+      duration_ms: 6.674307
+      type: 'test'
+      ...
+    # Subtest: keeps a hopped world across a durable bucket resume
+    ok 33 - keeps a hopped world across a durable bucket resume
+      ---
+      duration_ms: 30.970559
+      type: 'test'
+      ...
+    # Subtest: keeps defend substitution when spacing schema is unbound
+    ok 34 - keeps defend substitution when spacing schema is unbound
+      ---
+      duration_ms: 7.811239
+      type: 'test'
+      ...
+    # Subtest: prepares initiative from a cloned post-restoration snapshot
+    ok 35 - prepares initiative from a cloned post-restoration snapshot
+      ---
+      duration_ms: 8.107649
+      type: 'test'
+      ...
+    # Subtest: prepares and retains ADR-0001 order before action resolution
+    ok 36 - prepares and retains ADR-0001 order before action resolution
+      ---
+      duration_ms: 6.006238
+      type: 'test'
+      ...
+    # Subtest: resumes the later bucket without replaying the committed predecessor
+    ok 37 - resumes the later bucket without replaying the committed predecessor
+      ---
+      duration_ms: 43.06758
+      type: 'test'
+      ...
+    # Subtest: keeps explicit prepare, bucket, and finalize stages equivalent to resolveTurn
+    ok 38 - keeps explicit prepare, bucket, and finalize stages equivalent to resolveTurn
+      ---
+      duration_ms: 23.930524
+      type: 'test'
+      ...
+    # Subtest: atomically preserves equal-speed mutual incapacitation
+    ok 39 - atomically preserves equal-speed mutual incapacitation
+      ---
+      duration_ms: 5.591473
+      type: 'test'
+      ...
+    # Subtest: lets the faster side interrupt and revalidates the slower bucket
+    ok 40 - lets the faster side interrupt and revalidates the slower bucket
+      ---
+      duration_ms: 12.361672
+      type: 'test'
+      ...
+    # Subtest: applies same-bucket defense before either attack is evaluated
+    ok 41 - applies same-bucket defense before either attack is evaluated
+      ---
+      duration_ms: 15.218627
+      type: 'test'
+      ...
+    # Subtest: keeps mechanics invariant when simultaneous side labels are swapped
+    ok 42 - keeps mechanics invariant when simultaneous side labels are swapped
+      ---
+      duration_ms: 13.552587
+      type: 'test'
+      ...
+    # Subtest: keeps faster-side interruption invariant when side labels are swapped
+    ok 43 - keeps faster-side interruption invariant when side labels are swapped
+      ---
+      duration_ms: 13.527238
+      type: 'test'
+      ...
+    # Subtest: merges same-snapshot healing, damage, and mutual effects additively
+    ok 44 - merges same-snapshot healing, damage, and mutual effects additively
+      ---
+      duration_ms: 10.526219
+      type: 'test'
+      ...
+    # Subtest: does not feed narration style into temporal or mechanical resolution
+    ok 45 - does not feed narration style into temporal or mechanical resolution
+      ---
+      duration_ms: 11.406273
+      type: 'test'
+      ...
+    # Subtest: applies bounded held-object benefits to later attacks and defenses
+    ok 46 - applies bounded held-object benefits to later attacks and defenses
+      ---
+      duration_ms: 31.646641
+      type: 'test'
+      ...
+    1..46
+ok 5 - battle engine
+  ---
+  duration_ms: 748.189235
+  type: 'suite'
+  ...
+# Subtest: server-owned battle world
+    # Subtest: starts exposed opponents near each other with working senses
+    ok 1 - starts exposed opponents near each other with working senses
+      ---
+      duration_ms: 15.826019
+      type: 'test'
+      ...
+    # Subtest: commits sensory mental object and pair changes atomically
+    ok 2 - commits sensory mental object and pair changes atomically
+      ---
+      duration_ms: 5.311145
+      type: 'test'
+      ...
+    # Subtest: represents a worn blindfold and its server-derived vision constraint
+    ok 3 - represents a worn blindfold and its server-derived vision constraint
+      ---
+      duration_ms: 3.456517
+      type: 'test'
+      ...
+    # Subtest: rejects an inconsistent disappearance without partially changing state
+    ok 4 - rejects an inconsistent disappearance without partially changing state
+      ---
+      duration_ms: 5.209047
+      type: 'test'
+      ...
+    # Subtest: rejects cyclic object placement as one atomic transition
+    ok 5 - rejects cyclic object placement as one atomic transition
+      ---
+      duration_ms: 4.758501
+      type: 'test'
+      ...
+    # Subtest: keeps narration and unknown event IDs outside world transitions
+    ok 6 - keeps narration and unknown event IDs outside world transitions
+      ---
+      duration_ms: 2.706975
+      type: 'test'
+      ...
+    # Subtest: derives separate-area distance only from structured locations
+    ok 7 - derives separate-area distance only from structured locations
+      ---
+      duration_ms: 1.100354
+      type: 'test'
+      ...
+    # Subtest: derives an atomic world transition from structured semantic changes
+    ok 8 - derives an atomic world transition from structured semantic changes
+      ---
+      duration_ms: 25.333394
+      type: 'test'
+      ...
+    # Subtest: does not restore fighter placement or pair from stale semantic labels
+    ok 9 - does not restore fighter placement or pair from stale semantic labels
+      ---
+      duration_ms: 4.316277
+      type: 'test'
+      ...
+    # Subtest: does not move an object the engine already placed this turn
+    ok 10 - does not move an object the engine already placed this turn
+      ---
+      duration_ms: 5.398963
+      type: 'test'
+      ...
+    # Subtest: loads legacy dependents of absent semantic parents as absent
+    ok 11 - loads legacy dependents of absent semantic parents as absent
+      ---
+      duration_ms: 2.082774
+      type: 'test'
+      ...
+    # Subtest: promotes an observer-labeled object and concretizes it without changing identity
+    ok 12 - promotes an observer-labeled object and concretizes it without changing identity
+      ---
+      duration_ms: 5.657257
+      type: 'test'
+      ...
+    1..12
+ok 6 - server-owned battle world
+  ---
+  duration_ms: 84.566472
+  type: 'suite'
+  ...
+# Subtest: reposition transition
+    # Subtest: hops one adjacent area toward the counterpart
+    ok 1 - hops one adjacent area toward the counterpart
+      ---
+      duration_ms: 50.045342
+      type: 'test'
+      ...
+    # Subtest: opens an in-area rank when too close
+    ok 2 - opens an in-area rank when too close
+      ---
+      duration_ms: 13.075921
+      type: 'test'
+      ...
+    # Subtest: treats a present scene counterpart as localized in unique world
+    ok 3 - treats a present scene counterpart as localized in unique world
+      ---
+      duration_ms: 10.54398
+      type: 'test'
+      ...
+    1..3
+ok 7 - reposition transition
+  ---
+  duration_ms: 76.470098
+  type: 'suite'
+  ...
+# Subtest: BattlefieldDefinitionV2
+    # Subtest: maps legacy fields deterministically and drops unknown coefficient keys
+    ok 1 - maps legacy fields deterministically and drops unknown coefficient keys
+      ---
+      duration_ms: 13.231478
+      type: 'test'
+      ...
+    # Subtest: rejects dangling references, reserved ids, and cross-section duplicates
+    ok 2 - rejects dangling references, reserved ids, and cross-section duplicates
+      ---
+      duration_ms: 6.112111
+      type: 'test'
+      ...
+    # Subtest: compiles byte-equivalent instances without provider or public prose input
+    ok 3 - compiles byte-equivalent instances without provider or public prose input
+      ---
+      duration_ms: 35.604025
+      type: 'test'
+      ...
+    # Subtest: selects only authored evolution affordances deterministically
+    ok 4 - selects only authored evolution affordances deterministically
+      ---
+      duration_ms: 9.605059
+      type: 'test'
+      ...
+    # Subtest: places both semantic character roots at their exact authored entry areas
+    ok 5 - places both semantic character roots at their exact authored entry areas
+      ---
+      duration_ms: 122.36917
+      type: 'test'
+      ...
+    # Subtest: preserves distinct area and entity placements when display names are identical
+    ok 6 - preserves distinct area and entity placements when display names are identical
+      ---
+      duration_ms: 57.684241
+      type: 'test'
+      ...
+    # Subtest: rejects missing or dangling initial scene placement references
+    ok 7 - rejects missing or dangling initial scene placement references
+      ---
+      duration_ms: 16.815721
+      type: 'test'
+      ...
+    # Subtest: rejects using a structured instance without its required creation layout
+    ok 8 - rejects using a structured instance without its required creation layout
+      ---
+      duration_ms: 12.569732
+      type: 'test'
+      ...
+    # Subtest: keeps mechanics, hidden objects, and evolution controls out of public projections
+    ok 9 - keeps mechanics, hidden objects, and evolution controls out of public projections
+      ---
+      duration_ms: 4.3735
+      type: 'test'
+      ...
+    # Subtest: requires every compiler and an exact claim-validation receipt
+    ok 10 - requires every compiler and an exact claim-validation receipt
+      ---
+      duration_ms: 9.837882
+      type: 'test'
+      ...
+    1..10
+ok 8 - BattlefieldDefinitionV2
+  ---
+  duration_ms: 293.161969
+  type: 'suite'
+  ...
+# Subtest: requires structured placement handoff at compile time
+ok 9 - requires structured placement handoff at compile time
+  ---
+  duration_ms: 0.360702
+  type: 'test'
+  ...
+1..9
+# tests 110
+# suites 8
+# pass 110
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 2605.86625

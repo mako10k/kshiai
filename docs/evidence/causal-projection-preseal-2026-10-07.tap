@@ -1,0 +1,140 @@
+TAP version 13
+# Subtest: battle turn causal receipt
+    # Subtest: assembles explicit action, event, mechanics, semantic, and carry-forward owners
+    ok 1 - assembles explicit action, event, mechanics, semantic, and carry-forward owners
+      ---
+      duration_ms: 48.82604
+      type: 'test'
+      ...
+    # Subtest: keeps absent links unknown and never mines an event summary
+    ok 2 - keeps absent links unknown and never mines an event summary
+      ---
+      duration_ms: 15.628026
+      type: 'test'
+      ...
+    # Subtest: rejects dangling links and non-valid mechanical evidence
+    ok 3 - rejects dangling links and non-valid mechanical evidence
+      ---
+      duration_ms: 14.435064
+      type: 'test'
+      ...
+    # Subtest: rejects an applied patch that cannot reproduce committed semantic state
+    ok 4 - rejects an applied patch that cannot reproduce committed semantic state
+      ---
+      duration_ms: 11.929894
+      type: 'test'
+      ...
+    1..4
+ok 1 - battle turn causal receipt
+  ---
+  duration_ms: 92.777301
+  type: 'suite'
+  ...
+# Subtest: narration causal projection
+    # Subtest: projects external causal structure without IDs, raw values, or semantic paths
+    ok 1 - projects external causal structure without IDs, raw values, or semantic paths
+      ---
+      duration_ms: 17.264953
+      type: 'test'
+      ...
+    # Subtest: attributes accepted semantic change only in an exact omniscient chain
+    ok 2 - attributes accepted semantic change only in an exact omniscient chain
+      ---
+      duration_ms: 19.358514
+      type: 'test'
+      ...
+    # Subtest: keeps character-limited changes observed but causally unassigned
+    ok 3 - keeps character-limited changes observed but causally unassigned
+      ---
+      duration_ms: 16.404662
+      type: 'test'
+      ...
+    1..3
+ok 2 - narration causal projection
+  ---
+  duration_ms: 53.675876
+  type: 'suite'
+  ...
+# Subtest: narration perspective digests
+    # Subtest: maps locked perspectives to focus
+    ok 1 - maps locked perspectives to focus
+      ---
+      duration_ms: 1.39746
+      type: 'test'
+      ...
+    # Subtest: summary digests omit private detail
+    ok 2 - summary digests omit private detail
+      ---
+      duration_ms: 0.6423
+      type: 'test'
+      ...
+    # Subtest: includes counterpart condition only when identity and current access allow it
+    ok 3 - includes counterpart condition only when identity and current access allow it
+      ---
+      duration_ms: 0.409379
+      type: 'test'
+      ...
+    # Subtest: strips disallowed detail after focus
+    ok 4 - strips disallowed detail after focus
+      ---
+      duration_ms: 3.879198
+      type: 'test'
+      ...
+    1..4
+ok 3 - narration perspective digests
+  ---
+  duration_ms: 8.368792
+  type: 'suite'
+  ...
+# Subtest: deterministic perception quantization
+    # Subtest: keeps every absolute threshold monotonic and inclusive at its upper bound
+    ok 1 - keeps every absolute threshold monotonic and inclusive at its upper bound
+      ---
+      duration_ms: 8.727778
+      type: 'test'
+      ...
+    # Subtest: calculates absolute and target-relative axes independently
+    ok 2 - calculates absolute and target-relative axes independently
+      ---
+      duration_ms: 0.707735
+      type: 'test'
+      ...
+    # Subtest: keeps every relative threshold monotonic and inclusive at its upper bound
+    ok 3 - keeps every relative threshold monotonic and inclusive at its upper bound
+      ---
+      duration_ms: 1.345212
+      type: 'test'
+      ...
+    # Subtest: distinguishes no effect, immunity, incapacity, and overkill
+    ok 4 - distinguishes no effect, immunity, incapacity, and overkill
+      ---
+      duration_ms: 0.972986
+      type: 'test'
+      ...
+    # Subtest: keeps A/B side swaps and simultaneous targets mechanically symmetric
+    ok 5 - keeps A/B side swaps and simultaneous targets mechanically symmetric
+      ---
+      duration_ms: 0.625982
+      type: 'test'
+      ...
+    # Subtest: bands absolute and relative self reserves independently at every boundary
+    ok 6 - bands absolute and relative self reserves independently at every boundary
+      ---
+      duration_ms: 4.316938
+      type: 'test'
+      ...
+    1..6
+ok 4 - deterministic perception quantization
+  ---
+  duration_ms: 18.862402
+  type: 'suite'
+  ...
+1..4
+# tests 17
+# suites 4
+# pass 17
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 526.532809

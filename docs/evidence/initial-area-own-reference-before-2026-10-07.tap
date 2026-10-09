@@ -1,0 +1,102 @@
+TAP version 13
+# Subtest: BattlefieldDefinitionV2
+    # Subtest: maps legacy fields deterministically and drops unknown coefficient keys
+    ok 1 - maps legacy fields deterministically and drops unknown coefficient keys
+      ---
+      duration_ms: 5.301695
+      type: 'test'
+      ...
+    # Subtest: rejects dangling references, reserved ids, and cross-section duplicates
+    ok 2 - rejects dangling references, reserved ids, and cross-section duplicates
+      ---
+      duration_ms: 2.37501
+      type: 'test'
+      ...
+    # Subtest: compiles byte-equivalent instances without provider or public prose input
+    ok 3 - compiles byte-equivalent instances without provider or public prose input
+      ---
+      duration_ms: 11.449676
+      type: 'test'
+      ...
+    # Subtest: selects only authored evolution affordances deterministically
+    ok 4 - selects only authored evolution affordances deterministically
+      ---
+      duration_ms: 6.046013
+      type: 'test'
+      ...
+    # Subtest: places both semantic character roots at their exact authored entry areas
+    ok 5 - places both semantic character roots at their exact authored entry areas
+      ---
+      duration_ms: 37.764873
+      type: 'test'
+      ...
+    # Subtest: preserves distinct area and entity placements when display names are identical
+    ok 6 - preserves distinct area and entity placements when display names are identical
+      ---
+      duration_ms: 18.04237
+      type: 'test'
+      ...
+    # Subtest: rejects missing or dangling initial scene placement references
+    not ok 7 - rejects missing or dangling initial scene placement references
+      ---
+      duration_ms: 23.990642
+      type: 'test'
+      location: '/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/packages/shared/src/structured-battlefield.test.ts:1:7513'
+      failureType: 'testCodeFailure'
+      error: 'Missing expected exception.'
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected:
+      operator: 'throws'
+      stack: |-
+        TestContext.<anonymous> (/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/packages/shared/src/structured-battlefield.test.ts:245:12)
+        Test.runInAsyncScope (node:async_hooks:214:14)
+        Test.run (node:internal/test_runner/test:1047:25)
+        Suite.processPendingSubtests (node:internal/test_runner/test:744:18)
+        Test.postRun (node:internal/test_runner/test:1173:19)
+        Test.run (node:internal/test_runner/test:1101:12)
+        async Suite.processPendingSubtests (node:internal/test_runner/test:744:7)
+      ...
+    # Subtest: rejects using a structured instance without its required creation layout
+    ok 8 - rejects using a structured instance without its required creation layout
+      ---
+      duration_ms: 4.8764
+      type: 'test'
+      ...
+    # Subtest: keeps mechanics, hidden objects, and evolution controls out of public projections
+    ok 9 - keeps mechanics, hidden objects, and evolution controls out of public projections
+      ---
+      duration_ms: 1.246448
+      type: 'test'
+      ...
+    # Subtest: requires every compiler and an exact claim-validation receipt
+    ok 10 - requires every compiler and an exact claim-validation receipt
+      ---
+      duration_ms: 2.021412
+      type: 'test'
+      ...
+    1..10
+not ok 1 - BattlefieldDefinitionV2
+  ---
+  duration_ms: 114.760465
+  type: 'suite'
+  location: '/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/packages/shared/src/structured-battlefield.test.ts:1:2574'
+  failureType: 'subtestsFailed'
+  error: '1 subtest failed'
+  code: 'ERR_TEST_FAILURE'
+  ...
+# Subtest: requires structured placement handoff at compile time
+ok 2 - requires structured placement handoff at compile time
+  ---
+  duration_ms: 0.107482
+  type: 'test'
+  ...
+1..2
+# tests 11
+# suites 1
+# pass 10
+# fail 1
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 432.373252

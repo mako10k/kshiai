@@ -1,0 +1,15 @@
+{
+  "stage": "formal_e2e_all_pass",
+  "originalCases": 9,
+  "executedApplicationCases": 9,
+  "diagnosticExitCode": 0,
+  "cause": "Installed Playwright requests missing chromium_headless_shell revision 1193",
+  "log": "docs/evidence/e2e-current-recovery-runtime-ready-2026-10-08.log",
+  "sealed": true,
+  "formalPass": true,
+  "next": "Remaining original16 unit contract gaps",
+  "passedCases": 9,
+  "formalCases": 10,
+  "formalWholeFiles": 4,
+  "formalLog": "docs/evidence/all-e2e-formal-current-seals-2026-10-08.log"
+}

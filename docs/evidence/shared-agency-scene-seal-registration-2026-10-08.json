@@ -1,0 +1,220 @@
+{
+  "entries": [
+    {
+      "key": "design-battle-policy-bounded",
+      "path": "docs/shared-agency-scene-test-contract-review-2026-10-08.md",
+      "parents": [
+        "requirements"
+      ],
+      "scope": "FBTL16 exclusive perspective choice and empty unspecified. Original2cases, no realLLM policy generation or priority policy adoption.",
+      "ref": "all-tests-20261008/design-battle-policy-bounded",
+      "test": false,
+      "sha256": "73223bdebc1a6b7096eb8227c357d5aeafd822c541003499d6f260a3c686d425",
+      "sealId": "94af472cb4085c2358711a5ab302afd040abe26f445c9335fba45a1fc789ea6b",
+      "causeSealIds": [
+        "203e66fc4e30772adab026012c67f1b1ac4ca86ad2ada11b501c639a27a19eac"
+      ]
+    },
+    {
+      "key": "implementation-battle-policy-bounded",
+      "path": "packages/shared/src/battle.ts",
+      "parents": [
+        "design-battle-policy-bounded"
+      ],
+      "scope": "FBTL16 exclusive perspective choice and empty unspecified. Original2cases, no realLLM policy generation or priority policy adoption.",
+      "ref": "all-tests-20261008/implementation-battle-policy-bounded",
+      "test": false,
+      "sha256": "fc5d492df5fd5252b66e12017b265a4697cc3f798acc2811434b3c33d23b0752",
+      "sealId": "8842e3a6d39126a4f982ec5869abf0f89532a828a7e2b174699af2dd84e3fc2d",
+      "causeSealIds": [
+        "94af472cb4085c2358711a5ab302afd040abe26f445c9335fba45a1fc789ea6b"
+      ]
+    },
+    {
+      "key": "battle-policy-bounded-20261008",
+      "path": "packages/shared/src/battle-policy.test.ts",
+      "parents": [
+        "implementation-battle-policy-bounded"
+      ],
+      "scope": "FBTL16 exclusive perspective choice and empty unspecified. Original2cases, no realLLM policy generation or priority policy adoption. Wholeoriginalcases/assertions unchanged.",
+      "ref": "verification/battle-policy-bounded-20261008",
+      "test": true,
+      "sha256": "89b428b76e219df6f39f23c4a626b55b156006ade3f0ea226864a27e0633b797",
+      "sealId": "5ccff28d28e272f803f2f1ecffcbc88ba76a55e03f656cfdbe5b6f001b835bd5",
+      "causeSealIds": [
+        "8842e3a6d39126a4f982ec5869abf0f89532a828a7e2b174699af2dd84e3fc2d"
+      ]
+    },
+    {
+      "key": "design-battle-social-bounded",
+      "path": "docs/shared-agency-scene-test-contract-review-2026-10-08.md",
+      "parents": [
+        "requirements"
+      ],
+      "scope": "FBTL53/55/57 actual encounter/narrator identity and continuity with side-separatedrecords, legacy deterministiccontext. Original5cases, no fullobserver/narrator quality proof.",
+      "ref": "all-tests-20261008/design-battle-social-bounded",
+      "test": false,
+      "sha256": "73223bdebc1a6b7096eb8227c357d5aeafd822c541003499d6f260a3c686d425",
+      "sealId": "fda25c5c2f3da00bbec124df95a83c0e8c4c8000e7b7a0210216ed94e49b74b0",
+      "causeSealIds": [
+        "203e66fc4e30772adab026012c67f1b1ac4ca86ad2ada11b501c639a27a19eac"
+      ]
+    },
+    {
+      "key": "implementation-battle-social-bounded",
+      "path": "packages/shared/src/battle-social.ts",
+      "parents": [
+        "design-battle-social-bounded"
+      ],
+      "scope": "FBTL53/55/57 actual encounter/narrator identity and continuity with side-separatedrecords, legacy deterministiccontext. Original5cases, no fullobserver/narrator quality proof.",
+      "ref": "all-tests-20261008/implementation-battle-social-bounded",
+      "test": false,
+      "sha256": "65c24fddb1de10b595f1a6514a68112f3cc5e42a3acb42e707e44fc4d0255bd5",
+      "sealId": "60bc354087b631ce0e235a08657a38c55e5cb6ecc8036eebd4caa5dc9c8c9dec",
+      "causeSealIds": [
+        "fda25c5c2f3da00bbec124df95a83c0e8c4c8000e7b7a0210216ed94e49b74b0"
+      ]
+    },
+    {
+      "key": "battle-social-bounded-20261008",
+      "path": "packages/shared/src/battle-social.test.ts",
+      "parents": [
+        "implementation-battle-social-bounded"
+      ],
+      "scope": "FBTL53/55/57 actual encounter/narrator identity and continuity with side-separatedrecords, legacy deterministiccontext. Original5cases, no fullobserver/narrator quality proof. Wholeoriginalcases/assertions unchanged.",
+      "ref": "verification/battle-social-bounded-20261008",
+      "test": true,
+      "sha256": "7764d288f8a943baf84320355f9231e6c07361367143614f7ccaf33956966560",
+      "sealId": "3d2bd33f046c7c392b4cdc307d51269816e2ec7d1559926080a53a895c12db30",
+      "causeSealIds": [
+        "60bc354087b631ce0e235a08657a38c55e5cb6ecc8036eebd4caa5dc9c8c9dec"
+      ]
+    },
+    {
+      "key": "design-scene-beat-bounded",
+      "path": "docs/shared-agency-scene-test-contract-review-2026-10-08.md",
+      "parents": [
+        "beat",
+        "clock"
+      ],
+      "scope": "AcceptedADR0016/0017 retained helpers: K3/publicclock/legacyabsence/15percentHP closure/sequence ordering. Original5cases, not newawareness runtime or providercount.",
+      "ref": "all-tests-20261008/design-scene-beat-bounded",
+      "test": false,
+      "sha256": "73223bdebc1a6b7096eb8227c357d5aeafd822c541003499d6f260a3c686d425",
+      "sealId": "8702d9ff848534cf3d13c11018968bb8aae4ac801296ab06bfe5f13bba963783",
+      "causeSealIds": [
+        "5e8a10263f039ce3036187193c3182db2bf0648c40d8254aa5d9a2c9c15ad890",
+        "eca19b9925440ce3fdae98983a9121f3a887ad7a8ba137528209a6817c3dfa95"
+      ]
+    },
+    {
+      "key": "implementation-scene-beat-bounded",
+      "path": "packages/shared/src/scene-beat.ts",
+      "parents": [
+        "design-scene-beat-bounded"
+      ],
+      "scope": "AcceptedADR0016/0017 retained helpers: K3/publicclock/legacyabsence/15percentHP closure/sequence ordering. Original5cases, not newawareness runtime or providercount.",
+      "ref": "all-tests-20261008/implementation-scene-beat-bounded",
+      "test": false,
+      "sha256": "8a8174801e1a7060cae88044a051fa5ab9f878ca7aad796e495c3e2ec38492f3",
+      "sealId": "fc0912642cea1b6d5c26f1e87b0255f1a7078b17dd42021f437c4d99df920f73",
+      "causeSealIds": [
+        "8702d9ff848534cf3d13c11018968bb8aae4ac801296ab06bfe5f13bba963783"
+      ]
+    },
+    {
+      "key": "scene-beat-bounded-20261008",
+      "path": "packages/shared/src/scene-beat.test.ts",
+      "parents": [
+        "implementation-scene-beat-bounded"
+      ],
+      "scope": "AcceptedADR0016/0017 retained helpers: K3/publicclock/legacyabsence/15percentHP closure/sequence ordering. Original5cases, not newawareness runtime or providercount. Wholeoriginalcases/assertions unchanged.",
+      "ref": "verification/scene-beat-bounded-20261008",
+      "test": true,
+      "sha256": "d9d31cdcc745f2b035622f8062ebb5243ac721dfbf929c8b54c57776ea718a2f",
+      "sealId": "21ed669001fec8551e91a491c3cc3332bc16e67c4536fd4e089222930105dbc0",
+      "causeSealIds": [
+        "fc0912642cea1b6d5c26f1e87b0255f1a7078b17dd42021f437c4d99df920f73"
+      ]
+    },
+    {
+      "key": "design-conscious-agency-bounded",
+      "path": "docs/shared-agency-scene-test-contract-review-2026-10-08.md",
+      "parents": [
+        "phase",
+        "historical"
+      ],
+      "scope": "RecordedpinnedV3 retained underAcceptedADR0047: goal/action/intent/speech closures and partialacceptance/history lifetimes. Original20cases, no newV4/V5 quality/dispatch adoption.",
+      "ref": "all-tests-20261008/design-conscious-agency-bounded",
+      "test": false,
+      "sha256": "73223bdebc1a6b7096eb8227c357d5aeafd822c541003499d6f260a3c686d425",
+      "sealId": "79272672d3c8325a36644af5b1c8b7b4c702c539dda2dda1df22eb955e743232",
+      "causeSealIds": [
+        "e4164afcfc9119cfd59fb013ab3ec8a365d2e40e96bdb93c0c064728a7e25143",
+        "67823251903b9153ed114e82e3c148b25a4e0e1708f02d86e6d07f28d56409f6"
+      ]
+    },
+    {
+      "key": "implementation-conscious-agency-bounded",
+      "path": "packages/shared/src/conscious-agency.ts",
+      "parents": [
+        "design-conscious-agency-bounded"
+      ],
+      "scope": "RecordedpinnedV3 retained underAcceptedADR0047: goal/action/intent/speech closures and partialacceptance/history lifetimes. Original20cases, no newV4/V5 quality/dispatch adoption.",
+      "ref": "all-tests-20261008/implementation-conscious-agency-bounded",
+      "test": false,
+      "sha256": "6dff7d4af9f07460536001771168d3115ed1fa6e38630d630f8f143ee0b2c870",
+      "sealId": "55b6028d6c3827f1a9cd876767212653c48e82d77b00eac6870d3c9906949369",
+      "causeSealIds": [
+        "79272672d3c8325a36644af5b1c8b7b4c702c539dda2dda1df22eb955e743232"
+      ]
+    },
+    {
+      "key": "implementation-retained-agency-schema-bounded",
+      "path": "packages/shared/src/battle.ts",
+      "parents": [
+        "design-conscious-agency-bounded"
+      ],
+      "scope": "Actual closedV3 goal/intent/agency and optionalstate schema used by historicaldecoder/test; no newcontractadoption.",
+      "ref": "all-tests-20261008/implementation-retained-agency-schema-bounded",
+      "test": false,
+      "sha256": "fc5d492df5fd5252b66e12017b265a4697cc3f798acc2811434b3c33d23b0752",
+      "sealId": "dea87dce601f04086669be004a795680aa84ccff0dfa3091dcdff9fe1338ee72",
+      "causeSealIds": [
+        "79272672d3c8325a36644af5b1c8b7b4c702c539dda2dda1df22eb955e743232"
+      ]
+    },
+    {
+      "key": "conscious-agency-bounded-20261008",
+      "path": "packages/shared/src/conscious-agency.test.ts",
+      "parents": [
+        "implementation-conscious-agency-bounded",
+        "implementation-retained-agency-schema-bounded"
+      ],
+      "scope": "RecordedpinnedV3 retained underAcceptedADR0047: goal/action/intent/speech closures and partialacceptance/history lifetimes. Original20cases, no newV4/V5 quality/dispatch adoption. Wholeoriginalcases/assertions unchanged.",
+      "ref": "verification/conscious-agency-bounded-20261008",
+      "test": true,
+      "sha256": "bebc80fc9fdf90f71628cfc99b1e29e07768cf6ee5f4d523271e68a08c054776",
+      "sealId": "e4901838dcd2988a87a62f8d41bf373a4725164e339622e625733a5eeee4255c",
+      "causeSealIds": [
+        "55b6028d6c3827f1a9cd876767212653c48e82d77b00eac6870d3c9906949369",
+        "dea87dce601f04086669be004a795680aa84ccff0dfa3091dcdff9fe1338ee72"
+      ]
+    }
+  ],
+  "roots": {
+    "requirements": "all-tests-20261007/authority-semantic-observation-requirements",
+    "historical": "all-tests-20261007/design-retained-agency-v3-contract",
+    "phase": "all-tests-20261007/authority-dynamic-historical-continuation",
+    "beat": "all-tests-20261008/authority-scene-beat",
+    "clock": "all-tests-20261008/authority-scene-clock"
+  },
+  "rootSealIds": {
+    "requirements": "203e66fc4e30772adab026012c67f1b1ac4ca86ad2ada11b501c639a27a19eac",
+    "historical": "67823251903b9153ed114e82e3c148b25a4e0e1708f02d86e6d07f28d56409f6",
+    "phase": "e4164afcfc9119cfd59fb013ab3ec8a365d2e40e96bdb93c0c064728a7e25143",
+    "beat": "5e8a10263f039ce3036187193c3182db2bf0648c40d8254aa5d9a2c9c15ad890",
+    "clock": "eca19b9925440ce3fdae98983a9121f3a887ad7a8ba137528209a6817c3dfa95"
+  },
+  "elapsedSeconds": 124.052
+}

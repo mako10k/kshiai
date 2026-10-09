@@ -1,0 +1,7 @@
+sealed all-tests-20261008/design-persistent-workflow-guards
+sealed all-tests-20261008/implementation-persistent-workflow-stage-release
+sealed all-tests-20261008/implementation-persistent-workflow-promote-release
+sealed all-tests-20261008/implementation-persistent-workflow-observe-persistent-e2e
+sealed all-tests-20261008/implementation-persistent-workflow-supabase-auth-smoke
+sealed verification/persistent-e2e-workflow-bounded-20261008
+readback complete

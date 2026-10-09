@@ -1,0 +1,427 @@
+{
+  "entries": [
+    {
+      "key": "design-agency-state-presence-type-correction",
+      "path": "docs/evidence/agency-state-presence-types-rca-2026-10-07.think",
+      "parents": [
+        "requirements",
+        "current",
+        "dynamic"
+      ],
+      "scope": "CLI audited fatal/error/warning0 static type presence loss only. Required local A/B fields remove2canonical assembly casts with no runtime behavior change; no production missing-state incident inferred.",
+      "ref": "all-tests-20261007/design-agency-state-presence-type-correction",
+      "test": false,
+      "sha256": "9b41b5705930fd387f13f8cd1ea88aad3d036cd048d2aa83c960e6074a40b9ac",
+      "sealId": "5d5df9aad9a052cdc9b5be00a3cf19058d652f2d055ebd03502277d34605d3cb",
+      "causeSealIds": [
+        "203e66fc4e30772adab026012c67f1b1ac4ca86ad2ada11b501c639a27a19eac",
+        "4a236b55e9ad9e4aa54eb2c6bbe9d77e0a318881ba8328363505153d16e151dd",
+        "e4164afcfc9119cfd59fb013ab3ec8a365d2e40e96bdb93c0c064728a7e25143"
+      ]
+    },
+    {
+      "key": "design-retained-agency-integration-test-contract",
+      "path": "docs/agency-integration-test-contract-review-2026-10-07.md",
+      "parents": [
+        "requirements",
+        "current",
+        "activation",
+        "expression",
+        "dynamic",
+        "cutoverOwner",
+        "cutoverReq",
+        "cutoverAdr",
+        "design-agency-state-presence-type-correction"
+      ],
+      "scope": "Whole17original cases; historical V3 fixture schema/service/private state/isolatedSQLite/CAS plus legacy creation rejection only. Current0039 exact accepted hashes verified, formalACCEPTANCE-node gap not repaired. No discarded trial revival, publiccreation success, awareness-v5 or networkquality.",
+      "ref": "all-tests-20261007/design-retained-agency-integration-test-contract",
+      "test": false,
+      "sha256": "e717494d8fe4326a73e5911e213a25897dc86d70275d5f769ce6fa0c12d9f9b8",
+      "sealId": "6b7b9634d4b8729ba3cfdeffded746ba4f7b588cfacfaa271bff7b0763b3762e",
+      "causeSealIds": [
+        "203e66fc4e30772adab026012c67f1b1ac4ca86ad2ada11b501c639a27a19eac",
+        "4a236b55e9ad9e4aa54eb2c6bbe9d77e0a318881ba8328363505153d16e151dd",
+        "645e178be9a4b4662822f09d79c5977797a0830e072ee816510a4a62aa5b8e52",
+        "81c85423654dba4a056b6ca9844f1bf5569fbaff36621c3b9e05efabd9dcdc36",
+        "e4164afcfc9119cfd59fb013ab3ec8a365d2e40e96bdb93c0c064728a7e25143",
+        "c3f9ddc328fd22dca1b890122a77611353390c78e32ffecfe55f5ff59f21a7d4",
+        "ee029be3724cc1282b70df3a9a1b81886565d3a9f223d024beaaf2bbabdcfca3",
+        "210915fd53b85a68ab26d80dc400685e1645b2b2de93f0f5c6adc558f95c88ba",
+        "5d5df9aad9a052cdc9b5be00a3cf19058d652f2d055ebd03502277d34605d3cb"
+      ]
+    },
+    {
+      "key": "design-retained-agency-v3-contract",
+      "path": "docs/adr/0028-versioned-conscious-agency-contract.think",
+      "parents": [
+        "dynamic",
+        "current",
+        "activation",
+        "design-retained-agency-integration-test-contract"
+      ],
+      "scope": "Superseded0028 retained D2-D6 tuple/state/no-psyche/current observation/goal/later rules only through current0047/0051. Never standaloneAccepted or override dynamic-v4 repairs or current awareness-v5 pipeline.",
+      "ref": "all-tests-20261007/design-retained-agency-v3-contract",
+      "test": false,
+      "sha256": "b5ee7ff73adb102c2cefcc015ead40bf9afe6fa11993cb65234132146290d9ba",
+      "sealId": "aa60b589cfa4e1490aa8bfe09fb3635599e12fda778806e815fe4e4fd8763547",
+      "causeSealIds": [
+        "e4164afcfc9119cfd59fb013ab3ec8a365d2e40e96bdb93c0c064728a7e25143",
+        "4a236b55e9ad9e4aa54eb2c6bbe9d77e0a318881ba8328363505153d16e151dd",
+        "645e178be9a4b4662822f09d79c5977797a0830e072ee816510a4a62aa5b8e52",
+        "6b7b9634d4b8729ba3cfdeffded746ba4f7b588cfacfaa271bff7b0763b3762e"
+      ]
+    },
+    {
+      "key": "fixture-retained-conscious-agency-v3",
+      "path": "backend/src/services/conscious-agency.fixtures.ts",
+      "parents": [
+        "inventory",
+        "battle",
+        "design-retained-agency-v3-contract",
+        "design-retained-agency-integration-test-contract"
+      ],
+      "scope": "Schema-validated synthetic V3 conversion of frozen inventory fixture and initial private agent/reaction states. Internal fixture only; not product authoring/activation or existing public oldbattle restoration.",
+      "ref": "all-tests-20261007/fixture-retained-conscious-agency-v3",
+      "test": false,
+      "sha256": "46c307d406e47a414372b8033c9b0a9df27524854810befe1252d0f49521900b",
+      "sealId": "ffa16af3f341c2b25cf2e64dce646c61cc10f5fe95bed4784b619f8017931be2",
+      "causeSealIds": [
+        "7ed5f6b59fb21bfee662c9b29ac29e7fe915d4576b3bdd5d735e90248124c3cc",
+        "fd2692da29f2deaf81b6567e5499276f95ece18dfd67f0a669fd1a2077292209",
+        "aa60b589cfa4e1490aa8bfe09fb3635599e12fda778806e815fe4e4fd8763547",
+        "6b7b9634d4b8729ba3cfdeffded746ba4f7b588cfacfaa271bff7b0763b3762e"
+      ]
+    },
+    {
+      "key": "implementation-retained-agency-v3-acceptance",
+      "path": "packages/shared/src/conscious-agency.ts",
+      "parents": [
+        "battle",
+        "design-retained-agency-v3-contract",
+        "design-retained-agency-integration-test-contract"
+      ],
+      "scope": "Strict V3 decoder/acceptConsciousDecisionV3 supplied-goal/ref/phase/state behavior reached by service and directSQLite fixtures. No synthetic producer meaning in production or tactical quality acceptance.",
+      "ref": "all-tests-20261007/implementation-retained-agency-v3-acceptance",
+      "test": false,
+      "sha256": "6dff7d4af9f07460536001771168d3115ed1fa6e38630d630f8f143ee0b2c870",
+      "sealId": "c82d0c1de4eeda2352b6cbc75bb931434f1bbff955f69d4e002f08e7950f3540",
+      "causeSealIds": [
+        "fd2692da29f2deaf81b6567e5499276f95ece18dfd67f0a669fd1a2077292209",
+        "aa60b589cfa4e1490aa8bfe09fb3635599e12fda778806e815fe4e4fd8763547",
+        "6b7b9634d4b8729ba3cfdeffded746ba4f7b588cfacfaa271bff7b0763b3762e"
+      ]
+    },
+    {
+      "key": "implementation-retained-agency-v3-request-boundary",
+      "path": "backend/src/llm/conscious-agency.ts",
+      "parents": [
+        "battle",
+        "design-retained-agency-v3-contract",
+        "design-retained-agency-integration-test-contract",
+        "implementation-retained-agency-v3-acceptance"
+      ],
+      "scope": "Exercised immutable compiler/tuple assertion, closed consciousRequest, current facts/reaction/result decoding/private goal accessor. State drift refused before chat; no whole V4/V5 binding acceptance.",
+      "ref": "all-tests-20261007/implementation-retained-agency-v3-request-boundary",
+      "test": false,
+      "sha256": "7f8d227dbebe1a6542a4764520014baa08022220052d3e06bc0afc71af922136",
+      "sealId": "7df6cc18c76d451aff53077220356bdb242e1602928fa47d8ab19ad49ad3601b",
+      "causeSealIds": [
+        "fd2692da29f2deaf81b6567e5499276f95ece18dfd67f0a669fd1a2077292209",
+        "aa60b589cfa4e1490aa8bfe09fb3635599e12fda778806e815fe4e4fd8763547",
+        "6b7b9634d4b8729ba3cfdeffded746ba4f7b588cfacfaa271bff7b0763b3762e",
+        "c82d0c1de4eeda2352b6cbc75bb931434f1bbff955f69d4e002f08e7950f3540"
+      ]
+    },
+    {
+      "key": "implementation-sdk-retained-agency-v3-dispatch",
+      "path": "backend/src/llm/openai-compatible.ts",
+      "parents": [
+        "implementation-retained-agency-v3-request-boundary",
+        "design-retained-agency-v3-contract",
+        "design-retained-agency-integration-test-contract"
+      ],
+      "scope": "V3 normal/later dispatch and strict response processing through overriddenchatJson, noactualtransport. Requests/state markers checked, not live HTTP/modelquality/physicalaccounting or everyadapter branch.",
+      "ref": "all-tests-20261007/implementation-sdk-retained-agency-v3-dispatch",
+      "test": false,
+      "sha256": "8d4be097ddbfcb0da515dd0db402c7dc6dddccb763d625fce16165e7c524d2a5",
+      "sealId": "860e2bd9904b29efbcc0d1ed682da79f90dc8e592ba0e752cd46cf5507eb0911",
+      "causeSealIds": [
+        "7df6cc18c76d451aff53077220356bdb242e1602928fa47d8ab19ad49ad3601b",
+        "aa60b589cfa4e1490aa8bfe09fb3635599e12fda778806e815fe4e4fd8763547",
+        "6b7b9634d4b8729ba3cfdeffded746ba4f7b588cfacfaa271bff7b0763b3762e"
+      ]
+    },
+    {
+      "key": "implementation-retained-agency-v3-activation",
+      "path": "backend/src/services/dialogue-pipeline-activation.ts",
+      "parents": [
+        "activation",
+        "settings",
+        "design-retained-agency-v3-contract",
+        "design-retained-agency-integration-test-contract"
+      ],
+      "scope": "Supplied storedV3 plus legacy override rejects before activation. Only this pure overrideguard exercised, not configuredenv/Stage deployment or receiptcreation flow.",
+      "ref": "all-tests-20261007/implementation-retained-agency-v3-activation",
+      "test": false,
+      "sha256": "37cae40cbe581864bf06203153a45c6aa2c7bae1f635f77712e1b8bef337573b",
+      "sealId": "f2548da2d6bd9be335c5fbd52df5c722f78148570f87c3da208f57db4eec4845",
+      "causeSealIds": [
+        "645e178be9a4b4662822f09d79c5977797a0830e072ee816510a4a62aa5b8e52",
+        "6b23aca081e9f87055fdbe8ef961da8d6c9daf2653973e33e5b9e713a7947333",
+        "aa60b589cfa4e1490aa8bfe09fb3635599e12fda778806e815fe4e4fd8763547",
+        "6b7b9634d4b8729ba3cfdeffded746ba4f7b588cfacfaa271bff7b0763b3762e"
+      ]
+    },
+    {
+      "key": "implementation-retained-agency-v3-public-private-boundary",
+      "path": "backend/src/services/battle-public-projection.ts",
+      "parents": [
+        "requirements",
+        "expression",
+        "battle",
+        "design-retained-agency-integration-test-contract"
+      ],
+      "scope": "Public DTO explicit projection excludes tested private goal/intent/rationale markers; no claim of every secret field absence, rating policy or all publicprojection behavior.",
+      "ref": "all-tests-20261007/implementation-retained-agency-v3-public-private-boundary",
+      "test": false,
+      "sha256": "af717fea44e68f8324bbc50fb4a2dd4c91df75002d061c7817b7feb67523d6e0",
+      "sealId": "53ab40da81f03223ec4343a4e8625508fd888aabab496dd62e02f1b75d784d2c",
+      "causeSealIds": [
+        "203e66fc4e30772adab026012c67f1b1ac4ca86ad2ada11b501c639a27a19eac",
+        "81c85423654dba4a056b6ca9844f1bf5569fbaff36621c3b9e05efabd9dcdc36",
+        "fd2692da29f2deaf81b6567e5499276f95ece18dfd67f0a669fd1a2077292209",
+        "6b7b9634d4b8729ba3cfdeffded746ba4f7b588cfacfaa271bff7b0763b3762e"
+      ]
+    },
+    {
+      "key": "implementation-retained-agency-v3-storage",
+      "path": "backend/src/repositories/battles.ts",
+      "parents": [
+        "cutoverAdr",
+        "cutoverReq",
+        "db",
+        "battle",
+        "design-retained-agency-integration-test-contract"
+      ],
+      "scope": "Real isolatedSQLite insertNewBattle/getBattle/saveBattle closed-schema roundtrip and stale revision rejection. Raw compatibility inspection revalidates finalBattleState; no deletion receipt/lease/Postgres or realhistorical migration acceptance.",
+      "ref": "all-tests-20261007/implementation-retained-agency-v3-storage",
+      "test": false,
+      "sha256": "e0f5d0977e5a103249a382bbd5ac318f0a7a7b2abcde95ad2f4491ead5ca892f",
+      "sealId": "f09f7e2e5eae9da983979783a5f430dbf5372ce31ae52deaeac5da3c79ffa192",
+      "causeSealIds": [
+        "210915fd53b85a68ab26d80dc400685e1645b2b2de93f0f5c6adc558f95c88ba",
+        "ee029be3724cc1282b70df3a9a1b81886565d3a9f223d024beaaf2bbabdcfca3",
+        "4ea52a357e72328f2c5e136344aa945c23078b1c6957fc150f77a6153663ebee",
+        "fd2692da29f2deaf81b6567e5499276f95ece18dfd67f0a669fd1a2077292209",
+        "6b7b9634d4b8729ba3cfdeffded746ba4f7b588cfacfaa271bff7b0763b3762e"
+      ]
+    },
+    {
+      "key": "fixture-retained-legacy-character-storage",
+      "path": "backend/src/testing/historical-character-fixtures.ts",
+      "parents": [
+        "inventory",
+        "db",
+        "cutoverReq",
+        "design-retained-agency-integration-test-contract"
+      ],
+      "scope": "Internal historical V2 fixture population used only to prove currentpublic startBattle rejection. Not a delivered V2 writer or actual newV3 successful authoring/activation.",
+      "ref": "all-tests-20261007/fixture-retained-legacy-character-storage",
+      "test": false,
+      "sha256": "c29d82b0b3d86b882e4670829d6fb365f80c6dbe5a363b73e008263495fed165",
+      "sealId": "0ad461d8ec0885e685b39dde48308dbad3c71e481f37c4113a06d71495d9255a",
+      "causeSealIds": [
+        "7ed5f6b59fb21bfee662c9b29ac29e7fe915d4576b3bdd5d735e90248124c3cc",
+        "4ea52a357e72328f2c5e136344aa945c23078b1c6957fc150f77a6153663ebee",
+        "ee029be3724cc1282b70df3a9a1b81886565d3a9f223d024beaaf2bbabdcfca3",
+        "6b7b9634d4b8729ba3cfdeffded746ba4f7b588cfacfaa271bff7b0763b3762e"
+      ]
+    },
+    {
+      "key": "implementation-retained-agency-participant-gate",
+      "path": "backend/src/services/battle-participation-eligibility.ts",
+      "parents": [
+        "cutoverOwner",
+        "cutoverReq",
+        "cutoverAdr",
+        "design-retained-agency-integration-test-contract"
+      ],
+      "scope": "Currentgeneration must beV3 and battle-mechanics@3; legacyfixture rejected. Only blocked legacy case proven here, not allpositive capability/generation/access selectors.",
+      "ref": "all-tests-20261007/implementation-retained-agency-participant-gate",
+      "test": false,
+      "sha256": "9cd7beb95d5ce9f2e9ee5069941be5ee183cd578a64db229aa6e7ed2a227f417",
+      "sealId": "163805fe6d05356c0aa47121b2c4b2b91d42d56469022f43fefb383f92830543",
+      "causeSealIds": [
+        "c3f9ddc328fd22dca1b890122a77611353390c78e32ffecfe55f5ff59f21a7d4",
+        "ee029be3724cc1282b70df3a9a1b81886565d3a9f223d024beaaf2bbabdcfca3",
+        "210915fd53b85a68ab26d80dc400685e1645b2b2de93f0f5c6adc558f95c88ba",
+        "6b7b9634d4b8729ba3cfdeffded746ba4f7b588cfacfaa271bff7b0763b3762e"
+      ]
+    },
+    {
+      "key": "fixture-retained-agency-v3-mock-producer",
+      "path": "backend/src/llm/mock.ts",
+      "parents": [
+        "fixture-retained-conscious-agency-v3",
+        "implementation-retained-agency-v3-acceptance",
+        "design-retained-agency-integration-test-contract"
+      ],
+      "scope": "Only mockConsciousResult routed by advanceCharacterAgent(contract3) for internal service persistence fixtures. This is a testdouble, never real producer tactical/semantic/modelquality acceptance.",
+      "ref": "all-tests-20261007/fixture-retained-agency-v3-mock-producer",
+      "test": false,
+      "sha256": "df9fa66abdcd601351516c3903a09030690717b493454e8b5d141f0506cf385c",
+      "sealId": "81389d85ee06ca066cee54272d9767e0d40a09768509b62446f10ff65f359a5c",
+      "causeSealIds": [
+        "ffa16af3f341c2b25cf2e64dce646c61cc10f5fe95bed4784b619f8017931be2",
+        "c82d0c1de4eeda2352b6cbc75bb931434f1bbff955f69d4e002f08e7950f3540",
+        "6b7b9634d4b8729ba3cfdeffded746ba4f7b588cfacfaa271bff7b0763b3762e"
+      ]
+    },
+    {
+      "key": "implementation-retained-agency-v3-service-flow",
+      "path": "backend/src/services/battle-service.ts",
+      "parents": [
+        "battle",
+        "requirements",
+        "fixture-retained-conscious-agency-v3",
+        "implementation-retained-agency-v3-request-boundary",
+        "implementation-sdk-retained-agency-v3-dispatch",
+        "implementation-retained-agency-v3-activation",
+        "implementation-retained-agency-v3-public-private-boundary",
+        "implementation-retained-agency-v3-storage",
+        "implementation-retained-agency-participant-gate",
+        "design-agency-state-presence-type-correction",
+        "design-retained-agency-integration-test-contract"
+      ],
+      "scope": "Exercised advanceCharacterAgents/later build/public facade/startBattle refusal; strict required local canonical A/B state avoids casts. Synthetic historical contract, not all service/runtime transitions, newcreation success or legacytrial revival; sourcecurrent preexistingWIP retained.",
+      "ref": "all-tests-20261007/implementation-retained-agency-v3-service-flow",
+      "test": false,
+      "sha256": "80eda28c060f4f789dfb64a13a3babf2e4d82db77a8b34cebeb938cba040bce8",
+      "sealId": "01a97ac99ebd726ac84945cb319e02e598df6ec9435df2f721703c30fddce360",
+      "causeSealIds": [
+        "fd2692da29f2deaf81b6567e5499276f95ece18dfd67f0a669fd1a2077292209",
+        "203e66fc4e30772adab026012c67f1b1ac4ca86ad2ada11b501c639a27a19eac",
+        "ffa16af3f341c2b25cf2e64dce646c61cc10f5fe95bed4784b619f8017931be2",
+        "7df6cc18c76d451aff53077220356bdb242e1602928fa47d8ab19ad49ad3601b",
+        "860e2bd9904b29efbcc0d1ed682da79f90dc8e592ba0e752cd46cf5507eb0911",
+        "f2548da2d6bd9be335c5fbd52df5c722f78148570f87c3da208f57db4eec4845",
+        "53ab40da81f03223ec4343a4e8625508fd888aabab496dd62e02f1b75d784d2c",
+        "f09f7e2e5eae9da983979783a5f430dbf5372ce31ae52deaeac5da3c79ffa192",
+        "163805fe6d05356c0aa47121b2c4b2b91d42d56469022f43fefb383f92830543",
+        "5d5df9aad9a052cdc9b5be00a3cf19058d652f2d055ebd03502277d34605d3cb",
+        "6b7b9634d4b8729ba3cfdeffded746ba4f7b588cfacfaa271bff7b0763b3762e"
+      ]
+    },
+    {
+      "key": "retained-agency-v3-binding-current",
+      "path": "backend/src/services/conscious-agency-binding.test.ts",
+      "parents": [
+        "battle",
+        "activation",
+        "design-retained-agency-v3-contract",
+        "fixture-retained-conscious-agency-v3",
+        "inventory",
+        "design-retained-agency-integration-test-contract"
+      ],
+      "scope": "Entire unchanged5case file; schema/compiler/gen/policy/dialogue/override/default fixture constraints. Not actual successful battlecreation or allconsumer immutable binding proof.",
+      "ref": "verification/retained-agency-v3-binding-current-20261007",
+      "test": true,
+      "sha256": "4b0af7bbfe5cb5a24f7dac2974dee11bbe9b42a4a69fd4aa778e46d9a4be9c08",
+      "sealId": "6c33054a7ecb1f1edfa67738e77f35da8f94265291b033060bf486cdc167e3fc",
+      "causeSealIds": [
+        "fd2692da29f2deaf81b6567e5499276f95ece18dfd67f0a669fd1a2077292209",
+        "645e178be9a4b4662822f09d79c5977797a0830e072ee816510a4a62aa5b8e52",
+        "aa60b589cfa4e1490aa8bfe09fb3635599e12fda778806e815fe4e4fd8763547",
+        "ffa16af3f341c2b25cf2e64dce646c61cc10f5fe95bed4784b619f8017931be2",
+        "7ed5f6b59fb21bfee662c9b29ac29e7fe915d4576b3bdd5d735e90248124c3cc",
+        "6b7b9634d4b8729ba3cfdeffded746ba4f7b588cfacfaa271bff7b0763b3762e"
+      ]
+    },
+    {
+      "key": "retained-agency-v3-runtime-current",
+      "path": "backend/src/services/conscious-agency-runtime.test.ts",
+      "parents": [
+        "requirements",
+        "design-retained-agency-v3-contract",
+        "implementation-retained-agency-v3-service-flow",
+        "implementation-sdk-retained-agency-v3-dispatch",
+        "implementation-retained-agency-v3-activation",
+        "implementation-retained-agency-v3-public-private-boundary",
+        "fixture-retained-conscious-agency-v3",
+        "design-retained-agency-integration-test-contract"
+      ],
+      "scope": "Entire unchanged9cases including3phases: no psyche/current-privateinput/priorstate/repeatedspeech/independentexpression/tupleguard/disabled missingobservation hold/later no tick/overrideguard. OverriddenchatJson, no network/modelquality/current awareness-v5 proof.",
+      "ref": "verification/retained-agency-v3-runtime-current-20261007",
+      "test": true,
+      "sha256": "5e67fe87518c6699ded7dd5f4f799f4ca8a1c4ab8dbb7dccb64a5b6c23f93198",
+      "sealId": "e213649ee62c5ec771f04e628ba62c69a0b5ea58b81651ade610ee80a2366c28",
+      "causeSealIds": [
+        "203e66fc4e30772adab026012c67f1b1ac4ca86ad2ada11b501c639a27a19eac",
+        "aa60b589cfa4e1490aa8bfe09fb3635599e12fda778806e815fe4e4fd8763547",
+        "01a97ac99ebd726ac84945cb319e02e598df6ec9435df2f721703c30fddce360",
+        "860e2bd9904b29efbcc0d1ed682da79f90dc8e592ba0e752cd46cf5507eb0911",
+        "f2548da2d6bd9be335c5fbd52df5c722f78148570f87c3da208f57db4eec4845",
+        "53ab40da81f03223ec4343a4e8625508fd888aabab496dd62e02f1b75d784d2c",
+        "ffa16af3f341c2b25cf2e64dce646c61cc10f5fe95bed4784b619f8017931be2",
+        "6b7b9634d4b8729ba3cfdeffded746ba4f7b588cfacfaa271bff7b0763b3762e"
+      ]
+    },
+    {
+      "key": "retained-agency-v3-persistence-current",
+      "path": "backend/src/services/conscious-agency-persistence.test.ts",
+      "parents": [
+        "requirements",
+        "cutoverOwner",
+        "cutoverReq",
+        "cutoverAdr",
+        "db",
+        "implementation-retained-agency-v3-service-flow",
+        "implementation-retained-agency-v3-storage",
+        "implementation-retained-agency-v3-public-private-boundary",
+        "implementation-retained-agency-participant-gate",
+        "fixture-retained-legacy-character-storage",
+        "fixture-retained-agency-v3-mock-producer",
+        "implementation-retained-agency-v3-acceptance",
+        "settings",
+        "design-retained-agency-integration-test-contract"
+      ],
+      "scope": "Entire unchanged3case file: actual blocked legacy startBattle plus syntheticV3 service/reload/secondjudgment/staleCAS and direct state/publicmarker roundtrip. Directinsert bypasses publiccreation; lastSpeech assertion not entire service semantics. No discardedcutover trial or live DB/provider.",
+      "ref": "verification/retained-agency-v3-persistence-current-20261007",
+      "test": true,
+      "sha256": "2ca92b44d0b2abedd6c521f4319f4242abfc917021546a7b61ded1299fcf0ec6",
+      "sealId": "853363cdb6298f7dda73e4913a8ed990e48e387dd39525aff9d640b556bf78f4",
+      "causeSealIds": [
+        "203e66fc4e30772adab026012c67f1b1ac4ca86ad2ada11b501c639a27a19eac",
+        "c3f9ddc328fd22dca1b890122a77611353390c78e32ffecfe55f5ff59f21a7d4",
+        "ee029be3724cc1282b70df3a9a1b81886565d3a9f223d024beaaf2bbabdcfca3",
+        "210915fd53b85a68ab26d80dc400685e1645b2b2de93f0f5c6adc558f95c88ba",
+        "4ea52a357e72328f2c5e136344aa945c23078b1c6957fc150f77a6153663ebee",
+        "01a97ac99ebd726ac84945cb319e02e598df6ec9435df2f721703c30fddce360",
+        "f09f7e2e5eae9da983979783a5f430dbf5372ce31ae52deaeac5da3c79ffa192",
+        "53ab40da81f03223ec4343a4e8625508fd888aabab496dd62e02f1b75d784d2c",
+        "163805fe6d05356c0aa47121b2c4b2b91d42d56469022f43fefb383f92830543",
+        "0ad461d8ec0885e685b39dde48308dbad3c71e481f37c4113a06d71495d9255a",
+        "81389d85ee06ca066cee54272d9767e0d40a09768509b62446f10ff65f359a5c",
+        "c82d0c1de4eeda2352b6cbc75bb931434f1bbff955f69d4e002f08e7950f3540",
+        "6b23aca081e9f87055fdbe8ef961da8d6c9daf2653973e33e5b9e713a7947333",
+        "6b7b9634d4b8729ba3cfdeffded746ba4f7b588cfacfaa271bff7b0763b3762e"
+      ]
+    }
+  ],
+  "diagnostic": {
+    "focusedPass": 17,
+    "postRepairPass": 31,
+    "relatedHttpPass": 14,
+    "relatedWiringPass": 45,
+    "fail": 0,
+    "skipped": 0,
+    "strictTypecheckExit": 0,
+    "workspaceTypecheckExit": 0
+  },
+  "limitations": [
+    "All17original cases retained; local type annotation plus2cast removals only, no runtimechange",
+    "Synthetic historicalV3 helpers/service/SQLite, not publiccreation success or discardedtrial revival",
+    "Mocked chat; not current awareness-v5/live provider/completeprivacy acceptance",
+    "Four existing scoped area refs refreshed with exactpreviouscauses after14HTTPpass, other928existingheads unchanged"
+  ]
+}

@@ -1,0 +1,200 @@
+TAP version 13
+# Subtest: semantic authoring transport policy
+    # Subtest: requires explicit time-policy identity and values when the route is selected
+    ok 1 - requires explicit time-policy identity and values when the route is selected
+      ---
+      duration_ms: 1.90562
+      type: 'test'
+      ...
+    # Subtest: uses the explicitly supplied provider timeout without a whole-attempt deadline
+    ok 2 - uses the explicitly supplied provider timeout without a whole-attempt deadline
+      ---
+      duration_ms: 0.704353
+      type: 'test'
+      ...
+    # Subtest: fails closed when an unimplemented same-run recovery policy is selected
+    ok 3 - fails closed when an unimplemented same-run recovery policy is selected
+      ---
+      duration_ms: 1.991255
+      type: 'test'
+      ...
+    1..3
+ok 1 - semantic authoring transport policy
+  ---
+  duration_ms: 6.335845
+  type: 'suite'
+  ...
+# Subtest: frozen character authoring call budget
+    # Subtest: allows profile and claim calls only for newly registered create/revise policies
+    ok 1 - allows profile and claim calls only for newly registered create/revise policies
+      ---
+      duration_ms: 1.417124
+      type: 'test'
+      ...
+    # Subtest: restores old create/revise runs at eight calls and preserves their accounting identities
+    ok 2 - restores old create/revise runs at eight calls and preserves their accounting identities
+      ---
+      duration_ms: 0.367174
+      type: 'test'
+      ...
+    # Subtest: retains cumulative token and money limits despite the two additional calls
+    ok 3 - retains cumulative token and money limits despite the two additional calls
+      ---
+      duration_ms: 0.395605
+      type: 'test'
+      ...
+    # Subtest: rejects unknown policy identities and a ten-call migration instead of choosing a default
+    ok 4 - rejects unknown policy identities and a ten-call migration instead of choosing a default
+      ---
+      duration_ms: 0.305892
+      type: 'test'
+      ...
+    1..4
+ok 2 - frozen character authoring call budget
+  ---
+  duration_ms: 3.171974
+  type: 'suite'
+  ...
+# Subtest: semantic authoring durable ports
+    # Subtest: upgrades the previous SQLite request constraint before timeout settlement
+    ok 1 - upgrades the previous SQLite request constraint before timeout settlement
+      ---
+      duration_ms: 2.092051
+      type: 'test'
+      ...
+    # Subtest: enforces the frozen family/mode/policy call allowance in SQLite storage
+    ok 2 - enforces the frozen family/mode/policy call allowance in SQLite storage
+      ---
+      duration_ms: 11.919627
+      type: 'test'
+      ...
+    # Subtest: claims a pending run and records a reservation only under the live fence
+    ok 3 - claims a pending run and records a reservation only under the live fence
+      ---
+      duration_ms: 4.607837
+      type: 'test'
+      ...
+    # Subtest: recovers process loss by fencing, charging unknown consumption, and rejecting late application
+    ok 4 - recovers process loss by fencing, charging unknown consumption, and rejecting late application
+      ---
+      duration_ms: 5.573673
+      type: 'test'
+      ...
+    # Subtest: records a transport timeout once and retains unknown usage at the reserved maximum
+    ok 5 - records a transport timeout once and retains unknown usage at the reserved maximum
+      ---
+      duration_ms: 3.525453
+      type: 'test'
+      ...
+    # Subtest: replays the same owner command identity to the same pending run
+    ok 6 - replays the same owner command identity to the same pending run
+      ---
+      duration_ms: 1.68884
+      type: 'test'
+      ...
+    # Subtest: writes a terminal failure under the live fence and closes outstanding requests
+    ok 7 - writes a terminal failure under the live fence and closes outstanding requests
+      ---
+      duration_ms: 5.244839
+      type: 'test'
+      ...
+    # Subtest: stores a ready_for_review family payload reference under the live fence
+    ok 8 - stores a ready_for_review family payload reference under the live fence
+      ---
+      duration_ms: 2.261599
+      type: 'test'
+      ...
+    # Subtest: writes a needs_owner_answer question and keeps the run closed after an answer
+    ok 9 - writes a needs_owner_answer question and keeps the run closed after an answer
+      ---
+      duration_ms: 3.537163
+      type: 'test'
+      ...
+    1..9
+ok 3 - semantic authoring durable ports
+  ---
+  duration_ms: 42.388264
+  type: 'suite'
+  ...
+# Subtest: focused authoring through the real owner command and worker
+    # Subtest: generates from source through HTTP, exposes the stored owner candidate, and does not activate it
+    ok 1 - generates from source through HTTP, exposes the stored owner candidate, and does not activate it
+      ---
+      duration_ms: 160.687782
+      type: 'test'
+      ...
+    # Subtest: routes a create HTTP command through bounded focused recovery and persists failure without legacy calls
+    ok 2 - routes a create HTTP command through bounded focused recovery and persists failure without legacy calls
+      ---
+      duration_ms: 86.273085
+      type: 'test'
+      ...
+    # Subtest: routes an appearance revision from the real owner HTTP command to a non-current review candidate
+    ok 3 - routes an appearance revision from the real owner HTTP command to a non-current review candidate
+      ---
+      duration_ms: 88.454018
+      type: 'test'
+      ...
+    # Subtest: does not generate a candidate for ambiguous, multi-area, or invalid scope
+    ok 4 - does not generate a candidate for ambiguous, multi-area, or invalid scope
+      ---
+      duration_ms: 67.775353
+      type: 'test'
+      ...
+    # Subtest: carries changed-role migration meaning through the real worker into a review candidate
+    ok 5 - carries changed-role migration meaning through the real worker into a review candidate
+      ---
+      duration_ms: 46.114595
+      type: 'test'
+      ...
+    # Subtest: routes an exact ready V2 upgrade command into focused migration without activating it
+    ok 6 - routes an exact ready V2 upgrade command into focused migration without activating it
+      ---
+      duration_ms: 152.022366
+      type: 'test'
+      ...
+    # Subtest: lets the owner accept the exact focused migration candidate for Stage-scoped V3 selection
+    ok 7 - lets the owner accept the exact focused migration candidate for Stage-scoped V3 selection
+      ---
+      duration_ms: 112.480855
+      type: 'test'
+      ...
+    # Subtest: rolls back V3 append when the frozen source pointer drifts before owner acceptance
+    ok 8 - rolls back V3 append when the frozen source pointer drifts before owner acceptance
+      ---
+      duration_ms: 87.155722
+      type: 'test'
+      ...
+    # Subtest: carries an optional legacy meaning deferral through the real upgrade route
+    ok 9 - carries an optional legacy meaning deferral through the real upgrade route
+      ---
+      duration_ms: 57.798015
+      type: 'test'
+      ...
+    # Subtest: retries a failed owner command from the same source with a new attempt and idempotent replay
+    ok 10 - retries a failed owner command from the same source with a new attempt and idempotent replay
+      ---
+      duration_ms: 80.188201
+      type: 'test'
+      ...
+    # Subtest: persists source-drift failure in both lifecycles before any dispatch
+    ok 11 - persists source-drift failure in both lifecycles before any dispatch
+      ---
+      duration_ms: 5.564188
+      type: 'test'
+      ...
+    1..11
+ok 4 - focused authoring through the real owner command and worker
+  ---
+  duration_ms: 954.801722
+  type: 'suite'
+  ...
+1..4
+# tests 27
+# suites 4
+# pass 27
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 2271.785611

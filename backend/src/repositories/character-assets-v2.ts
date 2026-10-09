@@ -31,6 +31,9 @@ import {
   type AssetGeneration,
 } from "./asset-generations.js";
 import { insertOwnerNotification } from "./owner-notifications.js";
+import { readCompleteFocusedCharacterReview } from "./character-focused-candidate.js";
+import { CharacterReviewCorrectionSourceV1Schema, decodeCharacterReviewCorrectionSourceV1 }
+  from "../services/semantic-authoring/character-review-correction-source.js";
 import { registerCharacterFocusedAuthoringV3,
   readCharacterFocusedMigrationActivationV3,
   type CharacterFocusedRegistrationSourceV1 } from "../services/character-focused-authoring.js";
@@ -230,6 +233,7 @@ async function rejectBusyCharacterAuthoring(
   characterId: string,
   ownerUserId: string,
   kind: AssetAuthoringAttemptKind,
+  correctionPredecessorAttemptId: string | null = null,
 ): Promise<void> {
   if (kind === "create") return;
   const inflight = await connection.query<{ attempt_id: string }>(
@@ -239,8 +243,9 @@ async function rejectBusyCharacterAuthoring(
           'validating_structure', 'generating_description',
           'validating_description', 'awaiting_owner_acceptance',
           'committing')
+        AND ($3 IS NULL OR attempt_id <> $3)
       LIMIT 1`,
-    [characterId, ownerUserId],
+    [characterId, ownerUserId, correctionPredecessorAttemptId],
   );
   if (inflight.rows[0]) throw new Error("AUTHORING_ALREADY_IN_PROGRESS");
 }
@@ -286,6 +291,7 @@ type NewCharacterAuthoringInput = {
   sourceText: string;
   sourceDigest: string;
   ttlMs?: number;
+  correctionPredecessorAttemptId?: string;
   focused?: { source: CharacterFocusedRegistrationSourceV1; pricingIdentity: string;
     predecessorRunId?: string; commandId?: string };
 };
@@ -357,11 +363,7 @@ async function registerInsertedAuthoringAttempt(
   return attempt;
 }
 
-async function insertNewAuthoringAttempt(
-  connection: DatabaseConnection,
-  input: NewCharacterAuthoringInput,
-): Promise<CharacterAuthoringAttempt> {
-  const characterId = input.characterId ?? newId("chr");
+async function readNewAuthoringTarget(connection: DatabaseConnection, characterId: string) {
   const character = await connection.query<{ owner_user_id: string }>(
     `SELECT owner_user_id FROM characters WHERE id = $1`,
     [characterId],
@@ -378,12 +380,22 @@ async function insertNewAuthoringAttempt(
     [characterId],
   );
   const expected = current.rows[0] ?? null;
+  return { existingCharacter, expected };
+}
+
+async function insertNewAuthoringAttempt(
+  connection: DatabaseConnection,
+  input: NewCharacterAuthoringInput,
+): Promise<CharacterAuthoringAttempt> {
+  const characterId = input.characterId ?? newId("chr");
+  const { existingCharacter, expected } = await readNewAuthoringTarget(connection, characterId);
   assertNewAuthoringTarget(input, existingCharacter, expected);
   await rejectBusyCharacterAuthoring(
     connection,
     characterId,
     input.ownerUserId,
     input.kind,
+    input.correctionPredecessorAttemptId ?? null,
   );
   const now = new Date();
   const createdAt = now.toISOString();
@@ -466,7 +478,8 @@ function frozenRetrySource(sourceJson: unknown, sourceContentDigest: string, sou
   const rawSource = typeof sourceJson === "string" ? JSON.parse(sourceJson) : sourceJson;
   const decoded = createCharacterSemanticAuthoringAdapterV3().decodeFrozenSource(rawSource);
   const pendingScope = decodeUnresolvedCharacterRevisionSourceV1(rawSource);
-  const source = pendingScope ?? (decoded.accepted ? decoded.value : null);
+  const source = decodeCharacterReviewCorrectionSourceV1(rawSource)
+    ?? pendingScope ?? (decoded.accepted ? decoded.value : null);
   if (!source || !sourceText
     || assetContentDigest(source) !== sourceContentDigest) {
     throw new Error("FOCUSED_CHARACTER_SOURCE_INVALID");
@@ -511,6 +524,54 @@ export async function retryCharacterFocusedAuthoringV3(input: {
       idempotencyKey, requestDigest, sourceText: frozen.sourceText, sourceDigest: predecessor.sourceDigest,
       focused: { source: frozen.source, pricingIdentity: row.pricing_identity,
         predecessorRunId: row.run_id, commandId: input.commandId },
+    });
+    return { attempt, replayed: false };
+  });
+}
+
+/** Start an immutable successor from an exact reviewed candidate; keep its predecessor intact. */
+export async function beginCharacterDraftCorrection(input: {
+  ownerUserId: string; predecessorAttemptId: string; candidateDigest: string;
+  message: string; idempotencyKey: string; pricingIdentity: string;
+}): Promise<{ attempt: CharacterAuthoringAttempt; replayed: boolean }> {
+  if (!input.idempotencyKey.trim() || input.idempotencyKey.length > 200) throw new Error("INVALID_IDEMPOTENCY_KEY");
+  const instruction = input.message.trim();
+  return withTransaction(async (connection) => {
+    if (databaseKind() === "postgres") await connection.query(
+      `SELECT attempt_id FROM character_authoring_attempts WHERE attempt_id = $1 AND owner_user_id = $2 FOR UPDATE`,
+      [input.predecessorAttemptId, input.ownerUserId]);
+    const predecessor = await selectAttempt(connection, input.predecessorAttemptId, input.ownerUserId);
+    if (!predecessor) throw new Error("AUTHORING_ATTEMPT_NOT_FOUND");
+    const requestDigest = assetContentDigest({ operation: "review_candidate_correction",
+      ownerUserId: input.ownerUserId, predecessorAttemptId: input.predecessorAttemptId,
+      candidateDigest: input.candidateDigest, instruction });
+    const idempotencyKey = `character-draft-correction:${input.idempotencyKey}`;
+    const replay = await replayExistingAttempt(connection, input.ownerUserId, idempotencyKey, requestDigest);
+    if (replay) return replay;
+    if (predecessor.status !== "awaiting_owner_acceptance" || predecessor.kind === "upgrade"
+      || Date.parse(predecessor.expiresAt) <= Date.now()) {
+      throw new Error("CORRECTION_PREDECESSOR_NOT_READY");
+    }
+    await rejectStaleCharacterAuthoring(connection, predecessor.characterId, input.ownerUserId, predecessor.attemptId);
+    const frozen = await readCompleteFocusedCharacterReview(connection, predecessor.attemptId, input.ownerUserId);
+    if (frozen.complete.candidateDigest !== input.candidateDigest) throw new Error("CORRECTION_PREDECESSOR_BINDING_MISMATCH");
+    const pointer = await connection.query<{ generation_id: string }>(
+      `SELECT generation_id FROM asset_current_generations WHERE asset_type = 'character' AND asset_id = $1`,
+      [predecessor.characterId]);
+    if ((pointer.rows[0]?.generation_id ?? null) !== predecessor.expectedGenerationId) {
+      throw new Error("FOCUSED_CHARACTER_POINTER_DRIFT");
+    }
+    const source = CharacterReviewCorrectionSourceV1Schema.parse({
+      kind: "review_candidate_correction", predecessorAttemptId: predecessor.attemptId,
+      predecessorCandidate: frozen.complete, naturalText: instruction, requestedCluster: null,
+    });
+    const attempt = await insertNewAuthoringAttempt(connection, {
+      ownerUserId: input.ownerUserId, characterId: predecessor.characterId, kind: predecessor.kind,
+      idempotencyKey, requestDigest, sourceText: instruction,
+      sourceDigest: assetContentDigest({ predecessorAttemptId: predecessor.attemptId,
+        candidateDigest: input.candidateDigest, instruction }),
+      correctionPredecessorAttemptId: predecessor.attemptId,
+      focused: { source, pricingIdentity: input.pricingIdentity, predecessorRunId: frozen.runId },
     });
     return { attempt, replayed: false };
   });
@@ -1102,6 +1163,14 @@ async function readActivationCurrentSheet(
   return currentSheet;
 }
 
+function assertOwnerActivationReview(attempt: CharacterAuthoringAttempt, input: CharacterActivationInput) {
+    if (attempt.candidate) assertCharacterV3WriteCandidate(attempt.candidate);
+    if (attempt.candidate && CharacterGenerationEnvelopeV3Schema.safeParse(attempt.candidate).success
+      && (!input.candidateDigest || input.candidateDigest !== attempt.candidateDigest)) {
+      throw new Error("AUTHORING_REVIEW_DIGEST_MISMATCH");
+    }
+}
+
 export async function activateCharacterAuthoringAttempt(input: CharacterActivationInput): Promise<{ sheet: CharacterSheet; generation: AssetGeneration }> {
   const result = await withTransaction(async (connection) => {
     // Serialize duplicate confirmations before reading the candidate or appending a generation.
@@ -1110,11 +1179,7 @@ export async function activateCharacterAuthoringAttempt(input: CharacterActivati
       [input.attemptId, input.ownerUserId]);
     const attempt = await selectAttempt(connection, input.attemptId, input.ownerUserId);
     if (!attempt) throw new Error("AUTHORING_ATTEMPT_NOT_FOUND");
-    if (attempt.candidate) assertCharacterV3WriteCandidate(attempt.candidate);
-    if (attempt.candidate && CharacterGenerationEnvelopeV3Schema.safeParse(attempt.candidate).success
-      && (!input.candidateDigest || input.candidateDigest !== attempt.candidateDigest)) {
-      throw new Error("AUTHORING_REVIEW_DIGEST_MISMATCH");
-    }
+    assertOwnerActivationReview(attempt, input);
     if (attempt.status === "succeeded" && attempt.resultGenerationId) {
       return readActivatedAuthoringResult(connection, attempt, input.ownerUserId);
     }

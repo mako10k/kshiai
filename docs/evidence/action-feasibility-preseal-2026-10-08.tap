@@ -1,0 +1,101 @@
+TAP version 13
+# Subtest: observer-safe action feasibility
+    # Subtest: uses perceived labels and removes an out-of-range counterpart action
+    ok 1 - uses perceived labels and removes an out-of-range counterpart action
+      ---
+      duration_ms: 16.867495
+      type: 'test'
+      ...
+    # Subtest: reflects restraint and held-object usability without exposing object IDs
+    ok 2 - reflects restraint and held-object usability without exposing object IDs
+      ---
+      duration_ms: 5.157252
+      type: 'test'
+      ...
+    # Subtest: revalidates against an unperceived attached movement effect
+    ok 3 - revalidates against an unperceived attached movement effect
+      ---
+      duration_ms: 5.381706
+      type: 'test'
+      ...
+    # Subtest: substitutes, partially downgrades, or fails with canonical reasons
+    ok 4 - substitutes, partially downgrades, or fails with canonical reasons
+      ---
+      duration_ms: 7.511163
+      type: 'test'
+      ...
+    # Subtest: retains every remaining feasibility reason-to-substitute mapping
+    ok 5 - retains every remaining feasibility reason-to-substitute mapping
+      ---
+      duration_ms: 7.031023
+      type: 'test'
+      ...
+    # Subtest: produces the same candidate kinds when A and B are swapped
+    ok 6 - produces the same candidate kinds when A and B are swapped
+      ---
+      duration_ms: 5.851374
+      type: 'test'
+      ...
+    # Subtest: lists reposition and substitutes an out-of-range strike when spacing is enabled
+    ok 7 - lists reposition and substitutes an out-of-range strike when spacing is enabled
+      ---
+      duration_ms: 7.191429
+      type: 'test'
+      ...
+    # Subtest: opens when a strike is too close for its minReach band
+    ok 8 - opens when a strike is too close for its minReach band
+      ---
+      duration_ms: 4.774155
+      type: 'test'
+      ...
+    # Subtest: does not substitute generic line-of-sight failure to reposition
+    ok 9 - does not substitute generic line-of-sight failure to reposition
+      ---
+      duration_ms: 5.054188
+      type: 'test'
+      ...
+    # Subtest: does not treat pair.sight as physical line of sight
+    ok 10 - does not treat pair.sight as physical line of sight
+      ---
+      duration_ms: 5.827821
+      type: 'test'
+      ...
+    # Subtest: hides counterpart strikes from an observer who cannot localize them
+    ok 11 - hides counterpart strikes from an observer who cannot localize them
+      ---
+      duration_ms: 5.19294
+      type: 'test'
+      ...
+    # Subtest: revalidates counterpart strikes from unique world without observer frames
+    ok 12 - revalidates counterpart strikes from unique world without observer frames
+      ---
+      duration_ms: 4.367441
+      type: 'test'
+      ...
+    1..12
+ok 1 - observer-safe action feasibility
+  ---
+  duration_ms: 81.909197
+  type: 'suite'
+  ...
+# Subtest: rejects an unspecified skill through the existing feasibility reason
+ok 2 - rejects an unspecified skill through the existing feasibility reason
+  ---
+  duration_ms: 5.936904
+  type: 'test'
+  ...
+# Subtest: requires the original skill identifier in skill capability metadata
+ok 3 - requires the original skill identifier in skill capability metadata
+  ---
+  duration_ms: 0.138615
+  type: 'test'
+  ...
+1..3
+# tests 14
+# suites 1
+# pass 14
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 485.555494

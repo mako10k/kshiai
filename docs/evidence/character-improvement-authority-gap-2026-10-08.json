@@ -1,0 +1,12 @@
+{
+  "reviewer": "battle_helper_contract_review",
+  "classification": "BOUNDARY_DISPUTE",
+  "originalCases": 4,
+  "diagnosticPass": 4,
+  "sealed": false,
+  "protectedConsumer": "Owner analysis API/LLM-backed admission and next eligibility UI",
+  "unresolvedRule": "First5 finished battles; subsequent lastAnalyzedBattleCount+10; snapshot-relative counting",
+  "existingImplementationIsAuthority": false,
+  "testCasesKept": true,
+  "next": "Prepare versioned requirement candidate and owner review; do not reframe admission gate as harmless diagnostic arithmetic"
+}

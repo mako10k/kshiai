@@ -1,0 +1,77 @@
+{
+  "entries": [
+    {
+      "key": "authority-cloud-edge-contract",
+      "path": "docs/cloud_runtime.md",
+      "parents": [
+        "release"
+      ],
+      "scope": "Only existing SPA/streaming API proxy/protected origin contract; exclude old price/resource/deployment observations.",
+      "ref": "all-tests-20261007/authority-cloud-edge-contract",
+      "test": false,
+      "sha256": "7cb2bc8dbf0225650a62b521599a299c9fa96b8c0f7692a86e154b42e951f971",
+      "sealId": "f0e1b4cfadf05e6e2ea0a4c8e1292de8eb19c367a62d9baf823947bd31c39ffb",
+      "causeSealIds": [
+        "b76d73dc1a4b1a0cd6304c89eae2f5642327adbc48cafef6e7b192ebf8f24d1e"
+      ]
+    },
+    {
+      "key": "design-worker-edge",
+      "path": "docs/worker-edge-test-contract-review-2026-10-07.md",
+      "parents": [
+        "authority-cloud-edge-contract",
+        "release"
+      ],
+      "scope": "Three unchanged local cases/injected fetch; no real deployment/backend verifier proof.",
+      "ref": "all-tests-20261007/design-worker-edge",
+      "test": false,
+      "sha256": "872b0f7bdb13da966cf5516dc175968ecbd9657a2561e593553c5e5f25192e0b",
+      "sealId": "6b135665648e9d5dbb65eaec97aa4e5f43449de48392dda29b9b4877f9b47e5d",
+      "causeSealIds": [
+        "f0e1b4cfadf05e6e2ea0a4c8e1292de8eb19c367a62d9baf823947bd31c39ffb",
+        "b76d73dc1a4b1a0cd6304c89eae2f5642327adbc48cafef6e7b192ebf8f24d1e"
+      ]
+    },
+    {
+      "key": "implementation-worker-edge",
+      "path": "infra/cloudflare-worker/src/index.ts",
+      "parents": [
+        "design-worker-edge"
+      ],
+      "scope": "Static assets and fixed origin proxy header overwrite/fail closed; no deployment mutations.",
+      "ref": "all-tests-20261007/implementation-worker-edge",
+      "test": false,
+      "sha256": "b7987b341f53a64f223e5e124db81434418fb5b30c03f237a56ccc59c987fb57",
+      "sealId": "18d9cd5217a00936bc1ec55894608c88247c6ea257e795113bc8720f0f32f2fe",
+      "causeSealIds": [
+        "6b135665648e9d5dbb65eaec97aa4e5f43449de48392dda29b9b4877f9b47e5d"
+      ]
+    },
+    {
+      "key": "worker-edge-bounded",
+      "path": "infra/cloudflare-worker/src/index.test.ts",
+      "parents": [
+        "implementation-worker-edge"
+      ],
+      "scope": "Whole original three cases unchanged; static/proxy/secret absent guard only.",
+      "ref": "verification/worker-edge-bounded-20261007",
+      "test": true,
+      "sha256": "aeb049eb06feb0667f6502c63526dc3f4f573bda17b1203e6da3772c6f5542ca",
+      "sealId": "40ad7bb09f6a1ce91292f2ff4ac443be2233d5201296fe231a6c37d60a5b6c2e",
+      "causeSealIds": [
+        "18d9cd5217a00936bc1ec55894608c88247c6ea257e795113bc8720f0f32f2fe"
+      ]
+    }
+  ],
+  "diagnostic": {
+    "focusedPass": 3,
+    "fail": 0,
+    "skipped": 0,
+    "workspaceTypecheckEvidence": "docs/evidence/backend-implicit-any-workspace-types-2026-10-07.log"
+  },
+  "limitations": [
+    "Only original three local worker cases",
+    "Injected fetch/static assets, not deployment or actual backend verifier",
+    "Source/implementation unchanged, full251 goal incomplete"
+  ]
+}

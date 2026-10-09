@@ -1,0 +1,269 @@
+{
+  "entries": [
+    {
+      "ref": "all-tests-20261008/implementation-local-media-store",
+      "path": "backend/src/services/local-media-store.ts",
+      "sha256": "cfca0b70b26fb2e5e5c4515b83d6610526241985c4fb58933b2e47768c138b5b",
+      "sealId": "fa9980ceb4775dc090e7e5d0e33d608f44095cbdfbb78c1e26a3fa36c106204f",
+      "previousHead": "637edecb93b11419b985df4c5c33b9d5ba32b8e958589a2af8a90df02ad22f06",
+      "causeLinks": [
+        {
+          "target_seal": "f1e98287afcd1864dfe24ed1e16e83c2ee2b39e4980738b25fe3ff0f67892e5d",
+          "previous_revision_seal_of_target_seal": [],
+          "messages": [
+            "Single real local filesystem implementation with caller root/log sink; preserves prior URL/path/copy/null semantics. Private real-file verification, no R2/DB/provider claim."
+          ]
+        }
+      ],
+      "new": false
+    },
+    {
+      "ref": "all-tests-20261007/implementation-image-prompt-and-failure",
+      "path": "backend/src/services/image-service.ts",
+      "sha256": "cd9b5cc1e018a65074a32ff15a59d6c74b2bf0bc941218fb6f8250f4235c8da1",
+      "sealId": "71fd0695e8b0a4c1f0e985e11f09c2f28e8070e1cc3798f18978981b03b7a901",
+      "previousHead": "ea0f1b545851ccf646289c09e0bc35ca7b2de1d316046d3ac182ce59fa61d203",
+      "causeLinks": [
+        {
+          "target_seal": "ccecf98e73b7fa2bbd1146fa4f6619aaac931d752029ce54cd73961a08a27e29",
+          "previous_revision_seal_of_target_seal": [],
+          "messages": [
+            "Visual prompt composition, private field omission, immutable local URL and injected provider rejection. No DB activation atomicity/live quality claim."
+          ]
+        },
+        {
+          "target_seal": "fa9980ceb4775dc090e7e5d0e33d608f44095cbdfbb78c1e26a3fa36c106204f",
+          "previous_revision_seal_of_target_seal": [
+            "637edecb93b11419b985df4c5c33b9d5ba32b8e958589a2af8a90df02ad22f06"
+          ],
+          "messages": [
+            "Revalidated existing prompt/failure scope after extraction; typed default store preserves production root/logger and wrappers delegate to real local media module. No new image route activation.",
+            "Revalidated unchanged behavior after module responsibility comment; exact original cases/assertions and bounded local diagnostic25pass retained."
+          ]
+        }
+      ],
+      "new": false
+    },
+    {
+      "ref": "all-tests-20261008/implementation-sqlite-source-inspection",
+      "path": "backend/src/scripts/sqlite-to-postgres.ts",
+      "sha256": "5e5aa8c4e9d4cde49edb0211c4fb664e620bacff9d9f648c382e53d4f223fe09",
+      "sealId": "c3b3c0285aada47d197c96e23de2d26600a944152b553c7a056db153105b9a20",
+      "previousHead": "6019b83c60e92e172f3a8a64a033c3831dc2be774550c81fe9a0d5af8ed0817c",
+      "causeLinks": [
+        {
+          "target_seal": "16b54f679aa310b13ecd0a081a2decfcd603fa55d77bacbab1e41b686e7e2cf3",
+          "previous_revision_seal_of_target_seal": [],
+          "messages": [
+            "Typed fixed/dynamic SQL reads retain readonly/deferred/close behavior; private legacy normalization and real CLI preflight before target mode. No apply/import/upsert acceptance."
+          ]
+        }
+      ],
+      "new": false
+    },
+    {
+      "ref": "verification/image-prompt-failure-bounded-20261008",
+      "path": "backend/src/services/image-service.test.ts",
+      "sha256": "cf9e1fa231f684d3263cc9f07bde9d18467d7014e0dfc76b05ea09524e6c1826",
+      "sealId": "f6f6c57a1e0ae68341cdfb3afbdaf2dff040f12c6eade2b063c55001bd6bc939",
+      "previousHead": "2a7d347e701c2845f8d11d9cdc8eccc63776118e96c104c8a20ba6344935e917",
+      "causeLinks": [
+        {
+          "target_seal": "71fd0695e8b0a4c1f0e985e11f09c2f28e8070e1cc3798f18978981b03b7a901",
+          "previous_revision_seal_of_target_seal": [
+            "ea0f1b545851ccf646289c09e0bc35ca7b2de1d316046d3ac182ce59fa61d203"
+          ],
+          "messages": [
+            "Original four prompt/failure cases re-run after local-media extraction; 11-case focused diagnostic pass, unchanged original test bytes and scope.",
+            "Revalidated unchanged behavior after module responsibility comment; exact original cases/assertions and bounded local diagnostic25pass retained.",
+            "Whole original four cases/assertions retained. Prompt/omission/revision URL/rejection only; V2 fixture does not authorize V2 mutations or persistence acceptance."
+          ]
+        }
+      ],
+      "new": false
+    },
+    {
+      "ref": "verification/local-media-archive-connected-20261008",
+      "path": "backend/src/services/image-archive.test.ts",
+      "sha256": "ce81fffdc4a5c16bea360033ef2c819dcbb12cafcebb39ed0efc87b3500b3dec",
+      "sealId": "fad071e09fe375121929ac3a9a5ec1ddf6b6bd11e68d547b75fd3f941662e288",
+      "previousHead": "080dee86c76fd39748418936c6bb903d29d55367938338b966cf04b19910ac96",
+      "causeLinks": [
+        {
+          "target_seal": "71fd0695e8b0a4c1f0e985e11f09c2f28e8070e1cc3798f18978981b03b7a901",
+          "previous_revision_seal_of_target_seal": [
+            "ea0f1b545851ccf646289c09e0bc35ca7b2de1d316046d3ac182ce59fa61d203"
+          ],
+          "messages": [
+            "Original two cases/five assertions retained; service wrappers use private real filesystem. Added active revision selection and missing-file behavior. Four cases local helper only, no immutable DB activation or live writer success.",
+            "Revalidated unchanged behavior after module responsibility comment; exact original cases/assertions and bounded local diagnostic25pass retained."
+          ]
+        }
+      ],
+      "new": false
+    },
+    {
+      "ref": "verification/sqlite-source-inspection-bounded-20261008",
+      "path": "backend/src/scripts/sqlite-to-postgres.test.ts",
+      "sha256": "ee644bb4ede42f337c0d6a882fceb8e83ba3e4cce9170b721e54840b251bac49",
+      "sealId": "0efb54a00d9ce6ca57531bd264941816eefd130dae8eb81ad506d1db67fe2257",
+      "previousHead": "154cd3eda7abb6f2c930a630bdaf9f11313c89f5bf88e4dc5ab81854699f3881",
+      "causeLinks": [
+        {
+          "target_seal": "c3b3c0285aada47d197c96e23de2d26600a944152b553c7a056db153105b9a20",
+          "previous_revision_seal_of_target_seal": [
+            "6019b83c60e92e172f3a8a64a033c3831dc2be774550c81fe9a0d5af8ed0817c"
+          ],
+          "messages": [
+            "Revalidated unchanged behavior after module responsibility comment; exact original cases/assertions and bounded local diagnostic25pass retained.",
+            "Whole original two cases/all assertions retained; private SQLite JSON/booleans/counts/exact audit IDs/warnings and actual CLI invalid-source exit1. No apply/verify-target/network/import."
+          ]
+        }
+      ],
+      "new": false
+    },
+    {
+      "ref": "all-tests-20261008/design-battlefield-gap-helper",
+      "path": "docs/battlefield-stream-test-contract-review-2026-10-08.md",
+      "sha256": "e281336a9e76184c00eb348e667367d13c780335436ade002826697156f01782",
+      "sealId": "b91ef307bba86332dfe851d48e371df2e368773168063fd58fa9405ab4eb2f1e",
+      "causeLinks": [
+        {
+          "target_seal": "203e66fc4e30772adab026012c67f1b1ac4ca86ad2ada11b501c639a27a19eac",
+          "previous_revision_seal_of_target_seal": [],
+          "messages": [
+            "Accepted ADR0012/0010 legacy candidate enrichment and authoritativefield preservation, not system-preset readonly/full authoring/activation."
+          ]
+        },
+        {
+          "target_seal": "a65c9b0a1bf9589c18778e7cf7ca7985d7ccde11c3a36c7e0b5db5874f34c7b8",
+          "previous_revision_seal_of_target_seal": [],
+          "messages": [
+            "Accepted ADR0012/0010 legacy candidate enrichment and authoritativefield preservation, not system-preset readonly/full authoring/activation."
+          ]
+        },
+        {
+          "target_seal": "c18419afb42060d887b3f7f86970b45312cb77a7665dfbc7398a697e3e3d7ad5",
+          "previous_revision_seal_of_target_seal": [],
+          "messages": [
+            "Accepted ADR0012/0010 legacy candidate enrichment and authoritativefield preservation, not system-preset readonly/full authoring/activation."
+          ]
+        }
+      ],
+      "new": true,
+      "test": false
+    },
+    {
+      "ref": "all-tests-20261008/design-partial-narrator-helper",
+      "path": "docs/battlefield-stream-test-contract-review-2026-10-08.md",
+      "sha256": "e281336a9e76184c00eb348e667367d13c780335436ade002826697156f01782",
+      "sealId": "5c9b3f5c510509072be4dd365f5f10a27a148bf4f406713dfeabcff65ba6ba75",
+      "causeLinks": [
+        {
+          "target_seal": "203e66fc4e30772adab026012c67f1b1ac4ca86ad2ada11b501c639a27a19eac",
+          "previous_revision_seal_of_target_seal": [],
+          "messages": [
+            "Existing partial narrator-string extraction for progress input; no fullJSON/SSE/UI/current awareness stream acceptance."
+          ]
+        }
+      ],
+      "new": true,
+      "test": false
+    },
+    {
+      "ref": "all-tests-20261008/implementation-battlefield-gap-helper",
+      "path": "packages/shared/src/battlefield-definition-check.ts",
+      "sha256": "15170bdc806f762c595aec02b7719e3a9b298ee780896dbf73f46da2ff358ba8",
+      "sealId": "7ad85c40d670819d97f4d32707b6203553369af842b430aa6264d58503621615",
+      "causeLinks": [
+        {
+          "target_seal": "54f969c54c0489a5a5b7f3cb3fd3d97c4af5833c1d71d0e4d26649e4886db6d5",
+          "previous_revision_seal_of_target_seal": [],
+          "messages": [
+            "Typed guarded fallback and finalZod with existing legacy gap/fill/restoration semantics; no cast or new policy/activation."
+          ]
+        },
+        {
+          "target_seal": "b91ef307bba86332dfe851d48e371df2e368773168063fd58fa9405ab4eb2f1e",
+          "previous_revision_seal_of_target_seal": [],
+          "messages": [
+            "Typed guarded fallback and finalZod with existing legacy gap/fill/restoration semantics; no cast or new policy/activation."
+          ]
+        }
+      ],
+      "new": true,
+      "test": false
+    },
+    {
+      "ref": "all-tests-20261008/implementation-partial-narrator-helper",
+      "path": "packages/shared/src/battle-stream.ts",
+      "sha256": "8d84348561dc57c7abcc87e97ff261bb19cb62dc0e39cde5cdfa305c50191c64",
+      "sealId": "1aa39b2cea931af14b929634b448e9ac9a656e0213529bb527461813bcd7a35e",
+      "causeLinks": [
+        {
+          "target_seal": "5c9b3f5c510509072be4dd365f5f10a27a148bf4f406713dfeabcff65ba6ba75",
+          "previous_revision_seal_of_target_seal": [],
+          "messages": [
+            "Existing pure partial-string narrator extraction only. Whole source binding does not verify public stream event DTO delivery or lifecycle."
+          ]
+        }
+      ],
+      "new": true,
+      "test": false
+    },
+    {
+      "ref": "verification/battlefield-gap-helper-bounded-20261008",
+      "path": "packages/shared/src/battlefield-definition-check.test.ts",
+      "sha256": "251617d96d514e5d506bef37f872839bd2dd5c39566326e7273c2abeb0720e78",
+      "sealId": "ef160a6e37cb81a3c3a1013fba9a24450e673c2278d22acbc934908798cb0a66",
+      "causeLinks": [
+        {
+          "target_seal": "54f969c54c0489a5a5b7f3cb3fd3d97c4af5833c1d71d0e4d26649e4886db6d5",
+          "previous_revision_seal_of_target_seal": [],
+          "messages": [
+            "Whole original three cases/all assertions plus one guarded wrapped-text regression; legacy gaps/fill/IDshape/effect/preservation/restoration only."
+          ]
+        },
+        {
+          "target_seal": "7ad85c40d670819d97f4d32707b6203553369af842b430aa6264d58503621615",
+          "previous_revision_seal_of_target_seal": [],
+          "messages": [
+            "Whole original three cases/all assertions plus one guarded wrapped-text regression; legacy gaps/fill/IDshape/effect/preservation/restoration only."
+          ]
+        }
+      ],
+      "new": true,
+      "test": true
+    },
+    {
+      "ref": "verification/partial-narrator-helper-bounded-20261008",
+      "path": "packages/shared/src/battle-stream.test.ts",
+      "sha256": "5e74f82170786194101a9567f136489c38f098a8924d865c2f00e6cdb6cd9b7c",
+      "sealId": "4abe2b43067214713b9cc5d4b2640fbaec72d871803c39615ff9c24b2738abd7",
+      "causeLinks": [
+        {
+          "target_seal": "1aa39b2cea931af14b929634b448e9ac9a656e0213529bb527461813bcd7a35e",
+          "previous_revision_seal_of_target_seal": [],
+          "messages": [
+            "Whole original unchanged three cases: absent narrator, completedlines/open draft and escapedquote extraction. Not malformedJSON exhaustiveness or SSE/awareness acceptance."
+          ]
+        }
+      ],
+      "new": true,
+      "test": true
+    }
+  ],
+  "roots": {
+    "requirements": "all-tests-20261007/authority-semantic-observation-requirements",
+    "battlefield": "all-tests-20261007/authority-battlefield",
+    "selectable": "acceptance/adr-0010-existing-baseline",
+    "compiler": "all-tests-20261007/implementation-battlefield-compiler"
+  },
+  "rootSealIds": {
+    "requirements": "203e66fc4e30772adab026012c67f1b1ac4ca86ad2ada11b501c639a27a19eac",
+    "battlefield": "a65c9b0a1bf9589c18778e7cf7ca7985d7ccde11c3a36c7e0b5db5874f34c7b8",
+    "selectable": "c18419afb42060d887b3f7f86970b45312cb77a7665dfbc7398a697e3e3d7ad5",
+    "compiler": "54f969c54c0489a5a5b7f3cb3fd3d97c4af5833c1d71d0e4d26649e4886db6d5"
+  },
+  "elapsedSeconds": 138.016
+}

@@ -125,21 +125,30 @@ export function balanceEquipment(eq: Equipment | null | undefined): Equipment | 
   const positive = Math.max(0, atk) + Math.max(0, def) + Math.max(0, mag) +
     effects.reduce((sum, effect) => sum + Math.max(0, effect.delta), 0);
   const hasTradeoff =
-    atk < 0 || def < 0 || mag < 0 || effects.some((effect) => effect.delta < 0);
-  const addedTradeoff = positive > 0 && !hasTradeoff;
-  if (addedTradeoff) {
-    effects = [
-      ...effects.slice(0, 3),
-      { parameter: "stamina", delta: -Math.min(12, Math.max(2, Math.ceil(positive / 3))) },
-    ];
-  }
+    atk < 0 || def < 0 || mag < 0 || effects.some((effect) => effect.delta < 0) || eq.balanceTradeoff !== undefined;
   return {
     ...eq,
     atkBonus: atk,
     defBonus: def,
     magBonus: mag,
-    effects,
+    ...equipmentTradeoff({ effects, positive, hasTradeoff, balanceTradeoff: eq.balanceTradeoff }),
   };
+}
+
+function equipmentTradeoff(input: {
+  effects: NonNullable<Equipment["effects"]>;
+  positive: number;
+  hasTradeoff: boolean;
+  balanceTradeoff: Equipment["balanceTradeoff"];
+}): Pick<Equipment, "effects" | "balanceTradeoff"> {
+  if (input.hasTradeoff || input.positive <= 0) return {
+    effects: input.effects, ...(input.balanceTradeoff ? { balanceTradeoff: input.balanceTradeoff } : {}),
+  };
+  const tradeoff: NonNullable<Equipment["balanceTradeoff"]> = {
+    parameter: "stamina", delta: -Math.min(12, Math.max(2, Math.ceil(input.positive / 3))),
+  };
+  return input.effects.length === 4 ? { effects: input.effects, balanceTradeoff: tradeoff }
+    : { effects: [...input.effects, tradeoff] };
 }
 
 /**

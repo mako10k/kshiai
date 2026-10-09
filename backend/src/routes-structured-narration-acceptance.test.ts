@@ -1,10 +1,12 @@
 import assert from "node:assert/strict";
+import { z } from "zod";
 import { mkdtempSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { after, before, describe, it } from "node:test";
 import {
   NARRATION_PROMPT_COMPILER_V2,
+  BattlePublicSchema, NarrationDefinitionV2Schema, NarrationStylePublicSchema,
   defaultParameters,
   defaultBasicAttack,
   type CharacterSheet,
@@ -21,6 +23,12 @@ process.env.LLM_PROVIDER = "mock";
 const { saveHistoricalCharacterFixture } = await import("./testing/historical-character-fixtures.js");
 const { closeDatabase, query } = await import("./db.js");
 const { MockLlmProvider } = await import("./llm/mock.js");
+const { createOfflineAwarenessProvider } = await import("./testing/offline-awareness-provider.js");
+const { buildV3CharacterEnvelopeFixture } = await import("./testing/v3-character-envelope-fixture.js");
+const generations = await import("./testing/historical-asset-generations.js");
+const characters = await import("./repositories/characters.js");
+const settings = await import("./repositories/dialogue-pipeline-settings.js");
+const { createConsciousFixture } = await import("./services/conscious-agency.fixtures.js");
 const narrationRepo = await import("./repositories/narration-styles.js");
 const narrationAssetRepo = await import(
   "./repositories/narration-style-assets-v2.js"
@@ -43,7 +51,7 @@ class NarrationStructureFailureProvider extends MockLlmProvider {
   }
 }
 
-const llm = new MockLlmProvider();
+const llm = createOfflineAwarenessProvider();
 const failureLlm = new NarrationStructureFailureProvider();
 const app = buildRoutes({ llm });
 const failureApp = buildRoutes({ llm: failureLlm });
@@ -51,16 +59,13 @@ const sessionToken = "ses_structured_narration_route_acceptance";
 const authHeaders = { Cookie: `kshiai_session=${sessionToken}` };
 
 async function drainAuthoring(
-  provider: typeof llm,
+  provider: InstanceType<typeof MockLlmProvider>,
 ): Promise<void> {
   await drainCharacterAuthoringJobs({ llm: provider, workerId: "ns-route-test" });
 }
 
 async function acceptedAttemptId(response: Response): Promise<string> {
-  const body = (await response.json()) as {
-    attemptId?: string;
-    draft?: { id: string };
-  };
+  const body = z.object({ attemptId: z.string().optional(), draft: z.object({ id: z.string() }).optional() }).parse(await response.json());
   const attemptId = body.attemptId ?? body.draft?.id;
   assert.ok(attemptId);
   return attemptId;
@@ -164,6 +169,14 @@ before(async () => {
     ownerUserId: "narration-route-opponent",
     displayName: "語り検証相手",
   }));
+  for (const id of ["narration-route-mine", "narration-route-opponent"]) {
+    const current = await characters.getSheet(id);
+    assert.ok(current);
+    await generations.createAssetGeneration({ assetType: "character", assetId: id,
+      schemaVersion: 3, content: buildV3CharacterEnvelopeFixture(current) });
+  }
+  await settings.updateDialoguePipelineSettings({ userId: "narration-route-owner",
+    patch: { ...createConsciousFixture().settings, schemaVersion: 3, expectedRevision: 0 } });
   await insertLegacyStyle(style("narration-route-legacy", "未更新スタイル"));
   await insertLegacyStyle(style("narration-route-unsupported", "選べないスタイル"));
   await insertLegacyStyle(style("narration-route-expiry", "期限切れスタイル"));
@@ -202,7 +215,7 @@ describe("structured narration route acceptance", () => {
       body: JSON.stringify({ prompt: "途中失敗する語り口" }),
     });
     assert.equal(response.status, 202);
-    assert.ok(((await response.json()) as { attemptId: string }).attemptId);
+    assert.ok(z.object({ attemptId: z.string() }).parse(await response.json()).attemptId);
     await drainAuthoring(failureLlm);
     const attempt = await query<{
       narration_style_id: string;
@@ -227,27 +240,17 @@ describe("structured narration route acceptance", () => {
       headers: authHeaders,
     });
     assert.equal(management.status, 200);
-    const body = (await management.json()) as {
-      styles: Array<{
-        id: string;
-        selectable: boolean;
-        compatibility: { status: string };
-        upgradeAction: { targetSchemaVersion: number } | null;
-        instruction?: string;
-      }>;
-    };
+    const body = z.object({ styles: z.array(NarrationStylePublicSchema.passthrough()) }).parse(await management.json());
     const legacy = body.styles.find((value) => value.id === "narration-route-legacy");
     assert.equal(legacy?.selectable, false);
-    assert.equal(legacy?.compatibility.status, "unsupported");
+    assert.equal(legacy?.compatibility?.status, "unsupported");
     assert.equal(legacy?.upgradeAction?.targetSchemaVersion, 2);
     assert.equal("instruction" in (legacy ?? {}), false);
 
     const selectable = await app.request("/api/narration-styles?selectable=true", {
       headers: authHeaders,
     });
-    const ids = new Set(((await selectable.json()) as {
-      styles: Array<{ id: string }>;
-    }).styles.map((value) => value.id));
+    const ids = new Set(z.object({ styles: z.array(NarrationStylePublicSchema.passthrough()) }).parse(await selectable.json()).styles.map((value) => value.id));
     assert.equal(ids.has("narration-route-ready"), true);
     assert.equal(ids.has("narration-route-legacy"), false);
 
@@ -269,7 +272,7 @@ describe("structured narration route acceptance", () => {
       });
       assert.equal(battle.status, 409);
       assert.equal(
-        ((await battle.json()) as { error: string }).error,
+        z.object({ error: z.string() }).parse(await battle.json()).error,
         "narration_style_upgrade_required",
       );
     } finally {
@@ -296,12 +299,10 @@ describe("structured narration route acceptance", () => {
       { headers: authHeaders },
     );
     assert.equal(createdReview.status, 200);
-    const createdDraft = (await createdReview.json()) as {
-      attemptId: string;
-      assetId: string;
-      candidate: { id: string; description: string; instruction?: string } | null;
-      definition: Pick<NarrationDefinitionV2, "phases" | "voice"> | null;
-    };
+    const createdDraft = z.object({ attemptId: z.string(), assetId: z.string(),
+      candidate: z.object({ id: z.string(), description: z.string() }).passthrough().nullable(),
+      definition: NarrationDefinitionV2Schema.nullable(),
+    }).parse(await createdReview.json());
     assert.ok(createdDraft.candidate);
     assert.equal(createdDraft.definition?.voice.register, "broadcast");
     assert.deepEqual(Object.keys(createdDraft.definition?.phases ?? {}), [
@@ -357,13 +358,7 @@ describe("structured narration route acceptance", () => {
     const listed = await app.request("/api/narration-styles", {
       headers: authHeaders,
     });
-    const listedBody = await listed.json() as {
-      styles: Array<{
-        id: string;
-        reviewState: string | null;
-        reviewAttemptId: string | null;
-      }>;
-    };
+    const listedBody = z.object({ styles: z.array(NarrationStylePublicSchema.passthrough()) }).parse(await listed.json());
     const marked = listedBody.styles.find((item) => item.id === "narration-route-legacy");
     assert.equal(marked?.reviewState, "awaiting_acceptance");
     assert.equal(marked?.reviewAttemptId, upgradeAttemptId);
@@ -400,7 +395,7 @@ describe("structured narration route acceptance", () => {
       }),
     });
     assert.equal(response.status, 200);
-    const battleId = ((await response.json()) as { battle: { id: string } }).battle.id;
+    const battleId = z.object({ battle: BattlePublicSchema.passthrough() }).parse(await response.json()).battle.id;
     const state = await battleRepo.getBattle(battleId);
     assert.ok(state?.assetManifest);
     assert.equal(state.assetManifest.narrationStyle.generationId, ready.generationId);
@@ -533,5 +528,63 @@ describe("structured narration route acceptance", () => {
       /ASSET_CURRENT_GENERATION_DRIFT/,
     );
     assert.equal(await generationCount(driftStyle.id), countAfterConcurrent);
+  });
+
+  it("rejects corrupt stored styles on confirmation and completed replay without appending a generation", async () => {
+    const provider = new MockLlmProvider();
+    const started = await narrationAssetRepo.beginNarrationStyleAuthoringAttempt({
+      ownerUserId: "narration-route-owner", kind: "create",
+      idempotencyKey: "narration-stored-row-create", requestDigest: "stored-row-create",
+      sourceText: "確定後の保存値を検証する", sourceDigest: "stored-row-source",
+    });
+    const candidate = await buildNarrationStyleGenerationCandidate({
+      llm: provider, attemptId: started.attempt.attemptId,
+      narrationStyleId: started.attempt.narrationStyleId, ownerUserId: "narration-route-owner",
+      sourceText: "確定後の保存値を検証する", sourceKind: "create_instruction",
+      generated: style(started.attempt.narrationStyleId, "保存値検証スタイル"),
+    });
+    await narrationAssetRepo.saveNarrationStyleAuthoringCandidate({
+      attemptId: started.attempt.attemptId, ownerUserId: "narration-route-owner",
+      envelope: candidate.envelope, assistantMessage: "stored row fixture",
+    });
+    const activated = await narrationAssetRepo.activateNarrationStyleAuthoringAttempt({
+      attemptId: started.attempt.attemptId, ownerUserId: "narration-route-owner",
+    });
+    const revision = await narrationAssetRepo.beginNarrationStyleAuthoringAttempt({
+      ownerUserId: "narration-route-owner", narrationStyleId: activated.style.id,
+      kind: "revision", idempotencyKey: "narration-stored-row-revision",
+      requestDigest: "stored-row-revision", sourceText: "短くする", sourceDigest: "stored-row-edit",
+    });
+    const revisionCandidate = await buildNarrationStyleGenerationCandidate({
+      llm: provider, attemptId: revision.attempt.attemptId,
+      narrationStyleId: activated.style.id, ownerUserId: "narration-route-owner",
+      sourceText: "短くする", sourceKind: "revision_instruction",
+      generated: { ...activated.style, instruction: "短くする" }, existing: activated.style,
+    });
+    await narrationAssetRepo.saveNarrationStyleAuthoringCandidate({
+      attemptId: revision.attempt.attemptId, ownerUserId: "narration-route-owner",
+      envelope: revisionCandidate.envelope, assistantMessage: "typed revision fixture",
+    });
+    const original = JSON.stringify(activated.style);
+    await query("UPDATE narration_styles SET sheet_json = $2 WHERE id = $1",
+      [activated.style.id, JSON.stringify({ ...activated.style, instruction: null })]);
+    try {
+      for (const attemptId of [started.attempt.attemptId, revision.attempt.attemptId]) {
+        await assert.rejects(narrationAssetRepo.activateNarrationStyleAuthoringAttempt({
+          attemptId, ownerUserId: "narration-route-owner",
+        }), /NARRATION_STYLE_STORED_ROW_INVALID/);
+      }
+      assert.equal(await generationCount(activated.style.id), 1);
+      assert.equal((await narrationAssetRepo.getReadyNarrationStyleGeneration(activated.style.id))?.generationId,
+        activated.generation.generationId);
+    } finally {
+      await query("UPDATE narration_styles SET sheet_json = $2 WHERE id = $1", [activated.style.id, original]);
+    }
+    const replayed = await narrationAssetRepo.activateNarrationStyleAuthoringAttempt({
+      attemptId: started.attempt.attemptId, ownerUserId: "narration-route-owner",
+    });
+    assert.deepEqual(replayed.style, activated.style);
+    assert.equal(replayed.generation.generationId, activated.generation.generationId);
+    assert.equal(await generationCount(activated.style.id), 1);
   });
 });

@@ -1,0 +1,23 @@
+{
+  "scope": "7-file phase from recorded diagnostic start through review, fixture repair, registration and final readback; earlier exploratory preparation excluded",
+  "startedUnix": 1791366377.9074512,
+  "finishedUnix": 1791367112.5137765,
+  "elapsedSeconds": 734.6063261032104,
+  "wholeFiles": 7,
+  "cases": 43,
+  "registrationWriter": {
+    "scope": "registration writer only, excludes prior review and verification",
+    "elapsedSeconds": 355.3883159160614,
+    "wholeFiles": 7,
+    "newRefs": 18,
+    "causeEdges": 45
+  },
+  "method": "seven-file definition-to-bound-reader contract unit, reuse bounded independent review, one strict invocation, exact source/cause readback",
+  "comparison": {
+    "previousRegistrationOnlySeconds": 1017.8405129909515,
+    "previousWholeFiles": 12,
+    "currentRegistrationSecondsPerFile": 50.7697594165802,
+    "previousRegistrationSecondsPerFile": 84.82004274924596,
+    "limitations": "Writer-only samples have different source sizes and cause-edge counts; do not compare previous writer time against current whole-phase time or infer general performance."
+  }
+}

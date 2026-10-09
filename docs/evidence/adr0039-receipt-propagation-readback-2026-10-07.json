@@ -1,0 +1,17 @@
+{
+  "updatedRefs": 115,
+  "totalRefs": 1067,
+  "unaffectedHeadsUnchanged": 952,
+  "heldHeadsUnchanged": 8,
+  "sourceBytesMatch": true,
+  "draft": false,
+  "stale": 0,
+  "fsck": "ok",
+  "allOldSealsRetained": 1405,
+  "historicalLeavesVerifiedByExactSelector": 52,
+  "currentGraphIsObservedReachabilityNotRetentionInventory": true,
+  "exactCauseTargetsMessagesPreviousVerified": true,
+  "rootExactPrefixPreserved": true,
+  "testBodiesEdited": 0,
+  "testPassClaimedFromPropagation": false
+}

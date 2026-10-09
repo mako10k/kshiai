@@ -1,0 +1,14 @@
+domain GUIDANCE_SEALING:
+  description "Seal only the reviewed guidance delivery chain and three diagnostic test sources."
+evidence OWNER:
+  "Owner explicitly orders Seal after mechanical typed handoff repair and five compiler omission diagnostics."
+evidence CURRENT:
+  "Existing store contains 529 refs; proposed new scoped refs are absent. Normal full typecheck and restored backend typecheck succeeded, three diagnostic test files passed 23 cases; both content-loss mutations failed as intended."
+premise AUTHORITY:
+  "ADR0050 think records owner adoption and supersession; Accepted ADR0051 inherits pipeline except accounting proof. Requirement/basic design header records adoption. Preserve historical text and limit interpretation to U08/section6 and compiler live guidance duty. Sealing is provenance, not new requirement acceptance or semantic truth."
+premise SCOPE:
+  "New refs only for exact existing authority records, guidance detail, selected transfer source modules, three tests and readback evidence. Preserve old refs and unrelated unsealed tests. No remote publication, deployment, paid calls, PERT mutation or blanket resealing."
+premise OPTIONS:
+  "Reusing old compiler test authority does not cover new consumer. Sealing only tests lacks current cause chain. Scoped upstream/source/test links preserve reviewed provenance without claiming whole repository coverage."
+decision SEAL based_on OWNER, CURRENT, AUTHORITY, SCOPE, OPTIONS:
+  "Freeze exact paths/digests and cause targets in a registration packet. Publish reviewed new refs one at a time, verify bytes and exact cause IDs, register only three tests in existing inventory, inspect active classification and keep aggregate unsealed stop. Run stale and fsck readback and record limits."

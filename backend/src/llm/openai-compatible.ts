@@ -1,9 +1,10 @@
+import { CHARACTER_PROFILE_GENERATION_SYSTEM_V1, CHARACTER_PROFILE_CLAIM_SYSTEM_V1 } from "./character-profile-prompts.js";
 // R: Adapt domain LLM operations to accounted OpenAI-compatible chat requests.
 import { CURRENT_DIRECT_NARRATION_CONTRACT, type NarrationPromptContract } from "./narration-prompt-contract.js";
 import { observeLlmPhysicalAttempt } from "../repositories/llm-usage-observation.js";
 import { AwarenessDefaultPolicy } from "@kshiai/shared";
 import { decodeAwarenessRefereeResult, decodeAwarenessSemanticResult, AwarenessHappeningResultSchema } from "./awareness-adjudication-result.js";
-import { renderPromptSections } from "./prompt-prose.js";
+import { renderAdjudicationPrompt } from "./adjudication-prompt-prose.js";
 import { currentAwarenessDispatchContext } from "./awareness-dispatch-context.js";
 import { runConsciousGeneration, dynamicAgentResult, dynamicLaterInput } from "./conscious-dynamic.js";
 import { modelRequestOptions } from "./model-request-options.js";
@@ -750,7 +751,7 @@ function parseGeneratedSkill(raw: unknown) {
 
 function parseGeneratedEquipment(raw: unknown) {
   if (raw === null) return null;
-  const parsed = EquipmentSchema.safeParse(raw);
+  const parsed = EquipmentSchema.omit({ balanceTradeoff: true }).safeParse(raw);
   return parsed.success ? parsed.data : undefined;
 }
 
@@ -922,7 +923,7 @@ export class OpenAiCompatibleProvider implements LlmProvider {
       // Legacy domain helpers serialize already-projected data. Convert it mechanically for this role only.
       try {
         const data: unknown = JSON.parse(user);
-        user = renderPromptSections([{ title: "裁定に使える確定資料", value: data }]);
+        user = renderAdjudicationPrompt(data);
       } catch (error) {
         if (!(error instanceof SyntaxError)) throw error;
       }
@@ -1098,7 +1099,8 @@ Rules:
 - Use /placement held by character.<side> for a successful pickup. A failed reach has no success change.
 - Free actions never change HP, MP, parameters, canFight, identity, consciousness, agency, history, or winner.
 - causalEnvelope is qualitative planning input, not damage authority; improvised objects may be at most moderate.
-- Return exactly one proposal for each supplied intent and do not expose canonical facts in successSummary when the actor would not perceive them.`,
+- Return exactly one proposal for each supplied intent and do not expose canonical facts in successSummary when the actor would not perceive them.
+${freeActionPenaltyInstructions(input.penaltyContext)}`,
         JSON.stringify(input),
         {
           tier: "fast",
@@ -1117,6 +1119,11 @@ Rules:
         if (new Set(actual).size !== actual.length || expected.length !== actual.length ||
             expected.some((side, index) => side !== actual[index])) {
           throw new Error("AWARENESS_FREE_ACTION_PROPOSAL_COVERAGE");
+        }
+      }
+      for (const proposal of parsed.data.proposals) {
+        if (input.penaltyContext?.policyBySide[proposal.actorSide] && proposal.penalty === undefined) {
+          throw new Error("FREE_ACTION_PENALTY_CONTRACT_MISSING");
         }
       }
       return parsed.data;
@@ -1621,33 +1628,19 @@ Safe-for-work anime portrait only.`,
   ): Promise<GenerateCharacterProfileResult> {
     if (!this.client) return this.fallback.generateCharacterProfile(input);
     try {
-      const data = await this.chatJson(
-        `You write a concise public character profile from a server-approved fact projection.
-Return JSON only: {
-  "description": string,
-  "segments": [{ "id": string, "text": string,
-    "kind": "fact"|"flavor", "supportRefs": string[] }],
-  "assistantMessage": string
-}
-Use the same language as the owner source. The owner source may guide tone and emphasis,
-but it is NOT permission to publish a fact. Every material factual segment must cite one
-or more exact supportRef values from approvedFacts. Flavor may add rhythm or metaphor,
-but must not add a proper noun, number, capability, item, relationship, history event,
-hidden cause, or information right. Do not expose schema names, IDs, control values,
-numeric combat values, hidden psyche dynamics, or disclosure rules. Keep the description
-to 2-4 natural sentences and no more than 1600 characters. description must be the exact
-segment texts joined in order, with no additional unsegmented prose.`,
+      const data = z.record(z.unknown()).parse(await this.chatJson(
+        CHARACTER_PROFILE_GENERATION_SYSTEM_V1,
         JSON.stringify({
           ownerSourceForToneOnly: input.sourceText.slice(0, 6000),
           displayName: input.projection.displayName,
           approvedFacts: input.projection.facts,
         }),
         { tier: "engine", label: "generateCharacterProfile", temperature: 0.6 },
-      ) as Record<string, unknown>;
+      ));
       const segments = (Array.isArray(data.segments) ? data.segments : [])
         .slice(0, 12)
         .map((raw, index) => {
-          const value = raw as Record<string, unknown>;
+          const value = z.record(z.unknown()).parse(raw);
           return {
             id: String(value.id ?? `segment-${index + 1}`).slice(0, 120),
             text: String(value.text ?? "").slice(0, 1200),
@@ -1981,28 +1974,8 @@ to wait or another default action.`,
     input: ValidateCharacterProfileClaimsInput,
   ): Promise<ValidateCharacterProfileClaimsResult> {
     if (!this.client) return this.fallback.validateCharacterProfileClaims(input);
-    const data = await this.chatJson(
-      `You are an independent bounded material-claim validator for a public character profile.
-Return JSON only: {
-  "segments": [{
-    "segmentId": string,
-    "verdict": "supported"|"flavor_only"|"unsupported",
-    "supportRefs": string[],
-    "riskCodes": string[]
-  }]
-}
-
-You receive ONLY the candidate public profile and the server-approved public projection.
-Assess every candidate segment exactly once. A fact is supported only when its complete
-material meaning follows from one or more approved facts; return their exact supportRef
-values. Do not infer from style, plausibility, common sense, or a character name.
-flavor_only is allowed only for a flavor segment that adds rhythm, imagery, or metaphor
-without adding any proper noun, number, capability, item, relationship, history event,
-hidden cause, information right, mechanics, contradiction, or control metadata.
-Otherwise return unsupported and all applicable riskCodes from:
-proper_noun, number, capability, item, relationship, history_event, hidden_cause,
-information_right, mechanics, contradiction, control_metadata.
-Never rewrite, repair, or omit a segment. Never expose or guess restricted information.`,
+    const data = z.record(z.unknown()).parse(await this.chatJson(
+      CHARACTER_PROFILE_CLAIM_SYSTEM_V1,
       JSON.stringify({
         approvedProjection: input.projection,
         candidateProfile: input.profile,
@@ -2012,11 +1985,11 @@ Never rewrite, repair, or omit a segment. Never expose or guess restricted infor
         label: "validateCharacterProfileClaims",
         temperature: 0,
       },
-    ) as Record<string, unknown>;
+    ));
     const rawSegments = Array.isArray(data.segments) ? data.segments : [];
     return {
       segments: rawSegments.slice(0, 12).map((raw) => {
-        const value = raw as Record<string, unknown>;
+        const value = z.record(z.unknown()).parse(raw);
         const verdict = value.verdict === "supported" ||
             value.verdict === "flavor_only" || value.verdict === "unsupported"
           ? value.verdict
@@ -4111,4 +4084,12 @@ Default perspective external unless the user clearly wants subjective/omniscient
       }));
     }
   }
+}
+
+function freeActionPenaltyInstructions(context: Parameters<LlmProvider["adjudicateFreeActions"]>[0]["penaltyContext"]) {
+  if (!context) return "Historical action policy: do not propose an effort penalty.";
+  return `For a side with policyBySide=battle-action-effort-v1, penalty is required: null for ordinary effort, or one object.
+Choose kind extra_stamina for bodily effort (light/substantial/extreme maps to STA2/4/8), defense_exposure for an exposed posture (10/20/30 percent for the next incoming attack only), or execution_limit for physically overloaded action.
+Every object needs level, reason, an exact actionQuote from that side's intent.description, and baseWorldRevision=${context.baseWorldRevision}. execution_limit also needs execution=partial|not_executed, executedDescription (nonempty for partial), and appliedChangeIndexes. For partial, list the full intended changes and select a strict subset of their zero-based indexes; only selected changes are applied. For not_executed, outcome must be impossible, without subject or changes, and executedDescription and appliedChangeIndexes must be empty.
+Select at most one primary consequence; never charge thought or ordinary speech. Do not repeat a stamina charge as an exposure penalty for the same cause. Use actor conditions and canonical facts; invented capabilities or private thought are not evidence. Never patch parameters directly. For historical sides use penalty=null.`;
 }

@@ -1,0 +1,14 @@
+domain RETIRED_AUTHORING_TEST:
+  description "Replace unreachable legacy writer success scenarios with accepted rejection and preserve current claim readiness coverage."
+evidence AUTHORITY:
+  "AcceptedADR0043 Decision/Verification requires focused character-v3 ordinary writes or failure before provider work, retains explicit migration and historical imports separately. ADR0048 retains public claim receipt validation and rejects fabricated successful receipts."
+evidence REVIEW:
+  "Read legacy builder first statement unconditional LEGACY_CHARACTER_AUTHORING_RETIRED and five obsolete tests expecting its V2 pipeline. Independent review found current V3 adapter public/private projection and norm-preservation, semantic migration mechanics-preservation and bounded-repair tests; unsupported claim is tested in shared validator but lacks inspected V3 readiness negative. Read assertCharacterCandidateReady: V3 validates matching public projection and claim receipt through actual validator. Existing adapter positive candidate has supported receipt and tests denied disclosure mismatch."
+premise SCOPE:
+  "Replace retired function's five incompatible positive cases with four distinct source-kind refusal/no-provider/no-status cases; retain adjustment parsing test and generated input helper. This legacy builder cannot serve permitted migration/import: test checks this entry point only. Add an unsupported claim receipt negative to the real V3 candidate-readiness case to cover lost nonactivation obligation. Keep separate current positive/migration tests intact. No provider/source implementation, owner migration rights or persistence guards change."
+premise UNKNOWN:
+  "These tests do not prove route atomic storage or live V3 authoring quality. Introducing historical commit remains unknown; immediate failure condition is retired API invoked by old scenarios, detection gap is prior excluded/unsealed tests."
+premise ALTERNATIVES:
+  "Reactivating V2 writer contradicts owner; deleting old cases alone leaves missing V3 readiness negative; forcing old status sequence onto V3 would invent an upstream obligation."
+decision D1 based_on AUTHORITY, REVIEW, SCOPE, UNKNOWN, ALTERNATIVES:
+  "Audit, update only the two test files, diagnose both and check types. Preserve old evidence and unresolved seals; do not call aggregate passed."

@@ -1,0 +1,305 @@
+{
+  "entries": [
+    {
+      "key": "owner-contract",
+      "path": "docs/adr/0060-owner-test-contract-recovery.think",
+      "parents": [],
+      "scope": "Direct owner Accepted decision, exact current canonical ADR bytes; historical proposals retained, no paid/deploy authority.",
+      "ref": "all-tests-20261008/authority-owner-contract-recovery",
+      "test": false,
+      "sha256": "23f0c858776ccb127bcb345d8d40d89d46e79b8b23c1692eb774da7bfb310725",
+      "sealId": "214dad6f51c26770d5acc145acfc01f9d69bf15eeab57ccefdb7fa080ad4a6e4",
+      "causeSealIds": []
+    },
+    {
+      "key": "improvement-contract",
+      "path": "docs/adr/0061-manual-improvement-analysis-eligibility.think",
+      "parents": [],
+      "scope": "Direct owner Accepted decision, exact current canonical ADR bytes; historical proposals retained, no paid/deploy authority.",
+      "ref": "all-tests-20261008/authority-owner-improvement",
+      "test": false,
+      "sha256": "95b13e88fafd231073bea1144a1f149b3e0ef581044306a30df2fae0a4475b05",
+      "sealId": "8c65aa322718355bf765324f0ff1d729b8b01aefd0c9a77b517ea64bf1feb6de",
+      "causeSealIds": []
+    },
+    {
+      "key": "design-owner-visibility-fallback",
+      "path": "docs/owner-visibility-fallback-test-contract-review-2026-10-08.md",
+      "parents": [
+        "owner-contract",
+        "envelope"
+      ],
+      "scope": "Owner AcceptedADR0060 unknown visibility private and owner-directed friends; general 429 exact one-hour provider fallback and typed receipts; retained DNS/billing and terminal operation errors. Whole original10+1added local cases; no awareness autoswitch, live/providerquality or deployment claim.",
+      "ref": "all-tests-20261008/design-owner-visibility-fallback",
+      "test": false,
+      "sha256": "6151516fe792ebe890c705008cf45174623c1b597b5f876c557fcee7e1c373ae",
+      "sealId": "644ee8e6fc5cb3dd771ad9b172900fb59efe9b23e1e31443d8dbf924ae476498",
+      "causeSealIds": [
+        "214dad6f51c26770d5acc145acfc01f9d69bf15eeab57ccefdb7fa080ad4a6e4",
+        "fdaeaeb9f3694421a8776649f58ec4e89962ae6f95fc3249b8ca4b6a93b6e3ed"
+      ]
+    },
+    {
+      "key": "implementation-owner-visibility",
+      "path": "packages/shared/src/asset-visibility.ts",
+      "parents": [
+        "design-owner-visibility-fallback"
+      ],
+      "scope": "Owner AcceptedADR0060 unknown visibility private and owner-directed friends; general 429 exact one-hour provider fallback and typed receipts; retained DNS/billing and terminal operation errors. Whole original10+1added local cases; no awareness autoswitch, live/providerquality or deployment claim.",
+      "ref": "all-tests-20261008/implementation-owner-visibility",
+      "test": false,
+      "sha256": "9f5053543357b4cfc81c0d8f99e4509f68fd77fde21ad480dcd12794effb3c97",
+      "sealId": "bedb4dbd1c1d1dbacbc7e331c1584e0814e0fda38ec2d3fad470347e351cbc49",
+      "causeSealIds": [
+        "644ee8e6fc5cb3dd771ad9b172900fb59efe9b23e1e31443d8dbf924ae476498"
+      ]
+    },
+    {
+      "key": "implementation-owner-friends",
+      "path": "backend/src/repositories/friends.ts",
+      "parents": [
+        "design-owner-visibility-fallback"
+      ],
+      "scope": "Owner AcceptedADR0060 unknown visibility private and owner-directed friends; general 429 exact one-hour provider fallback and typed receipts; retained DNS/billing and terminal operation errors. Whole original10+1added local cases; no awareness autoswitch, live/providerquality or deployment claim.",
+      "ref": "all-tests-20261008/implementation-owner-friends",
+      "test": false,
+      "sha256": "ab5e4bb89e6cbd3a77bf53c6db424351cc0a28ae6e944d4af1a1f7fa3643c12a",
+      "sealId": "77b58a394dd5db946ee404b1ad9a053c5e5d60bbd3db8284e46af346014bc5fa",
+      "causeSealIds": [
+        "644ee8e6fc5cb3dd771ad9b172900fb59efe9b23e1e31443d8dbf924ae476498"
+      ]
+    },
+    {
+      "key": "implementation-owner-visibility-filter",
+      "path": "backend/src/repositories/asset-visibility.ts",
+      "parents": [
+        "implementation-owner-visibility",
+        "implementation-owner-friends"
+      ],
+      "scope": "Owner AcceptedADR0060 unknown visibility private and owner-directed friends; general 429 exact one-hour provider fallback and typed receipts; retained DNS/billing and terminal operation errors. Whole original10+1added local cases; no awareness autoswitch, live/providerquality or deployment claim.",
+      "ref": "all-tests-20261008/implementation-owner-visibility-filter",
+      "test": false,
+      "sha256": "93106967599716a73b6845b7794b462f21fda05ce7f3593e3ce255a84499f550",
+      "sealId": "51969de1dfba7bdafa9a74aa06ffff7abd1c1d6180eaaa45b22a39734402c3f3",
+      "causeSealIds": [
+        "bedb4dbd1c1d1dbacbc7e331c1584e0814e0fda38ec2d3fad470347e351cbc49",
+        "77b58a394dd5db946ee404b1ad9a053c5e5d60bbd3db8284e46af346014bc5fa"
+      ]
+    },
+    {
+      "key": "implementation-owner-route-receipt",
+      "path": "packages/shared/src/provider-route.ts",
+      "parents": [
+        "design-owner-visibility-fallback"
+      ],
+      "scope": "Owner AcceptedADR0060 unknown visibility private and owner-directed friends; general 429 exact one-hour provider fallback and typed receipts; retained DNS/billing and terminal operation errors. Whole original10+1added local cases; no awareness autoswitch, live/providerquality or deployment claim.",
+      "ref": "all-tests-20261008/implementation-owner-route-receipt",
+      "test": false,
+      "sha256": "dc4802cf1fceaf0c0306d449b5d51014ce52c5f0900434fd6380ff9a8ae599f0",
+      "sealId": "f9b3a4d6f73ad8db9d9f31e69e44fb9efedf15181583c1cbe7cbcea2cf6f9648",
+      "causeSealIds": [
+        "644ee8e6fc5cb3dd771ad9b172900fb59efe9b23e1e31443d8dbf924ae476498"
+      ]
+    },
+    {
+      "key": "implementation-owner-provider-errors",
+      "path": "backend/src/llm/provider-errors.ts",
+      "parents": [
+        "design-owner-visibility-fallback"
+      ],
+      "scope": "Owner AcceptedADR0060 unknown visibility private and owner-directed friends; general 429 exact one-hour provider fallback and typed receipts; retained DNS/billing and terminal operation errors. Whole original10+1added local cases; no awareness autoswitch, live/providerquality or deployment claim.",
+      "ref": "all-tests-20261008/implementation-owner-provider-errors",
+      "test": false,
+      "sha256": "e11320210883062c34809ae2cc32ffb7686e24b828ec5e294a83c4264a9fc2a6",
+      "sealId": "d03603a842ce328363ed673bcdf6fd2ff1eed253191a86fbe49aa126ff03eaad",
+      "causeSealIds": [
+        "644ee8e6fc5cb3dd771ad9b172900fb59efe9b23e1e31443d8dbf924ae476498"
+      ]
+    },
+    {
+      "key": "implementation-owner-fallback",
+      "path": "backend/src/llm/fallback.ts",
+      "parents": [
+        "implementation-owner-route-receipt",
+        "implementation-owner-provider-errors",
+        "mock"
+      ],
+      "scope": "Owner AcceptedADR0060 unknown visibility private and owner-directed friends; general 429 exact one-hour provider fallback and typed receipts; retained DNS/billing and terminal operation errors. Whole original10+1added local cases; no awareness autoswitch, live/providerquality or deployment claim.",
+      "ref": "all-tests-20261008/implementation-owner-fallback",
+      "test": false,
+      "sha256": "4651355187f8fc0040d03c8d37b8ca6d05f0c96fb9721db734b1beb55bf32ba6",
+      "sealId": "6f9888992cc5b9c4c965f7e9dd0a32b60a35cd69a4f52167beed5b249c3313e5",
+      "causeSealIds": [
+        "f9b3a4d6f73ad8db9d9f31e69e44fb9efedf15181583c1cbe7cbcea2cf6f9648",
+        "d03603a842ce328363ed673bcdf6fd2ff1eed253191a86fbe49aa126ff03eaad",
+        "e418d4ec33efce96955bece728bddb6140a4effb4e9c36b6f2fb46ac89ef85e4"
+      ]
+    },
+    {
+      "key": "owner-shared-visibility-20261008",
+      "path": "packages/shared/src/asset-visibility.test.ts",
+      "parents": [
+        "implementation-owner-visibility"
+      ],
+      "scope": "Owner AcceptedADR0060 unknown visibility private and owner-directed friends; general 429 exact one-hour provider fallback and typed receipts; retained DNS/billing and terminal operation errors. Whole original10+1added local cases; no awareness autoswitch, live/providerquality or deployment claim.",
+      "ref": "verification/owner-shared-visibility-20261008",
+      "test": true,
+      "sha256": "2de6ec2d9b0a400b23cd303d2b6b124922e7c92759d768b1bbfdaa9595011524",
+      "sealId": "774078d7a91807ccded4a11b6197a7c2d8b0071962bb5a3f608f8e98bdd86b6e",
+      "causeSealIds": [
+        "bedb4dbd1c1d1dbacbc7e331c1584e0814e0fda38ec2d3fad470347e351cbc49"
+      ]
+    },
+    {
+      "key": "owner-backend-visibility-20261008",
+      "path": "backend/src/repositories/asset-visibility.test.ts",
+      "parents": [
+        "implementation-owner-visibility-filter"
+      ],
+      "scope": "Owner AcceptedADR0060 unknown visibility private and owner-directed friends; general 429 exact one-hour provider fallback and typed receipts; retained DNS/billing and terminal operation errors. Whole original10+1added local cases; no awareness autoswitch, live/providerquality or deployment claim.",
+      "ref": "verification/owner-backend-visibility-20261008",
+      "test": true,
+      "sha256": "79bf98763472116d1f727ec673c10791ca033e50284236e058f2b1142d66337b",
+      "sealId": "178cfb8335f544de73e62c954d2eeab772b3f43dfd9b86eb38770e9a7e80b75b",
+      "causeSealIds": [
+        "51969de1dfba7bdafa9a74aa06ffff7abd1c1d6180eaaa45b22a39734402c3f3"
+      ]
+    },
+    {
+      "key": "owner-fallback-20261008",
+      "path": "backend/src/llm/fallback.test.ts",
+      "parents": [
+        "implementation-owner-fallback"
+      ],
+      "scope": "Owner AcceptedADR0060 unknown visibility private and owner-directed friends; general 429 exact one-hour provider fallback and typed receipts; retained DNS/billing and terminal operation errors. Whole original10+1added local cases; no awareness autoswitch, live/providerquality or deployment claim.",
+      "ref": "verification/owner-fallback-20261008",
+      "test": true,
+      "sha256": "e8aac7f8f90681ed530bf23cf7b1d7ddd1dccbba3077c14ce939d93353186b70",
+      "sealId": "319168d850906297165aa87f23d140e158b7b12d60b65719b851617ed22f0566",
+      "causeSealIds": [
+        "6f9888992cc5b9c4c965f7e9dd0a32b60a35cd69a4f52167beed5b249c3313e5"
+      ]
+    },
+    {
+      "key": "design-owner-rating-snapshot",
+      "path": "docs/rating-settlement-snapshot-design-2026-10-08.md",
+      "parents": [
+        "owner-contract",
+        "awareness",
+        "world",
+        "lifecycle",
+        "narration"
+      ],
+      "scope": "AcceptedADR0060 stored settlement snapshots projected without current population rebasing. Whole original15 public DTO/privacy/continuation cases retained under inherited Accepted boundaries. No settlement formula, new storage, historical displayed-mean reconstruction or live/deploy claim.",
+      "ref": "all-tests-20261008/design-owner-rating-snapshot",
+      "test": false,
+      "sha256": "c9aa6433707f6dcdc606d108af62abafd0ce052b7b393dc7bf982528bc31a1e4",
+      "sealId": "3a97aa5af1fa13bea924881ee676e57c6439e4d3558c7bec490442f7e2ecaf13",
+      "causeSealIds": [
+        "214dad6f51c26770d5acc145acfc01f9d69bf15eeab57ccefdb7fa080ad4a6e4",
+        "4a236b55e9ad9e4aa54eb2c6bbe9d77e0a318881ba8328363505153d16e151dd",
+        "bbdf88f6e4a55ed11c978c75df29f590ddd1d99c7383eac1a9b26d54609c9031",
+        "f49312f0b4c786dd41b4c2092a992dfebd04bfff33396a4891a199add8f5f17e",
+        "9aae6f378e9b227f6909912129368e8317bdc4d773933342da1ca3914be6dae0"
+      ]
+    },
+    {
+      "key": "implementation-owner-rating-projection",
+      "path": "backend/src/services/battle-public-projection.ts",
+      "parents": [
+        "design-owner-rating-snapshot"
+      ],
+      "scope": "AcceptedADR0060 stored settlement snapshots projected without current population rebasing. Whole original15 public DTO/privacy/continuation cases retained under inherited Accepted boundaries. No settlement formula, new storage, historical displayed-mean reconstruction or live/deploy claim.",
+      "ref": "all-tests-20261008/implementation-owner-rating-projection",
+      "test": false,
+      "sha256": "df6e8d86c696507428e05ce8eb370949b79726f58a6e266ae0ff0ecfa434dc56",
+      "sealId": "e3dd9e3e36177316417c7589aee4d27c0e312e9ecd02a85a13cb3b47fca5bc57",
+      "causeSealIds": [
+        "3a97aa5af1fa13bea924881ee676e57c6439e4d3558c7bec490442f7e2ecaf13"
+      ]
+    },
+    {
+      "key": "implementation-owner-rating-viewer",
+      "path": "backend/src/services/battle-service.ts",
+      "parents": [
+        "implementation-owner-rating-projection"
+      ],
+      "scope": "AcceptedADR0060 stored settlement snapshots projected without current population rebasing. Whole original15 public DTO/privacy/continuation cases retained under inherited Accepted boundaries. No settlement formula, new storage, historical displayed-mean reconstruction or live/deploy claim.",
+      "ref": "all-tests-20261008/implementation-owner-rating-viewer",
+      "test": false,
+      "sha256": "b1cb72011a0b1c40872b4d56da313d4a01504a8e2a860dd96b087b2e7b712af1",
+      "sealId": "05bb4b1fceeb0682c87efbcae4f30792f602fb964be0eb1d396f2f2f693b6bb8",
+      "causeSealIds": [
+        "e3dd9e3e36177316417c7589aee4d27c0e312e9ecd02a85a13cb3b47fca5bc57"
+      ]
+    },
+    {
+      "key": "owner-battle-public-20261008",
+      "path": "backend/src/services/battle-public.test.ts",
+      "parents": [
+        "implementation-owner-rating-viewer",
+        "mock"
+      ],
+      "scope": "AcceptedADR0060 stored settlement snapshots projected without current population rebasing. Whole original15 public DTO/privacy/continuation cases retained under inherited Accepted boundaries. No settlement formula, new storage, historical displayed-mean reconstruction or live/deploy claim.",
+      "ref": "verification/owner-battle-public-20261008",
+      "test": true,
+      "sha256": "2395441fbd8f6b1cd879eb6a132eab77b28cab569e1d99d6ae6514c5a976621a",
+      "sealId": "187421bb2491fc67a511420e347feb04e5fbaa897a950d19fb78f8e963b9a197",
+      "causeSealIds": [
+        "05bb4b1fceeb0682c87efbcae4f30792f602fb964be0eb1d396f2f2f693b6bb8",
+        "e418d4ec33efce96955bece728bddb6140a4effb4e9c36b6f2fb46ac89ef85e4"
+      ]
+    },
+    {
+      "key": "implementation-owner-improvement",
+      "path": "packages/shared/src/character-improvement.ts",
+      "parents": [
+        "improvement-contract"
+      ],
+      "scope": "AcceptedADR0061 pure eligibility first5 finished battles and last successful analysis snapshot+10. Whole original4 cases; no paid analysis, DB successful-save, concurrency or quality proof.",
+      "ref": "all-tests-20261008/implementation-owner-improvement",
+      "test": false,
+      "sha256": "0f1dccf28b1db67ecdf0cade51c6b290187d2b404ee552f97337225df8bcfde4",
+      "sealId": "c081da104bb7926e47b688aaa941e53db143fd4ced49cef3934b1085911e254a",
+      "causeSealIds": [
+        "8c65aa322718355bf765324f0ff1d729b8b01aefd0c9a77b517ea64bf1feb6de"
+      ]
+    },
+    {
+      "key": "owner-improvement-20261008",
+      "path": "packages/shared/src/character-improvement.test.ts",
+      "parents": [
+        "implementation-owner-improvement"
+      ],
+      "scope": "AcceptedADR0061 pure eligibility first5 finished battles and last successful analysis snapshot+10. Whole original4 cases; no paid analysis, DB successful-save, concurrency or quality proof.",
+      "ref": "verification/owner-improvement-20261008",
+      "test": true,
+      "sha256": "567903c965e84a91891aa58df063db140edfde4339af04e3338e101f44aa7d40",
+      "sealId": "a481501c572e460481e221ff08443f59d6f69b82d0807d6a8638999b5f2eba44",
+      "causeSealIds": [
+        "c081da104bb7926e47b688aaa941e53db143fd4ced49cef3934b1085911e254a"
+      ]
+    }
+  ],
+  "roots": {
+    "envelope": "all-tests-20261007/authority-selectable-envelope",
+    "awareness": "awareness-guidance-20261007/authority-current",
+    "world": "all-tests-20261007/authority-canonical-placement-separation",
+    "lifecycle": "acceptance/adr-0039-v3-battle-lifecycle",
+    "narration": "all-tests-20261007/authority-canonical-narration-latest",
+    "mock": "all-tests-20261008/implementation-mock-bounded",
+    "owner-contract": "all-tests-20261008/authority-owner-contract-recovery",
+    "improvement-contract": "all-tests-20261008/authority-owner-improvement"
+  },
+  "rootSealIds": {
+    "envelope": "fdaeaeb9f3694421a8776649f58ec4e89962ae6f95fc3249b8ca4b6a93b6e3ed",
+    "awareness": "4a236b55e9ad9e4aa54eb2c6bbe9d77e0a318881ba8328363505153d16e151dd",
+    "world": "bbdf88f6e4a55ed11c978c75df29f590ddd1d99c7383eac1a9b26d54609c9031",
+    "lifecycle": "f49312f0b4c786dd41b4c2092a992dfebd04bfff33396a4891a199add8f5f17e",
+    "narration": "9aae6f378e9b227f6909912129368e8317bdc4d773933342da1ca3914be6dae0",
+    "mock": "e418d4ec33efce96955bece728bddb6140a4effb4e9c36b6f2fb46ac89ef85e4",
+    "owner-contract": "214dad6f51c26770d5acc145acfc01f9d69bf15eeab57ccefdb7fa080ad4a6e4",
+    "improvement-contract": "8c65aa322718355bf765324f0ff1d729b8b01aefd0c9a77b517ea64bf1feb6de"
+  },
+  "elapsedSeconds": 169.44
+}

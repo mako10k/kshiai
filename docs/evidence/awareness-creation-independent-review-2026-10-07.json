@@ -1,0 +1,30 @@
+{
+  "reviewer": "/root/llm_boundary_seal_audit",
+  "mode": "read-only",
+  "originalReviewedWholeFiles": 5,
+  "originalRuntimeCases": 28,
+  "sourceHashes": {
+    "backend/src/repositories/battle-awareness-creation.ts": "0fa81094da6da7c061318719a2651836d4ad1adc883bb21e2289e4e8c92ea378",
+    "backend/src/repositories/battle-awareness.ts": "7a1fb475a5b52153a4262f80a987bb0158988319a6cc0bf6f2b8df44beff2953",
+    "backend/src/services/battle-service.ts": "80eda28c060f4f789dfb64a13a3babf2e4d82db77a8b34cebeb938cba040bce8",
+    "backend/src/services/awareness-creation-encounter.ts": "84dd49b45795edf215bac5baf3114a847f421724a4f16b1b1c35c76d0dc399a0",
+    "backend/src/llm/awareness-dispatch-admission.ts": "a6df626e1c9d7f4df5a72e29357e1a00f5fd0057f15cc3e2c552bba65f487248",
+    "backend/src/llm/awareness-provider-factory.ts": "f4c116093a1499212e44c1175d891bb2a188c6c0f527b29bca9ad936ce1c1325"
+  },
+  "proofRefusalScope": "Retained immutable certified trial-v1 only; new ordinary observed usage-v2 needs no certified quote",
+  "latestPromptScope": "Manifest binding and phase receipts only, not exact prompt replacement/full normal completion",
+  "limitations": [
+    "Local privateSQLite and fake SDK transports; no actual provider/prices/PG/deployment",
+    "No old cutover replay, ordinary V2 authoring or production migration",
+    "Idempotency timeout fixture immediately throws a string, not elapsed-time evidence; exact usage-v2 revision not asserted by that case"
+  ],
+  "deltaReview": {
+    "annotationMatchesSharedSchemaSideType": true,
+    "changedFileSha256": "c7e61249546b9538e40c64cb49cd79feaaec87df0c31ef50cc60cf45d8176d45",
+    "additionalFile": "backend/src/services/battle-create-idempotency.test.ts",
+    "additionalFileSha256": "77256250fdd27414968c91b923bbec81c8355de6b128cff1b8d32f9a6fac7855",
+    "additionalOuterCases": 1,
+    "allOriginalAssertionsPreserved": 51,
+    "allOriginalTestCallsPreserved": 4
+  }
+}

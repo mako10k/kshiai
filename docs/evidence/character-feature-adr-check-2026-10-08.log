@@ -1,0 +1,51 @@
+
+> kshiai@0.23.0 adr:check
+> node scripts/check-adrs.mjs
+
+docs/adr/0015-e2e-operator-session-reentry.think: historical exception; current DSL and acceptance-marker checks excluded; Pre-DSL Accepted record; current syntax and OWNER_ACCEPTANCE markers are absent
+docs/adr/0016-scene-beats-batched-narration.think: historical exception; current DSL and acceptance-marker checks excluded; Pre-DSL Accepted record; current syntax and OWNER_ACCEPTANCE markers are absent
+docs/adr/0017-public-turn-intra-turn-beats.think: historical exception; current DSL and acceptance-marker checks excluded; Pre-DSL Accepted record; current syntax and OWNER_ACCEPTANCE markers are absent
+docs/adr/0018-dialogue-context-activation-authority.think: LLMTHINK audit clean; projection status=Accepted
+docs/adr/0019-observation-token-and-cost-admission.think: historical exception; current DSL and acceptance-marker checks excluded; Historical Proposed record; legacy premise syntax and acceptance markers predate current checker
+docs/adr/0020-reposition-and-appropriate-range.think: LLMTHINK audit clean; projection status=Accepted
+docs/adr/0021-engine-live-continuation-and-type-escapes.think: LLMTHINK audit clean; projection status=Accepted
+docs/adr/0022-canonical-world-and-observer-cognition.think: LLMTHINK audit clean; projection status=Accepted
+docs/adr/0023-pair-channels-are-not-unique-cognition.think: LLMTHINK audit clean; projection status=Accepted
+docs/adr/0024-detach-authoring-from-read-traffic.think: LLMTHINK audit clean; projection status=Accepted
+docs/adr/0025-expression-state-and-utterance-actuals.think: LLMTHINK audit clean; projection status=Accepted
+docs/adr/0026-compact-psyche-semantic-closure-repair.think: LLMTHINK audit clean; projection status=Accepted
+docs/adr/0027-unified-conscious-agency-and-psyche-boundary.think: LLMTHINK audit clean; projection status=Accepted
+docs/adr/0028-versioned-conscious-agency-contract.think: LLMTHINK audit clean; projection status=Superseded
+docs/adr/0029-preserve-v2-soft-guidance-compatibility.think: LLMTHINK audit clean; projection status=Rejected
+docs/adr/0030-llm-assisted-character-semantic-migration.think: LLMTHINK audit clean; projection status=Accepted
+docs/adr/0031-focused-structured-semantic-authoring-kernel.think: LLMTHINK audit clean; projection status=Superseded
+docs/adr/0032-separate-authoring-time-boundaries.think: LLMTHINK audit clean; projection status=Accepted
+docs/adr/0033-runtime-config-not-run-identity.think: LLMTHINK audit clean; projection status=Accepted
+docs/adr/0034-seal-based-test-authority.think: LLMTHINK audit clean; projection status=Superseded
+docs/adr/0035-resolve-revision-scope-from-request.think: LLMTHINK audit clean; projection status=Accepted
+docs/adr/0036-propagate-draft-test-evidence.think: LLMTHINK audit clean; projection status=Accepted
+docs/adr/0037-append-only-narration-fragments.think: LLMTHINK audit clean; projection status=Rejected
+docs/adr/0038-narration-fragment-commit-and-result-reveal.think: LLMTHINK audit clean; projection status=Proposed
+docs/adr/0039-v3-battle-lifecycle-and-cutover.think: LLMTHINK audit clean; projection status=Accepted
+docs/adr/0041-cutover-snapshot-protection.think: LLMTHINK audit clean; projection status=Accepted
+docs/adr/0042-unreleased-v3-trial-scope.think: LLMTHINK audit clean; projection status=Accepted
+docs/adr/0043-v3-character-updates-with-historical-v2-display.think: LLMTHINK audit clean; projection status=Accepted
+docs/adr/0044-discriminated-action-intent-contracts.think: LLMTHINK audit clean; projection status=Superseded
+docs/adr/0045-preserve-action-intent-producer-values.think: LLMTHINK audit clean; projection status=Accepted
+docs/adr/0046-align-conditional-contracts.think: LLMTHINK audit clean; projection status=Accepted
+docs/adr/0047-phase-scoped-conscious-output-and-mechanical-completion.think: LLMTHINK audit clean; projection status=Accepted
+docs/adr/0048-v3-profile-guidance-source-projection.think: LLMTHINK audit clean; projection status=Accepted
+docs/adr/0049-v3-character-portrait-revisions.think: LLMTHINK audit clean; projection status=Accepted
+docs/adr/0050-asynchronous-awareness-projected-character-pipeline.think: LLMTHINK audit clean; projection status=Superseded
+docs/adr/0051-observed-llm-usage-accounting.think: LLMTHINK audit clean; projection status=Accepted
+docs/adr/0052-isolated-long-timeout-measurement.think: LLMTHINK audit clean; projection status=Accepted
+docs/adr/0053-awareness-response-completion-repair.think: LLMTHINK audit clean; projection status=Superseded
+docs/adr/0054-normal-awareness-waiting-deadlines.think: LLMTHINK audit clean; projection status=Accepted
+docs/adr/0055-consistent-awareness-narration-contract.think: LLMTHINK audit clean; projection status=Superseded
+docs/adr/0056-latest-prompt-contract-until-completion.think: LLMTHINK audit clean; projection status=Accepted
+docs/adr/0057-awareness-public-observation-accounting.think: LLMTHINK audit clean; projection status=Accepted
+docs/adr/0058-stop-test-runs-with-unsealed-tests.think: LLMTHINK audit clean; projection status=Accepted
+docs/adr/0059-complete-focused-character-review-payload.think: LLMTHINK audit clean; projection status=Accepted
+docs/adr/0060-owner-test-contract-recovery.think: LLMTHINK audit clean; projection status=Accepted
+docs/adr/0061-manual-improvement-analysis-eligibility.think: LLMTHINK audit clean; projection status=Accepted
+ADR checks passed: 42 current file(s) audited; 4 pinned historical file(s) excluded

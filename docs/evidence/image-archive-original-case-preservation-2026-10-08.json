@@ -1,0 +1,10 @@
+{
+  "originalSha256": "1185a2646623637176df08e0433ece218172a06ba5203b516f138e1b37933c02",
+  "currentSha256": "ce81fffdc4a5c16bea360033ef2c819dcbb12cafcebb39ed0efc87b3500b3dec",
+  "originalCases": 2,
+  "currentCases": 4,
+  "originalAssertions": 5,
+  "currentAssertions": 13,
+  "allOriginalCasesAndAssertionsRetained": true,
+  "method": "TypeScript AST call/title text comparison ignoring whitespace"
+}

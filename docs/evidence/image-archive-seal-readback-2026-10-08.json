@@ -1,0 +1,16 @@
+{
+  "priorRefs": 1085,
+  "currentRefs": 1088,
+  "newRefs": 3,
+  "refreshedRefs": [
+    "all-tests-20261007/implementation-image-prompt-and-failure",
+    "verification/image-prompt-failure-bounded-20261008"
+  ],
+  "unrelatedPriorHeadsUnchanged": 1083,
+  "oldAffectedBodiesRetained": true,
+  "exactCauseLinksReadback": true,
+  "exactHeadSourceReadback": true,
+  "newAndRefreshedStatusesClean": true,
+  "fsck": "ok",
+  "elapsedSeconds": 99.293
+}

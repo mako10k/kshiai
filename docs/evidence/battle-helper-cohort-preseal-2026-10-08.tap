@@ -1,0 +1,172 @@
+TAP version 13
+# Subtest: battle pacing policy
+    # Subtest: keeps all pacing thresholds in one validated snapshot
+    ok 1 - keeps all pacing thresholds in one validated snapshot
+      ---
+      duration_ms: 1.578069
+      type: 'test'
+      ...
+    # Subtest: produces reproducible local measurements without speech generation
+    ok 2 - produces reproducible local measurements without speech generation
+      ---
+      duration_ms: 453.144354
+      type: 'test'
+      ...
+    # Subtest: does not erase parameter changes under the explicit-effects policy
+    ok 3 - does not erase parameter changes under the explicit-effects policy
+      ---
+      duration_ms: 5.666865
+      type: 'test'
+      ...
+    1..3
+ok 1 - battle pacing policy
+  ---
+  duration_ms: 462.523794
+  type: 'suite'
+  ...
+# Subtest: drama progression
+    # Subtest: parses action signatures for variety avoidance
+    ok 1 - parses action signatures for variety avoidance
+      ---
+      duration_ms: 2.432633
+      type: 'test'
+      ...
+    # Subtest: flags stuck loops only, not ordinary turns
+    ok 2 - flags stuck loops only, not ordinary turns
+      ---
+      duration_ms: 0.575919
+      type: 'test'
+      ...
+    1..2
+ok 2 - drama progression
+  ---
+  duration_ms: 5.250972
+  type: 'suite'
+  ...
+# Subtest: composeNarratorTurn
+    # Subtest: writes narrator-shaped prose without engine event summaries or outcomes
+    ok 1 - writes narrator-shaped prose without engine event summaries or outcomes
+      ---
+      duration_ms: 21.344057
+      type: 'test'
+      ...
+    1..1
+ok 3 - composeNarratorTurn
+  ---
+  duration_ms: 23.263337
+  type: 'suite'
+  ...
+# Subtest: character speech reactions
+    # Subtest: accepts free narrator display labels and rejects only invalid formatting
+    ok 1 - accepts free narrator display labels and rejects only invalid formatting
+      ---
+      duration_ms: 2.095071
+      type: 'test'
+      ...
+    # Subtest: never returns empty speech; falls back to watching or ellipsis
+    ok 2 - never returns empty speech; falls back to watching or ellipsis
+      ---
+      duration_ms: 0.544019
+      type: 'test'
+      ...
+    # Subtest: detects stage reactions
+    ok 3 - detects stage reactions
+      ---
+      duration_ms: 1.273917
+      type: 'test'
+      ...
+    # Subtest: formats dialogue with quotes and reactions without
+    ok 4 - formats dialogue with quotes and reactions without
+      ---
+      duration_ms: 1.218336
+      type: 'test'
+      ...
+    # Subtest: interleaves character-authored speech at narrator-selected boundaries
+    ok 5 - interleaves character-authored speech at narrator-selected boundaries
+      ---
+      duration_ms: 2.04558
+      type: 'test'
+      ...
+    1..5
+ok 4 - character speech reactions
+  ---
+  duration_ms: 10.124487
+  type: 'suite'
+  ...
+# Subtest: skill cooldown
+    # Subtest: maps power into 1–9 turns monotonically
+    ok 1 - maps power into 1–9 turns monotonically
+      ---
+      duration_ms: 2.346197
+      type: 'test'
+      ...
+    # Subtest: blocks reuse until the cooldown window elapses
+    ok 2 - blocks reuse until the cooldown window elapses
+      ---
+      duration_ms: 0.758438
+      type: 'test'
+      ...
+    # Subtest: CD=1 blocks the next turn only
+    ok 3 - CD=1 blocks the next turn only
+      ---
+      duration_ms: 1.14278
+      type: 'test'
+      ...
+    1..3
+ok 5 - skill cooldown
+  ---
+  duration_ms: 6.743595
+  type: 'suite'
+  ...
+# Subtest: battle supervisor
+    # Subtest: detects quiet turns with little HP swing
+    ok 1 - detects quiet turns with little HP swing
+      ---
+      duration_ms: 3.240443
+      type: 'test'
+      ...
+    # Subtest: does not call heavy exchanges quiet
+    ok 2 - does not call heavy exchanges quiet
+      ---
+      duration_ms: 0.285039
+      type: 'test'
+      ...
+    # Subtest: injects after sustained quiet with cooldown
+    ok 3 - injects after sustained quiet with cooldown
+      ---
+      duration_ms: 1.586206
+      type: 'test'
+      ...
+    # Subtest: never injects merely because many active turns passed
+    ok 4 - never injects merely because many active turns passed
+      ---
+      duration_ms: 0.48152
+      type: 'test'
+      ...
+    # Subtest: distinguishes fighter exchanges from environmental pressure
+    ok 5 - distinguishes fighter exchanges from environmental pressure
+      ---
+      duration_ms: 0.294231
+      type: 'test'
+      ...
+    # Subtest: does not expose an internal happening label in the event summary
+    ok 6 - does not expose an internal happening label in the event summary
+      ---
+      duration_ms: 0.69474
+      type: 'test'
+      ...
+    1..6
+ok 6 - battle supervisor
+  ---
+  duration_ms: 9.313658
+  type: 'suite'
+  ...
+1..6
+# tests 20
+# suites 6
+# pass 20
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 1507.566031

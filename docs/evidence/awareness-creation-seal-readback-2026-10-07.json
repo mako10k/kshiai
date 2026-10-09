@@ -1,0 +1,16 @@
+{
+  "newRefs": 12,
+  "previousHeadsUnchanged": true,
+  "previousHeadCount": 1026,
+  "totalRefs": 1038,
+  "sourceBytesMatch": true,
+  "stale": 0,
+  "fsck": "ok",
+  "limitations": [
+    "29original cases/all51changed-file assertions preserved; annotation/import only; other5files unchanged",
+    "Private SQLite/offline/fakeSDK, not PG/live provider/pricing/full latest prompt/public completion",
+    "Certified proof-refusal only prior explicit policy; current ordinary observed usage-v2 not weakened",
+    "Idempotency timeout fixture string is not elapsed-time proof and exact usage-v2 revision not asserted by that case",
+    "251 whole files/unsealed stop/Owner decision gates preserved"
+  ]
+}

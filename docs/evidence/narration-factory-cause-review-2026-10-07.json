@@ -1,0 +1,288 @@
+{
+  "schema": "kshiai/narration-factory-cause-review/v1",
+  "upstream": [
+    {
+      "ref": "awareness-guidance-20261007/authority-current",
+      "sealId": "4a236b55e9ad9e4aa54eb2c6bbe9d77e0a318881ba8328363505153d16e151dd"
+    },
+    {
+      "ref": "all-tests-20261007/authority-current-output-guidance",
+      "sealId": "2c6888e9d07a676d4b429b041b241e1631845b18fac4fb4cda280a4a29670d50"
+    },
+    {
+      "ref": "awareness-guidance-20261007/basic-design",
+      "sealId": "1adba1d06106cfcc7537dcd2d85aa94f745a4a79ff6b3f5ac4911a11efdf79a8"
+    },
+    {
+      "ref": "all-tests-20261007/contract-awareness-decisions",
+      "sealId": "1edf3239229665d39a55aee22af5148f4408f6c8dfea24ca200ae835af46e02d"
+    },
+    {
+      "ref": "all-tests-20261007/implementation-awareness-policy",
+      "sealId": "c064db895ea9f010d2f6fb28360b243285cbe93156c19f8286e161ec2d0d731a"
+    },
+    {
+      "ref": "all-tests-20261007/authority-measurement",
+      "sealId": "66468c9b30e9ba4cd3a8649b7c3fa3f32a100622edb09d7864d54327be3db18a"
+    },
+    {
+      "ref": "all-tests-20261007/authority-normal-waits",
+      "sealId": "7f8ac50262580d0a94e13d82627be496f8e2e8fd059c194c4d93d84d2af28f43"
+    },
+    {
+      "ref": "all-tests-20261007/implementation-awareness-narration-contract",
+      "sealId": "869a646e8732d4d6f0f2b2982844f0db0313911e1ca00b0ca886586057a18f2c"
+    },
+    {
+      "ref": "all-tests-20261007/implementation-prompt-prose",
+      "sealId": "6c1550f5ce880ec29498884bfe98e2cae3cd6f920679168be6f75c7a556e9eda"
+    },
+    {
+      "ref": "all-tests-20261007/contract-awareness-request-options",
+      "sealId": "55cd6ea44ebccfb4f9f0e3012c1edd96fcafa0f412c8eaeafeac922832b9a100"
+    },
+    {
+      "ref": "all-tests-20261007/implementation-awareness-role-provider",
+      "sealId": "3d0638621f237dba7c7d7e0df6892b7946d8f44210ccfecfed642a51c0d823f0"
+    },
+    {
+      "ref": "all-tests-20261007/design-model-request-options",
+      "sealId": "ca00579d72ce103d2da9fa943d7c907aefe27ed4f7668f9c476c2e076fcb44c2"
+    },
+    {
+      "ref": "all-tests-20261007/implementation-sdk-model-options",
+      "sealId": "7fafa0e59a17475925224cbda6d3d97f05930a271c05d81a2026404546024fb7"
+    }
+  ],
+  "nodes": [
+    {
+      "key": "design-current-narration-dispatch",
+      "path": "docs/battle-awareness-prompt-repair-release-2026-10-05.md",
+      "parents": [
+        "authority",
+        "current",
+        "decisions"
+      ],
+      "scope": "Only phase content/wire separation, registered historical instruction replacement, strict speech source preservation and frozen dispatch identity. Deployment, public completion and historical trial statements are outside this cohort.",
+      "test": false,
+      "ref": "all-tests-20261007/design-current-narration-dispatch",
+      "sha256": "c9a494b6b18d169bc2fe1a50e246382e68086a9ea2a1c0c44ab1c1b536943cbd"
+    },
+    {
+      "key": "contract-frozen-narration-source",
+      "path": "packages/shared/src/awareness-narration-source.ts",
+      "parents": [
+        "authority",
+        "current",
+        "decisions"
+      ],
+      "scope": "Closed immutable narration frame schema, phase/receipt identity, speech sources, recognition refs and server-owned judgment verdict. Tested phase defaults/invariants and runtime parsing only; no durable persistence or full observer projection verification.",
+      "test": false,
+      "ref": "all-tests-20261007/contract-frozen-narration-source",
+      "sha256": "f93755b8d5cb9feac25022dfe38314d3820b4b4783bb66d1ab18caea5065e7ed"
+    },
+    {
+      "key": "implementation-current-narration-content-rules",
+      "path": "backend/src/llm/narration-prompt-contract.ts",
+      "parents": [
+        "current",
+        "design-current-narration-dispatch"
+      ],
+      "scope": "Content-only speech rule, current phase limits and registered historical output replacement as imported by frozen dispatch. This cohort does not certify all historical upgrade matching cases or direct legacy consumer behavior.",
+      "test": false,
+      "ref": "all-tests-20261007/implementation-current-narration-content-rules",
+      "sha256": "70bad55a2adca722d49d5a1484e1eda5b8e873ba1e21745c330bf749a23d2853"
+    },
+    {
+      "key": "implementation-narration-phase-builders",
+      "path": "backend/src/llm/openai-compatible.ts",
+      "parents": [
+        "authority",
+        "current",
+        "basic",
+        "design-current-narration-dispatch"
+      ],
+      "scope": "Only pure narration prompt material builders used in combat receipt fixtures and prologue speaker privacy test: perspective display labels remove canonical speaker field, content contract applied, phase material passed to freeze. Other SDK/domain methods, semantic naturalness and full perspective completeness outside this cohort.",
+      "test": false,
+      "ref": "all-tests-20261007/implementation-narration-phase-builders",
+      "sha256": "8d4be097ddbfcb0da515dd0db402c7dc6dddccb763d625fce16165e7c524d2a5"
+    },
+    {
+      "key": "implementation-freeze-narration-phase",
+      "path": "backend/src/llm/awareness-narration-phase.ts",
+      "parents": [
+        "contract-frozen-narration-source",
+        "prose",
+        "implementation-current-narration-content-rules",
+        "implementation-narration-phase-builders"
+      ],
+      "scope": "Only combat/prologue source freezing paths exercised here: typed phase input, receipt identity and natural prose, unchanged source speeches, canonical speaker-name omission and phase defaults. Actual aftermath/judgment phase builders are not exercised by synthetic frozen fixtures.",
+      "test": false,
+      "ref": "all-tests-20261007/implementation-freeze-narration-phase",
+      "sha256": "794b013dae0943c1a9cbcd0ae738c42066169dd680bc4f18f713c6963d6e18bb"
+    },
+    {
+      "key": "implementation-narration-schema-graph-check",
+      "path": "backend/src/llm/provider-response-schema.ts",
+      "parents": [
+        "current",
+        "design-current-narration-dispatch"
+      ],
+      "scope": "Only local-reference acyclic graph check invoked for generated phase grammars. No complete xAI dialect or live provider compatibility certification.",
+      "test": false,
+      "ref": "all-tests-20261007/implementation-narration-schema-graph-check",
+      "sha256": "252d84ebbd83a63c6fd81fab89fcae0faef6b0fd9ab46def4af957e055a1987a"
+    },
+    {
+      "key": "implementation-narration-phase-response-schema",
+      "path": "backend/src/llm/awareness-narration-response-schema.ts",
+      "parents": [
+        "wire",
+        "current",
+        "contract-frozen-narration-source",
+        "implementation-narration-schema-graph-check"
+      ],
+      "scope": "Single Zod runtime and generated strict grammar source: exact batch counts, closed objects, phase-specific narrator/framing lengths. Tests validate generated grammar and local parse/ref graph only, not live xAI acceptance.",
+      "test": false,
+      "ref": "all-tests-20261007/implementation-narration-phase-response-schema",
+      "sha256": "8e63072b0a8881ea0b5dcb97490135fc7e52a4b21859f6403ffa836d10c7e196"
+    },
+    {
+      "key": "implementation-narration-receipt-rules",
+      "path": "backend/src/llm/narration-receipt-contract.ts",
+      "parents": [
+        "current",
+        "decisions",
+        "wire",
+        "contract-frozen-narration-source"
+      ],
+      "scope": "Strict receipt order/identity and source speech instruction/shape example included in prepared dispatch. End-to-end prompt semantic compliance and all third-party speech grounding outside local structural proof.",
+      "test": false,
+      "ref": "all-tests-20261007/implementation-narration-receipt-rules",
+      "sha256": "3734b96bd1b004d2b5729057fcb1b6aa8b7e8a7336ce833b693cda134c1d65b9"
+    },
+    {
+      "key": "implementation-frozen-narration-dispatch",
+      "path": "backend/src/llm/awareness-frozen-narration.ts",
+      "parents": [
+        "authority",
+        "current",
+        "policy",
+        "measurement",
+        "normal",
+        "decisions",
+        "contract-frozen-narration-source",
+        "prose",
+        "implementation-current-narration-content-rules",
+        "implementation-narration-phase-response-schema",
+        "implementation-narration-receipt-rules"
+      ],
+      "scope": "All four synthetic frozen phases: prepared material, exact phase/batch count, deadline cap and strict receipt coverage/order/identity, immutable speech text and supported recognition refs, server judgment framing separation. Optional narrator dispatch context branch and public rendering/persistence are outside this cohort.",
+      "test": false,
+      "ref": "all-tests-20261007/implementation-frozen-narration-dispatch",
+      "sha256": "449233deacc537927d6455d03f21cbb9a26963ebfd2693c3ed9e74712ae0a715"
+    },
+    {
+      "key": "implementation-narration-role-transport",
+      "path": "backend/src/llm/awareness-narration.ts",
+      "parents": [
+        "authority",
+        "decisions",
+        "policy",
+        "transport",
+        "implementation-freeze-narration-phase",
+        "implementation-frozen-narration-dispatch"
+      ],
+      "scope": "Configured Grok fast, one-call capped narration, captured source immune to caller mutation, bound policy and per-call override, batch validation. No physical retries, persistence/public worker guarantees, semantic quality or all optional context branches.",
+      "test": false,
+      "ref": "all-tests-20261007/implementation-narration-role-transport",
+      "sha256": "a32f94cb75d85fb34cf1f502061622ed606136cf99d2bcf29d48506437fd524f"
+    },
+    {
+      "key": "implementation-awareness-role-factory",
+      "path": "backend/src/llm/awareness-provider-factory.ts",
+      "parents": [
+        "authority",
+        "decisions",
+        "normal",
+        "model-design",
+        "sdk-options",
+        "roles",
+        "implementation-narration-role-transport",
+        "transport"
+      ],
+      "scope": "Explicit two-provider configuration: missing credential returns unconfigured, validate Grok and HTTP URL before adapter creation, Luna temperature omission/fallback false, immutable identities and retry none, expose configured Grok domain port and pass bound policy to real narration role. No live credentials/provider availability or all SDK domain methods.",
+      "test": false,
+      "ref": "all-tests-20261007/implementation-awareness-role-factory",
+      "sha256": "f4c116093a1499212e44c1175d891bb2a188c6c0f527b29bca9ad936ce1c1325"
+    },
+    {
+      "key": "awareness-narration-batch",
+      "path": "backend/src/llm/awareness-narration.test.ts",
+      "parents": [
+        "authority",
+        "current",
+        "decisions",
+        "implementation-narration-role-transport",
+        "implementation-freeze-narration-phase",
+        "implementation-frozen-narration-dispatch"
+      ],
+      "scope": "Seven typed fake transport tests: one three-receipt call/caps/prose/speaker privacy, explicit measured deadline, caller mutation isolation, missing coverage rejection/no second call, swapped identity/cross-receipt speech refusal, pre-send duplicate/size/deadline refusal, missing speech/unsupported recognition refusal.",
+      "test": true,
+      "ref": "verification/awareness-narration-batch-20261007",
+      "sha256": "eb646e9d0c720b86f40b4bf32973013c35c96c63465385e3406fa570fbac0096"
+    },
+    {
+      "key": "awareness-frozen-narration",
+      "path": "backend/src/llm/awareness-frozen-narration.test.ts",
+      "parents": [
+        "authority",
+        "current",
+        "decisions",
+        "implementation-narration-role-transport",
+        "implementation-frozen-narration-dispatch",
+        "implementation-freeze-narration-phase",
+        "implementation-narration-phase-response-schema"
+      ],
+      "scope": "Seven typed local tests: synthetic frozen four-phase exact material dispatch, measurement cap and shorter deadline, policy override isolation, mixed/noncombat batch refusal, immutable judgment framing, actual prologue freeze speaker privacy, phase strict grammar/local schema counts/limits. All-phase actual builder and legacy continuation upgrade fixtures are separate tests; no live quality proof.",
+      "test": true,
+      "ref": "verification/awareness-frozen-narration-20261007",
+      "sha256": "169e8844021f414756bc65796b4de8a8dcc3b0c393fb49b67805e4494dba5f99"
+    },
+    {
+      "key": "awareness-provider-factory",
+      "path": "backend/src/llm/awareness-provider-factory.test.ts",
+      "parents": [
+        "authority",
+        "decisions",
+        "normal",
+        "roles",
+        "implementation-narration-role-transport",
+        "implementation-frozen-narration-dispatch",
+        "implementation-awareness-role-factory",
+        "sdk-options"
+      ],
+      "scope": "Five typed local tests: Luna/Grok explicit configuration, no fallback/transport retry and immutable identity, bound measured policy forwarded to actual frozen narration, default configured domain adapter construction without sending, missing-key no instantiation, wrong Grok/URL refusal. No provider credential/account/availability or live dispatch proof.",
+      "test": true,
+      "ref": "verification/awareness-provider-factory-20261007",
+      "sha256": "8f81ea03ce3aac3bf277d368477c193b4a9f418ff2e146b4806e7e3645ba0b2f"
+    }
+  ],
+  "diagnostic": {
+    "pass": 19,
+    "fail": 0,
+    "skipped": 0,
+    "strictTypecheckExit": 0
+  },
+  "clauses": [
+    "ADR0050 D11/D12 inherited by0051 and adopted decisions 5/7/8: explicit roles, exact speech and max3 receipt batch",
+    "ADR0056 C-LC01/02 and decision: latest single wire contract, phase content separation, preserve source identity",
+    "ADR0052 supplied measured deadlines and0054 normal policy unchanged"
+  ],
+  "limitations": [
+    "Local typed fake transport and pure-builder validation only",
+    "Synthetic frozen phase fixtures do not certify all actual phase builders or historical continuation conversion; dedicated tests remain unsealed",
+    "No optional narrator-context branch, durable delivery, public complete match or actual provider semantic quality claim",
+    "No paid/provider calls, deployment or pricing change"
+  ]
+}

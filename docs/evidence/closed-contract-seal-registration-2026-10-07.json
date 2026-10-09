@@ -1,0 +1,46 @@
+{
+  "scope": "ADR-0021 rule 3 and current user contract-type instructions; closed indices and non-any fields only",
+  "evidence": {
+    "typecheck": "/tmp/kshiai-closed-contract-typecheck.log",
+    "test": "/tmp/kshiai-closed-contract-test.tap",
+    "passed": 1,
+    "failed": 0
+  },
+  "entries": [
+    {
+      "ref": "all-tests-20261007/authority-closed-contract-adoption",
+      "path": "docs/adr/0021-engine-live-continuation-and-type-escapes.think",
+      "sealId": "a6d2f9035488ef209feefde301d449518f7d5681c50cc30075d66f4f2134947c",
+      "sha256": "7e741f3c1e5f0a13b57bed59fed2bea3dc1cdbccab2fbff181beacebb6c87b97",
+      "causeSealIds": []
+    },
+    {
+      "ref": "all-tests-20261007/authority-closed-contract",
+      "path": "docs/adr/0021-engine-live-continuation-and-type-escapes.md",
+      "sealId": "2c84ef3d0dd122e76543935595e774cfd33957cb01713505644e50f9ec5678ba",
+      "sha256": "bd21dba7a15efdec0d286884b834023b6583f98d7a339dfb1fef0f2f9a190999",
+      "causeSealIds": [
+        "a6d2f9035488ef209feefde301d449518f7d5681c50cc30075d66f4f2134947c"
+      ]
+    },
+    {
+      "ref": "all-tests-20261007/implementation-closed-battle-contract",
+      "path": "packages/shared/src/battle.ts",
+      "sealId": "fd2692da29f2deaf81b6567e5499276f95ece18dfd67f0a669fd1a2077292209",
+      "sha256": "fc5d492df5fd5252b66e12017b265a4697cc3f798acc2811434b3c33d23b0752",
+      "causeSealIds": [
+        "2c84ef3d0dd122e76543935595e774cfd33957cb01713505644e50f9ec5678ba"
+      ]
+    },
+    {
+      "ref": "verification/battle-contract-types-20261007",
+      "path": "packages/shared/src/battle-contract-types.test.ts",
+      "sealId": "a4c75f329082707016895dc47f49ef57e38ac63caa8a76bfeebfd5946356d9e5",
+      "sha256": "dc43725bc7d71b580c488b82dfcc47e61a5ee8cd842959c0f8981c7c075f403a",
+      "causeSealIds": [
+        "2c84ef3d0dd122e76543935595e774cfd33957cb01713505644e50f9ec5678ba",
+        "fd2692da29f2deaf81b6567e5499276f95ece18dfd67f0a669fd1a2077292209"
+      ]
+    }
+  ]
+}

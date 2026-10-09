@@ -1,0 +1,35 @@
+{
+  "method": "TypeScript AST call/title text comparison ignoring whitespace",
+  "entries": [
+    {
+      "path": "backend/src/postgres-config.test.ts",
+      "originalSha256": "f1459e2994c6934d8ca25e4e4fbe8659929472b3a203844a834b2d6b49553a19",
+      "currentSha256": "f1459e2994c6934d8ca25e4e4fbe8659929472b3a203844a834b2d6b49553a19",
+      "originalCases": 4,
+      "currentCases": 4,
+      "originalAssertions": 4,
+      "currentAssertions": 4,
+      "originalCasesAndAssertionsRetained": true
+    },
+    {
+      "path": "backend/src/scripts/postgres-migrations.test.ts",
+      "originalSha256": "64e9f05c2f775e7aedc61f3a652db553db4471c55dcf99fee367e494596d80fa",
+      "currentSha256": "e3b41f8d8d5acff6e2859cf56fea0de0b842ae956b46db6d8450ff9b631a524d",
+      "originalCases": 1,
+      "currentCases": 1,
+      "originalAssertions": 3,
+      "currentAssertions": 6,
+      "originalCasesAndAssertionsRetained": true
+    },
+    {
+      "path": "backend/src/scripts/sqlite-to-postgres.test.ts",
+      "originalSha256": "f6edd56df70335fe0e3041177bedc5a2ce3f848f32a39794805e51c9b92e6830",
+      "currentSha256": "ee644bb4ede42f337c0d6a882fceb8e83ba3e4cce9170b721e54840b251bac49",
+      "originalCases": 2,
+      "currentCases": 2,
+      "originalAssertions": 8,
+      "currentAssertions": 14,
+      "originalCasesAndAssertionsRetained": true
+    }
+  ]
+}

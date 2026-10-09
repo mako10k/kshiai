@@ -1,0 +1,8 @@
+domain CALLBACK:
+  description "Prepare one exact preview redirect allowlist append for owner approval."
+evidence BASELINE:
+  "Readonly Supabase GET observes three existing redirect URLs, public site_url, Google enabled; actual immutable Worker health200 binds RC2 revision."
+evidence AUTHORITY:
+  "Prior deployment approval explicitly authSettingsChange0. New PATCH is not authorized yet."
+decision PROPOSE based_on BASELINE, AUTHORITY:
+  "Request owner approval of PATCH uri_allow_list only, append exact immutable preview callback once. Fresh compare before write, independent GET readback; preserve provider and site_url. Alternative wait. Actual login/game and paid provider calls remain successor scope."

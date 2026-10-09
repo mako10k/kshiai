@@ -1,0 +1,106 @@
+TAP version 13
+# [llm] xai ready engine=grok-engine fast=grok-fast
+# [llm] xai/engine model=grok-engine fail 92ms: Provider returned invalid JSON
+# [llm] xai ready engine=grok-engine fast=grok-fast
+# [llm] xai/engine model=grok-engine fail 4ms: Provider returned invalid JSON
+# [llm] xai ready engine=grok-engine fast=grok-fast
+# [llm] xai/engine model=grok-engine ok 12ms
+# [llm] xai ready engine=grok-engine fast=grok-fast
+# [llm] xai/engine model=grok-engine fail 6ms: 400 secret failure text
+# [llm] xai ready engine=grok-engine fast=grok-fast
+# [llm] xai/engine model=grok-engine fail 4ms: Request timed out.
+# [llm] xai ready engine=grok-engine fast=grok-fast
+# [llm] xai/engine model=grok-engine fail 4ms: Provider returned invalid JSON
+# [llm] xai ready engine=grok-engine fast=grok-fast
+# [llm] xai/engine retry=1 reason=rate_limit delay=0ms same-provider
+# Subtest: physical SDK usage ledger
+    # Subtest: retains empty-content diagnostics before parsing rejection and reads old snapshots
+    ok 1 - retains empty-content diagnostics before parsing rejection and reads old snapshots
+      ---
+      duration_ms: 99.705583
+      type: 'test'
+      ...
+    # Subtest: stores raw categories and correlation before invalid JSON is rejected and survives reload
+    ok 2 - stores raw categories and correlation before invalid JSON is rejected and survives reload
+      ---
+      duration_ms: 31.397701
+      type: 'test'
+      ...
+    # Subtest: records missing usage and HTTP failure as unknown categories rather than zero
+    ok 3 - records missing usage and HTTP failure as unknown categories rather than zero
+      ---
+      duration_ms: 21.056513
+      type: 'test'
+      ...
+    # Subtest: records timeout termination with unknown usage and preserves missing versus invalid token categories
+    ok 4 - records timeout termination with unknown usage and preserves missing versus invalid token categories
+      ---
+      duration_ms: 6.719049
+      type: 'test'
+      ...
+    # Subtest: confirms a received invalid response even when its token usage is absent
+    ok 5 - confirms a received invalid response even when its token usage is absent
+      ---
+      duration_ms: 5.878526
+      type: 'test'
+      ...
+# [llm] xai/engine model=grok-engine ok 19ms
+# [llm] xai ready engine=grok-engine fast=grok-fast
+# [llm] xai/engine model=grok-engine ok stream 14ms
+# [llm] xai ready engine=grok-engine fast=grok-fast
+# [llm] xai ready engine=grok-engine fast=grok-fast
+# [llm] xai ready engine=grok-engine fast=grok-fast
+# [llm] xai/engine model=grok-engine fail stream 4ms: stream stopped
+    # Subtest: records each physical retry with the same call ID and a distinct ordinal
+    ok 6 - records each physical retry with the same call ID and a distinct ordinal
+      ---
+      duration_ms: 21.301187
+      type: 'test'
+      ...
+    # Subtest: records streamed usage-only chunks and both tool dispatch paths
+    ok 7 - records streamed usage-only chunks and both tool dispatch paths
+      ---
+      duration_ms: 26.238561
+      type: 'test'
+      ...
+    # Subtest: retains observed stream usage and request identity when the stream fails afterwards
+    ok 8 - retains observed stream usage and request identity when the stream fails afterwards
+      ---
+      duration_ms: 6.013452
+      type: 'test'
+      ...
+    # Subtest: prints a usage-only report from the executable read path without a price file
+    ok 9 - prints a usage-only report from the executable read path without a price file
+      ---
+      duration_ms: 329.305258
+      type: 'test'
+      ...
+# [llm] xai ready engine=grok-engine fast=grok-fast
+    # Subtest: preserves provider usage when wall time moves backwards while elapsed time remains monotonic
+    ok 10 - preserves provider usage when wall time moves backwards while elapsed time remains monotonic
+      ---
+      duration_ms: 12.68336
+      type: 'test'
+      ...
+# [llm] xai/engine model=grok-engine ok 5ms
+    # Subtest: records a late physical result after its caller stops waiting
+    ok 11 - records a late physical result after its caller stops waiting
+      ---
+      duration_ms: 6.430924
+      type: 'test'
+      ...
+    1..11
+ok 1 - physical SDK usage ledger
+  ---
+  duration_ms: 569.582124
+  type: 'suite'
+  ...
+1..1
+# tests 11
+# suites 1
+# pass 11
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 1373.449999

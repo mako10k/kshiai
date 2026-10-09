@@ -1,0 +1,13 @@
+{
+  "schema": "kshiai/prepush-security-and-reader-preflight/v1",
+  "trivyVersion": "0.70.0",
+  "trivyDownloadSha256": "8b4376d5d6befe5c24d503f10ff136d9e0c49f9127a4279fd110b727929a5aa9",
+  "preliminaryScannedTree": "5156b05c0807b0bf0c8986e346aa095926b3a014",
+  "preliminarySecretCount": 0,
+  "ciSealGraphCommit": "c23aa34cea273d7aa2beb94b9c9d69a924560fe6",
+  "ciPinnedFsck": "ok",
+  "ciPinnedExecutionReceiptMatches": true,
+  "receiptSealId": "4335ddd900d57976bf554c7b799d776f22b0c020aac4be00734737b6efcc7f1f",
+  "sourceCohortUnchanged": true,
+  "note": "Final staged tree will be rescanned after adding this factual preflight and lifecycle record. CI/deploy not yet complete."
+}

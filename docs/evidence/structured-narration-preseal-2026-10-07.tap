@@ -1,0 +1,84 @@
+TAP version 13
+# Subtest: structured narration route acceptance
+    # Subtest: records structure failure without exposing a partial style
+    ok 1 - records structure failure without exposing a partial style
+      ---
+      duration_ms: 66.301566
+      type: 'test'
+      ...
+    # Subtest: keeps legacy styles manageable but outside selectors and direct binding
+    ok 2 - keeps legacy styles manageable but outside selectors and direct binding
+      ---
+      duration_ms: 121.587958
+      type: 'test'
+      ...
+    # Subtest: creates and upgrades only after owner confirmation with idempotent readback
+    ok 3 - creates and upgrades only after owner confirmation with idempotent readback
+      ---
+      duration_ms: 71.700892
+      type: 'test'
+      ...
+    # Subtest: binds the exact ready generation and never appends one at battle start
+    ok 4 - binds the exact ready generation and never appends one at battle start
+      ---
+      duration_ms: 148.573744
+      type: 'test'
+      ...
+    # Subtest: persists expiry and rejects a candidate after current-pointer drift
+    ok 5 - persists expiry and rejects a candidate after current-pointer drift
+      ---
+      duration_ms: 25.111288
+      type: 'test'
+      ...
+    # Subtest: rejects corrupt stored styles on confirmation and completed replay without appending a generation
+    ok 6 - rejects corrupt stored styles on confirmation and completed replay without appending a generation
+      ---
+      duration_ms: 69.861453
+      type: 'test'
+      ...
+    1..6
+ok 1 - structured narration route acceptance
+  ---
+  duration_ms: 589.891679
+  type: 'suite'
+  ...
+# Subtest: NarrationDefinitionV2
+    # Subtest: rejects unknown phases, duplicate stable ids, and authority markers
+    ok 1 - rejects unknown phases, duplicate stable ids, and authority markers
+      ---
+      duration_ms: 8.42768
+      type: 'test'
+      ...
+    # Subtest: keeps rhetoric, examples, and compiler controls out of the public projection
+    ok 2 - keeps rhetoric, examples, and compiler controls out of the public projection
+      ---
+      duration_ms: 1.873161
+      type: 'test'
+      ...
+    # Subtest: compiles deterministic bounded phase policy with precedence and example budgets
+    ok 3 - compiles deterministic bounded phase policy with precedence and example budgets
+      ---
+      duration_ms: 6.024027
+      type: 'test'
+      ...
+    # Subtest: requires every compiler and an exact independent claim receipt
+    ok 4 - requires every compiler and an exact independent claim receipt
+      ---
+      duration_ms: 4.977183
+      type: 'test'
+      ...
+    1..4
+ok 2 - NarrationDefinitionV2
+  ---
+  duration_ms: 23.477058
+  type: 'suite'
+  ...
+1..2
+# tests 10
+# suites 2
+# pass 10
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 2307.782728

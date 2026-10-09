@@ -1,0 +1,12 @@
+domain LOCAL_PG_TEST:
+  description "Execute PostgreSQL regression cases on an isolated disposable loopback database."
+evidence OWNER:
+  "All-tests goal authorizes local regression preparation and execution, no production or paid jobs."
+evidence ENVIRONMENT:
+  "AWARENESS_POSTGRES_TEST_URL absent skips persistence tests; their guard requires loopback and database kshiai_awareness_test. PostgreSQL16 client tools exist but server/initdb do not; apt lists server package16.15; Docker WSL integration unavailable. No listener5432 was observed."
+premise OPTIONS:
+  "Skip violates all-tests completion. Production database violates scope. A downloaded distribution server package extracted only under a fresh tmp directory enables disposable loopback tests without installing system packages or changing shared services."
+premise BOUNDS:
+  "Fetch one Ubuntu server package via configured apt source into temporary directory, extract only there, check dependent libraries; if dependencies unavailable stop preparation. Initialize new local cluster, bind127.0.0.1 nondefault unused port, create only kshiai_awareness_test, run explicit regression, stop cluster on completion. No system service or credential mutation."
+decision D1 based_on OWNER, ENVIRONMENT, OPTIONS, BOUNDS:
+  "Audit, prepare isolated disposable PostgreSQL server, read back loopback/database identity, run guarded test without skipped cases and stop the cluster. Treat diagnostic evidence separately from formal Seal eligibility."

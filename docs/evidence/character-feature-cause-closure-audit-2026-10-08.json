@@ -1,0 +1,1295 @@
+{
+  "scope": "complete character feature current source closure preparation; no Seal mutation",
+  "completed": false,
+  "originalFiles": 251,
+  "priorSealRefs": 1360,
+  "changedBindings": [
+    {
+      "binding": {
+        "ref": "all-tests-20261007/implementation-battlefield-http",
+        "path": "backend/src/routes.ts"
+      },
+      "headSealId": "9fa712f404ae85a3404d6d983617c270c093775d35987a1f6ced6a8b3dd1adb3",
+      "relation": "WORKFILE_DIFFERS_FROM_HEAD",
+      "currentSha256": "e3933522bcf92ccf011290105b71febb5f3a48ba0ebbfd4e09268b6b43da20be"
+    },
+    {
+      "binding": {
+        "ref": "all-tests-20261007/implementation-character-attempt-reads",
+        "path": "backend/src/repositories/character-assets-v2.ts"
+      },
+      "headSealId": "71a3806f51ddb38886b2de44719b17f973c4d263a4257613274dfa1862a50ef4",
+      "relation": "WORKFILE_DIFFERS_FROM_HEAD",
+      "currentSha256": "4dc5580a4eefcbfd5ebba9b373f0e16aa960300d9f1de4293820dbb433aac318"
+    },
+    {
+      "binding": {
+        "ref": "all-tests-20261007/implementation-character-profile-readiness",
+        "path": "backend/src/services/character-authoring-candidate.ts"
+      },
+      "headSealId": "5fc4d62c89a90fdc6dfcae35711289ff9c139503a3e1cd31382d78d429d5cb6f",
+      "relation": "WORKFILE_DIFFERS_FROM_HEAD",
+      "currentSha256": "629c9f30ef065a808d4c1110012fc5e25d76f2a5be12c3ec8e23b0db95e7029a"
+    },
+    {
+      "binding": {
+        "ref": "all-tests-20261007/implementation-character-repository-activation",
+        "path": "backend/src/repositories/character-assets-v2.ts"
+      },
+      "headSealId": "6fc9de4333a04acce3cde69962c8e70cff20999112df9ef4959ad23d19164b2f",
+      "relation": "WORKFILE_DIFFERS_FROM_HEAD",
+      "currentSha256": "4dc5580a4eefcbfd5ebba9b373f0e16aa960300d9f1de4293820dbb433aac318"
+    },
+    {
+      "binding": {
+        "ref": "all-tests-20261007/implementation-current-focused-pending-read",
+        "path": "backend/src/services/character-focused-authoring.ts"
+      },
+      "headSealId": "18a1252ed2bfa2773aa446b80e9779cab123dd9f7ea1088ead63714d92e3aa1c",
+      "relation": "WORKFILE_DIFFERS_FROM_HEAD",
+      "currentSha256": "d97aa8c0f89bb6664567c775178ee56d3b20318d116b3328c7c772796c55e7e0"
+    },
+    {
+      "binding": {
+        "ref": "all-tests-20261007/implementation-current-narration-builder-contracts",
+        "path": "backend/src/llm/openai-compatible.ts"
+      },
+      "headSealId": "871b4b46e531e367409a529704c6b64bb1d041a22d3643fb0f6da4705473c1dc",
+      "relation": "WORKFILE_DIFFERS_FROM_HEAD",
+      "currentSha256": "75fdc50d0ff5550712fc50e967f7880950aad035fbab87fa40f2b5d9d0d6daaa"
+    },
+    {
+      "binding": {
+        "ref": "all-tests-20261007/implementation-current-six-draft-read-routes",
+        "path": "backend/src/routes.ts"
+      },
+      "headSealId": "0374262c05d28dee5d6b67d599280434b2fe91e7c416c66cda9c7ef975114e9c",
+      "relation": "WORKFILE_DIFFERS_FROM_HEAD",
+      "currentSha256": "e3933522bcf92ccf011290105b71febb5f3a48ba0ebbfd4e09268b6b43da20be"
+    },
+    {
+      "binding": {
+        "ref": "all-tests-20261007/implementation-direct-narration-projection-input",
+        "path": "backend/src/llm/openai-compatible.ts"
+      },
+      "headSealId": "bc4e17992fc99bebd82c0723ae94bbd5e55c07fbbb7ec0aeae83e0796a6267b5",
+      "relation": "WORKFILE_DIFFERS_FROM_HEAD",
+      "currentSha256": "75fdc50d0ff5550712fc50e967f7880950aad035fbab87fa40f2b5d9d0d6daaa"
+    },
+    {
+      "binding": {
+        "ref": "all-tests-20261007/implementation-draft-read-routes",
+        "path": "backend/src/routes.ts"
+      },
+      "headSealId": "bde4435dc99839ad7440be3006c1a589532213b5228148ed6be2121c24f4e5ed",
+      "relation": "WORKFILE_DIFFERS_FROM_HEAD",
+      "currentSha256": "e3933522bcf92ccf011290105b71febb5f3a48ba0ebbfd4e09268b6b43da20be"
+    },
+    {
+      "binding": {
+        "ref": "all-tests-20261007/implementation-focused-character-review-reads",
+        "path": "backend/src/services/character-focused-authoring.ts"
+      },
+      "headSealId": "02cff3aa82b9540318bcf089c96c4e8686d05438b1d686de6472f0a9307d526a",
+      "relation": "WORKFILE_DIFFERS_FROM_HEAD",
+      "currentSha256": "d97aa8c0f89bb6664567c775178ee56d3b20318d116b3328c7c772796c55e7e0"
+    },
+    {
+      "binding": {
+        "ref": "all-tests-20261007/implementation-narration-phase-builders",
+        "path": "backend/src/llm/openai-compatible.ts"
+      },
+      "headSealId": "ab889a4617f6f343aecbb1b47e503db56c41c7b4f19ca0cc32b4d60d1c0b3b93",
+      "relation": "WORKFILE_DIFFERS_FROM_HEAD",
+      "currentSha256": "75fdc50d0ff5550712fc50e967f7880950aad035fbab87fa40f2b5d9d0d6daaa"
+    },
+    {
+      "binding": {
+        "ref": "all-tests-20261007/implementation-narration-route-acceptance",
+        "path": "backend/src/routes.ts"
+      },
+      "headSealId": "49136c362e322c5b6cd87afd1f37a75478d5c0e4bc123441ae0f49f57662143d",
+      "relation": "WORKFILE_DIFFERS_FROM_HEAD",
+      "currentSha256": "e3933522bcf92ccf011290105b71febb5f3a48ba0ebbfd4e09268b6b43da20be"
+    },
+    {
+      "binding": {
+        "ref": "all-tests-20261007/implementation-provider-accounting-sdk-retries",
+        "path": "backend/src/llm/openai-compatible.ts"
+      },
+      "headSealId": "5b34d18fd701cf1ff6e739950e129ca0cf43a883d71a88795245a73ad34c1b5b",
+      "relation": "WORKFILE_DIFFERS_FROM_HEAD",
+      "currentSha256": "75fdc50d0ff5550712fc50e967f7880950aad035fbab87fa40f2b5d9d0d6daaa"
+    },
+    {
+      "binding": {
+        "ref": "all-tests-20261007/implementation-provider-control-sqlite-schema",
+        "path": "backend/src/db.ts"
+      },
+      "headSealId": "95bdd9c1de74a466708f8647c1af88b40820ac06ed834fe450b7a011e24e70c3",
+      "relation": "WORKFILE_DIFFERS_FROM_HEAD",
+      "currentSha256": "70bacc4e8b0e53f88fe25c15e45c0a1d9aa1c67d6a3925282d9fdec277b8f77e"
+    },
+    {
+      "binding": {
+        "ref": "all-tests-20261007/implementation-retained-compact-expression-decoder",
+        "path": "backend/src/llm/openai-compatible.ts"
+      },
+      "headSealId": "be6c5fd8e04b304d51b2023d34486a7e4028e69512cd6c6a9d54ae3fef337a3c",
+      "relation": "WORKFILE_DIFFERS_FROM_HEAD",
+      "currentSha256": "75fdc50d0ff5550712fc50e967f7880950aad035fbab87fa40f2b5d9d0d6daaa"
+    },
+    {
+      "binding": {
+        "ref": "all-tests-20261007/implementation-sdk-awareness-adjudication-result",
+        "path": "backend/src/llm/openai-compatible.ts"
+      },
+      "headSealId": "aa08f46a5ae70bccacc4b43e1621aaf341a26c873111dd15b6ee091836cdf3a2",
+      "relation": "WORKFILE_DIFFERS_FROM_HEAD",
+      "currentSha256": "75fdc50d0ff5550712fc50e967f7880950aad035fbab87fa40f2b5d9d0d6daaa"
+    },
+    {
+      "binding": {
+        "ref": "all-tests-20261007/implementation-sdk-awareness-dispatch",
+        "path": "backend/src/llm/openai-compatible.ts"
+      },
+      "headSealId": "11ad190b10415f87aaf38a9598ec3ac3e05031fd2c03800aac12da69ae178d91",
+      "relation": "WORKFILE_DIFFERS_FROM_HEAD",
+      "currentSha256": "75fdc50d0ff5550712fc50e967f7880950aad035fbab87fa40f2b5d9d0d6daaa"
+    },
+    {
+      "binding": {
+        "ref": "all-tests-20261007/implementation-sdk-json-accounting-boundary",
+        "path": "backend/src/llm/openai-compatible.ts"
+      },
+      "headSealId": "3f3dd4c5984778043e1a692b58d89c536c9af360c6a2b4881b76deb10c9e19a2",
+      "relation": "WORKFILE_DIFFERS_FROM_HEAD",
+      "currentSha256": "75fdc50d0ff5550712fc50e967f7880950aad035fbab87fa40f2b5d9d0d6daaa"
+    },
+    {
+      "binding": {
+        "ref": "all-tests-20261007/implementation-sdk-model-options",
+        "path": "backend/src/llm/openai-compatible.ts"
+      },
+      "headSealId": "7fafa0e59a17475925224cbda6d3d97f05930a271c05d81a2026404546024fb7",
+      "relation": "WORKFILE_DIFFERS_FROM_HEAD",
+      "currentSha256": "75fdc50d0ff5550712fc50e967f7880950aad035fbab87fa40f2b5d9d0d6daaa"
+    },
+    {
+      "binding": {
+        "ref": "all-tests-20261007/implementation-sdk-response-schema-ordinary-gate",
+        "path": "backend/src/llm/openai-compatible.ts"
+      },
+      "headSealId": "5c06dcccd164d1e51610184f474296ee948c8fef2a4469c62453df2b33e244d2",
+      "relation": "WORKFILE_DIFFERS_FROM_HEAD",
+      "currentSha256": "75fdc50d0ff5550712fc50e967f7880950aad035fbab87fa40f2b5d9d0d6daaa"
+    },
+    {
+      "binding": {
+        "ref": "all-tests-20261007/implementation-sdk-retained-agency-v3-dispatch",
+        "path": "backend/src/llm/openai-compatible.ts"
+      },
+      "headSealId": "5452852d0f1bf38ed89dca0b72e4eebb2db5b47bda137a1983f2e45e0bd14cc9",
+      "relation": "WORKFILE_DIFFERS_FROM_HEAD",
+      "currentSha256": "75fdc50d0ff5550712fc50e967f7880950aad035fbab87fa40f2b5d9d0d6daaa"
+    },
+    {
+      "binding": {
+        "ref": "all-tests-20261007/implementation-sdk-retained-dynamic-v4-dispatch",
+        "path": "backend/src/llm/openai-compatible.ts"
+      },
+      "headSealId": "ca44acedaa6634d8a56c49e3aad978d32cbe6e76704b5daa602c851614d05690",
+      "relation": "WORKFILE_DIFFERS_FROM_HEAD",
+      "currentSha256": "75fdc50d0ff5550712fc50e967f7880950aad035fbab87fa40f2b5d9d0d6daaa"
+    },
+    {
+      "binding": {
+        "ref": "all-tests-20261007/implementation-sdk-usage-paths",
+        "path": "backend/src/llm/openai-compatible.ts"
+      },
+      "headSealId": "b976cf61e0af34ee39d63f4bf5e274f29e08db10220b5c564fd6314e3f9db9f9",
+      "relation": "WORKFILE_DIFFERS_FROM_HEAD",
+      "currentSha256": "75fdc50d0ff5550712fc50e967f7880950aad035fbab87fa40f2b5d9d0d6daaa"
+    },
+    {
+      "binding": {
+        "ref": "all-tests-20261007/implementation-stable-area-authoring-http",
+        "path": "backend/src/routes.ts"
+      },
+      "headSealId": "b2e522e260e6fa48f6205c9facb8370981a6a95745318f207ef1d8ff4a61efb4",
+      "relation": "WORKFILE_DIFFERS_FROM_HEAD",
+      "currentSha256": "e3933522bcf92ccf011290105b71febb5f3a48ba0ebbfd4e09268b6b43da20be"
+    },
+    {
+      "binding": {
+        "ref": "all-tests-20261008/implementation-agent-typed-seam",
+        "path": "backend/src/llm/openai-compatible.ts"
+      },
+      "headSealId": "7c3693e3b4211157a5b340153f8317d853971ef27e080aa4f84332a20c3fd8a5",
+      "relation": "WORKFILE_DIFFERS_FROM_HEAD",
+      "currentSha256": "75fdc50d0ff5550712fc50e967f7880950aad035fbab87fa40f2b5d9d0d6daaa"
+    },
+    {
+      "binding": {
+        "ref": "all-tests-20261008/implementation-boundary-character-assets",
+        "path": "backend/src/repositories/character-assets-v2.ts"
+      },
+      "headSealId": "8d6bf70266a8a48bc0227bb6c69995a951948a704c1fee95f6e1fdd08d188075",
+      "relation": "WORKFILE_DIFFERS_FROM_HEAD",
+      "currentSha256": "4dc5580a4eefcbfd5ebba9b373f0e16aa960300d9f1de4293820dbb433aac318"
+    },
+    {
+      "binding": {
+        "ref": "all-tests-20261008/implementation-boundary-db",
+        "path": "backend/src/db.ts"
+      },
+      "headSealId": "29388522fd326751bb29a58fc9145bbf64bc1f96d80e2f54420065b80363d535",
+      "relation": "WORKFILE_DIFFERS_FROM_HEAD",
+      "currentSha256": "70bacc4e8b0e53f88fe25c15e45c0a1d9aa1c67d6a3925282d9fdec277b8f77e"
+    },
+    {
+      "binding": {
+        "ref": "all-tests-20261008/implementation-boundary-routes",
+        "path": "backend/src/routes.ts"
+      },
+      "headSealId": "fcf165143e528ea548c1e9c8313a465199e185c9f066ef7a60e1996a9e09856f",
+      "relation": "WORKFILE_DIFFERS_FROM_HEAD",
+      "currentSha256": "e3933522bcf92ccf011290105b71febb5f3a48ba0ebbfd4e09268b6b43da20be"
+    },
+    {
+      "binding": {
+        "ref": "all-tests-20261008/implementation-current-e2e-review-page",
+        "path": "frontend/src/pages/CharacterReviewPage.tsx"
+      },
+      "headSealId": "57d4a1a92c4d5344b598e42444c000c7014c6c46e1476c038dd8f55b79855b0e",
+      "relation": "WORKFILE_DIFFERS_FROM_HEAD",
+      "currentSha256": "dddcb952af6acc8714161ebc64e6bd9a73eda295128afb2d5ee2bd015bbd16b1"
+    },
+    {
+      "binding": {
+        "ref": "all-tests-20261008/implementation-openai-compatible-character-definition-recovery-bounded",
+        "path": "backend/src/llm/openai-compatible.ts"
+      },
+      "headSealId": "42b6ff80a71caa184ae9ccec1a087e025eb5e831d7e900d23bb08860ef918df4",
+      "relation": "WORKFILE_DIFFERS_FROM_HEAD",
+      "currentSha256": "75fdc50d0ff5550712fc50e967f7880950aad035fbab87fa40f2b5d9d0d6daaa"
+    },
+    {
+      "binding": {
+        "ref": "all-tests-20261008/implementation-perception-typed-seam",
+        "path": "backend/src/llm/openai-compatible.ts"
+      },
+      "headSealId": "fd9582a733bd7a3698b053fb0db428f7d6ea59ce3f545ecc1429ce9ee0127c1d",
+      "relation": "WORKFILE_DIFFERS_FROM_HEAD",
+      "currentSha256": "75fdc50d0ff5550712fc50e967f7880950aad035fbab87fa40f2b5d9d0d6daaa"
+    },
+    {
+      "binding": {
+        "ref": "all-tests-20261008/implementation-portrait-v3-activation",
+        "path": "backend/src/repositories/character-assets-v2.ts"
+      },
+      "headSealId": "991a0bed1f9217e6978039cb39b7b217e3122a147cd91f22786df658d1917be7",
+      "relation": "WORKFILE_DIFFERS_FROM_HEAD",
+      "currentSha256": "4dc5580a4eefcbfd5ebba9b373f0e16aa960300d9f1de4293820dbb433aac318"
+    },
+    {
+      "binding": {
+        "ref": "all-tests-20261008/implementation-portrait-v3-route",
+        "path": "backend/src/routes.ts"
+      },
+      "headSealId": "4a45c9459e2d46f7f2f91a881dc4ece3f4b6c6ce7843b9ad299930dde99b10d7",
+      "relation": "WORKFILE_DIFFERS_FROM_HEAD",
+      "currentSha256": "e3933522bcf92ccf011290105b71febb5f3a48ba0ebbfd4e09268b6b43da20be"
+    },
+    {
+      "binding": {
+        "ref": "all-tests-20261008/implementation-psyche-repair-bounded",
+        "path": "backend/src/llm/openai-compatible.ts"
+      },
+      "headSealId": "3c919c7c047bddd5eeabad3f7c74e5416c147c4df4817b89c945178a90567a20",
+      "relation": "WORKFILE_DIFFERS_FROM_HEAD",
+      "currentSha256": "75fdc50d0ff5550712fc50e967f7880950aad035fbab87fa40f2b5d9d0d6daaa"
+    },
+    {
+      "binding": {
+        "ref": "all-tests-20261008/implementation-routing-typed-seam",
+        "path": "backend/src/llm/openai-compatible.ts"
+      },
+      "headSealId": "02b6d59807b18e91e8cd3dc336900072e54507b2a4390bb5a4da0e2808cb536f",
+      "relation": "WORKFILE_DIFFERS_FROM_HEAD",
+      "currentSha256": "75fdc50d0ff5550712fc50e967f7880950aad035fbab87fa40f2b5d9d0d6daaa"
+    },
+    {
+      "binding": {
+        "ref": "all-tests-20261008/implementation-semantic-recovery-contracts",
+        "path": "packages/shared/src/semantic-authoring.ts"
+      },
+      "headSealId": "90df3c2c74cfedc2d5f0de6187786bb4d9470d7b5e49d789721378ad11df8240",
+      "relation": "WORKFILE_DIFFERS_FROM_HEAD",
+      "currentSha256": "2071026700dd927f17f7d81d055db6e29a040e8e9cbbdc4a938dc50cc4000bc1"
+    },
+    {
+      "binding": {
+        "ref": "all-tests-20261008/implementation-semantic-recovery-execution-policy",
+        "path": "backend/src/services/semantic-authoring/execution-policy.ts"
+      },
+      "headSealId": "11195c24131e1d66289d5b5aebd457862a7ac82f700f1d814c78794024a3b049",
+      "relation": "WORKFILE_DIFFERS_FROM_HEAD",
+      "currentSha256": "9693736ed735375d7ffd6a9efb722a9bc729c8f3c584d6620456bf7fd31ebb6a"
+    },
+    {
+      "binding": {
+        "ref": "implementation/cc304-focused-revise-route-current-20260925",
+        "path": "backend/src/routes.ts"
+      },
+      "headSealId": "714fcabc08db2375c192b3e46b9a8c842897f7eeb63401d9bb0295e3f195cecf",
+      "relation": "WORKFILE_DIFFERS_FROM_HEAD",
+      "currentSha256": "e3933522bcf92ccf011290105b71febb5f3a48ba0ebbfd4e09268b6b43da20be"
+    },
+    {
+      "binding": {
+        "ref": "implementation/cc311-focused-create-route-current-20260925",
+        "path": "backend/src/routes.ts"
+      },
+      "headSealId": "bdc9b6e9c40e6ffa3653b4d56c699a1a9f1d3a7cd1be6bbac8261b76f04184c4",
+      "relation": "WORKFILE_DIFFERS_FROM_HEAD",
+      "currentSha256": "e3933522bcf92ccf011290105b71febb5f3a48ba0ebbfd4e09268b6b43da20be"
+    },
+    {
+      "binding": {
+        "ref": "verification/character-focused-authoring-current-20260925",
+        "path": "backend/src/services/character-focused-authoring.test.ts"
+      },
+      "headSealId": "88f63f286cf7af3394c063a2e7520bae04779467e66c4538b2f81d092bcc7539",
+      "relation": "WORKFILE_DIFFERS_FROM_HEAD",
+      "currentSha256": "bae9232e23ef47a5578cb526a463a12b2fe8dad0697c817a2d0738659bce1475"
+    },
+    {
+      "binding": {
+        "ref": "verification/character-focused-migration-route-current-20260925",
+        "path": "backend/src/services/character-focused-authoring.test.ts"
+      },
+      "headSealId": "0669e240682f08392d6aafc6cbf93aebe21c62ecd87cc204984a4cbdc82d4b22",
+      "relation": "WORKFILE_DIFFERS_FROM_HEAD",
+      "currentSha256": "bae9232e23ef47a5578cb526a463a12b2fe8dad0697c817a2d0738659bce1475"
+    },
+    {
+      "binding": {
+        "ref": "verification/character-profile-v3-projection-20261007",
+        "path": "backend/src/services/character-v3-profile-adapter.test.ts"
+      },
+      "headSealId": "a0108db652a1550f90861a28c7d07826ba4875ba34580e5ee2ecfdee1966cd0d",
+      "relation": "WORKFILE_DIFFERS_FROM_HEAD",
+      "currentSha256": "f1e94ef111185dd7fd3e2e5447f7dea3e6f406fc5ee4dbabfa6003823add882d"
+    },
+    {
+      "binding": {
+        "ref": "verification/semantic-authoring-durable-repository-20260918",
+        "path": "backend/src/repositories/semantic-authoring.test.ts"
+      },
+      "headSealId": "2a2d54b3ccf45a78ee0d9111b6333e70de4c3a77d6b09897083d82e0284a61fe",
+      "relation": "WORKFILE_DIFFERS_FROM_HEAD",
+      "currentSha256": "248a451fd87353f5a9ec435a11b9af1a77d8b3559d10735dcc394b6ea4da1c00"
+    },
+    {
+      "binding": {
+        "ref": "verification/semantic-authoring-provider-v1",
+        "path": "backend/src/llm/semantic-authoring-provider.test.ts"
+      },
+      "headSealId": "0cf50ecdf03b025c9bd916205e41fe6f75b83589f6b409ad5da8c75cb9346b5b",
+      "relation": "WORKFILE_DIFFERS_FROM_HEAD",
+      "currentSha256": "4a08690a38f094750ab2abc5df72fd5523b948fecb0f480153e43e72f9dd376a"
+    },
+    {
+      "binding": {
+        "ref": "verification/semantic-recovery-provider-bounded-20261008",
+        "path": "backend/src/llm/semantic-authoring-provider.test.ts"
+      },
+      "headSealId": "f19a4794b62dd0a61f80da7097be1fe096cdcf3aa2a16bb7ab8a0da1c1035fc6",
+      "relation": "WORKFILE_DIFFERS_FROM_HEAD",
+      "currentSha256": "4a08690a38f094750ab2abc5df72fd5523b948fecb0f480153e43e72f9dd376a"
+    }
+  ],
+  "changedDistinctSeals": 45,
+  "unboundScopePaths": [
+    "backend/src/llm/character-profile-prompts.ts",
+    "backend/src/repositories/character-focused-candidate.ts",
+    "backend/src/routes-structured-character-acceptance.test.ts",
+    "backend/src/services/semantic-authoring/adapters/character-complete.ts",
+    "backend/src/services/semantic-authoring/adapters/character-context.ts",
+    "backend/src/services/semantic-authoring/adapters/character-profile-work.ts",
+    "backend/src/services/semantic-authoring/adapters/schema-notation.ts",
+    "backend/src/services/semantic-authoring/character-review-correction-source.ts",
+    "backend/src/testing/offline-focused-authoring-provider.ts",
+    "frontend/src/api.ts",
+    "packages/shared/src/api.ts"
+  ],
+  "affectedMappedTests": [
+    {
+      "path": "e2e/v3-local-integration.spec.ts",
+      "ref": "verification/local-integration-current-20261008",
+      "headSealId": "f5bc4e32207d5b2f7dddbc74ab945af49771a3df46ba46ca11ee2a07fef06b31",
+      "changedAncestorSealIds": [
+        "29388522fd326751bb29a58fc9145bbf64bc1f96d80e2f54420065b80363d535",
+        "57d4a1a92c4d5344b598e42444c000c7014c6c46e1476c038dd8f55b79855b0e",
+        "8d6bf70266a8a48bc0227bb6c69995a951948a704c1fee95f6e1fdd08d188075",
+        "fcf165143e528ea548c1e9c8313a465199e185c9f066ef7a60e1996a9e09856f"
+      ]
+    },
+    {
+      "path": "backend/src/services/v3-battle-creation.test.ts",
+      "ref": "verification/v3-battle-creation-recovery-bounded-20261008",
+      "headSealId": "58a7034ae30a4e8660db9c01161ea05ee28dbc0eb539d8e661559169945910de",
+      "changedAncestorSealIds": [
+        "29388522fd326751bb29a58fc9145bbf64bc1f96d80e2f54420065b80363d535",
+        "fcf165143e528ea548c1e9c8313a465199e185c9f066ef7a60e1996a9e09856f"
+      ]
+    },
+    {
+      "path": "backend/src/llm/openai-compatible-character-definition.test.ts",
+      "ref": "verification/openai-compatible-character-definition-recovery-bounded-20261008",
+      "headSealId": "a928e47ef948b5b0a729f767d0496b8013d67103aa1a5389d2da89650922e112",
+      "changedAncestorSealIds": [
+        "42b6ff80a71caa184ae9ccec1a087e025eb5e831d7e900d23bb08860ef918df4"
+      ]
+    },
+    {
+      "path": "backend/src/llm/provider-json.test.ts",
+      "ref": "verification/provider-json-accounting-20261007",
+      "headSealId": "66ba4b137b0a653e02487d93b3afc2ed991d194839f6654de5f8df7dc2ef0032",
+      "changedAncestorSealIds": [
+        "3f3dd4c5984778043e1a692b58d89c536c9af360c6a2b4881b76deb10c9e19a2"
+      ]
+    },
+    {
+      "path": "backend/src/llm/semantic-authoring-provider.test.ts",
+      "ref": "verification/semantic-recovery-provider-bounded-20261008",
+      "headSealId": "f19a4794b62dd0a61f80da7097be1fe096cdcf3aa2a16bb7ab8a0da1c1035fc6",
+      "changedAncestorSealIds": [
+        "11195c24131e1d66289d5b5aebd457862a7ac82f700f1d814c78794024a3b049",
+        "90df3c2c74cfedc2d5f0de6187786bb4d9470d7b5e49d789721378ad11df8240",
+        "f19a4794b62dd0a61f80da7097be1fe096cdcf3aa2a16bb7ab8a0da1c1035fc6"
+      ]
+    },
+    {
+      "path": "backend/src/repositories/semantic-authoring.test.ts",
+      "ref": "verification/semantic-authoring-durable-repository-20260918",
+      "headSealId": "2a2d54b3ccf45a78ee0d9111b6333e70de4c3a77d6b09897083d82e0284a61fe",
+      "changedAncestorSealIds": [
+        "2a2d54b3ccf45a78ee0d9111b6333e70de4c3a77d6b09897083d82e0284a61fe"
+      ]
+    },
+    {
+      "path": "backend/src/services/character-focused-authoring.test.ts",
+      "ref": "verification/character-focused-authoring-current-20260925",
+      "headSealId": "88f63f286cf7af3394c063a2e7520bae04779467e66c4538b2f81d092bcc7539",
+      "changedAncestorSealIds": [
+        "714fcabc08db2375c192b3e46b9a8c842897f7eeb63401d9bb0295e3f195cecf",
+        "88f63f286cf7af3394c063a2e7520bae04779467e66c4538b2f81d092bcc7539",
+        "bdc9b6e9c40e6ffa3653b4d56c699a1a9f1d3a7cd1be6bbac8261b76f04184c4"
+      ]
+    },
+    {
+      "path": "backend/src/services/semantic-authoring/adapters/character-v3.test.ts",
+      "ref": "verification/semantic-recovery-character-adapter-bounded-20261008",
+      "headSealId": "be15cea5ea4c2138822b7be1de0b0cfdc9b71f9c71fe2dcf40e9b57d4679bd7c",
+      "changedAncestorSealIds": [
+        "90df3c2c74cfedc2d5f0de6187786bb4d9470d7b5e49d789721378ad11df8240"
+      ]
+    },
+    {
+      "path": "backend/src/services/semantic-authoring/conformance.test.ts",
+      "ref": "verification/semantic-recovery-conformance-bounded-20261008",
+      "headSealId": "5e80483ea3621c45eaf972acfc5b047d35bf82f8902ad6b731bd89b58d190332",
+      "changedAncestorSealIds": [
+        "90df3c2c74cfedc2d5f0de6187786bb4d9470d7b5e49d789721378ad11df8240"
+      ]
+    },
+    {
+      "path": "e2e/character-focused-review.spec.ts",
+      "ref": "verification/character-focused-review-current-20261008",
+      "headSealId": "25925950c9b59afcc12bddf738ae646f20ecf82385391eda20edd975597a9c1a",
+      "changedAncestorSealIds": [
+        "57d4a1a92c4d5344b598e42444c000c7014c6c46e1476c038dd8f55b79855b0e"
+      ]
+    },
+    {
+      "path": "backend/src/routes-cutover-http.test.ts",
+      "ref": "verification/routes-cutover-http-recovery-bounded-20261008",
+      "headSealId": "efd44c44fc085431cb40e257a8432071d81a2326616640b36ae73eae697c91b7",
+      "changedAncestorSealIds": [
+        "29388522fd326751bb29a58fc9145bbf64bc1f96d80e2f54420065b80363d535",
+        "fcf165143e528ea548c1e9c8313a465199e185c9f066ef7a60e1996a9e09856f"
+      ]
+    },
+    {
+      "path": "backend/src/llm/provider-accounting.test.ts",
+      "ref": "verification/provider-accounting-current-20261007",
+      "headSealId": "b9b4686ee6f66fdcb17d5f720b2e53888c4dd455313b2113c7e43ede340299f5",
+      "changedAncestorSealIds": [
+        "5b34d18fd701cf1ff6e739950e129ca0cf43a883d71a88795245a73ad34c1b5b",
+        "95bdd9c1de74a466708f8647c1af88b40820ac06ed834fe450b7a011e24e70c3"
+      ]
+    },
+    {
+      "path": "backend/src/services/character-v2-update-boundary.test.ts",
+      "ref": "verification/character-v2-update-boundary-recovery-bounded-20261008",
+      "headSealId": "9c44026e7f6192152cba87a4c37a8c893e17e2e0a9be7516ac318685d6586439",
+      "changedAncestorSealIds": [
+        "29388522fd326751bb29a58fc9145bbf64bc1f96d80e2f54420065b80363d535",
+        "8d6bf70266a8a48bc0227bb6c69995a951948a704c1fee95f6e1fdd08d188075",
+        "95bdd9c1de74a466708f8647c1af88b40820ac06ed834fe450b7a011e24e70c3",
+        "fcf165143e528ea548c1e9c8313a465199e185c9f066ef7a60e1996a9e09856f"
+      ]
+    },
+    {
+      "path": "backend/src/routes-authoring-read-purity.test.ts",
+      "ref": "verification/authoring-read-purity-current-20261007",
+      "headSealId": "33c3815b246bd1ad28daccc940c45e880d90e53913ee745a5a0b7463a05879f9",
+      "changedAncestorSealIds": [
+        "0374262c05d28dee5d6b67d599280434b2fe91e7c416c66cda9c7ef975114e9c",
+        "18a1252ed2bfa2773aa446b80e9779cab123dd9f7ea1088ead63714d92e3aa1c",
+        "71a3806f51ddb38886b2de44719b17f973c4d263a4257613274dfa1862a50ef4"
+      ]
+    },
+    {
+      "path": "backend/src/routes-structured-battlefield-acceptance.test.ts",
+      "ref": "verification/stable-area-battlefield-http-acceptance-20261007",
+      "headSealId": "8b5497c1da2af6c911183d10bbf845d45e74fe69a2a267a0fafbf6e5da854c42",
+      "changedAncestorSealIds": [
+        "b2e522e260e6fa48f6205c9facb8370981a6a95745318f207ef1d8ff4a61efb4"
+      ]
+    },
+    {
+      "path": "backend/src/repositories/character-assets-v2.test.ts",
+      "ref": "verification/character-assets-repository-20261007",
+      "headSealId": "4d33938f8494654cc3ec9f0fa0bff4e60bc242bc5961d348b381a5ca2c0cae42",
+      "changedAncestorSealIds": [
+        "6fc9de4333a04acce3cde69962c8e70cff20999112df9ef4959ad23d19164b2f"
+      ]
+    },
+    {
+      "path": "backend/src/services/character-v3-profile-adapter.test.ts",
+      "ref": "verification/character-profile-v3-projection-20261007",
+      "headSealId": "a0108db652a1550f90861a28c7d07826ba4875ba34580e5ee2ecfdee1966cd0d",
+      "changedAncestorSealIds": [
+        "5fc4d62c89a90fdc6dfcae35711289ff9c139503a3e1cd31382d78d429d5cb6f",
+        "a0108db652a1550f90861a28c7d07826ba4875ba34580e5ee2ecfdee1966cd0d"
+      ]
+    },
+    {
+      "path": "backend/src/repositories/llm-usage.test.ts",
+      "ref": "verification/usage-ledger-sdk-20261007",
+      "headSealId": "2671b62b0ee78b4d80c926b14b69a99df3cd15c358206e86dbd6cde4487dd9a2",
+      "changedAncestorSealIds": [
+        "b976cf61e0af34ee39d63f4bf5e274f29e08db10220b5c564fd6314e3f9db9f9"
+      ]
+    },
+    {
+      "path": "backend/src/llm/openai-compatible-model-options.test.ts",
+      "ref": "verification/sdk-model-options-20261007",
+      "headSealId": "e673f8ab363f47d757fe209dc1888d50238295a5036c37dbe99dc7ef0c521705",
+      "changedAncestorSealIds": [
+        "7fafa0e59a17475925224cbda6d3d97f05930a271c05d81a2026404546024fb7"
+      ]
+    },
+    {
+      "path": "backend/src/llm/awareness-narration.test.ts",
+      "ref": "verification/awareness-narration-batch-20261007",
+      "headSealId": "a75c40e5f4121eff38ea4324cb8cbacba56d659a4d66995eb1a7fd58c4a652bf",
+      "changedAncestorSealIds": [
+        "ab889a4617f6f343aecbb1b47e503db56c41c7b4f19ca0cc32b4d60d1c0b3b93"
+      ]
+    },
+    {
+      "path": "backend/src/llm/awareness-frozen-narration.test.ts",
+      "ref": "verification/awareness-frozen-narration-20261007",
+      "headSealId": "2bc627a64211c6af5311ee885f237fca60cc9e44bb556cf901826b28622e2941",
+      "changedAncestorSealIds": [
+        "ab889a4617f6f343aecbb1b47e503db56c41c7b4f19ca0cc32b4d60d1c0b3b93"
+      ]
+    },
+    {
+      "path": "backend/src/llm/awareness-provider-factory.test.ts",
+      "ref": "verification/awareness-provider-factory-20261007",
+      "headSealId": "551ae7d8ea5734eee239f8d6fe9eb1d1ebc94bc2d291a8177e7ba58379d41237",
+      "changedAncestorSealIds": [
+        "7fafa0e59a17475925224cbda6d3d97f05930a271c05d81a2026404546024fb7",
+        "ab889a4617f6f343aecbb1b47e503db56c41c7b4f19ca0cc32b4d60d1c0b3b93"
+      ]
+    },
+    {
+      "path": "backend/src/llm/awareness-dispatch-context.test.ts",
+      "ref": "verification/awareness-dispatch-context-20261007",
+      "headSealId": "a8bd77581a0e475618eb1a02af79dc7e24c3b7cdf4959fa3264c6098f4cc4ae7",
+      "changedAncestorSealIds": [
+        "11ad190b10415f87aaf38a9598ec3ac3e05031fd2c03800aac12da69ae178d91",
+        "3f3dd4c5984778043e1a692b58d89c536c9af360c6a2b4881b76deb10c9e19a2",
+        "7fafa0e59a17475925224cbda6d3d97f05930a271c05d81a2026404546024fb7"
+      ]
+    },
+    {
+      "path": "backend/src/llm/awareness-adjudication-result.test.ts",
+      "ref": "verification/awareness-adjudication-result-20261007",
+      "headSealId": "6d6e0ceb41bec054864136538c5964cc4ab61c11a4f1c0f4ea9cf19b0314fcec",
+      "changedAncestorSealIds": [
+        "11ad190b10415f87aaf38a9598ec3ac3e05031fd2c03800aac12da69ae178d91",
+        "3f3dd4c5984778043e1a692b58d89c536c9af360c6a2b4881b76deb10c9e19a2",
+        "7fafa0e59a17475925224cbda6d3d97f05930a271c05d81a2026404546024fb7",
+        "aa08f46a5ae70bccacc4b43e1621aaf341a26c873111dd15b6ee091836cdf3a2"
+      ]
+    },
+    {
+      "path": "backend/src/llm/narration-prompt-contract.test.ts",
+      "ref": "verification/narration-prompt-contract-20261007",
+      "headSealId": "7ab3fea47a5d0f0dd3ec4a5e26206a9dd778d9b336706d658e9bcf199f6b8465",
+      "changedAncestorSealIds": [
+        "871b4b46e531e367409a529704c6b64bb1d041a22d3643fb0f6da4705473c1dc",
+        "ab889a4617f6f343aecbb1b47e503db56c41c7b4f19ca0cc32b4d60d1c0b3b93"
+      ]
+    },
+    {
+      "path": "backend/src/llm/provider-response-schema.test.ts",
+      "ref": "verification/provider-response-schema-20261007",
+      "headSealId": "c3f863e3f85498e21342866155699b0d288af3471be88bf3a6ea322fd45eb10f",
+      "changedAncestorSealIds": [
+        "5c06dcccd164d1e51610184f474296ee948c8fef2a4469c62453df2b33e244d2"
+      ]
+    },
+    {
+      "path": "backend/src/llm/openai-compatible-narration.test.ts",
+      "ref": "verification/direct-narration-projection-input-20261007",
+      "headSealId": "ece13f8be78174ec431251ffd3f7bcd01aef52c4c94093a631d64819a97c7194",
+      "changedAncestorSealIds": [
+        "871b4b46e531e367409a529704c6b64bb1d041a22d3643fb0f6da4705473c1dc",
+        "bc4e17992fc99bebd82c0723ae94bbd5e55c07fbbb7ec0aeae83e0796a6267b5"
+      ]
+    },
+    {
+      "path": "backend/src/llm/narrator-presentation-focus-evaluation.test.ts",
+      "ref": "verification/presentation-protocol-20261007",
+      "headSealId": "97a724470ebd013bce876238617aded319fd10eb648daea156cb91746cf131f1",
+      "changedAncestorSealIds": [
+        "871b4b46e531e367409a529704c6b64bb1d041a22d3643fb0f6da4705473c1dc"
+      ]
+    },
+    {
+      "path": "backend/src/routes-structured-narration-acceptance.test.ts",
+      "ref": "verification/stable-area-narration-http-acceptance-20261007",
+      "headSealId": "67fb7d4ddcae06450cbad5d2476ddf7ea178afca7b19e247eef6c8db19e36739",
+      "changedAncestorSealIds": [
+        "b2e522e260e6fa48f6205c9facb8370981a6a95745318f207ef1d8ff4a61efb4"
+      ]
+    },
+    {
+      "path": "backend/src/scripts/semantic-migration-probe-fixture.test.ts",
+      "ref": "verification/semantic-migration-probe-fixture-recovery-bounded-20261008",
+      "headSealId": "dc5e5e08f0545821e7bc4aaa8f10940b958553455d86133fd57922ed3b6fa8e2",
+      "changedAncestorSealIds": [
+        "95bdd9c1de74a466708f8647c1af88b40820ac06ed834fe450b7a011e24e70c3"
+      ]
+    },
+    {
+      "path": "backend/src/scripts/semantic-migration-probe-run.test.ts",
+      "ref": "verification/semantic-migration-probe-run-recovery-bounded-20261008",
+      "headSealId": "3d91b548be11f0624b6a88847c127e54a69140495041d50a133ea1cca9708423",
+      "changedAncestorSealIds": [
+        "95bdd9c1de74a466708f8647c1af88b40820ac06ed834fe450b7a011e24e70c3"
+      ]
+    },
+    {
+      "path": "backend/src/account-access.test.ts",
+      "ref": "verification/account-realm-access-current-20261007",
+      "headSealId": "96e6dbc106b9b579e08a0a8851f9084d82b1071cb55e9ce5ccc25f2e218ce1e1",
+      "changedAncestorSealIds": [
+        "95bdd9c1de74a466708f8647c1af88b40820ac06ed834fe450b7a011e24e70c3"
+      ]
+    },
+    {
+      "path": "backend/src/auth.test.ts",
+      "ref": "verification/authentication-persistence-current-20261007",
+      "headSealId": "6297c6a43cc8a45dd261fc6b40bfb6cb909c0e6def9505e844b4f7da6ad6bf72",
+      "changedAncestorSealIds": [
+        "95bdd9c1de74a466708f8647c1af88b40820ac06ed834fe450b7a011e24e70c3"
+      ]
+    },
+    {
+      "path": "backend/src/llm/character-expression-contract.test.ts",
+      "ref": "verification/retained-compact-expression-decoder-current-20261007",
+      "headSealId": "334383eed7e6d311408df36b38964de0e82ed4eaaa0f5f59817c978006174dde",
+      "changedAncestorSealIds": [
+        "be6c5fd8e04b304d51b2023d34486a7e4028e69512cd6c6a9d54ae3fef337a3c"
+      ]
+    },
+    {
+      "path": "backend/src/repositories/test-realm-assets.test.ts",
+      "ref": "verification/test-realm-assets-current-20261007",
+      "headSealId": "17bd50f2ae67cb6b09adff286d1164c9c01decdd605bfe78512f7a40494566b2",
+      "changedAncestorSealIds": [
+        "95bdd9c1de74a466708f8647c1af88b40820ac06ed834fe450b7a011e24e70c3"
+      ]
+    },
+    {
+      "path": "backend/src/services/e2e-session.test.ts",
+      "ref": "verification/injected-e2e-session-current-20261007",
+      "headSealId": "c5104f3c58d019dfab3efc68b685722fa9d1e4773aaafbadedba7a9b783d4f04",
+      "changedAncestorSealIds": [
+        "95bdd9c1de74a466708f8647c1af88b40820ac06ed834fe450b7a011e24e70c3"
+      ]
+    },
+    {
+      "path": "backend/src/routes-e2e-session.test.ts",
+      "ref": "verification/e2e-session-middleware-current-20261007",
+      "headSealId": "0a56df300458c836c52402d3b8eba8406334eaa12fe39b1505e4fa0d6d61a2db",
+      "changedAncestorSealIds": [
+        "95bdd9c1de74a466708f8647c1af88b40820ac06ed834fe450b7a011e24e70c3"
+      ]
+    },
+    {
+      "path": "backend/src/llm/conscious-dynamic.test.ts",
+      "ref": "verification/dynamic-v4-provider-current-20261007",
+      "headSealId": "d846992408136be4af06e558aad8d3f1007643d62841b83a138e84308cba32c9",
+      "changedAncestorSealIds": [
+        "ca44acedaa6634d8a56c49e3aad978d32cbe6e76704b5daa602c851614d05690"
+      ]
+    },
+    {
+      "path": "backend/src/repositories/dialogue-pipeline-settings.test.ts",
+      "ref": "verification/dialogue-settings-storage-current-20261007",
+      "headSealId": "b5d3f3590d68810285acd0fe857c1c8df4e88c28ebd1c29a36a749e07cc9ec5d",
+      "changedAncestorSealIds": [
+        "95bdd9c1de74a466708f8647c1af88b40820ac06ed834fe450b7a011e24e70c3"
+      ]
+    },
+    {
+      "path": "backend/src/services/conscious-agency-runtime.test.ts",
+      "ref": "verification/retained-agency-v3-runtime-current-20261007",
+      "headSealId": "fa58553524f9a1eb71835166e3953a88a94f2939b74016f18a3931f77198ea66",
+      "changedAncestorSealIds": [
+        "5452852d0f1bf38ed89dca0b72e4eebb2db5b47bda137a1983f2e45e0bd14cc9",
+        "95bdd9c1de74a466708f8647c1af88b40820ac06ed834fe450b7a011e24e70c3"
+      ]
+    },
+    {
+      "path": "backend/src/services/conscious-agency-persistence.test.ts",
+      "ref": "verification/retained-agency-v3-persistence-current-20261007",
+      "headSealId": "0df9cbe4abb949879c85eba500d7e80d742ffba5adfb2a80ed4b555e077eab45",
+      "changedAncestorSealIds": [
+        "5452852d0f1bf38ed89dca0b72e4eebb2db5b47bda137a1983f2e45e0bd14cc9",
+        "95bdd9c1de74a466708f8647c1af88b40820ac06ed834fe450b7a011e24e70c3"
+      ]
+    },
+    {
+      "path": "backend/src/repositories/battle-awareness-narration-reservation.test.ts",
+      "ref": "verification/narration-reservation-storage-current-20261007",
+      "headSealId": "af3fab324250de872010116f2bd7bc23214104aab3d86b80d0b4892da718d2b7",
+      "changedAncestorSealIds": [
+        "95bdd9c1de74a466708f8647c1af88b40820ac06ed834fe450b7a011e24e70c3"
+      ]
+    },
+    {
+      "path": "backend/src/repositories/battle-awareness-narrator.test.ts",
+      "ref": "verification/narrator-continuity-storage-current-20261007",
+      "headSealId": "fc463e7260c49c5c77823ade78c3b744e2a99decc65aed6c57a7f66e5badc84c",
+      "changedAncestorSealIds": [
+        "95bdd9c1de74a466708f8647c1af88b40820ac06ed834fe450b7a011e24e70c3"
+      ]
+    },
+    {
+      "path": "backend/src/services/awareness-narration-claim-snapshot.test.ts",
+      "ref": "verification/narration-claim-snapshot-current-20261007",
+      "headSealId": "dacc831dc9a5a55bed0c500a205949447e6f1e10a4efba2cdad33a3ecaec8170",
+      "changedAncestorSealIds": [
+        "95bdd9c1de74a466708f8647c1af88b40820ac06ed834fe450b7a011e24e70c3"
+      ]
+    },
+    {
+      "path": "backend/src/services/awareness-narration-event-storage.test.ts",
+      "ref": "verification/narration-event-storage-current-20261007",
+      "headSealId": "db2119a28b0bf3e394e3b7874aa05b747d7bc811f25aa70500450402d4a0a18d",
+      "changedAncestorSealIds": [
+        "95bdd9c1de74a466708f8647c1af88b40820ac06ed834fe450b7a011e24e70c3"
+      ]
+    },
+    {
+      "path": "backend/src/services/awareness-narration-worker.test.ts",
+      "ref": "verification/awareness-narration-worker-bounded-current-20261007",
+      "headSealId": "f345679a378d02706c792cf06060ea5f6de12c4f59f3c305bd080fcb35adc990",
+      "changedAncestorSealIds": [
+        "95bdd9c1de74a466708f8647c1af88b40820ac06ed834fe450b7a011e24e70c3",
+        "ab889a4617f6f343aecbb1b47e503db56c41c7b4f19ca0cc32b4d60d1c0b3b93"
+      ]
+    },
+    {
+      "path": "backend/src/services/awareness-narration-continuation.test.ts",
+      "ref": "verification/awareness-narration-continuation-bounded-current-20261007",
+      "headSealId": "e2823ff492c187657982505299761321e7ec60111ea99400bc0bc05cf7ce2ff8",
+      "changedAncestorSealIds": [
+        "95bdd9c1de74a466708f8647c1af88b40820ac06ed834fe450b7a011e24e70c3",
+        "ab889a4617f6f343aecbb1b47e503db56c41c7b4f19ca0cc32b4d60d1c0b3b93"
+      ]
+    },
+    {
+      "path": "backend/src/services/awareness-world-commit.test.ts",
+      "ref": "verification/awareness-world-commit-bounded-current-20261007",
+      "headSealId": "2155a828a7cb8d7d0d93506fa0dfbc78c85535b8773bd4ca3f825cd8af4c63d1",
+      "changedAncestorSealIds": [
+        "95bdd9c1de74a466708f8647c1af88b40820ac06ed834fe450b7a011e24e70c3"
+      ]
+    },
+    {
+      "path": "backend/src/services/awareness-adjudication-guard.test.ts",
+      "ref": "verification/awareness-adjudication-guard-bounded-current-20261007",
+      "headSealId": "1f1843e02aeb635bb678c9f5b3f399bb5271cc9a34e25fe2f4ccf5f84488d66e",
+      "changedAncestorSealIds": [
+        "95bdd9c1de74a466708f8647c1af88b40820ac06ed834fe450b7a011e24e70c3"
+      ]
+    },
+    {
+      "path": "backend/src/services/normal-awareness-policy.test.ts",
+      "ref": "verification/normal-awareness-policy-bounded-current-20261007",
+      "headSealId": "3666451e428f32f71eb4eaf71effbff06515ee065cdd932ed8915c43b7de2259",
+      "changedAncestorSealIds": [
+        "11ad190b10415f87aaf38a9598ec3ac3e05031fd2c03800aac12da69ae178d91",
+        "3f3dd4c5984778043e1a692b58d89c536c9af360c6a2b4881b76deb10c9e19a2",
+        "7fafa0e59a17475925224cbda6d3d97f05930a271c05d81a2026404546024fb7",
+        "95bdd9c1de74a466708f8647c1af88b40820ac06ed834fe450b7a011e24e70c3",
+        "ab889a4617f6f343aecbb1b47e503db56c41c7b4f19ca0cc32b4d60d1c0b3b93"
+      ]
+    },
+    {
+      "path": "backend/src/services/distributed-guard.test.ts",
+      "ref": "verification/distributed-guard-bounded-current-20261007",
+      "headSealId": "c0bba53d85453e55c8dfc8062b63f60e0b2c629d1af9f50a9f954fadcc27d725",
+      "changedAncestorSealIds": [
+        "95bdd9c1de74a466708f8647c1af88b40820ac06ed834fe450b7a011e24e70c3"
+      ]
+    },
+    {
+      "path": "backend/src/services/battle-causal-narration.test.ts",
+      "ref": "verification/battle-causal-narration-bounded-current-20261007",
+      "headSealId": "929614f7953c82a0c4f4c54bae84e6ae11064e81848ce2228b64fa4da02ebe60",
+      "changedAncestorSealIds": [
+        "95bdd9c1de74a466708f8647c1af88b40820ac06ed834fe450b7a011e24e70c3"
+      ]
+    },
+    {
+      "path": "backend/src/services/battle-consumer-wiring.test.ts",
+      "ref": "verification/battle-consumer-wiring-bounded-current-20261007",
+      "headSealId": "d969f6d3398dc3005aff16c3a5f0d81986cde3dfb8eaec48f48195e06b4a092a",
+      "changedAncestorSealIds": [
+        "95bdd9c1de74a466708f8647c1af88b40820ac06ed834fe450b7a011e24e70c3"
+      ]
+    },
+    {
+      "path": "backend/src/repositories/battle-awareness-creation.test.ts",
+      "ref": "verification/battle-awareness-creation-bounded-awareness-creation-20261007",
+      "headSealId": "9958ac7fdd8d862d47915ce8ece056b251506e2718c22f46ab7775ea22544176",
+      "changedAncestorSealIds": [
+        "95bdd9c1de74a466708f8647c1af88b40820ac06ed834fe450b7a011e24e70c3"
+      ]
+    },
+    {
+      "path": "backend/src/repositories/battle-awareness.test.ts",
+      "ref": "verification/battle-awareness-bounded-awareness-creation-20261007",
+      "headSealId": "cfe00eb6c63e4d8131cc6174c6c56cd7f4ff10052a208c12f445b49aaab780c3",
+      "changedAncestorSealIds": [
+        "95bdd9c1de74a466708f8647c1af88b40820ac06ed834fe450b7a011e24e70c3"
+      ]
+    },
+    {
+      "path": "backend/src/services/awareness-battle-creation.test.ts",
+      "ref": "verification/awareness-battle-creation-bounded-awareness-creation-20261007",
+      "headSealId": "53d5933f214fa6683fbf198a660a3ce47b929b85ccf2a18680e24a18028ca7ab",
+      "changedAncestorSealIds": [
+        "11ad190b10415f87aaf38a9598ec3ac3e05031fd2c03800aac12da69ae178d91",
+        "3f3dd4c5984778043e1a692b58d89c536c9af360c6a2b4881b76deb10c9e19a2",
+        "7fafa0e59a17475925224cbda6d3d97f05930a271c05d81a2026404546024fb7",
+        "95bdd9c1de74a466708f8647c1af88b40820ac06ed834fe450b7a011e24e70c3",
+        "ab889a4617f6f343aecbb1b47e503db56c41c7b4f19ca0cc32b4d60d1c0b3b93"
+      ]
+    },
+    {
+      "path": "backend/src/services/awareness-battle-service.test.ts",
+      "ref": "verification/awareness-battle-service-bounded-awareness-creation-20261007",
+      "headSealId": "8580d37b61869e20c4959c67206988ca356f178e3f74895a09016c7b9c52fe4f",
+      "changedAncestorSealIds": [
+        "11ad190b10415f87aaf38a9598ec3ac3e05031fd2c03800aac12da69ae178d91",
+        "3f3dd4c5984778043e1a692b58d89c536c9af360c6a2b4881b76deb10c9e19a2",
+        "7fafa0e59a17475925224cbda6d3d97f05930a271c05d81a2026404546024fb7",
+        "95bdd9c1de74a466708f8647c1af88b40820ac06ed834fe450b7a011e24e70c3"
+      ]
+    },
+    {
+      "path": "backend/src/services/awareness-creation-encounter.test.ts",
+      "ref": "verification/awareness-creation-encounter-bounded-awareness-creation-20261007",
+      "headSealId": "afc973998b2a0aed1ce265e005764de05bf47980ee8eae6d60c2ad8259bc126c",
+      "changedAncestorSealIds": [
+        "11ad190b10415f87aaf38a9598ec3ac3e05031fd2c03800aac12da69ae178d91",
+        "3f3dd4c5984778043e1a692b58d89c536c9af360c6a2b4881b76deb10c9e19a2",
+        "7fafa0e59a17475925224cbda6d3d97f05930a271c05d81a2026404546024fb7",
+        "95bdd9c1de74a466708f8647c1af88b40820ac06ed834fe450b7a011e24e70c3"
+      ]
+    },
+    {
+      "path": "backend/src/services/battle-create-idempotency.test.ts",
+      "ref": "verification/battle-create-idempotency-bounded-awareness-creation-20261007",
+      "headSealId": "2cb50f7f6a261d9605011de5ee688c5b2306cd9d8416679edc60bcf6fb8d7828",
+      "changedAncestorSealIds": [
+        "11ad190b10415f87aaf38a9598ec3ac3e05031fd2c03800aac12da69ae178d91",
+        "3f3dd4c5984778043e1a692b58d89c536c9af360c6a2b4881b76deb10c9e19a2",
+        "7fafa0e59a17475925224cbda6d3d97f05930a271c05d81a2026404546024fb7",
+        "95bdd9c1de74a466708f8647c1af88b40820ac06ed834fe450b7a011e24e70c3"
+      ]
+    },
+    {
+      "path": "backend/src/repositories/battle-awareness-postgres.test.ts",
+      "ref": "verification/battle-awareness-postgres-bounded-native-pg-20261007",
+      "headSealId": "5694d174aa491d92cbd04dc3c6f997e2f453145c1de1cf2d7b7b1e6d7fa7f9c4",
+      "changedAncestorSealIds": [
+        "95bdd9c1de74a466708f8647c1af88b40820ac06ed834fe450b7a011e24e70c3"
+      ]
+    },
+    {
+      "path": "backend/src/repositories/battle-awareness-narration-events-postgres.test.ts",
+      "ref": "verification/battle-awareness-narration-events-postgres-bounded-native-pg-20261007",
+      "headSealId": "cfa925d91ae62f7614d48e96e72df54ad78cbc7482ddd023baa35b6036c0b55a",
+      "changedAncestorSealIds": [
+        "95bdd9c1de74a466708f8647c1af88b40820ac06ed834fe450b7a011e24e70c3"
+      ]
+    },
+    {
+      "path": "backend/src/repositories/battle-awareness-narration-reservation-postgres.test.ts",
+      "ref": "verification/battle-awareness-narration-reservation-postgres-bounded-native-pg-20261007",
+      "headSealId": "3ef9dbacbd2573508abd0520de1b65c991fbbc8f453616021e81e2eafbcb6c82",
+      "changedAncestorSealIds": [
+        "95bdd9c1de74a466708f8647c1af88b40820ac06ed834fe450b7a011e24e70c3"
+      ]
+    },
+    {
+      "path": "backend/src/llm/openai-compatible-agent.test.ts",
+      "ref": "verification/agent-typed-seam-bounded-20261008",
+      "headSealId": "88b651b11bee401e5b0e8dd019e86e29ba2a319da1c226196d1f5de1f84823ff",
+      "changedAncestorSealIds": [
+        "7c3693e3b4211157a5b340153f8317d853971ef27e080aa4f84332a20c3fd8a5"
+      ]
+    },
+    {
+      "path": "backend/src/llm/openai-compatible-perception.test.ts",
+      "ref": "verification/perception-typed-seam-bounded-20261008",
+      "headSealId": "5383f46e17fbf709a60d07e1d3278ff95f638c28261239ac3d21077620eaf215",
+      "changedAncestorSealIds": [
+        "fd9582a733bd7a3698b053fb0db428f7d6ea59ce3f545ecc1429ce9ee0127c1d"
+      ]
+    },
+    {
+      "path": "backend/src/llm/openai-compatible-routing.test.ts",
+      "ref": "verification/routing-typed-seam-bounded-20261008",
+      "headSealId": "0595f010d8716e7fa14181a8e6065c93d1b863ea910acd970acd99a94137127e",
+      "changedAncestorSealIds": [
+        "02b6d59807b18e91e8cd3dc336900072e54507b2a4390bb5a4da0e2808cb536f",
+        "5b34d18fd701cf1ff6e739950e129ca0cf43a883d71a88795245a73ad34c1b5b",
+        "7fafa0e59a17475925224cbda6d3d97f05930a271c05d81a2026404546024fb7",
+        "95bdd9c1de74a466708f8647c1af88b40820ac06ed834fe450b7a011e24e70c3"
+      ]
+    },
+    {
+      "path": "backend/src/llm/openai-compatible-psyche-repair.test.ts",
+      "ref": "verification/psyche-repair-bounded-20261008",
+      "headSealId": "09d61c50f520e3a93618d90fd0f96b72f374a48cc14568715c488daae5d79ef6",
+      "changedAncestorSealIds": [
+        "3c919c7c047bddd5eeabad3f7c74e5416c147c4df4817b89c945178a90567a20"
+      ]
+    },
+    {
+      "path": "backend/src/services/character-portrait-v3.test.ts",
+      "ref": "verification/portrait-v3-bounded-20261008",
+      "headSealId": "0b349d1dfb958a33e71c52e699789174ce68f30a89a19b6b763d617fc37253c1",
+      "changedAncestorSealIds": [
+        "4a45c9459e2d46f7f2f91a881dc4ece3f4b6c6ce7843b9ad299930dde99b10d7",
+        "991a0bed1f9217e6978039cb39b7b217e3122a147cd91f22786df658d1917be7"
+      ]
+    },
+    {
+      "path": "backend/src/scripts/persistent-battle-e2e.test.ts",
+      "ref": "verification/persistent-battle-e2e-bounded-20261008",
+      "headSealId": "80a2e7de5b1077749bd377f650eca25cf49db53584341cdeaceca2f1fc8340e1",
+      "changedAncestorSealIds": [
+        "29388522fd326751bb29a58fc9145bbf64bc1f96d80e2f54420065b80363d535"
+      ]
+    },
+    {
+      "path": "backend/src/scripts/character-authoring-a2-freeze.test.ts",
+      "ref": "verification/character-authoring-a2-freeze-bounded-20261008",
+      "headSealId": "6d13151cbf3a36368cc65085413161fb2ca63a2a940ac2328c67471ccc4928bd",
+      "changedAncestorSealIds": [
+        "42b6ff80a71caa184ae9ccec1a087e025eb5e831d7e900d23bb08860ef918df4"
+      ]
+    },
+    {
+      "path": "backend/src/services/battle-speech-wiring.test.ts",
+      "ref": "verification/battle-speech-wiring-bounded-20261008",
+      "headSealId": "2d5c03f299e5ab8f4e4088010c51bafd8660b70fcb4580d936ae3e04cb88ba6b",
+      "changedAncestorSealIds": [
+        "42b6ff80a71caa184ae9ccec1a087e025eb5e831d7e900d23bb08860ef918df4",
+        "95bdd9c1de74a466708f8647c1af88b40820ac06ed834fe450b7a011e24e70c3"
+      ]
+    },
+    {
+      "path": "backend/src/routes-structured-asset-integration.test.ts",
+      "ref": "verification/structured-asset-integration-bounded-20261008",
+      "headSealId": "dcd4a07d88c2122d3dcaa50fa967172eb2673846224070052b1c4abc8fb2a9c0",
+      "changedAncestorSealIds": [
+        "29388522fd326751bb29a58fc9145bbf64bc1f96d80e2f54420065b80363d535",
+        "95bdd9c1de74a466708f8647c1af88b40820ac06ed834fe450b7a011e24e70c3",
+        "991a0bed1f9217e6978039cb39b7b217e3122a147cd91f22786df658d1917be7",
+        "fcf165143e528ea548c1e9c8313a465199e185c9f066ef7a60e1996a9e09856f"
+      ]
+    },
+    {
+      "path": "backend/src/repositories/characters.test.ts",
+      "ref": "verification/owner-characters-rating-20261008",
+      "headSealId": "ac93c3c970f294b13e77ea1b2f85035fb3a851b06794d1b2354ed9e261b2ee77",
+      "changedAncestorSealIds": [
+        "29388522fd326751bb29a58fc9145bbf64bc1f96d80e2f54420065b80363d535",
+        "95bdd9c1de74a466708f8647c1af88b40820ac06ed834fe450b7a011e24e70c3"
+      ]
+    },
+    {
+      "path": "backend/src/services/rating-service-transaction.test.ts",
+      "ref": "verification/owner-rating-transaction-20261008",
+      "headSealId": "144b80e9fadb7d42fd9524fc28aa7e6b407ce70730a14c388db6a219dcdc4387",
+      "changedAncestorSealIds": [
+        "29388522fd326751bb29a58fc9145bbf64bc1f96d80e2f54420065b80363d535"
+      ]
+    }
+  ],
+  "affectedCauseClosureSealIds": [
+    "0021883e808ae8bf7d59ead2180519d677c39d02b46ee485c358bb7fd19c27da",
+    "02b6d59807b18e91e8cd3dc336900072e54507b2a4390bb5a4da0e2808cb536f",
+    "0374262c05d28dee5d6b67d599280434b2fe91e7c416c66cda9c7ef975114e9c",
+    "03de78e3dab706f09ba7d1797ef6de6a2b10932cc295f7197da6c23deb3622ae",
+    "05233c7518e3340dcc31e80fc2d881de448923588870bd7de982bec009454fc9",
+    "058e6cfb7f73892647ac3dd22dfdb040c3ce088ac36422f99867080286203254",
+    "0595f010d8716e7fa14181a8e6065c93d1b863ea910acd970acd99a94137127e",
+    "09d61c50f520e3a93618d90fd0f96b72f374a48cc14568715c488daae5d79ef6",
+    "0a56df300458c836c52402d3b8eba8406334eaa12fe39b1505e4fa0d6d61a2db",
+    "0b349d1dfb958a33e71c52e699789174ce68f30a89a19b6b763d617fc37253c1",
+    "0c60ead1611a0aadf2a3e504245276785eac5c27a7a2d987d9f0d558c73e1e85",
+    "0df9cbe4abb949879c85eba500d7e80d742ffba5adfb2a80ed4b555e077eab45",
+    "11195c24131e1d66289d5b5aebd457862a7ac82f700f1d814c78794024a3b049",
+    "1175226dd96945f365c94c9cf3bb9c938d76eb453579f1102a039eea3d0ef045",
+    "11aa98609796b3fb676c1baefb648556aa90ebf6cab150f56590aa01b61ee91f",
+    "11ad190b10415f87aaf38a9598ec3ac3e05031fd2c03800aac12da69ae178d91",
+    "144b80e9fadb7d42fd9524fc28aa7e6b407ce70730a14c388db6a219dcdc4387",
+    "16c112b9b92ceaf3b11efa7a3958680b3a8d8efa785bd1ce5d5a73148cdffc9c",
+    "17bd50f2ae67cb6b09adff286d1164c9c01decdd605bfe78512f7a40494566b2",
+    "18a1252ed2bfa2773aa446b80e9779cab123dd9f7ea1088ead63714d92e3aa1c",
+    "1f1843e02aeb635bb678c9f5b3f399bb5271cc9a34e25fe2f4ccf5f84488d66e",
+    "2155a828a7cb8d7d0d93506fa0dfbc78c85535b8773bd4ca3f825cd8af4c63d1",
+    "25925950c9b59afcc12bddf738ae646f20ecf82385391eda20edd975597a9c1a",
+    "2653c86a8f1388ba5ef2118868e0ac895ab88777c4a26a669c6e64266878ca65",
+    "2671b62b0ee78b4d80c926b14b69a99df3cd15c358206e86dbd6cde4487dd9a2",
+    "29388522fd326751bb29a58fc9145bbf64bc1f96d80e2f54420065b80363d535",
+    "2a2d54b3ccf45a78ee0d9111b6333e70de4c3a77d6b09897083d82e0284a61fe",
+    "2b22a189f4d0208bbff9aedd3b2ae18c30263830fac3c6a2014a5752d67753b2",
+    "2bc627a64211c6af5311ee885f237fca60cc9e44bb556cf901826b28622e2941",
+    "2cb50f7f6a261d9605011de5ee688c5b2306cd9d8416679edc60bcf6fb8d7828",
+    "2d5c03f299e5ab8f4e4088010c51bafd8660b70fcb4580d936ae3e04cb88ba6b",
+    "3107542e2fc9024a85ec83384ea704e00ccb2fad1b6856cf7338445fb1dc8852",
+    "32bbf4004f18bf0ba3ca9055290441c1a241a108127d6379f0058efcd120650a",
+    "334383eed7e6d311408df36b38964de0e82ed4eaaa0f5f59817c978006174dde",
+    "33c3815b246bd1ad28daccc940c45e880d90e53913ee745a5a0b7463a05879f9",
+    "35672262cb7558737a45b108b84b94e08e9c5927d23613fe3ca817ca30ed80bc",
+    "3666451e428f32f71eb4eaf71effbff06515ee065cdd932ed8915c43b7de2259",
+    "372748bb422b36201c9e6007cac1e49aea38d6971f0babe7f08490bd8b67bb99",
+    "386b11e4e5a07400cb39b55967e40cb113e33afbe0d266ce8b85b13e96e979ec",
+    "3b837d74d17f9fab92b52b58222371978d14bb535f4031d15e334b19e6f25c9b",
+    "3c919c7c047bddd5eeabad3f7c74e5416c147c4df4817b89c945178a90567a20",
+    "3d36a9eb967904be5a9ad085fd8607b3daaea78a2258c04c7e954f43fd1fb22d",
+    "3d91b548be11f0624b6a88847c127e54a69140495041d50a133ea1cca9708423",
+    "3ef9dbacbd2573508abd0520de1b65c991fbbc8f453616021e81e2eafbcb6c82",
+    "3f3dd4c5984778043e1a692b58d89c536c9af360c6a2b4881b76deb10c9e19a2",
+    "42b6ff80a71caa184ae9ccec1a087e025eb5e831d7e900d23bb08860ef918df4",
+    "47170549e6addf05a3810fe9721c48f0384b4e3cfcb040ce0ad7d4c3bd7ecc44",
+    "4a45c9459e2d46f7f2f91a881dc4ece3f4b6c6ce7843b9ad299930dde99b10d7",
+    "4c52bb929156a693a0c40e94531ec4ca57137c397a8ed16fd8cb6acc7b3b3b62",
+    "4d33938f8494654cc3ec9f0fa0bff4e60bc242bc5961d348b381a5ca2c0cae42",
+    "4d6c4797b9bd6eab93329c57fcc7ee8fcb38635e14067cf8123007a41b035d3c",
+    "5383f46e17fbf709a60d07e1d3278ff95f638c28261239ac3d21077620eaf215",
+    "53d5933f214fa6683fbf198a660a3ce47b929b85ccf2a18680e24a18028ca7ab",
+    "5452852d0f1bf38ed89dca0b72e4eebb2db5b47bda137a1983f2e45e0bd14cc9",
+    "551ae7d8ea5734eee239f8d6fe9eb1d1ebc94bc2d291a8177e7ba58379d41237",
+    "5694d174aa491d92cbd04dc3c6f997e2f453145c1de1cf2d7b7b1e6d7fa7f9c4",
+    "572556ec9c769def8322540f89566583947cf29ecc98b2caf0ad380475b3b68b",
+    "57d4a1a92c4d5344b598e42444c000c7014c6c46e1476c038dd8f55b79855b0e",
+    "58a7034ae30a4e8660db9c01161ea05ee28dbc0eb539d8e661559169945910de",
+    "5b34d18fd701cf1ff6e739950e129ca0cf43a883d71a88795245a73ad34c1b5b",
+    "5b8cc9a2511965b1e75096daaf044bbea9dcd00c23556c8a8496324cf657571c",
+    "5c06dcccd164d1e51610184f474296ee948c8fef2a4469c62453df2b33e244d2",
+    "5e80483ea3621c45eaf972acfc5b047d35bf82f8902ad6b731bd89b58d190332",
+    "5fc4d62c89a90fdc6dfcae35711289ff9c139503a3e1cd31382d78d429d5cb6f",
+    "603632db17373c90f1abd2b832c67f6697b04ce21b1f9b9253ae6a480dcfcede",
+    "6297c6a43cc8a45dd261fc6b40bfb6cb909c0e6def9505e844b4f7da6ad6bf72",
+    "646bb467ac7254071e722cbf78de03a051041bbe250f0435a738b11bac9ab3ca",
+    "66ba4b137b0a653e02487d93b3afc2ed991d194839f6654de5f8df7dc2ef0032",
+    "67fb7d4ddcae06450cbad5d2476ddf7ea178afca7b19e247eef6c8db19e36739",
+    "69315aaf0137fd62cdecd0d85ae79e90cf61eeca43bb86b73ad34ecf00a1bd03",
+    "6d13151cbf3a36368cc65085413161fb2ca63a2a940ac2328c67471ccc4928bd",
+    "6d6e0ceb41bec054864136538c5964cc4ab61c11a4f1c0f4ea9cf19b0314fcec",
+    "6fc9de4333a04acce3cde69962c8e70cff20999112df9ef4959ad23d19164b2f",
+    "7004afaf7042b71899003cf822466529426e4846a5eba95b51105a20f76d0985",
+    "714fcabc08db2375c192b3e46b9a8c842897f7eeb63401d9bb0295e3f195cecf",
+    "71996ab40a982d193b1ee3b49152b47e53ac9175650065a896ac263107529471",
+    "71a3806f51ddb38886b2de44719b17f973c4d263a4257613274dfa1862a50ef4",
+    "73fb22d5bbbe5c6d5633e57b7ba31e1d7207b6f9e0e95fae8c0fc1455a23caa4",
+    "7872163ad23ff4c6f179f120b45857d18c80cea88160afe880b8d733729d77aa",
+    "7ab3fea47a5d0f0dd3ec4a5e26206a9dd778d9b336706d658e9bcf199f6b8465",
+    "7ab8e356ad69e65c8406fac4a705162de3bb61318659704a53587171dc79562f",
+    "7c3693e3b4211157a5b340153f8317d853971ef27e080aa4f84332a20c3fd8a5",
+    "7cdec0b7f5381f281a7c48b48b61b5df1d5eec35f3fd7230c1dc35426376990e",
+    "7fafa0e59a17475925224cbda6d3d97f05930a271c05d81a2026404546024fb7",
+    "80a2e7de5b1077749bd377f650eca25cf49db53584341cdeaceca2f1fc8340e1",
+    "821db870fb97dc423b6a54cfc9f5631e4d5a52c4526876621d332575c769b9f2",
+    "8531034c70ea9751330345dd99fb0d64e7817a9ecfa21fda37d2cd26b2bcbb15",
+    "8580d37b61869e20c4959c67206988ca356f178e3f74895a09016c7b9c52fe4f",
+    "871b4b46e531e367409a529704c6b64bb1d041a22d3643fb0f6da4705473c1dc",
+    "874aa5c3070cd3f991950aaf916f9a1d5b8d8afd7c752b16e95993bb46079f4c",
+    "88b651b11bee401e5b0e8dd019e86e29ba2a319da1c226196d1f5de1f84823ff",
+    "88f63f286cf7af3394c063a2e7520bae04779467e66c4538b2f81d092bcc7539",
+    "895e57e81b7f31fb092e3164c2ea4b7693964086078f15a0441fb16726337ce8",
+    "8b5497c1da2af6c911183d10bbf845d45e74fe69a2a267a0fafbf6e5da854c42",
+    "8c2a2e735262c7fb2b62c6bff2139d0eb33ba3e75d2a65eaf4e896483e5d0509",
+    "8d6bf70266a8a48bc0227bb6c69995a951948a704c1fee95f6e1fdd08d188075",
+    "90df3c2c74cfedc2d5f0de6187786bb4d9470d7b5e49d789721378ad11df8240",
+    "92128582fb5d99725dfcea755d43c7549468705c28ba73830fa3f6e0b04a9bff",
+    "929614f7953c82a0c4f4c54bae84e6ae11064e81848ce2228b64fa4da02ebe60",
+    "9354043daf7bf0b1c50f4269fb423b390f2c11a58e3b040ce62c31401f644366",
+    "938f2d59786fbd4d6929fcfa1411ab23d23fd0fccdfe75b25a7a20647117880b",
+    "959b1972626ffa29f460172eb73cbc339cb1d79b94f1e07961b3db3c06944c01",
+    "95bdd9c1de74a466708f8647c1af88b40820ac06ed834fe450b7a011e24e70c3",
+    "96811ac852f74ac0486ebe7e7ff135fcd029a1de0cbee588c60513620f87452e",
+    "96e6dbc106b9b579e08a0a8851f9084d82b1071cb55e9ce5ccc25f2e218ce1e1",
+    "97a724470ebd013bce876238617aded319fd10eb648daea156cb91746cf131f1",
+    "991a0bed1f9217e6978039cb39b7b217e3122a147cd91f22786df658d1917be7",
+    "9958ac7fdd8d862d47915ce8ece056b251506e2718c22f46ab7775ea22544176",
+    "99daa2bed6e0d01bde12df6dffd1ce3478049c4602e6231b668ea98d165e8a10",
+    "9b26fe9241b8c420e7dbdae9e9c18bc4a8e79abd020eca35edc15a686b277d29",
+    "9b7fa43608547ad79b43bfa3e37e3525be072ca7c77f4239fd32032f3dd32aef",
+    "9c44026e7f6192152cba87a4c37a8c893e17e2e0a9be7516ac318685d6586439",
+    "a0108db652a1550f90861a28c7d07826ba4875ba34580e5ee2ecfdee1966cd0d",
+    "a19d504723b074872d217b9c44248c6b0754ce72a384617e448845195ba64d70",
+    "a3058ee1e284b6eff25136b61aa3b828d47e1d3c15b26cc522802e37c1a91c52",
+    "a420f0e74f6e4a46c2af413afecbe4ac4242dee94441c1a7c7af599b7eda17e2",
+    "a4b348e58291d2bf152ffb13a831408af7c9c8813600725f6a8815261391030a",
+    "a5af3c2d06a7e3dd3912a744e0f8bced86a13f214caa2248bd1487894f635748",
+    "a75c40e5f4121eff38ea4324cb8cbacba56d659a4d66995eb1a7fd58c4a652bf",
+    "a8bd77581a0e475618eb1a02af79dc7e24c3b7cdf4959fa3264c6098f4cc4ae7",
+    "a928e47ef948b5b0a729f767d0496b8013d67103aa1a5389d2da89650922e112",
+    "aa08f46a5ae70bccacc4b43e1621aaf341a26c873111dd15b6ee091836cdf3a2",
+    "ab889a4617f6f343aecbb1b47e503db56c41c7b4f19ca0cc32b4d60d1c0b3b93",
+    "ac93c3c970f294b13e77ea1b2f85035fb3a851b06794d1b2354ed9e261b2ee77",
+    "ae27a3a0d74786dd4155d2ab94eaa17bea2c220e9ca916477e395189f00ae030",
+    "af3fab324250de872010116f2bd7bc23214104aab3d86b80d0b4892da718d2b7",
+    "afc973998b2a0aed1ce265e005764de05bf47980ee8eae6d60c2ad8259bc126c",
+    "afda05765c014a51e5bdccde6533d3345268857b7f80caa03848738226b838a7",
+    "b088922ab4f0f73fad2a0a7cf9632e4ba54143ee07f6dfbea313c15cce86531b",
+    "b2e522e260e6fa48f6205c9facb8370981a6a95745318f207ef1d8ff4a61efb4",
+    "b44c2d32b9cc158e4c422084e3ecfbf07686351d0bdaff2a9f3a85e4a0c73d3e",
+    "b5d3f3590d68810285acd0fe857c1c8df4e88c28ebd1c29a36a749e07cc9ec5d",
+    "b976cf61e0af34ee39d63f4bf5e274f29e08db10220b5c564fd6314e3f9db9f9",
+    "b9b4686ee6f66fdcb17d5f720b2e53888c4dd455313b2113c7e43ede340299f5",
+    "bc4e17992fc99bebd82c0723ae94bbd5e55c07fbbb7ec0aeae83e0796a6267b5",
+    "bdc9b6e9c40e6ffa3653b4d56c699a1a9f1d3a7cd1be6bbac8261b76f04184c4",
+    "be15cea5ea4c2138822b7be1de0b0cfdc9b71f9c71fe2dcf40e9b57d4679bd7c",
+    "be6c5fd8e04b304d51b2023d34486a7e4028e69512cd6c6a9d54ae3fef337a3c",
+    "c0bba53d85453e55c8dfc8062b63f60e0b2c629d1af9f50a9f954fadcc27d725",
+    "c3f863e3f85498e21342866155699b0d288af3471be88bf3a6ea322fd45eb10f",
+    "c4122415e22ef3f8870f6185da05928005a087d36374273b67b9019b13ab1315",
+    "c5104f3c58d019dfab3efc68b685722fa9d1e4773aaafbadedba7a9b783d4f04",
+    "c729b7f1dd8239ebe7c644b5dcbc966fcd8a2dfe6c09a2906468e518e4805c97",
+    "ca44acedaa6634d8a56c49e3aad978d32cbe6e76704b5daa602c851614d05690",
+    "cf31a12bbe4fc3ebc5fd1689aeb7a5098fce0f606c98de4f80ea8851b4948cab",
+    "cfa925d91ae62f7614d48e96e72df54ad78cbc7482ddd023baa35b6036c0b55a",
+    "cfbea376d97e54cacde4b6a906127ebd3f69058fd1e2f92edd2c367c99d379c9",
+    "cfe00eb6c63e4d8131cc6174c6c56cd7f4ff10052a208c12f445b49aaab780c3",
+    "d5d48d5393896637d613372fe29f34732f1622208012a058f6cc344e6550e9d8",
+    "d6129681d343c9f44cbf0f39d047984b4897c01d0b2fef68f2169f50aa55204b",
+    "d846992408136be4af06e558aad8d3f1007643d62841b83a138e84308cba32c9",
+    "d969f6d3398dc3005aff16c3a5f0d81986cde3dfb8eaec48f48195e06b4a092a",
+    "dacc831dc9a5a55bed0c500a205949447e6f1e10a4efba2cdad33a3ecaec8170",
+    "db2119a28b0bf3e394e3b7874aa05b747d7bc811f25aa70500450402d4a0a18d",
+    "dc5e5e08f0545821e7bc4aaa8f10940b958553455d86133fd57922ed3b6fa8e2",
+    "dc775c5520339cf0e1d0fbab3cbbe185e26a861592062b7e87c3488ee3e0d39b",
+    "dcd4a07d88c2122d3dcaa50fa967172eb2673846224070052b1c4abc8fb2a9c0",
+    "ded2bccd7b09310c4b37830d5e676c1a85972cbe23daf8e89b29982366a6ad7c",
+    "e2823ff492c187657982505299761321e7ec60111ea99400bc0bc05cf7ce2ff8",
+    "e2947758c2d961f4547d77ef7e166ac4e4af9639a8d93de682ce5cede88a71bc",
+    "e2e5e734368fbffdec66817b5b0a7922efe55e4af51d8356dff3122e8af6c42e",
+    "e673f8ab363f47d757fe209dc1888d50238295a5036c37dbe99dc7ef0c521705",
+    "e7cbf31666e20d7fe9136b4d686cdeae58e8be6281d4f25421c30906e096c415",
+    "e966130abcf3866532407c9296999c40c724cd7bf693418cd2610155dbb36535",
+    "ece13f8be78174ec431251ffd3f7bcd01aef52c4c94093a631d64819a97c7194",
+    "ef36e1c06a37227f1aeb951b86149bd6769fd1c9c5d7319aa768b720e52a6078",
+    "efd44c44fc085431cb40e257a8432071d81a2326616640b36ae73eae697c91b7",
+    "f079c42acda11bd04157f07dd4a01c304c0ecbe3ef6b3df3b4d0cef0b8ae59f8",
+    "f19a4794b62dd0a61f80da7097be1fe096cdcf3aa2a16bb7ab8a0da1c1035fc6",
+    "f1e75ecb6eff5e81e855cac205f50dd21795c346dcbd8bfd60a2974a37d2faf2",
+    "f345679a378d02706c792cf06060ea5f6de12c4f59f3c305bd080fcb35adc990",
+    "f5bc4e32207d5b2f7dddbc74ab945af49771a3df46ba46ca11ee2a07fef06b31",
+    "f6ca1fed9a2fc7984deb342141fecc05fc2bf4aedaaa48d61b062eba1bac7e6a",
+    "fa58553524f9a1eb71835166e3953a88a94f2939b74016f18a3931f77198ea66",
+    "fc463e7260c49c5c77823ade78c3b744e2a99decc65aed6c57a7f66e5badc84c",
+    "fcf165143e528ea548c1e9c8313a465199e185c9f066ef7a60e1996a9e09856f",
+    "fd9582a733bd7a3698b053fb0db428f7d6ea59ce3f545ecc1429ce9ee0127c1d"
+  ],
+  "counts": {
+    "scopeBindings": 45,
+    "changedBindings": 45,
+    "changedDistinctSeals": 45,
+    "affectedMappedTests": 73,
+    "affectedCauseClosureSeals": 177
+  },
+  "statusSnapshotSha256": "cbfde05c82e461a8370800d592775cdc658e07aa34a44cb4f65384e86b657838",
+  "graphSnapshotSha256": "03c1d93a6c9b7c389bc19688f84e505f5c3884c1b3914e73f2a5414c73719a6a",
+  "newSealRefs": 0,
+  "otherDivergedAncestorsOutsideInitialScope": [
+    {
+      "ref": "all-tests-20261007/implementation-retained-agency-v3-public-private-boundary",
+      "path": "backend/src/services/battle-public-projection.ts",
+      "headSealId": "8aad18fc84ec5efbc42d7d79b08364bf649d027990f8366fe970d399ace734d2",
+      "relation": "WORKFILE_DIFFERS_FROM_HEAD"
+    },
+    {
+      "ref": "all-tests-20261007/implementation-stable-area-ready-binding",
+      "path": "backend/src/services/battle-service.ts",
+      "headSealId": "e82f2436ea3107d7e9ea91589511117998ec8cf02078c043d1a172eb94e5f4b3",
+      "relation": "WORKFILE_DIFFERS_FROM_HEAD"
+    },
+    {
+      "ref": "all-tests-20261007/implementation-stable-initial-world-layout",
+      "path": "packages/shared/src/battle-world.ts",
+      "headSealId": "2c5b1cfe3cf17fa58ff39fb45e30eaccb0b91506a39e2c1349671d35bcb95270",
+      "relation": "WORKFILE_DIFFERS_FROM_HEAD"
+    },
+    {
+      "ref": "all-tests-20261007/implementation-typed-battlefield-creation",
+      "path": "packages/shared/src/battlefield-creation.ts",
+      "headSealId": "20c050a7fb0b19ccae7df3d80e3740fb5f235b4f5dd500cf706fbd8093392b91",
+      "relation": "WORKFILE_DIFFERS_FROM_HEAD"
+    },
+    {
+      "ref": "all-tests-20261007/implementation-world-profile-fixture-projection",
+      "path": "packages/shared/src/battle-world.ts",
+      "headSealId": "e54f08ad6e2c12e8bc0d606d127673f1f5d1c9338b0f2e499742538ad42ab527",
+      "relation": "WORKFILE_DIFFERS_FROM_HEAD"
+    },
+    {
+      "ref": "all-tests-20261008/implementation-boundary-battle",
+      "path": "backend/src/services/battle-service.ts",
+      "headSealId": "2eae8cc721eb57bccdb6600c1bcdf5c9c9cf72d1d2dc4feb7fb0f0d1b715b3bb",
+      "relation": "WORKFILE_DIFFERS_FROM_HEAD"
+    }
+  ],
+  "fullAncestorCount": 535
+}

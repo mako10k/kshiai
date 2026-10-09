@@ -1,0 +1,50 @@
+{
+  "nodes": [
+    {
+      "key": "design-runtime-directories",
+      "path": "docs/sealgraph-runtime-directory-test-review-2026-10-07.md",
+      "parents": [
+        "gate"
+      ],
+      "scope": "Preserve canonical SealGraph data while restoring disposable runtime directories; unchanged two local cases.",
+      "ref": "all-tests-20261007/design-runtime-directories",
+      "test": false,
+      "sha256": "53c3f5b51a0ee961ce96b4bd7df01be8cb08e32485dea0433eafd8e5b1bcc40f"
+    },
+    {
+      "key": "implementation-runtime-directories",
+      "path": "scripts/sealgraph-runtime-dirs.mjs",
+      "parents": [
+        "design-runtime-directories"
+      ],
+      "scope": "Checks existing config/objects/refs before idempotent mkdir of ignored runtime directories; no repository bootstrap.",
+      "ref": "all-tests-20261007/implementation-runtime-directories",
+      "test": false,
+      "sha256": "787baa8a4bc14356dd532891da7a8e72c8e789d05aa969e1529479036af79e7a"
+    },
+    {
+      "key": "sealgraph-runtime-directories-bounded",
+      "path": "scripts/sealgraph-runtime-dirs.test.mjs",
+      "parents": [
+        "implementation-runtime-directories"
+      ],
+      "scope": "Whole unchanged two cases config preservation/idempotent setup and absent repository rejection; no full tree equality claim.",
+      "ref": "verification/sealgraph-runtime-directories-bounded-20261007",
+      "test": true,
+      "sha256": "87012df79f51840e8a2852e72a1c2db40244544e7bca9e00fdfd30f3f99caf6d"
+    }
+  ],
+  "seeds": {
+    "gate": "all-tests-20261007/authority-test-gate"
+  },
+  "diagnostic": {
+    "focusedPass": 2,
+    "fail": 0,
+    "skipped": 0
+  },
+  "limitations": [
+    "Only two original runtime-directory cases",
+    "Not full object tree comparison",
+    "Full251 goal incomplete"
+  ]
+}

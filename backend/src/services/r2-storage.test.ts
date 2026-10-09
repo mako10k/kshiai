@@ -28,7 +28,7 @@ describe("R2 media object naming", () => {
     );
   });
 
-  it("writes a private S3 object and returns its shared public URL", async () => {
+  it("builds the configured PutObject command and returns a shared URL", async () => {
     const commands: PutObjectCommand[] = [];
     const writer = {
       async send(value: PutObjectCommand) {

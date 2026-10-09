@@ -1,0 +1,166 @@
+{
+  "entries": [
+    {
+      "key": "design-agent-typed-seam",
+      "path": "docs/llm-typed-seam-test-contract-review-2026-10-08.md",
+      "parents": [
+        "agency",
+        "phase",
+        "profile"
+      ],
+      "scope": "Retained historical action/psyche/expression and public profile validation prompt contracts through typed protected seam. Exact conscious projection; no live model quality or V5 dispatch completeness.",
+      "ref": "all-tests-20261008/design-agent-typed-seam",
+      "test": false,
+      "sha256": "715b7d34cb0f9e6115636381fa9ec753b0fb0c935258d059e3f14447222c8d7c",
+      "sealId": "d85609eaf2d1ce5290661187db2bd0ce3bd675b98d5e10e43bc2d056495f3b1d",
+      "causeSealIds": [
+        "87d4106035e8b09c667d27d164691b16b93c12c6c683b414097b3763b0c53e5d",
+        "e4164afcfc9119cfd59fb013ab3ec8a365d2e40e96bdb93c0c064728a7e25143",
+        "6a3de70a468b8d9270936f1ff76559d209677912e022a71feaf66be7a1da99d9"
+      ]
+    },
+    {
+      "key": "implementation-agent-typed-seam",
+      "path": "backend/src/llm/openai-compatible.ts",
+      "parents": [
+        "design-agent-typed-seam"
+      ],
+      "scope": "Retained historical action/psyche/expression and public profile validation prompt contracts through typed protected seam. Exact conscious projection; no live model quality or V5 dispatch completeness.",
+      "ref": "all-tests-20261008/implementation-agent-typed-seam",
+      "test": false,
+      "sha256": "8d4be097ddbfcb0da515dd0db402c7dc6dddccb763d625fce16165e7c524d2a5",
+      "sealId": "7c3693e3b4211157a5b340153f8317d853971ef27e080aa4f84332a20c3fd8a5",
+      "causeSealIds": [
+        "d85609eaf2d1ce5290661187db2bd0ce3bd675b98d5e10e43bc2d056495f3b1d"
+      ]
+    },
+    {
+      "key": "agent-typed-seam-bounded-20261008",
+      "path": "backend/src/llm/openai-compatible-agent.test.ts",
+      "parents": [
+        "implementation-agent-typed-seam"
+      ],
+      "scope": "Retained historical action/psyche/expression and public profile validation prompt contracts through typed protected seam. Exact conscious projection; no live model quality or V5 dispatch completeness. Whole original cases/assertions retained; diagnostic pass and full typecheck0.",
+      "ref": "verification/agent-typed-seam-bounded-20261008",
+      "test": true,
+      "sha256": "fb7b4b3b233acc5f73fa8fce2fa9baeb8653316d192ec0e538cfde41775fe897",
+      "sealId": "88b651b11bee401e5b0e8dd019e86e29ba2a319da1c226196d1f5de1f84823ff",
+      "causeSealIds": [
+        "7c3693e3b4211157a5b340153f8317d853971ef27e080aa4f84332a20c3fd8a5"
+      ]
+    },
+    {
+      "key": "design-perception-typed-seam",
+      "path": "docs/llm-typed-seam-test-contract-review-2026-10-08.md",
+      "parents": [
+        "world"
+      ],
+      "scope": "Independent world/sensory combined response acceptance through actual SDK create and mocked HTTP success; canonical and observer separation. No live inference quality.",
+      "ref": "all-tests-20261008/design-perception-typed-seam",
+      "test": false,
+      "sha256": "715b7d34cb0f9e6115636381fa9ec753b0fb0c935258d059e3f14447222c8d7c",
+      "sealId": "d78cc8ae7fcccb4ecece8a8c76f5621e0badc09b4cd5d1ca76b53936b9f6bc6e",
+      "causeSealIds": [
+        "bbdf88f6e4a55ed11c978c75df29f590ddd1d99c7383eac1a9b26d54609c9031"
+      ]
+    },
+    {
+      "key": "implementation-perception-typed-seam",
+      "path": "backend/src/llm/openai-compatible.ts",
+      "parents": [
+        "design-perception-typed-seam"
+      ],
+      "scope": "Independent world/sensory combined response acceptance through actual SDK create and mocked HTTP success; canonical and observer separation. No live inference quality.",
+      "ref": "all-tests-20261008/implementation-perception-typed-seam",
+      "test": false,
+      "sha256": "8d4be097ddbfcb0da515dd0db402c7dc6dddccb763d625fce16165e7c524d2a5",
+      "sealId": "fd9582a733bd7a3698b053fb0db428f7d6ea59ce3f545ecc1429ce9ee0127c1d",
+      "causeSealIds": [
+        "d78cc8ae7fcccb4ecece8a8c76f5621e0badc09b4cd5d1ca76b53936b9f6bc6e"
+      ]
+    },
+    {
+      "key": "perception-typed-seam-bounded-20261008",
+      "path": "backend/src/llm/openai-compatible-perception.test.ts",
+      "parents": [
+        "implementation-perception-typed-seam"
+      ],
+      "scope": "Independent world/sensory combined response acceptance through actual SDK create and mocked HTTP success; canonical and observer separation. No live inference quality. Whole original cases/assertions retained; diagnostic pass and full typecheck0.",
+      "ref": "verification/perception-typed-seam-bounded-20261008",
+      "test": true,
+      "sha256": "b7ca04101d8e6943cf4fd2ea4f2ac5030286cde106f8d197b0babc99087e9c03",
+      "sealId": "5383f46e17fbf709a60d07e1d3278ff95f638c28261239ac3d21077620eaf215",
+      "causeSealIds": [
+        "fd9582a733bd7a3698b053fb0db428f7d6ea59ce3f545ecc1429ce9ee0127c1d"
+      ]
+    },
+    {
+      "key": "design-routing-typed-seam",
+      "path": "docs/llm-typed-seam-test-contract-review-2026-10-08.md",
+      "parents": [
+        "wait",
+        "models",
+        "retry"
+      ],
+      "scope": "Same-provider model options and timeout/retry boundary. SDK success transport mocked; failures injected at typed SDK method preserve identity/physical counts3,2,1 and30s timeout. No real HTTP error normalization.",
+      "ref": "all-tests-20261008/design-routing-typed-seam",
+      "test": false,
+      "sha256": "715b7d34cb0f9e6115636381fa9ec753b0fb0c935258d059e3f14447222c8d7c",
+      "sealId": "96811ac852f74ac0486ebe7e7ff135fcd029a1de0cbee588c60513620f87452e",
+      "causeSealIds": [
+        "7f8ac50262580d0a94e13d82627be496f8e2e8fd059c194c4d93d84d2af28f43",
+        "7fafa0e59a17475925224cbda6d3d97f05930a271c05d81a2026404546024fb7",
+        "5b34d18fd701cf1ff6e739950e129ca0cf43a883d71a88795245a73ad34c1b5b"
+      ]
+    },
+    {
+      "key": "implementation-routing-typed-seam",
+      "path": "backend/src/llm/openai-compatible.ts",
+      "parents": [
+        "design-routing-typed-seam"
+      ],
+      "scope": "Same-provider model options and timeout/retry boundary. SDK success transport mocked; failures injected at typed SDK method preserve identity/physical counts3,2,1 and30s timeout. No real HTTP error normalization.",
+      "ref": "all-tests-20261008/implementation-routing-typed-seam",
+      "test": false,
+      "sha256": "8d4be097ddbfcb0da515dd0db402c7dc6dddccb763d625fce16165e7c524d2a5",
+      "sealId": "02b6d59807b18e91e8cd3dc336900072e54507b2a4390bb5a4da0e2808cb536f",
+      "causeSealIds": [
+        "96811ac852f74ac0486ebe7e7ff135fcd029a1de0cbee588c60513620f87452e"
+      ]
+    },
+    {
+      "key": "routing-typed-seam-bounded-20261008",
+      "path": "backend/src/llm/openai-compatible-routing.test.ts",
+      "parents": [
+        "implementation-routing-typed-seam"
+      ],
+      "scope": "Same-provider model options and timeout/retry boundary. SDK success transport mocked; failures injected at typed SDK method preserve identity/physical counts3,2,1 and30s timeout. No real HTTP error normalization. Whole original cases/assertions retained; diagnostic pass and full typecheck0.",
+      "ref": "verification/routing-typed-seam-bounded-20261008",
+      "test": true,
+      "sha256": "eeb519cdbacdfdab3f995c001825293896dcb7f31b5397a2ac8ffe9c8336caf8",
+      "sealId": "0595f010d8716e7fa14181a8e6065c93d1b863ea910acd970acd99a94137127e",
+      "causeSealIds": [
+        "02b6d59807b18e91e8cd3dc336900072e54507b2a4390bb5a4da0e2808cb536f"
+      ]
+    }
+  ],
+  "roots": {
+    "world": "all-tests-20261007/authority-canonical-placement-separation",
+    "phase": "all-tests-20261007/authority-dynamic-historical-continuation",
+    "wait": "all-tests-20261007/authority-normal-waits",
+    "models": "all-tests-20261007/implementation-sdk-model-options",
+    "retry": "all-tests-20261007/implementation-provider-accounting-sdk-retries",
+    "agency": "all-tests-20261008/authority-agency-typed-seam",
+    "profile": "all-tests-20261008/authority-profile-typed-seam"
+  },
+  "rootSealIds": {
+    "world": "bbdf88f6e4a55ed11c978c75df29f590ddd1d99c7383eac1a9b26d54609c9031",
+    "phase": "e4164afcfc9119cfd59fb013ab3ec8a365d2e40e96bdb93c0c064728a7e25143",
+    "wait": "7f8ac50262580d0a94e13d82627be496f8e2e8fd059c194c4d93d84d2af28f43",
+    "models": "7fafa0e59a17475925224cbda6d3d97f05930a271c05d81a2026404546024fb7",
+    "retry": "5b34d18fd701cf1ff6e739950e129ca0cf43a883d71a88795245a73ad34c1b5b",
+    "agency": "87d4106035e8b09c667d27d164691b16b93c12c6c683b414097b3763b0c53e5d",
+    "profile": "6a3de70a468b8d9270936f1ff76559d209677912e022a71feaf66be7a1da99d9"
+  },
+  "elapsedSeconds": 83.118
+}

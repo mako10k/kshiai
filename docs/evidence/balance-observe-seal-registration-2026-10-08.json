@@ -1,0 +1,73 @@
+{
+  "entries": [
+    {
+      "key": "design-balance-observation-bounded",
+      "path": "docs/balance-observe-test-contract-review-2026-10-08.md",
+      "parents": [
+        "requirements"
+      ],
+      "scope": "Pure diagnostic HPtrace/labels/profile arithmetic only, not gameplay, balancequality, admissiongate or adminAPIauthorization proof. Historicalauditrecord is non-normative, not owneracceptance.",
+      "ref": "all-tests-20261008/design-balance-observation-bounded",
+      "test": false,
+      "sha256": "d270339da6214d64c082861591bc26485f17a1c2fadcb68d026f44535974fc64",
+      "sealId": "dffa5e36db8d84159680110a0029b8a2df1d0fc43ee7c64984c7c719c448dc85",
+      "causeSealIds": [
+        "203e66fc4e30772adab026012c67f1b1ac4ca86ad2ada11b501c639a27a19eac"
+      ]
+    },
+    {
+      "key": "evidence-historical-balance-observation",
+      "path": "docs/battle-fit-gap-acceptance.md",
+      "parents": [
+        "requirements"
+      ],
+      "scope": "Pure diagnostic HPtrace/labels/profile arithmetic only, not gameplay, balancequality, admissiongate or adminAPIauthorization proof. Historicalauditrecord is non-normative, not owneracceptance.",
+      "ref": "all-tests-20261008/evidence-historical-balance-observation",
+      "test": false,
+      "sha256": "8d32776aec57e275b90eef8badec00d42311403968ddba040a1529f53e246d48",
+      "sealId": "f89e37290d2086bc30c60e29da9f8fbaebf11384291b5cfc9681844cb1c53e38",
+      "causeSealIds": [
+        "203e66fc4e30772adab026012c67f1b1ac4ca86ad2ada11b501c639a27a19eac"
+      ]
+    },
+    {
+      "key": "implementation-balance-observation-bounded",
+      "path": "packages/shared/src/balance-observe.ts",
+      "parents": [
+        "design-balance-observation-bounded",
+        "evidence-historical-balance-observation"
+      ],
+      "scope": "Pure diagnostic HPtrace/labels/profile arithmetic only, not gameplay, balancequality, admissiongate or adminAPIauthorization proof. Historicalauditrecord is non-normative, not owneracceptance.",
+      "ref": "all-tests-20261008/implementation-balance-observation-bounded",
+      "test": false,
+      "sha256": "f5876b904f1089004f2a63cfc2769dbedd478534e843a5d42ef0dced445a266b",
+      "sealId": "00b8a9a03621110b3982f82e2c6476e823b3c1a0ade7184803982cce47df2120",
+      "causeSealIds": [
+        "dffa5e36db8d84159680110a0029b8a2df1d0fc43ee7c64984c7c719c448dc85",
+        "f89e37290d2086bc30c60e29da9f8fbaebf11384291b5cfc9681844cb1c53e38"
+      ]
+    },
+    {
+      "key": "balance-observe-bounded-20261008",
+      "path": "packages/shared/src/balance-observe.test.ts",
+      "parents": [
+        "implementation-balance-observation-bounded"
+      ],
+      "scope": "Pure diagnostic HPtrace/labels/profile arithmetic only, not gameplay, balancequality, admissiongate or adminAPIauthorization proof. Historicalauditrecord is non-normative, not owneracceptance.",
+      "ref": "verification/balance-observe-bounded-20261008",
+      "test": true,
+      "sha256": "9a494d9f37eef76631bffbc72718815df20bfafd475a695fb51b219c5c3da19d",
+      "sealId": "45d5711186d18c3af6ca159b562e93acdb091d50a2c5bb196d159e3045043acc",
+      "causeSealIds": [
+        "00b8a9a03621110b3982f82e2c6476e823b3c1a0ade7184803982cce47df2120"
+      ]
+    }
+  ],
+  "roots": {
+    "requirements": "all-tests-20261007/authority-semantic-observation-requirements"
+  },
+  "rootSealIds": {
+    "requirements": "203e66fc4e30772adab026012c67f1b1ac4ca86ad2ada11b501c639a27a19eac"
+  },
+  "elapsedSeconds": 60.677
+}

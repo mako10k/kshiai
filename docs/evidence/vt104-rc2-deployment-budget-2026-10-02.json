@@ -1,0 +1,9 @@
+{
+  "identity": "vt104-rc2-deployment-budget-owner-20261002",
+  "ownerApprovalEvidence": "vt104-rc2-transition-owner-approval-2026-10-02.json",
+  "ownerApprovalCandidateSha256": "91eac07f5e161fbad4c611b05b07c65b7024307f71ad1d40f25593991bc79789",
+  "paidLlmCallCeiling": 0,
+  "scope": "Approved deployment preparation only: stopped empty provider/authoring queues; no agent authoring/game/provider requests. Ordinary cloud job and runtime resources incur cloud execution costs; no new spending or model policy settings. Owner game/authoring budget remains separate.",
+  "evidence": "Poststop DB provider/authoring/leases0; outbox0 after exact disposal/readback.",
+  "notClaimed": "A new enforced global provider account budget or dollar spending limit."
+}

@@ -1,0 +1,23 @@
+
+> @kshiai/backend@0.23.0 typecheck
+> tsc -p tsconfig.json --noEmit
+
+src/llm/openai-compatible-agent.test.ts(416,9): error TS2322: Type '{ contextMode: "compact"; phase: "turn"; character: { schemaVersion: 1; displayName: string; identity: { realName: null; nicknames: never[]; selfNames: string[]; epithets: never[]; gender: null; age: null; }; ... 6 more ...; equipment: { ...; }; }; previous: { ...; }; turnObservation: { ...; }; conversation: { ...; ...' is not assignable to type 'CharacterDeepPsycheInput'.
+  Types of property 'previous' are incompatible.
+    Object literal may only specify known properties, and 'selfReference' does not exist in type 'Pick<{ selfReference: string | null; privateMemory: string; currentGoal: string; emotion: string; beliefs: string[]; observations: string[]; speechStyle: string; lastSpeech: string | null; battleVolatileMemory?: string | undefined; ... 9 more ...; focusReceiptV1?: CharacterFocusTransitionReceiptV1 | undefined; }, "p...'.
+src/llm/openai-compatible-agent.test.ts(501,61): error TS2345: Argument of type '{ psyche: { emotion: any; speechStyle: any; selfReference: string; }; expressionBrief: { focus: ("ambient_change" | "self_result" | "counterpart_result" | "counterpart_speech")[]; observedImpact: string; continuityDecision: "reframe" | ... 2 more ... | "withhold"; sourceThread: "action_reaction" | ... 1 more ... | "...' is not assignable to parameter of type 'CharacterExpressionInput'.
+  Type '{ psyche: { emotion: any; speechStyle: any; selfReference: string; }; expressionBrief: { focus: ("ambient_change" | "self_result" | "counterpart_result" | "counterpart_speech")[]; observedImpact: string; continuityDecision: "advance" | "reframe" | "reiterate" | "withhold"; sourceThread: "action_reaction" | "conversa...' is not assignable to type 'CharacterExpressionInput'.
+    Type '{ psyche: { emotion: any; speechStyle: any; selfReference: string; }; expressionBrief: { focus: ("ambient_change" | "self_result" | "counterpart_result" | "counterpart_speech")[]; observedImpact: string; continuityDecision: "advance" | "reframe" | "reiterate" | "withhold"; sourceThread: "action_reaction" | "conversa...' is not assignable to type 'CharacterExpressionCompactInputV1'.
+      Types of property 'conversation' are incompatible.
+        Property 'anchoredExchange' is missing in type '{ recentExchange: { turn: number; text: string; speaker: "self" | "counterpart"; }[]; }' but required in type '{ recentExchange: { turn: number; text: string; speaker: "self" | "counterpart"; }[]; anchoredExchange: { turn: number; text: string; speaker: "self" | "counterpart"; } | null; }'.
+src/llm/openai-compatible-agent.test.ts(504,31): error TS2339: Property 'previous' does not exist on type 'CharacterDeepPsycheInput'.
+  Property 'previous' does not exist on type 'CharacterDeepPsycheCompactInputV2'.
+src/llm/openai-compatible-agent.test.ts(505,35): error TS2339: Property 'previous' does not exist on type 'CharacterDeepPsycheInput'.
+  Property 'previous' does not exist on type 'CharacterDeepPsycheCompactInputV2'.
+npm error Lifecycle script `typecheck` failed with error:
+npm error code 2
+npm error path /home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend
+npm error workspace @kshiai/backend@0.23.0
+npm error location /home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend
+npm error command failed
+npm error command sh -c tsc -p tsconfig.json --noEmit

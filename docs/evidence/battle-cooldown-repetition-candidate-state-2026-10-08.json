@@ -1,0 +1,15 @@
+{
+  "stage": "superseded_by_direct_owner_decision",
+  "path": "docs/battle-cooldown-repetition-requirement-candidate-r2-2026-10-08.md",
+  "sha256": "817757ab3316e8df01da0f9f049a9c479c6c0eea588134d09f39b43aadf9e0fc",
+  "accepted": false,
+  "independentReviewAuthorized": false,
+  "firstOwnerRoute": null,
+  "ownerQuestionPresented": true,
+  "laterEffectsAuthorized": false,
+  "supersedesUnacceptedCandidate": "docs/battle-cooldown-repetition-requirement-candidate-r1-2026-10-08.md",
+  "correction": "Normal creation currently binds candidate12 start4/floor0.9; current-policy helper start3/floor0.7 is not normal creation selection. Selector/adoption remains separate unresolved gap.",
+  "originalCandidateAccepted": false,
+  "governingDecision": "docs/battle-test-contract-owner-decisions-2026-10-08.md",
+  "directOwnerDecisionReceived": true
+}

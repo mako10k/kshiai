@@ -1,0 +1,20 @@
+{
+  "files": [
+    "backend/src/services/awareness-execution.test.ts",
+    "packages/shared/src/profile-grounding.test.ts",
+    "packages/shared/src/utterance-perception.test.ts",
+    "packages/shared/src/awareness-battle.test.ts",
+    "packages/shared/src/battle-turn-causal-receipt.test.ts",
+    "packages/shared/src/perception-projection.test.ts",
+    "packages/shared/src/dialogue-context.test.ts",
+    "backend/src/services/conscious-agency-binding.test.ts",
+    "backend/src/services/awareness-expression-commit.test.ts",
+    "packages/shared/src/character-manifestation.test.ts",
+    "backend/src/services/character-agency-inventory.test.ts",
+    "backend/src/services/scene-beat-wiring.test.ts",
+    "scripts/adr-historical-exceptions.test.mjs",
+    "packages/shared/src/battle-pacing.test.ts"
+  ],
+  "exit": 0,
+  "seconds": 20.516
+}

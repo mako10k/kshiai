@@ -1,0 +1,342 @@
+{
+  "thought_id": "docs-evidence-vt104-memory-approved-execution-2026-10-02",
+  "id_source": "file",
+  "report": {
+    "engine_version": "0.1.0",
+    "document_id": "docs-evidence-vt104-memory-approved-execution-2026-10-02",
+    "generated_at": "2026-10-02T01:09:14.124Z",
+    "summary": {
+      "fatal_count": 0,
+      "error_count": 0,
+      "warning_count": 0,
+      "info_count": 1,
+      "hint_count": 13
+    },
+    "results": [
+      {
+        "issue_id": "ISSUE-001",
+        "category": "contradiction_candidate",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "PROPOSE",
+            "role": "decision",
+            "step_id": "S-PROPOSE"
+          },
+          {
+            "ref_id": "EXECUTE",
+            "role": "decision",
+            "step_id": "S-EXECUTE"
+          }
+        ],
+        "message": "PROPOSE と EXECUTE は同一根拠 PLATFORM, LOCAL を共有しており、緊張関係にある可能性がある。",
+        "rationale": "複数の decision が同じ based_on 参照を共有しているため、観点と結論の整合性を再確認するべきである。",
+        "metadata": {
+          "shared_refs": [
+            "PLATFORM",
+            "LOCAL"
+          ],
+          "line": 15,
+          "column": 10,
+          "end_column": 17
+        }
+      },
+      {
+        "issue_id": "ISSUE-002",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "RCA",
+            "role": "domain"
+          }
+        ],
+        "message": "domain RCA の description は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 2,
+          "column": 3,
+          "text": "Determine the observed failed readonly-probe condition and choose a bounded next check.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-003",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "PLATFORM",
+            "role": "evidence",
+            "step_id": "S-PLATFORM"
+          }
+        ],
+        "message": "evidence PLATFORM は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 4,
+          "column": 3,
+          "text": "Executionkshiai-v3-trial-preflight-b6wkr failedCount1; CloudRunCompletedFalse saysconfiguredmemorylimitreached; logsOOMevent/signal9. Jobreadback512Mi,1task,retries0,120s. Noapplicationplan ortransporterror retained.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-004",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "LOCAL",
+            "role": "evidence",
+            "step_id": "S-LOCAL"
+          }
+        ],
+        "message": "evidence LOCAL は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 6,
+          "column": 3,
+          "text": "SamecompiledRC2 source readonlypreview throughsameproject existingpooler succeeds18/168/14. Payloadsize query186rows117922187bytes,max3046729. beforeDbRSS46Mi,afterpreparationimport58Mi,afterpayloadsize63Mi,previewpeak630764KiB=616Mi. Localmeasurement isnotCloudRunpeak.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-005",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "CODE",
+            "role": "evidence",
+            "step_id": "S-CODE"
+          }
+        ],
+        "message": "evidence CODE は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 8,
+          "column": 3,
+          "text": "battle-cutover inventory SELECT fetchesall186 fullstate_json rows,retainsarray andhashesJSON; preview includesall168finishedstates. No sourcechange sinceRC2.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-006",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "INFERENCE",
+            "role": "premise",
+            "step_id": "S-INFERENCE"
+          }
+        ],
+        "message": "premise INFERENCE は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 10,
+          "column": 3,
+          "text": "PlatformOOM isobserved immediatefailure. Configured512Mi isbelowlocallyobserved616Mi demand forsamefullreadonlypath. Bulkstate materialization explainsworkload-dependentmemorygrowth; GCP internal allocation/actualpeak/networkresult remainunknown. Do notclaimdatabaseconnectionfailure.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-007",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "ALTERNATIVES",
+            "role": "premise",
+            "step_id": "S-ALTERNATIVES"
+          }
+        ],
+        "message": "premise ALTERNATIVES は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 12,
+          "column": 3,
+          "text": "Moduleinitializationalone islowinlocalprofile; transportfailure notestablished byOOMlogs. Couldoptimize inventory streaming incode,requiringnewsource/CI/RC; immediate1Gi operatorjobcap avoidscode/contractchange andexceeds616Mi*1.5=924Mi. Capacityestimate lowconfidence untilGCPverification.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-008",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "SCOPE",
+            "role": "pending",
+            "step_id": "S-SCOPE"
+          }
+        ],
+        "message": "pending SCOPE は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 14,
+          "column": 3,
+          "text": "Ownerapprovedonly512Mi andoneexecute,nowconsumed. No automaticjobupdate/retry. ExistingAPIservice512Mi isdifferentworkload; do notchangeAPIresources. ActualGoogleV3 pathstillunproved.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-009",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "PROPOSE",
+            "role": "decision",
+            "step_id": "S-PROPOSE"
+          }
+        ],
+        "message": "decision PROPOSE は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 16,
+          "column": 3,
+          "text": "Recordfailedexecution andmemoryproof; askexactownerpermission tochangeonlyadminjobmemory512Mi->1Gi once andexecuteonce,retries0/120s/source/args/auth/secretunchanged. Verifycurrentjobidle/baselinefirst; readbacknewcap; inspectoneexecution/logs. Successfulpreview proveslimitedsameDBreachability/inventory,notfullproductionstartup.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-010",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "APPROVAL",
+            "role": "evidence",
+            "step_id": "S-APPROVAL"
+          }
+        ],
+        "message": "evidence APPROVAL は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 19,
+          "column": 3,
+          "text": "Human approved: 承認：1Giで1回確認. Exact candidate memory update1 and additional execute1 only.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-011",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "BASELINE",
+            "role": "evidence",
+            "step_id": "S-BASELINE"
+          }
+        ],
+        "message": "evidence BASELINE は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 21,
+          "column": 3,
+          "text": "Fresh job task spec equals original frozen512Mi configuration; only prior b6wkr execution exists and is terminal. Working day remains open.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-012",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "EXECUTE",
+            "role": "decision",
+            "step_id": "S-EXECUTE"
+          }
+        ],
+        "message": "decision EXECUTE は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 23,
+          "column": 3,
+          "text": "Update frozen admin job memory once to1Gi, independently compare all other task spec fields unchanged, then execute once. Inspect exact execution terminal/logs without redispatch. DB writes0 and service/auth changes0.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-013",
+        "category": "semantic_hint",
+        "severity": "info",
+        "target_refs": [
+          {
+            "ref_id": "SCOPE",
+            "role": "pending",
+            "step_id": "S-SCOPE"
+          }
+        ],
+        "message": "pending が存在するため、判断の確定度は下げて表示するべきである。",
+        "metadata": {
+          "line": 13,
+          "column": 9,
+          "end_column": 14
+        }
+      },
+      {
+        "issue_id": "ISSUE-014",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "PROPOSE",
+            "role": "decision",
+            "step_id": "S-PROPOSE"
+          },
+          {
+            "ref_id": "EXECUTE",
+            "role": "decision",
+            "step_id": "S-EXECUTE"
+          }
+        ],
+        "message": "PROPOSE と EXECUTE は意味的に近接している可能性がある。",
+        "metadata": {
+          "line": 15,
+          "column": 10,
+          "end_column": 17,
+          "similarity": 0.75,
+          "semantic_distance": 0.25
+        }
+      }
+    ],
+    "query_results": []
+  }
+}

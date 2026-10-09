@@ -1,0 +1,17 @@
+{
+  "reviewer": "battle_helper_contract_review",
+  "verdict": "INSIDE",
+  "cases": 4,
+  "files": {
+    "docs/adr/0061-manual-improvement-analysis-eligibility.think": "95b13e88fafd231073bea1144a1f149b3e0ef581044306a30df2fae0a4475b05",
+    "docs/character-improvement-eligibility-requirement-candidate-r1-2026-10-08.md": "ce836f4eaa05e914e558b8cd9958658548312625e0291c0121b332d781c7d71b",
+    "packages/shared/src/character-improvement.ts": "0f1dccf28b1db67ecdf0cade51c6b290187d2b404ee552f97337225df8bcfde4",
+    "packages/shared/src/character-improvement.test.ts": "567903c965e84a91891aa58df063db140edfde4339af04e3338e101f44aa7d40"
+  },
+  "scope": "Pure eligibility first5 and last successful snapshot+10; all original4 cases unchanged",
+  "excluded": [
+    "Backend successful save and finished count",
+    "Owner authorization/GET",
+    "Cost/concurrency/LLMquality/deploy"
+  ]
+}

@@ -1,0 +1,151 @@
+TAP version 13
+# [llm] test-fast ready engine=engine fast=fast
+# [llm] xai ready engine=grok-4-fast-non-reasoning fast=grok-4-fast-non-reasoning
+# [llm] xai ready engine=grok-4-fast-non-reasoning fast=grok-4-fast-non-reasoning
+# [llm] xai ready engine=grok-4.3 fast=grok-4.3
+# [llm] xai ready engine=grok-4.3 fast=grok-4.3
+# Subtest: character-agent action proposal prompt
+    # Subtest: keeps later-bucket action context separate from speech and psyche
+    ok 1 - keeps later-bucket action context separate from speech and psyche
+      ---
+      duration_ms: 11.49022
+      type: 'test'
+      ...
+    # Subtest: defines mutually exclusive action-kind output shapes
+    ok 2 - defines mutually exclusive action-kind output shapes
+      ---
+      duration_ms: 0.368339
+      type: 'test'
+      ...
+    # Subtest: receives administrator dialogue psychology as runtime pipeline context
+    ok 3 - receives administrator dialogue psychology as runtime pipeline context
+      ---
+      duration_ms: 5.898326
+      type: 'test'
+      ...
+    # Subtest: requires compact psyche to carry a private appraisal into expression
+    ok 4 - requires compact psyche to carry a private appraisal into expression
+      ---
+      duration_ms: 3.224482
+      type: 'test'
+      ...
+    1..4
+ok 1 - character-agent action proposal prompt
+  ---
+  duration_ms: 23.03346
+  type: 'suite'
+  ...
+# Subtest: public character profile claim validator
+    # Subtest: receives no owner source or restricted definition
+    ok 1 - receives no owner source or restricted definition
+      ---
+      duration_ms: 1.648529
+      type: 'test'
+      ...
+    # Subtest: fails closed instead of using provider fallback
+    ok 2 - fails closed instead of using provider fallback
+      ---
+      duration_ms: 1.657003
+      type: 'test'
+      ...
+    1..2
+ok 2 - public character profile claim validator
+  ---
+  duration_ms: 3.638099
+  type: 'suite'
+  ...
+# [llm] xai ready engine=grok-4-fast-non-reasoning fast=grok-4-fast-non-reasoning
+# [llm] xai/reconcileTurnSemanticState model=grok-4-fast-non-reasoning ok 63ms
+# [llm] xai ready engine=grok-4-fast-non-reasoning fast=grok-4-fast-non-reasoning
+# [llm] xai/reconcileTurnSemanticState model=grok-4-fast-non-reasoning ok 4ms
+# Subtest: XAI perception reconciliation
+    # Subtest: aligns environment proposals with representable canonical transitions
+    ok 1 - aligns environment proposals with representable canonical transitions
+      ---
+      duration_ms: 1.36491
+      type: 'test'
+      ...
+    # Subtest: keeps a valid world patch when the combined sensory section is invalid
+    ok 2 - keeps a valid world patch when the combined sensory section is invalid
+      ---
+      duration_ms: 74.034724
+      type: 'test'
+      ...
+    # Subtest: keeps valid sensory evidence when the combined world section is invalid
+    ok 3 - keeps valid sensory evidence when the combined world section is invalid
+      ---
+      duration_ms: 7.441729
+      type: 'test'
+      ...
+    1..3
+ok 3 - XAI perception reconciliation
+  ---
+  duration_ms: 85.414201
+  type: 'suite'
+  ...
+# [llm] xai ready engine=grok-4.5 fast=grok-4.3
+# [llm] xai/fast model=grok-4.3 ok 75ms
+# [llm] openai ready engine=gpt-4.1 fast=gpt-4.1-mini
+# [llm] openai/fast model=gpt-4.1-mini ok 4ms
+# [llm] primary ready engine=engine-model fast=fast-model
+# [llm] primary ready engine=engine-model fast=fast-model
+# [llm] primary/test429 retry=1 reason=rate_limit delay=0ms same-provider
+# Subtest: OpenAI-compatible provider routing policy
+    # Subtest: requests xAI grok-4.3 directly with reasoning effort none
+    ok 1 - requests xAI grok-4.3 directly with reasoning effort none
+      ---
+      duration_ms: 82.199155
+      type: 'test'
+      ...
+    # Subtest: does not send xAI-only reasoning effort to another provider
+    ok 2 - does not send xAI-only reasoning effort to another provider
+      ---
+      duration_ms: 4.728366
+      type: 'test'
+      ...
+    # Subtest: routes turn-limit referee rationale through the fast tier
+    ok 3 - routes turn-limit referee rationale through the fast tier
+      ---
+      duration_ms: 1.979544
+      type: 'test'
+      ...
+# [llm] primary/test429 retry=2 reason=rate_limit delay=0ms same-provider
+# [llm] primary/test429 model=fast-model ok 28ms
+# [llm] primary ready engine=engine-model fast=fast-model
+# [llm] primary/test503 retry=1 reason=service_unavailable delay=0ms same-provider
+    # Subtest: uses the extended fast timeout and retries 429 in the same client
+    ok 4 - uses the extended fast timeout and retries 429 in the same client
+      ---
+      duration_ms: 30.026018
+      type: 'test'
+      ...
+# [llm] primary/test503 model=fast-model fail 5ms: unavailable
+# [llm] primary ready engine=engine-model fast=fast-model
+# [llm] primary/timeout model=fast-model fail 3ms: Request was aborted.
+    # Subtest: limits 503 to one same-provider retry
+    ok 5 - limits 503 to one same-provider retry
+      ---
+      duration_ms: 6.834221
+      type: 'test'
+      ...
+    # Subtest: does not retry an aborted timeout
+    ok 6 - does not retry an aborted timeout
+      ---
+      duration_ms: 4.783786
+      type: 'test'
+      ...
+    1..6
+ok 4 - OpenAI-compatible provider routing policy
+  ---
+  duration_ms: 133.444809
+  type: 'suite'
+  ...
+1..4
+# tests 15
+# suites 4
+# pass 15
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 1090.139941

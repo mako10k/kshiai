@@ -1,0 +1,110 @@
+[
+  {
+    "schema": "sealgraph/source-compare/v1",
+    "ref": "all-tests-20261007/design-r2-helper",
+    "path": "docs/image-storage-test-contract-review-2026-10-07.md",
+    "baseline": "HEAD",
+    "baseline_content": {
+      "store": "native",
+      "type": "blob",
+      "object_id": "b5a5c0db28e5f0bc9aec5b7882d5aef88e1ae68954aa99227f3c173c0b6a436a"
+    },
+    "workfile_content": {
+      "store": "native",
+      "type": "blob",
+      "object_id": "b5a5c0db28e5f0bc9aec5b7882d5aef88e1ae68954aa99227f3c173c0b6a436a",
+      "bytes": 2045
+    },
+    "relation": "WORKFILE_MATCHES_HEAD"
+  },
+  {
+    "schema": "sealgraph/source-compare/v1",
+    "ref": "all-tests-20261007/design-image-service-helper",
+    "path": "docs/image-storage-test-contract-review-2026-10-07.md",
+    "baseline": "HEAD",
+    "baseline_content": {
+      "store": "native",
+      "type": "blob",
+      "object_id": "b5a5c0db28e5f0bc9aec5b7882d5aef88e1ae68954aa99227f3c173c0b6a436a"
+    },
+    "workfile_content": {
+      "store": "native",
+      "type": "blob",
+      "object_id": "b5a5c0db28e5f0bc9aec5b7882d5aef88e1ae68954aa99227f3c173c0b6a436a",
+      "bytes": 2045
+    },
+    "relation": "WORKFILE_MATCHES_HEAD"
+  },
+  {
+    "schema": "sealgraph/source-compare/v1",
+    "ref": "all-tests-20261007/implementation-r2-object-writer",
+    "path": "backend/src/services/r2-storage.ts",
+    "baseline": "HEAD",
+    "baseline_content": {
+      "store": "native",
+      "type": "blob",
+      "object_id": "382c45d3870098fa7b38daf3742c85d2132d9703b154a1e577997d354ca2782d"
+    },
+    "workfile_content": {
+      "store": "native",
+      "type": "blob",
+      "object_id": "382c45d3870098fa7b38daf3742c85d2132d9703b154a1e577997d354ca2782d",
+      "bytes": 1639
+    },
+    "relation": "WORKFILE_MATCHES_HEAD"
+  },
+  {
+    "schema": "sealgraph/source-compare/v1",
+    "ref": "all-tests-20261007/implementation-image-prompt-and-failure",
+    "path": "backend/src/services/image-service.ts",
+    "baseline": "HEAD",
+    "baseline_content": {
+      "store": "native",
+      "type": "blob",
+      "object_id": "6f28e5082818100674f6022548ff269166f0c1f25e38b1b19266256d478800d0"
+    },
+    "workfile_content": {
+      "store": "native",
+      "type": "blob",
+      "object_id": "6f28e5082818100674f6022548ff269166f0c1f25e38b1b19266256d478800d0",
+      "bytes": 18176
+    },
+    "relation": "WORKFILE_MATCHES_HEAD"
+  },
+  {
+    "schema": "sealgraph/source-compare/v1",
+    "ref": "verification/r2-object-writer-bounded-20261008",
+    "path": "backend/src/services/r2-storage.test.ts",
+    "baseline": "HEAD",
+    "baseline_content": {
+      "store": "native",
+      "type": "blob",
+      "object_id": "986b5b7ef3aafc7dba93df0339dab7e5fadc0b798f8c9330483bbe7d03f16bda"
+    },
+    "workfile_content": {
+      "store": "native",
+      "type": "blob",
+      "object_id": "986b5b7ef3aafc7dba93df0339dab7e5fadc0b798f8c9330483bbe7d03f16bda",
+      "bytes": 1785
+    },
+    "relation": "WORKFILE_MATCHES_HEAD"
+  },
+  {
+    "schema": "sealgraph/source-compare/v1",
+    "ref": "verification/image-prompt-failure-bounded-20261008",
+    "path": "backend/src/services/image-service.test.ts",
+    "baseline": "HEAD",
+    "baseline_content": {
+      "store": "native",
+      "type": "blob",
+      "object_id": "e2f63ddcf0c16778e36eab34468ce5e704972ca7a647d6bcb40de8f9af9b3f3f"
+    },
+    "workfile_content": {
+      "store": "native",
+      "type": "blob",
+      "object_id": "e2f63ddcf0c16778e36eab34468ce5e704972ca7a647d6bcb40de8f9af9b3f3f",
+      "bytes": 4249
+    },
+    "relation": "WORKFILE_MATCHES_HEAD"
+  }
+]

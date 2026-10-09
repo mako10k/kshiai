@@ -1,0 +1,9 @@
+{
+  "exit": 0,
+  "seconds": 39.118,
+  "files": 72,
+  "postgres": "16.15 extracted temporary server, loopback-only port55439, dedicated test DB",
+  "operatingSystemInstallation": false,
+  "liveDatabaseAccess": false,
+  "privatePostgresStopped": true
+}

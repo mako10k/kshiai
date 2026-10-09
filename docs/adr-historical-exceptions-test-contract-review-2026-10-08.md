@@ -1,0 +1,5 @@
+# 履歴ADRの固定snapshot分類
+
+元5ケース、独立INSIDE、diagnostic5pass/0fail/0skip。READMEのHistorical checker exceptions節はHEADにも同一内容で存在し、今回index変更で導入した方針ではない。現行repositorypolicyが固定4組ADR0015/16/17/19のsource/projection/statusを限定し、現在DSLとmarker検査だけを除外する。pair/statussyntaxは保持、1byte/status差は失敗、新規recordは通常検査へ送る。
+
+テストは分類器のexact source/md/status判定を検査する。classifier・実consumer checker・現在README・4組8ファイルをsource pinする。consumerはpair存在とstatussyntaxを先に確認し、exact historicalだけをcurrentDSL/markerから除外する。ここで4組の意味を再承認したり、ProposedADR0019をAcceptedにしたり、新しい例外を許可しない。5ケースだけでcheck-adrs全実行や全ADR意味の正当性を証明しない。

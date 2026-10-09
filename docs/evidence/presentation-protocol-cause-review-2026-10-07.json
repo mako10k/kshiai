@@ -1,0 +1,61 @@
+{
+  "schema": "kshiai/presentation-protocol-cause-review/v1",
+  "upstream": [
+    {
+      "ref": "all-tests-20261007/design-narrator-presentation-focus",
+      "sealId": "eee4367cd7841a6a33cc6bab182be35f3eda2ff35b507f5e43ab2bc950e188a7"
+    },
+    {
+      "ref": "all-tests-20261007/implementation-current-narration-builder-contracts",
+      "sealId": "871b4b46e531e367409a529704c6b64bb1d041a22d3643fb0f6da4705473c1dc"
+    },
+    {
+      "ref": "all-tests-20261007/implementation-narration-view-projections",
+      "sealId": "bd16bf609c83970863080df28633127aa3f7fcd9beff89c797adff15c38789fa"
+    }
+  ],
+  "nodes": [
+    {
+      "key": "implementation-presentation-protocol",
+      "path": "backend/src/llm/narrator-presentation-focus-evaluation.ts",
+      "parents": [
+        "design",
+        "builders",
+        "projection"
+      ],
+      "scope": "Accepted presentation-focus design bounded synthetic evaluation section: eight fixed scenarios, two arms, one sample each, unique output IDs, candidate opt-in and no-op when no structured change, review packet arm/sample exclusion. Local preparation only; no physical send, budget enforcement, review scores, actual improvement or ordinary adoption certified.",
+      "test": false,
+      "ref": "all-tests-20261007/implementation-presentation-protocol",
+      "sha256": "40f455852b16006b37bfb5be098b8865e1efdb474c7b9aa5a7936624ad5e051d"
+    },
+    {
+      "key": "presentation-protocol",
+      "path": "backend/src/llm/narrator-presentation-focus-evaluation.test.ts",
+      "parents": [
+        "design",
+        "builders",
+        "projection",
+        "implementation-presentation-protocol"
+      ],
+      "scope": "All four local protocol tests: sixteen unique paired requests across eight scenarios, opt-in prompt and brief on seven change scenarios, exact no-op on eighth, blinded context exact keys. No model calls or semantic quality evaluation, no proof of deep recursive freeze or stable randomized ordering across arbitrary data.",
+      "test": true,
+      "ref": "verification/presentation-protocol-20261007",
+      "sha256": "3981dd4731cca26eaa189e670e4866852628d6b84e25922a8cd03c1f90279bd1"
+    }
+  ],
+  "diagnostic": {
+    "pass": 4,
+    "fail": 0,
+    "skipped": 0,
+    "strictTypecheckExit": 0
+  },
+  "clauses": [
+    "Accepted narrator presentation focus design bounded synthetic evaluation: 8 scenarios, 2 arms, one sample; raw arm identity hidden",
+    "Existing builders and projection implement explicit opt-in; ordinary adoption separate"
+  ],
+  "limitations": [
+    "Local preparation only, zero physical model calls",
+    "No paid experiment authority derived from this Seal",
+    "No product-effect claim, scored review, deep-freeze or actual budget enforcement proof"
+  ]
+}

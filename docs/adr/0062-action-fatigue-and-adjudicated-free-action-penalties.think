@@ -1,0 +1,10 @@
+domain ADR0062:
+  description "Accepted revision1: new-battle repeated action fatigue and bounded adjudicated free-action penalties; preserve recorded historical policy."
+evidence OWNER_ACCEPTANCE:
+  "2026-10-09 owner answers この案を採用 to retain ordinary/high-power STA floors and add STA2 for repeated basic/skill/reflect 2-3, STA4 at4+, new battles only, no uniform free-action text charge. Owner answers s愛用します to the presented free-action penalty guideline; received as 採用します in the session."
+evidence CONTRACT:
+  "Accepted proposal defines extra STA2/4/8, defense exposure10/20/30 percent on next incoming attack once, partial execution or nonexecution. Concrete current-state reason and action quote, one primary consequence per cause, no ordinary thought/speech penalty, actual payment/shortfall receipt, and bodily forewarning/results delivered through perception to both awareness roles without another LLM call."
+evidence COMPATIBILITY:
+  "Prior ADR0060 accepted cooldown abolition but left quantities pending. Current owner selection supplies those quantities. Recorded old battles retain their bound policy without automatic migration. Original247 unit plus4 E2E files and all cases remain; diagnostic results do not replace formal sealed authority."
+decision ACCEPTANCE based_on OWNER_ACCEPTANCE, CONTRACT, COMPATIBILITY:
+  "Accept the bounded repeated-fatigue and free-action adjudication contract described above. Server validates policy identity, world revision, evidence and consequences before canonical application. Preserve old snapshot behavior and test cases. No unlimited penalties, paid/live trials, model-quality claim or deployment result is authorized by this ADR."

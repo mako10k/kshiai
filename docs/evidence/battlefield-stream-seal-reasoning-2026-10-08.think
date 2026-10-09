@@ -1,0 +1,20 @@
+domain BattlefieldStreamHelperSeal:
+  description "Verify repaired typed input paths and preserve the causal authority of affected current tests"
+problem P1:
+  "Battlefield helper and partial narrator extraction files remain unsealed. Original battlefield cases do not enter the two guarded input paths under repair. Three earlier source modules lack required responsibility comments."
+evidence E1:
+  "Accepted0012 and0010 plus existing schema/compiler govern legacy candidate enrichment with authoritative fields preserved. Three original cases observe gaps/fill/preservation/restoration; system-preset readonly and full authoring are not exercised."
+evidence E2:
+  "A minimal fourth case uses wrapped text in a raw non-array record, entering safeParse fallback and guarded property access. Both casts are removed with normal narrowing, and final Zod validation remains. Original three cases/assertions and stream three cases/source are preserved."
+evidence E3:
+  "Current adapter progress sink calls the partial extractor, but the dirty whole adapter is contextual only. Stream cases exercise absent narrator, completed lines/open draft and escaped quotes; no fullJSON/SSE/UI/awareness acceptance is established."
+evidence E4:
+  "Three prior producer files add only module-level R comments. Exact existing public Seal bodies equal current bodies after removing the first comment line. Their local media/image/SQLite verification scopes stay unchanged."
+evidence E5:
+  "Independent read-only review accepts exact bytes and scope; local diagnostic25pass/0fail/0skip and whole workspace typecheck succeeds."
+premise A1:
+  "Original247unit+4E2E remain required. Normal Seal requires active non-draft Causes, exact source and reviewed target revision assertions. All previous untouched heads and old changed bodies remain available."
+decision D1 based_on P1, E1, E2, E3, E4, E5, A1:
+  "Publish scoped design/implementation/whole-test chains for the two new files. Revalidate the six existing current refs affected by three R-only source changes. Replace verified changed Cause targets using previous=old target, adding new before unlinking old; retain original messages and historical observer heads separately."
+decision D2 based_on D1, A1:
+  "Read back exact current sources/Causes/states and fsck, preserve full251 accounting, and check that formal npm test still stops before execution for remaining unsealed files. Do not claim full goal completion from25local passes."

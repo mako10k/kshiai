@@ -1,0 +1,47 @@
+TAP version 13
+# Subtest: historical ADR checker exceptions
+    # Subtest: recognizes only the unchanged 0015-e2e-operator-session-reentry pair
+    ok 1 - recognizes only the unchanged 0015-e2e-operator-session-reentry pair
+      ---
+      duration_ms: 1.392133
+      type: 'test'
+      ...
+    # Subtest: recognizes only the unchanged 0016-scene-beats-batched-narration pair
+    ok 2 - recognizes only the unchanged 0016-scene-beats-batched-narration pair
+      ---
+      duration_ms: 0.719533
+      type: 'test'
+      ...
+    # Subtest: recognizes only the unchanged 0017-public-turn-intra-turn-beats pair
+    ok 3 - recognizes only the unchanged 0017-public-turn-intra-turn-beats pair
+      ---
+      duration_ms: 0.369812
+      type: 'test'
+      ...
+    # Subtest: recognizes only the unchanged 0019-observation-token-and-cost-admission pair
+    ok 4 - recognizes only the unchanged 0019-observation-token-and-cost-admission pair
+      ---
+      duration_ms: 0.312342
+      type: 'test'
+      ...
+    # Subtest: checks new ADRs through the ordinary path
+    ok 5 - checks new ADRs through the ordinary path
+      ---
+      duration_ms: 0.151771
+      type: 'test'
+      ...
+    1..5
+ok 1 - historical ADR checker exceptions
+  ---
+  duration_ms: 4.425918
+  type: 'suite'
+  ...
+1..1
+# tests 5
+# suites 1
+# pass 5
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 76.893708

@@ -1,0 +1,12 @@
+{
+  "observedAt": "2026-10-02T02:40:38.523Z",
+  "projectRef": "cvrbhpkfqkpqdegxfrlq",
+  "patchAttempts": 1,
+  "httpStatus": 200,
+  "transportError": null,
+  "verified": true,
+  "allOtherReturnedFieldsPreserved": true,
+  "site_url": "https://kshiai.mk10.org",
+  "external_google_enabled": true,
+  "uri_allow_list": "https://kshiai.mk10.org/auth/callback,http://localhost:5188/auth/callback,http://127.0.0.1:5188/auth/callback,https://26ff9223-kshiai-web.mako10k.workers.dev/auth/callback"
+}

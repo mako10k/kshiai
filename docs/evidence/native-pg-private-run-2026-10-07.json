@@ -1,0 +1,18 @@
+{
+  "root": "/tmp/kshiai-pg-seal-verification-20261007-u0yvr6ho",
+  "identity": "kshiai_awareness_test|127.0.0.1|15440|UTF8|16.15 (Ubuntu 16.15-0ubuntu0.24.04.1)",
+  "systemInstalled": false,
+  "serverStartedByThisRun": true,
+  "serverStopped": true,
+  "files": [
+    "backend/src/repositories/battle-awareness-postgres.test.ts",
+    "backend/src/repositories/battle-awareness-narration-events-postgres.test.ts",
+    "backend/src/repositories/battle-awareness-narration-reservation-postgres.test.ts"
+  ],
+  "elapsedSeconds": 8.555041551589966,
+  "testExit": 0,
+  "limitations": [
+    "Actual local PostgreSQL16, not production Supabase/PostgreSQL17 acceptance",
+    "Dedicated fresh cluster only; no existing cluster/system service/production configuration mutated"
+  ]
+}

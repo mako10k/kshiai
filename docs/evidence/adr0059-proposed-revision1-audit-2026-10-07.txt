@@ -1,0 +1,207 @@
+thought_id: docs-adr-0059-complete-focused-character-review-payload
+id_source: file
+status: draft
+draft: thoughts/docs-adr-0059-complete-focused-character-review-payload/draft.think
+latest_audit: thoughts/docs-adr-0059-complete-focused-character-review-payload/audits/2026-10-07T05-03-23.914Z.json
+next: reuse this thought_id with thought show/history/reflect/delete or dsl audit --id
+document: docs-adr-0059-complete-focused-character-review-payload
+engine: 0.1.0
+summary: fatal=0 error=0 warning=0 info=1 hint=35
+
+issues:
+- [hint] contradiction_candidate: D1_HANDOFF と D2_PROFILE_WORK は同一根拠 AUTHORITY を共有しており、緊張関係にある可能性がある。 (D1_HANDOFF, D2_PROFILE_WORK)
+  rationale: 複数の decision が同じ based_on 参照を共有しているため、観点と結論の整合性を再確認するべきである。
+- [hint] contradiction_candidate: D1_HANDOFF と D3_SHARED_POLICY は同一根拠 AUTHORITY を共有しており、緊張関係にある可能性がある。 (D1_HANDOFF, D3_SHARED_POLICY)
+  rationale: 複数の decision が同じ based_on 参照を共有しているため、観点と結論の整合性を再確認するべきである。
+- [hint] contradiction_candidate: D1_HANDOFF と D4_DRAFT_CORRECTION は同一根拠 AUTHORITY を共有しており、緊張関係にある可能性がある。 (D1_HANDOFF, D4_DRAFT_CORRECTION)
+  rationale: 複数の decision が同じ based_on 参照を共有しているため、観点と結論の整合性を再確認するべきである。
+- [hint] contradiction_candidate: D1_HANDOFF と D5_STORAGE_OLD_RESULTS は同一根拠 AUTHORITY を共有しており、緊張関係にある可能性がある。 (D1_HANDOFF, D5_STORAGE_OLD_RESULTS)
+  rationale: 複数の decision が同じ based_on 参照を共有しているため、観点と結論の整合性を再確認するべきである。
+- [hint] contradiction_candidate: D1_HANDOFF と D6_VERIFY_LIMITS は同一根拠 P1 を共有しており、緊張関係にある可能性がある。 (D1_HANDOFF, D6_VERIFY_LIMITS)
+  rationale: 複数の decision が同じ based_on 参照を共有しているため、観点と結論の整合性を再確認するべきである。
+- [hint] contradiction_candidate: D2_PROFILE_WORK と D3_SHARED_POLICY は同一根拠 AUTHORITY を共有しており、緊張関係にある可能性がある。 (D2_PROFILE_WORK, D3_SHARED_POLICY)
+  rationale: 複数の decision が同じ based_on 参照を共有しているため、観点と結論の整合性を再確認するべきである。
+- [hint] contradiction_candidate: D2_PROFILE_WORK と D4_DRAFT_CORRECTION は同一根拠 D1_HANDOFF, AUTHORITY を共有しており、緊張関係にある可能性がある。 (D2_PROFILE_WORK, D4_DRAFT_CORRECTION)
+  rationale: 複数の decision が同じ based_on 参照を共有しているため、観点と結論の整合性を再確認するべきである。
+- [hint] contradiction_candidate: D2_PROFILE_WORK と D5_STORAGE_OLD_RESULTS は同一根拠 D1_HANDOFF, AUTHORITY を共有しており、緊張関係にある可能性がある。 (D2_PROFILE_WORK, D5_STORAGE_OLD_RESULTS)
+  rationale: 複数の decision が同じ based_on 参照を共有しているため、観点と結論の整合性を再確認するべきである。
+- [hint] contradiction_candidate: D2_PROFILE_WORK と D6_VERIFY_LIMITS は同一根拠 D1_HANDOFF を共有しており、緊張関係にある可能性がある。 (D2_PROFILE_WORK, D6_VERIFY_LIMITS)
+  rationale: 複数の decision が同じ based_on 参照を共有しているため、観点と結論の整合性を再確認するべきである。
+- [hint] contradiction_candidate: D2_PROFILE_WORK と OWNER_REVIEW_PENDING は同一根拠 D1_HANDOFF を共有しており、緊張関係にある可能性がある。 (D2_PROFILE_WORK, OWNER_REVIEW_PENDING)
+  rationale: 複数の decision が同じ based_on 参照を共有しているため、観点と結論の整合性を再確認するべきである。
+- [hint] contradiction_candidate: D3_SHARED_POLICY と D4_DRAFT_CORRECTION は同一根拠 AUTHORITY を共有しており、緊張関係にある可能性がある。 (D3_SHARED_POLICY, D4_DRAFT_CORRECTION)
+  rationale: 複数の decision が同じ based_on 参照を共有しているため、観点と結論の整合性を再確認するべきである。
+- [hint] contradiction_candidate: D3_SHARED_POLICY と D5_STORAGE_OLD_RESULTS は同一根拠 D2_PROFILE_WORK, AUTHORITY を共有しており、緊張関係にある可能性がある。 (D3_SHARED_POLICY, D5_STORAGE_OLD_RESULTS)
+  rationale: 複数の decision が同じ based_on 参照を共有しているため、観点と結論の整合性を再確認するべきである。
+- [hint] contradiction_candidate: D3_SHARED_POLICY と D6_VERIFY_LIMITS は同一根拠 D2_PROFILE_WORK を共有しており、緊張関係にある可能性がある。 (D3_SHARED_POLICY, D6_VERIFY_LIMITS)
+  rationale: 複数の decision が同じ based_on 参照を共有しているため、観点と結論の整合性を再確認するべきである。
+- [hint] contradiction_candidate: D3_SHARED_POLICY と OWNER_REVIEW_PENDING は同一根拠 D2_PROFILE_WORK, OPTIONS を共有しており、緊張関係にある可能性がある。 (D3_SHARED_POLICY, OWNER_REVIEW_PENDING)
+  rationale: 複数の decision が同じ based_on 参照を共有しているため、観点と結論の整合性を再確認するべきである。
+- [hint] contradiction_candidate: D4_DRAFT_CORRECTION と D5_STORAGE_OLD_RESULTS は同一根拠 D1_HANDOFF, AUTHORITY を共有しており、緊張関係にある可能性がある。 (D4_DRAFT_CORRECTION, D5_STORAGE_OLD_RESULTS)
+  rationale: 複数の decision が同じ based_on 参照を共有しているため、観点と結論の整合性を再確認するべきである。
+- [hint] contradiction_candidate: D4_DRAFT_CORRECTION と D6_VERIFY_LIMITS は同一根拠 D1_HANDOFF を共有しており、緊張関係にある可能性がある。 (D4_DRAFT_CORRECTION, D6_VERIFY_LIMITS)
+  rationale: 複数の decision が同じ based_on 参照を共有しているため、観点と結論の整合性を再確認するべきである。
+- [hint] contradiction_candidate: D4_DRAFT_CORRECTION と OWNER_REVIEW_PENDING は同一根拠 D1_HANDOFF を共有しており、緊張関係にある可能性がある。 (D4_DRAFT_CORRECTION, OWNER_REVIEW_PENDING)
+  rationale: 複数の decision が同じ based_on 参照を共有しているため、観点と結論の整合性を再確認するべきである。
+- [hint] contradiction_candidate: D5_STORAGE_OLD_RESULTS と D6_VERIFY_LIMITS は同一根拠 D1_HANDOFF, D2_PROFILE_WORK, D4_DRAFT_CORRECTION を共有しており、緊張関係にある可能性がある。 (D5_STORAGE_OLD_RESULTS, D6_VERIFY_LIMITS)
+  rationale: 複数の decision が同じ based_on 参照を共有しているため、観点と結論の整合性を再確認するべきである。
+- [hint] contradiction_candidate: D5_STORAGE_OLD_RESULTS と OWNER_REVIEW_PENDING は同一根拠 D1_HANDOFF, D2_PROFILE_WORK, D4_DRAFT_CORRECTION を共有しており、緊張関係にある可能性がある。 (D5_STORAGE_OLD_RESULTS, OWNER_REVIEW_PENDING)
+  rationale: 複数の decision が同じ based_on 参照を共有しているため、観点と結論の整合性を再確認するべきである。
+- [hint] contradiction_candidate: D6_VERIFY_LIMITS と OWNER_REVIEW_PENDING は同一根拠 D1_HANDOFF, D2_PROFILE_WORK, D3_SHARED_POLICY, D4_DRAFT_CORRECTION, D5_STORAGE_OLD_RESULTS を共有しており、緊張関係にある可能性がある。 (D6_VERIFY_LIMITS, OWNER_REVIEW_PENDING)
+  rationale: 複数の decision が同じ based_on 参照を共有しているため、観点と結論の整合性を再確認するべきである。
+- [hint] semantic_hint: domain ADR0059 の description は 1 行の quoted text が長いため、block text に変えると読みやすい。 (ADR0059)
+  rationale: 長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。
+  suggestion: 長い 1 行本文を block text へ分割し、意味の切れ目で改行する。
+  syntax_help: llmthink dsl help syntax detail
+  syntax_guidance:
+    長い本文は block text を使い、意味の切れ目で改行する。
+    例:
+    problem P1:
+      |
+        1 行目の説明
+        2 行目の説明
+- [hint] semantic_hint: problem P1 は 1 行の quoted text が長いため、block text に変えると読みやすい。 (P1)
+  rationale: 長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。
+  suggestion: 長い 1 行本文を block text へ分割し、意味の切れ目で改行する。
+  syntax_help: llmthink dsl help syntax detail
+  syntax_guidance:
+    長い本文は block text を使い、意味の切れ目で改行する。
+    例:
+    problem P1:
+      |
+        1 行目の説明
+        2 行目の説明
+- [hint] semantic_hint: evidence USER_GOAL は 1 行の quoted text が長いため、block text に変えると読みやすい。 (USER_GOAL)
+  rationale: 長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。
+  suggestion: 長い 1 行本文を block text へ分割し、意味の切れ目で改行する。
+  syntax_help: llmthink dsl help syntax detail
+  syntax_guidance:
+    長い本文は block text を使い、意味の切れ目で改行する。
+    例:
+    problem P1:
+      |
+        1 行目の説明
+        2 行目の説明
+- [hint] semantic_hint: evidence CURRENT は 1 行の quoted text が長いため、block text に変えると読みやすい。 (CURRENT)
+  rationale: 長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。
+  suggestion: 長い 1 行本文を block text へ分割し、意味の切れ目で改行する。
+  syntax_help: llmthink dsl help syntax detail
+  syntax_guidance:
+    長い本文は block text を使い、意味の切れ目で改行する。
+    例:
+    problem P1:
+      |
+        1 行目の説明
+        2 行目の説明
+- [hint] semantic_hint: evidence AUTHORITY は 1 行の quoted text が長いため、block text に変えると読みやすい。 (AUTHORITY)
+  rationale: 長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。
+  suggestion: 長い 1 行本文を block text へ分割し、意味の切れ目で改行する。
+  syntax_help: llmthink dsl help syntax detail
+  syntax_guidance:
+    長い本文は block text を使い、意味の切れ目で改行する。
+    例:
+    problem P1:
+      |
+        1 行目の説明
+        2 行目の説明
+- [hint] semantic_hint: premise OPTIONS は 1 行の quoted text が長いため、block text に変えると読みやすい。 (OPTIONS)
+  rationale: 長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。
+  suggestion: 長い 1 行本文を block text へ分割し、意味の切れ目で改行する。
+  syntax_help: llmthink dsl help syntax detail
+  syntax_guidance:
+    長い本文は block text を使い、意味の切れ目で改行する。
+    例:
+    problem P1:
+      |
+        1 行目の説明
+        2 行目の説明
+- [hint] semantic_hint: decision D1_HANDOFF は 1 行の quoted text が長いため、block text に変えると読みやすい。 (D1_HANDOFF)
+  rationale: 長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。
+  suggestion: 長い 1 行本文を block text へ分割し、意味の切れ目で改行する。
+  syntax_help: llmthink dsl help syntax detail
+  syntax_guidance:
+    長い本文は block text を使い、意味の切れ目で改行する。
+    例:
+    problem P1:
+      |
+        1 行目の説明
+        2 行目の説明
+- [hint] semantic_hint: decision D2_PROFILE_WORK は 1 行の quoted text が長いため、block text に変えると読みやすい。 (D2_PROFILE_WORK)
+  rationale: 長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。
+  suggestion: 長い 1 行本文を block text へ分割し、意味の切れ目で改行する。
+  syntax_help: llmthink dsl help syntax detail
+  syntax_guidance:
+    長い本文は block text を使い、意味の切れ目で改行する。
+    例:
+    problem P1:
+      |
+        1 行目の説明
+        2 行目の説明
+- [hint] semantic_hint: decision D3_SHARED_POLICY は 1 行の quoted text が長いため、block text に変えると読みやすい。 (D3_SHARED_POLICY)
+  rationale: 長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。
+  suggestion: 長い 1 行本文を block text へ分割し、意味の切れ目で改行する。
+  syntax_help: llmthink dsl help syntax detail
+  syntax_guidance:
+    長い本文は block text を使い、意味の切れ目で改行する。
+    例:
+    problem P1:
+      |
+        1 行目の説明
+        2 行目の説明
+- [hint] semantic_hint: decision D4_DRAFT_CORRECTION は 1 行の quoted text が長いため、block text に変えると読みやすい。 (D4_DRAFT_CORRECTION)
+  rationale: 長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。
+  suggestion: 長い 1 行本文を block text へ分割し、意味の切れ目で改行する。
+  syntax_help: llmthink dsl help syntax detail
+  syntax_guidance:
+    長い本文は block text を使い、意味の切れ目で改行する。
+    例:
+    problem P1:
+      |
+        1 行目の説明
+        2 行目の説明
+- [hint] semantic_hint: decision D5_STORAGE_OLD_RESULTS は 1 行の quoted text が長いため、block text に変えると読みやすい。 (D5_STORAGE_OLD_RESULTS)
+  rationale: 長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。
+  suggestion: 長い 1 行本文を block text へ分割し、意味の切れ目で改行する。
+  syntax_help: llmthink dsl help syntax detail
+  syntax_guidance:
+    長い本文は block text を使い、意味の切れ目で改行する。
+    例:
+    problem P1:
+      |
+        1 行目の説明
+        2 行目の説明
+- [hint] semantic_hint: decision D6_VERIFY_LIMITS は 1 行の quoted text が長いため、block text に変えると読みやすい。 (D6_VERIFY_LIMITS)
+  rationale: 長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。
+  suggestion: 長い 1 行本文を block text へ分割し、意味の切れ目で改行する。
+  syntax_help: llmthink dsl help syntax detail
+  syntax_guidance:
+    長い本文は block text を使い、意味の切れ目で改行する。
+    例:
+    problem P1:
+      |
+        1 行目の説明
+        2 行目の説明
+- [hint] semantic_hint: decision OWNER_REVIEW_PENDING は 1 行の quoted text が長いため、block text に変えると読みやすい。 (OWNER_REVIEW_PENDING)
+  rationale: 長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。
+  suggestion: 長い 1 行本文を block text へ分割し、意味の切れ目で改行する。
+  syntax_help: llmthink dsl help syntax detail
+  syntax_guidance:
+    長い本文は block text を使い、意味の切れ目で改行する。
+    例:
+    problem P1:
+      |
+        1 行目の説明
+        2 行目の説明
+- [hint] semantic_hint: pending OWNER_ACCEPTANCE は 1 行の quoted text が長いため、block text に変えると読みやすい。 (OWNER_ACCEPTANCE)
+  rationale: 長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。
+  suggestion: 長い 1 行本文を block text へ分割し、意味の切れ目で改行する。
+  syntax_help: llmthink dsl help syntax detail
+  syntax_guidance:
+    長い本文は block text を使い、意味の切れ目で改行する。
+    例:
+    problem P1:
+      |
+        1 行目の説明
+        2 行目の説明
+- [info] semantic_hint: pending が存在するため、判断の確定度は下げて表示するべきである。 (OWNER_ACCEPTANCE)
+- [hint] semantic_hint: D1_HANDOFF と D2_PROFILE_WORK は意味的に近接している可能性がある。 (D1_HANDOFF, D2_PROFILE_WORK)

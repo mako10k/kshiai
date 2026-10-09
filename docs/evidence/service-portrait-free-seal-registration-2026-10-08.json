@@ -1,0 +1,124 @@
+{
+  "entries": [
+    {
+      "key": "design-portrait-v3-bounded",
+      "path": "docs/service-portrait-free-test-contract-review-2026-10-08.md",
+      "parents": [
+        "envelope",
+        "requirements"
+      ],
+      "scope": "Immutable V3 portrait local route lifecycle under AcceptedADR0010 authoring/CAS/failure preservingpointer and FCHR09/10. Injected imagegenerator, not realprovider or fullasset migration.",
+      "ref": "all-tests-20261008/design-portrait-v3-bounded",
+      "test": false,
+      "sha256": "6f0603a5a4439157d7393ed6fdda7762be220dbd222ff0ee577e1e350cfb9737",
+      "sealId": "4b1d5ffdbdb194067123c2a7e761ea33514e5ffd6812b7c0f3c48f6d233d5196",
+      "causeSealIds": [
+        "fdaeaeb9f3694421a8776649f58ec4e89962ae6f95fc3249b8ca4b6a93b6e3ed",
+        "203e66fc4e30772adab026012c67f1b1ac4ca86ad2ada11b501c639a27a19eac"
+      ]
+    },
+    {
+      "key": "implementation-portrait-v3-activation",
+      "path": "backend/src/repositories/character-assets-v2.ts",
+      "parents": [
+        "design-portrait-v3-bounded"
+      ],
+      "scope": "Actual portrait activation/toggle with owner/generation/attempt checks and immutable envelope. Bounded existing lifecycle only.",
+      "ref": "all-tests-20261008/implementation-portrait-v3-activation",
+      "test": false,
+      "sha256": "4a9f1360a3197fb2971acc6612a2328d33f41fe23d832927ac445ba0992c27a1",
+      "sealId": "991a0bed1f9217e6978039cb39b7b217e3122a147cd91f22786df658d1917be7",
+      "causeSealIds": [
+        "4b1d5ffdbdb194067123c2a7e761ea33514e5ffd6812b7c0f3c48f6d233d5196"
+      ]
+    },
+    {
+      "key": "implementation-portrait-v3-route",
+      "path": "backend/src/routes.ts",
+      "parents": [
+        "implementation-portrait-v3-activation"
+      ],
+      "scope": "Local authenticated image HTTP/idempotency/failure paths exercised with injected provider and privateSQLite. Not deployed route or real image inference.",
+      "ref": "all-tests-20261008/implementation-portrait-v3-route",
+      "test": false,
+      "sha256": "c62c1c59bfbd373480e43fd60b4f32c0a3ea73a051329bee3aa048da98ab209f",
+      "sealId": "4a45c9459e2d46f7f2f91a881dc4ece3f4b6c6ce7843b9ad299930dde99b10d7",
+      "causeSealIds": [
+        "991a0bed1f9217e6978039cb39b7b217e3122a147cd91f22786df658d1917be7"
+      ]
+    },
+    {
+      "key": "portrait-v3-bounded-20261008",
+      "path": "backend/src/services/character-portrait-v3.test.ts",
+      "parents": [
+        "implementation-portrait-v3-route"
+      ],
+      "scope": "Whole original3cases, immutableV3 portrait/newpointer/owner/CAS/activeauthoring/failure/idempotency. No other domains or deployment acceptance.",
+      "ref": "verification/portrait-v3-bounded-20261008",
+      "test": true,
+      "sha256": "d4ce4330bc1de1c11f913a9d6050f496d8f5cc5fd4bec7c67241281f91383c14",
+      "sealId": "0b349d1dfb958a33e71c52e699789174ce68f30a89a19b6b763d617fc37253c1",
+      "causeSealIds": [
+        "4a45c9459e2d46f7f2f91a881dc4ece3f4b6c6ce7843b9ad299930dde99b10d7"
+      ]
+    },
+    {
+      "key": "design-free-action-service-bounded",
+      "path": "docs/service-portrait-free-test-contract-review-2026-10-08.md",
+      "parents": [
+        "requirements",
+        "world"
+      ],
+      "scope": "FBTL60-68 canonical-root promotion versus belief, batched adjudication and bounded failure/commit; deterministic helper/Mock only.",
+      "ref": "all-tests-20261008/design-free-action-service-bounded",
+      "test": false,
+      "sha256": "6f0603a5a4439157d7393ed6fdda7762be220dbd222ff0ee577e1e350cfb9737",
+      "sealId": "b729ad11017ad7fef8b94d50e8c054153a32b293a16ae4e14990d37231da5811",
+      "causeSealIds": [
+        "203e66fc4e30772adab026012c67f1b1ac4ca86ad2ada11b501c639a27a19eac",
+        "bbdf88f6e4a55ed11c978c75df29f590ddd1d99c7383eac1a9b26d54609c9031"
+      ]
+    },
+    {
+      "key": "implementation-free-action-service-bounded",
+      "path": "backend/src/services/free-action-service.ts",
+      "parents": [
+        "design-free-action-service-bounded"
+      ],
+      "scope": "Actual prepare/parse/commit and canonicalpromotion paths; deterministic resolveTurn helper and Mock exercise retained engine semantics, not live quality.",
+      "ref": "all-tests-20261008/implementation-free-action-service-bounded",
+      "test": false,
+      "sha256": "fc05378dee90dcb8c3b79443231a7db86d861a869ff085c41bd98a6889f47248",
+      "sealId": "5ed84bb05d9fa80fe934a229f677f0ae63067abe91d7ddb3e0fa0a9e3685b263",
+      "causeSealIds": [
+        "b729ad11017ad7fef8b94d50e8c054153a32b293a16ae4e14990d37231da5811"
+      ]
+    },
+    {
+      "key": "free-action-service-bounded-20261008",
+      "path": "backend/src/services/free-action-service.test.ts",
+      "parents": [
+        "implementation-free-action-service-bounded"
+      ],
+      "scope": "Whole original9cases, failure subtype/callcounts/reach/belief-only rejection/ball and hatpromotion/failedpromotion laterconcretization. Not complete engine policy or actualmodel quality.",
+      "ref": "verification/free-action-service-bounded-20261008",
+      "test": true,
+      "sha256": "a3748c34fd42c98356f329d9c4aef9960993442c3cc410defdb402bf4c8ae02f",
+      "sealId": "c25556aa53ec82eaa7339bc657a4240bdf3f8235c2bbeabc46bf62ef3eb6c6a3",
+      "causeSealIds": [
+        "5ed84bb05d9fa80fe934a229f677f0ae63067abe91d7ddb3e0fa0a9e3685b263"
+      ]
+    }
+  ],
+  "roots": {
+    "envelope": "all-tests-20261007/authority-selectable-envelope",
+    "requirements": "all-tests-20261007/authority-semantic-observation-requirements",
+    "world": "all-tests-20261007/authority-canonical-placement-separation"
+  },
+  "rootSealIds": {
+    "envelope": "fdaeaeb9f3694421a8776649f58ec4e89962ae6f95fc3249b8ca4b6a93b6e3ed",
+    "requirements": "203e66fc4e30772adab026012c67f1b1ac4ca86ad2ada11b501c639a27a19eac",
+    "world": "bbdf88f6e4a55ed11c978c75df29f590ddd1d99c7383eac1a9b26d54609c9031"
+  },
+  "elapsedSeconds": 57.189
+}

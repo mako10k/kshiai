@@ -1,0 +1,8 @@
+domain ADR0060:
+  description "Accepted revision1: explicit owner decisions for test contract recovery."
+evidence OWNER_ACCEPTANCE:
+  "2026-10-08 owner directs unknown visibility private, owner-directed friends, contemporaneous rating snapshots, cooldown abolition with STA costs and awareness, discretionary free-action penalties with kinds pending, preserve equipment effects, 429 one-hour fallback, and ADR0059 recommendation."
+evidence SCOPE:
+  "docs/battle-test-contract-owner-decisions-2026-10-08.md records exact selected behavior and pending numeric/penalty/snapshot compatibility design. Original247unit+4E2E and immutable recorded battles remain protected. No paid/live/deploy authority."
+decision ACCEPTANCE based_on OWNER_ACCEPTANCE, SCOPE:
+  "Accept owner-selected rules. Correct code/tests through explicit contracts; do not infer pending STA formula, penalty kinds, missing snapshot migration or improvement5/10 acceptance. ADR0059 governs complete character creation separately."

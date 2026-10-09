@@ -1,0 +1,16 @@
+domain E2E_CURRENT_PIPELINE:
+  description "Connect current awareness typed ports and its real admission record to an existing offline user integration test."
+evidence AUTHORITY:
+  "Accepted0051 observed unknown usage,0054 new normal usage-v2, adopted decisions new awareness-v5 typed orchestration and immutable assets. Existing owner scope includes updating tests and closing typed handoffs; this is an internal test double, not a delivered model capability or paid acceptance."
+evidence REVIEW:
+  "Read E2E full path: normal browser creation then immutable revisions/replay/finish/narration/cutover. Current plain Mock lacks awareness; later check expects4 and legacy fixture saveSheet rejects under0043. Read creation encounter: guard.run must dispatch exactly once, reserve/complete attempt, then sends===1. Independent r1 missed that and was corrected by r2. Read runtime role/narration interfaces and validated frozen receipt results."
+premise DESIGN:
+  "E2E-only helper extends existing deterministic Mock for encounter. Inside current guard, build explicit local-double request with bound identity/limits, full input and output schema options; run deterministic encounter callback once and return null usage. It exercises real reservation/accounting while explicitly not claiming SDK prompt or real token validation. Attach schema-valid typed latent/conscious roles and frozen narration validated by production validator. No remote transport, no fake paid usage. Current SDK and pricing tests remain separate."
+premise BOUNDS:
+  "Keep real app/browser/API and all immutable/replay/terminal/deleted404 assertions. Change expected manifest to5 with normalpolicy/currentprompt/outputchecks, import testing-only historical fixture instead of saveSheet. Narration helper uses exact receipts and speeches. Adjust batching assertions to compare frozen batch's covered entries rather than require one-entry-one-call. Keep any newly observed failures visible."
+premise UNKNOWN:
+  "Offline deterministic actions do not validate entertainment, real model latency or provider token cost. Cutover and worker assertions may expose additional genuine gaps; do not bypass or preaccept them."
+premise ALTERNATIVES:
+  "Plain Mock fails unaccounted provider boundary; production V4 create fallback violates adoptednew pipeline. Real SDK plus loopback fakewire adds serialization coverage already tested elsewhere. Choose typed ports with genuine guard and unknown usage."
+decision D1 based_on AUTHORITY, REVIEW, DESIGN, BOUNDS, UNKNOWN, ALTERNATIVES:
+  "Audit then add one E2E-only helper and update the spec fixture/current binding/assertions. Run helper strict types and the single integration spec with disposable local DB/browser. No production edit or Seal until verified."

@@ -1,0 +1,14 @@
+{
+  "newRefs": 3,
+  "previousHeadsUnchanged": true,
+  "previousHeadCount": 891,
+  "totalRefs": 894,
+  "sourceBytesMatch": true,
+  "stale": 0,
+  "fsck": "ok",
+  "limitations": [
+    "Original four cases and top-level assertion retained; no code/test/config change",
+    "Exact Accepted model-default and mode-allowlist clauses not confirmed; stored-value assertions are regression only",
+    "No current model capability/default selection, production boot, dispatch, fallback resolution or live provider acceptance"
+  ]
+}

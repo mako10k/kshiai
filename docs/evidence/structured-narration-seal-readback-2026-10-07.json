@@ -1,0 +1,75 @@
+{
+  "entries": [
+    {
+      "ref": "all-tests-20261007/authority-structured-narration",
+      "sourceBytesMatch": true,
+      "sealId": "51875275fc237d7d28d5b090581feb463e9c9d74cdada06bce76198277b9c129"
+    },
+    {
+      "ref": "all-tests-20261007/implementation-structured-narration-contract",
+      "sourceBytesMatch": true,
+      "sealId": "d6f0fed558e50190a05d3c10981730b029d7985215bf53f9e5d8d275e071c54f"
+    },
+    {
+      "ref": "all-tests-20261007/implementation-narration-phase-bridge",
+      "sourceBytesMatch": true,
+      "sealId": "7c9a43bbfebfc008c7934b887d09cc3cf654e36c976744284db8caba16413cd4"
+    },
+    {
+      "ref": "all-tests-20261007/implementation-narration-candidate-building",
+      "sourceBytesMatch": true,
+      "sealId": "b5d994be6d213058541cb20240ae3e13ae9db1d0bd44df1a4961c738f21077e8"
+    },
+    {
+      "ref": "all-tests-20261007/implementation-narration-activation-validated-storage",
+      "sourceBytesMatch": true,
+      "sealId": "9a63b5e031f3ca89944c74ec4b3034ca95fe12921f7c628b68beb9a9b4dcec76"
+    },
+    {
+      "ref": "all-tests-20261007/implementation-narration-family-runner",
+      "sourceBytesMatch": true,
+      "sealId": "7a8b93dcb2e8101713ce91646b5d4fd4221f80a15a43f69d70a800a764ae89fc"
+    },
+    {
+      "ref": "all-tests-20261007/implementation-narration-battle-binding",
+      "sourceBytesMatch": true,
+      "sealId": "2b02aa82a50af634346b4cfabe00986f738ec2c151c292c4da5351477b5c5d52"
+    },
+    {
+      "ref": "all-tests-20261007/implementation-narration-battle-storage",
+      "sourceBytesMatch": true,
+      "sealId": "e458d8c9d12fe2f116fd33e22034b140a0fb1bac63fe5c5c5167e03e2159acba"
+    },
+    {
+      "ref": "all-tests-20261007/fixture-narration-route-offline-awareness",
+      "sourceBytesMatch": true,
+      "sealId": "1c34e06ab8d2273a0eb86a3cc40d7c29d753199bfb121896fe6d455826c9eae0"
+    },
+    {
+      "ref": "all-tests-20261007/fixture-narration-route-v3-envelope",
+      "sourceBytesMatch": true,
+      "sealId": "71b6f946fecfe00f9db9f216ecdf048316be65b2ae262d69852dbab7497e01a3"
+    },
+    {
+      "ref": "all-tests-20261007/implementation-narration-route-acceptance",
+      "sourceBytesMatch": true,
+      "sealId": "49136c362e322c5b6cd87afd1f37a75478d5c0e4bc123441ae0f49f57662143d"
+    },
+    {
+      "ref": "verification/structured-narration-20261007",
+      "sourceBytesMatch": true,
+      "sealId": "b969163c4cdecc17864344cd362a16d0c1070e82d4c0c61520e752b548059d77"
+    },
+    {
+      "ref": "verification/structured-narration-acceptance-20261007",
+      "sourceBytesMatch": true,
+      "sealId": "5a7ba79637625aa008208caa7a8592003437178b4eeb4064f96671807be3d049"
+    }
+  ],
+  "previousHeadCount": 742,
+  "previousHeadsUnchanged": true,
+  "totalRefs": 755,
+  "limitations": [
+    "Previous narration attempt read source binding now diverges from repaired source; regression passed but old Seal does not certify current upstream bytes."
+  ]
+}

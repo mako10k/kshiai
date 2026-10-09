@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { describe, it } from "node:test";
 import { z } from "zod";
+// R: Verify retained migration diagnostics and bounded source-value preservation with local fixtures.
 import {
   CharacterMigrationJsonSchema, CharacterSemanticMigrationAttemptV1Schema,
   CharacterSemanticMigrationChangeSetV1Schema,
@@ -56,14 +57,9 @@ describe("semantic migration repair diagnostics", () => {
       kind: "initial_generation", findings: [], repairClosure: [] });
     const first = BeforeSchema.parse(read("call-1-before.json")).call;
     assert.equal(payload.system, first.system);
-    const { targetDefinitionSchema: _liveSchema, ...liveInput } = payload.input as {
-      targetDefinitionSchema?: unknown;
-      [key: string]: unknown;
-    };
-    const { targetDefinitionSchema: _savedSchema, ...savedInput } = first.input as {
-      targetDefinitionSchema?: unknown;
-      [key: string]: unknown;
-    };
+    const inputObjectSchema = z.record(CharacterMigrationJsonSchema);
+    const { targetDefinitionSchema: _liveSchema, ...liveInput } = inputObjectSchema.parse(payload.input);
+    const { targetDefinitionSchema: _savedSchema, ...savedInput } = inputObjectSchema.parse(first.input);
     assert.deepEqual(liveInput, savedInput);
     for (const ordinal of [1, 3, 5]) {
       const before = BeforeSchema.parse(read(`call-${ordinal}-before.json`)).call;

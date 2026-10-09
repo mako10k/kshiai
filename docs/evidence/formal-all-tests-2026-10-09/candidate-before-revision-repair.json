@@ -1,0 +1,1227 @@
+{
+  "ref": "all-tests-20261009/formal-execution/original-251-result",
+  "expected_ref_head": null,
+  "prospective_seal_id": "819077608164de67808fc556f6d50d8f2076140f5b59e16841ae110ffac124ee",
+  "prospective_material_id": "1fb01665271c81e3181db42856bfc9d4b5cb1595a99024d3a10430292fbbf5ce",
+  "prospective_provenance_id": "6523cd3433d85641dd0e388e42c905c2938cdb178e02415f81b3eb4012440b13",
+  "content_blob_id": "af395b14aafeb828ed0cdf4436a15bf3616a9ba8cb7669aea9f958d51aec636e",
+  "content_bytes": 69436,
+  "attachments": [],
+  "root": false,
+  "draft": false,
+  "cause_links": [
+    {
+      "target_seal": "004bd62c0d2f752836ab0280f5ac183a13a98a346b70c6eb85f194405dd63ee6",
+      "previous_revision_seal_of_target_seal": [],
+      "messages": [
+        "Formal unit execution of whole original file backend/src/services/authoring-task-dispatch.test.ts at current source-matched non-draft Seal; no case removed or disabled."
+      ]
+    },
+    {
+      "target_seal": "019147827813f9c23ae23285203de6f46b5080c11b1265c5e7743c24be455502",
+      "previous_revision_seal_of_target_seal": [],
+      "messages": [
+        "Formal unit execution of whole original file backend/src/repositories/character-assets-v2.test.ts at current source-matched non-draft Seal; no case removed or disabled."
+      ]
+    },
+    {
+      "target_seal": "058329254cce0f97dfedbac71acb74eae7394265e353e9a952d8aa55c34c4c69",
+      "previous_revision_seal_of_target_seal": [],
+      "messages": [
+        "Formal unit execution of whole original file backend/src/services/v3-battle-creation.test.ts at current source-matched non-draft Seal; no case removed or disabled."
+      ]
+    },
+    {
+      "target_seal": "0761c09a28c45671d10ac6d14df8c9b92cef509f63f63fdcec1bf56b6ffee22c",
+      "previous_revision_seal_of_target_seal": [],
+      "messages": [
+        "Formal unit execution of whole original file frontend/src/battle-narration.test.ts at current source-matched non-draft Seal; no case removed or disabled."
+      ]
+    },
+    {
+      "target_seal": "089832c38778d97956fa0bce0682376d01af16350dd29a2a14585a3fa0bb891e",
+      "previous_revision_seal_of_target_seal": [],
+      "messages": [
+        "Formal unit execution of whole original file backend/src/services/battle-causal-narration.test.ts at current source-matched non-draft Seal; no case removed or disabled."
+      ]
+    },
+    {
+      "target_seal": "096527b8d49b6eddcbf4836f8ab56a7a850c51662560152d2dc7bae0d27eb757",
+      "previous_revision_seal_of_target_seal": [],
+      "messages": [
+        "Formal unit execution of whole original file backend/src/repositories/test-realm-assets.test.ts at current source-matched non-draft Seal; no case removed or disabled."
+      ]
+    },
+    {
+      "target_seal": "09cf6446d96834aa021a812a7f60cbb9edf48fbf77a8ef8b3ab440d8a6ff04bd",
+      "previous_revision_seal_of_target_seal": [],
+      "messages": [
+        "Formal unit execution of whole original file backend/src/services/semantic-authoring/kernel-foundation.test.ts at current source-matched non-draft Seal; no case removed or disabled."
+      ]
+    },
+    {
+      "target_seal": "0c6074815c7b47776d8b73dbe0507a54dcf9e9f62e53bb7c5a4a1176577419ca",
+      "previous_revision_seal_of_target_seal": [],
+      "messages": [
+        "Formal unit execution of whole original file backend/src/llm/character-focus-ablation-report.test.ts at current source-matched non-draft Seal; no case removed or disabled."
+      ]
+    },
+    {
+      "target_seal": "0e6e0f218045253ded86e60acdc3bb7d802f06c3a534d5951c879b209ac0dea1",
+      "previous_revision_seal_of_target_seal": [],
+      "messages": [
+        "Formal unit execution of whole original file packages/shared/src/structured-character.test.ts at current source-matched non-draft Seal; no case removed or disabled."
+      ]
+    },
+    {
+      "target_seal": "0ee494a912893c0d72afaec9790ab2ecab4f9bec422f7f5532ba3a42dddbd460",
+      "previous_revision_seal_of_target_seal": [],
+      "messages": [
+        "Formal unit execution of whole original file backend/src/repositories/llm-usage.test.ts at current source-matched non-draft Seal; no case removed or disabled."
+      ]
+    },
+    {
+      "target_seal": "100304b989a031475d147d87abda44131e48ab3c3df5c1013c6bf1eed994bc5e",
+      "previous_revision_seal_of_target_seal": [],
+      "messages": [
+        "Formal unit execution of whole original file backend/src/services/battle-consumer-wiring.test.ts at current source-matched non-draft Seal; no case removed or disabled."
+      ]
+    },
+    {
+      "target_seal": "111100c343ff94031479198d568ab34f291277d08995439a313b599c19ac2878",
+      "previous_revision_seal_of_target_seal": [],
+      "messages": [
+        "Formal unit execution of whole original file backend/src/services/awareness-context.test.ts at current source-matched non-draft Seal; no case removed or disabled."
+      ]
+    },
+    {
+      "target_seal": "130f81cade0fbf5549e1bc2ec985ff4ce61a6210937d37499105501cfec7590e",
+      "previous_revision_seal_of_target_seal": [],
+      "messages": [
+        "Formal unit execution of whole original file backend/src/services/awareness-execution.test.ts at current source-matched non-draft Seal; no case removed or disabled."
+      ]
+    },
+    {
+      "target_seal": "134d3dac093f8fdbc027f1b938b93a601d13e9494a2c066ca1a25c395c85a889",
+      "previous_revision_seal_of_target_seal": [],
+      "messages": [
+        "Formal unit execution of whole original file backend/src/scripts/semantic-migration-probe-run.test.ts at current source-matched non-draft Seal; no case removed or disabled."
+      ]
+    },
+    {
+      "target_seal": "14a0c81c669e5d77233a952f23ad09c06bfecb86ea68c73c975f8c47c5d6a760",
+      "previous_revision_seal_of_target_seal": [],
+      "messages": [
+        "Formal unit execution of whole original file backend/src/scripts/prepare-unreleased-v3-trial.test.ts at current source-matched non-draft Seal; no case removed or disabled."
+      ]
+    },
+    {
+      "target_seal": "160922180aa54704983e7c7f2c5da68364b57d252f2b362cf97094ccdbe2220e",
+      "previous_revision_seal_of_target_seal": [],
+      "messages": [
+        "Formal unit execution of whole original file backend/src/llm/provider-response-schema.test.ts at current source-matched non-draft Seal; no case removed or disabled."
+      ]
+    },
+    {
+      "target_seal": "1781e32b82723205257e1277e35b91e7652181401e3583b3e4b14326febe2d66",
+      "previous_revision_seal_of_target_seal": [],
+      "messages": [
+        "Formal unit execution of whole original file backend/src/llm/awareness-latent-output-guidance.test.ts at current source-matched non-draft Seal; no case removed or disabled."
+      ]
+    },
+    {
+      "target_seal": "17f3e46b0a11714629382d5611ab26fa126b21858875f15db850555f593ea6da",
+      "previous_revision_seal_of_target_seal": [],
+      "messages": [
+        "Formal unit execution of whole original file backend/src/services/cutover-stage-smoke.test.ts at current source-matched non-draft Seal; no case removed or disabled."
+      ]
+    },
+    {
+      "target_seal": "18bec5a467b9d588210760d328ca92accdb4389ec084b9e083e3f5514b00f83f",
+      "previous_revision_seal_of_target_seal": [],
+      "messages": [
+        "Executed driver and its explicit identity/count/exit guards; actual logs captured by digest in receipt."
+      ]
+    },
+    {
+      "target_seal": "18c4773af2609a1350c3819dd7bad6432691eb56d8bd220d21049b9b4c0511bf",
+      "previous_revision_seal_of_target_seal": [],
+      "messages": [
+        "Formal unit execution of whole original file backend/src/services/character-authoring-candidate.test.ts at current source-matched non-draft Seal; no case removed or disabled."
+      ]
+    },
+    {
+      "target_seal": "1b0df7addd56253b65fcfda918c91c89a63e101424d58e8e0c84629873cabdbd",
+      "previous_revision_seal_of_target_seal": [],
+      "messages": [
+        "Formal unit execution of whole original file backend/src/llm/awareness-output-contract.test.ts at current source-matched non-draft Seal; no case removed or disabled."
+      ]
+    },
+    {
+      "target_seal": "1c3e921b5d2d26658deec48e36c55480a9a75729ef07339a5b88c114c5d945e2",
+      "previous_revision_seal_of_target_seal": [],
+      "messages": [
+        "Formal unit execution of whole original file backend/src/services/conscious-agency-persistence.test.ts at current source-matched non-draft Seal; no case removed or disabled."
+      ]
+    },
+    {
+      "target_seal": "1ca27bbc543c57a61c75a37604e1dd23cde6305691eee673f52b5c015a09ed02",
+      "previous_revision_seal_of_target_seal": [],
+      "messages": [
+        "Formal unit execution of whole original file backend/src/services/battle-participation-eligibility.test.ts at current source-matched non-draft Seal; no case removed or disabled."
+      ]
+    },
+    {
+      "target_seal": "1d284c080dcb35df41f0594b07a4c798672cc49e7f1b91fabb6bdaf49e24c8d9",
+      "previous_revision_seal_of_target_seal": [],
+      "messages": [
+        "Formal unit execution of whole original file backend/src/llm/perception-prompt-strategy.test.ts at current source-matched non-draft Seal; no case removed or disabled."
+      ]
+    },
+    {
+      "target_seal": "1e10a3acc258e77fef935180bc2ecc40b38bc4adb648db3b8631968ac8eed63d",
+      "previous_revision_seal_of_target_seal": [],
+      "messages": [
+        "Formal unit execution of whole original file backend/src/repositories/battle-awareness-narrator.test.ts at current source-matched non-draft Seal; no case removed or disabled."
+      ]
+    },
+    {
+      "target_seal": "1eda914477c26f1bdc03cbc726d2ea302cd667f24de6bafffffff25c32608642",
+      "previous_revision_seal_of_target_seal": [],
+      "messages": [
+        "Formal unit execution of whole original file backend/src/services/semantic-authoring/scripted-ports.test.ts at current source-matched non-draft Seal; no case removed or disabled."
+      ]
+    },
+    {
+      "target_seal": "200a84d3ff1649af299059c27aa1dce04daad2177de39f2cb1b63eca8580862f",
+      "previous_revision_seal_of_target_seal": [],
+      "messages": [
+        "Formal unit execution of whole original file backend/src/repositories/battle-lifecycle-storage.test.ts at current source-matched non-draft Seal; no case removed or disabled."
+      ]
+    },
+    {
+      "target_seal": "202588ec5d15bfa9b479e1e4c2dfe195932d68bbe203d68eae6b6dcdfb0cfcf0",
+      "previous_revision_seal_of_target_seal": [],
+      "messages": [
+        "Formal unit execution of whole original file backend/src/services/e2e-session.test.ts at current source-matched non-draft Seal; no case removed or disabled."
+      ]
+    },
+    {
+      "target_seal": "203336392dfba0643d8b90327ac795ff7cadeb68b800a675be2d04be892b3449",
+      "previous_revision_seal_of_target_seal": [],
+      "messages": [
+        "Formal unit execution of whole original file packages/shared/src/character-definition-rules.test.ts at current source-matched non-draft Seal; no case removed or disabled."
+      ]
+    },
+    {
+      "target_seal": "2154dc04be218596caa4eb9917ecc2b4f725beee0b670b895eb469a49dc9e6c6",
+      "previous_revision_seal_of_target_seal": [],
+      "messages": [
+        "Formal unit execution of whole original file packages/shared/src/semantic-authoring.test.ts at current source-matched non-draft Seal; no case removed or disabled."
+      ]
+    },
+    {
+      "target_seal": "229ed9d2df2ab970f344f2b0e2f8ce5ec224e317f4eb20199920c7267bbf0589",
+      "previous_revision_seal_of_target_seal": [],
+      "messages": [
+        "Formal unit execution of whole original file backend/src/llm/provider-retry.test.ts at current source-matched non-draft Seal; no case removed or disabled."
+      ]
+    },
+    {
+      "target_seal": "233dd908d44be952965bd5e03a51ed247a45677f2c719b74c5d1d7ac0ffc40ad",
+      "previous_revision_seal_of_target_seal": [],
+      "messages": [
+        "Formal unit execution of whole original file packages/shared/src/awareness-state.test.ts at current source-matched non-draft Seal; no case removed or disabled."
+      ]
+    },
+    {
+      "target_seal": "23fb6919cfa22ddb3acb39bb030f1b116cbdbcff8720d6254a805624e227de5e",
+      "previous_revision_seal_of_target_seal": [],
+      "messages": [
+        "Formal unit execution of whole original file packages/shared/src/reposition-transition.test.ts at current source-matched non-draft Seal; no case removed or disabled."
+      ]
+    },
+    {
+      "target_seal": "2488c7fd17d845e53ffbddbe64b689daf1c4bcfed441d4c4d368ffd6d11bcdeb",
+      "previous_revision_seal_of_target_seal": [],
+      "messages": [
+        "Formal unit execution of whole original file backend/src/llm/character-focus-ablation.test.ts at current source-matched non-draft Seal; no case removed or disabled."
+      ]
+    },
+    {
+      "target_seal": "24cfbe89481a7861ec30b4b4ac29f9831f41ce40d364a4168bff1b2ac0569685",
+      "previous_revision_seal_of_target_seal": [],
+      "messages": [
+        "Formal unit execution of whole original file packages/shared/src/battle-action-norm-gate.test.ts at current source-matched non-draft Seal; no case removed or disabled."
+      ]
+    },
+    {
+      "target_seal": "28881bf7678482fbb32de683337c260d635b8941d25c9d4a38cd9c4a36c79488",
+      "previous_revision_seal_of_target_seal": [],
+      "messages": [
+        "Formal unit execution of whole original file backend/src/services/narration-worker.test.ts at current source-matched non-draft Seal; no case removed or disabled."
+      ]
+    },
+    {
+      "target_seal": "2920b625359df10a66a9d24a0c0feca14e481d2a8380091f4a5741a199bcd689",
+      "previous_revision_seal_of_target_seal": [],
+      "messages": [
+        "Formal unit execution of whole original file backend/src/services/normal-awareness-policy.test.ts at current source-matched non-draft Seal; no case removed or disabled."
+      ]
+    },
+    {
+      "target_seal": "2930c70f685f5496693e38355d83ffdddf695a39412e5db00064df3d8b192754",
+      "previous_revision_seal_of_target_seal": [],
+      "messages": [
+        "Formal unit execution of whole original file backend/src/services/cutover-admission.test.ts at current source-matched non-draft Seal; no case removed or disabled."
+      ]
+    },
+    {
+      "target_seal": "2981a3a43e297acf784f270b2e42f9a2919636aa7d2f32c7fa69c498bf625122",
+      "previous_revision_seal_of_target_seal": [],
+      "messages": [
+        "Formal unit execution of whole original file packages/shared/src/awareness-battle.test.ts at current source-matched non-draft Seal; no case removed or disabled."
+      ]
+    },
+    {
+      "target_seal": "2b33c11a792e6ad7087e1a64a5fc463fc8c18eca1c48cbfda1fc3fc1b1bd1ef7",
+      "previous_revision_seal_of_target_seal": [],
+      "messages": [
+        "Formal unit execution of whole original file backend/src/services/character-update-policy.test.ts at current source-matched non-draft Seal; no case removed or disabled."
+      ]
+    },
+    {
+      "target_seal": "2f3b6bec2875281902834e1c5ffb62345bae870f806a6d51df18578caf65a534",
+      "previous_revision_seal_of_target_seal": [],
+      "messages": [
+        "Formal unit execution of whole original file backend/src/services/semantic-authoring/public-mapping.test.ts at current source-matched non-draft Seal; no case removed or disabled."
+      ]
+    },
+    {
+      "target_seal": "3169da356e5be739c1cf0b83721e4a986adad15b8d60360ef8bbbe9343c49e04",
+      "previous_revision_seal_of_target_seal": [],
+      "messages": [
+        "Formal unit execution of whole original file backend/src/account-access.test.ts at current source-matched non-draft Seal; no case removed or disabled."
+      ]
+    },
+    {
+      "target_seal": "341bbe306bf4e4b53bf3334cfae19e809833d31bf6ad94498c4067525c4009f0",
+      "previous_revision_seal_of_target_seal": [],
+      "messages": [
+        "Formal unit execution of whole original file backend/src/llm/conscious-dynamic.test.ts at current source-matched non-draft Seal; no case removed or disabled."
+      ]
+    },
+    {
+      "target_seal": "3461b8eae260b66f3e7905d986cf5d919a59f5ec74025380fe43077fd0ca3c25",
+      "previous_revision_seal_of_target_seal": [],
+      "messages": [
+        "Formal unit execution of whole original file packages/shared/src/character-definition-v3.test.ts at current source-matched non-draft Seal; no case removed or disabled."
+      ]
+    },
+    {
+      "target_seal": "367d6b4d3222b09f51dc70914de0fc977c1b3f9b4e4113f2f753dbd78aebab19",
+      "previous_revision_seal_of_target_seal": [],
+      "messages": [
+        "Formal unit execution of whole original file backend/src/cutover-startup.test.ts at current source-matched non-draft Seal; no case removed or disabled."
+      ]
+    },
+    {
+      "target_seal": "3921541be5af635084f8b51291d531a7ecaac009127bef0cbc81bfc1350f6c69",
+      "previous_revision_seal_of_target_seal": [],
+      "messages": [
+        "Formal unit execution of whole original file backend/src/llm/semantic-authoring-provider.test.ts at current source-matched non-draft Seal; no case removed or disabled."
+      ]
+    },
+    {
+      "target_seal": "3ccb8de454e1c2c4e90d79b5f2ed16144787aee656cf438611353923e3472846",
+      "previous_revision_seal_of_target_seal": [],
+      "messages": [
+        "Formal unit execution of whole original file backend/src/repositories/character-generation-reader.test.ts at current source-matched non-draft Seal; no case removed or disabled."
+      ]
+    },
+    {
+      "target_seal": "3de3177b578afe62a65ae64a8348beb46a5a5120baa5834eb26c86980b964d53",
+      "previous_revision_seal_of_target_seal": [],
+      "messages": [
+        "Formal unit execution of whole original file backend/src/llm/openai-compatible-narration.test.ts at current source-matched non-draft Seal; no case removed or disabled."
+      ]
+    },
+    {
+      "target_seal": "3e6e243c9da8f3fc46ce10550017bbd6204e071ce4a5fed2123027ac8a80821a",
+      "previous_revision_seal_of_target_seal": [],
+      "messages": [
+        "Formal unit execution of whole original file frontend/src/battle-screen.test.ts at current source-matched non-draft Seal; no case removed or disabled."
+      ]
+    },
+    {
+      "target_seal": "3fce4a3c0c5ea1165106c11b3bb7e26acd5f7dc0205bd31f08f9a0a13d240ffd",
+      "previous_revision_seal_of_target_seal": [],
+      "messages": [
+        "Formal unit execution of whole original file packages/shared/src/awareness-policy.test.ts at current source-matched non-draft Seal; no case removed or disabled."
+      ]
+    },
+    {
+      "target_seal": "435919a76019bae6fe15c51c14676e4a181d40e113a9ae8d5d81ec5b0ab93bb1",
+      "previous_revision_seal_of_target_seal": [],
+      "messages": [
+        "Formal unit execution of whole original file backend/src/llm/character-definition-response-schema.test.ts at current source-matched non-draft Seal; no case removed or disabled."
+      ]
+    },
+    {
+      "target_seal": "4465021c7cbe61547dfab5acc6f6faad7fd99ecb01a8359f8605610a4db6290b",
+      "previous_revision_seal_of_target_seal": [],
+      "messages": [
+        "Formal unit execution of whole original file backend/src/llm/character-expression-contract.test.ts at current source-matched non-draft Seal; no case removed or disabled."
+      ]
+    },
+    {
+      "target_seal": "45241218e04a3d27dc62edac99b30378ca1513751ebdb5d40393ba1603af4635",
+      "previous_revision_seal_of_target_seal": [],
+      "messages": [
+        "Formal unit execution of whole original file backend/src/origin-verification.test.ts at current source-matched non-draft Seal; no case removed or disabled."
+      ]
+    },
+    {
+      "target_seal": "45f029074ecfb7213001799a9dae1e2b409ed18965d9df11359e92d6c7f91b55",
+      "previous_revision_seal_of_target_seal": [],
+      "messages": [
+        "Formal unit execution of whole original file backend/src/repositories/dialogue-pipeline-settings.test.ts at current source-matched non-draft Seal; no case removed or disabled."
+      ]
+    },
+    {
+      "target_seal": "489b377336fc7457f9bf29de708445e167b975e6c29eee08bdcb290f67c11947",
+      "previous_revision_seal_of_target_seal": [],
+      "messages": [
+        "Formal unit execution of whole original file backend/src/services/semantic-authoring/conformance.test.ts at current source-matched non-draft Seal; no case removed or disabled."
+      ]
+    },
+    {
+      "target_seal": "48d880774f0a224a4f8dfb4b996030638677eb0336e3dbfdf3d8b2cacaebc297",
+      "previous_revision_seal_of_target_seal": [],
+      "messages": [
+        "Formal unit execution of whole original file backend/src/llm/provider-json.test.ts at current source-matched non-draft Seal; no case removed or disabled."
+      ]
+    },
+    {
+      "target_seal": "496c155f25565f963f8283a78c814b71b776f081158d4286c908203f73276821",
+      "previous_revision_seal_of_target_seal": [],
+      "messages": [
+        "Formal unit execution of whole original file backend/src/llm/perception-evidence.test.ts at current source-matched non-draft Seal; no case removed or disabled."
+      ]
+    },
+    {
+      "target_seal": "49c8abe02bb9bf68005ca1f1b627976770e1b4362548486599a0dd2766659d2b",
+      "previous_revision_seal_of_target_seal": [],
+      "messages": [
+        "Formal unit execution of whole original file backend/src/llm/narration-prompt-contract.test.ts at current source-matched non-draft Seal; no case removed or disabled."
+      ]
+    },
+    {
+      "target_seal": "4dbb74f9d18fa26a0564f1e5acb62de47d56772e9e7e751ca8b98b61d63e3144",
+      "previous_revision_seal_of_target_seal": [],
+      "messages": [
+        "Formal unit execution of whole original file backend/src/scripts/semantic-migration-probe-fixture.test.ts at current source-matched non-draft Seal; no case removed or disabled."
+      ]
+    },
+    {
+      "target_seal": "51b27c6d9c36dc305b44803c1c2c7339746213e37102076b59e802632c03be12",
+      "previous_revision_seal_of_target_seal": [],
+      "messages": [
+        "Formal unit execution of whole original file backend/src/services/distributed-guard.test.ts at current source-matched non-draft Seal; no case removed or disabled."
+      ]
+    },
+    {
+      "target_seal": "54d3906ca8e4c28c1da4700e0cce646eb42c25c27846e7b2c0cdf9d8cf89eede",
+      "previous_revision_seal_of_target_seal": [],
+      "messages": [
+        "Formal unit execution of whole original file packages/shared/src/battle-contract-types.test.ts at current source-matched non-draft Seal; no case removed or disabled."
+      ]
+    },
+    {
+      "target_seal": "56bffd6fcd014547963c5bd3833ae85d7cc5542c9437d4912819b0f015454b49",
+      "previous_revision_seal_of_target_seal": [],
+      "messages": [
+        "Formal unit execution of whole original file scripts/test-authority.test.mjs at current source-matched non-draft Seal; no case removed or disabled."
+      ]
+    },
+    {
+      "target_seal": "58b670444a2a6d6530d72e75a7f8e3042fc4eb0d515b11d261a1685f6e326483",
+      "previous_revision_seal_of_target_seal": [],
+      "messages": [
+        "Formal unit execution of whole original file backend/src/repositories/unreleased-trial-preparation.test.ts at current source-matched non-draft Seal; no case removed or disabled."
+      ]
+    },
+    {
+      "target_seal": "58f543bdf13814a9acb24d7694e64d6c7e40d7fa5bd39fc563201bb2d84575c7",
+      "previous_revision_seal_of_target_seal": [],
+      "messages": [
+        "Formal unit execution of whole original file backend/src/repositories/character-semantic-migration.test.ts at current source-matched non-draft Seal; no case removed or disabled."
+      ]
+    },
+    {
+      "target_seal": "59e66ec9cc3a96deac707c2c8ba28cba415b6dc3e1a646b5268003eb479ed25f",
+      "previous_revision_seal_of_target_seal": [],
+      "messages": [
+        "Formal unit execution of whole original file backend/src/services/character-semantic-migration.test.ts at current source-matched non-draft Seal; no case removed or disabled."
+      ]
+    },
+    {
+      "target_seal": "5b2c894e90e274f7a9c84c7a9216c98dd658097a50267d9d72fa1d5b42abb185",
+      "previous_revision_seal_of_target_seal": [],
+      "messages": [
+        "Formal unit execution of whole original file frontend/src/battle-scroll.test.ts at current source-matched non-draft Seal; no case removed or disabled."
+      ]
+    },
+    {
+      "target_seal": "60ad23da6753573781e7aa6fcf6b8f803333c09ac2763756298342798aba05a7",
+      "previous_revision_seal_of_target_seal": [],
+      "messages": [
+        "Formal unit execution of whole original file packages/shared/src/utterance-perception.test.ts at current source-matched non-draft Seal; no case removed or disabled."
+      ]
+    },
+    {
+      "target_seal": "64fa7f6f4605872f5292e2294b26f17f3a7841b7af56b4accedc4422ad71a09e",
+      "previous_revision_seal_of_target_seal": [],
+      "messages": [
+        "Formal unit execution of whole original file backend/src/llm/model-request-options.test.ts at current source-matched non-draft Seal; no case removed or disabled."
+      ]
+    },
+    {
+      "target_seal": "66e0028821a4d107240e29f3da44f3d67d462675d9dd92a937be05ae0c8db054",
+      "previous_revision_seal_of_target_seal": [],
+      "messages": [
+        "Formal unit execution of whole original file packages/shared/src/psyche-reaction-policy.test.ts at current source-matched non-draft Seal; no case removed or disabled."
+      ]
+    },
+    {
+      "target_seal": "68bfc74fe0c3975f06a45fc7caa48fad3926f5bf2c33443b5a4c46ccceba2a92",
+      "previous_revision_seal_of_target_seal": [],
+      "messages": [
+        "Formal unit execution of whole original file packages/shared/src/battle-receipt-zero-net.test.ts at current source-matched non-draft Seal; no case removed or disabled."
+      ]
+    },
+    {
+      "target_seal": "69a49ed3830b35a7e8e590f84dcd2924741c52feef3370da5ea8ced6fc6a09f3",
+      "previous_revision_seal_of_target_seal": [],
+      "messages": [
+        "Formal unit execution of whole original file backend/src/llm/narrator-presentation-focus-evaluation.test.ts at current source-matched non-draft Seal; no case removed or disabled."
+      ]
+    },
+    {
+      "target_seal": "6d5a52455bf1f1a65c65e967179cc1ba8afe2f9470724a40ef90216155a6b0d3",
+      "previous_revision_seal_of_target_seal": [],
+      "messages": [
+        "Formal unit execution of whole original file packages/shared/src/perception-projection.test.ts at current source-matched non-draft Seal; no case removed or disabled."
+      ]
+    },
+    {
+      "target_seal": "6e1019aa24fbc09b7c9783f85d9426f6141a5e3a707a561856911cb8c45158db",
+      "previous_revision_seal_of_target_seal": [],
+      "messages": [
+        "Formal unit execution of whole original file backend/src/llm/awareness-narration.test.ts at current source-matched non-draft Seal; no case removed or disabled."
+      ]
+    },
+    {
+      "target_seal": "6f71fd5cf9e10e5c86fa9c2953b30765ad114a28d4311e83edf1960b096c7c46",
+      "previous_revision_seal_of_target_seal": [],
+      "messages": [
+        "Formal unit execution of whole original file frontend/src/match-selection-preferences.test.ts at current source-matched non-draft Seal; no case removed or disabled."
+      ]
+    },
+    {
+      "target_seal": "715280eb1c2ba5512f2a2875dac09dde038770d966565b9fc46bef3f0173ef88",
+      "previous_revision_seal_of_target_seal": [],
+      "messages": [
+        "Formal unit execution of whole original file packages/shared/src/compiler-phase-contract.test.ts at current source-matched non-draft Seal; no case removed or disabled."
+      ]
+    },
+    {
+      "target_seal": "717542a47be9ec38b131ce5b470ea806d357277ba6efb9e28bca29fee1c5c54b",
+      "previous_revision_seal_of_target_seal": [],
+      "messages": [
+        "Formal unit execution of whole original file packages/shared/src/dialogue-context.test.ts at current source-matched non-draft Seal; no case removed or disabled."
+      ]
+    },
+    {
+      "target_seal": "722e0b834e70ef88b0f4eb431311e89eb056a595a42709a466907e9e1dd4ba40",
+      "previous_revision_seal_of_target_seal": [],
+      "messages": [
+        "Formal unit execution of whole original file backend/src/llm/awareness-provider.test.ts at current source-matched non-draft Seal; no case removed or disabled."
+      ]
+    },
+    {
+      "target_seal": "722f4c301d409d98cf4e5cf6aa59fc86905a6dcbeb9a6f36291da05e407751d4",
+      "previous_revision_seal_of_target_seal": [],
+      "messages": [
+        "Formal unit execution of whole original file packages/shared/src/narration-perception.test.ts at current source-matched non-draft Seal; no case removed or disabled."
+      ]
+    },
+    {
+      "target_seal": "74753b27ec2ac54c40ac38ab6a7275dc4e0f7e4f6ed84593b2d7bcca077d55dc",
+      "previous_revision_seal_of_target_seal": [],
+      "messages": [
+        "Formal unit execution of whole original file scripts/test-authority-empty.test.mjs at current source-matched non-draft Seal; no case removed or disabled."
+      ]
+    },
+    {
+      "target_seal": "74946377e4df0c75e244ddfcdcca0e605ba6505dcd8381ceeebef4f40b6b9e50",
+      "previous_revision_seal_of_target_seal": [],
+      "messages": [
+        "Formal unit execution of whole original file backend/src/services/character-v2-update-boundary.test.ts at current source-matched non-draft Seal; no case removed or disabled."
+      ]
+    },
+    {
+      "target_seal": "7583e3c88444dee088f00736d8bd8c5399f3bc4fd385ffaaed2df02ecf6e44e5",
+      "previous_revision_seal_of_target_seal": [],
+      "messages": [
+        "Formal unit execution of whole original file backend/src/llm/awareness-adjudication-result.test.ts at current source-matched non-draft Seal; no case removed or disabled."
+      ]
+    },
+    {
+      "target_seal": "77ff51eceaa58daedbd1002d60b15b6c42ab7eb54cb27b66db3ef37efa569345",
+      "previous_revision_seal_of_target_seal": [],
+      "messages": [
+        "Formal unit execution of whole original file packages/shared/src/character-semantic-authoring.test.ts at current source-matched non-draft Seal; no case removed or disabled."
+      ]
+    },
+    {
+      "target_seal": "794e2b0291daa9cfe703142cdfbd6929e4b0f290a8509bf04a0aab5d8661c88c",
+      "previous_revision_seal_of_target_seal": [],
+      "messages": [
+        "Formal unit execution of whole original file backend/src/repositories/cutover-control.test.ts at current source-matched non-draft Seal; no case removed or disabled."
+      ]
+    },
+    {
+      "target_seal": "7ad3f131e588fd6824c6f80374050e9be1b1db33927181c24e6f12545305862e",
+      "previous_revision_seal_of_target_seal": [],
+      "messages": [
+        "Formal unit execution of whole original file backend/src/repositories/asset-generations.test.ts at current source-matched non-draft Seal; no case removed or disabled."
+      ]
+    },
+    {
+      "target_seal": "7d53147994e3c7b7764314c255c0d76f977542fa15d5691219b4c72d9c639ac1",
+      "previous_revision_seal_of_target_seal": [],
+      "messages": [
+        "Formal unit execution of whole original file backend/src/services/character-focused-authoring.test.ts at current source-matched non-draft Seal; no case removed or disabled."
+      ]
+    },
+    {
+      "target_seal": "7d74049e84ffe422b3292e06764e48cadd08026c694c86d864ee0c9690cec4d7",
+      "previous_revision_seal_of_target_seal": [],
+      "messages": [
+        "Formal unit execution of whole original file backend/src/repositories/battle-awareness-narration-reservation.test.ts at current source-matched non-draft Seal; no case removed or disabled."
+      ]
+    },
+    {
+      "target_seal": "7e49158e2010b3d20eadda5df0caee16ca7a5b35e5ccb8b6ea62805c536d5814",
+      "previous_revision_seal_of_target_seal": [],
+      "messages": [
+        "Formal unit execution of whole original file backend/src/llm/character-migration-ollama-provider.test.ts at current source-matched non-draft Seal; no case removed or disabled."
+      ]
+    },
+    {
+      "target_seal": "7ee9fc384ab2a725eacb862a9cf9a2b7dbd0da359186e4449b4a5a2a6c102df6",
+      "previous_revision_seal_of_target_seal": [],
+      "messages": [
+        "Formal unit execution of whole original file backend/src/llm/awareness-dispatch-context.test.ts at current source-matched non-draft Seal; no case removed or disabled."
+      ]
+    },
+    {
+      "target_seal": "830e1dafc48acb783e8332120e8667a88e2d193fc86505978c20bb189160ea93",
+      "previous_revision_seal_of_target_seal": [],
+      "messages": [
+        "Formal unit execution of whole original file backend/src/scripts/stage-auth-smoke.test.ts at current source-matched non-draft Seal; no case removed or disabled."
+      ]
+    },
+    {
+      "target_seal": "832a2a22f9a292aa0b2be44885a2207080b51ca183f17e688d394e0f55285f84",
+      "previous_revision_seal_of_target_seal": [],
+      "messages": [
+        "Formal unit execution of whole original file backend/src/services/narration-worker-accounting.test.ts at current source-matched non-draft Seal; no case removed or disabled."
+      ]
+    },
+    {
+      "target_seal": "849b4017632bd719a891d91bd19106ae8e95cf03aa0621031e024c6505e7ae9e",
+      "previous_revision_seal_of_target_seal": [],
+      "messages": [
+        "Formal unit execution of whole original file packages/shared/src/character-manifestation.test.ts at current source-matched non-draft Seal; no case removed or disabled."
+      ]
+    },
+    {
+      "target_seal": "84e59f2d467a58b1804404687f8b6590be3ed830b3389f024fb4816103672dd7",
+      "previous_revision_seal_of_target_seal": [],
+      "messages": [
+        "Formal unit execution of whole original file packages/shared/src/character-semantic-change-set.test.ts at current source-matched non-draft Seal; no case removed or disabled."
+      ]
+    },
+    {
+      "target_seal": "85187aebe755df650f716bc476481168b26f5445d98c19b14dd9badf91eaa367",
+      "previous_revision_seal_of_target_seal": [],
+      "messages": [
+        "Formal unit execution of whole original file backend/src/e2e-observer.test.ts at current source-matched non-draft Seal; no case removed or disabled."
+      ]
+    },
+    {
+      "target_seal": "864d432fd605944b4a12b6b3f3a5fea2f6581390b8027b0c527c05c2505f0b27",
+      "previous_revision_seal_of_target_seal": [],
+      "messages": [
+        "Formal unit execution of whole original file backend/src/llm/awareness-request.test.ts at current source-matched non-draft Seal; no case removed or disabled."
+      ]
+    },
+    {
+      "target_seal": "884a10862318c3d096579664974eea5b894537cb1e052b566e7b0a4cbe04d752",
+      "previous_revision_seal_of_target_seal": [],
+      "messages": [
+        "Formal unit execution of whole original file backend/src/services/llm-usage-cost-report.test.ts at current source-matched non-draft Seal; no case removed or disabled."
+      ]
+    },
+    {
+      "target_seal": "8c3b7dd93ea2f7dca8e60678ba1998c3598273b61f28cf9b39406bb83373b3f7",
+      "previous_revision_seal_of_target_seal": [],
+      "messages": [
+        "Formal unit execution of whole original file packages/shared/src/character-battle-compiler-v4.test.ts at current source-matched non-draft Seal; no case removed or disabled."
+      ]
+    },
+    {
+      "target_seal": "8cce32ec7ee5ecd71fb3d9fcd67d4a166f38634fc3ec3aaf75ea362d275bae96",
+      "previous_revision_seal_of_target_seal": [],
+      "messages": [
+        "Formal unit execution of whole original file backend/src/routes-authoring-read-purity.test.ts at current source-matched non-draft Seal; no case removed or disabled."
+      ]
+    },
+    {
+      "target_seal": "8eb0fda6c6ca2eab1e269373740bee3817a5e7e380a40dade916432061ae68ef",
+      "previous_revision_seal_of_target_seal": [],
+      "messages": [
+        "Formal unit execution of whole original file packages/shared/src/character.test.ts at current source-matched non-draft Seal; no case removed or disabled."
+      ]
+    },
+    {
+      "target_seal": "8f061d86b8db21dea441b94b508396bac52df911276625d314e621a11227b1a7",
+      "previous_revision_seal_of_target_seal": [
+        "8903c34cd976b58afc723ba9f12dbdaab921930293c71ecfb72a8c00841de1e5"
+      ],
+      "messages": [
+        "Exact adopted registry succeeded original251 formal file selection. Historical registry retained only as previous revision; no missing/unsealed file accepted."
+      ]
+    },
+    {
+      "target_seal": "8f56e38101b59ebf45c40cc055937312ac7700bb1f8aa6654e46f633e61ca35d",
+      "previous_revision_seal_of_target_seal": [],
+      "messages": [
+        "Formal unit execution of whole original file packages/shared/src/awareness-pipeline.test.ts at current source-matched non-draft Seal; no case removed or disabled."
+      ]
+    },
+    {
+      "target_seal": "8f7c733417864f5bd5ac8002f3f0e9c7c0660b839d4111bb750fde1d97b42ebe",
+      "previous_revision_seal_of_target_seal": [],
+      "messages": [
+        "Formal unit execution of whole original file backend/src/services/narration-task-dispatch.test.ts at current source-matched non-draft Seal; no case removed or disabled."
+      ]
+    },
+    {
+      "target_seal": "9235cead735bba4cb3c0dd2067f8de382894f5d0d5276074d4760b32bbe7125e",
+      "previous_revision_seal_of_target_seal": [],
+      "messages": [
+        "Formal unit execution of whole original file packages/shared/src/action-intent-contract.test.ts at current source-matched non-draft Seal; no case removed or disabled."
+      ]
+    },
+    {
+      "target_seal": "932c8052058c8385b9d8ee09f565ac501196f893ec274c9417b45e9cfe8fad59",
+      "previous_revision_seal_of_target_seal": [],
+      "messages": [
+        "Formal unit execution of whole original file backend/src/services/conscious-agency-runtime.test.ts at current source-matched non-draft Seal; no case removed or disabled."
+      ]
+    },
+    {
+      "target_seal": "958b6eba8304e250e7104a27dad3dedf0651302575e47734c243d79ebd77e12a",
+      "previous_revision_seal_of_target_seal": [],
+      "messages": [
+        "Formal unit execution of whole original file backend/src/routes-e2e-session.test.ts at current source-matched non-draft Seal; no case removed or disabled."
+      ]
+    },
+    {
+      "target_seal": "95efe8929542fa9b7e6d3c96e77531f6a942d87caa6e2193de1ee62f3e9a84ec",
+      "previous_revision_seal_of_target_seal": [],
+      "messages": [
+        "Formal unit execution of whole original file packages/shared/src/character-definition-check.test.ts at current source-matched non-draft Seal; no case removed or disabled."
+      ]
+    },
+    {
+      "target_seal": "9604a73031c8f95e3db9412c5c9cb4b13faba1e9631fde550f020553edc9796a",
+      "previous_revision_seal_of_target_seal": [],
+      "messages": [
+        "Formal unit execution of whole original file packages/shared/src/action-norm-contract.test.ts at current source-matched non-draft Seal; no case removed or disabled."
+      ]
+    },
+    {
+      "target_seal": "973d65369dffff5e9c015b41f6ce64ff90352e88018d2753af91d74c420c1d7a",
+      "previous_revision_seal_of_target_seal": [],
+      "messages": [
+        "Formal unit execution of whole original file frontend/src/authenticated-fetch.test.ts at current source-matched non-draft Seal; no case removed or disabled."
+      ]
+    },
+    {
+      "target_seal": "995fcaff8b91512b55a3269df0426dbf1d7ace6f1a8ef4fd73a1083c7ef8ab3d",
+      "previous_revision_seal_of_target_seal": [],
+      "messages": [
+        "Formal unit execution of whole original file backend/src/routes-structured-narration-acceptance.test.ts at current source-matched non-draft Seal; no case removed or disabled."
+      ]
+    },
+    {
+      "target_seal": "9d59b9c32465c28f24b3916eb83ad5a57b3f858401272d9c4089473377d36219",
+      "previous_revision_seal_of_target_seal": [],
+      "messages": [
+        "Formal unit execution of whole original file packages/shared/src/profile-grounding.test.ts at current source-matched non-draft Seal; no case removed or disabled."
+      ]
+    },
+    {
+      "target_seal": "9e3cba5fc5d8589acb4afd80d0c454daa4c3a8aae84283edf865f18b3a08d8cc",
+      "previous_revision_seal_of_target_seal": [],
+      "messages": [
+        "Formal unit execution of whole original file backend/src/services/awareness-narration-event-storage.test.ts at current source-matched non-draft Seal; no case removed or disabled."
+      ]
+    },
+    {
+      "target_seal": "9e430e3538bbd18c533c8f5859397f668a33e1d67115ace301b48ff525820faa",
+      "previous_revision_seal_of_target_seal": [],
+      "messages": [
+        "Formal unit execution of whole original file backend/src/routes-structured-battlefield-acceptance.test.ts at current source-matched non-draft Seal; no case removed or disabled."
+      ]
+    },
+    {
+      "target_seal": "9f1a2b6f5b93eee3ec97931dadb37a29bad6ee3e6622983d7fa8503b9b35cbf1",
+      "previous_revision_seal_of_target_seal": [],
+      "messages": [
+        "Formal unit execution of whole original file packages/shared/src/battle-turn-causal-receipt.test.ts at current source-matched non-draft Seal; no case removed or disabled."
+      ]
+    },
+    {
+      "target_seal": "a182d0ac92b43bbd97e2265ec738689c906d64aaadda76cba84947ebccea8cc3",
+      "previous_revision_seal_of_target_seal": [],
+      "messages": [
+        "Formal E2E execution of whole original file e2e/v3-local-integration.spec.ts at current source-matched non-draft Seal; no case removed or disabled."
+      ]
+    },
+    {
+      "target_seal": "a1dbfceecc9981e91c75cbb07700039a7f519ccd2be5116f73070231f422b701",
+      "previous_revision_seal_of_target_seal": [],
+      "messages": [
+        "Formal unit execution of whole original file backend/src/services/character-authoring-service.test.ts at current source-matched non-draft Seal; no case removed or disabled."
+      ]
+    },
+    {
+      "target_seal": "a349ef18605a00e722db10a54502502bcecc6dabd36bf84f5648b736601e50c6",
+      "previous_revision_seal_of_target_seal": [],
+      "messages": [
+        "Formal unit execution of whole original file backend/src/services/conscious-agency-binding.test.ts at current source-matched non-draft Seal; no case removed or disabled."
+      ]
+    },
+    {
+      "target_seal": "a35d00f59c2e79ac5a4cebe1a3df0b281f8bc88bb050e989de83eec8b44adecf",
+      "previous_revision_seal_of_target_seal": [],
+      "messages": [
+        "Formal unit execution of whole original file backend/src/llm/provider-config.test.ts at current source-matched non-draft Seal; no case removed or disabled."
+      ]
+    },
+    {
+      "target_seal": "a378104c32366345aee78dca589e6b64d294ae592f9fdf5bb448b60188ef17e1",
+      "previous_revision_seal_of_target_seal": [],
+      "messages": [
+        "Formal unit execution of whole original file backend/src/services/awareness-narration-continuation.test.ts at current source-matched non-draft Seal; no case removed or disabled."
+      ]
+    },
+    {
+      "target_seal": "a5958ab82e216d8a7651e5a3dc6acfb63aa99d5bcbe93007b40ebc53736be672",
+      "previous_revision_seal_of_target_seal": [],
+      "messages": [
+        "Formal unit execution of whole original file backend/src/services/awareness-narration-claim-snapshot.test.ts at current source-matched non-draft Seal; no case removed or disabled."
+      ]
+    },
+    {
+      "target_seal": "a694e5e0c4ccea14a18e72910ed150ac0564230c24aaba4eb2d9ec22ee6e4def",
+      "previous_revision_seal_of_target_seal": [],
+      "messages": [
+        "Formal E2E execution of whole original file e2e/history-character-navigation.spec.ts at current source-matched non-draft Seal; no case removed or disabled."
+      ]
+    },
+    {
+      "target_seal": "a975bd69e04610204f930a1f7ce53a4d11bf8589564f49d2cac7b1729291def5",
+      "previous_revision_seal_of_target_seal": [],
+      "messages": [
+        "Formal unit execution of whole original file backend/src/services/supabase-identity.test.ts at current source-matched non-draft Seal; no case removed or disabled."
+      ]
+    },
+    {
+      "target_seal": "ab615ddec3258a1abc3f9331aefa7f3e35c7525ca940db6afbb37c6b3d8993f3",
+      "previous_revision_seal_of_target_seal": [],
+      "messages": [
+        "Formal unit execution of whole original file backend/src/llm/character-migration-response-schema.test.ts at current source-matched non-draft Seal; no case removed or disabled."
+      ]
+    },
+    {
+      "target_seal": "ab7903dd325752de4ca28afe43daf80091d413a353e15d2a2ed93ddb71e32364",
+      "previous_revision_seal_of_target_seal": [],
+      "messages": [
+        "Formal unit execution of whole original file packages/shared/src/semantic-state.test.ts at current source-matched non-draft Seal; no case removed or disabled."
+      ]
+    },
+    {
+      "target_seal": "abecf79b0767dba3b296a3cb8dfdf3e7139a4802e8ff399a60ed897dde16ae24",
+      "previous_revision_seal_of_target_seal": [],
+      "messages": [
+        "Formal unit execution of whole original file backend/src/repositories/local-v3-trial-characters.test.ts at current source-matched non-draft Seal; no case removed or disabled."
+      ]
+    },
+    {
+      "target_seal": "acbf73234c8998518138f4c6f262ea1e9c081f483134ffd34b535346aeb65e90",
+      "previous_revision_seal_of_target_seal": [],
+      "messages": [
+        "Formal unit execution of whole original file packages/shared/src/structured-battlefield.test.ts at current source-matched non-draft Seal; no case removed or disabled."
+      ]
+    },
+    {
+      "target_seal": "afda2b4871cffb3c4003f78c90c745a48786a9d2d52ca6b5bc18d13f04f61938",
+      "previous_revision_seal_of_target_seal": [],
+      "messages": [
+        "Formal unit execution of whole original file backend/src/services/character-v3-profile-adapter.test.ts at current source-matched non-draft Seal; no case removed or disabled."
+      ]
+    },
+    {
+      "target_seal": "b1b0a9f0458a81e03ba39b619c572bc5d51ab7ef9ab3fce142fb8434eacb0021",
+      "previous_revision_seal_of_target_seal": [],
+      "messages": [
+        "Formal unit execution of whole original file packages/shared/src/perception-quantization.test.ts at current source-matched non-draft Seal; no case removed or disabled."
+      ]
+    },
+    {
+      "target_seal": "b463b5477df184a44773b5491b79769548aeb704740937f2247003dc030f3681",
+      "previous_revision_seal_of_target_seal": [],
+      "messages": [
+        "Formal unit execution of whole original file packages/shared/src/turn-event-contract.test.ts at current source-matched non-draft Seal; no case removed or disabled."
+      ]
+    },
+    {
+      "target_seal": "b4a376fe18ab482053fdb83de819a1bfe81881efd847dc28b7eb59128fa96cc7",
+      "previous_revision_seal_of_target_seal": [],
+      "messages": [
+        "Formal unit execution of whole original file backend/src/services/character-historical-view.test.ts at current source-matched non-draft Seal; no case removed or disabled."
+      ]
+    },
+    {
+      "target_seal": "b4dbac111d19688e92f8a409922a3f7f2918a5cce3633fdf40ee29162555ed95",
+      "previous_revision_seal_of_target_seal": [],
+      "messages": [
+        "Formal unit execution of whole original file backend/src/llm/openai-compatible-model-options.test.ts at current source-matched non-draft Seal; no case removed or disabled."
+      ]
+    },
+    {
+      "target_seal": "b8337b87fe89356e2c81ab4b27e17dcb5510aeba78818dbf52ad0576d59cb208",
+      "previous_revision_seal_of_target_seal": [],
+      "messages": [
+        "Formal unit execution of whole original file backend/src/services/character-authoring-jobs.test.ts at current source-matched non-draft Seal; no case removed or disabled."
+      ]
+    },
+    {
+      "target_seal": "b89f5db0f0901a087a555e4d3bac89df96f83ac23703abf8a2360e395da590fe",
+      "previous_revision_seal_of_target_seal": [],
+      "messages": [
+        "Formal unit execution of whole original file backend/src/services/character-action-fallback.test.ts at current source-matched non-draft Seal; no case removed or disabled."
+      ]
+    },
+    {
+      "target_seal": "b969163c4cdecc17864344cd362a16d0c1070e82d4c0c61520e752b548059d77",
+      "previous_revision_seal_of_target_seal": [],
+      "messages": [
+        "Formal unit execution of whole original file packages/shared/src/structured-narration.test.ts at current source-matched non-draft Seal; no case removed or disabled."
+      ]
+    },
+    {
+      "target_seal": "bc161187f7bccd3acd70198bb2d99df332e02149f4cc86320311f9b649aaa6fc",
+      "previous_revision_seal_of_target_seal": [],
+      "messages": [
+        "Formal unit execution of whole original file backend/src/llm/openai-compatible-character-definition.test.ts at current source-matched non-draft Seal; no case removed or disabled."
+      ]
+    },
+    {
+      "target_seal": "bdae2ca6065c13de1567d7ffda94713b86f25c55a8cafd3e82bc22b4f1de962c",
+      "previous_revision_seal_of_target_seal": [],
+      "messages": [
+        "Formal unit execution of whole original file backend/src/llm/awareness-dispatch-admission.test.ts at current source-matched non-draft Seal; no case removed or disabled."
+      ]
+    },
+    {
+      "target_seal": "c230271fb4a42174824d021a78705a6ef19a520b85a23ffaec26be3af5ef2882",
+      "previous_revision_seal_of_target_seal": [],
+      "messages": [
+        "Formal unit execution of whole original file backend/src/services/awareness-narration-worker.test.ts at current source-matched non-draft Seal; no case removed or disabled."
+      ]
+    },
+    {
+      "target_seal": "c2ad3d9548d4aa048b84053b4e0e90881d4afbf0ea30bf5709faa4344f81506f",
+      "previous_revision_seal_of_target_seal": [],
+      "messages": [
+        "Formal unit execution of whole original file packages/shared/src/character-focus-policy.test.ts at current source-matched non-draft Seal; no case removed or disabled."
+      ]
+    },
+    {
+      "target_seal": "c33efcbab05dc4f71b5051272f6fc00cea60a44b9177427e3700dcf14910f119",
+      "previous_revision_seal_of_target_seal": [],
+      "messages": [
+        "Formal unit execution of whole original file packages/shared/src/awareness-guidance.test.ts at current source-matched non-draft Seal; no case removed or disabled."
+      ]
+    },
+    {
+      "target_seal": "c5855ba84cd538bda8869636bb81a3d3b54160fb0b72c51627398b706c1627bb",
+      "previous_revision_seal_of_target_seal": [],
+      "messages": [
+        "Formal unit execution of whole original file backend/src/llm/prompt-prose.test.ts at current source-matched non-draft Seal; no case removed or disabled."
+      ]
+    },
+    {
+      "target_seal": "c7005e56015792e083c2eca785b4bab9e5ac1ae4f131e9018ef1900e75ba5dd6",
+      "previous_revision_seal_of_target_seal": [],
+      "messages": [
+        "Formal unit execution of whole original file backend/src/llm/adjudication-prompt-prose.test.ts at current source-matched non-draft Seal; no case removed or disabled."
+      ]
+    },
+    {
+      "target_seal": "c78207309d069012d7611f74736270ce44c2fb24671ccb741c63303959edea9e",
+      "previous_revision_seal_of_target_seal": [],
+      "messages": [
+        "Formal unit execution of whole original file backend/src/llm/provider-accounting.test.ts at current source-matched non-draft Seal; no case removed or disabled."
+      ]
+    },
+    {
+      "target_seal": "c8bdc22c4690d34115448776d19e9393e1480cd16148bf66353a39ac07f48f97",
+      "previous_revision_seal_of_target_seal": [],
+      "messages": [
+        "Formal unit execution of whole original file backend/src/llm/awareness-frozen-narration.test.ts at current source-matched non-draft Seal; no case removed or disabled."
+      ]
+    },
+    {
+      "target_seal": "cc7e7806289760541bdd2fba1d679ba4af9986d24d8bafa98fcb83371cbdf3b4",
+      "previous_revision_seal_of_target_seal": [],
+      "messages": [
+        "Formal unit execution of whole original file packages/shared/src/battle-asset-manifest.test.ts at current source-matched non-draft Seal; no case removed or disabled."
+      ]
+    },
+    {
+      "target_seal": "ccbb3a0262204c72e3febc49ffda3e571c06c750d6b26f7823144d31ae7684bf",
+      "previous_revision_seal_of_target_seal": [],
+      "messages": [
+        "Formal unit execution of whole original file backend/src/services/cutover-background-dispatch.test.ts at current source-matched non-draft Seal; no case removed or disabled."
+      ]
+    },
+    {
+      "target_seal": "d32358c0148d42bc2f676c97ec738c3e7d87a759993774a2bc9d799f18e5e1b6",
+      "previous_revision_seal_of_target_seal": [],
+      "messages": [
+        "Formal unit execution of whole original file backend/src/services/semantic-authoring/adapters/character-v3.test.ts at current source-matched non-draft Seal; no case removed or disabled."
+      ]
+    },
+    {
+      "target_seal": "d4ef82752128036ae42f4d507e58fd34e66c76719c64c130aadb462427d33e5a",
+      "previous_revision_seal_of_target_seal": [],
+      "messages": [
+        "Formal unit execution of whole original file packages/shared/src/battle-temporal-rules.test.ts at current source-matched non-draft Seal; no case removed or disabled."
+      ]
+    },
+    {
+      "target_seal": "d5dee6729c5971ed8ae6b6698c3d58c799bf2b08e24fa692f3047bf3f94e8f6c",
+      "previous_revision_seal_of_target_seal": [],
+      "messages": [
+        "Formal unit execution of whole original file backend/src/repositories/semantic-authoring.test.ts at current source-matched non-draft Seal; no case removed or disabled."
+      ]
+    },
+    {
+      "target_seal": "d93b78dcf717f58f5cbec8838231558d6ba45c7011f29ccbf3e193d97147e77b",
+      "previous_revision_seal_of_target_seal": [],
+      "messages": [
+        "Formal unit execution of whole original file backend/src/auth.test.ts at current source-matched non-draft Seal; no case removed or disabled."
+      ]
+    },
+    {
+      "target_seal": "d99ac91be3f7261fa349f25e9b081a6385a30f5216ae5793a3ade7674822d8fa",
+      "previous_revision_seal_of_target_seal": [],
+      "messages": [
+        "Formal unit execution of whole original file backend/src/llm/provider-errors.test.ts at current source-matched non-draft Seal; no case removed or disabled."
+      ]
+    },
+    {
+      "target_seal": "da4ab586c3186d6927f415c076dfb1633b0624742592b26204caaa67e7dd107c",
+      "previous_revision_seal_of_target_seal": [],
+      "messages": [
+        "Formal unit execution of whole original file backend/src/llm/character-migration-probe-provider.test.ts at current source-matched non-draft Seal; no case removed or disabled."
+      ]
+    },
+    {
+      "target_seal": "da7b1c78e89d6bec4f11f7eced816ed7776d15f952b6674a34cc2f4ff7c8ca56",
+      "previous_revision_seal_of_target_seal": [],
+      "messages": [
+        "Formal unit execution of whole original file packages/shared/src/structured-assets.test.ts at current source-matched non-draft Seal; no case removed or disabled."
+      ]
+    },
+    {
+      "target_seal": "dd0c8f93c3a83d7277f10944ac9ee2170900e84bf9cad8ee3d75bdddab63cd21",
+      "previous_revision_seal_of_target_seal": [],
+      "messages": [
+        "Formal unit execution of whole original file packages/shared/src/conscious-dynamic.test.ts at current source-matched non-draft Seal; no case removed or disabled."
+      ]
+    },
+    {
+      "target_seal": "e15b0a4680f8528e2dca15edffc64645bde00ea5f340dad6345c554145bf9dad",
+      "previous_revision_seal_of_target_seal": [],
+      "messages": [
+        "Formal unit execution of whole original file backend/src/scripts/cutover-control.test.ts at current source-matched non-draft Seal; no case removed or disabled."
+      ]
+    },
+    {
+      "target_seal": "e39b5c07af8a8ac38a808c5358217ca18fc0987f7f43755f623e20d69c9b7b8d",
+      "previous_revision_seal_of_target_seal": [],
+      "messages": [
+        "Formal unit execution of whole original file packages/shared/src/perception.test.ts at current source-matched non-draft Seal; no case removed or disabled."
+      ]
+    },
+    {
+      "target_seal": "e43609b39161b832c7cde04e7d655bc21ff48b6c7011d3b5deccccc6905e3107",
+      "previous_revision_seal_of_target_seal": [],
+      "messages": [
+        "Formal unit execution of whole original file backend/src/repositories/system-battlefield-seed.test.ts at current source-matched non-draft Seal; no case removed or disabled."
+      ]
+    },
+    {
+      "target_seal": "e498c21b29bdba1e05acfb0c212b62a077ed02a7b0dfb5dd27e4d4b627e31d92",
+      "previous_revision_seal_of_target_seal": [],
+      "messages": [
+        "Formal unit execution of whole original file backend/src/services/awareness-clock.test.ts at current source-matched non-draft Seal; no case removed or disabled."
+      ]
+    },
+    {
+      "target_seal": "e5b1244df657098048e397f306aa6c5afdc358d6995c7d0f8b39f3f6213a3a3c",
+      "previous_revision_seal_of_target_seal": [],
+      "messages": [
+        "Formal unit execution of whole original file backend/src/services/awareness-expression-commit.test.ts at current source-matched non-draft Seal; no case removed or disabled."
+      ]
+    },
+    {
+      "target_seal": "e89e0f4c7813230e22cb34bbf032601da99ec293fd69fd26242278f7dbf07ad0",
+      "previous_revision_seal_of_target_seal": [],
+      "messages": [
+        "Formal unit execution of whole original file packages/shared/src/narration-perspective.test.ts at current source-matched non-draft Seal; no case removed or disabled."
+      ]
+    },
+    {
+      "target_seal": "e9023fc2ef2652c2eb7fe457a1774c4a19995ac2d9803010f0d50d831e888fee",
+      "previous_revision_seal_of_target_seal": [],
+      "messages": [
+        "Formal unit execution of whole original file backend/src/llm/llm-physical-completion.test.ts at current source-matched non-draft Seal; no case removed or disabled."
+      ]
+    },
+    {
+      "target_seal": "e9d92d0a02ab89457bf728b4ac267e5ea6cc452e1e0b7fe6cdce5a45bd5f1753",
+      "previous_revision_seal_of_target_seal": [],
+      "messages": [
+        "Formal unit execution of whole original file backend/src/routes-cutover-http.test.ts at current source-matched non-draft Seal; no case removed or disabled."
+      ]
+    },
+    {
+      "target_seal": "ecbea24931f21a918ed1bd5ca9e64a452acafabe723aee6cec935450e0d77352",
+      "previous_revision_seal_of_target_seal": [],
+      "messages": [
+        "Formal unit execution of whole original file packages/shared/src/battle-causal-execution.test.ts at current source-matched non-draft Seal; no case removed or disabled."
+      ]
+    },
+    {
+      "target_seal": "efa2e596e953081ed8f2155463d0b4cecc403a1b943534b02f1478881ec29c49",
+      "previous_revision_seal_of_target_seal": [],
+      "messages": [
+        "Formal unit execution of whole original file packages/shared/src/battle-world.test.ts at current source-matched non-draft Seal; no case removed or disabled."
+      ]
+    },
+    {
+      "target_seal": "f0cb773e2acd98b6b6a5e4b98431ecba096bbb64423b233549f8a1738a532bbc",
+      "previous_revision_seal_of_target_seal": [],
+      "messages": [
+        "Formal unit execution of whole original file backend/src/services/character-migration-diagnostics.test.ts at current source-matched non-draft Seal; no case removed or disabled."
+      ]
+    },
+    {
+      "target_seal": "f0de05eafbd3b92ad4e2aee3c575b82477e50f35f97b7a7f6b0bef08c953160b",
+      "previous_revision_seal_of_target_seal": [],
+      "messages": [
+        "Formal unit execution of whole original file backend/src/llm/awareness-provider-factory.test.ts at current source-matched non-draft Seal; no case removed or disabled."
+      ]
+    },
+    {
+      "target_seal": "f4a3c1e2bfe8dc7bec4bbf23583b8261c3792c9a93f74bb384471ff8ad5d6327",
+      "previous_revision_seal_of_target_seal": [],
+      "messages": [
+        "Formal unit execution of whole original file backend/src/services/awareness-world-commit.test.ts at current source-matched non-draft Seal; no case removed or disabled."
+      ]
+    },
+    {
+      "target_seal": "f4c2637f66047b08ae627ebb51ca81bc6c50aaad3f0056dde5be99cae9e3e4aa",
+      "previous_revision_seal_of_target_seal": [],
+      "messages": [
+        "Formal unit execution of whole original file backend/src/services/awareness-adjudication-guard.test.ts at current source-matched non-draft Seal; no case removed or disabled."
+      ]
+    },
+    {
+      "target_seal": "f5599f9a2a2a13fe2f3b2438d0cdf9b80af7d5b1e289c664d8b4dabf7aa05c19",
+      "previous_revision_seal_of_target_seal": [],
+      "messages": [
+        "Formal unit execution of whole original file backend/src/services/cutover-http-admission.test.ts at current source-matched non-draft Seal; no case removed or disabled."
+      ]
+    },
+    {
+      "target_seal": "f59361225f9c06e9a785db582d8732f4aabe7846f05d01f68e9759ce87f9cffb",
+      "previous_revision_seal_of_target_seal": [],
+      "messages": [
+        "Formal unit execution of whole original file backend/src/scripts/awareness-narration-convergence.test.ts at current source-matched non-draft Seal; no case removed or disabled."
+      ]
+    },
+    {
+      "target_seal": "f5b8aeb204d487979d7a864b3190f76fa473c939110fd75d4bcdee4d57fc9c90",
+      "previous_revision_seal_of_target_seal": [],
+      "messages": [
+        "Formal unit execution of whole original file scripts/verify-v3-trial-evidence.test.mjs at current source-matched non-draft Seal; no case removed or disabled."
+      ]
+    },
+    {
+      "target_seal": "f61aad8f087fdce496ef3d2dce84bf6f15f190031a3ec165412c8691c3914ef6",
+      "previous_revision_seal_of_target_seal": [],
+      "messages": [
+        "Formal E2E execution of whole original file e2e/character-focused-review.spec.ts at current source-matched non-draft Seal; no case removed or disabled."
+      ]
+    },
+    {
+      "target_seal": "fa88e0ebb919cdf52263c397f61f98f11085837f1df1a4b2d23c697416bd98f7",
+      "previous_revision_seal_of_target_seal": [],
+      "messages": [
+        "Formal unit execution of whole original file backend/src/services/awareness-narration-queue.test.ts at current source-matched non-draft Seal; no case removed or disabled."
+      ]
+    },
+    {
+      "target_seal": "fc275e28e03c96a375557d5a11fd4f847957159ffa1913fcad55fa88f98002b1",
+      "previous_revision_seal_of_target_seal": [],
+      "messages": [
+        "Formal unit execution of whole original file backend/src/cutover-config.test.ts at current source-matched non-draft Seal; no case removed or disabled."
+      ]
+    },
+    {
+      "target_seal": "fd826049f83dae950de974a53166aa8c3a47eaf93d7279d1ff590ab0c2f49057",
+      "previous_revision_seal_of_target_seal": [],
+      "messages": [
+        "Formal unit execution of whole original file backend/src/services/awareness-narration-urgency.test.ts at current source-matched non-draft Seal; no case removed or disabled."
+      ]
+    },
+    {
+      "target_seal": "fdb6bbdf1a9a4bba3b2c4a900dc2f04ac648569808cdeeee2f169f0ad2327936",
+      "previous_revision_seal_of_target_seal": [],
+      "messages": [
+        "Formal unit execution of whole original file packages/shared/src/compact-psyche-decode.test.ts at current source-matched non-draft Seal; no case removed or disabled."
+      ]
+    }
+  ]
+}

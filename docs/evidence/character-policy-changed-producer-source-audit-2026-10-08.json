@@ -1,0 +1,156 @@
+{
+  "scope": "Changed character budget producer source bindings only; older rating/service propagation remains separately open",
+  "completed": false,
+  "bindings": [
+    {
+      "binding": {
+        "ref": "all-tests-20261007/implementation-current-focused-pending-read",
+        "path": "backend/src/services/character-focused-authoring.ts"
+      },
+      "currentSha256": "772e7333314785c417f08bd5b3a8c73b2291273cf03b2ca95fbd13ad5cebeb25",
+      "comparison": {
+        "schema": "sealgraph/source-compare/v1",
+        "ref": "all-tests-20261007/implementation-current-focused-pending-read",
+        "path": "backend/src/services/character-focused-authoring.ts",
+        "baseline": "HEAD",
+        "baseline_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "8a6430917c281afc4a57676f46bb64c1f7bec8c438a3fcda294fbdb73388ba53"
+        },
+        "workfile_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "b7317677ffd17ceac4a30e467ccccac47f443b5a47c003148e0f2e7360c41a6d",
+          "bytes": 35749
+        },
+        "relation": "WORKFILE_DIFFERS_FROM_HEAD"
+      }
+    },
+    {
+      "binding": {
+        "ref": "all-tests-20261007/implementation-focused-character-review-reads",
+        "path": "backend/src/services/character-focused-authoring.ts"
+      },
+      "currentSha256": "772e7333314785c417f08bd5b3a8c73b2291273cf03b2ca95fbd13ad5cebeb25",
+      "comparison": {
+        "schema": "sealgraph/source-compare/v1",
+        "ref": "all-tests-20261007/implementation-focused-character-review-reads",
+        "path": "backend/src/services/character-focused-authoring.ts",
+        "baseline": "HEAD",
+        "baseline_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "dd50dc7c4b5230f9c2694fad39fb22b84e8f8d5438c54c39f7ddf5eadf2400d0"
+        },
+        "workfile_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "b7317677ffd17ceac4a30e467ccccac47f443b5a47c003148e0f2e7360c41a6d",
+          "bytes": 35749
+        },
+        "relation": "WORKFILE_DIFFERS_FROM_HEAD"
+      }
+    },
+    {
+      "binding": {
+        "ref": "all-tests-20261007/implementation-provider-control-sqlite-schema",
+        "path": "backend/src/db.ts"
+      },
+      "currentSha256": "70bacc4e8b0e53f88fe25c15e45c0a1d9aa1c67d6a3925282d9fdec277b8f77e",
+      "comparison": {
+        "schema": "sealgraph/source-compare/v1",
+        "ref": "all-tests-20261007/implementation-provider-control-sqlite-schema",
+        "path": "backend/src/db.ts",
+        "baseline": "HEAD",
+        "baseline_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "2fe82bde1099239ee73c31229c620af3f8d7557e1439ee14b636f18b16ddbfcb"
+        },
+        "workfile_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "e92569c90af67bf9f76763decaa98b141760594616942c44d1af7c167e3f8319",
+          "bytes": 46135
+        },
+        "relation": "WORKFILE_DIFFERS_FROM_HEAD"
+      }
+    },
+    {
+      "binding": {
+        "ref": "all-tests-20261008/implementation-boundary-db",
+        "path": "backend/src/db.ts"
+      },
+      "currentSha256": "70bacc4e8b0e53f88fe25c15e45c0a1d9aa1c67d6a3925282d9fdec277b8f77e",
+      "comparison": {
+        "schema": "sealgraph/source-compare/v1",
+        "ref": "all-tests-20261008/implementation-boundary-db",
+        "path": "backend/src/db.ts",
+        "baseline": "HEAD",
+        "baseline_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "2fe82bde1099239ee73c31229c620af3f8d7557e1439ee14b636f18b16ddbfcb"
+        },
+        "workfile_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "e92569c90af67bf9f76763decaa98b141760594616942c44d1af7c167e3f8319",
+          "bytes": 46135
+        },
+        "relation": "WORKFILE_DIFFERS_FROM_HEAD"
+      }
+    },
+    {
+      "binding": {
+        "ref": "all-tests-20261008/implementation-semantic-recovery-contracts",
+        "path": "packages/shared/src/semantic-authoring.ts"
+      },
+      "currentSha256": "2071026700dd927f17f7d81d055db6e29a040e8e9cbbdc4a938dc50cc4000bc1",
+      "comparison": {
+        "schema": "sealgraph/source-compare/v1",
+        "ref": "all-tests-20261008/implementation-semantic-recovery-contracts",
+        "path": "packages/shared/src/semantic-authoring.ts",
+        "baseline": "HEAD",
+        "baseline_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "3730d5af7318ff6ee697ea7c57027a08fd4c26c77ef95e2bce1d4f7c430d5300"
+        },
+        "workfile_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "9eee0b9a60437b8745ed2a6ced681b4f1a5b70c1053457b6873a4f662a32ba6c",
+          "bytes": 21584
+        },
+        "relation": "WORKFILE_DIFFERS_FROM_HEAD"
+      }
+    },
+    {
+      "binding": {
+        "ref": "all-tests-20261008/implementation-semantic-recovery-execution-policy",
+        "path": "backend/src/services/semantic-authoring/execution-policy.ts"
+      },
+      "currentSha256": "9693736ed735375d7ffd6a9efb722a9bc729c8f3c584d6620456bf7fd31ebb6a",
+      "comparison": {
+        "schema": "sealgraph/source-compare/v1",
+        "ref": "all-tests-20261008/implementation-semantic-recovery-execution-policy",
+        "path": "backend/src/services/semantic-authoring/execution-policy.ts",
+        "baseline": "HEAD",
+        "baseline_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "295321b0cb3e1d2b9a736a1b2fb09ade44cdb3f742d1091a9e6c216287f1929e"
+        },
+        "workfile_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "99bc716990b0f7c4b11d808e37e7c4ed6d3bdc6d2f142cf0fcddb93f78d3f8d9",
+          "bytes": 2199
+        },
+        "relation": "WORKFILE_DIFFERS_FROM_HEAD"
+      }
+    }
+  ]
+}

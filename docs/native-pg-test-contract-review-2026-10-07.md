@@ -1,0 +1,17 @@
+# PostgreSQLのfence・採番・予約のテスト因果レビュー
+
+2026-10-07。元3全ファイル4ケース、全source/test byteを変更しない。Accepted0051 INHERITANCE/D01/D02/ACCEPTANCEを根拠にし、Superseded0050 D02/D08/D10/D12のruntime generation/fence、physical attempt/unknown budget、canonical-first独立実況とIDの継承範囲に限定する。Accepted0006 Decisionの先行canonical CAS・別narrator fence・順序付きreceipt/public event identityへ接続する。10/06のevent-allocationとreservation-isolation修正記録は同契約の実装修正であり外部許可を拡張しない。
+
+## whole-fileの証明範囲
+
+- battle-awareness-postgres 2件: actual native pg ClientとTEMP TABLEで、runtime initialization queryのowner/fence/未失効lease一致で1insert、不一致/同時刻expiry/missing leaseで0insert、conflictは既存byteを上書きしない。runtime_jsonのtoy JSONはopaque SQL textでAwarenessPipelineStateの意味的validityを証明しない。SQLのbigint/timestamptzとinteger/text parameterを独立bindingするhelperだけを確認する。
+- battle-awareness-narration-events-postgres 1件: ランダムなprivate schemaと最小event/retention tableで、old unlocked MAX controlがunique collisionすること、同battleのadvisory lock待機をpg_locksで実観測、commit後sequence2、他battleは待機中も進行、rollback後sequence1再利用、prune floor2からsequence3を確認。actual appendNarrationEventのpostgres branchを通す。全DB schema/migrations、SSE cursor/CloudTaskやfull app wiringは確認しない。
+- battle-awareness-narration-reservation-postgres 1件: native clientsでactual reserveNarrationAttemptInTransactionを通し、first reservationがruntime row lockを保持、secondがserver barrier待機後にbudget拒否、world fence7をnarrator fence3で上書きしない、old CASが予約を消せずfresh stateに残る、rollbackでbatch claimed保持、stale narrator fence拒否。world write部分はdirectSQLモデルで実engine writerではない。unknown maximumUsd nullのobserved policyであり価格閾値の証明ではない。batch3全体、全admission状態は別証拠。
+
+## 独立レビューと実行
+
+read-only independent reviewで元4casesとsource hashes、INSIDE型escape/accepted条項不一致なしを確認。nonnull query/client array fixture参照はsnapshot変換ではない。各testはloopbackとdatabase name kshiai_awareness_testをguardし、URLがなければskipする。そのskipを今回の成功に数えない。
+
+今日の既存抽出済みUbuntu PostgreSQL16.15 binaryを使い、新しい/tmp専用clusterをinitdb、127.0.0.1:15440・kshiai_awareness_testだけを準備した。既存cluster/system service/package/公開DB/credentialを変更しない。独立identity readback、actual4pass0fail0skip、finally pg_ctl fast stopとpg_ctl status exit3で停止を確認した。実PostgreSQL16のSQL/lock証拠であり、production Supabase/PostgreSQL17受入ではない。DB準備/実行8.55秒は別record、総review/register/readback計測に混ぜず範囲を明記する。
+
+standalone strictで3filesとimportを確認する。workspace typecheckは直前の作成単位の成功を再利用し、その後TypeScript source変更がない。正式gate・source/cause readback・以前1038heads保持・fsckを確認して封印単位を完了する。251filesと未封印停止を保持し、全体合格、公開完走、未決Owner承認に置き換えない。OUTSIDEはPG17/live/fullschema/whole privacy等の上記境界。BOUNDARY_DISPUTEなし。新たな規則やデータ移行を下位fixtureから導入しない。

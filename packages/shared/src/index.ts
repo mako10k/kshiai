@@ -1,3 +1,4 @@
+// R: Expose the shared domain contracts and deterministic logic to workspace consumers.
 export * from "./asset-visibility.js";
 export * from "./character.js";
 export * from "./character-improvement.js";
@@ -71,3 +72,10 @@ export * from "./awareness-narration-contract.js";
 
 export * from "./awareness-narration-source.js";
 export * from "./awareness-prompt-revision.js";
+
+export * from "./awareness-guidance.js";
+
+export * from "./battlefield-creation.js";
+
+export * from "./action-effort-policy.js";
+export * from "./battle-effort-perception.js";

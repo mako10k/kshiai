@@ -1,0 +1,14 @@
+{
+  "command": [
+    "npm",
+    "test"
+  ],
+  "exit": 1,
+  "elapsedSeconds": 0.182,
+  "previousElapsedSeconds": 54.324,
+  "sameUnmappedFiles": 53,
+  "speedupObserved": 297.9,
+  "authorityEvaluated": false,
+  "testsExecuted": false,
+  "scope": "Single before/after local failure-certain preflight measurement; source reviewed, new Seal publication in progress. No general performance guarantee."
+}

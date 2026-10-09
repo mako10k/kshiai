@@ -1,0 +1,86 @@
+{
+  "entries": [
+    {
+      "ref": "all-tests-20261007/implementation-current-focused-pending-read",
+      "path": "backend/src/services/character-focused-authoring.ts",
+      "sourceBytesMatch": true,
+      "sealId": "18a1252ed2bfa2773aa446b80e9779cab123dd9f7ea1088ead63714d92e3aa1c"
+    },
+    {
+      "ref": "all-tests-20261007/implementation-current-narration-draft-read",
+      "path": "backend/src/repositories/narration-style-assets-v2.ts",
+      "sourceBytesMatch": true,
+      "sealId": "480fa57d97ccda60a0e2406cbdadcba33373238a0e2ba935fe3544b19374f4bd"
+    },
+    {
+      "ref": "all-tests-20261007/implementation-current-six-draft-read-routes",
+      "path": "backend/src/routes.ts",
+      "sourceBytesMatch": true,
+      "sealId": "0374262c05d28dee5d6b67d599280434b2fe91e7c416c66cda9c7ef975114e9c"
+    },
+    {
+      "ref": "verification/authoring-read-purity-current-20261007",
+      "path": "backend/src/routes-authoring-read-purity.test.ts",
+      "sourceBytesMatch": true,
+      "sealId": "33c3815b246bd1ad28daccc940c45e880d90e53913ee745a5a0b7463a05879f9"
+    },
+    {
+      "ref": "all-tests-20261007/authority-conditional-event-alignment",
+      "path": "docs/adr/0046-align-conditional-contracts.think",
+      "sourceBytesMatch": true,
+      "sealId": "df1074f8d520f877ab0f1fb62633520c31da784118e1933cfaa5a1b3d409d577"
+    },
+    {
+      "ref": "all-tests-20261007/authority-observer-sensory-channels",
+      "path": "docs/adr/0023-pair-channels-are-not-unique-cognition.think",
+      "sourceBytesMatch": true,
+      "sealId": "09e78a830856b823afef86d311752163722c1c37c3c6b7c9b17a1da63649af21"
+    },
+    {
+      "ref": "all-tests-20261007/contract-turn-event-conditional-delivery",
+      "path": "packages/shared/src/battle.ts",
+      "sourceBytesMatch": true,
+      "sealId": "c75f415a640db0d2d69d8455e5b8eff530cdf43f7dde97bcebdb98b56ae087ad"
+    },
+    {
+      "ref": "all-tests-20261007/implementation-expression-causal-senses",
+      "path": "packages/shared/src/battle-causality.ts",
+      "sourceBytesMatch": true,
+      "sealId": "92323f1ce7d639dc1cb97e7fac7f2335c01849c5cabcb1f0d9e0a7d870cf0352"
+    },
+    {
+      "ref": "all-tests-20261007/implementation-expression-observer-projection",
+      "path": "packages/shared/src/perception-projection.ts",
+      "sourceBytesMatch": true,
+      "sealId": "aab43121b4eedb246691f7ea5f6071496074e760649ea9330dc550494a6830f1"
+    },
+    {
+      "ref": "all-tests-20261007/implementation-committed-utterance-perception",
+      "path": "packages/shared/src/utterance-perception.ts",
+      "sourceBytesMatch": true,
+      "sealId": "a6bf11b8b7f44ce01470acc41b8b93ac2f8aa84b08c9461ea2016e6795dbc912"
+    },
+    {
+      "ref": "verification/turn-event-contract-20261007",
+      "path": "packages/shared/src/turn-event-contract.test.ts",
+      "sourceBytesMatch": true,
+      "sealId": "1524247f80c8d87c492d44b5426b35d35598863123f8a2ffba30445dbe3d7f46"
+    },
+    {
+      "ref": "verification/utterance-perception-20261007",
+      "path": "packages/shared/src/utterance-perception.test.ts",
+      "sourceBytesMatch": true,
+      "sealId": "46682f88987e303b31ec67ec316f68ddbf2fa07a34bde181d4246e92c939155d"
+    }
+  ],
+  "prior755And759HeadsUnchanged": true,
+  "totalRefs": 767,
+  "fsck": {
+    "schema": "sealgraph/fsck/v2",
+    "result": "ok",
+    "refs": 767,
+    "seals": 1400,
+    "blobs": 4446
+  },
+  "scope": "Current pending draft read proof plus six expression delivery cases; no natural character creation completion or live battle quality evidence"
+}

@@ -1,0 +1,24 @@
+{
+  "reviewer": "/root/early_unsealed_review",
+  "verdict": "PASS",
+  "inside": [],
+  "outside": [
+    "Seal publication",
+    "All251 current authority and aggregate green",
+    "Public game/DB/provider"
+  ],
+  "boundaryDisputes": [],
+  "files": {
+    "scripts/test-authority.mjs": "969b5c17ca8467378cbc90c95f8baf0784f013ba73791bb204c57752a7f70e8e",
+    "scripts/test-authority-empty.test.mjs": "1c61ac3d490672ccca276be9d7c77b172a9181c602669f507ac48126c516c5af",
+    "scripts/test-authority.test.mjs": "1dd5102a8c3b342925798ff2b0a7fdf9a37a4ac85774e3ee683c94f81fb0a52a",
+    "docs/test-authority-early-unsealed-design-2026-10-08.md": "9583438a20f6147689f4708d67441ea915a990726eb3fefafb4bc37cea2aacdb"
+  },
+  "diagnostic": {
+    "pass": 19,
+    "fail": 0,
+    "skip": 0,
+    "proof": "docs/evidence/test-authority-early-unsealed-diagnostic-2026-10-08.tap"
+  },
+  "reason": "Failure-certain execution rejects all discovered unmapped paths before source binding/stale/show/compare; full inspection remains for list or no-unmapped. No classification counts invented."
+}

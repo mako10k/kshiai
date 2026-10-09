@@ -1,0 +1,48 @@
+{
+  "sources": [
+    {
+      "path": "packages/shared/src/battle-engine.ts",
+      "sha256": "c03ba6dff1f53ee4edaa86f21ceee74b82a307a993d875706da10400123c35f6"
+    },
+    {
+      "path": "packages/shared/src/battle-world.ts",
+      "sha256": "f612883f9e9adf9e4dcb799ede0ac827c866548b77b826c25b016b90686f35a7"
+    },
+    {
+      "path": "packages/shared/src/reposition-transition.ts",
+      "sha256": "0f33f0e62363e7097478f3981e0db2d471424c039c3baf79754cd4bcfe7f3f17"
+    },
+    {
+      "path": "packages/shared/src/reposition-transition.test.ts",
+      "sha256": "cdebe900e52b0975af0d7dd92218da084e348214e4e7382ccf09cdaeefe2809d"
+    },
+    {
+      "path": "packages/shared/src/structured-battlefield.ts",
+      "sha256": "d8fb37c1c5ef9957267e2b66673d8810be88f01fd9da5bc9fefab47ad0524b6e"
+    },
+    {
+      "path": "packages/shared/src/battlefield.ts",
+      "sha256": "13d20841ee041f60e17b393cdd255b562383e6419778dc0a81bcca77711c632a"
+    },
+    {
+      "path": "docs/adr/0020-reposition-and-appropriate-range.think",
+      "sha256": "05e0abd7b6f39a62e786a8da837ae0406eb464a131b8b1bd02fcfb1b4b1d7c7a"
+    },
+    {
+      "path": "docs/adr/0022-canonical-world-and-observer-cognition.think",
+      "sha256": "bc22073fcd623932c4380f4ddb75023c015322d67538e6d9aa7076d0f2b58f82"
+    }
+  ],
+  "beforeRepair": "docs/evidence/reposition-original-area-id-before-repair-2026-10-07.tap",
+  "diagnostic": {
+    "passed": 2,
+    "failed": 1,
+    "skipped": 0
+  },
+  "audit": "docs/evidence/reposition-original-area-id-rca-audit-2026-10-07.json",
+  "observed": "Frozen area IDs and unoccupied middle area are lost by label-derived initialization; strengthened first-hop test rejects missing third area.",
+  "scope": "Offline current initializer and one reposition fixture only",
+  "repairApplied": false,
+  "nextDiscriminatingRead": "Preserve canonical declared area IDs and explicit entry IDs, and inspect typed object/effect placement mapping for legal duplicate display names. Do not repair by deduplicating labels or silently selecting the first matching area.",
+  "existingBattles": "Preserve existing world state; existing legacy missing-world behavior requires separate compatibility check before mutation."
+}

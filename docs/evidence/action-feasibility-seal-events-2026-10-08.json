@@ -1,0 +1,76 @@
+[
+  {
+    "key": "design-action-feasibility-bounded",
+    "path": "docs/action-feasibility-test-contract-review-2026-10-08.md",
+    "parents": [
+      "requirements",
+      "range",
+      "world",
+      "world-design"
+    ],
+    "scope": "Observer-safe capabilities and canonical self-contained fallback sequence under Accepted F-BTL49-52/ADR20/22. Original14 cases, not cooldown arithmetic/new balance policy.",
+    "ref": "all-tests-20261008/design-action-feasibility-bounded",
+    "test": false,
+    "sha256": "c54623b2a350785c65498c0e0f96dc66741827aa6849101e15f8874a5411fe77",
+    "sealId": "e31edaaa16be36df2ac1b7a602b97f98dbdee7401785a5820956c04ba0932731",
+    "causeSealIds": [
+      "203e66fc4e30772adab026012c67f1b1ac4ca86ad2ada11b501c639a27a19eac",
+      "6efb5be6e2ddbb719f97bc5438544aaec79e985db691ba80e22e9a69934e220c",
+      "bbdf88f6e4a55ed11c978c75df29f590ddd1d99c7383eac1a9b26d54609c9031",
+      "75f897826d1b70f498a72cf58487f5fef17c791201ca5eee7515f80f7e495111"
+    ]
+  },
+  {
+    "key": "design-retained-action-feasibility",
+    "path": "docs/battle-action-feasibility.md",
+    "parents": [
+      "requirements",
+      "range",
+      "world"
+    ],
+    "scope": "Observer-safe capabilities and canonical self-contained fallback sequence under Accepted F-BTL49-52/ADR20/22. Original14 cases, not cooldown arithmetic/new balance policy.",
+    "ref": "all-tests-20261008/design-retained-action-feasibility",
+    "test": false,
+    "sha256": "d6b37eef3f08a9798dd011949a8881b27a270869e9459d123a288c449af3057b",
+    "sealId": "72fa34b01ecf5b9ecadb5d2cbe49a968650d4439b3bd76eee29462869dc26393",
+    "causeSealIds": [
+      "203e66fc4e30772adab026012c67f1b1ac4ca86ad2ada11b501c639a27a19eac",
+      "6efb5be6e2ddbb719f97bc5438544aaec79e985db691ba80e22e9a69934e220c",
+      "bbdf88f6e4a55ed11c978c75df29f590ddd1d99c7383eac1a9b26d54609c9031"
+    ]
+  },
+  {
+    "key": "implementation-action-feasibility-bounded",
+    "path": "packages/shared/src/action-feasibility.ts",
+    "parents": [
+      "design-action-feasibility-bounded",
+      "design-retained-action-feasibility",
+      "world-design"
+    ],
+    "scope": "Observer-safe capabilities and canonical self-contained fallback sequence under Accepted F-BTL49-52/ADR20/22. Original14 cases, not cooldown arithmetic/new balance policy.",
+    "ref": "all-tests-20261008/implementation-action-feasibility-bounded",
+    "test": false,
+    "sha256": "b36b1a126f1673c4c83ddc252b7ddca26a5c1454c209dce9b8c2a4b7c2fb607f",
+    "sealId": "a2587450446ea9744be156f1e61993df47e8e03433ba332fb646e50a456fe09b",
+    "causeSealIds": [
+      "e31edaaa16be36df2ac1b7a602b97f98dbdee7401785a5820956c04ba0932731",
+      "72fa34b01ecf5b9ecadb5d2cbe49a968650d4439b3bd76eee29462869dc26393",
+      "75f897826d1b70f498a72cf58487f5fef17c791201ca5eee7515f80f7e495111"
+    ]
+  },
+  {
+    "key": "action-feasibility-bounded-20261008",
+    "path": "packages/shared/src/action-feasibility.test.ts",
+    "parents": [
+      "implementation-action-feasibility-bounded"
+    ],
+    "scope": "Observer-safe capabilities and canonical self-contained fallback sequence under Accepted F-BTL49-52/ADR20/22. Original14 cases, not cooldown arithmetic/new balance policy.",
+    "ref": "verification/action-feasibility-bounded-20261008",
+    "test": true,
+    "sha256": "5e0ab7a50a339ed3e4a1e2986e17a1635edf2230b4f5a85551a5c30cd832102a",
+    "sealId": "9bc28c55d0c07c706c80fa52aa4a87a433c6c7102657d156db7162e3f838821a",
+    "causeSealIds": [
+      "a2587450446ea9744be156f1e61993df47e8e03433ba332fb646e50a456fe09b"
+    ]
+  }
+]

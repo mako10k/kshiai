@@ -1,0 +1,68 @@
+TAP version 13
+# Subtest: authenticated read-surface smoke
+    # Subtest: exercises the retained-data and screen-facing read endpoints
+    ok 1 - exercises the retained-data and screen-facing read endpoints
+      ---
+      duration_ms: 88.109405
+      type: 'test'
+      ...
+    # Subtest: fails with the endpoint identity when one screen read fails
+    ok 2 - fails with the endpoint identity when one screen read fails
+      ---
+      duration_ms: 6.908448
+      type: 'test'
+      ...
+    1..2
+ok 1 - authenticated read-surface smoke
+  ---
+  duration_ms: 97.549844
+  type: 'suite'
+  ...
+# [battles] advance stream start btl_auth_sse_ba33e12e-0001-4ba1-af12-dc5391c6099f
+# [battles] advance stream fail btl_auth_sse_ba33e12e-0001-4ba1-af12-dc5391c6099f 30ms BATTLE_FINISHED
+# Subtest: authenticated staged SSE smoke
+    # Subtest: streams a terminal error through actual routes, retains access checks and cleans state
+    ok 1 - streams a terminal error through actual routes, retains access checks and cleans state
+      ---
+      duration_ms: 102.055672
+      type: 'test'
+      ...
+    # Subtest: cleans the isolated fixture when the transport fails
+    ok 2 - cleans the isolated fixture when the transport fails
+      ---
+      duration_ms: 19.775601
+      type: 'test'
+      ...
+    # Subtest: rejects non-SSE responses rather than treating a JSON error as transport proof
+    ok 3 - rejects non-SSE responses rather than treating a JSON error as transport proof
+      ---
+      duration_ms: 20.333243
+      type: 'test'
+      ...
+    1..3
+ok 2 - authenticated staged SSE smoke
+  ---
+  duration_ms: 144.546613
+  type: 'suite'
+  ...
+# Subtest: reports one physical batch attempt and actual tokens without inventing prices or private content
+ok 3 - reports one physical batch attempt and actual tokens without inventing prices or private content
+  ---
+  duration_ms: 6.411592
+  type: 'test'
+  ...
+# Subtest: rejects missing runtime, outstanding execution, cross-battle rows and ledger mismatches
+ok 4 - rejects missing runtime, outstanding execution, cross-battle rows and ledger mismatches
+  ---
+  duration_ms: 4.547743
+  type: 'test'
+  ...
+1..4
+# tests 7
+# suites 2
+# pass 7
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 2090.148637

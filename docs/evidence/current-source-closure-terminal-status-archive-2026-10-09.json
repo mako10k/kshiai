@@ -1,0 +1,12 @@
+{
+  "schema": "kshiai/lossless-evidence-archive/v1",
+  "rawPath": "docs/evidence/current-source-closure-terminal-status-r3-2026-10-09.json",
+  "archivePath": "docs/evidence/current-source-closure-terminal-status-r3-2026-10-09.json.gz",
+  "rawBytes": 206776937,
+  "archiveBytes": 3028896,
+  "rawSha256": "2b441d448b8882b109fe11de91670024065d822f295bd9f154f02bcca1d11020",
+  "archiveSha256": "26b3c2bcf08cf864675dadc9a2c16182f9b0b03b8551dc5558bed557a8f72eb0",
+  "roundTripSha256": "2b441d448b8882b109fe11de91670024065d822f295bd9f154f02bcca1d11020",
+  "roundTripIdentical": true,
+  "rawDisposition": "Retained locally, excluded from Git addition because above GitHub file size limit; exact gzip archive is repository evidence."
+}

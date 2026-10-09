@@ -1,0 +1,280 @@
+{
+  "nodes": [
+    {
+      "key": "contract-migration-target-compilers",
+      "path": "packages/shared/src/character-definition-v3.ts",
+      "parents": [
+        "authority",
+        "wire"
+      ],
+      "scope": "Strict target V3 generation/definition, conscious guidance versus executable norms/fallback separation, compiler capability/deferred compatibility and pure compiler calls used in migration validation. Tested synthetic candidates only; no actual battle consumer delivery, natural profile validity or generated meaning proof.",
+      "ref": "all-tests-20261007/contract-migration-target-compilers",
+      "test": false,
+      "sha256": "aa6fd84424cf938c8d87bb8048e706d251cb8a5d576b7b1b23b6058d448daacf"
+    },
+    {
+      "key": "implementation-migration-repair-context",
+      "path": "backend/src/services/character-migration-context.ts",
+      "parents": [
+        "authority",
+        "wire",
+        "contract-migration-target-compilers",
+        "receipt"
+      ],
+      "scope": "Retained prompt identities1..4, strict V2 source decode, copied baseline, deterministic allocated IDs, registered source/target paths and union repair closure including proposed dependencies. Existing consumed identities retained. Scope is supplied fixtures, not arbitrary migration meaning preservation.",
+      "ref": "all-tests-20261007/implementation-migration-repair-context",
+      "test": false,
+      "sha256": "6e944fb5d153794261e5332718e0f72c05e4f62c86abf1fafa2cf73cbcffcd57"
+    },
+    {
+      "key": "implementation-migration-repair-diagnostics",
+      "path": "backend/src/services/character-migration-diagnostics.ts",
+      "parents": [
+        "authority",
+        "wire",
+        "implementation-migration-repair-context",
+        "contract-migration-target-compilers"
+      ],
+      "scope": "Review envelope and findings/path validation separate from semantic truth. Valid sibling findings survive malformed review; whole-envelope diagnostic paths confer no writes; rejected/invalid fragments are inspected without applying them. Scoped to supplied old responses and scripted fixtures.",
+      "ref": "all-tests-20261007/implementation-migration-repair-diagnostics",
+      "test": false,
+      "sha256": "e81d949870bf800532287212c1d75ddd1e37ce133f9ca2f71092ea88b58e08f1"
+    },
+    {
+      "key": "implementation-migration-repair-merge",
+      "path": "backend/src/services/character-migration-merge.ts",
+      "parents": [
+        "authority",
+        "implementation-migration-repair-context",
+        "implementation-migration-repair-diagnostics",
+        "wire"
+      ],
+      "scope": "Registered operation paths, declared repair scope, source-owned copy/move, retirement/defer, prior-version behavior and prompt-v4 fragment rejection; exact displaced-source archival and owner diff with no activation. Tested fixtures only; complete arbitrary operation interactions or capsule overflow matrix not certified.",
+      "ref": "all-tests-20261007/implementation-migration-repair-merge",
+      "test": false,
+      "sha256": "590167d42454f17c1bff94416ea20c0873d025321e7cd7eb84a01cb9d012fa0a"
+    },
+    {
+      "key": "implementation-migration-repair-deferred",
+      "path": "backend/src/services/character-migration-deferred.ts",
+      "parents": [
+        "authority",
+        "implementation-migration-repair-context",
+        "contract-migration-target-compilers"
+      ],
+      "scope": "Server field-to-consumer dependencies expand deferred obligations; an unrelated optional capability cannot evade a required field consumer. Tested optional defer and mismatch cases, not every registry dependency independently.",
+      "ref": "all-tests-20261007/implementation-migration-repair-deferred",
+      "test": false,
+      "sha256": "194efb62fec78039f5c4186759bf6b9283e49d11d4706763293357cc7eb9656d"
+    },
+    {
+      "key": "implementation-migration-repair-references",
+      "path": "backend/src/services/character-migration-references.ts",
+      "parents": [
+        "authority",
+        "implementation-migration-repair-context",
+        "contract-migration-target-compilers"
+      ],
+      "scope": "Name reference and source support IDs resolve to supplied candidate/frozen sources; collection IDs remain unique. Tested invented name/support reference rejection; no complete foreign-reference coverage or generated semantic truth certification.",
+      "ref": "all-tests-20261007/implementation-migration-repair-references",
+      "test": false,
+      "sha256": "8c6fa8e6c44d167328d85e9f4d56a6a8621e7517fd2bc32ae30795162c824fd5"
+    },
+    {
+      "key": "implementation-migration-repair-validation",
+      "path": "backend/src/services/character-migration-validation.ts",
+      "parents": [
+        "authority",
+        "implementation-migration-repair-merge",
+        "implementation-migration-repair-references",
+        "implementation-migration-repair-deferred",
+        "contract-migration-target-compilers"
+      ],
+      "scope": "Full candidate schema plus source coverage, IDs, frozen mechanics/catalog, fallback accounting, consumer/disclosure limits and compatibility. Retained prompt-v4 norm lineage and exact public-text per-leaf grants preserve older consumed behavior. Supplied local corpus only; no claim arbitrary semantic conclusions are deterministically provable.",
+      "ref": "all-tests-20261007/implementation-migration-repair-validation",
+      "test": false,
+      "sha256": "d7836b31b4a9fe84fd89bef142cb35bdd9379e5cfff959b3c378cf03ea13caab"
+    },
+    {
+      "key": "implementation-migration-repair-payload",
+      "path": "backend/src/services/character-migration-prompts.ts",
+      "parents": [
+        "authority",
+        "wire",
+        "projection",
+        "implementation-migration-repair-context",
+        "implementation-migration-repair-merge",
+        "implementation-migration-repair-diagnostics"
+      ],
+      "scope": "Frozen source, complete merged candidate, registered write/review scope, valid prior fragments, findings/causes/closure and full rereview payload. Retained prompt versions preserved; targetDefinitionSchema representation explicitly excluded from one historical input comparison, separately graph checked. No model obedience proof.",
+      "ref": "all-tests-20261007/implementation-migration-repair-payload",
+      "test": false,
+      "sha256": "b1cd78d1ba768002913388cefb60ec0a49ca15a446fa0eeaa1c0bca61af38c68"
+    },
+    {
+      "key": "implementation-migration-repair-ledger",
+      "path": "backend/src/repositories/character-semantic-migration.ts",
+      "parents": [
+        "authority",
+        "receipt",
+        "generation"
+      ],
+      "scope": "SQLite tests freeze/replay attempts, requests/receipts/events, initial and subsequent digests, six-request ceiling, natural source disclosure/digest, current pointer recheck, bounded capsule owner/consumer access. Minimal ledger source/target fixtures do not prove full V3 domain validity, PostgreSQL concurrency or owner activation/CAS workflows.",
+      "ref": "all-tests-20261007/implementation-migration-repair-ledger",
+      "test": false,
+      "sha256": "8a5ecc5380f5018c0c1753493e25420872e6750902ada34432392a9bf2c43efa"
+    },
+    {
+      "key": "implementation-migration-repair-readiness",
+      "path": "backend/src/repositories/character-migration-readiness.ts",
+      "parents": [
+        "authority",
+        "implementation-migration-repair-ledger"
+      ],
+      "scope": "Readiness and exact source generation are checked before every provider step. Test rejects unsupported source before scripted call and restores isolated state. No full production source eligibility acceptance.",
+      "ref": "all-tests-20261007/implementation-migration-repair-readiness",
+      "test": false,
+      "sha256": "841edfb163b9b63bc2ea57207ebacae98e3c9480219da1f7269c9c54337e22bc"
+    },
+    {
+      "key": "implementation-migration-repair-request-boundary",
+      "path": "backend/src/services/character-migration-requests.ts",
+      "parents": [
+        "authority",
+        "receipt",
+        "implementation-migration-repair-ledger",
+        "implementation-migration-repair-readiness",
+        "implementation-migration-repair-payload"
+      ],
+      "scope": "Record distinct request/digest before provider port, replay received receipts, retain pending ambiguous outcome without resend, persist observed receipt/accounting, never invent zero usage. Scripted provider and SQLite only; no real provider/transport acceptance.",
+      "ref": "all-tests-20261007/implementation-migration-repair-request-boundary",
+      "test": false,
+      "sha256": "621971836f819db2b6ad7570163dcbfe3984d3ffb22064fbaebb0f58fef5a56c"
+    },
+    {
+      "key": "implementation-migration-repair-orchestration",
+      "path": "backend/src/services/character-semantic-migration.ts",
+      "parents": [
+        "authority",
+        "implementation-migration-repair-request-boundary",
+        "implementation-migration-repair-merge",
+        "implementation-migration-repair-validation",
+        "implementation-migration-repair-diagnostics",
+        "implementation-migration-repair-payload",
+        "implementation-migration-repair-response-parser"
+      ],
+      "scope": "Retained bounded generation/review/repair service: whole candidate validation/review, up to two repairs/six requests, replay and pending/failure, preserved valid siblings, structural findings despite consistent model verdict, unverified prompt-v4 review concerns stop for owner review. No pointer activation or current focused-authoring route conformance claimed.",
+      "ref": "all-tests-20261007/implementation-migration-repair-orchestration",
+      "test": false,
+      "sha256": "8d1abface2e7ef8f63bab627c5b12098239d3c9493c497d51d5c2e8ac44dad05"
+    },
+    {
+      "key": "evidence-migration-repair-retained-corpus",
+      "path": "docs/evidence/migration-repair-retained-corpus-manifest-2026-10-07.json",
+      "parents": [
+        "authority"
+      ],
+      "scope": "Point-in-time hashes for all nineteen saved JSON inputs read by these two historical regression files. Bytes retained as data, not endorsed model claims or authority to rerun paid experiments. Hashes checked before and after sealing.",
+      "ref": "all-tests-20261007/evidence-migration-repair-retained-corpus",
+      "test": false,
+      "sha256": "8bba94d57739ea9532c3c73ca9be3f2f0d5f75acc3a65405b89cc37dcbf0b4a2"
+    },
+    {
+      "key": "migration-repair-diagnostics-current",
+      "path": "backend/src/services/character-migration-diagnostics.test.ts",
+      "parents": [
+        "authority",
+        "evidence-migration-repair-retained-corpus",
+        "implementation-migration-repair-context",
+        "implementation-migration-repair-diagnostics",
+        "implementation-migration-repair-merge",
+        "implementation-migration-repair-validation",
+        "implementation-migration-repair-payload"
+      ],
+      "scope": "Entire eight-case diagnostic file: retained prompt-v2 system and non-target-schema input/final draft reconstruction; valid finding retention without truth endorsement; diagnostic metadata paths versus write exclusion; malformed review never approved; rejected old-key fragments and exact source archival; registered review scope/unknown capability availability; strict mixed source-supported candidate. Input object casts replaced by runtime JSON-object decode. No live provider truth or target schema exact historical byte equality claim.",
+      "ref": "verification/migration-repair-diagnostics-current-20261007",
+      "test": true,
+      "sha256": "80abf4b61dc15dda60772af32a2e8a9b0fbe4d4b84594996750bbe40f54da0f1"
+    },
+    {
+      "key": "migration-repair-generation-current",
+      "path": "backend/src/services/character-semantic-migration.test.ts",
+      "parents": [
+        "authority",
+        "evidence-migration-repair-retained-corpus",
+        "implementation-migration-repair-orchestration",
+        "implementation-migration-repair-validation",
+        "implementation-migration-repair-merge",
+        "implementation-migration-repair-request-boundary",
+        "historical"
+      ],
+      "scope": "Entire twenty-five-case B5 file: saved six-response corpus/consumed behavior, prompt-v4 fragment and review-grounding isolation, full review and bounded repair, preservation/disclosure/lineage, valid sibling/replay, six distinct receipts, ambiguous pending no resend, failure/accounting, source readiness, unsupported capabilities, copy/move/retire/defer, nullable removal, references and source-free private synthesis. Scripted SQLite tests; no ordinary current authoring route, natural model quality, activation or live acceptance.",
+      "ref": "verification/migration-repair-generation-current-20261007",
+      "test": true,
+      "sha256": "5ed75343e6d0d7e5396d5ead8632612ebb30091abfb82fed2b96150490b1c079"
+    },
+    {
+      "key": "migration-repair-persistence-current",
+      "path": "backend/src/repositories/character-semantic-migration.test.ts",
+      "parents": [
+        "authority",
+        "implementation-migration-repair-ledger",
+        "receipt",
+        "historical"
+      ],
+      "scope": "Entire six-case SQLite ledger file: frozen exact attempt and pointer stability; unreceipted request replay and explicitly appended failed-request child; exact receipts/events; bounded restricted capsule owner read; six request ceiling; natural-source disclosure/digest rejection; drifted source pointer rejects later request. Minimal raw source/target fixture content is not full-domain V3 readiness proof, and explicit ledger retry is not automatic network resend.",
+      "ref": "verification/migration-repair-persistence-current-20261007",
+      "test": true,
+      "sha256": "6ff6ff9f2334abbfc5e3423dadcb4b67c0db36a624d4560fcb893e8fcd6c781d"
+    },
+    {
+      "key": "implementation-migration-repair-response-parser",
+      "path": "backend/src/services/character-migration-response.ts",
+      "parents": [
+        "authority",
+        "wire",
+        "implementation-migration-repair-merge"
+      ],
+      "scope": "Strict received change-set envelope with individual operation validation preserves structurally valid siblings and bounded target-specific invalid-operation findings; never substitutes arbitrary raw operation values into typed merge. Supplied partial-response/replay cases only, not arbitrary semantic truth or real model conformance.",
+      "ref": "all-tests-20261007/implementation-migration-repair-response-parser",
+      "test": false,
+      "sha256": "42fdc8820fe5586f18dde79372135b8dd23e64c7d7644bd6eac51bf125679d86"
+    }
+  ],
+  "seeds": {
+    "authority": "2fb9650ddebe867a978634fea432e65d0611085c8cb823c36a6d6f3f5eaa2962",
+    "wire": "2739cb30b70b34439e139c55e7a4bc9f1db254667ca72c17d1c8cb2c14f71024",
+    "projection": "9fbb20104c9c55a7ac4f0cecde7bd3d4a4ff897e37398abd404eee6b5e5472cc",
+    "receipt": "769ee08e85d6e207ac28f5c0c0118281387f7d1cd5fbe7d720b8fbab33f24583",
+    "historical": "9b3b176efd5f71b72166640ddc9b41af6f0b1a2786129ea8d10e43578fd6c297",
+    "generation": "edd5470e342cb4a99acba56c04e5cc6fcbd0f25dd04ebb26045b3b35c908db21"
+  },
+  "authority": [
+    "ADR0030 D2..D10/D13/ACCEPTANCE",
+    "ADR0046 D1 through current received-value branches"
+  ],
+  "canonicalRelatedTasks": [
+    "docs/character-semantic-migration.pert#cb203",
+    "docs/character-semantic-migration.pert#cb204",
+    "docs/character-semantic-migration.pert#cb205"
+  ],
+  "scope": "Three current whole migration service/diagnostic/ledger file refs replace diverged bindings. Retained route contracts and owner decisions preserved; no new paid execution or current focused-authoring acceptance inferred.",
+  "diagnostic": {
+    "pass": 39,
+    "fail": 0,
+    "skipped": 0,
+    "strictTypecheckExit": 0,
+    "workspaceTypecheckExit": 0
+  },
+  "limitations": [
+    "Three whole local historical migration files only",
+    "No live provider acceptance or full migration engine certification",
+    "Scripted provider and isolated SQLite only. Ledger raw fixture is not full target domain validity; initial historical input comparison excludes targetDefinitionSchema representation. Nineteen retained corpus hashes read back."
+  ],
+  "typeValidation": "docs/evidence/migration-repair-workspace-types-2026-10-07.log",
+  "caseCounts": {
+    "diagnostics": 8,
+    "generation": 25,
+    "persistence": 6
+  }
+}

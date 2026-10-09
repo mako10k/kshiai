@@ -1,0 +1,14 @@
+{
+  "verdict": "BOUNDARY_DISPUTE",
+  "sealBlocker": true,
+  "testPath": "backend/src/llm/fallback.test.ts",
+  "testSha256": "311c1031ccd2d204c38c572bc943aaf57be4af7c7402dbcc91114af1e2e604ed",
+  "authorityPath": "docs/requirements.md",
+  "authoritySha256": "db31cba32bace76de756e0a2ccb1702e133dc365f8dc8edbadf23d273c2698ad",
+  "clause": "F-CFG-05",
+  "conflict": "requirement includes rate limits, existing implementation/tests make429terminal",
+  "previousPassSuperseded": true,
+  "scope": "all6cases preserved, no runtime/requirement changes",
+  "reviewer": "/root/battle_helper_contract_review",
+  "detailPath": "docs/fallback-authority-conflict-2026-10-08.md"
+}

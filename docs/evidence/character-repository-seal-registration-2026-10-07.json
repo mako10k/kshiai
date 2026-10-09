@@ -1,0 +1,236 @@
+{
+  "scope": "Current V3 repository activation and historical V2 reader invariants only",
+  "review": "docs/evidence/character-repository-cause-review-2026-10-07.json",
+  "entries": [
+    {
+      "key": "authority-character-review-invariants",
+      "path": "docs/adr/0011-structured-character-definition.md",
+      "parents": [],
+      "scope": "Accepted authoring/upgrade hold clauses only: owner scope, candidate digest, expiry, exactly one immutable activation. V2 ordinary writing and old runtime psyche requirements superseded; do not adopt those clauses.",
+      "test": false,
+      "ref": "all-tests-20261007/authority-character-review-invariants",
+      "sha256": "60611d35bd03be6e8ee37e855841b7d6f857198abdbbf7bb4f3bd2f72fb0d31d",
+      "sealId": "51b88502ce6cf07710e956c6d10f128b83233b93d97309ce392a37a631be3dba",
+      "causeSealIds": []
+    },
+    {
+      "key": "design-character-review-invariants",
+      "path": "docs/structured-character-definition-design.md",
+      "parents": [
+        "authority-selectable-envelope",
+        "authority-v3-writes",
+        "authority-character-review-invariants",
+        "design-selectable-envelope"
+      ],
+      "scope": "Authoring confirmation hold and immutable portrait media history only; version admission follows ADR-0043. No revival of legacy model or V2 writer routes.",
+      "test": false,
+      "ref": "all-tests-20261007/design-character-review-invariants",
+      "sha256": "c9f29ee63121aa8ffa65f7270f11c56ac46ebc1a80309d8b37bc110b5486e6a0",
+      "sealId": "d9e29249c9599e07cf250fafe549dba47f5601e94681bfee1d81d9e43dd0cd3f",
+      "causeSealIds": [
+        "fdaeaeb9f3694421a8776649f58ec4e89962ae6f95fc3249b8ca4b6a93b6e3ed",
+        "480c02403f61dc6a9cd7d54861639b962dbc3bde86673481e02e0defc8415e17",
+        "51b88502ce6cf07710e956c6d10f128b83233b93d97309ce392a37a631be3dba",
+        "a1e2179abb3dfcf09dd5104e3e38a6a7901c49e86604c37411b6989e6ee99366"
+      ]
+    },
+    {
+      "key": "contract-character-v3-envelope",
+      "path": "packages/shared/src/character-definition-v3.ts",
+      "parents": [
+        "authority-selectable-envelope",
+        "authority-v3-writes",
+        "contract-selectable-envelope"
+      ],
+      "scope": "Only valid V3 envelope parsing/readiness for current writes and historical compatibility reads exercised by this repository cohort; no full consciousness projection claim.",
+      "test": false,
+      "ref": "all-tests-20261007/contract-character-v3-envelope",
+      "sha256": "aa6fd84424cf938c8d87bb8048e706d251cb8a5d576b7b1b23b6058d448daacf",
+      "sealId": "256c436664b69e1d7ddcc50f818d90173bbaf402b3b9bd322dd96c3d150771db",
+      "causeSealIds": [
+        "fdaeaeb9f3694421a8776649f58ec4e89962ae6f95fc3249b8ca4b6a93b6e3ed",
+        "480c02403f61dc6a9cd7d54861639b962dbc3bde86673481e02e0defc8415e17",
+        "5a84c8424772e34504daf62f2737bb29646a8762a07c26db984696686be56e3c"
+      ]
+    },
+    {
+      "key": "fixture-v3-character-envelope",
+      "path": "backend/src/testing/v3-character-envelope-fixture.ts",
+      "parents": [
+        "authority-v3-writes",
+        "contract-character-v3-envelope"
+      ],
+      "scope": "Internal validated synthetic V3 envelopes only; empty guidance and norms are fixture data, not delivered authoring or character naturalness.",
+      "test": false,
+      "ref": "all-tests-20261007/fixture-v3-character-envelope",
+      "sha256": "c3eff395a23dc3ee82cee6a5a20d1525ee2fb2984ce28bc24f1d2cc61e420c57",
+      "sealId": "c8b0ffded33bafbc8743d8b941fa6a3be202f7abf2f52f02b6ff8abd0bca9de1",
+      "causeSealIds": [
+        "480c02403f61dc6a9cd7d54861639b962dbc3bde86673481e02e0defc8415e17",
+        "256c436664b69e1d7ddcc50f818d90173bbaf402b3b9bd322dd96c3d150771db"
+      ]
+    },
+    {
+      "key": "implementation-character-repository-activation",
+      "path": "backend/src/repositories/character-assets-v2.ts",
+      "parents": [
+        "authority-selectable-envelope",
+        "authority-v3-writes",
+        "authority-character-review-invariants",
+        "design-character-review-invariants",
+        "contract-character-v3-envelope",
+        "implementation-selectable-generation-storage"
+      ],
+      "scope": "Only explicit V3 target attempt/candidate/activation, digest rejection, idempotent replay, expiry/discard, CAS rollback, internal immutable portrait revision/toggle, unavailable restore and historical V2 read eligibility. No focused LLM generation or public portrait-route acceptance.",
+      "test": false,
+      "ref": "all-tests-20261007/implementation-character-repository-activation",
+      "sha256": "4a9f1360a3197fb2971acc6612a2328d33f41fe23d832927ac445ba0992c27a1",
+      "sealId": "6fc9de4333a04acce3cde69962c8e70cff20999112df9ef4959ad23d19164b2f",
+      "causeSealIds": [
+        "fdaeaeb9f3694421a8776649f58ec4e89962ae6f95fc3249b8ca4b6a93b6e3ed",
+        "480c02403f61dc6a9cd7d54861639b962dbc3bde86673481e02e0defc8415e17",
+        "51b88502ce6cf07710e956c6d10f128b83233b93d97309ce392a37a631be3dba",
+        "d9e29249c9599e07cf250fafe549dba47f5601e94681bfee1d81d9e43dd0cd3f",
+        "256c436664b69e1d7ddcc50f818d90173bbaf402b3b9bd322dd96c3d150771db",
+        "edd5470e342cb4a99acba56c04e5cc6fcbd0f25dd04ebb26045b3b35c908db21"
+      ]
+    },
+    {
+      "key": "implementation-character-repository-management",
+      "path": "backend/src/repositories/characters.ts",
+      "parents": [
+        "authority-selectable-envelope",
+        "authority-v3-writes",
+        "implementation-character-repository-activation"
+      ],
+      "scope": "Only owner management compatibility/read flags and portrait history view asserted by this cohort; public API routes and broad character writer behavior are not certified.",
+      "test": false,
+      "ref": "all-tests-20261007/implementation-character-repository-management",
+      "sha256": "3ea23344eefe964550f2a775beda786cff5bb03512444c14d38ce6d9839335ce",
+      "sealId": "71996ab40a982d193b1ee3b49152b47e53ac9175650065a896ac263107529471",
+      "causeSealIds": [
+        "fdaeaeb9f3694421a8776649f58ec4e89962ae6f95fc3249b8ca4b6a93b6e3ed",
+        "480c02403f61dc6a9cd7d54861639b962dbc3bde86673481e02e0defc8415e17",
+        "6fc9de4333a04acce3cde69962c8e70cff20999112df9ef4959ad23d19164b2f"
+      ]
+    },
+    {
+      "key": "character-assets-repository",
+      "path": "backend/src/repositories/character-assets-v2.test.ts",
+      "parents": [
+        "authority-selectable-envelope",
+        "authority-v3-writes",
+        "authority-character-review-invariants",
+        "design-character-review-invariants",
+        "contract-character-v3-envelope",
+        "fixture-v3-character-envelope",
+        "implementation-character-repository-activation",
+        "implementation-character-repository-management"
+      ],
+      "scope": "Six local repository tests mapped individually in review; no paid provider, public deployment, V2 runtime writer or broad focused-authoring acceptance.",
+      "test": true,
+      "ref": "verification/character-assets-repository-20261007",
+      "sha256": "1f5b846b59218d4792907f01bec524ffcf54f5c80c614e2a74514219023d0c57",
+      "sealId": "4d33938f8494654cc3ec9f0fa0bff4e60bc242bc5961d348b381a5ca2c0cae42",
+      "causeSealIds": [
+        "fdaeaeb9f3694421a8776649f58ec4e89962ae6f95fc3249b8ca4b6a93b6e3ed",
+        "480c02403f61dc6a9cd7d54861639b962dbc3bde86673481e02e0defc8415e17",
+        "51b88502ce6cf07710e956c6d10f128b83233b93d97309ce392a37a631be3dba",
+        "d9e29249c9599e07cf250fafe549dba47f5601e94681bfee1d81d9e43dd0cd3f",
+        "256c436664b69e1d7ddcc50f818d90173bbaf402b3b9bd322dd96c3d150771db",
+        "c8b0ffded33bafbc8743d8b941fa6a3be202f7abf2f52f02b6ff8abd0bca9de1",
+        "6fc9de4333a04acce3cde69962c8e70cff20999112df9ef4959ad23d19164b2f",
+        "71996ab40a982d193b1ee3b49152b47e53ac9175650065a896ac263107529471"
+      ]
+    }
+  ],
+  "existingUpstreamSeals": [
+    {
+      "key": "authority-selectable-envelope",
+      "path": "docs/adr/0010-structured-selectable-asset-envelope.md",
+      "parents": [],
+      "scope": "Accepted common generation identity, readiness, disclosure and read-only binding. Historical R3 cutover clauses are excluded from this cohort.",
+      "ref": "all-tests-20261007/authority-selectable-envelope",
+      "test": false,
+      "sha256": "52cb39bf97e85b85115a9182ebf6854e8d9babc1253916adb8bef0c90970530f",
+      "sealId": "fdaeaeb9f3694421a8776649f58ec4e89962ae6f95fc3249b8ca4b6a93b6e3ed",
+      "causeSealIds": []
+    },
+    {
+      "key": "design-selectable-envelope",
+      "path": "docs/structured-asset-envelope-design.md",
+      "parents": [
+        "authority-selectable-envelope",
+        "authority-authoring-review"
+      ],
+      "scope": "Immutable generation/CAS/disclosure invariants; subsequent ADR0014 owner hold governs activation timing.",
+      "ref": "all-tests-20261007/design-selectable-envelope",
+      "test": false,
+      "sha256": "33dc428d719782e8f54b7cdc6e34cf48e8412dcfcec3022a0d29a8bf4d2ae1b0",
+      "sealId": "a1e2179abb3dfcf09dd5104e3e38a6a7901c49e86604c37411b6989e6ee99366",
+      "causeSealIds": [
+        "811d0305e67ce73b5902135bb8662e7ee31e6efaf98852b0ad5de8d1f0c15007",
+        "fdaeaeb9f3694421a8776649f58ec4e89962ae6f95fc3249b8ca4b6a93b6e3ed"
+      ]
+    },
+    {
+      "key": "contract-selectable-envelope",
+      "path": "packages/shared/src/structured-assets.ts",
+      "parents": [
+        "authority-selectable-envelope",
+        "design-selectable-envelope"
+      ],
+      "scope": "Typed envelope, disclosure, claim receipt and registered compiler contracts used by battlefield readiness.",
+      "ref": "all-tests-20261007/contract-selectable-envelope",
+      "test": false,
+      "sha256": "088c275e0d54a26be21451a23d5a6376ca7bf342e664d4b4370443e51643883c",
+      "sealId": "5a84c8424772e34504daf62f2737bb29646a8762a07c26db984696686be56e3c",
+      "causeSealIds": [
+        "a1e2179abb3dfcf09dd5104e3e38a6a7901c49e86604c37411b6989e6ee99366",
+        "fdaeaeb9f3694421a8776649f58ec4e89962ae6f95fc3249b8ca4b6a93b6e3ed"
+      ]
+    },
+    {
+      "key": "implementation-selectable-generation-storage",
+      "path": "backend/src/repositories/asset-generations.ts",
+      "parents": [
+        "authority-selectable-envelope",
+        "design-selectable-envelope",
+        "v3"
+      ],
+      "scope": "Immutable append/current pointer/CAS and current V3 character guard, not every asset API behavior.",
+      "ref": "all-tests-20261007/implementation-selectable-generation-storage",
+      "test": false,
+      "sha256": "09e98c31f676bc8f30ae5bc53d70a0126b728d3990862bd6d28f2b48a74c4a34",
+      "sealId": "edd5470e342cb4a99acba56c04e5cc6fcbd0f25dd04ebb26045b3b35c908db21",
+      "causeSealIds": [
+        "480c02403f61dc6a9cd7d54861639b962dbc3bde86673481e02e0defc8415e17",
+        "a1e2179abb3dfcf09dd5104e3e38a6a7901c49e86604c37411b6989e6ee99366",
+        "fdaeaeb9f3694421a8776649f58ec4e89962ae6f95fc3249b8ca4b6a93b6e3ed"
+      ]
+    },
+    {
+      "ref": "all-tests-20261007/authority-v3-writes",
+      "path": "docs/adr/0043-v3-character-updates-with-historical-v2-display.md",
+      "sealId": "480c02403f61dc6a9cd7d54861639b962dbc3bde86673481e02e0defc8415e17",
+      "sha256": "d9e93ca090771b38167e0c2d0189ec792cbf88d807a85272097f9a7cb5f82a44",
+      "causeSealIds": [
+        "a1c688a46b255e61a935098665e31e0e6f368cc259b72b0b81d87a4ec1552c3a"
+      ]
+    }
+  ],
+  "diagnostic": {
+    "passed": 6,
+    "failed": 0,
+    "skipped": 0,
+    "strictTypecheckExit": 0
+  },
+  "readback": {
+    "totalRefs": 616,
+    "newRefs": 7,
+    "sourcesMatch": true,
+    "stale": 0,
+    "previousHeadsChanged": 0,
+    "fsck": "ok"
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "planSha256": "239a2008d5497391e58903ede00b8bc8edc4feed88385af1e9aeae3e0ba7edf8",
+  "nodes": [
+    {
+      "ref": "all-tests-20261009/readback/reviewed-source-closure-plan-r3",
+      "sealId": "ed21b581503ea3f3aac63793edf12a98b3a532f2df8e61d8f016cd8f02b821c8",
+      "sourceSha256": "d00d95d149ac0cdda4177d7b4cd30422731f98bfb5f011cc965ea63cf07f65fa",
+      "causeSealIds": [
+        "cbd69b1da11de1854532c6f3e38b8f7496e79b6e6afb3efb6f4ca40bd3505223",
+        "214dad6f51c26770d5acc145acfc01f9d69bf15eeab57ccefdb7fa080ad4a6e4",
+        "dbbeca8b373693d7c2e6a5d3e829d0c39c37b335ef1082eec22703f062516915",
+        "482a422f2b14004e75fed8c5503875f83fbce05528dd43d869f6cb0a48933f93"
+      ],
+      "sourceMatch": true,
+      "root": false,
+      "draft": false
+    },
+    {
+      "ref": "all-tests-20261009/readback/verifier-source-r3",
+      "sealId": "d9caba0cadb8918a7b6f97230bfbe0e7a30d45451489f1bee6d91742d272539a",
+      "sourceSha256": "00c20ba0e252949a5ed562326a96243a0c2f49294b4837094819ed8993db58ae",
+      "causeSealIds": [
+        "ed21b581503ea3f3aac63793edf12a98b3a532f2df8e61d8f016cd8f02b821c8"
+      ],
+      "sourceMatch": true,
+      "root": false,
+      "draft": false
+    }
+  ],
+  "priorHeadsUnchanged": true
+}

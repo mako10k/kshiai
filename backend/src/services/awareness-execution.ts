@@ -1,3 +1,4 @@
+import type { SelfActionEffortPerceptionV1 } from "@kshiai/shared";
 import { applyAwarenessTickBoundary, assertAwarenessTickLimit, hasAwarenessExpiry, shouldStartAwarenessThought } from "./awareness-execution-boundary.js";
 import { verifyAwarenessExecutionProof as verifyProof } from "./awareness-execution-admission.js";
 // R: Orchestrate durable subjective tick preparation through bounded storage and model ports.
@@ -8,6 +9,7 @@ import {
   AwarenessCancelGeneration, AwarenessConsumeMailbox, AwarenessExpireDesires,
   AwarenessSelectDesires, AwarenessStartConsciousJob,
   AwarenessConsciousInputSchema, AwarenessLatentInputSchema,
+  AwarenessConsciousGuidanceSchema, appendAwarenessConsciousGuidance, type AwarenessConsciousGuidance,
   type AwarenessConsciousInput, type AwarenessConsciousOutput,
   type AwarenessLatentInput, type AwarenessLatentOutput, type AwarenessPipelineState,
 } from "@kshiai/shared";
@@ -16,8 +18,11 @@ import type { BattleLeaseFence } from "./distributed-guard.js";
 
 export type AwarenessExecutionContext = Pick<AwarenessLatentInput,
   "character" | "characteristics" | "training" | "availableActions" | "facts" | "perception"> & {
+  /** Required current seam; null identifies an explicitly historical effort contract. */
+  actionEffort: SelfActionEffortPerceptionV1 | null;
   stimuli: AwarenessLatentInput["stimuli"];
   consciousCharacteristics: string[];
+  consciousGuidance: AwarenessConsciousGuidance;
   consciousTraining: string[];
   receivedSpeech: boolean;
   intentCompleted: boolean;
@@ -125,11 +130,12 @@ export function createAwarenessExecution(ports: Ports): { prepareTick(input: Awa
       : state);
   }
 
-  function privateContext(context: AwarenessExecutionContext, conscious = false) {
+  function privateContext(context: AwarenessExecutionContext, conscious = false): Pick<AwarenessConsciousInput,
+    "character" | "characteristics" | "training" | "availableActions" | "facts" | "perception" | "actionEffort"> {
     return { character: context.character,
-      characteristics: conscious ? context.consciousCharacteristics : context.characteristics,
+      characteristics: conscious ? appendAwarenessConsciousGuidance(context.consciousCharacteristics, context.consciousGuidance) : context.characteristics,
       training: conscious ? context.consciousTraining : context.training,
-      availableActions: context.availableActions, facts: context.facts, perception: context.perception };
+      availableActions: context.availableActions, facts: context.facts, perception: context.perception, actionEffort: context.actionEffort };
   }
 
   async function reserve(input: AwarenessPrepareTickInput, id: string, role: "subconscious" | "conscious", proof: AwarenessDispatchProof) {
@@ -147,8 +153,9 @@ export function createAwarenessExecution(ports: Ports): { prepareTick(input: Awa
     const current = await storage.read(input.battleId);
     const state = current.runtime.sides[side];
     if (!shouldStartAwarenessThought(current.runtime, side, input.tick)) return;
-    const frozen = AwarenessConsciousInputSchema.parse({ ...privateContext(input.sides[side], true), side, sourceTick: input.tick,
-      feltProjection: state.latent.feltProjection, consciousState: state.conscious });
+    const payload: AwarenessConsciousInput = { ...privateContext(input.sides[side], true), side, sourceTick: input.tick,
+      feltProjection: state.latent.feltProjection, consciousState: state.conscious };
+    const frozen = AwarenessConsciousInputSchema.parse(payload);
     const proof = verifyProof(await admission.verify({ role: "conscious", input: frozen }), current.runtime.policy, "conscious");
     const id = `${input.battleId}:thought:${side}:${state.generation + 1}:${input.tick}`;
     await reserve(input, id, "conscious", proof);
@@ -191,8 +198,9 @@ export function createAwarenessExecution(ports: Ports): { prepareTick(input: Awa
       state.execution.perceptionRevision !== context.perception.revision ||
       input.tick - state.latent.updatedTick >= current.runtime.policy.latentReassessmentTicks;
     if (!required) return;
-    const frame = AwarenessLatentInputSchema.parse({ ...privateContext(context), side, tick: input.tick,
-      currentState: state.latent, stimuli: context.stimuli, influences: mailbox.map((entry) => entry.influence) });
+    const payload: AwarenessLatentInput = { ...privateContext(context), side, tick: input.tick,
+      currentState: state.latent, stimuli: context.stimuli, influences: mailbox.map((entry) => entry.influence) };
+    const frame = AwarenessLatentInputSchema.parse(payload);
     const proof = verifyProof(await admission.verify({ role: "subconscious", input: frame }), current.runtime.policy, "subconscious");
     const id = `${input.battleId}:latent:${side}:${input.tick}`;
     await reserve(input, id, "subconscious", proof);
@@ -241,6 +249,8 @@ export function createAwarenessExecution(ports: Ports): { prepareTick(input: Awa
       return prepared(snapshot, input.tick, false);
     }
     try {
+      AwarenessConsciousGuidanceSchema.parse(input.sides.a.consciousGuidance);
+      AwarenessConsciousGuidanceSchema.parse(input.sides.b.consciousGuidance);
       assertAwarenessTickLimit(snapshot.runtime, input.tick, () => clock.now());
       if (snapshot.runtime.lastCommittedAt !== null && input.tick !== snapshot.runtime.preparedTick &&
           clock.now() - snapshot.runtime.lastCommittedAt < snapshot.runtime.policy.minTickIntervalMs) {

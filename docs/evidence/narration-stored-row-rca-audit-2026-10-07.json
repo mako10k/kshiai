@@ -1,0 +1,95 @@
+{
+  "thought_id": "docs-evidence-narration-stored-row-rca-2026-10-07",
+  "id_source": "file",
+  "report": {
+    "engine_version": "0.1.0",
+    "document_id": "docs-evidence-narration-stored-row-rca-2026-10-07",
+    "generated_at": "2026-10-07T05:14:21.334Z",
+    "summary": {
+      "fatal_count": 0,
+      "error_count": 0,
+      "warning_count": 0,
+      "info_count": 0,
+      "hint_count": 3
+    },
+    "results": [
+      {
+        "issue_id": "ISSUE-001",
+        "category": "contradiction_candidate",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "D1",
+            "role": "decision",
+            "step_id": "S-D1"
+          },
+          {
+            "ref_id": "D2",
+            "role": "decision",
+            "step_id": "S-D2"
+          }
+        ],
+        "message": "D1 と D2 は同一根拠 E3 を共有しており、緊張関係にある可能性がある。",
+        "rationale": "複数の decision が同じ based_on 参照を共有しているため、観点と結論の整合性を再確認するべきである。",
+        "metadata": {
+          "shared_refs": [
+            "E3"
+          ],
+          "line": 24,
+          "column": 10,
+          "end_column": 12
+        }
+      },
+      {
+        "issue_id": "ISSUE-002",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "P1",
+            "role": "problem"
+          }
+        ],
+        "message": "problem P1 は block text が 1 行のみであり、quoted line に簡略化できる。",
+        "rationale": "block text は複数行本文や quote を避けたい本文に寄せると、短文との読み分けが安定する。",
+        "suggestion": "1 行本文で足りるなら quoted line を使う。",
+        "metadata": {
+          "line": 4,
+          "column": 3,
+          "end_column": 4,
+          "text": "Preserve valid narration confirmation and replay while rejecting corrupt stored styles.",
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "短い本文は quoted line を使う。\n例:\nproblem P1:\n  \"短い本文\""
+        }
+      },
+      {
+        "issue_id": "ISSUE-003",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "D1",
+            "role": "decision",
+            "step_id": "S-D1"
+          },
+          {
+            "ref_id": "D2",
+            "role": "decision",
+            "step_id": "S-D2"
+          }
+        ],
+        "message": "D1 と D2 は意味的に近接している可能性がある。",
+        "metadata": {
+          "line": 24,
+          "column": 10,
+          "end_column": 12,
+          "similarity": 0.5952,
+          "semantic_distance": 0.4048,
+          "embedding_provider": "ollama",
+          "embedding_model": "nomic-embed-text"
+        }
+      }
+    ],
+    "query_results": []
+  }
+}

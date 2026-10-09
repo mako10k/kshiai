@@ -1,0 +1,13 @@
+{
+  "file": "backend/src/repositories/battles-improvement.test.ts",
+  "sha256": "f570216761031d2b12be725c3162578c9d65b2d08932d551f234c69c3c483903",
+  "originalCases": 4,
+  "casesNow": 4,
+  "preservedAssertions": true,
+  "repair": "Separate raw invalid persisted fixture via object spread; NaN invalid number needs no authoritative type cast",
+  "productionChanged": false,
+  "diagnostic": "docs/evidence/repository-cohort-diagnostic-2026-10-08.tap",
+  "pass": 11,
+  "fail": 0,
+  "skip": 0
+}

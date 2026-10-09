@@ -1,0 +1,11 @@
+# 未登録テストの先行停止 — 実行順序の改善
+
+根拠はAccepted ADR0058の「検出した時点でテスト実行前に失敗」「unit/e2e」「停止対象パス・理由」、継承されたADR0034のSeal/ソース/Cause/stale条件、Accepted ADR0036のdraft分類。新しい適格性・例外・成功条件を採用しない。
+
+現行の公式selectorは、discoverとmappingの比較で未登録が分かる場合も、全mappingのsource bind・stale scan・show/source compareを先に実行する。未登録が一つでもある場合は結果が失敗と確定しており、これらの照会は実行許可には寄与しない。
+
+実行モードでは、inventory構造検査と全対象ファイルのdiscover後、mappingのないパスを抽出し、既存requireSealedTestsへ渡して先にexit1とする。表示はTEST_PREFLIGHT unsealed=<件数> authority_evaluated=falseと停止パス/理由。まだ評価していないactive/provisional/disabled件数を捏造しない。未登録なしなら従来どおり全Seal照会・分類・missing_ref停止・zeroactive拒否・実行を行う。--listは従来どおり全照会と全件分類を返す。判断結果・データ削除・mapping追加・キャッシュ・Seal自動昇格は変更しない。
+
+検証は原selector9ケースと原execution gate6ケース/全assertionを保持し、専用一時rootへ実driverとruntime依存3ファイルをコピーして実CLIを起動する。unit/e2eの未登録はSealGraph不在PATHでもパスを報告してexit1し、SealGraph呼出失敗より先に停止する。--listと未登録なしの実行はSealGraph不在PATHでENOENTになり、先行停止が照会を省略するのは失敗確定時だけと確認する。実repoでも変更前後の公式失敗ゲート経過秒を記録する。現行--listによる分類の完全読取りは1回にまとめる。
+
+レビュー境界: 現フェーズはADR0058等との意味一致、実主経路の検証、原ケース保持、Source/Cause再Seal。全251ファイルの成立・全体合格は未達であり、この高速化の成功に置き換えない。公開ゲーム/DB/providerには変更・呼出なし。

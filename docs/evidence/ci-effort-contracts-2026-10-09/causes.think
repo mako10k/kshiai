@@ -1,0 +1,16 @@
+domain CI_REPAIR:
+  description "CI run37773665037 bounded repair findings"
+problem P1:
+  "Owner asks to repair CI before continuing sealing."
+evidence E1:
+  "GitHub failed log saved /tmp/kshiai-ci-failed-37773665037.log: validate lint fails Lizard count130 versus121 and totalExcess1463 versus1369; build/typecheck completed. Security audit rejects sharp advisory1241331."
+evidence E2:
+  "Current npm audit /tmp/kshiai-ci-audit.json identifies sharp less than0.35.5, inherited from miniflare, fixAvailable true. Root lock records sharp0.35.4. Maintainer advisory GHSA-wq5f-xc86-pv6w identifies patched0.35.5."
+evidence E3:
+  "Previous local formal npm test stops before execution with four unsealed files. Publication checkpoint178/244 nodes and unresolved STA/penalty quantities remain. This CI log does not show npm test success."
+premise UNKNOWN:
+  "Historical development-time detection mechanism and vulnerability runtime exploitability are unproven. Exact responsible complexity functions require current versus prior baseline measurement. No gate suppression or adoption of pending game numbers follows from CI repair."
+decision D1 based_on P1,E1,E2,UNKNOWN:
+  "Resolve dependency to maintainer-patched sharp via minimal audited override if its parent pins vulnerable release. Reduce measured excess complexity through responsibility-specific extraction without raising baseline or removing tests; compare function metrics first."
+decision D2 based_on E3,UNKNOWN:
+  "CI whole-pass cannot be claimed until required sealing and adopted contracts are satisfied. Collect owner quantity decisions separately and retain unsealed early stop."

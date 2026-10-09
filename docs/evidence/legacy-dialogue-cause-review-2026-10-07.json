@@ -1,0 +1,217 @@
+{
+  "nodes": [
+    {
+      "key": "authority-dialogue-activation",
+      "path": "docs/adr/0018-dialogue-context-activation-authority.think",
+      "parents": [],
+      "scope": "Accepted canonical ADR0018 activation receipts/immutable source provenance and existing receipt compatibility. No Stage override, setting write or deployment authorized by this test root.",
+      "ref": "all-tests-20261007/authority-dialogue-activation",
+      "test": false,
+      "sha256": "88606f8aec68c546a965361c6ab47903a4514a7d750ad6443c7653175b40884a"
+    },
+    {
+      "key": "authority-separated-compact-expression",
+      "path": "docs/adr/0025-expression-state-and-utterance-actuals.think",
+      "parents": [],
+      "scope": "Accepted ADR0025 separated semantic state/history/nextUtterance and old-processing compatibility. Current decoder/helper tests only; no new lifecycle identity or runtime repetition critic.",
+      "ref": "all-tests-20261007/authority-separated-compact-expression",
+      "test": false,
+      "sha256": "8abd0d4b31fa2aea490c4c863b2447ca5cb80a6c01be331f08895943d7184777"
+    },
+    {
+      "key": "authority-compact-appraisal-closure",
+      "path": "docs/adr/0026-compact-psyche-semantic-closure-repair.think",
+      "parents": [],
+      "scope": "Accepted ADR0026 strict nonblank appraisal/cross-field closure. Provider one-repair execution remains separate, not proven by these local schema tests.",
+      "ref": "all-tests-20261007/authority-compact-appraisal-closure",
+      "test": false,
+      "sha256": "95336c8367c9472122fd006648b07bd966dd72347efa88e507c0c61f0e6d293d"
+    },
+    {
+      "key": "authority-dynamic-historical-continuation",
+      "path": "docs/adr/0047-phase-scoped-conscious-output-and-mechanical-completion.think",
+      "parents": [],
+      "scope": "Accepted ADR0047 retains historical pinned contracts while superseding0028 new dynamic response/repair rules. Use only retained historical continuation for this cohort, no new dynamic/provider acceptance.",
+      "ref": "all-tests-20261007/authority-dynamic-historical-continuation",
+      "test": false,
+      "sha256": "ccd18cbd50a635e44bb528d850eee111c1132d0a86701c21968aee5ef090eb31"
+    },
+    {
+      "key": "authority-separated-compact-requirement-acceptance",
+      "path": "docs/dialogue-expression-realization-requirement-acceptance-v3.md",
+      "parents": [],
+      "scope": "Existing owner Accepted exact candidate b5c7f96f1e2d73d2bed4f3356f703942bed4c3c68414e7f06889c56dbad4c265; immutable snapshot1 oldCompact/2 separated state-history-output, no migration/provider/deploy authority.",
+      "ref": "all-tests-20261007/authority-separated-compact-requirement-acceptance",
+      "test": false,
+      "sha256": "9669bcc1fcb7e73cf9c83601d498835a1186e92acb7cce158be194121defeea4"
+    },
+    {
+      "key": "contract-separated-compact-requirement-v3",
+      "path": "docs/dialogue-expression-realization-requirement-v3.md",
+      "parents": [
+        "authority-separated-compact-requirement-acceptance",
+        "authority-separated-compact-expression"
+      ],
+      "scope": "Exact accepted candidate bytes: semantic state, historical completed utterances and current output separate; preserve old pinned snapshot. Helper representation conformance only, no end-to-end delivery claim.",
+      "ref": "all-tests-20261007/contract-separated-compact-requirement-v3",
+      "test": false,
+      "sha256": "b5c7f96f1e2d73d2bed4f3356f703942bed4c3c68414e7f06889c56dbad4c265"
+    },
+    {
+      "key": "design-legacy-dialogue-test-contract",
+      "path": "docs/legacy-dialogue-test-contract-review-2026-10-07.md",
+      "parents": [
+        "requirements",
+        "current",
+        "authority-dialogue-activation",
+        "authority-separated-compact-expression",
+        "authority-compact-appraisal-closure",
+        "authority-dynamic-historical-continuation",
+        "contract-separated-compact-requirement-v3"
+      ],
+      "scope": "Nineteen original helper cases under exact retained contracts. V3 missing-input caller guard differs from legacy helper direct-null decay; snapshot round-trip/result-packet exclusion not downstream selection/conversation delivery. No code changes, current awareness-v5 or provider quality acceptance.",
+      "ref": "all-tests-20261007/design-legacy-dialogue-test-contract",
+      "test": false,
+      "sha256": "9db7bb8005da82084a434db10382a95caedbace605443fc95fe2d22c3c1bb33f"
+    },
+    {
+      "key": "design-retained-psyche-reaction-v1",
+      "path": "docs/adr/0028-versioned-conscious-agency-contract.md",
+      "parents": [
+        "authority-dynamic-historical-continuation",
+        "current",
+        "design-legacy-dialogue-test-contract"
+      ],
+      "scope": "Superseded0028 D3 retained historical psychology/projection text only through current0047/0051 adoption. Input-missing hold is caller orchestration; null-helper decay is existing implementation regression, not overriding V3 hold. No standalone Accepted status or new dynamic response/repair adoption.",
+      "ref": "all-tests-20261007/design-retained-psyche-reaction-v1",
+      "test": false,
+      "sha256": "0d5167c343930935860fe424fe5ddf2716d98d8dedd6e63d16f3f3bfda0b59a4"
+    },
+    {
+      "key": "implementation-retained-dialogue-snapshots",
+      "path": "packages/shared/src/dialogue-pipeline.ts",
+      "parents": [
+        "authority-dialogue-activation",
+        "contract-separated-compact-requirement-v3",
+        "design-legacy-dialogue-test-contract"
+      ],
+      "scope": "Exercised operator settings to immutable V1/V2 snapshot and binding receipt shape/provenance. No mutable persistence activation, runtime selector, Stage override deployment or allV3 configuration coverage.",
+      "ref": "all-tests-20261007/implementation-retained-dialogue-snapshots",
+      "test": false,
+      "sha256": "80dd1db0e25a9f2359325c6b76b5f8a53e6e67ebbda2a4bdf9484a1edff66f88"
+    },
+    {
+      "key": "implementation-retained-dialogue-observer-packets",
+      "path": "packages/shared/src/dialogue-context.ts",
+      "parents": [
+        "requirements",
+        "battle",
+        "perception",
+        "semantic",
+        "authority-separated-compact-expression",
+        "design-legacy-dialogue-test-contract"
+      ],
+      "scope": "Supplied frame to observer-local changed-percept packet and event references; exclude utterance-prefixed percepts from result packet. Not physical evidence truth, alternate conversation delivery, pipeline routing or all bounded-item/priority branches.",
+      "ref": "all-tests-20261007/implementation-retained-dialogue-observer-packets",
+      "test": false,
+      "sha256": "80de2212888716098c38b78e3a30ab66bfba43ec053254b62cbcaf6dfdbff56d"
+    },
+    {
+      "key": "implementation-retained-compact-psyche-decoder",
+      "path": "packages/shared/src/compact-psyche-decode.ts",
+      "parents": [
+        "battle",
+        "authority-separated-compact-expression",
+        "authority-compact-appraisal-closure",
+        "contract-separated-compact-requirement-v3",
+        "design-legacy-dialogue-test-contract"
+      ],
+      "scope": "Tolerant raw envelope projection followed by strict Compact schema and issue summaries; five exercised scenarios. Raw unknown record inspection not final contract escape. Legacy cost meaning tested, default bearer semantics not asserted/adopted; no one-repair provider path.",
+      "ref": "all-tests-20261007/implementation-retained-compact-psyche-decoder",
+      "test": false,
+      "sha256": "a382c675bb1ffb799ce91773a0c3990f9c99224157a24bd5d462f16ea82deb0d"
+    },
+    {
+      "key": "implementation-retained-psyche-reaction-v1",
+      "path": "packages/shared/src/psyche-reaction-policy.ts",
+      "parents": [
+        "battle",
+        "design-retained-psyche-reaction-v1",
+        "design-legacy-dialogue-test-contract"
+      ],
+      "scope": "Pure deterministic legacy state update/projection and receipt, structured certainty/sourceIDs/inhibition. Existing direct-null decay regression only; caller skips missing V3 packet separately, not tested by helper file. No LLM sentiment, tactical action, provider or current awareness-v5 latent acceptance.",
+      "ref": "all-tests-20261007/implementation-retained-psyche-reaction-v1",
+      "test": false,
+      "sha256": "dcf0b43512037974cc8e2c25c49f9307f16ec03e74ca727d588558ff70f6a9c6"
+    },
+    {
+      "key": "retained-dialogue-context-current",
+      "path": "packages/shared/src/dialogue-context.test.ts",
+      "parents": [
+        "requirements",
+        "authority-dialogue-activation",
+        "contract-separated-compact-requirement-v3",
+        "implementation-retained-dialogue-snapshots",
+        "implementation-retained-dialogue-observer-packets",
+        "battle",
+        "design-legacy-dialogue-test-contract"
+      ],
+      "scope": "Entire unchanged ten-case file: packet/privacy/appraisal, snapshot representation/provenance, changed per-observer percepts/evidence refs and utterance exclusion. Titles do not expand observed proof to runtime selector or alternate conversation delivery; synthetic inputs only.",
+      "ref": "verification/retained-dialogue-context-current-20261007",
+      "test": true,
+      "sha256": "ab4e64fe538e9163e1068211c17d69b5f14fdc790c1c3b5e83fedb215c88489c"
+    },
+    {
+      "key": "retained-compact-psyche-decoder-current",
+      "path": "packages/shared/src/compact-psyche-decode.test.ts",
+      "parents": [
+        "authority-separated-compact-expression",
+        "authority-compact-appraisal-closure",
+        "implementation-retained-compact-psyche-decoder",
+        "battle",
+        "design-legacy-dialogue-test-contract"
+      ],
+      "scope": "Entire unchanged five-case file: unknown key projection then strict validation, legacy cost meaning, missing appraisal/path, incompatible continuity and whitespace refusal. No legacy bearer conversion semantics, repair request or current awareness-v5 proof.",
+      "ref": "verification/retained-compact-psyche-decoder-current-20261007",
+      "test": true,
+      "sha256": "e3052385f665a3b2bd557bbce710c607186ba7c7442907683d8a64124b8fb7e3"
+    },
+    {
+      "key": "retained-psyche-reaction-v1-current",
+      "path": "packages/shared/src/psyche-reaction-policy.test.ts",
+      "parents": [
+        "design-retained-psyche-reaction-v1",
+        "implementation-retained-psyche-reaction-v1",
+        "design-legacy-dialogue-test-contract"
+      ],
+      "scope": "Entire unchanged four-case file: pure projection/repeated state preserved and transition formula; enum/IDs independent from prose; prior-state direct-null helper decay; inhibition/impulse-action separation. Direct-null regression not V3 caller missing-input hold proof; retained legacy only.",
+      "ref": "verification/retained-psyche-reaction-v1-current-20261007",
+      "test": true,
+      "sha256": "77a00a923c285b73f68c9d9a72ecf8fcc1303d9087a347722749e19fa8221d0c"
+    }
+  ],
+  "seeds": {
+    "requirements": "all-tests-20261007/authority-semantic-observation-requirements",
+    "current": "awareness-guidance-20261007/authority-current",
+    "battle": "all-tests-20261007/implementation-closed-battle-contract",
+    "perception": "all-tests-20261007/implementation-observer-contact-projection",
+    "semantic": "all-tests-20261007/implementation-semantic-state-patch-observation"
+  },
+  "authority": [
+    "Accepted canonicalADR0018/25/26/47",
+    "Accepted requirement-v3 exact snapshot selector",
+    "Accepted currentADR0051 retained historical adoption; superseded0028 not standaloneauthority"
+  ],
+  "diagnostic": {
+    "focusedPass": 19,
+    "fail": 0,
+    "skipped": 0,
+    "strictTypecheckExit": 0
+  },
+  "limitations": [
+    "Original19 cases/assertions retained; no code/test changes",
+    "Pure retained legacy helper/synthetic frame tests, not awareness-v5 model/privacy/physical/persistence/full-pipeline acceptance",
+    "Snapshot representation and result-packet exclusion not downstream selector or alternateconversation delivery",
+    "V3 caller missing-input hold distinct from oldhelper null regression; legacy cost bearer semantics not asserted"
+  ]
+}

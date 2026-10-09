@@ -1,0 +1,43 @@
+{
+  "scope": "Local unsealed-test execution gate readback; not governed aggregate test success",
+  "unit": {
+    "command": "npm test",
+    "exitCode": 1,
+    "active": 36,
+    "provisional": 2,
+    "disabled": 208,
+    "unsealedBlockers": 191,
+    "testExecutionStarted": false,
+    "result": "expected_stop"
+  },
+  "e2e": {
+    "command": "node scripts/test-authority.mjs --e2e",
+    "exitCode": 1,
+    "active": 3,
+    "disabled": 1,
+    "unsealedBlockers": 1,
+    "testExecutionStarted": false,
+    "result": "expected_stop"
+  },
+  "inventory": {
+    "command": "npm run test:inventory -- --e2e",
+    "exitCode": 0,
+    "result": "diagnostic_listing_available"
+  },
+  "gateDiagnostics": {
+    "command": "node --test scripts/test-authority.test.mjs scripts/test-authority-empty.test.mjs",
+    "passed": 15,
+    "failed": 0,
+    "authoritativeSealEvidence": false
+  },
+  "adr0058Audit": { "fatal": 0, "error": 0, "warning": 0 },
+  "allAdrCheck": {
+    "command": "npm run adr:check",
+    "exitCode": 1,
+    "blocker": "Existing ADR0039 Accepted record lacks required acceptance markers",
+    "adr0039Modified": false
+  },
+  "commit": null,
+  "remoteSynchronization": false,
+  "deployment": false
+}

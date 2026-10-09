@@ -1,0 +1,52 @@
+{
+  "schema": "kshiai/prestop-readonly-probe-candidate/v1",
+  "status": "Proposed",
+  "sourceCommit": "4ab19719ef7fa61cdfb8571c4579c3c64cc96dfb",
+  "releaseTag": "v0.23.0-rc.2",
+  "prepareRunId": "36857282507",
+  "imageRef": "asia-northeast1-docker.pkg.dev/kshiai/kshiai/backend@sha256:2e7051ec6395d36a27124ace0cad8d032bbb6b47878509339b05ce27c679c056",
+  "localGcpAccount": "mako10k@mk10.org",
+  "databaseProjectRef": "cvrbhpkfqkpqdegxfrlq",
+  "schemaName": "public",
+  "maximumWrites": {
+    "jobUpdate": 1,
+    "jobExecute": 1,
+    "databaseWrites": 0,
+    "runtimeServiceChanges": 0,
+    "authSettingsChanges": 0,
+    "paidLlmCalls": 0
+  },
+  "jobExecuteArgv": [
+    "gcloud",
+    "run",
+    "jobs",
+    "execute",
+    "kshiai-v3-trial-preflight",
+    "--project=kshiai",
+    "--region=asia-northeast1",
+    "--wait"
+  ],
+  "beforeExecute": [
+    "owner additionalapproval",
+    "currentjobmatchesfirstfrozenpacket andidle withonefailedexecution",
+    "jobmemoryreadback1Gi allotherconfig unchanged"
+  ],
+  "afterExecute": [
+    "single returned execution ID retained",
+    "terminal execution success and exact plan/target metadata readback",
+    "failure or ambiguous result inspected without redispatch"
+  ],
+  "scope": "One additional admin job memory correction and one additional readonly execution after recordedOOM; all other config retained",
+  "priorFailedExecution": "kshiai-v3-trial-preflight-b6wkr",
+  "jobUpdateArgv": [
+    "gcloud",
+    "run",
+    "jobs",
+    "update",
+    "kshiai-v3-trial-preflight",
+    "--project=kshiai",
+    "--region=asia-northeast1",
+    "--memory=1Gi",
+    "--quiet"
+  ]
+}

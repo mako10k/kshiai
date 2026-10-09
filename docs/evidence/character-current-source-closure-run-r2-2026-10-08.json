@@ -1,0 +1,13 @@
+{
+  "schema": "kshiai/repaired-source-closure-run/v1",
+  "reused": 134,
+  "newOrRepaired": 44,
+  "verifiedLogicalNodes": 178,
+  "plannedNodes": 244,
+  "publishedHistoryEvents": 181,
+  "priorHeadsUnchanged": true,
+  "seconds": 934.709,
+  "complete": false,
+  "inventorySwitched": false,
+  "deadline": "2026-10-08T20:55:00+09:00"
+}

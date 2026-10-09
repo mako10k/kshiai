@@ -1,0 +1,60 @@
+TAP version 13
+# Subtest: Compact expression V2 result contract
+    # Subtest: decodes nextUtterance through a closed result schema
+    ok 1 - decodes nextUtterance through a closed result schema
+      ---
+      duration_ms: 2.648486
+      type: 'test'
+      ...
+    # Subtest: contains an invalid action without rejecting the valid utterance
+    ok 2 - contains an invalid action without rejecting the valid utterance
+      ---
+      duration_ms: 0.434736
+      type: 'test'
+      ...
+    1..2
+ok 1 - Compact expression V2 result contract
+  ---
+  duration_ms: 4.469922
+  type: 'suite'
+  ...
+# Subtest: perception evidence boundaries
+    # Subtest: accepts mechanics only when action, event, and semantic targets are committed
+    ok 1 - accepts mechanics only when action, event, and semantic targets are committed
+      ---
+      duration_ms: 4.862148
+      type: 'test'
+      ...
+    # Subtest: derives the reviewed qualitative cue from structure, not event prose
+    ok 2 - derives the reviewed qualitative cue from structure, not event prose
+      ---
+      duration_ms: 13.111374
+      type: 'test'
+      ...
+    # Subtest: omits parameter cues when the event lacks structured key and direction
+    ok 3 - omits parameter cues when the event lacks structured key and direction
+      ---
+      duration_ms: 0.67592
+      type: 'test'
+      ...
+    # Subtest: rejects the whole sensory section when a source is not committed
+    ok 4 - rejects the whole sensory section when a source is not committed
+      ---
+      duration_ms: 2.089972
+      type: 'test'
+      ...
+    1..4
+ok 2 - perception evidence boundaries
+  ---
+  duration_ms: 22.826606
+  type: 'suite'
+  ...
+1..2
+# tests 6
+# suites 2
+# pass 6
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 946.223229

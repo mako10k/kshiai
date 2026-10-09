@@ -1,0 +1,89 @@
+TAP version 13
+# Subtest: awareness absence in deterministic engine
+    # Subtest: advances a full temporal turn with no chosen actions, damage, recovery, or stance event
+    ok 1 - advances a full temporal turn with no chosen actions, damage, recovery, or stance event
+      ---
+      duration_ms: 68.127607
+      type: 'test'
+      ...
+    # Subtest: lets the other actor attack without selecting any substitute for an absent actor
+    ok 2 - lets the other actor attack without selecting any substitute for an absent actor
+      ---
+      duration_ms: 29.895475
+      type: 'test'
+      ...
+    # Subtest: keeps legacy undefined-planned actions on their established selection route
+    ok 3 - keeps legacy undefined-planned actions on their established selection route
+      ---
+      duration_ms: 31.953129
+      type: 'test'
+      ...
+    # Subtest: persists actual absence through every restart bucket without requiring the caller's original option
+    ok 4 - persists actual absence through every restart bucket without requiring the caller's original option
+      ---
+      duration_ms: 46.636515
+      type: 'test'
+      ...
+    # Subtest: rejects a missing action that was not explicitly declared absent
+    ok 5 - rejects a missing action that was not explicitly declared absent
+      ---
+      duration_ms: 24.426072
+      type: 'test'
+      ...
+    # Subtest: can remove a future admitted intent without erasing the already committed predecessor
+    ok 6 - can remove a future admitted intent without erasing the already committed predecessor
+      ---
+      duration_ms: 37.969192
+      type: 'test'
+      ...
+    # Subtest: preserves an explicit wait despite passive pressure and an unrelated player override
+    ok 7 - preserves an explicit wait despite passive pressure and an unrelated player override
+      ---
+      duration_ms: 22.645483
+      type: 'test'
+      ...
+    # Subtest: preserves a repeated selected attack without selecting a variety policy
+    ok 8 - preserves a repeated selected attack without selecting a variety policy
+      ---
+      duration_ms: 18.832992
+      type: 'test'
+      ...
+    # Subtest: omits a norm-rejected intent instead of executing the norm fallback
+    ok 9 - omits a norm-rejected intent instead of executing the norm fallback
+      ---
+      duration_ms: 18.21115
+      type: 'test'
+      ...
+    # Subtest: omits a mechanically unavailable skill instead of choosing rest or defense
+    ok 10 - omits a mechanically unavailable skill instead of choosing rest or defense
+      ---
+      duration_ms: 24.025149
+      type: 'test'
+      ...
+    # Subtest: retains strict selection during a durable restart even if the caller omits the flag
+    ok 11 - retains strict selection during a durable restart even if the caller omits the flag
+      ---
+      duration_ms: 18.947657
+      type: 'test'
+      ...
+    # Subtest: preserves an already committed strict receipt when later intent and norm inputs change
+    ok 12 - preserves an already committed strict receipt when later intent and norm inputs change
+      ---
+      duration_ms: 24.352843
+      type: 'test'
+      ...
+    1..12
+ok 1 - awareness absence in deterministic engine
+  ---
+  duration_ms: 371.009512
+  type: 'suite'
+  ...
+1..1
+# tests 12
+# suites 1
+# pass 12
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 1268.692976

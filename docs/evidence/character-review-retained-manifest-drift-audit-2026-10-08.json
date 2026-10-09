@@ -1,0 +1,47 @@
+{
+  "schema": "kshiai/retained-manifest-current-drift-audit/v1",
+  "observedAt": "2026-10-08T19:57:30.184684+09:00",
+  "elapsedSeconds": 29.378,
+  "inspectedUnboundImplementationCandidates": 32,
+  "retainedPathManifests": [
+    {
+      "sealId": "a6f996d4e1244368efa23ec3480178552f7cb9c4210f77b287847848605cdc94",
+      "refs": [
+        "implementation/cc315-focused-v3-migration-acceptance-20260925"
+      ],
+      "entries": [
+        {
+          "path": "backend/src/repositories/character-assets-v2.ts",
+          "recordedSha256": "ab631f160f50950ff8d1ba8cf609e87ee0fbc5f6ffccb073fc17f9aa9515edb8",
+          "currentSha256": "4dc5580a4eefcbfd5ebba9b373f0e16aa960300d9f1de4293820dbb433aac318",
+          "relation": "CHANGED"
+        },
+        {
+          "path": "backend/src/routes.ts",
+          "recordedSha256": "70adbdfb2acb5eefe0e9ad5eaedc88f2cd8ad58a50e9762bc1ececa8d60ac718",
+          "currentSha256": "ec2500cac883a552bc4527b1878c16029cfab3160b2402b34a4e10219fbeee71",
+          "relation": "CHANGED"
+        },
+        {
+          "path": "backend/src/services/character-focused-authoring.ts",
+          "recordedSha256": "02d5f2f3798596efa0ac77acc8cf4ac835423b7e60d3fa5c4b4bae0a174011a9",
+          "currentSha256": "d97aa8c0f89bb6664567c775178ee56d3b20318d116b3328c7c772796c55e7e0",
+          "relation": "CHANGED"
+        }
+      ],
+      "changedEntries": 3,
+      "scope": "Retained immutable historical hash manifest; drift identifies review candidates, not automatic semantic failure."
+    }
+  ],
+  "manifestsWithCurrentDrift": 1,
+  "mappedTestsReachingDriftedHistoricalManifests": [
+    {
+      "path": "backend/src/services/character-focused-authoring.test.ts",
+      "ref": "verification/character-focused-authoring-current-20260925",
+      "retainedChangedManifestIds": [
+        "a6f996d4e1244368efa23ec3480178552f7cb9c4210f77b287847848605cdc94"
+      ]
+    }
+  ],
+  "scope": "Read-only bounded selection of reachable unbound implementation refs. Check actual runtime/claim scope before adding producer links. Not all source dependencies or all current Seal states."
+}

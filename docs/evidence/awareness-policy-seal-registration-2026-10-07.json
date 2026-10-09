@@ -1,0 +1,105 @@
+{
+  "scope": "Four offline revision-correlated policy obligations; SDK and public completion excluded",
+  "entries": [
+    {
+      "ref": "all-tests-20261007/authority-measurement-adoption",
+      "path": "docs/adr/0052-isolated-long-timeout-measurement.think",
+      "sealId": "a8bbea501cb94fd3a9c414993c80f5e585d223f0f23cb894ed86b97c6db775a4",
+      "sha256": "83248e0d929f0f296cfa0126fd2db8a8663bbab9db932d9b3927b7d197ce1692",
+      "causeSealIds": []
+    },
+    {
+      "ref": "all-tests-20261007/authority-measurement",
+      "path": "docs/adr/0052-isolated-long-timeout-measurement.md",
+      "sealId": "66468c9b30e9ba4cd3a8649b7c3fa3f32a100622edb09d7864d54327be3db18a",
+      "sha256": "fbf2ce7894613ef4db4bc21b1e9f6b62edad6481c3fe73cc5ec1adaa45646f0e",
+      "causeSealIds": [
+        "4a236b55e9ad9e4aa54eb2c6bbe9d77e0a318881ba8328363505153d16e151dd",
+        "a8bbea501cb94fd3a9c414993c80f5e585d223f0f23cb894ed86b97c6db775a4"
+      ]
+    },
+    {
+      "ref": "all-tests-20261007/authority-normal-waits-adoption",
+      "path": "docs/adr/0054-normal-awareness-waiting-deadlines.think",
+      "sealId": "f16e9ead78dda44031acb7b49b711d967e3284a6d113edafbbb57cbbd15e49fe",
+      "sha256": "d7aa2e804166cce3c7cd6fc7519aee8cbf8ba93796317eb6bf95773644f77c3d",
+      "causeSealIds": []
+    },
+    {
+      "ref": "all-tests-20261007/authority-normal-waits",
+      "path": "docs/adr/0054-normal-awareness-waiting-deadlines.md",
+      "sealId": "7f8ac50262580d0a94e13d82627be496f8e2e8fd059c194c4d93d84d2af28f43",
+      "sha256": "62e027cfc8b2581b4fb77cc132ad35d04365ddd3b8c4c3e39226c791bc353433",
+      "causeSealIds": [
+        "4a236b55e9ad9e4aa54eb2c6bbe9d77e0a318881ba8328363505153d16e151dd",
+        "66468c9b30e9ba4cd3a8649b7c3fa3f32a100622edb09d7864d54327be3db18a",
+        "f16e9ead78dda44031acb7b49b711d967e3284a6d113edafbbb57cbbd15e49fe"
+      ]
+    },
+    {
+      "ref": "all-tests-20261007/implementation-awareness-policy",
+      "path": "packages/shared/src/awareness-policy.ts",
+      "sealId": "c064db895ea9f010d2f6fb28360b243285cbe93156c19f8286e161ec2d0d731a",
+      "sha256": "e77a702f8f6b8e831723940491e9f2966a4de48a6c1cba126da3f413a04aa2b1",
+      "causeSealIds": [
+        "1edf3239229665d39a55aee22af5148f4408f6c8dfea24ca200ae835af46e02d",
+        "4a236b55e9ad9e4aa54eb2c6bbe9d77e0a318881ba8328363505153d16e151dd",
+        "66468c9b30e9ba4cd3a8649b7c3fa3f32a100622edb09d7864d54327be3db18a",
+        "7f8ac50262580d0a94e13d82627be496f8e2e8fd059c194c4d93d84d2af28f43"
+      ]
+    },
+    {
+      "ref": "verification/awareness-policy-20261007",
+      "path": "packages/shared/src/awareness-policy.test.ts",
+      "sealId": "e8c1fb99205b28211e0c6c9fb1b290ae9046df3a346d8e4cc6ea21831d7e2b3c",
+      "sha256": "98260f87570863821bb684a1153820624a1addc67d59f349f680e0172e9c7816",
+      "causeSealIds": [
+        "4a236b55e9ad9e4aa54eb2c6bbe9d77e0a318881ba8328363505153d16e151dd",
+        "56e673314fc7d2d4b1caef3c2c3411213422bba8d58a28bb6f8fbe5f3fa3df72",
+        "66468c9b30e9ba4cd3a8649b7c3fa3f32a100622edb09d7864d54327be3db18a",
+        "7f8ac50262580d0a94e13d82627be496f8e2e8fd059c194c4d93d84d2af28f43",
+        "c064db895ea9f010d2f6fb28360b243285cbe93156c19f8286e161ec2d0d731a",
+        "cea338023663fcb0df2f08b3e889a61b0033e7d60008a6301090ccac8a3fe50a"
+      ]
+    }
+  ],
+  "existingUpstreamSeals": [
+    {
+      "ref": "awareness-guidance-20261007/authority-current",
+      "path": "docs/adr/0051-observed-llm-usage-accounting.md",
+      "sealId": "4a236b55e9ad9e4aa54eb2c6bbe9d77e0a318881ba8328363505153d16e151dd",
+      "causes": [
+        "d5695200a29531ed085f10c0d502effc2af325ee206874b1f32c61db6872fba4"
+      ]
+    },
+    {
+      "ref": "awareness-guidance-20261007/input-contract",
+      "path": "packages/shared/src/awareness-pipeline.ts",
+      "sealId": "56e673314fc7d2d4b1caef3c2c3411213422bba8d58a28bb6f8fbe5f3fa3df72",
+      "causes": [
+        "1adba1d06106cfcc7537dcd2d85aa94f745a4a79ff6b3f5ac4911a11efdf79a8"
+      ]
+    },
+    {
+      "ref": "all-tests-20261007/contract-awareness-decisions",
+      "path": "docs/battle-consciousness-implementation-decisions-2026-10-05.md",
+      "sealId": "1edf3239229665d39a55aee22af5148f4408f6c8dfea24ca200ae835af46e02d",
+      "sha256": "76dd7398683b9f633793ff606dcdea5e59dd540c635a62409c3527c60bc87095",
+      "causeSealIds": [
+        "4a236b55e9ad9e4aa54eb2c6bbe9d77e0a318881ba8328363505153d16e151dd",
+        "bfad7f3d9646ec7657e4db701b034d71990427ee991a8a037efe3d09f5367e48"
+      ]
+    },
+    {
+      "ref": "all-tests-20261007/implementation-awareness-state",
+      "path": "packages/shared/src/awareness-state.ts",
+      "sealId": "cea338023663fcb0df2f08b3e889a61b0033e7d60008a6301090ccac8a3fe50a",
+      "sha256": "a3cb6a4bb7fb4fd44aa5a8d054496a69ee791045c5271261b5e59d7aeebad43a",
+      "causeSealIds": [
+        "1adba1d06106cfcc7537dcd2d85aa94f745a4a79ff6b3f5ac4911a11efdf79a8",
+        "1edf3239229665d39a55aee22af5148f4408f6c8dfea24ca200ae835af46e02d",
+        "56e673314fc7d2d4b1caef3c2c3411213422bba8d58a28bb6f8fbe5f3fa3df72"
+      ]
+    }
+  ]
+}

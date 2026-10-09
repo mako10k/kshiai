@@ -7,6 +7,8 @@ import {
 import type { LlmProvider } from "./types.js";
 import { classifyLlmProviderError } from "./provider-errors.js";
 
+// R: Route general LLM operations through available providers and record cooldowns.
+
 type Clock = () => number;
 
 const routeReceiptCapture = new AsyncLocalStorage<LlmProviderRouteReceipt[]>();
@@ -41,32 +43,28 @@ function recordProviderRoute(input: {
 
 export function isProviderUnavailableError(error: unknown): boolean {
   const reason = classifyLlmProviderError(error);
-  return reason === "billing" || reason === "dns";
+  return reason === "billing" || reason === "dns" || reason === "rate_limit";
 }
 
 /**
  * Route every LlmProvider method through an ordered provider list.
- * Only provider-unavailable DNS or billing failures enter cooldown and permit
- * the next provider. Timeout, 429, 503, and operation errors remain terminal.
+ * DNS, billing and rate limits permit the next provider. Rate limits suspend
+ * that provider for one hour; timeout, 503 and operation errors remain terminal.
  */
 export function createFallbackLlmProvider(
   providers: LlmProvider[],
   providerCooldownMs: number,
   now: Clock = Date.now,
 ): LlmProvider {
-  if (providers.length === 0) {
+  const target = providers[0];
+  if (!target) {
     throw new Error("At least one LLM provider is required");
   }
   const cooldowns = new Map<LlmProvider, {
     until: number;
-    reason: "billing" | "dns";
+    reason: LlmProviderRouteFailure["reason"];
   }>();
   const label = providers.map((provider) => provider.name).join(">");
-
-  const target = {
-    name: `fallback:${label}`,
-    models: providers[0]?.models,
-  } as LlmProvider;
 
   return new Proxy(target, {
     get(_target, property) {
@@ -108,9 +106,12 @@ export function createFallbackLlmProvider(
             lastError = error;
             const reason = classifyLlmProviderError(error);
             if (isProviderUnavailableError(error)) {
-              const unavailableReason = reason === "billing" ? "billing" : "dns";
+              const unavailableReason = reason === "billing" ? "billing"
+                : reason === "rate_limit" ? "rate_limit" : "dns";
+              const cooldownMs = unavailableReason === "rate_limit"
+                ? 3_600_000 : providerCooldownMs;
               cooldowns.set(provider, {
-                until: now() + providerCooldownMs,
+                until: now() + cooldownMs,
                 reason: unavailableReason,
               });
               failures.push({
@@ -118,12 +119,12 @@ export function createFallbackLlmProvider(
                 reason: unavailableReason,
                 disposition: "failed",
                 cooldownMs: Math.min(
-                  providerCooldownMs,
+                  cooldownMs,
                   MAX_RECORDED_COOLDOWN_MS,
                 ),
               });
               console.warn(
-                `[llm-router] ${provider.name} unavailable reason=${reason}; cooldown=${Math.round(providerCooldownMs / 1000)}s; trying next provider`,
+                `[llm-router] ${provider.name} unavailable reason=${reason}; cooldown=${Math.round(cooldownMs / 1000)}s; trying next provider`,
               );
             } else {
               recordProviderRoute({

@@ -121,4 +121,18 @@ describe("battlefield definition upgrade fills", () => {
     assert.equal(restored.appearance.publicSummary, "霧に沈む石造遺跡");
     assert.equal(restored.baseCoefficients.damage, 0.9);
   });
+
+  it("normalizes wrapped text through the guarded fallback", () => {
+    const fill = parseBattlefieldDefinitionGapFillV2({
+      atmosphere: [{ text: "  濃霧  " }],
+      scale: null,
+      genre: { text: "  石造遺跡  " },
+      areas: null,
+      objects: null,
+      effects: null,
+      evolutionAffordances: null,
+    });
+    assert.deepEqual(fill.atmosphere, ["濃霧"]);
+    assert.equal(fill.genre, "石造遺跡");
+  });
 });

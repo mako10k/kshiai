@@ -1,0 +1,79 @@
+{
+  "status": "partial_ci_repair_not_formal_acceptance",
+  "head": "c9f086121289b86201a9a994c3b0a69a3e266ffe",
+  "ciRun": 37773665037,
+  "directFailures": [
+    "static:lizard",
+    "sharp advisory 1241331"
+  ],
+  "diagnosticRules": {
+    "pass": 70,
+    "fail": 0,
+    "skipped": 0
+  },
+  "awarenessDelivery": {
+    "pass": 30,
+    "fail": 0,
+    "skipped": 0
+  },
+  "typecheck": "passed",
+  "sharedBuild": "passed",
+  "npmAudit": "no advisories",
+  "formalTest": {
+    "status": "blocked_before_execution",
+    "unsealed": 4,
+    "authorityEvaluated": false
+  },
+  "independentReview": {
+    "agent": "/root/battle_helper_contract_review",
+    "decision": "ADR0062 and ADR0063 INSIDE/PASS",
+    "withdrawnFinding": "V3 inventory allegedly accepts balanceTradeoff; its strict separate inventory schema rejects that field",
+    "laterFix": "regression found simultaneous merge dropping defense-exposure consumption; merge now receives mandatory typed action-facts snapshot"
+  },
+  "remaining": [
+    "revalidate full original unit/E2E cases",
+    "rebuild current-source closure plan with ADR0062/0063 and changed source hashes",
+    "publish/readback and bind all 251 original test files",
+    "formal tests",
+    "push authorized branch and verify current-SHA full CI"
+  ],
+  "sourceSha256": {
+    "backend/src/llm/mock.ts": "a002cbc35aceaab54d49455c7d3b2ed115e3e7a5c7a31feb94e2e4f27be8f7a4",
+    "backend/src/llm/openai-compatible.ts": "260824cdb5253361d056324a4d8eaf5dd7eb2597e1300231400c16e83d1e8eba",
+    "backend/src/llm/types.ts": "13be24b8dd82b4b42491e33c991c35dc729f388ce5e5eaf4fd8a9e4249ad1960",
+    "backend/src/repositories/character-assets-v2.ts": "3efd14caf7b057d6539987f77b97b0b4461c0c7736ceede41bf7c2ff4959bd04",
+    "backend/src/repositories/character-focused-candidate.ts": "a04fd748974ddf8bc9c804e00d5624f32adddb345afea204b2889626e45879e9",
+    "backend/src/services/awareness-context.test.ts": "de1234d2453c77a30fe188672160c9ce9cf49eebd8b71099ccc77e6fdaa5fa63",
+    "backend/src/services/awareness-context.ts": "2b0831f27574930b808b1ffe237497011e1845ebd60c0216b54605db0b1036e4",
+    "backend/src/services/awareness-execution.test.ts": "a80c75b5009316b82becad53391bc2df1c8d6b239f5b21d177bd24409d24748a",
+    "backend/src/services/awareness-execution.ts": "f3ab31ed95580f23aabe6019e72e5835aa5460af90afa61d995853464bd40a70",
+    "backend/src/services/battle-service.ts": "b8d5a8f51767374734181093a4077f448177438589a9a836dafa75ba32c710b3",
+    "backend/src/services/character-focused-authoring.ts": "43baff7a324561676708b5d715576cd4789f7f0d9c53b48ee36115dda4dd57a0",
+    "backend/src/services/free-action-service.test.ts": "60e0f14b576092a35f47cbe01f25cd5ecde8b7cfcdb2f3c1049a22eb83594cca",
+    "backend/src/services/free-action-service.ts": "6256f175c899dae56e78f9f8cc194889406b1ec49938cb5ddcb075d9565c2ce9",
+    "backend/src/services/semantic-authoring/adapters/character-complete.ts": "6b6fd26056125a9faca17d4e0bd07375acea0f2fa8709f104e1dab4293c14bd9",
+    "package-lock.json": "0009e8fa30f4a9cb80a104bdcb08d9a213771aeb437fab8af29400858fbc2949",
+    "package.json": "34187cc55cabc7f0964b6e1bc66eff3700cc5330fb2ac6e765c5f56eb3d816a2",
+    "packages/shared/src/action-feasibility.ts": "1fb17511ac4a54e6ff85523a0e1ec4f015c19086791a4cd09cdb077540597e0a",
+    "packages/shared/src/awareness-pipeline.test.ts": "6a2bd24592978f991c5433031b20b024e69da9b227975a144a80e29eff40d252",
+    "packages/shared/src/awareness-pipeline.ts": "e2c189c2ffd43ca5d0f1a1ac55d0f177cafb3b31bff2c8dbab53d06e387ec8e0",
+    "packages/shared/src/balance.test.ts": "7374a26ee2ba43fc3ef320195f14758dcfce04fb02abca139c28823d022d6486",
+    "packages/shared/src/balance.ts": "30fc1936b5493253e4432b1ae7541a204c48aaae590d9adcf934023132bf36ae",
+    "packages/shared/src/battle-engine.test.ts": "83eb413439b931be19965079e73178027f495ccaba12b1047e8acc8f2564c2a6",
+    "packages/shared/src/battle-engine.ts": "61b8a37a3bf2235397cc5186633b7bbbc2b85326934342090291a6c65a1725ec",
+    "packages/shared/src/battle.ts": "8108fafd0d9ca04e740826b37cf13fc304f5dafa7e169bf4c704dd15ee599462",
+    "packages/shared/src/battlefield-creation.ts": "ae8f07535d5404068145d75207d0d0b6cf7e8c6361b0b0397481b6b9822ff9a9",
+    "packages/shared/src/character.ts": "1889d77a61c2d781ce42c71e1bbadab8b4d1013dfbb69e024701eac355744c50",
+    "packages/shared/src/free-action.ts": "fc0673ed025f383aec540be4946b3d2322a44c28d5153d3f7b683f98114fa98b",
+    "packages/shared/src/index.ts": "480967a958788d08393c6a4a61101c3afd8e0305cd4ff30b0212c41ec089a36e",
+    "packages/shared/src/perception-projection.ts": "08aa6d8cb6d44d5d6d8a801c839a49aecd338a234e11e7375358f55804e17c01",
+    "packages/shared/src/perception.ts": "b2d35566b8a8eeca56a1d0f4656f3ebd1a298a87bafc3e7dd1c3635ddb6303e2",
+    "packages/shared/src/skill-cooldown.test.ts": "056d7e77c7104e7db5167c625b0669361b5604883df333267de8350078a428eb",
+    "packages/shared/src/skill-cooldown.ts": "1d73da1e70a1b66f399dfd09770f08c63388d8853e5deabd6e1789dd0ead18bb",
+    "backend/src/services/free-action-penalties.ts": "1ea394a61635357a3fe91ae3b343c10ff5ba1c8553ad458c5380700aaab14606",
+    "packages/shared/src/action-effort-policy.ts": "dabb6d35f829374b587a7d2be4fd812d6a3a44ed417b28d084b15e5f98a23a24",
+    "packages/shared/src/battle-effort-perception.ts": "66073ea326d7047ec51902502df5dde9af1360ebaeb8614e9ddce9a3f58c126b",
+    "docs/adr/0062-action-fatigue-and-adjudicated-free-action-penalties.md": "2483ad01b2525a30d0015a0a1bae6b787574d148f1636ef5bf0b633a67020ccd",
+    "docs/adr/0063-preserve-equipment-effects-with-server-balance-tradeoff.md": "c0b5b65aa50df1c00bb6f9711940f53b7674babcc9b5153da3a76f98c027def4"
+  }
+}

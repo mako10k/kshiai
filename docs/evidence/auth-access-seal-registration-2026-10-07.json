@@ -1,0 +1,331 @@
+{
+  "entries": [
+    {
+      "key": "authority-retained-operator-identity",
+      "path": "docs/adr/0015-e2e-operator-session-reentry.think",
+      "parents": [],
+      "scope": "Accepted ADR0015 Context/Rules1/2 and Compatibility retain server-owned test realm, internal general-user 404 boundaries, existing administrator/developer ownership and Supabase production identity. No operator mint, live identity rotation, deployment or actual GUI acceptance is authorized/certified by this root.",
+      "ref": "all-tests-20261007/authority-retained-operator-identity",
+      "test": false,
+      "sha256": "85470fd2ce9db4ec6b832d2c550c77ced689e5fbaa611f2aeaa06f21cbb8d9b5",
+      "sealId": "9a193a751c31ca13af8d4258564fadf6bab164f38170c1fd72e8ee6f9d61f990",
+      "causeSealIds": []
+    },
+    {
+      "key": "design-retained-account-realm",
+      "path": "docs/persistent-e2e-observation.md",
+      "parents": [
+        "requirements",
+        "authority-retained-operator-identity"
+      ],
+      "scope": "Access model only: four server-owned account kinds, general/test realm separation, administrator inspection, role-limited internal view and general404. Later pipeline descriptions, fixture import details, provider execution, workflow invocation and historical deployment identities elsewhere in this document are outside this cohort; no whole observation acceptance.",
+      "ref": "all-tests-20261007/design-retained-account-realm",
+      "test": false,
+      "sha256": "862e8e84b11da88e8fdf1c72c633666a9869558ec23b9cbf95a09ad47b23c219",
+      "sealId": "4ab3d24cbe88cf5312d76e7476ea441e974b6a28a67833eeb1491b7451262191",
+      "causeSealIds": [
+        "203e66fc4e30772adab026012c67f1b1ac4ca86ad2ada11b501c639a27a19eac",
+        "9a193a751c31ca13af8d4258564fadf6bab164f38170c1fd72e8ee6f9d61f990"
+      ]
+    },
+    {
+      "key": "design-existing-origin-secret-guard",
+      "path": "docs/cloud_runtime.md",
+      "parents": [
+        "requirements",
+        "authority-retained-operator-identity"
+      ],
+      "scope": "Existing Runtime settings origin-secret guard description only: Worker configured secret is an additional guard without replacing Supabase/application authorization; local helper behavior is tested with fake strings. This source does not accept historical price/timeout/scaling settings or prove configured deployed proxy protection.",
+      "ref": "all-tests-20261007/design-existing-origin-secret-guard",
+      "test": false,
+      "sha256": "7cb2bc8dbf0225650a62b521599a299c9fa96b8c0f7692a86e154b42e951f971",
+      "sealId": "5cb0f536376e7590c0578826b81cfc16980a60f4ab363ceb6bc42b3680001a0f",
+      "causeSealIds": [
+        "203e66fc4e30772adab026012c67f1b1ac4ca86ad2ada11b501c639a27a19eac",
+        "9a193a751c31ca13af8d4258564fadf6bab164f38170c1fd72e8ee6f9d61f990"
+      ]
+    },
+    {
+      "key": "design-auth-access-test-repair",
+      "path": "docs/auth-access-test-contract-review-2026-10-07.md",
+      "parents": [
+        "requirements",
+        "authority-retained-operator-identity",
+        "design-retained-account-realm",
+        "design-existing-origin-secret-guard"
+      ],
+      "scope": "Existing-contract local repair/verification scope: remove unchecked kind/error/provider assertions, retain original tests and strengthen classification/secret mismatch/expired signed token boundaries. No SQL/schema/role/provider/session-duration migration or external action. Local and injected boundary proofs remain separate from hosted identity/deployed acceptance.",
+      "ref": "all-tests-20261007/design-auth-access-test-repair",
+      "test": false,
+      "sha256": "8629a77422fae62431489ac68185b1279f045ec1afca7544c757e0e1b865df77",
+      "sealId": "fd54b4d54a1d9ef5fb2cd6121eafaf925a5501ae5986b7745f29d5cc20635007",
+      "causeSealIds": [
+        "203e66fc4e30772adab026012c67f1b1ac4ca86ad2ada11b501c639a27a19eac",
+        "9a193a751c31ca13af8d4258564fadf6bab164f38170c1fd72e8ee6f9d61f990",
+        "4ab3d24cbe88cf5312d76e7476ea441e974b6a28a67833eeb1491b7451262191",
+        "5cb0f536376e7590c0578826b81cfc16980a60f4ab363ceb6bc42b3680001a0f"
+      ]
+    },
+    {
+      "key": "implementation-auth-configuration-fields",
+      "path": "backend/src/config.ts",
+      "parents": [
+        "requirements",
+        "authority-retained-operator-identity",
+        "design-auth-access-test-repair"
+      ],
+      "scope": "Auth provider validation before construction, Supabase identity settings and server-owned administrator allowlist normalization. authProvider now uses its already narrowed value directly. Source bound as loaded by local tests; no certification of all cutover/media/provider/pacing settings or actual environment values, production initialization or deployment.",
+      "ref": "all-tests-20261007/implementation-auth-configuration-fields",
+      "test": false,
+      "sha256": "6b58fd9428c378fefee216abc3e7f062d9798a9cec9d28c8d2ac831fb3cdc750",
+      "sealId": "9e67de0be989263248c519ae8e5f32e6b59c6cdd11331447a10bee2515630b58",
+      "causeSealIds": [
+        "203e66fc4e30772adab026012c67f1b1ac4ca86ad2ada11b501c639a27a19eac",
+        "9a193a751c31ca13af8d4258564fadf6bab164f38170c1fd72e8ee6f9d61f990",
+        "fd54b4d54a1d9ef5fb2cd6121eafaf925a5501ae5986b7745f29d5cc20635007"
+      ]
+    },
+    {
+      "key": "implementation-local-user-public-projection",
+      "path": "backend/src/repositories/users.ts",
+      "parents": [
+        "requirements",
+        "db"
+      ],
+      "scope": "Selected helpers randomDisplayName/resolveDisplayName/toUserPublic used by authentication preserve application id/username and a bounded display name. Source bound for these exercised helpers only; friend/list/update APIs and every public-profile privacy branch not certified by auth cases.",
+      "ref": "all-tests-20261007/implementation-local-user-public-projection",
+      "test": false,
+      "sha256": "4808aac3b07b7c66829707aaf017625a7bb7564d2cbc8915946b75048cf2fd67",
+      "sealId": "ee29b011f89e02e034d9bea8df091bdf02117f53d8ec2943b85592d918c78f57",
+      "causeSealIds": [
+        "203e66fc4e30772adab026012c67f1b1ac4ca86ad2ada11b501c639a27a19eac",
+        "4ea52a357e72328f2c5e136344aa945c23078b1c6957fc150f77a6153663ebee"
+      ]
+    },
+    {
+      "key": "implementation-server-owned-account-access",
+      "path": "backend/src/account-access.ts",
+      "parents": [
+        "requirements",
+        "authority-retained-operator-identity",
+        "design-retained-account-realm",
+        "design-auth-access-test-repair",
+        "implementation-auth-configuration-fields",
+        "db"
+      ],
+      "scope": "Existing account access helpers use DB-owned kind/email and configured administrator lists. Unknown input classified general by returning actual matching literal kind, no unknown-to-contract assertion. Exercised kind/realm/admin/internal-role/owner paths only; not authentication of injected users, every asset-sharing branch or nonexistent-user authorization proof.",
+      "ref": "all-tests-20261007/implementation-server-owned-account-access",
+      "test": false,
+      "sha256": "9bebaf7d75b6c6a0e5e962fe827a7b21ee4b361586f46785fa15e2486b2226a6",
+      "sealId": "92475a5ff880b77b09bc22657dcf0a3227ff28f93848ffbf349add56ed54580c",
+      "causeSealIds": [
+        "203e66fc4e30772adab026012c67f1b1ac4ca86ad2ada11b501c639a27a19eac",
+        "9a193a751c31ca13af8d4258564fadf6bab164f38170c1fd72e8ee6f9d61f990",
+        "4ab3d24cbe88cf5312d76e7476ea441e974b6a28a67833eeb1491b7451262191",
+        "fd54b4d54a1d9ef5fb2cd6121eafaf925a5501ae5986b7745f29d5cc20635007",
+        "9e67de0be989263248c519ae8e5f32e6b59c6cdd11331447a10bee2515630b58",
+        "4ea52a357e72328f2c5e136344aa945c23078b1c6957fc150f77a6153663ebee"
+      ]
+    },
+    {
+      "key": "implementation-signed-supabase-identity",
+      "path": "backend/src/services/supabase-identity.ts",
+      "parents": [
+        "requirements",
+        "authority-retained-operator-identity"
+      ],
+      "scope": "F-AUTH08 pure signed identity verification boundary: ES256 verifier with configured issuer/audience/role/string subject and expiry, bounded metadata extraction and null on invalid input. Four cases inject locally generated public keys; hosted JWKS refresh, OAuth and email confirmation not certified. No application DB writes by this module.",
+      "ref": "all-tests-20261007/implementation-signed-supabase-identity",
+      "test": false,
+      "sha256": "b7f441f85250fb198295e882015a9d2b842a73517d324da710fe45c3994f3f1f",
+      "sealId": "8c72d6d55a0336c244414d1226e7406bd88bdc8d4f698cb7978f7575ebd603f2",
+      "causeSealIds": [
+        "203e66fc4e30772adab026012c67f1b1ac4ca86ad2ada11b501c639a27a19eac",
+        "9a193a751c31ca13af8d4258564fadf6bab164f38170c1fd72e8ee6f9d61f990"
+      ]
+    },
+    {
+      "key": "implementation-local-authentication-persistence",
+      "path": "backend/src/auth.ts",
+      "parents": [
+        "requirements",
+        "design-auth-access-test-repair",
+        "implementation-auth-configuration-fields",
+        "implementation-local-user-public-projection",
+        "implementation-server-owned-account-access",
+        "implementation-signed-supabase-identity",
+        "db"
+      ],
+      "scope": "Local isolated SQLite registration/hash verification/session destruction, mapping supplied identity to stable application user, unique username classification and injected-user internal visibility guard. Error code is read through object/null/property narrowing instead of assertions. Source contains production verifier wiring but no complete requireUser/requireAdmin/cookie/expiry-session/PostgreSQL race/real provider acceptance claim.",
+      "ref": "all-tests-20261007/implementation-local-authentication-persistence",
+      "test": false,
+      "sha256": "497c87571118b8d64709a90f9fbca77eca6c931402ab7115cbf983f0ec510256",
+      "sealId": "a12956c0df410246eaae8f94f6b0a7e773dcd4f79f7c9d623f67975ea6e39b11",
+      "causeSealIds": [
+        "203e66fc4e30772adab026012c67f1b1ac4ca86ad2ada11b501c639a27a19eac",
+        "fd54b4d54a1d9ef5fb2cd6121eafaf925a5501ae5986b7745f29d5cc20635007",
+        "9e67de0be989263248c519ae8e5f32e6b59c6cdd11331447a10bee2515630b58",
+        "ee29b011f89e02e034d9bea8df091bdf02117f53d8ec2943b85592d918c78f57",
+        "92475a5ff880b77b09bc22657dcf0a3227ff28f93848ffbf349add56ed54580c",
+        "8c72d6d55a0336c244414d1226e7406bd88bdc8d4f698cb7978f7575ebd603f2",
+        "4ea52a357e72328f2c5e136344aa945c23078b1c6957fc150f77a6153663ebee"
+      ]
+    },
+    {
+      "key": "implementation-optional-origin-secret-comparison",
+      "path": "backend/src/origin-verification.ts",
+      "parents": [
+        "design-existing-origin-secret-guard",
+        "design-auth-access-test-repair"
+      ],
+      "scope": "Pure configured-secret byte comparison: absent config permits local helper use, missing/empty/mismatched header rejected when configured; equal-length values compared with timingSafeEqual. Fake strings only; no live secret, HTTP proxy injection or deployment configuration proof.",
+      "ref": "all-tests-20261007/implementation-optional-origin-secret-comparison",
+      "test": false,
+      "sha256": "9db278d5239920a9d9b88d1cbe78c271862b1812e01362cbe91c7279ea5b499b",
+      "sealId": "3ded544a1f276244682f9e78869007fc9b63221fdbc99712001b684a66911217",
+      "causeSealIds": [
+        "5cb0f536376e7590c0578826b81cfc16980a60f4ab363ceb6bc42b3680001a0f",
+        "fd54b4d54a1d9ef5fb2cd6121eafaf925a5501ae5986b7745f29d5cc20635007"
+      ]
+    },
+    {
+      "key": "implementation-browser-authenticated-fetch",
+      "path": "frontend/src/authenticated-fetch.ts",
+      "parents": [
+        "requirements",
+        "design-auth-access-test-repair"
+      ],
+      "scope": "F-AUTH02 request helper merges current Bearer token only when no explicit Authorization header, retains other headers and credentials include by default. Injected fetch only; fixture SSE URL does not certify endpoint existence, browser credential refresh, hosted auth or actual SSE transport.",
+      "ref": "all-tests-20261007/implementation-browser-authenticated-fetch",
+      "test": false,
+      "sha256": "996a035bfaced338150ef4184c6a71de49c9891bc010ade3914da22fe64ca080",
+      "sealId": "b6739189f07c41ef417b15efe568559eca99b431f5f146013eb8036622f5ee99",
+      "causeSealIds": [
+        "203e66fc4e30772adab026012c67f1b1ac4ca86ad2ada11b501c639a27a19eac",
+        "fd54b4d54a1d9ef5fb2cd6121eafaf925a5501ae5986b7745f29d5cc20635007"
+      ]
+    },
+    {
+      "key": "account-realm-access-current",
+      "path": "backend/src/account-access.test.ts",
+      "parents": [
+        "requirements",
+        "authority-retained-operator-identity",
+        "design-retained-account-realm",
+        "implementation-server-owned-account-access",
+        "implementation-local-authentication-persistence",
+        "db"
+      ],
+      "scope": "Entire original three-case file retained, added valid/non-string classification assertions. Isolated synthetic SQL identities prove general/test realm separation, admin override, selected owner checks, role mapping and injected-user middleware general404/developer200. Auth is supplied by test middleware; no JWT authenticity or end-to-end authorization-chain proof.",
+      "ref": "verification/account-realm-access-current-20261007",
+      "test": true,
+      "sha256": "acded520435db19591c025137404ffdf7672cff94b307d73ad62c4023b6d5d64",
+      "sealId": "40dd2bf0972b237e05c36163e24ecac230b7a56627d4b5b4a41dbeb0fb091915",
+      "causeSealIds": [
+        "203e66fc4e30772adab026012c67f1b1ac4ca86ad2ada11b501c639a27a19eac",
+        "9a193a751c31ca13af8d4258564fadf6bab164f38170c1fd72e8ee6f9d61f990",
+        "4ab3d24cbe88cf5312d76e7476ea441e974b6a28a67833eeb1491b7451262191",
+        "92475a5ff880b77b09bc22657dcf0a3227ff28f93848ffbf349add56ed54580c",
+        "a12956c0df410246eaae8f94f6b0a7e773dcd4f79f7c9d623f67975ea6e39b11",
+        "4ea52a357e72328f2c5e136344aa945c23078b1c6957fc150f77a6153663ebee"
+      ]
+    },
+    {
+      "key": "authentication-persistence-current",
+      "path": "backend/src/auth.test.ts",
+      "parents": [
+        "requirements",
+        "implementation-local-authentication-persistence",
+        "implementation-signed-supabase-identity",
+        "implementation-server-owned-account-access",
+        "implementation-local-user-public-projection",
+        "db"
+      ],
+      "scope": "Entire unchanged four-case file: local register/password verification/session destruction, concurrent supplied identity stable mapping, SQLite username uniqueness classification, empty admin lists deny and normalized email match. No live Supabase call, production legacy auth, every admin-id path or PostgreSQL concurrency proof.",
+      "ref": "verification/authentication-persistence-current-20261007",
+      "test": true,
+      "sha256": "12c0393c51f4af35c0abdcc1a0d6866982fabc8712a5a75ac22a553b12b87224",
+      "sealId": "86cc5603f00c1d19fc5707b45c206466d910cf082c9ed2729d90bc7e537902a9",
+      "causeSealIds": [
+        "203e66fc4e30772adab026012c67f1b1ac4ca86ad2ada11b501c639a27a19eac",
+        "a12956c0df410246eaae8f94f6b0a7e773dcd4f79f7c9d623f67975ea6e39b11",
+        "8c72d6d55a0336c244414d1226e7406bd88bdc8d4f698cb7978f7575ebd603f2",
+        "92475a5ff880b77b09bc22657dcf0a3227ff28f93848ffbf349add56ed54580c",
+        "ee29b011f89e02e034d9bea8df091bdf02117f53d8ec2943b85592d918c78f57",
+        "4ea52a357e72328f2c5e136344aa945c23078b1c6957fc150f77a6153663ebee"
+      ]
+    },
+    {
+      "key": "origin-secret-comparison-current",
+      "path": "backend/src/origin-verification.test.ts",
+      "parents": [
+        "design-existing-origin-secret-guard",
+        "implementation-optional-origin-secret-comparison"
+      ],
+      "scope": "Entire original two-case file retained with equal-length mismatch and empty header added. Fake configured/absent secret helper behavior, exact match and missing/wrong values; does not prove deployed backend requires header or Worker supplies configured secret.",
+      "ref": "verification/origin-secret-comparison-current-20261007",
+      "test": true,
+      "sha256": "75b4a418869ae5ff50e7e9acebe1d42ec95582d81dfe59efc6f26a8a23582940",
+      "sealId": "45241218e04a3d27dc62edac99b30378ca1513751ebdb5d40393ba1603af4635",
+      "causeSealIds": [
+        "5cb0f536376e7590c0578826b81cfc16980a60f4ab363ceb6bc42b3680001a0f",
+        "3ded544a1f276244682f9e78869007fc9b63221fdbc99712001b684a66911217"
+      ]
+    },
+    {
+      "key": "browser-authenticated-fetch-current",
+      "path": "frontend/src/authenticated-fetch.test.ts",
+      "parents": [
+        "requirements",
+        "implementation-browser-authenticated-fetch"
+      ],
+      "scope": "Entire unchanged two-case file: injected fake fetch observes current token plus SSE Accept and credentials, explicit Authorization prevents token lookup and survives. Generic header helper only; the illustrative route string is not endpoint integration acceptance.",
+      "ref": "verification/browser-authenticated-fetch-current-20261007",
+      "test": true,
+      "sha256": "52204b72bdc75e23f4bcee685bd12341f2574bca7e85c587e1a6e2eed634b415",
+      "sealId": "973d65369dffff5e9c015b41f6ce64ff90352e88018d2753af91d74c420c1d7a",
+      "causeSealIds": [
+        "203e66fc4e30772adab026012c67f1b1ac4ca86ad2ada11b501c639a27a19eac",
+        "b6739189f07c41ef417b15efe568559eca99b431f5f146013eb8036622f5ee99"
+      ]
+    },
+    {
+      "key": "supabase-signed-identity-current",
+      "path": "backend/src/services/supabase-identity.test.ts",
+      "parents": [
+        "requirements",
+        "authority-retained-operator-identity",
+        "implementation-signed-supabase-identity"
+      ],
+      "scope": "Complete file retains three original cases and adds fourth validly signed expired-token refusal. In-memory ES256 keys prove accepted identity extraction, wrong issuer/audience/role/absent subject, wrong signing key, missing config/token and expiry rejection. No hosted JWKS fetch/rotation, OAuth, email confirmation, application provisioning, cutover execution or production identity proof.",
+      "ref": "verification/supabase-signed-identity-current-20261007",
+      "test": true,
+      "sha256": "26c0e2b31412cac39d0fee5bb0a93cd94d826c90e3d4392a3afe2627fa144753",
+      "sealId": "a975bd69e04610204f930a1f7ce53a4d11bf8589564f49d2cac7b1729291def5",
+      "causeSealIds": [
+        "203e66fc4e30772adab026012c67f1b1ac4ca86ad2ada11b501c639a27a19eac",
+        "9a193a751c31ca13af8d4258564fadf6bab164f38170c1fd72e8ee6f9d61f990",
+        "8c72d6d55a0336c244414d1226e7406bd88bdc8d4f698cb7978f7575ebd603f2"
+      ]
+    }
+  ],
+  "diagnostic": {
+    "focusedPass": 15,
+    "relatedPass": 6,
+    "relatedFiles": [
+      "backend/src/repositories/test-realm-assets.test.ts",
+      "backend/src/repositories/asset-visibility.test.ts",
+      "backend/src/services/e2e-session.test.ts",
+      "backend/src/routes-e2e-session.test.ts"
+    ],
+    "fail": 0,
+    "skipped": 0,
+    "strictTypecheckExit": 0,
+    "workspaceTypecheckExit": 0
+  },
+  "limitations": [
+    "SQLite and locally signed/injected-key/fetch tests only; no external identity or provider work",
+    "Historical origin runtime prices/limits and observation workflow directives not adopted by this binding",
+    "Four unsealed files registered, signed identity file rebound without removing any original cases or reviving discarded cutover trial"
+  ]
+}

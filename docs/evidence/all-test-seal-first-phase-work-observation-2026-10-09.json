@@ -1,0 +1,14 @@
+{
+  "schema": "kshiai/first-phase-work-observation/v1",
+  "source": "all-test-seal-delivery-velocity-measured-2026-10-09.json",
+  "task": "source-cohort",
+  "points": 2,
+  "elapsedSeconds": 1669,
+  "pointPerElapsedHour": 4.314,
+  "sampleCount": 1,
+  "activeTimeMeasured": false,
+  "effortMeasured": false,
+  "applicability": "Only the first source-cohort review/freeze phase. Not a measured SealGraph publication, CI, deployment, provider-call or total project rate. Those phases include different work and external gates; do not set a project-wide velocity from this sample.",
+  "nextMeasurement": "seal-closure official start/finish plus publication-node elapsed counts; then compare phase applicability before adopting velocity",
+  "forecast": "Completion earliest19:00 JST, low confidence;20:00 worktime boundary and external approval gates remain."
+}

@@ -1,25 +1,10 @@
+// R: Verify the retired legacy authoring entry rejects before work and retains adjustment parsing.
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
-import {
-  defaultParameters,
-  defaultBasicAttack,
-  type CharacterDefinitionV2,
-  type CharacterSheet,
-} from "@kshiai/shared";
+import { defaultParameters, defaultBasicAttack } from "@kshiai/shared";
 import { MockLlmProvider } from "../llm/mock.js";
-import type {
-  GenerateCharacterDefinitionV2Input,
-  GenerateCharacterProfileInput,
-  GenerateCharacterResult,
-  ValidateCharacterProfileClaimsInput,
-} from "../llm/types.js";
-import type { ReviewCharacterDefinitionV2Input } from "../llm/types.js";
-import {
-  buildCharacterGenerationCandidate,
-  CHARACTER_DEFINITION_CHECK_FAILED,
-  existingCharacterGenerationResult,
-  lastAuthoringAdjustment,
-} from "./character-authoring-service.js";
+import type { GenerateCharacterResult } from "../llm/types.js";
+import { buildCharacterGenerationCandidate, lastAuthoringAdjustment } from "./character-authoring-service.js";
 
 function generatedCharacter(): GenerateCharacterResult {
   return {
@@ -54,340 +39,32 @@ function generatedCharacter(): GenerateCharacterResult {
   };
 }
 
-class RecordingClaimProvider extends MockLlmProvider {
-  readonly calls: string[] = [];
-  claimInput: ValidateCharacterProfileClaimsInput | null = null;
-  reviewInput: ReviewCharacterDefinitionV2Input | null = null;
-  definitionInput: GenerateCharacterDefinitionV2Input | null = null;
-
-  override async generateCharacterDefinitionV2(
-    input: GenerateCharacterDefinitionV2Input,
-  ): Promise<CharacterDefinitionV2> {
-    this.calls.push("structure");
-    this.definitionInput = structuredClone(input);
-    const definition = await super.generateCharacterDefinitionV2(input);
-    return {
-      ...definition,
-      psycheDisposition: {
-        ...definition.psycheDisposition,
-        dynamics: {
-          ...definition.psycheDisposition.dynamics,
-          adverseSensitivity: 731,
-        },
-      },
-    };
-  }
-
-  override async reviewCharacterDefinitionV2(
-    input: ReviewCharacterDefinitionV2Input,
-  ) {
-    this.calls.push("review");
-    this.reviewInput = structuredClone(input);
-    return super.reviewCharacterDefinitionV2(input);
-  }
-
-  override async generateCharacterProfile(input: GenerateCharacterProfileInput) {
-    this.calls.push("profile");
-    return super.generateCharacterProfile(input);
-  }
-
-  override async validateCharacterProfileClaims(
-    input: ValidateCharacterProfileClaimsInput,
-  ) {
-    this.calls.push("claim-validator");
-    this.claimInput = structuredClone(input);
-    return super.validateCharacterProfileClaims(input);
-  }
+class RejectWorkProvider extends MockLlmProvider {
+  calls = 0;
+  override async generateCharacterDefinitionV2(): Promise<never> { this.calls++; throw new Error("UNEXPECTED_PROVIDER_WORK"); }
+  override async reviewCharacterDefinitionV2(): Promise<never> { this.calls++; throw new Error("UNEXPECTED_PROVIDER_WORK"); }
+  override async generateCharacterProfile(): Promise<never> { this.calls++; throw new Error("UNEXPECTED_PROVIDER_WORK"); }
+  override async validateCharacterProfileClaims(): Promise<never> { this.calls++; throw new Error("UNEXPECTED_PROVIDER_WORK"); }
 }
 
-describe("structured character authoring claim validation", () => {
-  it("runs after profile generation with only the public projection and candidate", async () => {
-    const provider = new RecordingClaimProvider();
-    const statuses: string[] = [];
-    const result = await buildCharacterGenerationCandidate({
-      llm: provider,
-      attemptId: "attempt-claim-order",
-      characterId: "character-claim-order",
-      ownerUserId: "owner-claim-order",
-      sourceText: "PRIVATE_SOURCE_SENTINEL",
-      sourceKind: "create_instruction",
-      generated: generatedCharacter(),
-      reportStatus: async (status) => {
-        statuses.push(status);
-      },
+describe("retired legacy character authoring boundary", () => {
+  // ADR0043 retains migration/historical import readers, not this former V2 writer.
+  for (const sourceKind of ["create_instruction", "revision_instruction", "upgrade_description", "import"] as const) {
+    it(`rejects ${sourceKind} before provider work or progress publication`, async () => {
+      const provider = new RejectWorkProvider();
+      const statuses: string[] = [];
+      const generated = generatedCharacter();
+      const before = structuredClone(generated);
+      await assert.rejects(buildCharacterGenerationCandidate({
+        llm: provider, attemptId: `retired-${sourceKind}`, characterId: "retired-character",
+        ownerUserId: "retired-owner", sourceText: "火を守る旅人。", sourceKind, generated,
+        reportStatus: async (status) => { statuses.push(status); },
+      }), { message: "LEGACY_CHARACTER_AUTHORING_RETIRED" });
+      assert.equal(provider.calls, 0);
+      assert.deepEqual(statuses, []);
+      assert.deepEqual(generated, before);
     });
-
-    assert.deepEqual(provider.calls, [
-      "structure",
-      "review",
-      "profile",
-      "claim-validator",
-    ]);
-    assert.deepEqual(statuses, [
-      "generating_structure",
-      "validating_structure",
-      "generating_description",
-      "validating_description",
-    ]);
-    assert.ok(provider.reviewInput);
-    assert.equal(provider.reviewInput!.sourceKind, "create_instruction");
-    assert.ok(provider.claimInput);
-    assert.deepEqual(Object.keys(provider.claimInput!).sort(), ["profile", "projection"]);
-    const serialized = JSON.stringify(provider.claimInput);
-    assert.equal(serialized.includes("PRIVATE_SOURCE_SENTINEL"), false);
-    assert.equal(serialized.includes("731"), false);
-    assert.equal(serialized.includes("dynamics"), false);
-    assert.equal(
-      result.envelope.publicPresentation.claimValidation?.validatorContract,
-      "character-profile-claim-validator-v1",
-    );
-    assert.ok(result.envelope.compilerCompatibility.some((compiler) =>
-      compiler.consumer === "character-profile-claim-validator" &&
-      compiler.version === 1));
-  });
-
-  it("does not produce an activatable envelope for an unsupported material claim", async () => {
-    class RejectingProvider extends RecordingClaimProvider {
-      override async validateCharacterProfileClaims(
-        input: ValidateCharacterProfileClaimsInput,
-      ) {
-        this.claimInput = structuredClone(input);
-        return {
-          segments: input.profile.segments.map((segment) => ({
-            segmentId: segment.id,
-            verdict: "unsupported" as const,
-            supportRefs: [],
-            riskCodes: ["history_event" as const],
-          })),
-        };
-      }
-    }
-
-    await assert.rejects(
-      buildCharacterGenerationCandidate({
-        llm: new RejectingProvider(),
-        attemptId: "attempt-claim-rejected",
-        characterId: "character-claim-rejected",
-        ownerUserId: "owner-claim-rejected",
-        sourceText: "公開可能な情報だけで作る",
-        sourceKind: "create_instruction",
-        generated: generatedCharacter(),
-      }),
-      /PROFILE_UNSUPPORTED_CLAIM/,
-    );
-  });
-
-  it("does not elevate first-stage prose principles into persisted action-norm authority", async () => {
-    const generated = generatedCharacter();
-    generated.sheet.decisionProfile = {
-      defaultObjective: {
-        id: "victory",
-        statement: "勝利を目指す",
-        priority: 50,
-      },
-      principles: [{
-        id: "intermediate-wait",
-        statement: "まず待つ",
-        priority: 90,
-        force: "constraint",
-      }],
-    };
-    const provider = new RecordingClaimProvider();
-
-    await buildCharacterGenerationCandidate({
-      llm: provider,
-      attemptId: "attempt-intermediate-principle",
-      characterId: "character-intermediate-principle",
-      ownerUserId: "owner-intermediate-principle",
-      sourceText: "好機には踏み込む剣士",
-      sourceKind: "create_instruction",
-      generated,
-    });
-
-    assert.ok(provider.definitionInput);
-    assert.deepEqual(provider.definitionInput!.baseDefinition.actionNorms, []);
-    assert.deepEqual(provider.definitionInput!.unstructuredActionNormSources, []);
-  });
-
-  it("upgrades from the existing sheet and restores drifted mechanics", async () => {
-    class DriftingUpgradeProvider extends RecordingClaimProvider {
-      override async generateCharacterDefinitionV2(
-        input: GenerateCharacterDefinitionV2Input,
-      ): Promise<CharacterDefinitionV2> {
-        this.calls.push("structure");
-        this.definitionInput = structuredClone(input);
-        const definition = await super.generateCharacterDefinitionV2(input);
-        return {
-          ...definition,
-          identity: { ...definition.identity, displayName: "別人" },
-          combat: {
-            ...definition.combat,
-            parameters: { ...definition.combat.parameters, atk: 99 },
-          },
-        };
-      }
-    }
-
-    const existing: CharacterSheet = {
-      id: "character-upgrade-existing",
-      ownerUserId: "owner-upgrade",
-      createdAt: "2026-08-14T00:00:00.000Z",
-      updatedAt: "2026-08-14T00:00:00.000Z",
-      ...generatedCharacter().sheet,
-      displayName: "灯",
-      narrativeBlurb: "火を守る旅人。",
-      decisionProfile: {
-        defaultObjective: {
-          id: "victory",
-          statement: "勝利を目指す",
-          priority: 50,
-        },
-        principles: [{
-          id: "protect-flame",
-          statement: "火を守る",
-          priority: 80,
-          force: "commitment",
-        }],
-      },
-    };
-    const provider = new DriftingUpgradeProvider();
-    const result = await buildCharacterGenerationCandidate({
-      llm: provider,
-      attemptId: "attempt-upgrade-restore",
-      characterId: existing.id,
-      ownerUserId: existing.ownerUserId,
-      sourceText: existing.narrativeBlurb,
-      sourceKind: "upgrade_description",
-      generated: existingCharacterGenerationResult(existing),
-      existing,
-    });
-
-    assert.ok(provider.calls.includes("review"));
-    assert.deepEqual(provider.definitionInput?.unstructuredActionNormSources, [{
-      id: "protect-flame",
-      statement: "火を守る",
-      priority: 80,
-      force: "commitment",
-    }]);
-    assert.deepEqual(provider.reviewInput?.unstructuredActionNormSources, [{
-      id: "protect-flame",
-      statement: "火を守る",
-      priority: 80,
-      force: "commitment",
-    }]);
-    assert.equal(result.envelope.definition.identity.displayName, "灯");
-    assert.notEqual(result.envelope.definition.combat.parameters.atk, 99);
-    assert.equal(
-      result.envelope.definition.expressionNotes?.text.includes("火を守る"),
-      true,
-    );
-  });
-
-  it("applies a self-review fill and fails closed when checks still fail", async () => {
-    class RevisingProvider extends RecordingClaimProvider {
-      override async reviewCharacterDefinitionV2() {
-        this.calls.push("review");
-        return {
-          verdict: "revise" as const,
-          issues: [{
-            code: "missing_background",
-            path: "profileBackground",
-            message: "source supports a traveler origin",
-          }],
-          fill: {
-            profileBackground: [{
-              id: "background-origin",
-              kind: "origin" as const,
-              summary: "火を守る旅",
-              description: {
-                text: "火を守る旅人として各地を歩く。",
-                consumerTags: ["profile-generator" as const],
-                sourceSupportRefs: [],
-              },
-              selfAwareness: "aware" as const,
-            }],
-          },
-        };
-      }
-    }
-
-    const revised = await buildCharacterGenerationCandidate({
-      llm: new RevisingProvider(),
-      attemptId: "attempt-review-revise",
-      characterId: "character-review-revise",
-      ownerUserId: "owner-review-revise",
-      sourceText: "火を守る旅人。",
-      sourceKind: "upgrade_description",
-      generated: existingCharacterGenerationResult({
-        id: "character-review-revise",
-        ownerUserId: "owner-review-revise",
-        createdAt: "2026-08-14T00:00:00.000Z",
-        updatedAt: "2026-08-14T00:00:00.000Z",
-        ...generatedCharacter().sheet,
-        narrativeBlurb: "火を守る旅人。",
-      }),
-      existing: {
-        id: "character-review-revise",
-        ownerUserId: "owner-review-revise",
-        createdAt: "2026-08-14T00:00:00.000Z",
-        updatedAt: "2026-08-14T00:00:00.000Z",
-        ...generatedCharacter().sheet,
-        narrativeBlurb: "火を守る旅人。",
-      },
-    });
-    assert.equal(
-      revised.envelope.definition.profileBackground[0]?.id,
-      "background-origin",
-    );
-
-    class BrokenReviewProvider extends RecordingClaimProvider {
-      override async reviewCharacterDefinitionV2() {
-        return {
-          verdict: "revise" as const,
-          issues: [],
-          fill: {
-            actionNorms: [{
-              id: "norm-bad",
-              when: {
-                match: "all" as const,
-                clauses: [{
-                  kind: "always" as const,
-                  operator: "is" as const,
-                  value: "true" as const,
-                }],
-              },
-              response: {
-                disposition: "prefer" as const,
-                actionRefs: ["missing-action"],
-                actionKinds: [],
-                tacticTags: [],
-                statement: "存在しない行動を使う",
-                fallbackActionRef: null,
-              },
-              priority: 10,
-              force: "preference" as const,
-              selfAwareness: "aware" as const,
-              exceptions: [],
-              description: null,
-            }],
-          },
-        };
-      }
-    }
-
-    await assert.rejects(
-      buildCharacterGenerationCandidate({
-        llm: new BrokenReviewProvider(),
-        attemptId: "attempt-review-invalid",
-        characterId: "character-review-invalid",
-        ownerUserId: "owner-review-invalid",
-        sourceText: "火を守る旅人。",
-        sourceKind: "upgrade_description",
-        generated: generatedCharacter(),
-      }),
-      new RegExp(CHARACTER_DEFINITION_CHECK_FAILED),
-    );
-  });
+  }
 });
 
 describe("lastAuthoringAdjustment", () => {

@@ -1,0 +1,36 @@
+{
+  "schema": "kshiai/test-authority-selection/v2",
+  "suite": "e2e",
+  "discovered": 4,
+  "active": 1,
+  "provisional": 0,
+  "disabled": 3,
+  "sealed": 3,
+  "unsealed": 1,
+  "tests": [
+    {
+      "path": "e2e/battle-screen.spec.ts",
+      "state": "disabled",
+      "reason": "unsealed",
+      "ref": null
+    },
+    {
+      "path": "e2e/character-focused-review.spec.ts",
+      "ref": "verification/vt104-character-focused-review-20260930",
+      "state": "disabled",
+      "reason": "source_diverged"
+    },
+    {
+      "path": "e2e/history-character-navigation.spec.ts",
+      "ref": "verification/history-character-navigation-20261002",
+      "state": "active",
+      "reason": "current"
+    },
+    {
+      "path": "e2e/v3-local-integration.spec.ts",
+      "ref": "verification/vt103-local-integration-20260930",
+      "state": "disabled",
+      "reason": "source_diverged"
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "newRefs": 6,
+  "previousHeadsUnchanged": true,
+  "previousHeadCount": 798,
+  "totalRefs": 804,
+  "sourceBytesMatch": true,
+  "stale": 0,
+  "limitations": [
+    "Two local schema files only",
+    "No live provider acceptance or full migration engine certification",
+    "Historical fixture comparison masks requiringCapability only; actual registered pair consistency has separate ADR0046 tests"
+  ]
+}

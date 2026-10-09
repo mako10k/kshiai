@@ -1,0 +1,20 @@
+{
+  "classification": "GAP",
+  "source": "backend/src/services/battle-service.ts:712",
+  "sourceSha256": "80eda28c060f4f789dfb64a13a3babf2e4d82db77a8b34cebeb938cba040bce8",
+  "configSha256": "6b58fd9428c378fefee216abc3e7f062d9798a9cec9d28c8d2ac831fb3cdc750",
+  "facts": [
+    "Normal creation unconditionally binds LOCAL_TWELVE_TURN_PACING_CANDIDATE",
+    "BATTLE_PACING_POLICY defaults current but parsed config has no consumer",
+    "Candidate vector persists and engine consumes it"
+  ],
+  "protectedContract": [
+    "F-BTL11/12 automatic restoration",
+    "Accepted ADR0017 restoration on first beat"
+  ],
+  "unresolved": "Accepted replacement/adoption for normal explicit-effects-only and full numeric vector not established",
+  "outsideNarrowTestSeal": true,
+  "notProductionAcceptance": true,
+  "mutationsApplied": false,
+  "next": "Recover exact owner/adoption authority or present selector/restoration contract choice; do not infer it from test pass/name."
+}

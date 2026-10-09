@@ -1,0 +1,16 @@
+domain DatabaseHelperSeal:
+  description "Seal local database preparation helpers without promoting preparation to production migration acceptance"
+problem P1:
+  "Three whole files/seven cases remain unsealed; two test titles claimed stronger SHA256/historical ID/failclosed evidence than their assertions directly exercised. Source inspection uses two unchecked casts."
+evidence E1:
+  "Current requirements identify PostgreSQL17 production target and SQLite source/local-only use. Four CA cases exercise configured path success/error only. One migration discovery case exercises selection/order/checksum. Two SQLite cases exercise private legacy source inspection and errors."
+evidence E2:
+  "Independent mapping identifies the missing positive evidence. Original cases/assertions are retained; exact SHA256/content, actual retained audit IDs/warning text and real CLI inspection rejection are added to the existing cases. No target apply/verify flags or connection is used."
+evidence E3:
+  "Installed better-sqlite3 declares typed prepare/all results; pragma default executes PRAGMA statement.all. Typed fixed integrity query and dynamic unknown-field SourceRow query replace casts while preserving SQL/read-only/deferred/finally-close behavior."
+premise A1:
+  "All247unit+4E2E and original cases/assertions remain required. Preparation tests cannot satisfy PG17/TLS/NFR10 completeness, migration application, hosted import, rollback, or current domain JSON validity."
+decision D1 based_on P1, E1, E2, E3, A1:
+  "Publish responsibility-specific scoped design/producer/whole-test Cause chains after independent implementation review, unchanged-case evidence, seven-case diagnostics and workspace typecheck. Use only accepted requirements as normative root; operator documentation describes existing helpers but is not fresh authority."
+decision D2 based_on D1, A1:
+  "Normal Seal and readback prove only exact current local scopes. Preserve all prior heads, source bindings and original251 file accounting. Formal npm test must stop before execution while any original unit remains unsealed."

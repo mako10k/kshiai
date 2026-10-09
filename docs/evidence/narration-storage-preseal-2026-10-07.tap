@@ -1,0 +1,83 @@
+TAP version 13
+# Subtest: narrator reserves while world lease is live, preserving world fence and fresh world CAS budget
+ok 1 - narrator reserves while world lease is live, preserving world fence and fresh world CAS budget
+  ---
+  duration_ms: 164.928064
+  type: 'test'
+  ...
+# Subtest: stale, expired or incorrectly linked narrator capabilities never reserve
+ok 2 - stale, expired or incorrectly linked narrator capabilities never reserve
+  ---
+  duration_ms: 52.147197
+  type: 'test'
+  ...
+# Subtest: budget and inactive bounds remain enforced and transaction rollback removes proof and reservation
+ok 3 - budget and inactive bounds remain enforced and transaction rollback removes proof and reservation
+  ---
+  duration_ms: 43.299522
+  type: 'test'
+  ...
+# Subtest: projects only the requested subjective narrator perspective and never reseeds from a later baseline
+ok 4 - projects only the requested subjective narrator perspective and never reseeds from a later baseline
+  ---
+  duration_ms: 257.31477
+  type: 'test'
+  ...
+# Subtest: narration claim statement read order
+    # Subtest: captures old entries before an interleaved atomic commit and validates them against the newer battle
+    ok 1 - captures old entries before an interleaved atomic commit and validates them against the newer battle
+      ---
+      duration_ms: 204.79928
+      type: 'test'
+      ...
+    # Subtest: includes a newly committed receipt when its atomic commit precedes entry capture
+    ok 2 - includes a newly committed receipt when its atomic commit precedes entry capture
+      ---
+      duration_ms: 47.474801
+      type: 'test'
+      ...
+    # Subtest: leaves a receipt arriving after an empty capture for the next capture
+    ok 3 - leaves a receipt arriving after an empty capture for the next capture
+      ---
+      duration_ms: 66.501516
+      type: 'test'
+      ...
+    # Subtest: preserves missing battle acknowledgement and missing runtime errors even for empty entries
+    ok 4 - preserves missing battle acknowledgement and missing runtime errors even for empty entries
+      ---
+      duration_ms: 39.53033
+      type: 'test'
+      ...
+    # Subtest: does not repair or discard a corrupted material before the strict material validator sees it
+    ok 5 - does not repair or discard a corrupted material before the strict material validator sees it
+      ---
+      duration_ms: 25.512841
+      type: 'test'
+      ...
+    1..5
+ok 5 - narration claim statement read order
+  ---
+  duration_ms: 388.240003
+  type: 'suite'
+  ...
+# Subtest: SQLite appends exact public IDs and continues above the retained floor after full pruning
+ok 6 - SQLite appends exact public IDs and continues above the retained floor after full pruning
+  ---
+  duration_ms: 308.504627
+  type: 'test'
+  ...
+# Subtest: rollback publishes no event and permits reuse of its unpublished sequence
+ok 7 - rollback publishes no event and permits reuse of its unpublished sequence
+  ---
+  duration_ms: 3.565599
+  type: 'test'
+  ...
+1..7
+# tests 11
+# suites 1
+# pass 11
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 3065.53988

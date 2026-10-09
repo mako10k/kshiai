@@ -1,0 +1,72 @@
+{
+  "scope": "Six pure subjective-state transition obligations; existing exact upstream seeds retained, no operational deadline claim",
+  "entries": [
+    {
+      "ref": "all-tests-20261007/contract-awareness-decisions",
+      "path": "docs/battle-consciousness-implementation-decisions-2026-10-05.md",
+      "sealId": "1edf3239229665d39a55aee22af5148f4408f6c8dfea24ca200ae835af46e02d",
+      "sha256": "76dd7398683b9f633793ff606dcdea5e59dd540c635a62409c3527c60bc87095",
+      "causeSealIds": [
+        "4a236b55e9ad9e4aa54eb2c6bbe9d77e0a318881ba8328363505153d16e151dd",
+        "bfad7f3d9646ec7657e4db701b034d71990427ee991a8a037efe3d09f5367e48"
+      ]
+    },
+    {
+      "ref": "all-tests-20261007/implementation-awareness-state",
+      "path": "packages/shared/src/awareness-state.ts",
+      "sealId": "cea338023663fcb0df2f08b3e889a61b0033e7d60008a6301090ccac8a3fe50a",
+      "sha256": "a3cb6a4bb7fb4fd44aa5a8d054496a69ee791045c5271261b5e59d7aeebad43a",
+      "causeSealIds": [
+        "1adba1d06106cfcc7537dcd2d85aa94f745a4a79ff6b3f5ac4911a11efdf79a8",
+        "1edf3239229665d39a55aee22af5148f4408f6c8dfea24ca200ae835af46e02d",
+        "56e673314fc7d2d4b1caef3c2c3411213422bba8d58a28bb6f8fbe5f3fa3df72"
+      ]
+    },
+    {
+      "ref": "verification/awareness-state-20261007",
+      "path": "packages/shared/src/awareness-state.test.ts",
+      "sealId": "c20387af136077c79090a6de785ac93057b92ad60f5a9aa0e92398b4c190f0ef",
+      "sha256": "7b397e955d18e08c1486164ac4832a006877b14bd91342a8b50e938db66787de",
+      "causeSealIds": [
+        "1edf3239229665d39a55aee22af5148f4408f6c8dfea24ca200ae835af46e02d",
+        "56e673314fc7d2d4b1caef3c2c3411213422bba8d58a28bb6f8fbe5f3fa3df72",
+        "cea338023663fcb0df2f08b3e889a61b0033e7d60008a6301090ccac8a3fe50a"
+      ]
+    }
+  ],
+  "existingUpstreamSeals": [
+    {
+      "ref": "awareness-guidance-20261007/authority-current",
+      "path": "docs/adr/0051-observed-llm-usage-accounting.md",
+      "sealId": "4a236b55e9ad9e4aa54eb2c6bbe9d77e0a318881ba8328363505153d16e151dd",
+      "causes": [
+        "d5695200a29531ed085f10c0d502effc2af325ee206874b1f32c61db6872fba4"
+      ]
+    },
+    {
+      "ref": "awareness-guidance-20261007/requirements",
+      "path": "docs/battle-consciousness-requirements-2026-10-05.md",
+      "sealId": "bfad7f3d9646ec7657e4db701b034d71990427ee991a8a037efe3d09f5367e48",
+      "causes": [
+        "4a236b55e9ad9e4aa54eb2c6bbe9d77e0a318881ba8328363505153d16e151dd"
+      ]
+    },
+    {
+      "ref": "awareness-guidance-20261007/basic-design",
+      "path": "docs/battle-consciousness-basic-design-2026-10-05.md",
+      "sealId": "1adba1d06106cfcc7537dcd2d85aa94f745a4a79ff6b3f5ac4911a11efdf79a8",
+      "causes": [
+        "bfad7f3d9646ec7657e4db701b034d71990427ee991a8a037efe3d09f5367e48",
+        "4a236b55e9ad9e4aa54eb2c6bbe9d77e0a318881ba8328363505153d16e151dd"
+      ]
+    },
+    {
+      "ref": "awareness-guidance-20261007/input-contract",
+      "path": "packages/shared/src/awareness-pipeline.ts",
+      "sealId": "56e673314fc7d2d4b1caef3c2c3411213422bba8d58a28bb6f8fbe5f3fa3df72",
+      "causes": [
+        "1adba1d06106cfcc7537dcd2d85aa94f745a4a79ff6b3f5ac4911a11efdf79a8"
+      ]
+    }
+  ]
+}

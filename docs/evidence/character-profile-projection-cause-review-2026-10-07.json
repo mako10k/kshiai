@@ -1,0 +1,137 @@
+{
+  "schema": "kshiai/character-profile-projection-cause-review/v1",
+  "scope": "Four isolated local tests: norm preservation, absent public permission exclusion, explicit public guidance projection and invalid profile receipt/disclosure rejection. Synthetic fixture receipt, no live model quality or natural-language create completion.",
+  "upstream": [
+    {
+      "ref": "all-tests-20261007/authority-v3-writes",
+      "sealId": "480c02403f61dc6a9cd7d54861639b962dbc3bde86673481e02e0defc8415e17",
+      "path": "docs/adr/0043-v3-character-updates-with-historical-v2-display.md"
+    },
+    {
+      "ref": "all-tests-20261007/contract-character-v3-envelope",
+      "sealId": "256c436664b69e1d7ddcc50f818d90173bbaf402b3b9bd322dd96c3d150771db",
+      "path": "packages/shared/src/character-definition-v3.ts"
+    },
+    {
+      "ref": "all-tests-20261007/fixture-neva-v3-envelope",
+      "sealId": "63bbfc08658ea806c48180ea5e813d4e5cefa4539dcd673f92cfc83517589cce",
+      "path": "backend/src/fixtures/neva-v3.ts"
+    }
+  ],
+  "nodes": [
+    {
+      "key": "authority-character-profile-support",
+      "path": "docs/adr/0011-structured-character-definition.md",
+      "parents": [],
+      "scope": "Accepted Public profile clauses only: display-authorized support references, bounded claim validation, unsupported claims prevent activation; ordinary V2 structure writers remain retired by ADR-0043.",
+      "ref": "all-tests-20261007/authority-character-profile-support",
+      "sha256": "60611d35bd03be6e8ee37e855841b7d6f857198abdbbf7bb4f3bd2f72fb0d31d"
+    },
+    {
+      "key": "design-character-profile-support",
+      "path": "docs/structured-character-definition-design.md",
+      "parents": [
+        "authority-character-profile-support",
+        "authority-v3-writes"
+      ],
+      "scope": "Public profile projection/support/claim validation clauses only (public profile section); no adoption of superseded V2 runtime psyche or ordinary authoring routes.",
+      "ref": "all-tests-20261007/design-character-profile-support",
+      "sha256": "c9f29ee63121aa8ffa65f7270f11c56ac46ebc1a80309d8b37bc110b5486e6a0"
+    },
+    {
+      "key": "contract-character-profile-support",
+      "path": "packages/shared/src/structured-character.ts",
+      "parents": [
+        "authority-character-profile-support",
+        "design-character-profile-support"
+      ],
+      "scope": "Existing profile-v2 display facts and server receipt validation reused by V3 only; no certification of legacy V2 authoring, all validators or provider semantic truth.",
+      "ref": "all-tests-20261007/contract-character-profile-support",
+      "sha256": "b505129a97ad24c44285f6779e0be2736433a8560e66a312a4ddbc62f874aa42"
+    },
+    {
+      "key": "implementation-character-profile-v3",
+      "path": "packages/shared/src/character-profile-v3.ts",
+      "parents": [
+        "contract-character-profile-support",
+        "contract-character-v3-envelope",
+        "design-character-profile-support"
+      ],
+      "scope": "Profile-only V3 adaptation retaining norm force/disposition/action references/description; public guidance statements require explicit profile/public/unconditional disclosure. Not an authoritative V2 downgrade.",
+      "ref": "all-tests-20261007/implementation-character-profile-v3",
+      "sha256": "7669ded1796e242d5574d8e0276d8a7650238b50be23ca9d5e522a0a0bfeaf5b"
+    },
+    {
+      "key": "implementation-character-profile-adapter",
+      "path": "backend/src/services/character-v3-profile-adapter.ts",
+      "parents": [
+        "implementation-character-profile-v3"
+      ],
+      "scope": "Typed profile-only wrapper delegation; no current character state mutation or LLM generation.",
+      "ref": "all-tests-20261007/implementation-character-profile-adapter",
+      "sha256": "157df530fb025777ef72904d91c338d18b728060cfe55e61c7a1ea94a219960f"
+    },
+    {
+      "key": "implementation-character-profile-readiness",
+      "path": "backend/src/services/character-authoring-candidate.ts",
+      "parents": [
+        "contract-character-v3-envelope",
+        "implementation-character-profile-v3",
+        "contract-character-profile-support"
+      ],
+      "scope": "assertCharacterCandidateReady V3 profile projection digest and receipt checks only; other review/activation helpers and full compiler eligibility are outside this test claim.",
+      "ref": "all-tests-20261007/implementation-character-profile-readiness",
+      "sha256": "f6d4fac8387502507d30f4fc428bb0963f451a2154a1506f093122357af2a0ba"
+    },
+    {
+      "key": "character-profile-v3-projection",
+      "path": "backend/src/services/character-v3-profile-adapter.test.ts",
+      "parents": [
+        "authority-character-profile-support",
+        "design-character-profile-support",
+        "contract-character-v3-envelope",
+        "contract-character-profile-support",
+        "implementation-character-profile-v3",
+        "implementation-character-profile-adapter",
+        "implementation-character-profile-readiness",
+        "fixture-neva-v3-envelope"
+      ],
+      "scope": "Four isolated local tests: norm preservation, absent public permission exclusion, explicit public guidance projection and invalid profile receipt/disclosure rejection. Synthetic fixture receipt, no live model quality or natural-language create completion.",
+      "ref": "verification/character-profile-v3-projection-20261007",
+      "sha256": "ea6c181562e790c5243548074a84de6dc5c377ec2d4031a15c964dbcb6de72db"
+    }
+  ],
+  "cases": [
+    {
+      "case": "norm preservation",
+      "authority": "ADR-0011 public profile derives from structured display projection",
+      "observation": "force, response disposition, action refs and description remain equal"
+    },
+    {
+      "case": "private guidance exclusion",
+      "authority": "ADR-0011 public profile support references publication-authorized only",
+      "observation": "V3 and legacy projection equal without explicit public guidance rule"
+    },
+    {
+      "case": "explicit guidance inclusion",
+      "authority": "Structured character design display projection is disclosure filtered",
+      "observation": "public unconditional exact rule includes statement; owner/narrator/prerequisite/other-ID rules exclude"
+    },
+    {
+      "case": "claim readiness rejection",
+      "authority": "ADR-0011 unsupported material claim fails activation",
+      "observation": "supported fixture passes; unsupported receipt and removed disclosure reject"
+    }
+  ],
+  "diagnostic": {
+    "pass": 4,
+    "fail": 0,
+    "skipped": 0,
+    "strictTypecheckExit": 0
+  },
+  "limitations": [
+    "Does not prove model claim assessment truth",
+    "Does not complete focused create/profile generation",
+    "Does not certify other functions in bound files"
+  ]
+}

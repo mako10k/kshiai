@@ -1,0 +1,58 @@
+TAP version 13
+# Subtest: rejects changed candidate input before execution
+ok 1 - rejects changed candidate input before execution
+  ---
+  duration_ms: 9.017422
+  type: 'test'
+  ...
+# Subtest: defaults to offline validation and ignores inherited normal database targets
+ok 2 - defaults to offline validation and ignores inherited normal database targets
+  ---
+  duration_ms: 883.697192
+  type: 'test'
+  ...
+# Subtest: runs exactly three combat ticks and drains narration with fixed actual SDK routes
+ok 3 - runs exactly three combat ticks and drains narration with fixed actual SDK routes
+  ---
+  duration_ms: 7175.904443
+  type: 'test'
+  ...
+# Subtest: retains failed encounter usage without creating another battle or sending later ticks
+ok 4 - retains failed encounter usage without creating another battle or sending later ticks
+  ---
+  duration_ms: 1449.714708
+  type: 'test'
+  ...
+# Subtest: stops new combat ticks after narration fails and preserves failed readback
+ok 5 - stops new combat ticks after narration fails and preserves failed readback
+  ---
+  duration_ms: 39130.170889
+  type: 'test'
+  ...
+# Subtest: binds long measurement timing to the new trial and counts actual wire input without retaining prompts
+ok 6 - binds long measurement timing to the new trial and counts actual wire input without retaining prompts
+  ---
+  duration_ms: 10974.253912
+  type: 'test'
+  ...
+# Subtest: releases completed SDK slots after invalid latent and late conscious shapes while retaining unknown cost
+ok 7 - releases completed SDK slots after invalid latent and late conscious shapes while retaining unknown cost
+  ---
+  duration_ms: 58669.21022
+  type: 'test'
+  ...
+# Subtest: closes SDK-completed narration format rejection without inventing a narrative or zero cost
+ok 8 - closes SDK-completed narration format rejection without inventing a narrative or zero cost
+  ---
+  duration_ms: 3264.435723
+  type: 'test'
+  ...
+1..8
+# tests 8
+# suites 0
+# pass 8
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 122141.726744

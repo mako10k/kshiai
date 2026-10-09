@@ -337,6 +337,7 @@ export class MockLlmProvider implements LlmProvider {
         if (!root) {
           return {
             actorSide,
+            ...(input.penaltyContext?.policyBySide[actorSide] ? { penalty: null } : {}),
             outcome: "impossible" as const,
             interpretation: intent.description ?? "対象へ働きかける",
             changes: [],
@@ -351,6 +352,7 @@ export class MockLlmProvider implements LlmProvider {
         );
         return {
           actorSide,
+          ...(input.penaltyContext?.policyBySide[actorSide] ? { penalty: null } : {}),
           outcome: outOfReach ? "impossible" as const : "possible" as const,
           interpretation: intent.description ?? `${perceived?.perceivedAs ?? "対象"}を扱う`,
           subject: {

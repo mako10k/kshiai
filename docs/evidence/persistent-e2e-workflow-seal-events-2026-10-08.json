@@ -1,0 +1,110 @@
+[
+  {
+    "key": "design-persistent-workflow-guards",
+    "path": "docs/persistent-e2e-workflow-test-contract-review-2026-10-08.md",
+    "parents": [
+      "release",
+      "narration",
+      "operator",
+      "activation",
+      "queue",
+      "observation",
+      "clock"
+    ],
+    "scope": "Static7case preservation of existing Stage/Promote/Observe guards and selected policy equality; no workflow/cloud/provider execution, paid authorization, candidate numeric adoption or discardedcutover verification.",
+    "ref": "all-tests-20261008/design-persistent-workflow-guards",
+    "test": false,
+    "sha256": "ed51f96e6cebf04c5261ccb5d1bc7e5dcae9765390443dc728be5d79ac1870a6",
+    "sealId": "adb71f9a45bd5bdba325436caae0019c7d5e36b76649f1926fffbc75f0f951cf",
+    "causeSealIds": [
+      "b76d73dc1a4b1a0cd6304c89eae2f5642327adbc48cafef6e7b192ebf8f24d1e",
+      "78f9fec1b418020c221d67930654a6ead967fb85393603a544651cea83a61371",
+      "9a193a751c31ca13af8d4258564fadf6bab164f38170c1fd72e8ee6f9d61f990",
+      "645e178be9a4b4662822f09d79c5977797a0830e072ee816510a4a62aa5b8e52",
+      "995d80276d4d54ad40871ddff2f44c1c96343282655f34a54af8f570ea1751b3",
+      "f37d62dd130cf26f48ced720565c4fad035b93a3f3ad1c3e98943cdc9bf585d1",
+      "eca19b9925440ce3fdae98983a9121f3a887ad7a8ba137528209a6817c3dfa95"
+    ]
+  },
+  {
+    "key": "implementation-persistent-workflow-stage-release",
+    "path": ".github/workflows/stage-release.yml",
+    "parents": [
+      "design-persistent-workflow-guards"
+    ],
+    "scope": "Static7case preservation of existing Stage/Promote/Observe guards and selected policy equality; no workflow/cloud/provider execution, paid authorization, candidate numeric adoption or discardedcutover verification.",
+    "ref": "all-tests-20261008/implementation-persistent-workflow-stage-release",
+    "test": false,
+    "sha256": "2872883d30ce1abb41e0b667a09ee31fa0580a3745728393dee8dee9178d98df",
+    "sealId": "2a6012a246672b0ba43550212e524c0c38008ad20fa86f0772f9085e878f52e2",
+    "causeSealIds": [
+      "adb71f9a45bd5bdba325436caae0019c7d5e36b76649f1926fffbc75f0f951cf"
+    ]
+  },
+  {
+    "key": "implementation-persistent-workflow-promote-release",
+    "path": ".github/workflows/promote-release.yml",
+    "parents": [
+      "design-persistent-workflow-guards"
+    ],
+    "scope": "Static7case preservation of existing Stage/Promote/Observe guards and selected policy equality; no workflow/cloud/provider execution, paid authorization, candidate numeric adoption or discardedcutover verification.",
+    "ref": "all-tests-20261008/implementation-persistent-workflow-promote-release",
+    "test": false,
+    "sha256": "caa7b9ef2c0eab375820422de456dd95ba967229d6674d0b72e2ce434f72f161",
+    "sealId": "4c644ea01b7c78054fc7238d33da43e71ba6609d392ee12c3e367f753b4e9349",
+    "causeSealIds": [
+      "adb71f9a45bd5bdba325436caae0019c7d5e36b76649f1926fffbc75f0f951cf"
+    ]
+  },
+  {
+    "key": "implementation-persistent-workflow-observe-persistent-e2e",
+    "path": ".github/workflows/observe-persistent-e2e.yml",
+    "parents": [
+      "design-persistent-workflow-guards"
+    ],
+    "scope": "Static7case preservation of existing Stage/Promote/Observe guards and selected policy equality; no workflow/cloud/provider execution, paid authorization, candidate numeric adoption or discardedcutover verification.",
+    "ref": "all-tests-20261008/implementation-persistent-workflow-observe-persistent-e2e",
+    "test": false,
+    "sha256": "e1a9e7943aa3d6cae8091322a4ba30bf5e8d1b4a89f14c88181d42df85db38c7",
+    "sealId": "b7eb1c5ec7e30d1ca7cbc3adf96ad90f6c7852485638c82a7eac0e0f55f72fc8",
+    "causeSealIds": [
+      "adb71f9a45bd5bdba325436caae0019c7d5e36b76649f1926fffbc75f0f951cf"
+    ]
+  },
+  {
+    "key": "implementation-persistent-workflow-supabase-auth-smoke",
+    "path": "backend/src/scripts/supabase-auth-smoke.ts",
+    "parents": [
+      "design-persistent-workflow-guards"
+    ],
+    "scope": "Static7case preservation of existing Stage/Promote/Observe guards and selected policy equality; no workflow/cloud/provider execution, paid authorization, candidate numeric adoption or discardedcutover verification.",
+    "ref": "all-tests-20261008/implementation-persistent-workflow-supabase-auth-smoke",
+    "test": false,
+    "sha256": "93aaed4f15fed5efe4a88250a06500986854b9b970e8de8def50393b0a75a08c",
+    "sealId": "20c78dab18dbe9c42b7356086cfb3b8e367f4f10bcaf8c6fd7e75df9ee38b80d",
+    "causeSealIds": [
+      "adb71f9a45bd5bdba325436caae0019c7d5e36b76649f1926fffbc75f0f951cf"
+    ]
+  },
+  {
+    "key": "persistent-e2e-workflow-bounded-20261008",
+    "path": "backend/src/scripts/persistent-e2e-workflow.test.ts",
+    "parents": [
+      "implementation-persistent-workflow-stage-release",
+      "implementation-persistent-workflow-promote-release",
+      "implementation-persistent-workflow-observe-persistent-e2e",
+      "implementation-persistent-workflow-supabase-auth-smoke"
+    ],
+    "scope": "Static7case preservation of existing Stage/Promote/Observe guards and selected policy equality; no workflow/cloud/provider execution, paid authorization, candidate numeric adoption or discardedcutover verification. Whole7originalcases/assertions unchanged, no skips.",
+    "ref": "verification/persistent-e2e-workflow-bounded-20261008",
+    "test": true,
+    "sha256": "b343a85e85c4ff2f47386ce7d99a6ad883d88e951c81266b38a794922a770371",
+    "sealId": "09bc5ef000c38601bc679fe851b224233b6bdd9b8179fdb277992bd9311bf509",
+    "causeSealIds": [
+      "2a6012a246672b0ba43550212e524c0c38008ad20fa86f0772f9085e878f52e2",
+      "4c644ea01b7c78054fc7238d33da43e71ba6609d392ee12c3e367f753b4e9349",
+      "b7eb1c5ec7e30d1ca7cbc3adf96ad90f6c7852485638c82a7eac0e0f55f72fc8",
+      "20c78dab18dbe9c42b7356086cfb3b8e367f4f10bcaf8c6fd7e75df9ee38b80d"
+    ]
+  }
+]

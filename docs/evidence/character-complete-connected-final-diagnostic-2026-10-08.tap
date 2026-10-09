@@ -1,0 +1,211 @@
+TAP version 13
+# [llm] test-fast ready engine=engine fast=fast
+# [llm] xai ready engine=grok-4-fast-non-reasoning fast=grok-4-fast-non-reasoning
+# [llm] xai ready engine=grok-4-fast-non-reasoning fast=grok-4-fast-non-reasoning
+# [llm] xai ready engine=grok-4.3 fast=grok-4.3
+# [llm] xai ready engine=grok-4.3 fast=grok-4.3
+# [llm] xai ready engine=grok-4.3 fast=grok-4.3
+# Subtest: character-agent action proposal prompt
+    # Subtest: keeps later-bucket action context separate from speech and psyche
+    ok 1 - keeps later-bucket action context separate from speech and psyche
+      ---
+      duration_ms: 15.105766
+      type: 'test'
+      ...
+    # Subtest: defines mutually exclusive action-kind output shapes
+    ok 2 - defines mutually exclusive action-kind output shapes
+      ---
+      duration_ms: 0.453227
+      type: 'test'
+      ...
+    # Subtest: receives administrator dialogue psychology as runtime pipeline context
+    ok 3 - receives administrator dialogue psychology as runtime pipeline context
+      ---
+      duration_ms: 8.053237
+      type: 'test'
+      ...
+    # Subtest: requires compact psyche to carry a private appraisal into expression
+    ok 4 - requires compact psyche to carry a private appraisal into expression
+      ---
+      duration_ms: 3.258833
+      type: 'test'
+      ...
+    1..4
+ok 1 - character-agent action proposal prompt
+  ---
+  duration_ms: 28.721345
+  type: 'suite'
+  ...
+# Subtest: public character profile claim validator
+    # Subtest: receives no owner source or restricted definition
+    ok 1 - receives no owner source or restricted definition
+      ---
+      duration_ms: 1.839619
+      type: 'test'
+      ...
+    # Subtest: fails closed instead of using provider fallback
+    ok 2 - fails closed instead of using provider fallback
+      ---
+      duration_ms: 2.054093
+      type: 'test'
+      ...
+    # Subtest: decodes profile response objects and segment objects instead of trusting contract casts
+    ok 3 - decodes profile response objects and segment objects instead of trusting contract casts
+      ---
+      duration_ms: 5.247093
+      type: 'test'
+      ...
+    1..3
+ok 2 - public character profile claim validator
+  ---
+  duration_ms: 10.657143
+  type: 'suite'
+  ...
+# Subtest: focused authoring through the real owner command and worker
+    # Subtest: generates a complete owner candidate through HTTP and activates only the explicitly confirmed digest
+    ok 1 - generates a complete owner candidate through HTTP and activates only the explicitly confirmed digest
+      ---
+      duration_ms: 504.962922
+      type: 'test'
+      ...
+    # Subtest: routes a create HTTP command through bounded focused recovery and persists failure without legacy calls
+    ok 2 - routes a create HTTP command through bounded focused recovery and persists failure without legacy calls
+      ---
+      duration_ms: 119.992029
+      type: 'test'
+      ...
+    # Subtest: resumes a previously registered eight-call create without upgrading its frozen allowance
+    ok 3 - resumes a previously registered eight-call create without upgrading its frozen allowance
+      ---
+      duration_ms: 84.331457
+      type: 'test'
+      ...
+    # Subtest: routes an appearance revision from the real owner HTTP command to a non-current review candidate
+    ok 4 - routes an appearance revision from the real owner HTTP command to a non-current review candidate
+      ---
+      duration_ms: 195.780206
+      type: 'test'
+      ...
+    # Subtest: does not generate a candidate for ambiguous, multi-area, or invalid scope
+    ok 5 - does not generate a candidate for ambiguous, multi-area, or invalid scope
+      ---
+      duration_ms: 141.00119
+      type: 'test'
+      ...
+    # Subtest: carries changed-role migration meaning through the real worker into a review candidate
+    ok 6 - carries changed-role migration meaning through the real worker into a review candidate
+      ---
+      duration_ms: 71.226165
+      type: 'test'
+      ...
+    # Subtest: routes an exact ready V2 upgrade command into focused migration without activating it
+    ok 7 - routes an exact ready V2 upgrade command into focused migration without activating it
+      ---
+      duration_ms: 148.649526
+      type: 'test'
+      ...
+    # Subtest: lets the owner accept the exact focused migration candidate for Stage-scoped V3 selection
+    ok 8 - lets the owner accept the exact focused migration candidate for Stage-scoped V3 selection
+      ---
+      duration_ms: 134.251838
+      type: 'test'
+      ...
+    # Subtest: rolls back V3 append when the frozen source pointer drifts before owner acceptance
+    ok 9 - rolls back V3 append when the frozen source pointer drifts before owner acceptance
+      ---
+      duration_ms: 97.723562
+      type: 'test'
+      ...
+    # Subtest: carries an optional legacy meaning deferral through the real upgrade route
+    ok 10 - carries an optional legacy meaning deferral through the real upgrade route
+      ---
+      duration_ms: 70.826169
+      type: 'test'
+      ...
+    # Subtest: retries a failed owner command from the same source with a new attempt and idempotent replay
+    ok 11 - retries a failed owner command from the same source with a new attempt and idempotent replay
+      ---
+      duration_ms: 95.403899
+      type: 'test'
+      ...
+    # Subtest: persists source-drift failure in both lifecycles before any dispatch
+    ok 12 - persists source-drift failure in both lifecycles before any dispatch
+      ---
+      duration_ms: 6.234344
+      type: 'test'
+      ...
+    1..12
+ok 3 - focused authoring through the real owner command and worker
+  ---
+  duration_ms: 1685.702723
+  type: 'suite'
+  ...
+# Subtest: preserves restrictive and preference norm values through the V3 profile adapter
+ok 4 - preserves restrictive and preference norm values through the V3 profile adapter
+  ---
+  duration_ms: 42.316448
+  type: 'test'
+  ...
+# Subtest: keeps previous profile facts exact when guidance has no explicit public permission
+ok 5 - keeps previous profile facts exact when guidance has no explicit public permission
+  ---
+  duration_ms: 13.087368
+  type: 'test'
+  ...
+# Subtest: projects only explicitly public unconditional guidance statements
+ok 6 - projects only explicitly public unconditional guidance statements
+  ---
+  duration_ms: 23.322302
+  type: 'test'
+  ...
+# Subtest: accepts a real V3 candidate with a guidance-backed unchanged public statement
+ok 7 - accepts a real V3 candidate with a guidance-backed unchanged public statement
+  ---
+  duration_ms: 27.011781
+  type: 'test'
+  ...
+# Subtest: requires generated profile and independent claim receipt before a complete focused result
+ok 8 - requires generated profile and independent claim receipt before a complete focused result
+  ---
+  duration_ms: 68.64901
+  type: 'test'
+  ...
+# Subtest: invalidates both profile products when definition or disclosure changes and preserves unchanged state
+ok 9 - invalidates both profile products when definition or disclosure changes and preserves unchanged state
+  ---
+  duration_ms: 42.966858
+  type: 'test'
+  ...
+# Subtest: rejects generated facts without public support and description outside its segments
+ok 10 - rejects generated facts without public support and description outside its segments
+  ---
+  duration_ms: 20.201957
+  type: 'test'
+  ...
+# Subtest: requires exactly one clean independent assessment of every segment
+ok 11 - requires exactly one clean independent assessment of every segment
+  ---
+  duration_ms: 57.267284
+  type: 'test'
+  ...
+# Subtest: gives profile work only approved public facts, with no raw owner source
+ok 12 - gives profile work only approved public facts, with no raw owner source
+  ---
+  duration_ms: 14.939005
+  type: 'test'
+  ...
+# Subtest: rejects restored progress whose digest or claim validation no longer matches its inputs
+ok 13 - rejects restored progress whose digest or claim validation no longer matches its inputs
+  ---
+  duration_ms: 20.459178
+  type: 'test'
+  ...
+1..13
+# tests 29
+# suites 3
+# pass 29
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 3799.194005

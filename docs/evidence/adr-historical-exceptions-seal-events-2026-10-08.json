@@ -1,0 +1,204 @@
+[
+  {
+    "key": "design-historical-adr-classifier-bounded",
+    "path": "docs/adr-historical-exceptions-test-contract-review-2026-10-08.md",
+    "parents": [
+      "policy",
+      "gate"
+    ],
+    "scope": "Exact retained historicalADR tuple classifier only; current pair/status checks remain, byte/status changes fail, newADRs ordinary. No acceptance of Proposed0019 or newexceptions/semanticreapproval.",
+    "ref": "all-tests-20261008/design-historical-adr-classifier-bounded",
+    "test": false,
+    "sha256": "ad5957d00a17abd77a4c2d71335a8216eda27850a6955fac57f397657a59d4fa",
+    "sealId": "765e9c774bfbaba0e6f69165c775fe626f34f3d7508959fa5824acb01280af94",
+    "causeSealIds": [
+      "742c262b58a40d74f35596bd60f4bf787a4e58370a2480e7f67fa0b1e7eda52b",
+      "ac14858b7b48b7a0857eba65a94a7659b11752383804a6aea41efc934518186a"
+    ]
+  },
+  {
+    "key": "implementation-historical-adr-classifier-bounded",
+    "path": "scripts/adr-historical-exceptions.mjs",
+    "parents": [
+      "design-historical-adr-classifier-bounded"
+    ],
+    "scope": "Exact retained historicalADR tuple classifier only; current pair/status checks remain, byte/status changes fail, newADRs ordinary. No acceptance of Proposed0019 or newexceptions/semanticreapproval.",
+    "ref": "all-tests-20261008/implementation-historical-adr-classifier-bounded",
+    "test": false,
+    "sha256": "b41c8054e0360758024f0f6a9aedcfcf53bb2ee0c78d60ae7b19752eea6dfb31",
+    "sealId": "3adeeb73189315cc7a0b24b871a4c424c6774310fb0fa448fc5496872569740c",
+    "causeSealIds": [
+      "765e9c774bfbaba0e6f69165c775fe626f34f3d7508959fa5824acb01280af94"
+    ]
+  },
+  {
+    "key": "implementation-historical-adr-consumer-bounded",
+    "path": "scripts/check-adrs.mjs",
+    "parents": [
+      "implementation-historical-adr-classifier-bounded",
+      "policy"
+    ],
+    "scope": "Exact retained historicalADR tuple classifier only; current pair/status checks remain, byte/status changes fail, newADRs ordinary. No acceptance of Proposed0019 or newexceptions/semanticreapproval.",
+    "ref": "all-tests-20261008/implementation-historical-adr-consumer-bounded",
+    "test": false,
+    "sha256": "bd959cc59d245e609904f6e6d75fcd340d1cbf0b3a63b20e2eb57a56a8691b6f",
+    "sealId": "36b93c9c95b19b11e624b3f0fe78edf423a4149ebf618f00970b8fcdb4b973f6",
+    "causeSealIds": [
+      "3adeeb73189315cc7a0b24b871a4c424c6774310fb0fa448fc5496872569740c",
+      "742c262b58a40d74f35596bd60f4bf787a4e58370a2480e7f67fa0b1e7eda52b"
+    ]
+  },
+  {
+    "key": "fixture-historical-adr-0015-think",
+    "path": "docs/adr/0015-e2e-operator-session-reentry.think",
+    "parents": [
+      "policy"
+    ],
+    "scope": "Exact retained historicalADR tuple classifier only; current pair/status checks remain, byte/status changes fail, newADRs ordinary. No acceptance of Proposed0019 or newexceptions/semanticreapproval.",
+    "ref": "all-tests-20261008/fixture-historical-adr-0015-think",
+    "test": false,
+    "sha256": "85470fd2ce9db4ec6b832d2c550c77ced689e5fbaa611f2aeaa06f21cbb8d9b5",
+    "sealId": "576163a219d398c2f1320bd5cc3534cc396f9c99a057db1948bd1ff93ae38151",
+    "causeSealIds": [
+      "742c262b58a40d74f35596bd60f4bf787a4e58370a2480e7f67fa0b1e7eda52b"
+    ]
+  },
+  {
+    "key": "fixture-historical-adr-0015-md",
+    "path": "docs/adr/0015-e2e-operator-session-reentry.md",
+    "parents": [
+      "policy"
+    ],
+    "scope": "Exact retained historicalADR tuple classifier only; current pair/status checks remain, byte/status changes fail, newADRs ordinary. No acceptance of Proposed0019 or newexceptions/semanticreapproval.",
+    "ref": "all-tests-20261008/fixture-historical-adr-0015-md",
+    "test": false,
+    "sha256": "192f4b12763e91531fad86922a8609ae1d3dd306b5e24326875fa2e02fa7d8b3",
+    "sealId": "5585b1a0f4b782ac560c2478331e0b26e59e59de4c38a397153101c267571746",
+    "causeSealIds": [
+      "742c262b58a40d74f35596bd60f4bf787a4e58370a2480e7f67fa0b1e7eda52b"
+    ]
+  },
+  {
+    "key": "fixture-historical-adr-0016-think",
+    "path": "docs/adr/0016-scene-beats-batched-narration.think",
+    "parents": [
+      "policy"
+    ],
+    "scope": "Exact retained historicalADR tuple classifier only; current pair/status checks remain, byte/status changes fail, newADRs ordinary. No acceptance of Proposed0019 or newexceptions/semanticreapproval.",
+    "ref": "all-tests-20261008/fixture-historical-adr-0016-think",
+    "test": false,
+    "sha256": "a51c9a49cc64150a98063ee190b5066d88b56975107f16e111ec3b57372e7d65",
+    "sealId": "85b86c7794f33c1d805666213478894f2c8a91a477d726f6100e5c82d970fa88",
+    "causeSealIds": [
+      "742c262b58a40d74f35596bd60f4bf787a4e58370a2480e7f67fa0b1e7eda52b"
+    ]
+  },
+  {
+    "key": "fixture-historical-adr-0016-md",
+    "path": "docs/adr/0016-scene-beats-batched-narration.md",
+    "parents": [
+      "policy"
+    ],
+    "scope": "Exact retained historicalADR tuple classifier only; current pair/status checks remain, byte/status changes fail, newADRs ordinary. No acceptance of Proposed0019 or newexceptions/semanticreapproval.",
+    "ref": "all-tests-20261008/fixture-historical-adr-0016-md",
+    "test": false,
+    "sha256": "d58cf83b157d478ff788c4af80a9551c6e17cbc27313a5c036beb7f391bc8aca",
+    "sealId": "89872a07368f0e4f8d2140a5f8662fa1eaef4ea6d9d3531ef358a002c8ea52a4",
+    "causeSealIds": [
+      "742c262b58a40d74f35596bd60f4bf787a4e58370a2480e7f67fa0b1e7eda52b"
+    ]
+  },
+  {
+    "key": "fixture-historical-adr-0017-think",
+    "path": "docs/adr/0017-public-turn-intra-turn-beats.think",
+    "parents": [
+      "policy"
+    ],
+    "scope": "Exact retained historicalADR tuple classifier only; current pair/status checks remain, byte/status changes fail, newADRs ordinary. No acceptance of Proposed0019 or newexceptions/semanticreapproval.",
+    "ref": "all-tests-20261008/fixture-historical-adr-0017-think",
+    "test": false,
+    "sha256": "81e742113703e82d48c863e6fe15a09827614e39fb526a62ae0f82dc1d599a7b",
+    "sealId": "4eace438f8f1bcf305e1bfbee11c994600aebdc6b4833059b53003e425074730",
+    "causeSealIds": [
+      "742c262b58a40d74f35596bd60f4bf787a4e58370a2480e7f67fa0b1e7eda52b"
+    ]
+  },
+  {
+    "key": "fixture-historical-adr-0017-md",
+    "path": "docs/adr/0017-public-turn-intra-turn-beats.md",
+    "parents": [
+      "policy"
+    ],
+    "scope": "Exact retained historicalADR tuple classifier only; current pair/status checks remain, byte/status changes fail, newADRs ordinary. No acceptance of Proposed0019 or newexceptions/semanticreapproval.",
+    "ref": "all-tests-20261008/fixture-historical-adr-0017-md",
+    "test": false,
+    "sha256": "fd317b9d85471f6412e2d15c27d6b9ffd590d19a6e9efa75814fdad271f11877",
+    "sealId": "da26354ba947e082ffbfcbae66b4a3a254efecd0f4fc6e1afe9c5b7565b134bc",
+    "causeSealIds": [
+      "742c262b58a40d74f35596bd60f4bf787a4e58370a2480e7f67fa0b1e7eda52b"
+    ]
+  },
+  {
+    "key": "fixture-historical-adr-0019-think",
+    "path": "docs/adr/0019-observation-token-and-cost-admission.think",
+    "parents": [
+      "policy"
+    ],
+    "scope": "Exact retained historicalADR tuple classifier only; current pair/status checks remain, byte/status changes fail, newADRs ordinary. No acceptance of Proposed0019 or newexceptions/semanticreapproval.",
+    "ref": "all-tests-20261008/fixture-historical-adr-0019-think",
+    "test": false,
+    "sha256": "70d681fa10a08cce8cdb3fb998c8e3ce3090d16135edf301165b6d3c59195a04",
+    "sealId": "b76dcabe76ac2c770e2b4cfebf1f4b34e695c716f8474f562af9421100834f84",
+    "causeSealIds": [
+      "742c262b58a40d74f35596bd60f4bf787a4e58370a2480e7f67fa0b1e7eda52b"
+    ]
+  },
+  {
+    "key": "fixture-historical-adr-0019-md",
+    "path": "docs/adr/0019-observation-token-and-cost-admission.md",
+    "parents": [
+      "policy"
+    ],
+    "scope": "Exact retained historicalADR tuple classifier only; current pair/status checks remain, byte/status changes fail, newADRs ordinary. No acceptance of Proposed0019 or newexceptions/semanticreapproval.",
+    "ref": "all-tests-20261008/fixture-historical-adr-0019-md",
+    "test": false,
+    "sha256": "7aaea17cf1d4a227a591bb9c123e339c1bc8747cdfd84a59d30275689be0ec30",
+    "sealId": "0e21c502abad6a7b331130e9d641148787a58e5392168b76ec1dd8934253ec3b",
+    "causeSealIds": [
+      "742c262b58a40d74f35596bd60f4bf787a4e58370a2480e7f67fa0b1e7eda52b"
+    ]
+  },
+  {
+    "key": "adr-historical-exceptions-bounded-20261008",
+    "path": "scripts/adr-historical-exceptions.test.mjs",
+    "parents": [
+      "implementation-historical-adr-classifier-bounded",
+      "implementation-historical-adr-consumer-bounded",
+      "fixture-historical-adr-0015-think",
+      "fixture-historical-adr-0015-md",
+      "fixture-historical-adr-0016-think",
+      "fixture-historical-adr-0016-md",
+      "fixture-historical-adr-0017-think",
+      "fixture-historical-adr-0017-md",
+      "fixture-historical-adr-0019-think",
+      "fixture-historical-adr-0019-md"
+    ],
+    "scope": "Exact retained historicalADR tuple classifier only; current pair/status checks remain, byte/status changes fail, newADRs ordinary. No acceptance of Proposed0019 or newexceptions/semanticreapproval.",
+    "ref": "verification/adr-historical-exceptions-bounded-20261008",
+    "test": true,
+    "sha256": "2b49360fdd6744fcc92be4fc51bd547fb17fac911531fb0f9d4ec7191f28bb98",
+    "sealId": "d47712845d5ff04e9987cc5963ca09fd68a9b5573c0dc89c417b866e15031049",
+    "causeSealIds": [
+      "3adeeb73189315cc7a0b24b871a4c424c6774310fb0fa448fc5496872569740c",
+      "36b93c9c95b19b11e624b3f0fe78edf423a4149ebf618f00970b8fcdb4b973f6",
+      "576163a219d398c2f1320bd5cc3534cc396f9c99a057db1948bd1ff93ae38151",
+      "5585b1a0f4b782ac560c2478331e0b26e59e59de4c38a397153101c267571746",
+      "85b86c7794f33c1d805666213478894f2c8a91a477d726f6100e5c82d970fa88",
+      "89872a07368f0e4f8d2140a5f8662fa1eaef4ea6d9d3531ef358a002c8ea52a4",
+      "4eace438f8f1bcf305e1bfbee11c994600aebdc6b4833059b53003e425074730",
+      "da26354ba947e082ffbfcbae66b4a3a254efecd0f4fc6e1afe9c5b7565b134bc",
+      "b76dcabe76ac2c770e2b4cfebf1f4b34e695c716f8474f562af9421100834f84",
+      "0e21c502abad6a7b331130e9d641148787a58e5392168b76ec1dd8934253ec3b"
+    ]
+  }
+]

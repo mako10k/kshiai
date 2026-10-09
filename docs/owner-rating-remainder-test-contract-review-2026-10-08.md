@@ -1,0 +1,7 @@
+# レーティング残4wholefileの契約照合
+
+Accepted ADR0060/所有者決定項目2が継承する初期1500/K20/400/仮表示5件、全体/公開二系列と現在プロフィールの母集団補正を元23ケースで検証する。履歴settlementは保存当時snapshotを表示する変更を別途Seal済みであり、現在母集団再補正を復活させない。
+
+rating8ケースは数式/非clip/引分0.5/表示丸め、match-rating4はcrossowner public/sameowner overall fallback/実績得点率/予測表示、characters6はowner管理・予約名・memory・F-MTCH04選択・realm別有効母集団と削除後非補償、transaction5はfinished/冪等/同一正準transactionで双方会計commitとCAS失敗rollbackを固定する。独立review INSIDE/型escapeなし、現在hash一致、診断23pass/0fail/0skip。privateSQLiteとfixtureで検証し、legacy fixtureを通常v2作成や旧試行成功の代用にしない。
+
+数式校正・予測精度・欠落snapshot復元・全battle-service動作・tested transaction外の並行性・課金・公開配備を保証しない。元4wholefile23case/assertionを削除/skipしない。

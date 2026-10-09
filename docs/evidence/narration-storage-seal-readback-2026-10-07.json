@@ -1,0 +1,13 @@
+{
+  "newRefs": 15,
+  "previousHeadsUnchanged": true,
+  "previousHeadCount": 949,
+  "totalRefs": 964,
+  "sourceBytesMatch": true,
+  "stale": 0,
+  "fsck": "ok",
+  "limitations": [
+    "All eleven original cases/assertions retained; no source/test changes",
+    "SQLite and fake ports only; no PostgreSQL isolation/concurrency, live provider, cryptographic digest or full privacy acceptance"
+  ]
+}

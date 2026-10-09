@@ -1,0 +1,525 @@
+{
+  "entries": [
+    {
+      "key": "design-semantic-kernel-recovery",
+      "path": "docs/semantic-authoring-recovery-test-contract-review-2026-10-08.md",
+      "parents": [
+        "foundation",
+        "foundationReceipt",
+        "character",
+        "characterReceipt",
+        "design",
+        "time",
+        "configuration",
+        "migration"
+      ],
+      "scope": "Existing Accepted controlled semantic kernel/adapters/public mapping wholefile recovery only; no current full route readiness, ProposedADR0059, runtime numeric policy selection or live provider proof.",
+      "ref": "all-tests-20261008/design-semantic-kernel-recovery",
+      "test": false,
+      "sha256": "d3f20473b0f9374ff369fe9504ad9665dfe4f414c529e2da3484980f9fb508c1",
+      "sealId": "4416175bcd92f66ba15aa699a95fec17b52382482d49d816f6e6c3daa81986aa",
+      "causeSealIds": [
+        "2a779ad74cb7e11bbc803024ea90c3ba6fc8ec57a0c6701b441a449a9440587a",
+        "d53bc670bd6f0889a13f229a2f7583e2d76f5acb4fe7fd43a6391827355a657d",
+        "3942057ff54a50c9ba7330f8069242d637aa62302b067be0d9796198f1932f01",
+        "d4827ddffae7ca5d6680c5fa0eb062295ed2f1be377e639f215eda930179c7fd",
+        "9664f17a979e36b650a466d62ba17e62a9e8962cdc36a123d67857f7f9702bf1",
+        "996c4d1144c9bdac462d595a9baf46e8ed29548e8044b0131e67ad940bc6b66b",
+        "52ac744769e34ae6b7998d4bfc40fed48543f3aa9b51192a8dd51175aec23972",
+        "2fb9650ddebe867a978634fea432e65d0611085c8cb823c36a6d6f3f5eaa2962"
+      ]
+    },
+    {
+      "key": "implementation-semantic-recovery-contracts",
+      "path": "packages/shared/src/semantic-authoring.ts",
+      "parents": [
+        "design-semantic-kernel-recovery"
+      ],
+      "scope": "Existing Accepted controlled semantic kernel/adapters/public mapping wholefile recovery only; no current full route readiness, ProposedADR0059, runtime numeric policy selection or live provider proof.",
+      "ref": "all-tests-20261008/implementation-semantic-recovery-contracts",
+      "test": false,
+      "sha256": "296c867b25f8e0101020f781b7e70942dc4457f760bc5007480267f16aa955eb",
+      "sealId": "90df3c2c74cfedc2d5f0de6187786bb4d9470d7b5e49d789721378ad11df8240",
+      "causeSealIds": [
+        "4416175bcd92f66ba15aa699a95fec17b52382482d49d816f6e6c3daa81986aa"
+      ]
+    },
+    {
+      "key": "implementation-semantic-recovery-public-contracts",
+      "path": "packages/shared/src/semantic-authoring-public.ts",
+      "parents": [
+        "design-semantic-kernel-recovery"
+      ],
+      "scope": "Existing Accepted controlled semantic kernel/adapters/public mapping wholefile recovery only; no current full route readiness, ProposedADR0059, runtime numeric policy selection or live provider proof.",
+      "ref": "all-tests-20261008/implementation-semantic-recovery-public-contracts",
+      "test": false,
+      "sha256": "a2e8f0716481a75ed52d223c806c3dc045071af5b93e66ccf8a59578efff96f5",
+      "sealId": "83679d5bb368229ae76ddbff8bec58b81ce51e9a75a51672c7bb7ebe55c14408",
+      "causeSealIds": [
+        "4416175bcd92f66ba15aa699a95fec17b52382482d49d816f6e6c3daa81986aa"
+      ]
+    },
+    {
+      "key": "implementation-semantic-recovery-migration-contracts",
+      "path": "packages/shared/src/character-semantic-change-set.ts",
+      "parents": [
+        "design-semantic-kernel-recovery"
+      ],
+      "scope": "Existing Accepted controlled semantic kernel/adapters/public mapping wholefile recovery only; no current full route readiness, ProposedADR0059, runtime numeric policy selection or live provider proof.",
+      "ref": "all-tests-20261008/implementation-semantic-recovery-migration-contracts",
+      "test": false,
+      "sha256": "76d521a6f7a6ce9e0bfbae873d37a3e87aec567bbacf600527f421b0534bcee6",
+      "sealId": "e7d0eb64a239fc06dc5669d23a6cb2bb32ff6001a83c3445710cc0a5d46c8a10",
+      "causeSealIds": [
+        "4416175bcd92f66ba15aa699a95fec17b52382482d49d816f6e6c3daa81986aa"
+      ]
+    },
+    {
+      "key": "implementation-semantic-recovery-character-contracts",
+      "path": "packages/shared/src/character-semantic-authoring.ts",
+      "parents": [
+        "implementation-semantic-recovery-migration-contracts"
+      ],
+      "scope": "Existing Accepted controlled semantic kernel/adapters/public mapping wholefile recovery only; no current full route readiness, ProposedADR0059, runtime numeric policy selection or live provider proof.",
+      "ref": "all-tests-20261008/implementation-semantic-recovery-character-contracts",
+      "test": false,
+      "sha256": "0cfb956c351c00186764f3a1e66f8b7698c6ca117e56f780d9c2581ce7f00d9a",
+      "sealId": "76a338c00973d0a9bcd270f6277959943e519fbd520b1b57b97a59c735e0bad8",
+      "causeSealIds": [
+        "e7d0eb64a239fc06dc5669d23a6cb2bb32ff6001a83c3445710cc0a5d46c8a10"
+      ]
+    },
+    {
+      "key": "implementation-semantic-recovery-accounting",
+      "path": "backend/src/services/semantic-authoring/accounting.ts",
+      "parents": [
+        "implementation-semantic-recovery-contracts"
+      ],
+      "scope": "Existing Accepted controlled semantic kernel/adapters/public mapping wholefile recovery only; no current full route readiness, ProposedADR0059, runtime numeric policy selection or live provider proof.",
+      "ref": "all-tests-20261008/implementation-semantic-recovery-accounting",
+      "test": false,
+      "sha256": "85c6dd9fd36317ee61f73e9a7c839ae21fdc89675cc9ffb8c9847951832c39bb",
+      "sealId": "ded2bccd7b09310c4b37830d5e676c1a85972cbe23daf8e89b29982366a6ad7c",
+      "causeSealIds": [
+        "90df3c2c74cfedc2d5f0de6187786bb4d9470d7b5e49d789721378ad11df8240"
+      ]
+    },
+    {
+      "key": "implementation-semantic-recovery-kernel",
+      "path": "backend/src/services/semantic-authoring/kernel.ts",
+      "parents": [
+        "design-semantic-kernel-recovery"
+      ],
+      "scope": "Existing Accepted controlled semantic kernel/adapters/public mapping wholefile recovery only; no current full route readiness, ProposedADR0059, runtime numeric policy selection or live provider proof.",
+      "ref": "all-tests-20261008/implementation-semantic-recovery-kernel",
+      "test": false,
+      "sha256": "283f85c87235d4a77327827d4971e0ec453e7dbcaa96c91d814681cce0584b43",
+      "sealId": "be5c9a3dadf48bf07040b7f56a23615f3ac535b7567039be56cf20cbe069b3fc",
+      "causeSealIds": [
+        "4416175bcd92f66ba15aa699a95fec17b52382482d49d816f6e6c3daa81986aa"
+      ]
+    },
+    {
+      "key": "implementation-semantic-recovery-capability-session",
+      "path": "backend/src/services/semantic-authoring/capability-session.ts",
+      "parents": [
+        "implementation-semantic-recovery-contracts"
+      ],
+      "scope": "Existing Accepted controlled semantic kernel/adapters/public mapping wholefile recovery only; no current full route readiness, ProposedADR0059, runtime numeric policy selection or live provider proof.",
+      "ref": "all-tests-20261008/implementation-semantic-recovery-capability-session",
+      "test": false,
+      "sha256": "16786f35f5e7a558bd6116f07f0214e99e5320e7f186e7308202190501ec3195",
+      "sealId": "c4122415e22ef3f8870f6185da05928005a087d36374273b67b9019b13ab1315",
+      "causeSealIds": [
+        "90df3c2c74cfedc2d5f0de6187786bb4d9470d7b5e49d789721378ad11df8240"
+      ]
+    },
+    {
+      "key": "implementation-semantic-recovery-progress-monitor",
+      "path": "backend/src/services/semantic-authoring/progress-monitor.ts",
+      "parents": [
+        "implementation-semantic-recovery-contracts"
+      ],
+      "scope": "Existing Accepted controlled semantic kernel/adapters/public mapping wholefile recovery only; no current full route readiness, ProposedADR0059, runtime numeric policy selection or live provider proof.",
+      "ref": "all-tests-20261008/implementation-semantic-recovery-progress-monitor",
+      "test": false,
+      "sha256": "99b113848b12a69b90513e1ae31eb815b3b088cda3bd4d4f5cfdda7b3c470653",
+      "sealId": "8c2a2e735262c7fb2b62c6bff2139d0eb33ba3e75d2a65eaf4e896483e5d0509",
+      "causeSealIds": [
+        "90df3c2c74cfedc2d5f0de6187786bb4d9470d7b5e49d789721378ad11df8240"
+      ]
+    },
+    {
+      "key": "implementation-semantic-recovery-orchestration",
+      "path": "backend/src/services/semantic-authoring/orchestration.ts",
+      "parents": [
+        "implementation-semantic-recovery-contracts",
+        "implementation-semantic-recovery-accounting",
+        "implementation-semantic-recovery-kernel",
+        "implementation-semantic-recovery-capability-session",
+        "implementation-semantic-recovery-progress-monitor"
+      ],
+      "scope": "Existing Accepted controlled semantic kernel/adapters/public mapping wholefile recovery only; no current full route readiness, ProposedADR0059, runtime numeric policy selection or live provider proof.",
+      "ref": "all-tests-20261008/implementation-semantic-recovery-orchestration",
+      "test": false,
+      "sha256": "a2d936cac5b11329ac050a4476a957cea6c4ff9f12d90d24b5a15c502550b29b",
+      "sealId": "11aa98609796b3fb676c1baefb648556aa90ebf6cab150f56590aa01b61ee91f",
+      "causeSealIds": [
+        "90df3c2c74cfedc2d5f0de6187786bb4d9470d7b5e49d789721378ad11df8240",
+        "ded2bccd7b09310c4b37830d5e676c1a85972cbe23daf8e89b29982366a6ad7c",
+        "be5c9a3dadf48bf07040b7f56a23615f3ac535b7567039be56cf20cbe069b3fc",
+        "c4122415e22ef3f8870f6185da05928005a087d36374273b67b9019b13ab1315",
+        "8c2a2e735262c7fb2b62c6bff2139d0eb33ba3e75d2a65eaf4e896483e5d0509"
+      ]
+    },
+    {
+      "key": "implementation-semantic-recovery-ports",
+      "path": "backend/src/services/semantic-authoring/ports.ts",
+      "parents": [
+        "implementation-semantic-recovery-contracts",
+        "implementation-semantic-recovery-accounting",
+        "implementation-semantic-recovery-orchestration"
+      ],
+      "scope": "Existing Accepted controlled semantic kernel/adapters/public mapping wholefile recovery only; no current full route readiness, ProposedADR0059, runtime numeric policy selection or live provider proof.",
+      "ref": "all-tests-20261008/implementation-semantic-recovery-ports",
+      "test": false,
+      "sha256": "850b811140cd5c7f036cef63b0f17ab3da92d1bb0839b06effaecd636c4e73aa",
+      "sealId": "058e6cfb7f73892647ac3dd22dfdb040c3ce088ac36422f99867080286203254",
+      "causeSealIds": [
+        "90df3c2c74cfedc2d5f0de6187786bb4d9470d7b5e49d789721378ad11df8240",
+        "ded2bccd7b09310c4b37830d5e676c1a85972cbe23daf8e89b29982366a6ad7c",
+        "11aa98609796b3fb676c1baefb648556aa90ebf6cab150f56590aa01b61ee91f"
+      ]
+    },
+    {
+      "key": "implementation-semantic-recovery-scripted-ports",
+      "path": "backend/src/services/semantic-authoring/scripted-ports.ts",
+      "parents": [
+        "implementation-semantic-recovery-contracts",
+        "implementation-semantic-recovery-accounting",
+        "implementation-semantic-recovery-ports"
+      ],
+      "scope": "Existing Accepted controlled semantic kernel/adapters/public mapping wholefile recovery only; no current full route readiness, ProposedADR0059, runtime numeric policy selection or live provider proof.",
+      "ref": "all-tests-20261008/implementation-semantic-recovery-scripted-ports",
+      "test": false,
+      "sha256": "712e5edf90cb2b899e1188dba76b75e4e33bceb916097786251786680ba694a4",
+      "sealId": "a3058ee1e284b6eff25136b61aa3b828d47e1d3c15b26cc522802e37c1a91c52",
+      "causeSealIds": [
+        "90df3c2c74cfedc2d5f0de6187786bb4d9470d7b5e49d789721378ad11df8240",
+        "ded2bccd7b09310c4b37830d5e676c1a85972cbe23daf8e89b29982366a6ad7c",
+        "058e6cfb7f73892647ac3dd22dfdb040c3ce088ac36422f99867080286203254"
+      ]
+    },
+    {
+      "key": "implementation-semantic-recovery-execution",
+      "path": "backend/src/services/semantic-authoring/execution.ts",
+      "parents": [
+        "implementation-semantic-recovery-contracts",
+        "implementation-semantic-recovery-accounting",
+        "implementation-semantic-recovery-orchestration",
+        "implementation-semantic-recovery-ports"
+      ],
+      "scope": "Existing Accepted controlled semantic kernel/adapters/public mapping wholefile recovery only; no current full route readiness, ProposedADR0059, runtime numeric policy selection or live provider proof.",
+      "ref": "all-tests-20261008/implementation-semantic-recovery-execution",
+      "test": false,
+      "sha256": "da4a87f102f4b0c957cb1f5b9a8f0c9e5a7072d3a98d56c5f787a6fa1ce1cca6",
+      "sealId": "a5af3c2d06a7e3dd3912a744e0f8bced86a13f214caa2248bd1487894f635748",
+      "causeSealIds": [
+        "90df3c2c74cfedc2d5f0de6187786bb4d9470d7b5e49d789721378ad11df8240",
+        "ded2bccd7b09310c4b37830d5e676c1a85972cbe23daf8e89b29982366a6ad7c",
+        "11aa98609796b3fb676c1baefb648556aa90ebf6cab150f56590aa01b61ee91f",
+        "058e6cfb7f73892647ac3dd22dfdb040c3ce088ac36422f99867080286203254"
+      ]
+    },
+    {
+      "key": "implementation-semantic-recovery-execution-policy",
+      "path": "backend/src/services/semantic-authoring/execution-policy.ts",
+      "parents": [
+        "implementation-semantic-recovery-contracts"
+      ],
+      "scope": "Existing Accepted controlled semantic kernel/adapters/public mapping wholefile recovery only; no current full route readiness, ProposedADR0059, runtime numeric policy selection or live provider proof.",
+      "ref": "all-tests-20261008/implementation-semantic-recovery-execution-policy",
+      "test": false,
+      "sha256": "1b42f3118f0d8632ee155566412a35097b120140c1c653f7a2d71b84edd48b6b",
+      "sealId": "11195c24131e1d66289d5b5aebd457862a7ac82f700f1d814c78794024a3b049",
+      "causeSealIds": [
+        "90df3c2c74cfedc2d5f0de6187786bb4d9470d7b5e49d789721378ad11df8240"
+      ]
+    },
+    {
+      "key": "implementation-semantic-recovery-provider",
+      "path": "backend/src/llm/semantic-authoring-provider.ts",
+      "parents": [
+        "implementation-semantic-recovery-contracts",
+        "implementation-semantic-recovery-execution",
+        "implementation-semantic-recovery-execution-policy"
+      ],
+      "scope": "Existing Accepted controlled semantic kernel/adapters/public mapping wholefile recovery only; no current full route readiness, ProposedADR0059, runtime numeric policy selection or live provider proof.",
+      "ref": "all-tests-20261008/implementation-semantic-recovery-provider",
+      "test": false,
+      "sha256": "8e3ab10f643f3f3624705ccb7f4536789cff2f0894fef29e91e0e6847e9a5731",
+      "sealId": "a420f0e74f6e4a46c2af413afecbe4ac4242dee94441c1a7c7af599b7eda17e2",
+      "causeSealIds": [
+        "90df3c2c74cfedc2d5f0de6187786bb4d9470d7b5e49d789721378ad11df8240",
+        "a5af3c2d06a7e3dd3912a744e0f8bced86a13f214caa2248bd1487894f635748",
+        "11195c24131e1d66289d5b5aebd457862a7ac82f700f1d814c78794024a3b049"
+      ]
+    },
+    {
+      "key": "implementation-semantic-recovery-public-mapping",
+      "path": "backend/src/services/semantic-authoring/public-mapping.ts",
+      "parents": [
+        "implementation-semantic-recovery-public-contracts"
+      ],
+      "scope": "Existing Accepted controlled semantic kernel/adapters/public mapping wholefile recovery only; no current full route readiness, ProposedADR0059, runtime numeric policy selection or live provider proof.",
+      "ref": "all-tests-20261008/implementation-semantic-recovery-public-mapping",
+      "test": false,
+      "sha256": "5a761f2d7cf65ec60b2d4284207f734f41a6c022bc22d5d2c8ac39309299b368",
+      "sealId": "2e6f4497926f275f8b36245fa399489540da8f5a83df7b5f641229252999e0e3",
+      "causeSealIds": [
+        "83679d5bb368229ae76ddbff8bec58b81ce51e9a75a51672c7bb7ebe55c14408"
+      ]
+    },
+    {
+      "key": "implementation-semantic-recovery-pending-preservation",
+      "path": "backend/src/services/semantic-authoring/adapters/pending-preservation-json.ts",
+      "parents": [
+        "design-semantic-kernel-recovery"
+      ],
+      "scope": "Existing Accepted controlled semantic kernel/adapters/public mapping wholefile recovery only; no current full route readiness, ProposedADR0059, runtime numeric policy selection or live provider proof.",
+      "ref": "all-tests-20261008/implementation-semantic-recovery-pending-preservation",
+      "test": false,
+      "sha256": "0894a58025ef530b6870e4521ff0a874df730cbb05c318050086f8d031a9b1ac",
+      "sealId": "8bd68d8372633c5e4c43928cee472181a251f86982d9e3ae258b2212c87c0e25",
+      "causeSealIds": [
+        "4416175bcd92f66ba15aa699a95fec17b52382482d49d816f6e6c3daa81986aa"
+      ]
+    },
+    {
+      "key": "implementation-semantic-recovery-character-deferral",
+      "path": "backend/src/services/semantic-authoring/adapters/character-deferral.ts",
+      "parents": [
+        "implementation-semantic-recovery-character-contracts",
+        "implementation-semantic-recovery-migration-contracts"
+      ],
+      "scope": "Existing Accepted controlled semantic kernel/adapters/public mapping wholefile recovery only; no current full route readiness, ProposedADR0059, runtime numeric policy selection or live provider proof.",
+      "ref": "all-tests-20261008/implementation-semantic-recovery-character-deferral",
+      "test": false,
+      "sha256": "82ebe28c2c938aef672918f6c574ab1b6c6d94b849a791cd99ed7855454ae9ed",
+      "sealId": "b37208541abb65f5eace588f1f6537a2f13b1a2431d7b65433a4854bee28e377",
+      "causeSealIds": [
+        "76a338c00973d0a9bcd270f6277959943e519fbd520b1b57b97a59c735e0bad8",
+        "e7d0eb64a239fc06dc5669d23a6cb2bb32ff6001a83c3445710cc0a5d46c8a10"
+      ]
+    },
+    {
+      "key": "implementation-semantic-recovery-character-ledger",
+      "path": "backend/src/services/semantic-authoring/adapters/character-source-ledger.ts",
+      "parents": [
+        "implementation-semantic-recovery-character-contracts",
+        "implementation-semantic-recovery-migration-contracts",
+        "implementation-semantic-recovery-pending-preservation"
+      ],
+      "scope": "Existing Accepted controlled semantic kernel/adapters/public mapping wholefile recovery only; no current full route readiness, ProposedADR0059, runtime numeric policy selection or live provider proof.",
+      "ref": "all-tests-20261008/implementation-semantic-recovery-character-ledger",
+      "test": false,
+      "sha256": "39f0a111dea9b6e73e0f481b337556c382a2b7dc2c93728ed3f7118f642fc986",
+      "sealId": "59d0e8b8fded5c930a7a0a8b04b53efe380dfafd78573eae6edbb788abcc004a",
+      "causeSealIds": [
+        "76a338c00973d0a9bcd270f6277959943e519fbd520b1b57b97a59c735e0bad8",
+        "e7d0eb64a239fc06dc5669d23a6cb2bb32ff6001a83c3445710cc0a5d46c8a10",
+        "8bd68d8372633c5e4c43928cee472181a251f86982d9e3ae258b2212c87c0e25"
+      ]
+    },
+    {
+      "key": "implementation-semantic-recovery-character-adapter",
+      "path": "backend/src/services/semantic-authoring/adapters/character-v3.ts",
+      "parents": [
+        "implementation-semantic-recovery-contracts",
+        "implementation-semantic-recovery-character-contracts",
+        "implementation-semantic-recovery-character-ledger",
+        "implementation-semantic-recovery-character-deferral",
+        "implementation-semantic-recovery-pending-preservation"
+      ],
+      "scope": "Existing Accepted controlled semantic kernel/adapters/public mapping wholefile recovery only; no current full route readiness, ProposedADR0059, runtime numeric policy selection or live provider proof.",
+      "ref": "all-tests-20261008/implementation-semantic-recovery-character-adapter",
+      "test": false,
+      "sha256": "988dd3ea8184d3bd9b36ada67be0ada1a76e144d5bbf26b7806d09f0ca204231",
+      "sealId": "afda05765c014a51e5bdccde6533d3345268857b7f80caa03848738226b838a7",
+      "causeSealIds": [
+        "90df3c2c74cfedc2d5f0de6187786bb4d9470d7b5e49d789721378ad11df8240",
+        "76a338c00973d0a9bcd270f6277959943e519fbd520b1b57b97a59c735e0bad8",
+        "59d0e8b8fded5c930a7a0a8b04b53efe380dfafd78573eae6edbb788abcc004a",
+        "b37208541abb65f5eace588f1f6537a2f13b1a2431d7b65433a4854bee28e377",
+        "8bd68d8372633c5e4c43928cee472181a251f86982d9e3ae258b2212c87c0e25"
+      ]
+    },
+    {
+      "key": "implementation-semantic-recovery-family-adapter",
+      "path": "backend/src/services/semantic-authoring/adapters/family-conformance.ts",
+      "parents": [
+        "implementation-semantic-recovery-contracts"
+      ],
+      "scope": "Existing Accepted controlled semantic kernel/adapters/public mapping wholefile recovery only; no current full route readiness, ProposedADR0059, runtime numeric policy selection or live provider proof.",
+      "ref": "all-tests-20261008/implementation-semantic-recovery-family-adapter",
+      "test": false,
+      "sha256": "dac65edb552b541dcacb6e68543f69a5beb6351e8838a7d802065d6ea4c6cc60",
+      "sealId": "92128582fb5d99725dfcea755d43c7549468705c28ba73830fa3f6e0b04a9bff",
+      "causeSealIds": [
+        "90df3c2c74cfedc2d5f0de6187786bb4d9470d7b5e49d789721378ad11df8240"
+      ]
+    },
+    {
+      "key": "implementation-semantic-recovery-battlefield-adapter",
+      "path": "backend/src/services/semantic-authoring/adapters/battlefield-conformance.ts",
+      "parents": [
+        "implementation-semantic-recovery-family-adapter"
+      ],
+      "scope": "Existing Accepted controlled semantic kernel/adapters/public mapping wholefile recovery only; no current full route readiness, ProposedADR0059, runtime numeric policy selection or live provider proof.",
+      "ref": "all-tests-20261008/implementation-semantic-recovery-battlefield-adapter",
+      "test": false,
+      "sha256": "d967296ee577eb33300458e4d2a5135a1e5fc34a19ac3c57a607b74408876ba6",
+      "sealId": "8531034c70ea9751330345dd99fb0d64e7817a9ecfa21fda37d2cd26b2bcbb15",
+      "causeSealIds": [
+        "92128582fb5d99725dfcea755d43c7549468705c28ba73830fa3f6e0b04a9bff"
+      ]
+    },
+    {
+      "key": "implementation-semantic-recovery-narration-adapter",
+      "path": "backend/src/services/semantic-authoring/adapters/narration-conformance.ts",
+      "parents": [
+        "implementation-semantic-recovery-family-adapter"
+      ],
+      "scope": "Existing Accepted controlled semantic kernel/adapters/public mapping wholefile recovery only; no current full route readiness, ProposedADR0059, runtime numeric policy selection or live provider proof.",
+      "ref": "all-tests-20261008/implementation-semantic-recovery-narration-adapter",
+      "test": false,
+      "sha256": "9428ef31f2f3d83601e6fa2a316199169625207ae3be320336c07f2cf36351e0",
+      "sealId": "603632db17373c90f1abd2b832c67f6697b04ce21b1f9b9253ae6a480dcfcede",
+      "causeSealIds": [
+        "92128582fb5d99725dfcea755d43c7549468705c28ba73830fa3f6e0b04a9bff"
+      ]
+    },
+    {
+      "key": "semantic-recovery-provider-bounded-20261008",
+      "path": "backend/src/llm/semantic-authoring-provider.test.ts",
+      "parents": [
+        "implementation-semantic-recovery-provider",
+        "implementation-semantic-recovery-execution-policy"
+      ],
+      "scope": "Existing Accepted controlled semantic kernel/adapters/public mapping wholefile recovery only; no current full route readiness, ProposedADR0059, runtime numeric policy selection or live provider proof. Whole originalcases/assertions unchanged, no skips.",
+      "ref": "verification/semantic-recovery-provider-bounded-20261008",
+      "test": true,
+      "sha256": "0c6846d3422cd538e3470456622d5f278fa5635a03e4f0844b5db27f0df466b0",
+      "sealId": "f19a4794b62dd0a61f80da7097be1fe096cdcf3aa2a16bb7ab8a0da1c1035fc6",
+      "causeSealIds": [
+        "a420f0e74f6e4a46c2af413afecbe4ac4242dee94441c1a7c7af599b7eda17e2",
+        "11195c24131e1d66289d5b5aebd457862a7ac82f700f1d814c78794024a3b049"
+      ]
+    },
+    {
+      "key": "semantic-recovery-character-adapter-bounded-20261008",
+      "path": "backend/src/services/semantic-authoring/adapters/character-v3.test.ts",
+      "parents": [
+        "implementation-semantic-recovery-character-adapter",
+        "implementation-semantic-recovery-character-contracts"
+      ],
+      "scope": "Existing Accepted controlled semantic kernel/adapters/public mapping wholefile recovery only; no current full route readiness, ProposedADR0059, runtime numeric policy selection or live provider proof. Whole originalcases/assertions unchanged, no skips.",
+      "ref": "verification/semantic-recovery-character-adapter-bounded-20261008",
+      "test": true,
+      "sha256": "fd544e0245832e806755cceb7ad9259ecaf15fc6e2f785566cb886735e26e8c1",
+      "sealId": "be15cea5ea4c2138822b7be1de0b0cfdc9b71f9c71fe2dcf40e9b57d4679bd7c",
+      "causeSealIds": [
+        "afda05765c014a51e5bdccde6533d3345268857b7f80caa03848738226b838a7",
+        "76a338c00973d0a9bcd270f6277959943e519fbd520b1b57b97a59c735e0bad8"
+      ]
+    },
+    {
+      "key": "semantic-recovery-public-mapping-bounded-20261008",
+      "path": "backend/src/services/semantic-authoring/public-mapping.test.ts",
+      "parents": [
+        "implementation-semantic-recovery-public-mapping",
+        "implementation-semantic-recovery-public-contracts"
+      ],
+      "scope": "Existing Accepted controlled semantic kernel/adapters/public mapping wholefile recovery only; no current full route readiness, ProposedADR0059, runtime numeric policy selection or live provider proof. Whole originalcases/assertions unchanged, no skips.",
+      "ref": "verification/semantic-recovery-public-mapping-bounded-20261008",
+      "test": true,
+      "sha256": "5589d87f82716abea927164acfc781bd3a26f2d808bab9287d73fab1c482ffe8",
+      "sealId": "2f3b6bec2875281902834e1c5ffb62345bae870f806a6d51df18578caf65a534",
+      "causeSealIds": [
+        "2e6f4497926f275f8b36245fa399489540da8f5a83df7b5f641229252999e0e3",
+        "83679d5bb368229ae76ddbff8bec58b81ce51e9a75a51672c7bb7ebe55c14408"
+      ]
+    },
+    {
+      "key": "semantic-recovery-character-contracts-bounded-20261008",
+      "path": "packages/shared/src/character-semantic-authoring.test.ts",
+      "parents": [
+        "implementation-semantic-recovery-character-contracts",
+        "implementation-semantic-recovery-migration-contracts"
+      ],
+      "scope": "Existing Accepted controlled semantic kernel/adapters/public mapping wholefile recovery only; no current full route readiness, ProposedADR0059, runtime numeric policy selection or live provider proof. Whole originalcases/assertions unchanged, no skips.",
+      "ref": "verification/semantic-recovery-character-contracts-bounded-20261008",
+      "test": true,
+      "sha256": "9adcf3f338043773019a137517952e94d35baa1656fe5a461492846fc24098ae",
+      "sealId": "77ff51eceaa58daedbd1002d60b15b6c42ab7eb54cb27b66db3ef37efa569345",
+      "causeSealIds": [
+        "76a338c00973d0a9bcd270f6277959943e519fbd520b1b57b97a59c735e0bad8",
+        "e7d0eb64a239fc06dc5669d23a6cb2bb32ff6001a83c3445710cc0a5d46c8a10"
+      ]
+    },
+    {
+      "key": "semantic-recovery-conformance-bounded-20261008",
+      "path": "backend/src/services/semantic-authoring/conformance.test.ts",
+      "parents": [
+        "implementation-semantic-recovery-contracts",
+        "implementation-semantic-recovery-orchestration",
+        "implementation-semantic-recovery-execution",
+        "implementation-semantic-recovery-ports",
+        "implementation-semantic-recovery-progress-monitor",
+        "implementation-semantic-recovery-scripted-ports",
+        "implementation-semantic-recovery-character-adapter",
+        "implementation-semantic-recovery-battlefield-adapter",
+        "implementation-semantic-recovery-narration-adapter",
+        "implementation-semantic-recovery-public-mapping"
+      ],
+      "scope": "Existing Accepted controlled semantic kernel/adapters/public mapping wholefile recovery only; no current full route readiness, ProposedADR0059, runtime numeric policy selection or live provider proof. Whole originalcases/assertions unchanged, no skips.",
+      "ref": "verification/semantic-recovery-conformance-bounded-20261008",
+      "test": true,
+      "sha256": "0e9ababee0db7df3a18c365ae8fac859e518c0f4fa07d473296b27092479ee31",
+      "sealId": "5e80483ea3621c45eaf972acfc5b047d35bf82f8902ad6b731bd89b58d190332",
+      "causeSealIds": [
+        "90df3c2c74cfedc2d5f0de6187786bb4d9470d7b5e49d789721378ad11df8240",
+        "11aa98609796b3fb676c1baefb648556aa90ebf6cab150f56590aa01b61ee91f",
+        "a5af3c2d06a7e3dd3912a744e0f8bced86a13f214caa2248bd1487894f635748",
+        "058e6cfb7f73892647ac3dd22dfdb040c3ce088ac36422f99867080286203254",
+        "8c2a2e735262c7fb2b62c6bff2139d0eb33ba3e75d2a65eaf4e896483e5d0509",
+        "a3058ee1e284b6eff25136b61aa3b828d47e1d3c15b26cc522802e37c1a91c52",
+        "afda05765c014a51e5bdccde6533d3345268857b7f80caa03848738226b838a7",
+        "8531034c70ea9751330345dd99fb0d64e7817a9ecfa21fda37d2cd26b2bcbb15",
+        "603632db17373c90f1abd2b832c67f6697b04ce21b1f9b9253ae6a480dcfcede",
+        "2e6f4497926f275f8b36245fa399489540da8f5a83df7b5f641229252999e0e3"
+      ]
+    }
+  ],
+  "roots": {
+    "foundation": "requirement/structured-semantic-foundation-v3-accepted-snapshot",
+    "foundationReceipt": "acceptance/structured-semantic-foundation-v3-owner-decision",
+    "character": "requirement/character-v3-authoring-v5-accepted-snapshot",
+    "characterReceipt": "acceptance/character-v3-authoring-v5-current",
+    "design": "design/structured-semantic-authoring-kernel-v1-current",
+    "time": "acceptance/adr-0032-current",
+    "configuration": "acceptance/adr-0033-current",
+    "migration": "all-tests-20261007/authority-migration-operation-wire"
+  },
+  "rootSealIds": {
+    "foundation": "2a779ad74cb7e11bbc803024ea90c3ba6fc8ec57a0c6701b441a449a9440587a",
+    "foundationReceipt": "d53bc670bd6f0889a13f229a2f7583e2d76f5acb4fe7fd43a6391827355a657d",
+    "character": "3942057ff54a50c9ba7330f8069242d637aa62302b067be0d9796198f1932f01",
+    "characterReceipt": "d4827ddffae7ca5d6680c5fa0eb062295ed2f1be377e639f215eda930179c7fd",
+    "design": "9664f17a979e36b650a466d62ba17e62a9e8962cdc36a123d67857f7f9702bf1",
+    "time": "996c4d1144c9bdac462d595a9baf46e8ed29548e8044b0131e67ad940bc6b66b",
+    "configuration": "52ac744769e34ae6b7998d4bfc40fed48543f3aa9b51192a8dd51175aec23972",
+    "migration": "2fb9650ddebe867a978634fea432e65d0611085c8cb823c36a6d6f3f5eaa2962"
+  },
+  "elapsedSeconds": 476.265
+}

@@ -1,0 +1,54 @@
+TAP version 13
+# Subtest: profile grounding
+    # Subtest: freezes a complete mechanics-free own-profile anchor
+    ok 1 - freezes a complete mechanics-free own-profile anchor
+      ---
+      duration_ms: 5.744935
+      type: 'test'
+      ...
+    # Subtest: keeps null identity facts unknown instead of inventing them
+    ok 2 - keeps null identity facts unknown instead of inventing them
+      ---
+      duration_ms: 2.632829
+      type: 'test'
+      ...
+    # Subtest: does not expose the counterpart anchor to character-limited narration
+    ok 3 - does not expose the counterpart anchor to character-limited narration
+      ---
+      duration_ms: 0.600147
+      type: 'test'
+      ...
+    # Subtest: projects a removed profile item into both current profile and scene state
+    ok 4 - projects a removed profile item into both current profile and scene state
+      ---
+      duration_ms: 8.824393
+      type: 'test'
+      ...
+    1..4
+ok 1 - profile grounding
+  ---
+  duration_ms: 19.213862
+  type: 'suite'
+  ...
+# Subtest: asset authoring progress
+    # Subtest: maps in-flight statuses to labeled steps
+    ok 1 - maps in-flight statuses to labeled steps
+      ---
+      duration_ms: 2.858642
+      type: 'test'
+      ...
+    1..1
+ok 2 - asset authoring progress
+  ---
+  duration_ms: 3.847729
+  type: 'suite'
+  ...
+1..2
+# tests 5
+# suites 2
+# pass 5
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 229.058317

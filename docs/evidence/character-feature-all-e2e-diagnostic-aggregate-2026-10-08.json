@@ -1,0 +1,40 @@
+{
+  "schema": "kshiai/current-character-e2e-diagnostic-aggregate/v1",
+  "observedAt": "2026-10-08T19:39:14.921231+09:00",
+  "files": [
+    {
+      "path": "e2e/history-character-navigation.spec.ts",
+      "sha256": "679bdf16202090a41257e4d7b1c49990f85d1f43d2a6c4dbd8a7973f6de32e7d"
+    },
+    {
+      "path": "e2e/battle-screen.spec.ts",
+      "sha256": "294aab09315703b2ef1dd60c8e5de4e7c143dc6ed0f2148da0867cf11cff0a20"
+    },
+    {
+      "path": "e2e/character-focused-review.spec.ts",
+      "sha256": "48bc0247aaddd380c29304d60403d37006caa3763e010d46f77a2530e2ce5d0c"
+    },
+    {
+      "path": "e2e/v3-local-integration.spec.ts",
+      "sha256": "fd0d642a0cbaaac8c93da00dcd1276424193d640c383dcecfa1313be19f9bd88"
+    }
+  ],
+  "pass": 10,
+  "skipped": 0,
+  "deletedCases": 0,
+  "logs": [
+    {
+      "path": "docs/evidence/character-feature-other-e2e-final-2026-10-08.log",
+      "passingCasesUsed": 4
+    },
+    {
+      "path": "docs/evidence/character-feature-closure-focused-e2e-final-2026-10-08.log",
+      "passingCasesUsed": 5
+    },
+    {
+      "path": "docs/evidence/character-feature-closure-e2e-diagnostic-2026-10-08.log",
+      "passingCasesUsed": 1
+    }
+  ],
+  "scope": "All four original E2E files, 10 cases, diagnostic executions on current implementation. Earlier combined invocation had baseURL harness failures for five focused-review cases; those five were rerun with base URL unset. Formal aggregate gate is still pending Seal publication/readback."
+}

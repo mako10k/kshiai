@@ -1,0 +1,136 @@
+{
+  "ref": "all-tests-20261009/current-source-closure/fixed-current-manifest",
+  "expected_ref_head": null,
+  "prospective_seal_id": "09a79e2f909dcd129b7a89fa1336e328e0758efebc06a6811bea0552338f1f1a",
+  "prospective_material_id": "039a5fe2209f3ee0dda3af54c44ed84effb9708df9ab207518b982add15226c6",
+  "prospective_provenance_id": "fb8861e43347d18308ca740535415de05e11b4fa3af08e3331001df1bd8640d0",
+  "content_blob_id": "8c81d31d3d860234435d793cbfc4428281188f026242fc0ea0e7c98f0067cdec",
+  "content_bytes": 2587,
+  "attachments": [],
+  "root": false,
+  "draft": false,
+  "cause_links": [
+    {
+      "target_seal": "1d4a090d290087e4f67ae0d4409ce6761cb5b01fb849e04298536b8f7ce8ddbb",
+      "previous_revision_seal_of_target_seal": [],
+      "messages": [
+        "Same original16-file capture updated to current bytes, with explicit per-file source-bound producers so source drift cannot hide behind an immutable hash list. Path identity, not full runtime behavior or live trial acceptance."
+      ]
+    },
+    {
+      "target_seal": "3162bf49ec452ac24dc264cbda017de7d1f0dd72ef5a67c7396b0cdcd6ec6ea1",
+      "previous_revision_seal_of_target_seal": [],
+      "messages": [
+        "Same original16-file capture updated to current bytes, with explicit per-file source-bound producers so source drift cannot hide behind an immutable hash list. Path identity, not full runtime behavior or live trial acceptance."
+      ]
+    },
+    {
+      "target_seal": "3b076ca7afbafff4462d7af796eb4c1ce89f8700aeb610a254a6d964365e5a83",
+      "previous_revision_seal_of_target_seal": [
+        "0a1024bb57cd92ac85dbb20ce8641252ab5fe2669c41ce969a49c456c427d635"
+      ],
+      "messages": [
+        "Same original16-file capture updated to current bytes, with explicit per-file source-bound producers so source drift cannot hide behind an immutable hash list. Path identity, not full runtime behavior or live trial acceptance."
+      ]
+    },
+    {
+      "target_seal": "6a8d0c70d178a47c529d0e8bc6bf13897ea9863b64e8ae7bb5c4b00cda6e8818",
+      "previous_revision_seal_of_target_seal": [],
+      "messages": [
+        "Same original16-file capture updated to current bytes, with explicit per-file source-bound producers so source drift cannot hide behind an immutable hash list. Path identity, not full runtime behavior or live trial acceptance."
+      ]
+    },
+    {
+      "target_seal": "6c63641741bfa06c8297572a7f303fa9c44bb2690fbceb44eb750ea294251afa",
+      "previous_revision_seal_of_target_seal": [],
+      "messages": [
+        "Same original16-file capture updated to current bytes, with explicit per-file source-bound producers so source drift cannot hide behind an immutable hash list. Path identity, not full runtime behavior or live trial acceptance."
+      ]
+    },
+    {
+      "target_seal": "7ea4aa4147fbcc95c936b1960c9dcba014baca38c4a4c03b2446cfe1bfc2acfc",
+      "previous_revision_seal_of_target_seal": [
+        "1dc4e0a7e5ebbce6e80a1e4bfe6eba7f83e798512ffcb031f2c657bfeab48d0d"
+      ],
+      "messages": [
+        "Same original16-file capture updated to current bytes, with explicit per-file source-bound producers so source drift cannot hide behind an immutable hash list. Path identity, not full runtime behavior or live trial acceptance."
+      ]
+    },
+    {
+      "target_seal": "85526a5aa11b3c343870bf7e20210bfda95b026fb0f381b263c846ea8c380227",
+      "previous_revision_seal_of_target_seal": [],
+      "messages": [
+        "Same original16-file capture updated to current bytes, with explicit per-file source-bound producers so source drift cannot hide behind an immutable hash list. Path identity, not full runtime behavior or live trial acceptance."
+      ]
+    },
+    {
+      "target_seal": "869129df4d654527d085c525a8fba685dce132eaac26280ee3e12afe243162f7",
+      "previous_revision_seal_of_target_seal": [],
+      "messages": [
+        "Same original16-file capture updated to current bytes, with explicit per-file source-bound producers so source drift cannot hide behind an immutable hash list. Path identity, not full runtime behavior or live trial acceptance."
+      ]
+    },
+    {
+      "target_seal": "86ef8457d8b8fc47cf67a1df8a2d292628c807fc335eb8706be9f4b41d4c520d",
+      "previous_revision_seal_of_target_seal": [],
+      "messages": [
+        "Same original16-file capture updated to current bytes, with explicit per-file source-bound producers so source drift cannot hide behind an immutable hash list. Path identity, not full runtime behavior or live trial acceptance."
+      ]
+    },
+    {
+      "target_seal": "8ad70dad248400f3ab9ec9b9816488837f8c025007a56ebfab29c29bef801a6a",
+      "previous_revision_seal_of_target_seal": [
+        "6569b1d2f1f74eda7f32b7917a5fe3eee8dfb0d6e2bfbbd07fd0ae50f70bf408"
+      ],
+      "messages": [
+        "Same original16-file capture updated to current bytes, with explicit per-file source-bound producers so source drift cannot hide behind an immutable hash list. Path identity, not full runtime behavior or live trial acceptance."
+      ]
+    },
+    {
+      "target_seal": "9b8e4d175588d3531223c72f7630503dd65edc7eb5eae07eb415248bbc440636",
+      "previous_revision_seal_of_target_seal": [],
+      "messages": [
+        "Same original16-file capture updated to current bytes, with explicit per-file source-bound producers so source drift cannot hide behind an immutable hash list. Path identity, not full runtime behavior or live trial acceptance."
+      ]
+    },
+    {
+      "target_seal": "c5eea2c18d28a2c0322a1158e450439937c7e9b1658b5ee8d98448a9610d277e",
+      "previous_revision_seal_of_target_seal": [
+        "a6be5c731849d6737103eed857b2e29ef8e8bbcc68f53c7cfcc77e33c4198924"
+      ],
+      "messages": [
+        "Same original16-file capture updated to current bytes, with explicit per-file source-bound producers so source drift cannot hide behind an immutable hash list. Path identity, not full runtime behavior or live trial acceptance."
+      ]
+    },
+    {
+      "target_seal": "cbef9de20b431a38f89505c9d0f1f194fe9b63d0d1f9aa5e45d9156c36221fe3",
+      "previous_revision_seal_of_target_seal": [],
+      "messages": [
+        "Same original16-file capture updated to current bytes, with explicit per-file source-bound producers so source drift cannot hide behind an immutable hash list. Path identity, not full runtime behavior or live trial acceptance."
+      ]
+    },
+    {
+      "target_seal": "e1e76e8fc50c429caa641bce766b0242aac955e7565fd42bb626e1bf46ce96aa",
+      "previous_revision_seal_of_target_seal": [],
+      "messages": [
+        "Same original16-file capture updated to current bytes, with explicit per-file source-bound producers so source drift cannot hide behind an immutable hash list. Path identity, not full runtime behavior or live trial acceptance."
+      ]
+    },
+    {
+      "target_seal": "f1209c83d198bb8d8e8cf63df6436074171d3a4a2edbf78562f78937ed54d607",
+      "previous_revision_seal_of_target_seal": [],
+      "messages": [
+        "Same original16-file capture updated to current bytes, with explicit per-file source-bound producers so source drift cannot hide behind an immutable hash list. Path identity, not full runtime behavior or live trial acceptance."
+      ]
+    },
+    {
+      "target_seal": "f743b5a319b1ae1f1e321ce6c3023b27c19a3457e554c7ff332f1c81a94c3319",
+      "previous_revision_seal_of_target_seal": [
+        "bdcf896ff5601575d03d4920a14fc5e3f994fb1a83a59633ab68187d54ca7d15"
+      ],
+      "messages": [
+        "Same original16-file capture updated to current bytes, with explicit per-file source-bound producers so source drift cannot hide behind an immutable hash list. Path identity, not full runtime behavior or live trial acceptance."
+      ]
+    }
+  ]
+}

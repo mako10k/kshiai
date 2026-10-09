@@ -1,0 +1,13 @@
+{
+  "schema": "kshiai/repaired-source-closure-final-head-readback/v1",
+  "oldHeadCount": 1360,
+  "oldHeadsUnchanged": true,
+  "currentLogicalHeads": 134,
+  "currentHeadsMatchJournal": true,
+  "historyEvents": 137,
+  "executedPublisherSource": "docs/evidence/character-current-source-closure-publisher-r2-executed-2026-10-08.py",
+  "executedPublisherSourceSha256": "32b498e837f1fd414e48f76c8b91f63fa1eabb34c00bf2d9a80a4c1daa911f29",
+  "futurePublisherSource": "docs/evidence/character-current-source-closure-publisher-r2-2026-10-08.py",
+  "futurePublisherSourceSha256": "62df61156efbb57b5f4adc9ffaf2e7c6b0c7799721ce9383fe4ff1b9f9a0b601",
+  "scope": "Independent read-only HEAD snapshot; running publisher terminal state and fsck still separate."
+}

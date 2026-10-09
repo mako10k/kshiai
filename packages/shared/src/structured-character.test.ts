@@ -412,8 +412,8 @@ describe("CharacterNormClauseV2 registered vocabularies", () => {
       true,
     );
     assert.equal(
-      (CHARACTER_NORM_OBSERVED_EVENT_KINDS_V2 as readonly string[])
-        .includes("direct_address"),
+      new Set<string>(CHARACTER_NORM_OBSERVED_EVENT_KINDS_V2)
+        .has("direct_address"),
       false,
     );
     assert.ok(characterNormClauseVocabularyPromptV2().includes("utterance"));

@@ -135,3 +135,11 @@ evidence OWNER_ACCEPTANCE:
     docs/evidence/cc319-owner-acceptance-2026-09-29.md preserves the four
     submitted SHA256 identities and the limited D4 replacement scope.
     The subsequent handoff instruction keeps vt102 suspended for continuation.
+
+decision ACCEPTANCE based_on OWNER_ACCEPTANCE:
+  |
+    Record the already accepted ADR0039 revision 1 package and scope documented
+    in the existing OWNER_ACCEPTANCE evidence and cc319 acceptance record.
+    D1-D4 and VERIFY retain their accepted meanings. This receipt projection
+    grants no new execution authority, does not resume suspended vt102, and
+    does not authorize Stage, production, data operations or a discarded trial.

@@ -1,0 +1,12 @@
+domain STATE_TEST_SEAL:
+  description "Seal six awareness state regressions against adopted subjective-state contracts."
+evidence OWNER:
+  "Owner adopted implementation decisionsv1 and requests all test Cause review/sealing. ADR0051 inherits ADR0050 except certified-cost admission."
+evidence REVIEW:
+  "Read awareness-state.test.ts all6 assertions, awareness-state.ts transitions, requirementsU01/U02/U05/U06/U10/U11, implementation decisions1/3/4, basic design4/7/8/9/12. Source snapshot cloned, active desires sorted by strength/accepted/id, physical slot retained after cancellation, generation/fence/deadline guards reject late invalid output, mailbox applied next tick once, immutable issued IDs reject reuse. Shared diagnostic415 passed no skips."
+premise BOUNDARY:
+  "The tested deadline16000 is a local job input, not a claim of current operational policy. Default legacy certified policy still readable; new measured admission unaffected. Requirement/base docs retain historical Draft text but current adoption override is explicitly recorded and already frozen with inherited authority Causes. No new owner acceptance is fabricated."
+premise SCOPE:
+  "Reuse exact current inherited ADR0051, requirements/basic and pipeline source Seals, after source/stale readback. Create only three local refs: adopted implementation-decision text, pure awareness-state implementation, and its test. Link Causes to reviewed exact upstream source Seals. Register one test. Preserve every old head. Not complete import coverage or all-tests success."
+decision D1 based_on OWNER, REVIEW, BOUNDARY, SCOPE:
+  "Audit, publish reviewed three refs and map test, verify source identity/stale/fsck and eligibility; keep full all-tests goal active."

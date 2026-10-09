@@ -1,0 +1,13 @@
+sealed all-tests-20261008/design-current-e2e
+sealed all-tests-20261008/implementation-current-e2e-battle-page
+sealed all-tests-20261008/implementation-current-e2e-battle-view
+sealed all-tests-20261008/implementation-current-e2e-styles
+sealed all-tests-20261008/implementation-current-e2e-review-page
+sealed all-tests-20261008/implementation-current-e2e-detail-page
+sealed all-tests-20261008/implementation-current-e2e-browser-fixture
+sealed all-tests-20261008/implementation-current-e2e-cutover
+sealed all-tests-20261008/implementation-current-e2e-rio-fixture
+sealed verification/battle-screen-current-20261008
+sealed verification/character-focused-review-current-20261008
+sealed verification/local-integration-current-20261008
+readback complete

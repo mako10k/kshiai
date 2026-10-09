@@ -1,0 +1,170 @@
+[WebServer] (node:2723895) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 9 tests using 1 worker
+
+(node:2723938) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:2723938) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  1 e2e/battle-screen.spec.ts:41:7 › battle screen › renders all arrived speech immediately without fade or delayed reveal (7ms)
+(node:2723951) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:2723951) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  2 e2e/battle-screen.spec.ts:94:7 › battle screen › keeps the latest log above the bottom nav and hides save plus extra object facts (4ms)
+(node:2723964) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:2723964) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  3 e2e/battle-screen.spec.ts:124:7 › battle screen › follows new story lines inside the log container (4ms)
+(node:2723977) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:2723977) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  4 e2e/v3-local-integration.spec.ts:12:5 › formal Neva/Rio remain immutable through browser review, completion, replay and cutover (4ms)
+(node:2723990) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:2723990) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  5 e2e/character-focused-review.spec.ts:24:5 › shows the stored structured difference without presenting incomplete work as acceptable (4ms)
+(node:2724003) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:2724003) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  6 e2e/character-focused-review.spec.ts:39:5 › keeps the same owner command after an ambiguous response and opens the new attempt (4ms)
+(node:2724016) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:2724016) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  7 e2e/character-focused-review.spec.ts:68:5 › confirms a fixed V3 candidate with the exact reviewed digest and exposes its complete review (5ms)
+(node:2724029) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:2724029) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  8 e2e/character-focused-review.spec.ts:100:5 › restricts closed owner review to confirmation and stays on the exact review after saving (5ms)
+(node:2724042) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:2724042) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  9 e2e/character-focused-review.spec.ts:139:5 › keeps an owned V2 profile readable without advertising unavailable migration or ordinary editors (5ms)
+
+
+  1) e2e/battle-screen.spec.ts:41:7 › battle screen › renders all arrived speech immediately without fade or delayed reveal 
+
+    Error: browserType.launch: Executable doesn't exist at /home/katsumata-m/.cache/ms-playwright/chromium_headless_shell-1193/chrome-linux/headless_shell
+    ╔═════════════════════════════════════════════════════════════════════════╗
+    ║ Looks like Playwright Test or Playwright was just installed or updated. ║
+    ║ Please run the following command to download new browsers:              ║
+    ║                                                                         ║
+    ║     npx playwright install                                              ║
+    ║                                                                         ║
+    ║ <3 Playwright Team                                                      ║
+    ╚═════════════════════════════════════════════════════════════════════════╝
+
+  2) e2e/battle-screen.spec.ts:94:7 › battle screen › keeps the latest log above the bottom nav and hides save plus extra object facts 
+
+    Error: browserType.launch: Executable doesn't exist at /home/katsumata-m/.cache/ms-playwright/chromium_headless_shell-1193/chrome-linux/headless_shell
+    ╔═════════════════════════════════════════════════════════════════════════╗
+    ║ Looks like Playwright Test or Playwright was just installed or updated. ║
+    ║ Please run the following command to download new browsers:              ║
+    ║                                                                         ║
+    ║     npx playwright install                                              ║
+    ║                                                                         ║
+    ║ <3 Playwright Team                                                      ║
+    ╚═════════════════════════════════════════════════════════════════════════╝
+
+  3) e2e/battle-screen.spec.ts:124:7 › battle screen › follows new story lines inside the log container 
+
+    Error: browserType.launch: Executable doesn't exist at /home/katsumata-m/.cache/ms-playwright/chromium_headless_shell-1193/chrome-linux/headless_shell
+    ╔═════════════════════════════════════════════════════════════════════════╗
+    ║ Looks like Playwright Test or Playwright was just installed or updated. ║
+    ║ Please run the following command to download new browsers:              ║
+    ║                                                                         ║
+    ║     npx playwright install                                              ║
+    ║                                                                         ║
+    ║ <3 Playwright Team                                                      ║
+    ╚═════════════════════════════════════════════════════════════════════════╝
+
+  4) e2e/character-focused-review.spec.ts:24:5 › shows the stored structured difference without presenting incomplete work as acceptable 
+
+    Error: browserType.launch: Executable doesn't exist at /home/katsumata-m/.cache/ms-playwright/chromium_headless_shell-1193/chrome-linux/headless_shell
+    ╔═════════════════════════════════════════════════════════════════════════╗
+    ║ Looks like Playwright Test or Playwright was just installed or updated. ║
+    ║ Please run the following command to download new browsers:              ║
+    ║                                                                         ║
+    ║     npx playwright install                                              ║
+    ║                                                                         ║
+    ║ <3 Playwright Team                                                      ║
+    ╚═════════════════════════════════════════════════════════════════════════╝
+
+  5) e2e/character-focused-review.spec.ts:39:5 › keeps the same owner command after an ambiguous response and opens the new attempt 
+
+    Error: browserType.launch: Executable doesn't exist at /home/katsumata-m/.cache/ms-playwright/chromium_headless_shell-1193/chrome-linux/headless_shell
+    ╔═════════════════════════════════════════════════════════════════════════╗
+    ║ Looks like Playwright Test or Playwright was just installed or updated. ║
+    ║ Please run the following command to download new browsers:              ║
+    ║                                                                         ║
+    ║     npx playwright install                                              ║
+    ║                                                                         ║
+    ║ <3 Playwright Team                                                      ║
+    ╚═════════════════════════════════════════════════════════════════════════╝
+
+  6) e2e/character-focused-review.spec.ts:68:5 › confirms a fixed V3 candidate with the exact reviewed digest and exposes its complete review 
+
+    Error: browserType.launch: Executable doesn't exist at /home/katsumata-m/.cache/ms-playwright/chromium_headless_shell-1193/chrome-linux/headless_shell
+    ╔═════════════════════════════════════════════════════════════════════════╗
+    ║ Looks like Playwright Test or Playwright was just installed or updated. ║
+    ║ Please run the following command to download new browsers:              ║
+    ║                                                                         ║
+    ║     npx playwright install                                              ║
+    ║                                                                         ║
+    ║ <3 Playwright Team                                                      ║
+    ╚═════════════════════════════════════════════════════════════════════════╝
+
+  7) e2e/character-focused-review.spec.ts:100:5 › restricts closed owner review to confirmation and stays on the exact review after saving 
+
+    Error: browserType.launch: Executable doesn't exist at /home/katsumata-m/.cache/ms-playwright/chromium_headless_shell-1193/chrome-linux/headless_shell
+    ╔═════════════════════════════════════════════════════════════════════════╗
+    ║ Looks like Playwright Test or Playwright was just installed or updated. ║
+    ║ Please run the following command to download new browsers:              ║
+    ║                                                                         ║
+    ║     npx playwright install                                              ║
+    ║                                                                         ║
+    ║ <3 Playwright Team                                                      ║
+    ╚═════════════════════════════════════════════════════════════════════════╝
+
+  8) e2e/character-focused-review.spec.ts:139:5 › keeps an owned V2 profile readable without advertising unavailable migration or ordinary editors 
+
+    Error: browserType.launch: Executable doesn't exist at /home/katsumata-m/.cache/ms-playwright/chromium_headless_shell-1193/chrome-linux/headless_shell
+    ╔═════════════════════════════════════════════════════════════════════════╗
+    ║ Looks like Playwright Test or Playwright was just installed or updated. ║
+    ║ Please run the following command to download new browsers:              ║
+    ║                                                                         ║
+    ║     npx playwright install                                              ║
+    ║                                                                         ║
+    ║ <3 Playwright Team                                                      ║
+    ╚═════════════════════════════════════════════════════════════════════════╝
+
+  9) e2e/v3-local-integration.spec.ts:12:5 › formal Neva/Rio remain immutable through browser review, completion, replay and cutover 
+
+    Error: browserType.launch: Executable doesn't exist at /home/katsumata-m/.cache/ms-playwright/chromium_headless_shell-1193/chrome-linux/headless_shell
+    ╔═════════════════════════════════════════════════════════════════════════╗
+    ║ Looks like Playwright Test or Playwright was just installed or updated. ║
+    ║ Please run the following command to download new browsers:              ║
+    ║                                                                         ║
+    ║     npx playwright install                                              ║
+    ║                                                                         ║
+    ║ <3 Playwright Team                                                      ║
+    ╚═════════════════════════════════════════════════════════════════════════╝
+
+  9 failed
+    e2e/battle-screen.spec.ts:41:7 › battle screen › renders all arrived speech immediately without fade or delayed reveal 
+    e2e/battle-screen.spec.ts:94:7 › battle screen › keeps the latest log above the bottom nav and hides save plus extra object facts 
+    e2e/battle-screen.spec.ts:124:7 › battle screen › follows new story lines inside the log container 
+    e2e/character-focused-review.spec.ts:24:5 › shows the stored structured difference without presenting incomplete work as acceptable 
+    e2e/character-focused-review.spec.ts:39:5 › keeps the same owner command after an ambiguous response and opens the new attempt 
+    e2e/character-focused-review.spec.ts:68:5 › confirms a fixed V3 candidate with the exact reviewed digest and exposes its complete review 
+    e2e/character-focused-review.spec.ts:100:5 › restricts closed owner review to confirmation and stays on the exact review after saving 
+    e2e/character-focused-review.spec.ts:139:5 › keeps an owned V2 profile readable without advertising unavailable migration or ordinary editors 
+    e2e/v3-local-integration.spec.ts:12:5 › formal Neva/Rio remain immutable through browser review, completion, replay and cutover 

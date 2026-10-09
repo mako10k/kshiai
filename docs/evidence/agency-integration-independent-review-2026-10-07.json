@@ -1,0 +1,31 @@
+{
+  "reviewer": "/root/llm_boundary_seal_audit",
+  "mode": "read-only",
+  "originalCases": 17,
+  "files": [
+    {
+      "path": "backend/src/services/conscious-agency-binding.test.ts",
+      "sha256": "4b0af7bbfe5cb5a24f7dac2974dee11bbe9b42a4a69fd4aa778e46d9a4be9c08"
+    },
+    {
+      "path": "backend/src/services/conscious-agency-runtime.test.ts",
+      "sha256": "5e67fe87518c6699ded7dd5f4f799f4ca8a1c4ab8dbb7dccb64a5b6c23f93198"
+    },
+    {
+      "path": "backend/src/services/conscious-agency-persistence.test.ts",
+      "sha256": "2ca92b44d0b2abedd6c521f4319f4242abfc917021546a7b61ded1299fcf0ec6"
+    }
+  ],
+  "findings": [
+    "Two canonical-state presence casts identified; required local type correction independently supported",
+    "Accepted0039 four exact current documents match accepted readback; missing formal ACCEPTANCE node remains reported, not repaired",
+    "No exact functional contradiction established; fixtures demonstrate historical helpers not public creation success"
+  ],
+  "rootCorrection": "Service already had preexisting WIP versus HEAD; exact pre-repair current Seal compared to post-repair source confirms only3line change, all other WIP retained",
+  "limits": [
+    "Mocked chat/no network",
+    "SyntheticV3 direct insertion not current product support or discarded trial revival",
+    "Private marker assertions not universal privacy proof",
+    "Three new wholefile Seals plus four source/cause refreshes; related45 diagnostic-only"
+  ]
+}

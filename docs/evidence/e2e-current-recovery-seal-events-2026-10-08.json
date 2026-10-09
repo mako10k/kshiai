@@ -1,0 +1,244 @@
+[
+  {
+    "key": "design-current-e2e",
+    "path": "docs/e2e-current-test-contract-review-2026-10-08.md",
+    "parents": [
+      "requirements",
+      "terminal",
+      "authoring",
+      "character",
+      "lifecycle",
+      "retirement",
+      "awareness",
+      "latest"
+    ],
+    "scope": "Original nine browser cases only: mocked participant/review UI plus localhost/disposableSQLite/offline-provider lifecycle. Not production, paid, oldcutovertrial success or proposed contract adoption.",
+    "ref": "all-tests-20261008/design-current-e2e",
+    "test": false,
+    "sha256": "cc45ba87d410957e08fcd92e8c633d71ffba194df485d2f423045402f8ea1663",
+    "sealId": "6721224ee16d33c1b70d8c909cc2d25dbf847028d3f34538f4782d823da0d793",
+    "causeSealIds": [
+      "203e66fc4e30772adab026012c67f1b1ac4ca86ad2ada11b501c639a27a19eac",
+      "78f9fec1b418020c221d67930654a6ead967fb85393603a544651cea83a61371",
+      "137fb216bdd17be1b005ed6ec66c949dceed3b262a93daedc66a512128db5a1a",
+      "3942057ff54a50c9ba7330f8069242d637aa62302b067be0d9796198f1932f01",
+      "f49312f0b4c786dd41b4c2092a992dfebd04bfff33396a4891a199add8f5f17e",
+      "480c02403f61dc6a9cd7d54861639b962dbc3bde86673481e02e0defc8415e17",
+      "4a236b55e9ad9e4aa54eb2c6bbe9d77e0a318881ba8328363505153d16e151dd",
+      "9aae6f378e9b227f6909912129368e8317bdc4d773933342da1ca3914be6dae0"
+    ]
+  },
+  {
+    "key": "implementation-current-e2e-battle-page",
+    "path": "frontend/src/pages/BattlePage.tsx",
+    "parents": [
+      "design-current-e2e"
+    ],
+    "scope": "Original nine browser cases only: mocked participant/review UI plus localhost/disposableSQLite/offline-provider lifecycle. Not production, paid, oldcutovertrial success or proposed contract adoption.",
+    "ref": "all-tests-20261008/implementation-current-e2e-battle-page",
+    "test": false,
+    "sha256": "a1b9b58cbe9537f8ba7a95f4fbb77a60e82d854acd4ae58de934e3619b26e110",
+    "sealId": "da060c69986665461f0b419e997273799e3b4d1be515adf5ca698667c6db061a",
+    "causeSealIds": [
+      "6721224ee16d33c1b70d8c909cc2d25dbf847028d3f34538f4782d823da0d793"
+    ]
+  },
+  {
+    "key": "implementation-current-e2e-battle-view",
+    "path": "frontend/src/pages/BattlePageView.tsx",
+    "parents": [
+      "design-current-e2e"
+    ],
+    "scope": "Original nine browser cases only: mocked participant/review UI plus localhost/disposableSQLite/offline-provider lifecycle. Not production, paid, oldcutovertrial success or proposed contract adoption.",
+    "ref": "all-tests-20261008/implementation-current-e2e-battle-view",
+    "test": false,
+    "sha256": "a029ed8776d1e9ff97179609a192ef738024539a4767308053f4cd3556ca8c28",
+    "sealId": "c9804a7d36810cdedb84783f3446fa667f2e9e68ee9ed5b667f21f5d2d0bc8b4",
+    "causeSealIds": [
+      "6721224ee16d33c1b70d8c909cc2d25dbf847028d3f34538f4782d823da0d793"
+    ]
+  },
+  {
+    "key": "implementation-current-e2e-styles",
+    "path": "frontend/src/styles.css",
+    "parents": [
+      "design-current-e2e"
+    ],
+    "scope": "Original nine browser cases only: mocked participant/review UI plus localhost/disposableSQLite/offline-provider lifecycle. Not production, paid, oldcutovertrial success or proposed contract adoption.",
+    "ref": "all-tests-20261008/implementation-current-e2e-styles",
+    "test": false,
+    "sha256": "a38c52d92cc52b1b8de45a5820adafa678a3fb12179f1d8033e37d2a3835fc61",
+    "sealId": "a6ae940a9d8cbbfd183bf659f11999a6b54bf4bd50ed41b5c38832012f42001c",
+    "causeSealIds": [
+      "6721224ee16d33c1b70d8c909cc2d25dbf847028d3f34538f4782d823da0d793"
+    ]
+  },
+  {
+    "key": "implementation-current-e2e-review-page",
+    "path": "frontend/src/pages/CharacterReviewPage.tsx",
+    "parents": [
+      "design-current-e2e"
+    ],
+    "scope": "Original nine browser cases only: mocked participant/review UI plus localhost/disposableSQLite/offline-provider lifecycle. Not production, paid, oldcutovertrial success or proposed contract adoption.",
+    "ref": "all-tests-20261008/implementation-current-e2e-review-page",
+    "test": false,
+    "sha256": "e34bc4d428c6a51a3658faf2c2781839c9dabea9fe97486fbc91e961f607fc2c",
+    "sealId": "57d4a1a92c4d5344b598e42444c000c7014c6c46e1476c038dd8f55b79855b0e",
+    "causeSealIds": [
+      "6721224ee16d33c1b70d8c909cc2d25dbf847028d3f34538f4782d823da0d793"
+    ]
+  },
+  {
+    "key": "implementation-current-e2e-detail-page",
+    "path": "frontend/src/pages/CharacterDetailPage.tsx",
+    "parents": [
+      "design-current-e2e"
+    ],
+    "scope": "Original nine browser cases only: mocked participant/review UI plus localhost/disposableSQLite/offline-provider lifecycle. Not production, paid, oldcutovertrial success or proposed contract adoption.",
+    "ref": "all-tests-20261008/implementation-current-e2e-detail-page",
+    "test": false,
+    "sha256": "4b57f748c6ddaa9576f6f0e17bcc5b128ae1523e088293876037d72b1f511c99",
+    "sealId": "1facb162839cdf38740865dedf60e068bee29a41b801fd50a895656f25f3e15e",
+    "causeSealIds": [
+      "6721224ee16d33c1b70d8c909cc2d25dbf847028d3f34538f4782d823da0d793"
+    ]
+  },
+  {
+    "key": "implementation-current-e2e-browser-fixture",
+    "path": "e2e/fixtures/battle.ts",
+    "parents": [
+      "design-current-e2e"
+    ],
+    "scope": "Original nine browser cases only: mocked participant/review UI plus localhost/disposableSQLite/offline-provider lifecycle. Not production, paid, oldcutovertrial success or proposed contract adoption.",
+    "ref": "all-tests-20261008/implementation-current-e2e-browser-fixture",
+    "test": false,
+    "sha256": "b88253bfe84bbe466f2aeac05828f3748d5339eb76a909694c5c701a6de4c4cc",
+    "sealId": "4e0bc4d85fab55f47c747525b0288b0a887b2e756054b0d7aee1f18707dcc9cf",
+    "causeSealIds": [
+      "6721224ee16d33c1b70d8c909cc2d25dbf847028d3f34538f4782d823da0d793"
+    ]
+  },
+  {
+    "key": "implementation-current-e2e-cutover",
+    "path": "backend/src/repositories/battle-cutover.ts",
+    "parents": [
+      "design-current-e2e"
+    ],
+    "scope": "Original nine browser cases only: mocked participant/review UI plus localhost/disposableSQLite/offline-provider lifecycle. Not production, paid, oldcutovertrial success or proposed contract adoption.",
+    "ref": "all-tests-20261008/implementation-current-e2e-cutover",
+    "test": false,
+    "sha256": "abb298bf4b6fa9043eda1957f714bf19a62a60bec0d0a8f9e4de8748d4db2895",
+    "sealId": "f2f675b0da8e1d692eca779ce6333f7c2b96a64b0f11eeb7199088a26e2d824b",
+    "causeSealIds": [
+      "6721224ee16d33c1b70d8c909cc2d25dbf847028d3f34538f4782d823da0d793"
+    ]
+  },
+  {
+    "key": "implementation-current-e2e-rio-fixture",
+    "path": "backend/src/fixtures/rio-v3.ts",
+    "parents": [
+      "design-current-e2e"
+    ],
+    "scope": "Original nine browser cases only: mocked participant/review UI plus localhost/disposableSQLite/offline-provider lifecycle. Not production, paid, oldcutovertrial success or proposed contract adoption.",
+    "ref": "all-tests-20261008/implementation-current-e2e-rio-fixture",
+    "test": false,
+    "sha256": "19946585c3104c2894abfe8185d06c95ae77c99fadbcce07b1c0209c9ac7cab1",
+    "sealId": "9b8e4d175588d3531223c72f7630503dd65edc7eb5eae07eb415248bbc440636",
+    "causeSealIds": [
+      "6721224ee16d33c1b70d8c909cc2d25dbf847028d3f34538f4782d823da0d793"
+    ]
+  },
+  {
+    "key": "battle-screen-current-20261008",
+    "path": "e2e/battle-screen.spec.ts",
+    "parents": [
+      "implementation-current-e2e-battle-page",
+      "implementation-current-e2e-battle-view",
+      "implementation-current-e2e-styles",
+      "implementation-current-e2e-browser-fixture"
+    ],
+    "scope": "Original nine browser cases only: mocked participant/review UI plus localhost/disposableSQLite/offline-provider lifecycle. Not production, paid, oldcutovertrial success or proposed contract adoption.",
+    "ref": "verification/battle-screen-current-20261008",
+    "test": true,
+    "sha256": "294aab09315703b2ef1dd60c8e5de4e7c143dc6ed0f2148da0867cf11cff0a20",
+    "sealId": "95b27cfc2a1136346829d0a0958fb8f6d55ec9796019168cb4f40526a56e316c",
+    "causeSealIds": [
+      "da060c69986665461f0b419e997273799e3b4d1be515adf5ca698667c6db061a",
+      "c9804a7d36810cdedb84783f3446fa667f2e9e68ee9ed5b667f21f5d2d0bc8b4",
+      "a6ae940a9d8cbbfd183bf659f11999a6b54bf4bd50ed41b5c38832012f42001c",
+      "4e0bc4d85fab55f47c747525b0288b0a887b2e756054b0d7aee1f18707dcc9cf"
+    ]
+  },
+  {
+    "key": "character-focused-review-current-20261008",
+    "path": "e2e/character-focused-review.spec.ts",
+    "parents": [
+      "implementation-current-e2e-review-page",
+      "implementation-current-e2e-detail-page",
+      "implementation-current-e2e-browser-fixture"
+    ],
+    "scope": "Original nine browser cases only: mocked participant/review UI plus localhost/disposableSQLite/offline-provider lifecycle. Not production, paid, oldcutovertrial success or proposed contract adoption.",
+    "ref": "verification/character-focused-review-current-20261008",
+    "test": true,
+    "sha256": "48bc0247aaddd380c29304d60403d37006caa3763e010d46f77a2530e2ce5d0c",
+    "sealId": "25925950c9b59afcc12bddf738ae646f20ecf82385391eda20edd975597a9c1a",
+    "causeSealIds": [
+      "57d4a1a92c4d5344b598e42444c000c7014c6c46e1476c038dd8f55b79855b0e",
+      "1facb162839cdf38740865dedf60e068bee29a41b801fd50a895656f25f3e15e",
+      "4e0bc4d85fab55f47c747525b0288b0a887b2e756054b0d7aee1f18707dcc9cf"
+    ]
+  },
+  {
+    "key": "local-integration-current-20261008",
+    "path": "e2e/v3-local-integration.spec.ts",
+    "parents": [
+      "design-current-e2e",
+      "implementation-current-e2e-cutover",
+      "implementation-current-e2e-rio-fixture",
+      "implementation-current-e2e-review-page",
+      "implementation-current-e2e-battle-page",
+      "backend-routes",
+      "backend-auth",
+      "backend-db",
+      "backend-characters",
+      "backend-character-assets",
+      "backend-generations",
+      "backend-controlled-preparation",
+      "backend-battle",
+      "backend-battles",
+      "backend-narration-worker",
+      "backend-historical-character",
+      "backend-offline-provider",
+      "backend-conscious-fixture",
+      "backend-neva-fixture",
+      "backend-guard"
+    ],
+    "scope": "Original nine browser cases only: mocked participant/review UI plus localhost/disposableSQLite/offline-provider lifecycle. Not production, paid, oldcutovertrial success or proposed contract adoption.",
+    "ref": "verification/local-integration-current-20261008",
+    "test": true,
+    "sha256": "fd0d642a0cbaaac8c93da00dcd1276424193d640c383dcecfa1313be19f9bd88",
+    "sealId": "f5bc4e32207d5b2f7dddbc74ab945af49771a3df46ba46ca11ee2a07fef06b31",
+    "causeSealIds": [
+      "6721224ee16d33c1b70d8c909cc2d25dbf847028d3f34538f4782d823da0d793",
+      "f2f675b0da8e1d692eca779ce6333f7c2b96a64b0f11eeb7199088a26e2d824b",
+      "9b8e4d175588d3531223c72f7630503dd65edc7eb5eae07eb415248bbc440636",
+      "57d4a1a92c4d5344b598e42444c000c7014c6c46e1476c038dd8f55b79855b0e",
+      "da060c69986665461f0b419e997273799e3b4d1be515adf5ca698667c6db061a",
+      "fcf165143e528ea548c1e9c8313a465199e185c9f066ef7a60e1996a9e09856f",
+      "31a499023d115fb49f5762170be780e1570417cff3a1e9d049a96d78e550b515",
+      "29388522fd326751bb29a58fc9145bbf64bc1f96d80e2f54420065b80363d535",
+      "6c315ff831dd9d2818e56a98727fc72bdd703c5cab6552bc28baec03c45c734c",
+      "8d6bf70266a8a48bc0227bb6c69995a951948a704c1fee95f6e1fdd08d188075",
+      "869129df4d654527d085c525a8fba685dce132eaac26280ee3e12afe243162f7",
+      "ccf97654c093b99cd30adcec5b1a72c8a4fab6d78e3e38c2258df52121a992ed",
+      "2eae8cc721eb57bccdb6600c1bcdf5c9c9cf72d1d2dc4feb7fb0f0d1b715b3bb",
+      "c13f788ff9274a1abf7cc32574a4882693f2a5eed8082bdec37afdf9216023e3",
+      "18b5c01c9ddeacc5e5bd9e82d5e9e1924024b31853817bcb323caaa230677d72",
+      "7ded913cf0afb3625fa20d843b6b61ad27be823815dcb89ad384380de9306eb0",
+      "c91b093d735b162729efe8cfaf1944a716ad32955b4d15c5273a53833f210493",
+      "daca8dadb8a85073ca868c61f6423974fff038c9548cee89ead8f7ae58348deb",
+      "86ef8457d8b8fc47cf67a1df8a2d292628c807fc335eb8706be9f4b41d4c520d",
+      "6565d6dac8180fd57f7c82c61c4486ae4ea30b6315cb6acc45fadd09208998af"
+    ]
+  }
+]

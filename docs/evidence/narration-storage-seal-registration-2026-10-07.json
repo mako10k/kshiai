@@ -1,0 +1,293 @@
+{
+  "entries": [
+    {
+      "key": "design-narration-storage-test-contract",
+      "path": "docs/narration-storage-test-contract-review-2026-10-07.md",
+      "parents": [
+        "requirements",
+        "current",
+        "narration",
+        "basic",
+        "decisions"
+      ],
+      "scope": "Current0051 exact inheritance, canonical-first0006 and adoptedQ07/Q08 only. Eleven unchanged local cases; no live provider, complete privacy, multi-receipt grouping or PostgreSQL acceptance.",
+      "ref": "all-tests-20261007/design-narration-storage-test-contract",
+      "test": false,
+      "sha256": "0d495acc066673a0596e9b2b8844f04c96e404a5f449f0fc2d4280927074eabf",
+      "sealId": "d1bf4b23433d3887849b98cd11b8fb7e622e23aead2ef665f7cb1f297a425e87",
+      "causeSealIds": [
+        "203e66fc4e30772adab026012c67f1b1ac4ca86ad2ada11b501c639a27a19eac",
+        "4a236b55e9ad9e4aa54eb2c6bbe9d77e0a318881ba8328363505153d16e151dd",
+        "78f9fec1b418020c221d67930654a6ead967fb85393603a544651cea83a61371",
+        "1adba1d06106cfcc7537dcd2d85aa94f745a4a79ff6b3f5ac4911a11efdf79a8",
+        "1edf3239229665d39a55aee22af5148f4408f6c8dfea24ca200ae835af46e02d"
+      ]
+    },
+    {
+      "key": "implementation-narration-storage-fixture",
+      "path": "backend/src/services/awareness-test-fixture.ts",
+      "parents": [
+        "design-narration-storage-test-contract",
+        "battle"
+      ],
+      "scope": "Synthetic fixture construction only; not actual battle creation.",
+      "ref": "all-tests-20261007/implementation-narration-storage-fixture",
+      "test": false,
+      "sha256": "6004a1019014000d2c155cd171eb2e4ea98f7880e258bdc82bf709dd4bba28b0",
+      "sealId": "6ac6f7936f62bf30134d2c26620c335f7b71357945f0713f35f4635a70754a31",
+      "causeSealIds": [
+        "d1bf4b23433d3887849b98cd11b8fb7e622e23aead2ef665f7cb1f297a425e87",
+        "fd2692da29f2deaf81b6567e5499276f95ece18dfd67f0a669fd1a2077292209"
+      ]
+    },
+    {
+      "key": "implementation-narration-storage-social",
+      "path": "packages/shared/src/battle-social.ts",
+      "parents": [
+        "design-narration-storage-test-contract",
+        "battle"
+      ],
+      "scope": "Only narrator focus projection and recognition update reducer reached by the serial SQLite case, not all social behavior or all secrets.",
+      "ref": "all-tests-20261007/implementation-narration-storage-social",
+      "test": false,
+      "sha256": "65c24fddb1de10b595f1a6514a68112f3cc5e42a3acb42e707e44fc4d0255bd5",
+      "sealId": "d2519328e27669c5674a955184a902995c9daba1c8d8ef925404334a710f0fd3",
+      "causeSealIds": [
+        "d1bf4b23433d3887849b98cd11b8fb7e622e23aead2ef665f7cb1f297a425e87",
+        "fd2692da29f2deaf81b6567e5499276f95ece18dfd67f0a669fd1a2077292209"
+      ]
+    },
+    {
+      "key": "implementation-narration-storage-context",
+      "path": "backend/src/llm/awareness-narrator-context.ts",
+      "parents": [
+        "design-narration-storage-test-contract",
+        "implementation-narration-storage-social",
+        "battle"
+      ],
+      "scope": "Strict target/private continuity context grammar only; not real narration model quality.",
+      "ref": "all-tests-20261007/implementation-narration-storage-context",
+      "test": false,
+      "sha256": "89b451e1d64ede824b6b8a7c70a18f3ad919b54376ef52ed20f50ab3429b0f68",
+      "sealId": "604fe01d141d9532df38636e7168dcde40197a80f684141d5720661f8ed815ec",
+      "causeSealIds": [
+        "d1bf4b23433d3887849b98cd11b8fb7e622e23aead2ef665f7cb1f297a425e87",
+        "d2519328e27669c5674a955184a902995c9daba1c8d8ef925404334a710f0fd3",
+        "fd2692da29f2deaf81b6567e5499276f95ece18dfd67f0a669fd1a2077292209"
+      ]
+    },
+    {
+      "key": "implementation-narration-storage-continuity",
+      "path": "backend/src/repositories/battle-awareness-narrator.ts",
+      "parents": [
+        "design-narration-storage-test-contract",
+        "implementation-narration-storage-context",
+        "implementation-narration-storage-social",
+        "db"
+      ],
+      "scope": "Seed-once, target projection and serial watermark update. No concurrent CAS or full privacy coverage.",
+      "ref": "all-tests-20261007/implementation-narration-storage-continuity",
+      "test": false,
+      "sha256": "65fa8352467a3d2bbe226e7815a57e41b11c4ec120017366e8f21638f87ed6ca",
+      "sealId": "2bb4f69f1e8be4176a337798da73e71336d20744dad624903b89adee8d66fb1d",
+      "causeSealIds": [
+        "d1bf4b23433d3887849b98cd11b8fb7e622e23aead2ef665f7cb1f297a425e87",
+        "604fe01d141d9532df38636e7168dcde40197a80f684141d5720661f8ed815ec",
+        "d2519328e27669c5674a955184a902995c9daba1c8d8ef925404334a710f0fd3",
+        "4ea52a357e72328f2c5e136344aa945c23078b1c6957fc150f77a6153663ebee"
+      ]
+    },
+    {
+      "key": "implementation-narration-storage-runtime",
+      "path": "backend/src/repositories/battle-awareness.ts",
+      "parents": [
+        "design-narration-storage-test-contract",
+        "state",
+        "db"
+      ],
+      "scope": "Runtime read and CAS used by narration reservation tests, preserving unrelated concurrent reservation. SQLite serial transaction only.",
+      "ref": "all-tests-20261007/implementation-narration-storage-runtime",
+      "test": false,
+      "sha256": "7a1fb475a5b52153a4262f80a987bb0158988319a6cc0bf6f2b8df44beff2953",
+      "sealId": "8c03873ba349ed1531f1dc6adf2d11b86b8e525c3cf6e501e38ff6ff2bf25cef",
+      "causeSealIds": [
+        "d1bf4b23433d3887849b98cd11b8fb7e622e23aead2ef665f7cb1f297a425e87",
+        "cea338023663fcb0df2f08b3e889a61b0033e7d60008a6301090ccac8a3fe50a",
+        "4ea52a357e72328f2c5e136344aa945c23078b1c6957fc150f77a6153663ebee"
+      ]
+    },
+    {
+      "key": "implementation-narration-storage-budget",
+      "path": "backend/src/repositories/awareness-reservation-budget.ts",
+      "parents": [
+        "design-narration-storage-test-contract",
+        "policy",
+        "state"
+      ],
+      "scope": "Admission reached by tests: inactive and occupied same-role rejection. Not comprehensive global physical/USD cap proof.",
+      "ref": "all-tests-20261007/implementation-narration-storage-budget",
+      "test": false,
+      "sha256": "38158534908bb95843cdf333cd80bf0689b492d6a072a4e3098fac9bf392019a",
+      "sealId": "b94c5cce82ce40391910a8dba02ab76cf9c320ed2354635a9bc37a31fcbe8fc7",
+      "causeSealIds": [
+        "d1bf4b23433d3887849b98cd11b8fb7e622e23aead2ef665f7cb1f297a425e87",
+        "c064db895ea9f010d2f6fb28360b243285cbe93156c19f8286e161ec2d0d731a",
+        "cea338023663fcb0df2f08b3e889a61b0033e7d60008a6301090ccac8a3fe50a"
+      ]
+    },
+    {
+      "key": "implementation-narration-storage-reservation",
+      "path": "backend/src/repositories/battle-awareness-narration-reservation.ts",
+      "parents": [
+        "design-narration-storage-test-contract",
+        "implementation-narration-storage-runtime",
+        "implementation-narration-storage-budget",
+        "db"
+      ],
+      "scope": "Live fenced narrator capability, receipt linkage, atomic logical/physical reservation and rollback, separate unchanged world fence. Single receipt; literal digest persistence is not cryptographic proof.",
+      "ref": "all-tests-20261007/implementation-narration-storage-reservation",
+      "test": false,
+      "sha256": "9a0bdd97ddc7819a042f7a1bef06e052e6412c1a3a364040f26aec42630e2667",
+      "sealId": "3aed68d44713782e7c1b6bd96ded8f20bc91524ac0c2cd0a6af648359f510774",
+      "causeSealIds": [
+        "d1bf4b23433d3887849b98cd11b8fb7e622e23aead2ef665f7cb1f297a425e87",
+        "8c03873ba349ed1531f1dc6adf2d11b86b8e525c3cf6e501e38ff6ff2bf25cef",
+        "b94c5cce82ce40391910a8dba02ab76cf9c320ed2354635a9bc37a31fcbe8fc7",
+        "4ea52a357e72328f2c5e136344aa945c23078b1c6957fc150f77a6153663ebee"
+      ]
+    },
+    {
+      "key": "implementation-narration-storage-claim",
+      "path": "backend/src/services/awareness-narration-claim-snapshot.ts",
+      "parents": [
+        "design-narration-storage-test-contract",
+        "implementation-narration-storage-runtime",
+        "db"
+      ],
+      "scope": "Read entries then battle then runtime; fake read-port interleavings. No actual database isolation or full retention-boundary proof.",
+      "ref": "all-tests-20261007/implementation-narration-storage-claim",
+      "test": false,
+      "sha256": "fda5e8040ec1665a665725a7e11017d6b67c385cbc1159508c85541066d00a55",
+      "sealId": "c391faa470d5e149ef6e6403509f6f837177c3f25e13caa3915ec4f1b621fa1b",
+      "causeSealIds": [
+        "d1bf4b23433d3887849b98cd11b8fb7e622e23aead2ef665f7cb1f297a425e87",
+        "8c03873ba349ed1531f1dc6adf2d11b86b8e525c3cf6e501e38ff6ff2bf25cef",
+        "4ea52a357e72328f2c5e136344aa945c23078b1c6957fc150f77a6153663ebee"
+      ]
+    },
+    {
+      "key": "implementation-narration-storage-material",
+      "path": "backend/src/services/awareness-narration-worker-material.ts",
+      "parents": [
+        "design-narration-storage-test-contract",
+        "frozen"
+      ],
+      "scope": "Scope materialFromEntry strict frozen grammar and battle/receipt/phase checks; not cryptographic digest validation or entire worker.",
+      "ref": "all-tests-20261007/implementation-narration-storage-material",
+      "test": false,
+      "sha256": "496a5ff5faba0f0dbbf7143108cde2e062ed6c3845cfc89f8ca2b7d6ae287af2",
+      "sealId": "6343f08bfd235396b9c7dedeb191cd24f5e766d79b32590663743890e0576403",
+      "causeSealIds": [
+        "d1bf4b23433d3887849b98cd11b8fb7e622e23aead2ef665f7cb1f297a425e87",
+        "3ce85102892804dcfeb7df194b5e93d477ab783cef102356d02ed300e993ea69"
+      ]
+    },
+    {
+      "key": "implementation-narration-storage-events",
+      "path": "backend/src/services/narration-event-storage.ts",
+      "parents": [
+        "design-narration-storage-test-contract",
+        "db"
+      ],
+      "scope": "SQLite sequential event allocator, prune floor and rollback. No PostgreSQL advisory lock, concurrent allocation, cursor reset or SSE proof.",
+      "ref": "all-tests-20261007/implementation-narration-storage-events",
+      "test": false,
+      "sha256": "6e9491bf319bdc73c964bcf08ecc6b71979f2db62d29288989e64c236c6176ef",
+      "sealId": "d064bd9b7b5a1cff846d2c79b56f213876e6157d0afede6f913f17fda0474e19",
+      "causeSealIds": [
+        "d1bf4b23433d3887849b98cd11b8fb7e622e23aead2ef665f7cb1f297a425e87",
+        "4ea52a357e72328f2c5e136344aa945c23078b1c6957fc150f77a6153663ebee"
+      ]
+    },
+    {
+      "key": "narration-reservation-storage-current",
+      "path": "backend/src/repositories/battle-awareness-narration-reservation.test.ts",
+      "parents": [
+        "implementation-narration-storage-reservation",
+        "implementation-narration-storage-runtime"
+      ],
+      "scope": "Entire unchanged three cases, local SQLite capability/admission/CAS/rollback, single receipt and literal digest.",
+      "ref": "verification/narration-reservation-storage-current-20261007",
+      "test": true,
+      "sha256": "1ed5e287b8cd89856a54cb77b3ac5a3c486f4db42cb8062cf128cbfc149d7282",
+      "sealId": "23010342c60715d1d367ced05b9d727e92f0897a0eb14572e6c49904a1a04d1d",
+      "causeSealIds": [
+        "3aed68d44713782e7c1b6bd96ded8f20bc91524ac0c2cd0a6af648359f510774",
+        "8c03873ba349ed1531f1dc6adf2d11b86b8e525c3cf6e501e38ff6ff2bf25cef"
+      ]
+    },
+    {
+      "key": "narrator-continuity-storage-current",
+      "path": "backend/src/repositories/battle-awareness-narrator.test.ts",
+      "parents": [
+        "implementation-narration-storage-continuity",
+        "implementation-narration-storage-fixture"
+      ],
+      "scope": "Entire unchanged single case: A projection, private B exclusion, recognition persistence, no reseed, reader exclusion and stale watermark rejection.",
+      "ref": "verification/narrator-continuity-storage-current-20261007",
+      "test": true,
+      "sha256": "e40e13bf97d2abf4a5f3d1e33e03218228d9a4bfdcab6f6db43c79015cc153dd",
+      "sealId": "a68d8555b0618e8731157637794118fb914286ce511b0268096fd74cd2544a70",
+      "causeSealIds": [
+        "2bb4f69f1e8be4176a337798da73e71336d20744dad624903b89adee8d66fb1d",
+        "6ac6f7936f62bf30134d2c26620c335f7b71357945f0713f35f4635a70754a31"
+      ]
+    },
+    {
+      "key": "narration-claim-snapshot-current",
+      "path": "backend/src/services/awareness-narration-claim-snapshot.test.ts",
+      "parents": [
+        "implementation-narration-storage-claim",
+        "implementation-narration-storage-material",
+        "implementation-narration-storage-fixture"
+      ],
+      "scope": "Entire unchanged five fake-port cases, ordered snapshots, missing battle/runtime and unchanged corrupt material refusal. Not actual DB transaction isolation.",
+      "ref": "verification/narration-claim-snapshot-current-20261007",
+      "test": true,
+      "sha256": "800e7f2532359b912a981606fdd27ac032ff48f1b641a349fe4bd1bb6e1e03c3",
+      "sealId": "351baa6d9b7466ad5e947d4ba7388d4c6be5d6eb5cd831c965be250b8d38366d",
+      "causeSealIds": [
+        "c391faa470d5e149ef6e6403509f6f837177c3f25e13caa3915ec4f1b621fa1b",
+        "6343f08bfd235396b9c7dedeb191cd24f5e766d79b32590663743890e0576403",
+        "6ac6f7936f62bf30134d2c26620c335f7b71357945f0713f35f4635a70754a31"
+      ]
+    },
+    {
+      "key": "narration-event-storage-current",
+      "path": "backend/src/services/awareness-narration-event-storage.test.ts",
+      "parents": [
+        "implementation-narration-storage-events",
+        "implementation-narration-storage-fixture"
+      ],
+      "scope": "Entire unchanged two SQLite cases: event sequence, prune floor and rollback. Not SSE/read cursors/PG/concurrency.",
+      "ref": "verification/narration-event-storage-current-20261007",
+      "test": true,
+      "sha256": "b122739d04537224cead567e658d2d9dd205566f150100631623e24b187d67ab",
+      "sealId": "27320d02e1bd5c534cfdaed10449145c8205cfe9f66e7520b6c9b4a894d635d6",
+      "causeSealIds": [
+        "d064bd9b7b5a1cff846d2c79b56f213876e6157d0afede6f913f17fda0474e19",
+        "6ac6f7936f62bf30134d2c26620c335f7b71357945f0713f35f4635a70754a31"
+      ]
+    }
+  ],
+  "diagnostic": {
+    "focusedPass": 11,
+    "fail": 0,
+    "skipped": 0,
+    "strictTypecheckExit": 0
+  },
+  "limitations": [
+    "All eleven original cases/assertions retained; no source/test changes",
+    "SQLite and fake ports only; no PostgreSQL isolation/concurrency, live provider, cryptographic digest or full privacy acceptance"
+  ]
+}

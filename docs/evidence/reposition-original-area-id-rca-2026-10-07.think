@@ -1,0 +1,43 @@
+domain RepositionOriginalAreaId:
+  description "Current offline canonical battlefield area identity mismatch"
+problem P1:
+  "One adjacent hop must preserve frozen battlefield topology and canonical area IDs."
+evidence E1:
+  |
+    ADR0020 D1 bounds one accepted reposition to one adjacent topology hop.
+    ADR0022 D1 separates canonical placement/topology from observer perception.
+    The existing three-area fixture supplies area.1 sand, area.2 stone, area.3 center
+    and frozen entryAreas a area.1 b area.3 with two topology edges.
+evidence E2:
+  |
+    battle-engine.ts translates frozen entry IDs into initial semantic display names
+    then calls createBattleWorldState with semanticState only. battle-world.ts
+    buildAreaMapping sorts only labels present in semantic entities and generates
+    new area.N IDs. Empty middle areas are not seeded from battlefield definitions.
+evidence E3:
+  |
+    Strengthened regression in reposition-transition.test.ts asserts three original
+    area IDs, canonical a area.1 and b area.3, then a single hop to area.2 rather
+    than directly to the target. Current before-repair TAP fails missing area.3;
+    other two cases pass. The former first case passed with generated IDs and an
+    assertion that the hop reached the target, failing to verify the intended chain.
+evidence E4:
+  |
+    A perception or provider failure cannot explain the initializer's absent middle
+    canonical area: this isolated pure initialization has no provider calls.
+    Historical introduction, existing battle repair policy and any production impact
+    remain unknown. This result does not establish every canonical topology issue.
+decision D1 based_on P1, E1, E2, E3, E4:
+  |
+    The current producing condition is losing frozen area identity and unoccupied
+    areas while translating IDs to display labels and regenerating area.N IDs.
+    Three declared areas trigger the mismatch. The generated-ID-based assertion
+    explains this test's detection gap; historical detection failures are unknown.
+decision D2 based_on D1, E1, E4:
+  |
+    Preserve supplied frozen area IDs and all declared areas during new battle
+    initialization, and explicitly map entry IDs to canonical actor placements.
+    Keep legacy callers without area definitions deterministic and preserve saved
+    existing world state. Inspect duplicate display labels and source/schema limits
+    before choosing the typed initialization contract. Do not rewrite old battles or
+    declare this repair complete merely because the original weaker test passes.

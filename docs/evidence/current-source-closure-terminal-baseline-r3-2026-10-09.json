@@ -1,0 +1,17 @@
+{
+  "observedAt": "2026-10-09T04:54:40.843724+00:00",
+  "terminatedSession": 82044,
+  "terminalExit": 143,
+  "lastVerifiedPosition": 349,
+  "journalEventCount": 514,
+  "latestJournalKeyCount": 349,
+  "journalHeadDrift": [],
+  "unrecordedDestinationHeads": [],
+  "priorHeadsUnchanged": true,
+  "changedPlanSources": [],
+  "changedDiagnosticSources": [],
+  "nextPlanKey": "old:ec37f5a65fe4aa7611177e09944e29b6521fe87ea1609027a92ac037122298b2",
+  "scope": "Verified terminal exit143, no live publisher/CLI child, no working Candidates, no orphan publication, no source or HEAD drift. Resume same publisher from exact journal; stop cause remains unknown.",
+  "officialStatusPendingCandidates": 0,
+  "officialStatusRowCount": 1709
+}

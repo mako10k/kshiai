@@ -845,6 +845,8 @@ export interface LlmProvider {
   }): Promise<BattleEncounterProposal>;
   /** Interpret both sides' open attempts in one server-only call. */
   adjudicateFreeActions(input: {
+    /** Always supplied by current production preparation; absence is historical/direct input. */
+    penaltyContext?: { baseWorldRevision: number; policyBySide: { a: "battle-action-effort-v1" | null; b: "battle-action-effort-v1" | null } };
     turn: number;
     scene: string;
     actors: {

@@ -259,14 +259,18 @@ describe("character battle history tools", () => {
       selfName: "アオイ",
       oppName: "カゲ",
       winnerSide: "a",
-    }) as unknown as Record<string, unknown>;
-    state.agentStateA = { currentGoal: "長".repeat(400) };
+    });
+    // R: Build invalid persisted bytes without widening the authoritative BattleState type.
+    const corruptedState = {
+      ...state,
+      agentStateA: { currentGoal: "長".repeat(400) },
+    };
     await query(
       `INSERT INTO battles
         (id, state_json, side_a_user_id, side_a_character_id, side_b_character_id,
          created_at, updated_at, revision)
        VALUES ($1, $2, $3, $4, $5, $6, $7, 0)`,
-      [state.id, JSON.stringify(state), "usr_degraded", characterId, opponentId,
+      [state.id, JSON.stringify(corruptedState), "usr_degraded", characterId, opponentId,
         state.createdAt, state.updatedAt],
     );
 
@@ -285,11 +289,12 @@ describe("character battle history tools", () => {
       selfName: "アオイ",
       oppName: "カゲ",
       winnerSide: "a",
-    }) as BattleState & { turn: unknown };
+    });
+    // R: NaN satisfies number statically; persistence must still reject its invalid schema value.
     invalid.turn = Number.NaN;
 
     await assert.rejects(
-      saveBattle(invalid as BattleState, {
+      saveBattle(invalid, {
         sideAUserId: "usr_invalid",
         sideACharacterId: characterId,
         sideBCharacterId: opponentId,

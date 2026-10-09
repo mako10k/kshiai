@@ -1,0 +1,17 @@
+# 現行実況の予約・認知・読取・イベント保存の因果レビュー
+
+2026-10-07。対象4ファイル11件。case/assertion/sourceを変更しない。独立read-onlyレビューと主担当の一次契約照合を実施した。
+
+Accepted ADR0051正本INHERITANCE/D01/D02/ACCEPTANCEが現在の根拠。Superseded0050のD01/D04/D10/D12・受理済み実装候補v1 Q07/Q08と基本設計の正準・私的状態・ナレータ分離を継承する。必須料金証明はobserved policyに要求せず、未判明費用を既知0と扱わない。Accepted0006の別fenced lease、canonical-first、既存battleId/turnReceiptId、durable順序も継承する。今回batchのbeat groupingやADR0016との全適合を受入済みにしない。Proposed0038は根拠にしない。
+
+予約3件は一時SQLiteで、live narrator capability（owner/fence/expiry/attempt/receipt linkage）に基づく予約がworld fence7を保持し、runtime revisionを増やし、古い世界CASを拒否・新しいCASは予約を保持することを確認する。6つの不正capabilityでphysical attempt増加なし、inactive/同role占有のadmission拒否、transaction rollbackでreservation/proof statusを戻す。1receipt fixtureであり複数receipt batchや全200attempt/費用capの網羅ではない。requestDigest="proof"の保存はその文字列の保存であり、意味/暗号学的な正しさの証明ではない。
+
+ナレータ1件は、一時SQLiteのserial transactionでAの認知投影だけを読みB私的markerを除外し、認識更新が保存され、後のinitial baseline markerで再seedされず、readerにはA私的認識を出さないこと、既公開sequence1の更新を拒否しwatermark1が残ることを確認する。全視点/全秘密/4件公開履歴/同時CAS/Postgres raceを網羅しない。
+
+claim snapshot5件はfake read portでentries→battle→runtimeの順序と、その間にcommitした合成receiptの包含関係を検証する。空capture後に到着するreceiptは次capture、battle欠落はnullでruntime読取を省略、runtime欠落は空entriesでもerror。不正materialは改変せずstrict materialFromEntryまで渡して拒否する。テスト自身はdigest/内容/phaseなどのprovenanceを照合するが、実DB isolation、actual claim transaction、全retention境界を証明しない。
+
+イベント2件は一時SQLiteで、:event:1/2、全prune後のretention floor2から:event:3、rollbackで公開rowなし・未公開sequence1再利用を確認する。allocatorの検証でありcursor reader/reset/SSEやPostgres advisory lock/同時発番の証明ではない。
+
+raw JSONは閉じたschemaへ検証する。4直接sourceに最終contractをcastする逃げ道は見つからず、11診断pass/0fail/0skipとstrict imported TypeScript exit0。外部API・実provider・料金・公開負荷の測定は行わない。
+
+共通上位契約をこの範囲文書へ一度だけ結び、実装は実際の依存componentを親とし、testは直接の実装へ結ぶ。各testに同じ全上位rootを反復登録せず、正確なSealIDの推移的因果関係を維持する。これは進行効率の測定対象であり、未封印の停止条件や検証義務を緩和しない。全251ファイルを維持する。

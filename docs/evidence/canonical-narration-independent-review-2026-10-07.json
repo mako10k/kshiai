@@ -1,0 +1,48 @@
+{
+  "reviewer": "/root/llm_boundary_seal_audit",
+  "mode": "read-only",
+  "files": [
+    {
+      "path": "backend/src/services/awareness-narration-worker.test.ts",
+      "currentSha256": "49357c9c606e188b12e9bb93d079afd8895107568ff040a8395d18107158a426",
+      "originalCases": 20
+    },
+    {
+      "path": "backend/src/services/awareness-narration-continuation.test.ts",
+      "currentSha256": "15d760b34cb85f9562bbfb931ad1c267e6fdef200eb7876e767a51d801edabb3",
+      "originalCases": 1
+    },
+    {
+      "path": "backend/src/services/awareness-narration-queue.test.ts",
+      "currentSha256": "c98182bc664f259a2379e598905ee126769a893fdc685c832ee0a39b3d3390ac",
+      "originalCases": 9
+    },
+    {
+      "path": "backend/src/services/awareness-narration-urgency.test.ts",
+      "currentSha256": "9d5f5e396a475213428a5427059d15f986aaa419db5de11de6180085e2f28651",
+      "originalCases": 4
+    },
+    {
+      "path": "backend/src/scripts/awareness-narration-convergence.test.ts",
+      "currentSha256": "3d3d6ed84c9f8131452dd8206d82dfae181fee214de05cd58617a681f05f7f0f",
+      "originalCases": 5
+    }
+  ],
+  "originalCases": 39,
+  "continuationInternalPaths": 12,
+  "verdict": "No INSIDE normative contradiction; worker implicit-any identified, root repaired declared method parameters only",
+  "bounds": [
+    "SQLite/fake clock/transport and pure helpers only",
+    "No real provider, PostgreSQL concurrency, public completion or real pricing acceptance"
+  ],
+  "authoritySummaryCorrection": "Root corrects reviewer wording: Accepted0051 removes compulsory proof for new observed policy; retains old certified contracts",
+  "repairVerification": "Root verifies 77 cases and 183 original assertion ASTs; source runtime untouched",
+  "deltaReview": {
+    "mode": "read-only",
+    "verified": "exactly two method-parameter annotations, no other worker changes",
+    "workerCurrentSha256": "49357c9c606e188b12e9bb93d079afd8895107568ff040a8395d18107158a426",
+    "originalCases": 20,
+    "originalAssertions": 111,
+    "authorityCorrectionAcknowledged": true
+  }
+}

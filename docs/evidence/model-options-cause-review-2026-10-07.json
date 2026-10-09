@@ -1,0 +1,108 @@
+{
+  "schema": "kshiai/model-options-cause-review/v1",
+  "upstream": [
+    {
+      "ref": "awareness-guidance-20261007/authority-current",
+      "sealId": "4a236b55e9ad9e4aa54eb2c6bbe9d77e0a318881ba8328363505153d16e151dd"
+    },
+    {
+      "ref": "all-tests-20261007/contract-awareness-request-options",
+      "sealId": "55cd6ea44ebccfb4f9f0e3012c1edd96fcafa0f412c8eaeafeac922832b9a100"
+    }
+  ],
+  "nodes": [
+    {
+      "key": "evidence-openai-model-options",
+      "path": "docs/evidence/model-options-official-observation-2026-10-07.md",
+      "parents": [],
+      "scope": "External official documentation readback only: exact Luna none and generated-token ceiling meaning, no owner authority or live availability/pricing claim.",
+      "test": false,
+      "ref": "all-tests-20261007/evidence-openai-model-options",
+      "sha256": "2ceef7efb6ee551a0781af2b463c79015ae30f1545eaab9dcb65309056f07e67"
+    },
+    {
+      "key": "design-model-request-options",
+      "path": "docs/battle-consciousness-model-compatibility-2026-10-05.md",
+      "parents": [
+        "authority"
+      ],
+      "scope": "Owner-selected Luna none and accepted compatibility preparation contract: explicit provider/model identity, cap validation, no unverified temperature, all four SDK request paths. Old certified-pricing, preparation-only lifecycle and obsolete SDK latest-version claims remain historical, not current operational claims.",
+      "test": false,
+      "ref": "all-tests-20261007/design-model-request-options",
+      "sha256": "f35760470172b35b43bf44ff28be65a4fd1643caafa60ddbdf7ee97cbf65d4da"
+    },
+    {
+      "key": "implementation-model-request-options",
+      "path": "backend/src/llm/model-request-options.ts",
+      "parents": [
+        "authority",
+        "design-model-request-options",
+        "evidence-openai-model-options"
+      ],
+      "scope": "Typed existing model-specific Chat Completions options: exact openai/Luna none and temperature omission, exact xai/Grok4.3 none, unrelated provider/model unaffected, positive safe integer output ceiling. No model recommendation or observed latency/cost claim.",
+      "test": false,
+      "ref": "all-tests-20261007/implementation-model-request-options",
+      "sha256": "2bc830ce2b6d7bbaf6c581e14433c72813064d9526074397ec3c61c370dd9eeb"
+    },
+    {
+      "key": "implementation-sdk-model-options",
+      "path": "backend/src/llm/openai-compatible.ts",
+      "parents": [
+        "design-model-request-options",
+        "implementation-model-request-options",
+        "transport"
+      ],
+      "scope": "Only requestOptions propagation to JSON, streaming and two tool SDK paths; cap/model/reasoning/temperature and input text wire preservation. Existing tool JSON object and normal/stream caller JSON schema behavior; no certification of all domain methods.",
+      "test": false,
+      "ref": "all-tests-20261007/implementation-sdk-model-options",
+      "sha256": "8d4be097ddbfcb0da515dd0db402c7dc6dddccb763d625fce16165e7c524d2a5"
+    },
+    {
+      "key": "model-request-options",
+      "path": "backend/src/llm/model-request-options.test.ts",
+      "parents": [
+        "authority",
+        "design-model-request-options",
+        "implementation-model-request-options",
+        "evidence-openai-model-options"
+      ],
+      "scope": "Three local tests: exact Luna none/options, existing Grok none and unrelated model nonapplication, invalid ceilings rejected without clipping. No live provider/account acceptance.",
+      "test": true,
+      "ref": "verification/model-request-options-20261007",
+      "sha256": "a5186ef8fa5403f46ea84d190f464c5f503297889db4944996c201d4f1eb9e32"
+    },
+    {
+      "key": "sdk-model-options",
+      "path": "backend/src/llm/openai-compatible-model-options.test.ts",
+      "parents": [
+        "authority",
+        "design-model-request-options",
+        "implementation-model-request-options",
+        "implementation-sdk-model-options",
+        "transport",
+        "evidence-openai-model-options"
+      ],
+      "scope": "Four mocked HTTP SDK tests with temporary SQLite: Luna fast model/none/600 cap, temperature omitted, text unchanged; JSON/stream strict schema preserved and two tool paths preserve json_object. No actual provider call or tool execution conformance claim.",
+      "test": true,
+      "ref": "verification/sdk-model-options-20261007",
+      "sha256": "034206142283136011189366f124ba2a25f1b9eb49e11d94dd69020f81c8460e"
+    }
+  ],
+  "diagnostic": {
+    "pass": 7,
+    "fail": 0,
+    "skipped": 0,
+    "strictTypecheckExit": 0
+  },
+  "clauses": [
+    "Owner-selected Luna none under inherited ADR0050/0051",
+    "Model compatibility preparation: exact provider/model identity and SDK wire paths",
+    "Official API readback: Luna none and generated-token ceiling"
+  ],
+  "limitations": [
+    "Mocked HTTP with isolated SQLite only",
+    "No actual provider availability, quality, latency or pricing",
+    "External readback is evidence, not acceptance",
+    "JSON parser/accounting full behavior has separate tests"
+  ]
+}

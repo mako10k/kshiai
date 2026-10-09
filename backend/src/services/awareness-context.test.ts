@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import {
   AwarenessLatentInputSchema, CharacterGenerationEnvelopeV3Schema,
+  CurrentActionEffortPolicyV1, projectBattleActionEffort,
   CharacterDefinitionV3Schema, compileCharacterBattleCompilerInputsV4,
   type CharacterSheet,
 } from "@kshiai/shared";
@@ -44,10 +45,23 @@ function fixture() {
   return { state, generation, content, binding };
 }
 function project(input: ReturnType<typeof fixture>) {
-  return buildAwarenessExecutionContext({ state: input.state, side: "a", generation: input.generation, availableActions: [], receivedSpeech: false, intentCompleted: false, intentInvalid: false });
+  return buildAwarenessExecutionContext({ state: input.state, side: "a", generation: input.generation, availableActions: [], consciousGuidance: { kind: "none" }, receivedSpeech: false, intentCompleted: false, intentInvalid: false });
 }
 
 describe("awareness immutable context projection", () => {
+  it("requires the current bodily effort projection for a newly bound policy", () => {
+    const input = fixture();
+    input.state.sideA.actionEffortPolicy = CurrentActionEffortPolicyV1;
+    assert.throws(() => project(input), /AWARENESS_EFFORT_PERCEPTION_REQUIRED/);
+    const frame = input.state.perceptionFrameA;
+    assert.ok(frame);
+    const effort = projectBattleActionEffort(input.state, "a");
+    assert.ok(effort);
+    frame.actionEffort = effort;
+    const context = project(input);
+    assert.deepEqual(context.actionEffort, effort);
+    assert.deepEqual(context.perception.actionEffort, effort);
+  });
   it("includes hidden latent traits and background while conscious context uses only its aware compiler", () => {
     const context = project(fixture());
     assert.equal(context.characteristics.includes("本人に知られていない過去の理由"), true);
@@ -57,6 +71,13 @@ describe("awareness immutable context projection", () => {
     assert.equal(context.consciousCharacteristics.some((text) => text.includes("知ら") || text.includes("意識せず")), false);
     assert.deepEqual(context.training, []);
     assert.deepEqual(context.consciousTraining, []);
+  });
+  it("rejects missing or unevaluated guidance instead of treating it as no applicable principle", () => {
+    const source = fixture();
+    const input = { state: source.state, side: "a" as const, generation: source.generation, availableActions: [],
+      consciousGuidance: { kind: "none" as const }, receivedSpeech: false, intentCompleted: false, intentInvalid: false };
+    Reflect.deleteProperty(input, "consciousGuidance");
+    assert.throws(() => buildAwarenessExecutionContext(input));
   });
   it("rejects mismatched asset, generation, digest, and missing immutable compiler", () => {
     for (const patch of [ { assetId: "another-character" }, { generationId: "current-pointer-generation" }, { contentDigest: "different-digest" }, { assetType: "battlefield" } ]) {

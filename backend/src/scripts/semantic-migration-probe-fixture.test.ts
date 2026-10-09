@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { it } from "node:test";
 import { CharacterGenerationEnvelopeV2Schema } from "@kshiai/shared";
-import { semanticMigrationProbeSource } from "./semantic-migration-probe-fixture.js";
+import { semanticMigrationProbeSource } from "../testing/semantic-migration-probe-fixture.js";
 
 it("authors a valid V2 source with both selectorless and executable preferences", () => {
   const fixture = semanticMigrationProbeSource();

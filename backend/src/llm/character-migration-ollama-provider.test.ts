@@ -1,3 +1,4 @@
+// R: Verify local Ollama migration request, recursive output grammar and receipt boundaries.
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import { z } from "zod";
@@ -71,16 +72,39 @@ describe("local Ollama semantic migration check adapter", () => {
   });
 
   it("restores recursive generic JSON at only the Ollama adapter boundary", () => {
-    const schema = z.object({ definitions: z.record(z.unknown()) }).passthrough().parse(
+    const schema = z.object({
+      definitions: z.record(z.unknown()),
+      properties: z.object({
+        operations: z.object({
+          items: z.object({
+            anyOf: z.array(z.object({
+              properties: z.object({
+                operation: z.object({ const: z.string() }).passthrough(),
+                value: z.unknown(),
+              }).passthrough(),
+            }).passthrough()),
+          }).passthrough(),
+        }).passthrough(),
+      }).passthrough(),
+    }).passthrough().parse(
       ollamaMigrationResponseSchema(call.responseSchema),
     );
-    const valueKey =
-      "character_semantic_migration_change_set_v1_properties_operations_items_properties_value";
+    const synthesis = schema.properties.operations.items.anyOf.find(
+      (branch) => branch.properties.operation.const === "synthesize",
+    );
+    assert.ok(synthesis);
+    const referenceSchema = z.object({ $ref: z.string() });
+    const valueRef = referenceSchema.parse(synthesis.properties.value).$ref;
+    assert.ok(valueRef.startsWith("#/definitions/"));
+    const valueKey = valueRef.slice("#/definitions/".length).replace(/~1/g, "/").replace(/~0/g, "~");
     const value = z.object({ anyOf: z.array(z.unknown()) }).passthrough().parse(
       schema.definitions[valueKey],
     );
     assert.equal(value.anyOf.length, 6);
-    assert.match(JSON.stringify(value), new RegExp(`#/definitions/${valueKey}`));
+    const arrayValue = z.object({ type: z.literal("array"), items: referenceSchema }).parse(value.anyOf[4]);
+    const objectValue = z.object({ type: z.literal("object"), additionalProperties: referenceSchema }).parse(value.anyOf[5]);
+    assert.equal(arrayValue.items.$ref, valueRef);
+    assert.equal(objectValue.additionalProperties.$ref, valueRef);
     assert.throws(() => ollamaMigrationResponseSchema({ type: "object" }),
       /OLLAMA_MIGRATION_CHECK_SCHEMA_DRIFT/);
   });

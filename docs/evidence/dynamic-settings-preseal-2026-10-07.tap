@@ -1,0 +1,153 @@
+TAP version 13
+# [llm] xai ready engine=test fast=test
+# [llm] xai/consciousDynamic model=test ok 123ms
+# Subtest: dynamic provider boundary (no network or live quality claims)
+    # Subtest: requests only current phase fields and restores the exact bound skill
+    ok 1 - requests only current phase fields and restores the exact bound skill
+      ---
+      duration_ms: 54.967223
+      type: 'test'
+      ...
+    # Subtest: keeps character speech guidance phase scoped and accepts chosen speech and silence independently
+    ok 2 - keeps character speech guidance phase scoped and accepts chosen speech and silence independently
+      ---
+      duration_ms: 33.245204
+      type: 'test'
+      ...
+    # Subtest: anchors the latest speaker roles without classifying or discarding repeated words
+    ok 3 - anchors the latest speaker roles without classifying or discarding repeated words
+      ---
+      duration_ms: 47.038825
+      type: 'test'
+      ...
+    # Subtest: repairs speech only, preserves action and blocks out-of-target overwrites
+    ok 4 - repairs speech only, preserves action and blocks out-of-target overwrites
+      ---
+      duration_ms: 18.179035
+      type: 'test'
+      ...
+    # Subtest: repairs invalid selections together with intent and provides exact candidates
+    ok 5 - repairs invalid selections together with intent and provides exact candidates
+      ---
+      duration_ms: 15.115345
+      type: 'test'
+      ...
+    # Subtest: keeps missing free-action content invalid and never synthesizes it
+    ok 6 - keeps missing free-action content invalid and never synthesizes it
+      ---
+      duration_ms: 14.167006
+      type: 'test'
+      ...
+    # Subtest: handles syntax as one domain repair and does not retry transport errors
+    ok 7 - handles syntax as one domain repair and does not retry transport errors
+      ---
+      duration_ms: 16.792805
+      type: 'test'
+      ...
+    # Subtest: does not repair optional omissions and obeys an already-reserved budget
+    ok 8 - does not repair optional omissions and obeys an already-reserved budget
+      ---
+      duration_ms: 13.992416
+      type: 'test'
+      ...
+    # Subtest: removes goal/speech from later and requires a concrete current decision
+    ok 9 - removes goal/speech from later and requires a concrete current decision
+      ---
+      duration_ms: 13.262261
+      type: 'test'
+      ...
+    # Subtest: sends the dynamic strict schema through the actual HTTP adapter
+    ok 10 - sends the dynamic strict schema through the actual HTTP adapter
+      ---
+      duration_ms: 143.731807
+      type: 'test'
+      ...
+    # Subtest: skips an empty target set and closes dependencies for partial generation
+    ok 11 - skips an empty target set and closes dependencies for partial generation
+      ---
+      duration_ms: 13.85452
+      type: 'test'
+      ...
+    # Subtest: repairs only missing payload slots while preserving selection, intent and valid description
+    ok 12 - repairs only missing payload slots while preserving selection, intent and valid description
+      ---
+      duration_ms: 21.269051
+      type: 'test'
+      ...
+    1..12
+ok 1 - dynamic provider boundary (no network or live quality claims)
+  ---
+  duration_ms: 408.66255
+  type: 'suite'
+  ...
+# Subtest: dialogue pipeline settings
+    # Subtest: uses an auditable runtime default until an administrator saves
+    ok 1 - uses an auditable runtime default until an administrator saves
+      ---
+      duration_ms: 66.31237
+      type: 'test'
+      ...
+    # Subtest: persists one administrator revision and rejects stale saves
+    ok 2 - persists one administrator revision and rejects stale saves
+      ---
+      duration_ms: 18.935576
+      type: 'test'
+      ...
+    # Subtest: opts into V3, preserves it on omission, rejects legacy mode atomically, and permits explicit V2
+    ok 3 - opts into V3, preserves it on omission, rejects legacy mode atomically, and permits explicit V2
+      ---
+      duration_ms: 5.686137
+      type: 'test'
+      ...
+    1..3
+ok 2 - dialogue pipeline settings
+  ---
+  duration_ms: 93.365536
+  type: 'suite'
+  ...
+# Subtest: ADR-0047 versioned mechanical completion
+    # Subtest: initializes only from real supplied goal, never from omission or null
+    ok 1 - initializes only from real supplied goal, never from omission or null
+      ---
+      duration_ms: 6.502133
+      type: 'test'
+      ...
+    # Subtest: keeps goal and old decision without creating new intent for omissions
+    ok 2 - keeps goal and old decision without creating new intent for omissions
+      ---
+      duration_ms: 3.642074
+      type: 'test'
+      ...
+    # Subtest: allows optional omission/null but retains their origin and rejects non-null invalid
+    ok 3 - allows optional omission/null but retains their origin and rejects non-null invalid
+      ---
+      duration_ms: 2.16705
+      type: 'test'
+      ...
+    # Subtest: requires current refs and concrete later action, without borrowing old intent
+    ok 4 - requires current refs and concrete later action, without borrowing old intent
+      ---
+      duration_ms: 2.843589
+      type: 'test'
+      ...
+    # Subtest: pins the new state separately; old rationale and decoding remain strict
+    ok 5 - pins the new state separately; old rationale and decoding remain strict
+      ---
+      duration_ms: 2.077664
+      type: 'test'
+      ...
+    1..5
+ok 3 - ADR-0047 versioned mechanical completion
+  ---
+  duration_ms: 19.665322
+  type: 'suite'
+  ...
+1..3
+# tests 20
+# suites 3
+# pass 20
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 1573.873218

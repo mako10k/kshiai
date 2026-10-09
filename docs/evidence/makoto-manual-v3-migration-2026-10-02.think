@@ -1,0 +1,8 @@
+domain MIGRATE:
+  description "Directly migrate one identified Makoto JSON to V3 using existing versioned activation."
+evidence OWNER:
+  "Owner requested JSON per-character subagent conversion and explicitly permits direct V3 migration with later self-adjustment. Exact discussed target Makoto chr_7cb0db2370d44d616c097b6a owner usr_568b632d7ad86cfe3e356171."
+evidence CURRENT:
+  "Readonly export current generation g2 digest187adb371d2a6bf3 schema2. Existing repository provides authoring registration, V3 candidate validation and digest-checked activation retaining previous immutable generations and operational state."
+decision EXECUTE based_on OWNER, CURRENT:
+  "Delegate temporary JSON conversion only, validate full V3 envelope and preserve unrelated values. Root sole DB writer, compare frozen current generation before register; create one manual upgrade attempt, save candidate and activate once. No provider calls, deploy, auth changes, other characters or old-generation deletion. Read back current schema3 same owner/ID and runtime eligibility. Stop ambiguous result and inspect rather than retry."

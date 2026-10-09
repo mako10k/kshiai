@@ -1,0 +1,12 @@
+domain OLLAMA_TEST_REPAIR:
+  description "Repair the diagnostic recursive-schema assertion without accepting draft provider authority."
+evidence FAILURE:
+  "LLM/image diagnostic236 cases:235pass1fail. Ollama test reads definitions at hardcoded name ending operations_items_properties_value; parse receives undefined."
+evidence SHAPE:
+  "Native schema inspection shows discriminated operation anyOf branches and recursive generic JSON now at operations_items_anyOf_2_properties_value. Six alternatives and array/object self references remain. Synthesize value references that definition. Runtime adapter produced the recursive schema; no HTTP executed."
+premise ALTERNATIVES:
+  "Could be missing recursion in implementation or stale generated-name expectation. Inspection confirms recursive six-way definition exists and synthesize references it; only hardcoded name is absent. Trigger is operation-union representation and automatic helper naming. Detection gap: this test is provisional draft_basis and excluded from aggregate, separate from producing brittle expectation. Exact historical introducing commit not yet inspected."
+premise SCOPE:
+  "Owner all-tests conformance authorizes test assertion repair. Follow synthesize value's definitions reference, assert six JSON branches and both recursive references. Do not change production adapter, semantic schema, provider endpoint or provisional authority status. Preserve old Seal history and record source divergence pending reviewed draft disposition."
+decision D1 based_on FAILURE, SHAPE, ALTERNATIVES, SCOPE:
+  "Audit the supported immediate mechanism, replace only brittle generated-definition lookup with structural reference traversal and exact recursive assertions, rerun this test and affected LLM diagnostic. Keep draft basis unresolved; no promotion or live provider call."

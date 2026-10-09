@@ -267,7 +267,7 @@ export const config = {
   databaseUrl,
   databaseSchema: parseDatabaseSchema(process.env.DATABASE_SCHEMA),
   databasePoolMax: Math.max(1, Number(process.env.DATABASE_POOL_MAX ?? 10)),
-  authProvider: authProvider as "legacy" | "supabase",
+  authProvider,
   adminUserIds: (process.env.ADMIN_USER_IDS ?? "")
     .split(",")
     .map((value) => value.trim())

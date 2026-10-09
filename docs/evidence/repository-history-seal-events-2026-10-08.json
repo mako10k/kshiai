@@ -1,0 +1,96 @@
+[
+  {
+    "key": "design-battle-presentations-history-bounded",
+    "path": "docs/repository-history-test-contract-review-2026-10-08.md",
+    "parents": [
+      "narration"
+    ],
+    "scope": "Original1case receipt sequence readback and different input digest rejection; not same-digest immutability, SSE, fencing or auth certification.",
+    "ref": "all-tests-20261008/design-battle-presentations-history-bounded",
+    "test": false,
+    "sha256": "7eb1a7c151a89e20652378c296dee2cbea8b8a94ba2dc25dc121a92696360f68",
+    "sealId": "e7e58d4b6d26c0d1fddd93a43f76b66c0b2fe36d5f92756368e54e72e8501582",
+    "causeSealIds": [
+      "78f9fec1b418020c221d67930654a6ead967fb85393603a544651cea83a61371"
+    ]
+  },
+  {
+    "key": "implementation-battle-presentations-history-bounded",
+    "path": "backend/src/repositories/battle-presentations.ts",
+    "parents": [
+      "design-battle-presentations-history-bounded"
+    ],
+    "scope": "Original1case receipt sequence readback and different input digest rejection; not same-digest immutability, SSE, fencing or auth certification.",
+    "ref": "all-tests-20261008/implementation-battle-presentations-history-bounded",
+    "test": false,
+    "sha256": "a05b21f7a93cc38c9b76b7d1f7c4df3c293ab41f6007497303625e93175b1f91",
+    "sealId": "27874b9d8a41677872022e614807ce87deb901fb27132b4447f6152c2dadca7d",
+    "causeSealIds": [
+      "e7e58d4b6d26c0d1fddd93a43f76b66c0b2fe36d5f92756368e54e72e8501582"
+    ]
+  },
+  {
+    "key": "battle-presentations-history-bounded-20261008",
+    "path": "backend/src/repositories/battle-presentations.test.ts",
+    "parents": [
+      "implementation-battle-presentations-history-bounded"
+    ],
+    "scope": "Original1case receipt sequence readback and different input digest rejection; not same-digest immutability, SSE, fencing or auth certification. Whole originalcases/assertions preserved, no skips.",
+    "ref": "verification/battle-presentations-history-bounded-20261008",
+    "test": true,
+    "sha256": "16dfad9077d834de752daec64eeb7b2ed3116351995e8e723599743ffccfac01",
+    "sealId": "cbf36ad6adbed63c111fd1fbbc86e494e3f05f5b7cd85539f07024289d600597",
+    "causeSealIds": [
+      "27874b9d8a41677872022e614807ce87deb901fb27132b4447f6152c2dadca7d"
+    ]
+  },
+  {
+    "key": "design-battles-improvement-history-bounded",
+    "path": "docs/repository-history-test-contract-review-2026-10-08.md",
+    "parents": [
+      "narration",
+      "history",
+      "retained"
+    ],
+    "scope": "Original4cases historical read/search/degraded nonresume, revisionCAS and invalid write rejection; test-only type repair, no route authorization claim.",
+    "ref": "all-tests-20261008/design-battles-improvement-history-bounded",
+    "test": false,
+    "sha256": "7eb1a7c151a89e20652378c296dee2cbea8b8a94ba2dc25dc121a92696360f68",
+    "sealId": "b3e6ac0e26a5472c60c2b40d8b1ca613eff6a93fb1002b29ae30db6dc710b23c",
+    "causeSealIds": [
+      "78f9fec1b418020c221d67930654a6ead967fb85393603a544651cea83a61371",
+      "f49312f0b4c786dd41b4c2092a992dfebd04bfff33396a4891a199add8f5f17e",
+      "480c02403f61dc6a9cd7d54861639b962dbc3bde86673481e02e0defc8415e17"
+    ]
+  },
+  {
+    "key": "implementation-battles-improvement-history-bounded",
+    "path": "backend/src/repositories/battles.ts",
+    "parents": [
+      "design-battles-improvement-history-bounded"
+    ],
+    "scope": "Original4cases historical read/search/degraded nonresume, revisionCAS and invalid write rejection; test-only type repair, no route authorization claim.",
+    "ref": "all-tests-20261008/implementation-battles-improvement-history-bounded",
+    "test": false,
+    "sha256": "e0f5d0977e5a103249a382bbd5ac318f0a7a7b2abcde95ad2f4491ead5ca892f",
+    "sealId": "638fe39fe9d4eead3dceff81d25a7708206aecb9d04120e4a4fd2aa37382bfb6",
+    "causeSealIds": [
+      "b3e6ac0e26a5472c60c2b40d8b1ca613eff6a93fb1002b29ae30db6dc710b23c"
+    ]
+  },
+  {
+    "key": "battles-improvement-history-bounded-20261008",
+    "path": "backend/src/repositories/battles-improvement.test.ts",
+    "parents": [
+      "implementation-battles-improvement-history-bounded"
+    ],
+    "scope": "Original4cases historical read/search/degraded nonresume, revisionCAS and invalid write rejection; test-only type repair, no route authorization claim. Whole originalcases/assertions preserved, no skips.",
+    "ref": "verification/battles-improvement-history-bounded-20261008",
+    "test": true,
+    "sha256": "f570216761031d2b12be725c3162578c9d65b2d08932d551f234c69c3c483903",
+    "sealId": "0e3732f9bded71d9345bba978299671d4bc7293e5de9a715e0094c83a7b1bc0f",
+    "causeSealIds": [
+      "638fe39fe9d4eead3dceff81d25a7708206aecb9d04120e4a4fd2aa37382bfb6"
+    ]
+  }
+]

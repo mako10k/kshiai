@@ -1,0 +1,23 @@
+{
+  "reviewer": "battle_helper_contract_review",
+  "verdict": "INSIDE",
+  "originalCases": 3,
+  "files": {
+    "packages/shared/src/battle-pacing.test.ts": "5b519c93b9ef326c4fd7bb06d2de8c81b393b50074c076a6183f205d1b979d4b",
+    "packages/shared/src/battle-pacing.ts": "2950f0d51844f4996b614d6a5c3c00f963960cedf5d3b4b47d738f95727b80fb",
+    "packages/shared/src/battle-pacing-observe.ts": "6d32777b6804c188804eeef8108bab8c3377f98587be909279d3162827bec8b9",
+    "packages/shared/src/battle-engine-test-helper.ts": "a6ae8e377e870a49152e9a10374ef997c114585c14ed20f9bd2f0999185917c0",
+    "docs/battle-pacing-candidate-12-v2.md": "7a8fe6452aa2728a1ca47d85c60775f94a3323bb44485106e73690000055c32b",
+    "docs/battle-pacing-local-measurement-2026-08-12.md": "5cfaa9760a09599a5fa7fb5e11a0bee11fb496ffa4bffeafa20a13b8466e2220"
+  },
+  "diagnosticPass": 3,
+  "scope": "Schema-valid named candidate representation, deterministic offline measurement, explicitly injected explicit-effects behavior",
+  "excluded": [
+    "production selector/config",
+    "candidate numeric adoption",
+    "balance fitness",
+    "speech",
+    "unasserted numeric thresholds"
+  ],
+  "normalCreationActuallyUsesCandidate": true
+}

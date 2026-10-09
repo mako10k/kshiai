@@ -4,6 +4,7 @@ import { mkdtempSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import {
+  CharacterGenerationEnvelopeV3Schema,
   defaultBasicAttack,
   defaultParameters,
   defaultRecord,
@@ -16,6 +17,9 @@ process.env.AUTH_PROVIDER = "legacy";
 process.env.DATABASE_PATH = join(tempDir, "test.db");
 process.env.ADMIN_EMAILS = "mako10k@mk10.org";
 const { saveHistoricalCharacterFixture } = await import("../testing/historical-character-fixtures.js");
+const generationRepo = await import("../testing/historical-asset-generations.js");
+const { createV3StageTrialCandidate } = await import("../fixtures/neva-v3.js");
+const { buildImportedCharacterEnvelopeV2 } = await import("../services/character-authoring-service.js");
 const repo = await import("./characters.js");
 const { pickAutoMatchedOpponent } = await import("../services/battle-service.js");
 const { getDb } = await import("../db.js");
@@ -50,6 +54,39 @@ function sheet(id: string, ownerUserId: string, displayName: string): CharacterS
     narrativeBlurb: `${displayName}の紹介`,
     record: defaultRecord(),
   };
+}
+
+function envelopeV3(value: CharacterSheet) {
+  const source = buildImportedCharacterEnvelopeV2({ sheet: value,
+    attemptId: `characters-test-v3-${value.id}` });
+  const trial = createV3StageTrialCandidate();
+  const { schemaVersion: _schemaVersion, actionNorms: _actionNorms, ...stable } = source.definition;
+  const basicActionId = stable.capabilities.basicAction.id;
+  const actionNorms = trial.definition.actionNorms.map((norm, index) => ({
+    ...norm,
+    ...(index === 0 ? { when: { match: "all" as const,
+      clauses: [{ kind: "always" as const, operator: "is" as const, value: "true" as const }] } } : {}),
+    response: { ...norm.response, actionRefs: [basicActionId] },
+  }));
+  const mechanicalConflictFallbacks = trial.definition.mechanicalConflictFallbacks.map((fallback) => ({
+    ...fallback, orderedActionRefs: [basicActionId],
+  }));
+  return CharacterGenerationEnvelopeV3Schema.parse({
+    ...source, definitionSchema: { family: "character", version: 3 },
+    definition: { ...stable, schemaVersion: 3, actionNorms,
+      consciousGuidance: trial.definition.consciousGuidance,
+      mechanicalConflictFallbacks },
+    compilerCompatibility: trial.compilerCompatibility, deferredValues: trial.deferredValues,
+  });
+}
+
+async function activateV3(value: CharacterSheet) {
+  await generationRepo.createAssetGeneration({
+    assetType: "character",
+    assetId: value.id,
+    schemaVersion: 3,
+    content: envelopeV3(value),
+  });
 }
 
 describe("owner-scoped character generation references", () => {
@@ -122,6 +159,9 @@ describe("owner-scoped character generation references", () => {
     far.parameters.atk = 18;
     far.parameters.def = 5;
     await saveHistoricalCharacterFixture(far);
+    await activateV3(await repo.getSheet("char-a") ?? sheet("char-a", "user-a", "楓"));
+    await activateV3(await repo.getSheet("char-b") ?? sheet("char-b", "user-b", "比堂"));
+    await activateV3(far);
 
     const matched = await pickAutoMatchedOpponent("user-a", "char-a");
     assert.equal(matched?.id, "char-b");
@@ -190,6 +230,8 @@ describe("owner-scoped character generation references", () => {
     );
     await saveHistoricalCharacterFixture(sheet("char-e2e-a", "user-e2e-a", "観測者"));
     await saveHistoricalCharacterFixture(sheet("char-e2e-b", "user-e2e-b", "対照役"));
+    await activateV3(await repo.getSheet("char-e2e-a") ?? sheet("char-e2e-a", "user-e2e-a", "観測者"));
+    await activateV3(await repo.getSheet("char-e2e-b") ?? sheet("char-e2e-b", "user-e2e-b", "対照役"));
 
     const generalIds = (await repo.listPlayableOpponentSheets("user-a"))
       .map((item) => item.id);

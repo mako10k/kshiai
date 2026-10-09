@@ -1,0 +1,78 @@
+{
+  "shown": {
+    "seal_id": "11752a49d8fd1d7df23c6505c0c27b7de6c73290923e90cf21553f9e79c8cc38",
+    "material_id": "043eba30d3bfaffe6818020507b79a77dfc5a13b95803b677e094493d03825fc",
+    "provenance_id": "02b668aa33715d21f8877f5ee53e008f7727980ea4385db67a2e334089507c51",
+    "content_blob_id": "47832bafe73e43797058c0efbd136be8df290e6099731985e8486964a0673af1",
+    "content_bytes": 114429,
+    "attachments": [],
+    "root": false,
+    "draft": false,
+    "cause_links": [
+      {
+        "target_seal": "7458782a7a1d366726077f24fe4b942f65516abf12f6fdf6a1789679d61de84f",
+        "previous_revision_seal_of_target_seal": [],
+        "messages": [
+          "ADR0062/0063 owner-adopted bounded changes in packages/shared/src/battle.ts only. Preserve historical policy. Producer/consumer evidence; this node certifies no formal test pass, CI or deployment result."
+        ]
+      },
+      {
+        "target_seal": "79abf82d6390e9bc62e8cceee2a7992e4ebcf3fa2807053bbd762486215cbc99",
+        "previous_revision_seal_of_target_seal": [],
+        "messages": [
+          "ADR0062/0063 owner-adopted bounded changes in packages/shared/src/battle.ts only. Preserve historical policy. Producer/consumer evidence; this node certifies no formal test pass, CI or deployment result."
+        ]
+      },
+      {
+        "target_seal": "a51781ef8eae98a0dd47322e3aa7cdb710b8c2c1525e8bbb439d4acd64d43fdd",
+        "previous_revision_seal_of_target_seal": [],
+        "messages": [
+          "ADR0062/0063 owner-adopted bounded changes in packages/shared/src/battle.ts only. Preserve historical policy. Producer/consumer evidence; this node certifies no formal test pass, CI or deployment result."
+        ]
+      },
+      {
+        "target_seal": "d8526f904f96ffcebd0a1d882eb00aef3041c6f47bbf29e556ab68c212c99607",
+        "previous_revision_seal_of_target_seal": [],
+        "messages": [
+          "ADR0062/0063 owner-adopted bounded changes in packages/shared/src/battle.ts only. Preserve historical policy. Producer/consumer evidence; this node certifies no formal test pass, CI or deployment result."
+        ]
+      }
+    ]
+  },
+  "compare": {
+    "schema": "sealgraph/source-compare/v1",
+    "ref": "all-tests-20261009/action-effort/battle-contract",
+    "path": "packages/shared/src/battle.ts",
+    "baseline": "HEAD",
+    "baseline_content": {
+      "store": "native",
+      "type": "blob",
+      "object_id": "47832bafe73e43797058c0efbd136be8df290e6099731985e8486964a0673af1"
+    },
+    "workfile_content": {
+      "store": "native",
+      "type": "blob",
+      "object_id": "47832bafe73e43797058c0efbd136be8df290e6099731985e8486964a0673af1",
+      "bytes": 114429
+    },
+    "relation": "WORKFILE_MATCHES_HEAD"
+  },
+  "event": {
+    "key": "new:battle-contract",
+    "ref": "all-tests-20261009/action-effort/battle-contract",
+    "sealId": "11752a49d8fd1d7df23c6505c0c27b7de6c73290923e90cf21553f9e79c8cc38",
+    "path": "packages/shared/src/battle.ts",
+    "sourceSha256": "8108fafd0d9ca04e740826b37cf13fc304f5dafa7e169bf4c704dd15ee599462",
+    "oldSealId": null,
+    "causeSealIds": [
+      "d8526f904f96ffcebd0a1d882eb00aef3041c6f47bbf29e556ab68c212c99607",
+      "a51781ef8eae98a0dd47322e3aa7cdb710b8c2c1525e8bbb439d4acd64d43fdd",
+      "79abf82d6390e9bc62e8cceee2a7992e4ebcf3fa2807053bbd762486215cbc99",
+      "7458782a7a1d366726077f24fe4b942f65516abf12f6fdf6a1789679d61de84f"
+    ],
+    "test": null,
+    "revision": 3,
+    "supersedesPublishedSeal": null,
+    "recovery": "Seal committed after deliberate interrupt before journal receipt. Official show/source comparison proves exact original plan match; recovered once without republishing."
+  }
+}

@@ -46,6 +46,6 @@ export function validAwarenessBattleFixture(id: string) {
     rules: { battleEngine: "battle-engine-v1", temporalRules: "initiative-window-v2", psycheReaction: "awareness-v5",
       characterDefinitionRules: "character-definition-rules-v3", battlefieldDefinitionRules: "battlefield-instance-v2", narrationStyleRules: "narration-prompt-v2" } });
   const state = BattleStateSchema.parse({ ...createBattleState({ id, sideA: a, sideB: b, turnLimit: 12,
-    battlefield, prologuePending: false }), assetManifest: manifest, agentStateA: undefined, agentStateB: undefined });
+    battlefield: { kind: "legacy", instance: battlefield }, prologuePending: false }), assetManifest: manifest, agentStateA: undefined, agentStateB: undefined });
   return { state, characters: { a, b }, definitions: { a: CharacterDefinitionV3Schema.parse({ ...legacyCharacterSheetToDefinitionV2(a), schemaVersion: 3, actionNorms: [], consciousGuidance: [], mechanicalConflictFallbacks: [] }), b: CharacterDefinitionV3Schema.parse({ ...legacyCharacterSheetToDefinitionV2(b), schemaVersion: 3, actionNorms: [], consciousGuidance: [], mechanicalConflictFallbacks: [] }) } };
 }

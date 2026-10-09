@@ -1,0 +1,44 @@
+{
+  "schema": "kshiai/all-test-seal-progress/v1",
+  "localOnly": true,
+  "newSeals": 8,
+  "previousHeadsUnchanged": 548,
+  "sourceMatches": 8,
+  "scopedStale": 0,
+  "fsckResult": "ok",
+  "newTestSelection": [
+    {
+      "path": "packages/shared/src/action-intent-contract.test.ts",
+      "ref": "verification/action-intent-contract-20261007",
+      "state": "active",
+      "reason": "current"
+    },
+    {
+      "path": "scripts/test-authority-empty.test.mjs",
+      "ref": "verification/test-authority-execution-gate-20261007",
+      "state": "active",
+      "reason": "current"
+    }
+  ],
+  "unitSummary": {
+    "discovered": 247,
+    "active": 41,
+    "provisional": 2,
+    "disabled": 204,
+    "unsealed": 187
+  },
+  "diagnosticShared": {
+    "testFiles": 66,
+    "tests": 415,
+    "passed": 415,
+    "failed": 0,
+    "skipped": 0
+  },
+  "diagnosticGate": {
+    "tests": 15,
+    "passed": 15,
+    "failed": 0,
+    "skipped": 0
+  },
+  "formalAllTestsPassed": false
+}

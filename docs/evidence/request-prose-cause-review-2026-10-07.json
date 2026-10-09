@@ -1,0 +1,135 @@
+{
+  "schema": "kshiai/request-prose-cause-review/v1",
+  "upstream": [
+    {
+      "ref": "awareness-guidance-20261007/authority-current",
+      "sealId": "4a236b55e9ad9e4aa54eb2c6bbe9d77e0a318881ba8328363505153d16e151dd"
+    },
+    {
+      "ref": "awareness-guidance-20261007/basic-design",
+      "sealId": "1adba1d06106cfcc7537dcd2d85aa94f745a4a79ff6b3f5ac4911a11efdf79a8"
+    },
+    {
+      "ref": "awareness-guidance-20261007/input-contract",
+      "sealId": "56e673314fc7d2d4b1caef3c2c3411213422bba8d58a28bb6f8fbe5f3fa3df72"
+    },
+    {
+      "ref": "all-tests-20261007/implementation-awareness-policy",
+      "sealId": "c064db895ea9f010d2f6fb28360b243285cbe93156c19f8286e161ec2d0d731a"
+    },
+    {
+      "ref": "all-tests-20261007/authority-measurement",
+      "sealId": "66468c9b30e9ba4cd3a8649b7c3fa3f32a100622edb09d7864d54327be3db18a"
+    },
+    {
+      "ref": "all-tests-20261007/authority-current-output-guidance",
+      "sealId": "2c6888e9d07a676d4b429b041b241e1631845b18fac4fb4cda280a4a29670d50"
+    },
+    {
+      "ref": "all-tests-20261007/implementation-action-output-guidance",
+      "sealId": "d833631e02d60d0471e0891a70581b12ea9b9afa7ff0b1a453f3121191d4cf7f"
+    },
+    {
+      "ref": "all-tests-20261007/implementation-latent-output-brevity",
+      "sealId": "211f430ae024c70fa3bd8aed992bad5865c048b9016c182f95b7c828db709d17"
+    }
+  ],
+  "nodes": [
+    {
+      "key": "implementation-prompt-prose",
+      "path": "backend/src/llm/prompt-prose.ts",
+      "parents": [
+        "authority",
+        "basic"
+      ],
+      "scope": "Pure role data renderer preserving order, original strings/references, null/false/zero and empty collections, omitting undefined object properties/absent sections; rejects cycles, unsupported values and bounded depth/entry overflow. No semantic compression or input projection claim.",
+      "test": false,
+      "ref": "all-tests-20261007/implementation-prompt-prose",
+      "sha256": "4f7145c57b85b5d75db80b4ffd9f5441eef506f809f0165997fc47429b939650"
+    },
+    {
+      "key": "contract-awareness-request-options",
+      "path": "backend/src/llm/awareness-provider-contract.ts",
+      "parents": [
+        "authority",
+        "basic",
+        "policy"
+      ],
+      "scope": "Narrow typed JSON transport options: tier, timeout, output cap, role label and response format. No SDK delivery or provider compatibility claim.",
+      "test": false,
+      "ref": "all-tests-20261007/contract-awareness-request-options",
+      "sha256": "f4b4ea8eba8f7910d256dcc4fdf3d9e83ac6a816c0270270542960ff8f402bb4"
+    },
+    {
+      "key": "implementation-awareness-request",
+      "path": "backend/src/llm/awareness-request.ts",
+      "parents": [
+        "authority",
+        "basic",
+        "input",
+        "policy",
+        "measurement",
+        "current",
+        "action",
+        "brevity",
+        "implementation-prompt-prose",
+        "contract-awareness-request-options"
+      ],
+      "scope": "Deterministic latent/conscious request preparation: validated role/observer input, frozen source tick, supplied immutable policy limits, latest output guidance for supported historical identities, fresh conscious desire ID guidance and natural prose data. Legacy helper default timing does not certify normal operational invocation; compact character preparation successor is outside this cohort.",
+      "test": false,
+      "ref": "all-tests-20261007/implementation-awareness-request",
+      "sha256": "1d14e53095da42c7c1891d5f91f389a97a045e4b067ba3727a650be006118995"
+    },
+    {
+      "key": "prompt-prose",
+      "path": "backend/src/llm/prompt-prose.test.ts",
+      "parents": [
+        "authority",
+        "basic",
+        "implementation-prompt-prose"
+      ],
+      "scope": "Three local tests: ordered null/false/zero/reference/multiline preservation; rejection of cyclic, nonfinite and unsupported values; shared noncyclic data and omitted absent section. No model interpretation or round-trip decoder claim.",
+      "test": true,
+      "ref": "verification/prompt-prose-20261007",
+      "sha256": "21b6e8d2ee33aac6938f8287194b6d4866d7cd91e4478a9c3141886c5471c52a"
+    },
+    {
+      "key": "awareness-request",
+      "path": "backend/src/llm/awareness-request.test.ts",
+      "parents": [
+        "authority",
+        "basic",
+        "input",
+        "policy",
+        "measurement",
+        "current",
+        "action",
+        "brevity",
+        "implementation-prompt-prose",
+        "contract-awareness-request-options",
+        "implementation-awareness-request"
+      ],
+      "scope": "Six local builder tests: deterministic frozen data, exact supplied measurement deadline/caps, current instructions for historical/current labels and unknown rejection, per-side frozen-source fresh conscious IDs, observer mismatch refusal, conscious self projection limits/no raw latent content. No SDK transmission or accepted compression completion claim.",
+      "test": true,
+      "ref": "verification/awareness-request-20261007",
+      "sha256": "d712d2cbe95b1a4d2c89a9c4a7d7ff00ed25ba626a738bb5a0a8f6d3c6cb71a5"
+    }
+  ],
+  "diagnostic": {
+    "pass": 9,
+    "fail": 0,
+    "skipped": 0,
+    "strictTypecheckExit": 0
+  },
+  "clauses": [
+    "ADR0051 inherits ADR0050 D01 natural prose and D02 frozen thinking input",
+    "Basic design section 4: preserve numerical values, negation and source distinctions during prose rendering",
+    "ADR0056 latest output instructions for supported historical identities",
+    "ADR0052 supplied long-measurement policy is distinct from legacy default helper limits"
+  ],
+  "limitations": [
+    "No live provider or SDK transmission acceptance",
+    "Legacy default helper limits are not normal public operating policy",
+    "Character compression successor remains a separate unimplemented connection to verify"
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "reviewer": "battle_helper_contract_review",
+  "verdict": "INSIDE",
+  "originalCases": 8,
+  "files": {
+    "backend/src/scripts/run-awareness-trial.ts": "702e898034d578d235495a154de07409af18d47e4f90d13ea50116332a13d5b3",
+    "backend/src/services/awareness-trial-candidate.ts": "04bb11f519b4cc9e317d6944fe0ec4ef5563e2e21911c470722861cf3d58c760",
+    "backend/src/testing/awareness-trial-http-fixture.ts": "088fc7ab1a38dc5f22da317e2dd7af97804e8790360aa88c2a1f4367c4fafc91",
+    "backend/src/services/awareness-trial-execution.ts": "3db6e2474a467ce7a97378ecb263da313bcf4218065b663195be56853ec69f1b",
+    "backend/src/services/awareness-trial-seed.ts": "32947a08475ef8063e0f061e50a8d42e0ff0467f5b6622ea549bbba7be328974",
+    "backend/src/services/awareness-trial-input-sizes.ts": "32516c5dd6f47b7e988a507332a33dd68d818b3530d4190bdf080bb4211da1d7",
+    "docs/evidence/awareness-real-trial-candidate-2026-10-05.json": "9116f338280ab5738f73aac1ae444ad56f0dc5d763a7d8a156382b0341da4a58",
+    "backend/src/services/awareness-trial-harness.test.ts": "2774eedb6d4739f1a6b11ab0eb7ca49321e3dd6c5be0d09aff6b196b26fc0619"
+  },
+  "liveCalls": 0,
+  "discardedCutoverTrialVerified": false
+}

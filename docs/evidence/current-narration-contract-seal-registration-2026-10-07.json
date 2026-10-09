@@ -1,0 +1,129 @@
+{
+  "review": "docs/evidence/current-narration-contract-cause-review-2026-10-07.json",
+  "entries": [
+    {
+      "key": "implementation-current-narration-builder-contracts",
+      "path": "backend/src/llm/openai-compatible.ts",
+      "parents": [
+        "current",
+        "design",
+        "content"
+      ],
+      "scope": "Only all four pure phase builders and directly invoked valid-fixture narration methods: current single-phase instruction grammar and exact committed speech restoration on model punctuation rewrite. No complete raw response grammar enforcement, unsafe malformed inputs, physical SDK/provider or full observer projection acceptance.",
+      "test": false,
+      "ref": "all-tests-20261007/implementation-current-narration-builder-contracts",
+      "sha256": "8d4be097ddbfcb0da515dd0db402c7dc6dddccb763d625fce16165e7c524d2a5",
+      "sealId": "871b4b46e531e367409a529704c6b64bb1d041a22d3643fb0f6da4705473c1dc",
+      "causeSealIds": [
+        "2c6888e9d07a676d4b429b041b241e1631845b18fac4fb4cda280a4a29670d50",
+        "38dddd1b1aa02f0968cbe7284d8bd3507a5d34a5ef9cdbf9ba95cf230b1be8eb",
+        "f457c669375c1681fdf7277a8abd6f7e05848f33abb595d21df018b75b78866d"
+      ]
+    },
+    {
+      "key": "implementation-perception-response-grammar-materials",
+      "path": "backend/src/llm/perception-prompt-strategy.ts",
+      "parents": [
+        "current",
+        "semantic",
+        "perception"
+      ],
+      "scope": "Only three existing strict perception response formats used as outgoing schema graph fixtures, unchanged by checker. No topology quality thresholds/live sample claims or all sensory/world output semantic acceptance.",
+      "test": false,
+      "ref": "all-tests-20261007/implementation-perception-response-grammar-materials",
+      "sha256": "88e0b2107da52b58e4cca8cc66b754256d947e8fa132dd3652178eec155b8b01",
+      "sealId": "3e55a3ffb470d3a6ccc397366b15cd9889707b2b96909b2f4f2bf8c16ee068db",
+      "causeSealIds": [
+        "2c6888e9d07a676d4b429b041b241e1631845b18fac4fb4cda280a4a29670d50",
+        "dce107f59177be59fec704680461fb377ad1211e05fd35db9e654b94c0691b59",
+        "635dddb9346372392eefec016dc989a0bcf82d8dd14f049bb771d910c1a924ae"
+      ]
+    },
+    {
+      "key": "implementation-sdk-response-schema-ordinary-gate",
+      "path": "backend/src/llm/openai-compatible.ts",
+      "parents": [
+        "authority",
+        "graph"
+      ],
+      "scope": "Only ordinary non-guarded xAI chatJson pre-send schema graph validation before retry/fallback, and absence of this xAI-specific constraint for openai route. Synthetic HTTP, no live model/provider dialect acceptance.",
+      "test": false,
+      "ref": "all-tests-20261007/implementation-sdk-response-schema-ordinary-gate",
+      "sha256": "8d4be097ddbfcb0da515dd0db402c7dc6dddccb763d625fce16165e7c524d2a5",
+      "sealId": "5c06dcccd164d1e51610184f474296ee948c8fef2a4469c62453df2b33e244d2",
+      "causeSealIds": [
+        "4a236b55e9ad9e4aa54eb2c6bbe9d77e0a318881ba8328363505153d16e151dd",
+        "7d3553c4450352d27ccca8b36ff087b703bb00896b0369e283494116cd5b094e"
+      ]
+    },
+    {
+      "key": "narration-prompt-contract",
+      "path": "backend/src/llm/narration-prompt-contract.test.ts",
+      "parents": [
+        "current",
+        "design",
+        "content",
+        "freeze",
+        "frozen",
+        "receipt",
+        "narration",
+        "implementation-current-narration-builder-contracts"
+      ],
+      "scope": "All five local tests: valid mock direct runtime restores source punctuation in all phases; real phase builders use current direct grammar; exact registered old grammar/speech permission upgrade preserves appended style/observation text; all actual phase freeze/strict dispatch example validation and focus/speech change refusal; old/revisionless saved material byte-equivalent and unchanged; alternate combat batch contract. Earlier source Seal scope caveats refer to prior cohort only; this cohort verifies real four-phase builders and historical upgrade cases. No complete malformed direct response validation or semantic quality acceptance.",
+      "test": true,
+      "ref": "verification/narration-prompt-contract-20261007",
+      "sha256": "dfb2b63e8d46121c1be39be749385101bc03f1ee4f531935d885627d01a43367",
+      "sealId": "7ab3fea47a5d0f0dd3ec4a5e26206a9dd778d9b336706d658e9bcf199f6b8465",
+      "causeSealIds": [
+        "2c6888e9d07a676d4b429b041b241e1631845b18fac4fb4cda280a4a29670d50",
+        "38dddd1b1aa02f0968cbe7284d8bd3507a5d34a5ef9cdbf9ba95cf230b1be8eb",
+        "f457c669375c1681fdf7277a8abd6f7e05848f33abb595d21df018b75b78866d",
+        "d5d48d5393896637d613372fe29f34732f1622208012a058f6cc344e6550e9d8",
+        "3ce85102892804dcfeb7df194b5e93d477ab783cef102356d02ed300e993ea69",
+        "cf37057fb3dca7457db30a05bac0109cfdf98a19222e8598ae202d062887fccd",
+        "e2947758c2d961f4547d77ef7e166ac4e4af9639a8d93de682ce5cede88a71bc",
+        "871b4b46e531e367409a529704c6b64bb1d041a22d3643fb0f6da4705473c1dc"
+      ]
+    },
+    {
+      "key": "provider-response-schema",
+      "path": "backend/src/llm/provider-response-schema.test.ts",
+      "parents": [
+        "graph",
+        "implementation-perception-response-grammar-materials",
+        "implementation-sdk-response-schema-ordinary-gate"
+      ],
+      "scope": "All six local tests: three existing strict formats unchanged, direct/transitive/root/escaped cycles reject, shared acyclic/literal refs allowed, escaped/percent/array pointers resolved and unresolved rejected, ordinary xAI before fetch even fallback enabled, alternate provider sends without xAI restriction. Checker is not complete provider dialect validator; no real provider acceptance.",
+      "test": true,
+      "ref": "verification/provider-response-schema-20261007",
+      "sha256": "86849fa71237b6557ae393eefbab58b77e565d0d2e125094d9438e8d5f2564c5",
+      "sealId": "c3f863e3f85498e21342866155699b0d288af3471be88bf3a6ea322fd45eb10f",
+      "causeSealIds": [
+        "7d3553c4450352d27ccca8b36ff087b703bb00896b0369e283494116cd5b094e",
+        "3e55a3ffb470d3a6ccc397366b15cd9889707b2b96909b2f4f2bf8c16ee068db",
+        "5c06dcccd164d1e51610184f474296ee948c8fef2a4469c62453df2b33e244d2"
+      ]
+    }
+  ],
+  "diagnostic": {
+    "pass": 14,
+    "fail": 0,
+    "skipped": 0,
+    "strictTypecheckExit": 0
+  },
+  "readback": {
+    "newRefs": 5,
+    "sourceMatch": true,
+    "stale": 0,
+    "previousHeadsChanged": 0,
+    "previousRefs": 702,
+    "totalRefs": 707,
+    "fsck": "ok",
+    "unitEligibility": {
+      "active": 75,
+      "provisional": 1,
+      "disabled": 171,
+      "unsealed": 155
+    }
+  }
+}

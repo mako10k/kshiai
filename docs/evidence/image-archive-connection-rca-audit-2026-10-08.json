@@ -1,0 +1,260 @@
+{
+  "thought_id": "docs-evidence-image-archive-connection-rca-2026-10-08",
+  "id_source": "file",
+  "report": {
+    "engine_version": "0.1.0",
+    "document_id": "docs-evidence-image-archive-connection-rca-2026-10-08",
+    "generated_at": "2026-10-08T02:13:17.191Z",
+    "summary": {
+      "fatal_count": 0,
+      "error_count": 0,
+      "warning_count": 0,
+      "info_count": 0,
+      "hint_count": 10
+    },
+    "results": [
+      {
+        "issue_id": "ISSUE-001",
+        "category": "contradiction_candidate",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "CAUSE",
+            "role": "decision",
+            "step_id": "S-CAUSE"
+          },
+          {
+            "ref_id": "VERIFY",
+            "role": "decision",
+            "step_id": "S-VERIFY"
+          }
+        ],
+        "message": "CAUSE と VERIFY は同一根拠 E2 を共有しており、緊張関係にある可能性がある。",
+        "rationale": "複数の decision が同じ based_on 参照を共有しているため、観点と結論の整合性を再確認するべきである。",
+        "metadata": {
+          "shared_refs": [
+            "E2"
+          ],
+          "line": 11,
+          "column": 10,
+          "end_column": 15
+        }
+      },
+      {
+        "issue_id": "ISSUE-002",
+        "category": "contradiction_candidate",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "REPAIR",
+            "role": "decision",
+            "step_id": "S-REPAIR"
+          },
+          {
+            "ref_id": "VERIFY",
+            "role": "decision",
+            "step_id": "S-VERIFY"
+          }
+        ],
+        "message": "REPAIR と VERIFY は同一根拠 A1 を共有しており、緊張関係にある可能性がある。",
+        "rationale": "複数の decision が同じ based_on 参照を共有しているため、観点と結論の整合性を再確認するべきである。",
+        "metadata": {
+          "shared_refs": [
+            "A1"
+          ],
+          "line": 13,
+          "column": 10,
+          "end_column": 16
+        }
+      },
+      {
+        "issue_id": "ISSUE-003",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "P1",
+            "role": "problem"
+          }
+        ],
+        "message": "problem P1 は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 4,
+          "column": 3,
+          "text": "The original archive case copies bytes through fs.copyFileSync instead of invoking archiveActiveCharacterPortrait; it can pass without the service copying an active portrait.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-004",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "E1",
+            "role": "evidence",
+            "step_id": "S-E1"
+          }
+        ],
+        "message": "evidence E1 は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 6,
+          "column": 3,
+          "text": "image-archive.test.ts case1 directly writes/copies/reads private fixture files. There is no service archive invocation. Case2 tests public URL formatting and missing=null but cannot distinguish accepted previous filename from rejected filename.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-005",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "E2",
+            "role": "evidence",
+            "step_id": "S-E2"
+          }
+        ],
+        "message": "evidence E2 は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 8,
+          "column": 3,
+          "text": "image-service.ts owns active URL selection, primary fallback, copy, failure-to-null and success/failure logging. Its resolver checks kind, filename, path and existence. These responsibilities are absent from the original archive assertions' execution path.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-006",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "A1",
+            "role": "premise",
+            "step_id": "S-A1"
+          }
+        ],
+        "message": "premise A1 は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 10,
+          "column": 3,
+          "text": "User retains all247unit plus4E2E files and original assertions. Accepted ADR0010/0011 and character-v3-write-boundary remain normative. No ordinary character-definition-v2 writer or hosted persistence authority is added.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-007",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "CAUSE",
+            "role": "decision",
+            "step_id": "S-CAUSE"
+          }
+        ],
+        "message": "decision CAUSE は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 12,
+          "column": 3,
+          "text": "The producing condition is test construction that substitutes low-level filesystem operations for service invocation. The detection gap is accepting plausible case titles/green filesystem checks without checking the invoked production path; type checking cannot detect this semantic substitution.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-008",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "REPAIR",
+            "role": "decision",
+            "step_id": "S-REPAIR"
+          }
+        ],
+        "message": "decision REPAIR は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 14,
+          "column": 3,
+          "text": "Extract shared real local-media operations behind an explicitly typed private-root store. Existing service wrappers use the production root/logger; repaired tests call actual service wrappers with a real temporary filesystem store. Preserve default path/URL/copy/error/log behavior and original byte/URL/missing assertions. Add positive previous-file resolution and active revision archive coverage.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-009",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "VERIFY",
+            "role": "decision",
+            "step_id": "S-VERIFY"
+          }
+        ],
+        "message": "decision VERIFY は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 16,
+          "column": 3,
+          "text": "Independent review, private real files, workspace types, existing image-helper tests and original-case preservation precede normal Seal. Revalidate current source-bound image-service implementation and dependent verification with exact replacement Cause; preserve old immutable revisions. Formal aggregate remains blocked by remaining unsealed tests.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-010",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "CAUSE",
+            "role": "decision",
+            "step_id": "S-CAUSE"
+          },
+          {
+            "ref_id": "REPAIR",
+            "role": "decision",
+            "step_id": "S-REPAIR"
+          }
+        ],
+        "message": "CAUSE と REPAIR は意味的に近接している可能性がある。",
+        "metadata": {
+          "line": 11,
+          "column": 10,
+          "end_column": 15,
+          "similarity": 0.6532,
+          "semantic_distance": 0.3468,
+          "embedding_provider": "ollama",
+          "embedding_model": "nomic-embed-text"
+        }
+      }
+    ],
+    "query_results": []
+  }
+}

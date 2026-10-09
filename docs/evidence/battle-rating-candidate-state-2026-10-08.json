@@ -1,0 +1,16 @@
+{
+  "stage": "superseded_by_direct_owner_decision",
+  "path": "docs/battle-rating-requirement-candidate-r1-2026-10-08.md",
+  "sha256": "42e88ad7467afac75199bef9cc83650372cc34a92e19d172c2fe481eedb592a4",
+  "accepted": false,
+  "independentReviewAuthorized": false,
+  "firstOwnerRoute": null,
+  "ownerQuestionPresented": true,
+  "laterEffectsAuthorized": false,
+  "wholeFiles": 5,
+  "originalCases": 38,
+  "selfReview": "Actual shared/service/owner projection/population/frontend inputs checked; prior numerical authority unresolved, current implementation explicitly nonnormative.",
+  "originalCandidateAccepted": false,
+  "governingDecision": "docs/battle-test-contract-owner-decisions-2026-10-08.md",
+  "directOwnerDecisionReceived": true
+}

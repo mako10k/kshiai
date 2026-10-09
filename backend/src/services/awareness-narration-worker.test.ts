@@ -147,7 +147,7 @@ it("requeues a preclaim flush wait and accepts only the fresh delivery generatio
   await query("UPDATE battle_narration_outbox SET status='dispatched',dispatched_at=$2 WHERE outbox_id=$1", [input.outbox_id, new Date(base).toISOString()]);
   let calls = 0;
   const generator = Object.assign(async () => { throw new Error("legacy generator must not run"); },
-    { awareness: { provider: { ...provider({ calls: 0 }), narrateFrozenBatch: async (materials) => {
+    { awareness: { provider: { ...provider({ calls: 0 }), narrateFrozenBatch: async (materials: Parameters<AwarenessNarrationProvider["narrateFrozenBatch"]>[0]) => {
       calls++;
       return materials.map((material) => ({ phase: "combat" as const, battleId: material.battleId, turnReceiptId: material.turnReceiptId,
         narration: { turn: material.turn, narrator: ["待機が解けた。"], speeches: [] } }));
@@ -193,7 +193,7 @@ it("requeues an unselected input after successful publication without touching i
   await query("UPDATE battle_narration_outbox SET status='dispatched',dispatched_at=$2 WHERE outbox_id=$1", [input.outbox_id, new Date(base).toISOString()]);
   let calls = 0;
   const generator = Object.assign(async () => { throw new Error("legacy generator must not run"); },
-    { awareness: { provider: { ...provider({ calls: 0 }), narrateFrozenBatch: async (materials) => {
+    { awareness: { provider: { ...provider({ calls: 0 }), narrateFrozenBatch: async (materials: Parameters<AwarenessNarrationProvider["narrateFrozenBatch"]>[0]) => {
       calls++;
       return materials.map((material) => ({ phase: "combat" as const, battleId: material.battleId, turnReceiptId: material.turnReceiptId,
         narration: { turn: material.turn, narrator: ["公開された。"], speeches: [] } }));

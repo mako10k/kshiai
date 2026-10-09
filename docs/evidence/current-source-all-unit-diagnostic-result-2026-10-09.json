@@ -1,0 +1,17 @@
+{
+  "schema": "kshiai/current-source-full-unit-diagnostic/v1",
+  "unitFiles": 247,
+  "exitCode": 0,
+  "seconds": 85.042,
+  "observedAt": "2026-10-09T01:48:17.795294+00:00",
+  "postgresEndpoint": "127.0.0.1:55439/kshiai_awareness_test",
+  "formalAuthority": false,
+  "privatePostgresStopExit": 0,
+  "tests": 1468,
+  "pass": 1468,
+  "fail": 0,
+  "skipped": 0,
+  "e2eFiles": 4,
+  "e2ePass": 10,
+  "e2eFail": 0
+}

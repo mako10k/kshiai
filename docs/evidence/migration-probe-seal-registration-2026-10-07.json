@@ -1,0 +1,247 @@
+{
+  "entries": [
+    {
+      "key": "contract-migration-probe-attempt-receipt",
+      "path": "packages/shared/src/character-semantic-migration.ts",
+      "parents": [
+        "authority"
+      ],
+      "scope": "Existing typed attempt and provider receipt fields used by isolated synthetic probe: immutable source/prompt/route IDs, explicit outcome and observed token accounting. Only fixture and scripted response branches exercised; no full attempt ledger, capsule or live migration proof.",
+      "ref": "all-tests-20261007/contract-migration-probe-attempt-receipt",
+      "test": false,
+      "sha256": "bb7d5e54d81de47b55e4408d881e879e01137007aaa5c58bb746a62d704b237c",
+      "sealId": "769ee08e85d6e207ac28f5c0c0118281387f7d1cd5fbe7d720b8fbab33f24583",
+      "causeSealIds": [
+        "2fb9650ddebe867a978634fea432e65d0611085c8cb823c36a6d6f3f5eaa2962"
+      ]
+    },
+    {
+      "key": "implementation-migration-probe-run-identities",
+      "path": "backend/src/scripts/semantic-migration-probe-run.ts",
+      "parents": [
+        "authority"
+      ],
+      "scope": "Historical run identity constants and frozen prompt pairings remain independent for consumed migration prompt versions2/3. No new run allocated or historical experiment rerun.",
+      "ref": "all-tests-20261007/implementation-migration-probe-run-identities",
+      "test": false,
+      "sha256": "94ced94b5518b493f649fc0437429a098102de085878b18827335cc2bf034c9d",
+      "sealId": "d0e91dd4315198c54b286721df42b55a1e2855395040c7d716914b6dbdb97ae3",
+      "causeSealIds": [
+        "2fb9650ddebe867a978634fea432e65d0611085c8cb823c36a6d6f3f5eaa2962"
+      ]
+    },
+    {
+      "key": "fixture-migration-probe-historical-generation-writer",
+      "path": "backend/src/testing/historical-asset-generations.ts",
+      "parents": [
+        "authority",
+        "importer"
+      ],
+      "scope": "Test-only createAssetGeneration creates the V2 historical synthetic source in a fresh SQLite database. Production character writers remain governed by retirement. Other helper activation/CAS branches not certified by this cohort.",
+      "ref": "all-tests-20261007/fixture-migration-probe-historical-generation-writer",
+      "test": false,
+      "sha256": "1f853f953dbd5c2a9aa3c5628652b72d251b4e7d1b1f2e91afbc8334c2cced5a",
+      "sealId": "9b3b176efd5f71b72166640ddc9b41af6f0b1a2786129ea8d10e43578fd6c297",
+      "causeSealIds": [
+        "2fb9650ddebe867a978634fea432e65d0611085c8cb823c36a6d6f3f5eaa2962",
+        "fe98078e33db80587a9694804807184024b6fe2f27f281eb74f92c8353e6e998"
+      ]
+    },
+    {
+      "key": "implementation-migration-probe-initial-digest",
+      "path": "backend/src/repositories/character-semantic-migration.ts",
+      "parents": [
+        "authority",
+        "contract-migration-probe-attempt-receipt"
+      ],
+      "scope": "Only characterSemanticMigrationInitialRequestDigest over frozen attempt source and target identities for the synthetic seed. Entire persistence/resume/request lifecycle is outside this local probe-run test claim.",
+      "ref": "all-tests-20261007/implementation-migration-probe-initial-digest",
+      "test": false,
+      "sha256": "8a5ecc5380f5018c0c1753493e25420872e6750902ada34432392a9bf2c43efa",
+      "sealId": "4e1f818486c40be8836cc745622d90621dbe9f1a3298ff3027e57a2bcab5d608",
+      "causeSealIds": [
+        "2fb9650ddebe867a978634fea432e65d0611085c8cb823c36a6d6f3f5eaa2962",
+        "769ee08e85d6e207ac28f5c0c0118281387f7d1cd5fbe7d720b8fbab33f24583"
+      ]
+    },
+    {
+      "key": "implementation-migration-probe-context",
+      "path": "backend/src/services/character-migration-context.ts",
+      "parents": [
+        "authority",
+        "wire",
+        "contract-migration-probe-attempt-receipt"
+      ],
+      "scope": "Only creating context from valid synthetic V2 source under retained prompt-v2, deterministic baseline and registered source/target paths used by initial payload. No whole repair closure or arbitrary migration correctness guarantee.",
+      "ref": "all-tests-20261007/implementation-migration-probe-context",
+      "test": false,
+      "sha256": "6e944fb5d153794261e5332718e0f72c05e4f62c86abf1fafa2cf73cbcffcd57",
+      "sealId": "693949593441f24ad2ffc0db92a9bed5d545f6040396eca86beb8aa22fd7a7a6",
+      "causeSealIds": [
+        "2fb9650ddebe867a978634fea432e65d0611085c8cb823c36a6d6f3f5eaa2962",
+        "2739cb30b70b34439e139c55e7a4bc9f1db254667ca72c17d1c8cb2c14f71024",
+        "769ee08e85d6e207ac28f5c0c0118281387f7d1cd5fbe7d720b8fbab33f24583"
+      ]
+    },
+    {
+      "key": "implementation-migration-probe-initial-merge",
+      "path": "backend/src/services/character-migration-merge.ts",
+      "parents": [
+        "authority",
+        "implementation-migration-probe-context"
+      ],
+      "scope": "Only initialCharacterMigrationMerge clones the supplied baseline into empty operations/findings/deferred/uncertainties. No change-set application or disclosure/semantic reconciliation certified by this cohort.",
+      "ref": "all-tests-20261007/implementation-migration-probe-initial-merge",
+      "test": false,
+      "sha256": "590167d42454f17c1bff94416ea20c0873d025321e7cd7eb84a01cb9d012fa0a",
+      "sealId": "08529d586b5cd9aee651d49101df27b9f1686e1d7a526660ae3a6a918836e89f",
+      "causeSealIds": [
+        "2fb9650ddebe867a978634fea432e65d0611085c8cb823c36a6d6f3f5eaa2962",
+        "693949593441f24ad2ffc0db92a9bed5d545f6040396eca86beb8aa22fd7a7a6"
+      ]
+    },
+    {
+      "key": "implementation-migration-probe-payload",
+      "path": "backend/src/services/character-migration-prompts.ts",
+      "parents": [
+        "authority",
+        "wire",
+        "projection",
+        "implementation-migration-probe-context",
+        "implementation-migration-probe-initial-merge"
+      ],
+      "scope": "Retained prompt-v2 initial generation payload carries frozen source, initial candidate, registered references and acyclic projected response grammar. No real model conformance or all repair/review prompt versions certified.",
+      "ref": "all-tests-20261007/implementation-migration-probe-payload",
+      "test": false,
+      "sha256": "b1cd78d1ba768002913388cefb60ec0a49ca15a446fa0eeaa1c0bca61af38c68",
+      "sealId": "e8216c2b951ab77812727048cac5a7324dcf60ffa41c623432a58eae7ba5c281",
+      "causeSealIds": [
+        "2fb9650ddebe867a978634fea432e65d0611085c8cb823c36a6d6f3f5eaa2962",
+        "2739cb30b70b34439e139c55e7a4bc9f1db254667ca72c17d1c8cb2c14f71024",
+        "9fbb20104c9c55a7ac4f0cecde7bd3d4a4ff897e37398abd404eee6b5e5472cc",
+        "693949593441f24ad2ffc0db92a9bed5d545f6040396eca86beb8aa22fd7a7a6",
+        "08529d586b5cd9aee651d49101df27b9f1686e1d7a526660ae3a6a918836e89f"
+      ]
+    },
+    {
+      "key": "implementation-migration-probe-transport",
+      "path": "backend/src/llm/character-migration-probe-provider.ts",
+      "parents": [
+        "authority",
+        "graph",
+        "contract-migration-probe-attempt-receipt",
+        "retained"
+      ],
+      "scope": "Historical isolated xAI probe transport: exact schema/route, before-send evidence, known received accounting, stop on ambiguity/failure, six-call and request/reservation ceilings. All fetches injected in local tests. Historical hardcoded rate arithmetic is tested as frozen data, not current pricing or present paid execution authority.",
+      "ref": "all-tests-20261007/implementation-migration-probe-transport",
+      "test": false,
+      "sha256": "902c259fcc3df21e531db32ece78b769a3a74c4b7de2c5372a8fd97248f84107",
+      "sealId": "c5996a4f29e4d619d903f62e75e408c7da7b0686f40d6be8885962baff27aa42",
+      "causeSealIds": [
+        "2fb9650ddebe867a978634fea432e65d0611085c8cb823c36a6d6f3f5eaa2962",
+        "7d3553c4450352d27ccca8b36ff087b703bb00896b0369e283494116cd5b094e",
+        "769ee08e85d6e207ac28f5c0c0118281387f7d1cd5fbe7d720b8fbab33f24583",
+        "d794d17fdb3c085e94a0300e0ba9b5b56e0c0e0af99970e560d7065e5dacf90e"
+      ]
+    },
+    {
+      "key": "fixture-migration-probe-isolated-source",
+      "path": "backend/src/scripts/semantic-migration-probe-fixture.ts",
+      "parents": [
+        "authority",
+        "importer",
+        "contract-migration-probe-attempt-receipt",
+        "implementation-migration-probe-run-identities",
+        "fixture-migration-probe-historical-generation-writer",
+        "implementation-migration-probe-initial-digest",
+        "implementation-migration-probe-transport"
+      ],
+      "scope": "Synthetic V2 source includes one selectorless preference/fallback and one executable preference. seed requires test SQLite with zero users/characters/generations; creates historical source and distinct frozen attempt identity. Local temporary DB only, no product legacy write or historical paid retry.",
+      "ref": "all-tests-20261007/fixture-migration-probe-isolated-source",
+      "test": false,
+      "sha256": "81681738a078eb1b70c9656bde0b82bc5c3880d70a047362ebe5e16d3b274034",
+      "sealId": "4cbdc8b9fca68ed2d2bdb2dc7a859f523d34db918d70f5daa92e80dc1384916f",
+      "causeSealIds": [
+        "2fb9650ddebe867a978634fea432e65d0611085c8cb823c36a6d6f3f5eaa2962",
+        "fe98078e33db80587a9694804807184024b6fe2f27f281eb74f92c8353e6e998",
+        "769ee08e85d6e207ac28f5c0c0118281387f7d1cd5fbe7d720b8fbab33f24583",
+        "d0e91dd4315198c54b286721df42b55a1e2855395040c7d716914b6dbdb97ae3",
+        "9b3b176efd5f71b72166640ddc9b41af6f0b1a2786129ea8d10e43578fd6c297",
+        "4e1f818486c40be8836cc745622d90621dbe9f1a3298ff3027e57a2bcab5d608",
+        "c5996a4f29e4d619d903f62e75e408c7da7b0686f40d6be8885962baff27aa42"
+      ]
+    },
+    {
+      "key": "migration-probe-fixture-current",
+      "path": "backend/src/scripts/semantic-migration-probe-fixture.test.ts",
+      "parents": [
+        "authority",
+        "fixture-migration-probe-isolated-source"
+      ],
+      "scope": "Entire one-case synthetic source fixture regression: valid historical V2 envelope, selectorless preference with fallback and executable preference without fallback. Fixture capability only, not generated migration quality.",
+      "ref": "verification/migration-probe-fixture-current-20261007",
+      "test": true,
+      "sha256": "b7d60794c90761615727909d4cdd7fb5b2f9b384ce3389f3d93c4c6d4918bf1f",
+      "sealId": "2157c461aae60d8e56b6819f02e4361d8b297702a0a3a746169c803898c55969",
+      "causeSealIds": [
+        "2fb9650ddebe867a978634fea432e65d0611085c8cb823c36a6d6f3f5eaa2962",
+        "4cbdc8b9fca68ed2d2bdb2dc7a859f523d34db918d70f5daa92e80dc1384916f"
+      ]
+    },
+    {
+      "key": "migration-probe-run-current",
+      "path": "backend/src/scripts/semantic-migration-probe-run.test.ts",
+      "parents": [
+        "authority",
+        "fixture-migration-probe-isolated-source",
+        "implementation-migration-probe-run-identities",
+        "implementation-migration-probe-payload",
+        "implementation-migration-probe-transport"
+      ],
+      "scope": "Entire two-case file: consumed run/prompt constants preserved and distinct; fresh SQLite seed binds prompt-v2 independent of consumed-v1, repeat seed and production mode reject with counts unchanged, payload acyclic and reservation within historical bounds. No provider invocation or production DB writes.",
+      "ref": "verification/migration-probe-run-current-20261007",
+      "test": true,
+      "sha256": "54d76a822808910d22e2d2208d86cf7f72a72e8090cd52740e353488992fec0f",
+      "sealId": "31b7c3502c2f41e0f1892ba424f28d9c43927dc81f827f047984c99a4fb01709",
+      "causeSealIds": [
+        "2fb9650ddebe867a978634fea432e65d0611085c8cb823c36a6d6f3f5eaa2962",
+        "4cbdc8b9fca68ed2d2bdb2dc7a859f523d34db918d70f5daa92e80dc1384916f",
+        "d0e91dd4315198c54b286721df42b55a1e2855395040c7d716914b6dbdb97ae3",
+        "e8216c2b951ab77812727048cac5a7324dcf60ffa41c623432a58eae7ba5c281",
+        "c5996a4f29e4d619d903f62e75e408c7da7b0686f40d6be8885962baff27aa42"
+      ]
+    },
+    {
+      "key": "migration-probe-provider-current",
+      "path": "backend/src/llm/character-migration-probe-provider.test.ts",
+      "parents": [
+        "authority",
+        "implementation-migration-probe-transport",
+        "retained",
+        "graph"
+      ],
+      "scope": "Entire nine-case injected-fetch transport file: old circular grammar stops before events/fetch, exact outgoing schema/settings, before/response/receipt and known accounting, malformed JSON failure stops, HTTP/model/usage failure never fabricates receipt or resends, persistence-before-send failure prevents fetch, route/input ceilings, six physical requests, observed usage overrun retained then stops. Historical rate arithmetic only; no current provider prices, paid sends, timing performance or full orchestration acceptance.",
+      "ref": "verification/migration-probe-provider-current-20261007",
+      "test": true,
+      "sha256": "f202053a23251db35835a61fdebf75d1b56ce33e847cf1710dbbb48d9012f0c0",
+      "sealId": "da4ab586c3186d6927f415c076dfb1633b0624742592b26204caaa67e7dd107c",
+      "causeSealIds": [
+        "2fb9650ddebe867a978634fea432e65d0611085c8cb823c36a6d6f3f5eaa2962",
+        "c5996a4f29e4d619d903f62e75e408c7da7b0686f40d6be8885962baff27aa42",
+        "d794d17fdb3c085e94a0300e0ba9b5b56e0c0e0af99970e560d7065e5dacf90e",
+        "7d3553c4450352d27ccca8b36ff087b703bb00896b0369e283494116cd5b094e"
+      ]
+    }
+  ],
+  "diagnostic": {
+    "pass": 12,
+    "fail": 0,
+    "skipped": 0,
+    "strictTypecheckExit": 0
+  },
+  "limitations": [
+    "Three local isolated probe files only",
+    "No live provider acceptance or full migration engine certification",
+    "Historical hardcoded price arithmetic is not a current price claim. All network work is replaced by injected fetches; temporary SQLite isolated before imports."
+  ]
+}

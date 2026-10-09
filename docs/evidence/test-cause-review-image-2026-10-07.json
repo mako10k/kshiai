@@ -1,0 +1,45 @@
+{
+  "schema":"kshiai/test-cause-image/v1",
+  "readOnly":true,
+  "testsExecuted":false,
+  "testPath":"backend/src/image/openai-compatible.test.ts",
+  "authority":{"state":"disabled","reason":"unsealed","ref":null},
+  "obligations":[
+    "Verify that OpenAiCompatibleImageProvider sends the configured model, trimmed prompt, and aspect ratio to the OpenAI-compatible /images/generations endpoint and returns the provider URL.",
+    "Verify that createFallbackImageProvider invokes the next ImageProvider after a first provider failure and returns the succeeding data URL."
+  ],
+  "governingSources":[
+    {"path":"backend/src/image/openai-compatible.ts","clause":"OpenAiCompatibleImageProvider.generate constructs POST request, parses URL/b64 response, and reports provider errors","status":"implementation","why":"The test directly exercises request construction and URL response branch."},
+    {"path":"backend/src/image/fallback.ts","clause":"fallback provider invokes providers in order after failure","status":"implementation","why":"The second test directly exercises fallback ordering."},
+    {"path":"docs/requirements.md","clause":"F-CFG-01 provider configuration and image generation uses an OpenAI-compatible ImageProvider","status":"current requirement","why":"Establishes the product-level adapter role; it does not itself accept this unsealed test as live evidence."},
+    {"path":"docs/battle-pipeline-production-rollout.md","clause":"XAI primary and OpenAI ordered operational fallback","status":"plan/current topology","why":"Supports fallback ordering context; provider acceptance remains separately gated."},
+    {"path":"docs/adr/0058-stop-test-runs-with-unsealed-tests.md","clause":"unsealed discovered tests stop authoritative execution","status":"Accepted","why":"Explains current disabled authority state."}
+  ],
+  "implementationPaths":[
+    "backend/src/image/openai-compatible.ts",
+    "backend/src/image/fallback.ts",
+    "backend/src/image/types.ts"
+  ],
+  "fixturePaths":[
+    "in-test injected fetch implementation",
+    "https://images.example/v1/ as a non-contacting example base URL",
+    "https://cdn.example/image.jpg as mocked response URL",
+    "in-test failing and succeeding ImageProvider objects",
+    "data:image/jpeg;base64,abc mocked fallback result"
+  ],
+  "executionPrerequisites":{
+    "database":"none; test imports only image provider modules and does not initialize or access db",
+    "network":"none during intended test; fetch is injected and the test never invokes the default global fetch",
+    "nonLoopback":false,
+    "paidProvider":false,
+    "credentials":"none; literal 'secret' is passed only to assert request construction and is never sent because fetch is mocked",
+    "liveAcceptance":"not established; a real provider URL/key/model, network allowance, cost ceiling, moderation behavior, and independent readback would be required for any live image generation experiment"
+  },
+  "issues":[
+    "The inventory has no current verification Seal, so the test must remain disabled under ADR-0058.",
+    "Coverage is limited to successful URL response and fallback order; it does not assert empty prompt, non-2xx/error parsing, malformed JSON, moderation filtering, empty data, or b64_json handling implemented by the adapter.",
+    "This unit test cannot prove xAI/OpenAI/Venice compatibility, R2 persistence, public media retrieval, or image quality. Those are separate integration/live acceptance gates."
+  ],
+  "staticImportAndSideEffectReview":"Static imports are limited to image/fallback/types modules; no db/config import or default database initialization was observed. The only potential external side effect is the provider's default global fetch, but this test supplies an injected fetch in the OpenAI-compatible case and does not invoke a real endpoint.",
+  "confidence":"high"
+}

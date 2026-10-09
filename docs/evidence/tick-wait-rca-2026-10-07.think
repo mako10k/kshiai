@@ -1,0 +1,14 @@
+domain TICK_WAIT:
+  description "Preserve the adopted minimum tick interval when a timer wakes before the persisted wall-clock boundary."
+evidence E_SOURCE:
+  "battle-service.ts4842-4844 calculates lastCommittedAt+minTickIntervalMs-Date.now once and sleeps once. awareness-execution.ts252-254 rejects world commit with active runtime and no incompleteReason when the wall-clock interval is still short. battle-service.ts4847-4849 then treats every canCommitWorld false as a required-boundary failure and catches it to persist incomplete."
+evidence E_TEST:
+  "Existing awareness-execution.test.ts270-282 explicitly verifies a too-early boundary returns canCommitWorld false and resumes successfully after the minimum interval. Shared policy is immutable minTickIntervalMs1000 under Accepted ADR0054 retaining prior policy controls."
+evidence E_RUN:
+  "Offline E2E r4 fails at an explicit incomplete-status assertion with AWARENESS_REQUIRED_BOUNDARY_FAILED. Route log has a negative -1390ms elapsed duration measured with Date.now. No source-wide Date.now replacement was found in the active fixture. The OS clock adjustment origin is unknown. Exact runtime snapshot at the rejection is not retained, so this occurrence's trigger remains inferred."
+premise P_SCOPE:
+  "User authorizes repairing all tests with type integrity. Accepted ADR0054 preserves tick spacing and finite global deadlines; no policy relaxation, clock replacement, retries of model transport, deployment, or paid call is authorized."
+premise P_ALTERNATIVES:
+  "Changing the test to accept incomplete or removing minimum spacing loses obligations. A second fixed sleep does not establish the boundary. Recheck the persisted not-before time after each wake and stop at the existing global deadline. This corrects the independently verified one-shot-wait defect without asserting the OS trigger is proven."
+decision D_REPAIR based_on E_SOURCE, E_TEST, E_RUN, P_SCOPE, P_ALTERNATIVES:
+  "Add a typed bounded tick-wait helper in awareness-clock.ts and use it at the existing production waiting seam. Test a backward clock reading and early timer wake followed by the correct boundary, elapsed global deadline, and zero unnecessary sleep. Then rerun clock tests, guidance tests and strict E2E types, followed by the offline E2E. Changed production Seal stays stale until its reviewed scope and dependent proof are refreshed; do not claim type-only equivalence."

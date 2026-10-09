@@ -1,0 +1,13 @@
+{
+  "reviewer": "battle_helper_contract_review",
+  "verdict": "INSIDE",
+  "originalCases": 5,
+  "files": {
+    "backend/src/repositories/battle-presentations.test.ts": "16dfad9077d834de752daec64eeb7b2ed3116351995e8e723599743ffccfac01",
+    "backend/src/repositories/battles-improvement.test.ts": "f570216761031d2b12be725c3162578c9d65b2d08932d551f234c69c3c483903",
+    "backend/src/repositories/battle-presentations.ts": "a05b21f7a93cc38c9b76b7d1f7c4df3c293ab41f6007497303625e93175b1f91",
+    "backend/src/repositories/battles.ts": "e0f5d0977e5a103249a382bbd5ac318f0a7a7b2abcde95ad2f4491ead5ca892f"
+  },
+  "charactersVerdict": "BOUNDARY_DISPUTE",
+  "typecheckExit": 0
+}

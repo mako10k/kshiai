@@ -1,8 +1,10 @@
 import { z } from "zod";
 
+// R: Validate bounded provider fallback receipts without exposing request content.
+
 export const LlmProviderRouteFailureSchema = z.object({
   provider: z.string().min(1).max(120),
-  reason: z.enum(["billing", "dns"]),
+  reason: z.enum(["billing", "dns", "rate_limit"]),
   disposition: z.enum(["failed", "cooldown_active"]),
   cooldownMs: z.number().int().nonnegative().max(86_400_000),
 }).strict();

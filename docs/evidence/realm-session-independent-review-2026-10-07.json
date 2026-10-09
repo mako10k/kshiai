@@ -1,0 +1,28 @@
+{
+  "reviewer": "/root/frontend_seal_contract_audit",
+  "mode": "read-only",
+  "originalCaseCounts": {
+    "backend/src/repositories/asset-visibility.test.ts": 1,
+    "backend/src/repositories/test-realm-assets.test.ts": 1,
+    "backend/src/services/e2e-session.test.ts": 3,
+    "backend/src/routes-e2e-session.test.ts": 1
+  },
+  "governingClauses": [
+    "Accepted ADR0015 Rules1-7, especially1/2/3/7",
+    "Persistent E2E observation Access model; current selectable asset requirements F-MTCH01/02/06/07"
+  ],
+  "scopes": {
+    "testRealmAssets": "Real isolated SQLite list/direct resolve paths over E2E-owned ready field/style; not all account kinds or HTTP/GUI",
+    "service": "Pure operator predicate, injected local rotation/mint/audit and missing fixture; not real credential rotation/invalidation",
+    "route": "Minimum Hono app with injected users and real middleware; not routes.ts/realSupabase/admin route/request/header verification",
+    "visibility": "Exact public/friends/private upstream definition not found in inspected sources; separately remains unsealed"
+  },
+  "rootDiagnostic": {
+    "passed": 6,
+    "failed": 0,
+    "skipped": 0,
+    "strictExit": 0,
+    "proof": "/tmp/kshiai-realm-session-preseal.tap"
+  },
+  "rootDisposition": "Register three supported complete files five cases, retain fourth original file/assertions unsealed; no graph mutation or test execution by reviewer"
+}

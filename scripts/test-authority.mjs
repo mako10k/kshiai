@@ -129,6 +129,16 @@ export function buildInventory(testPaths, configuredTests, statuses) {
   });
 }
 
+export function findUnmappedTests(testPaths, configuredTests) {
+  const mappedPaths = new Set(configuredTests.map((entry) => entry.path));
+  return testPaths.flatMap((absolutePath) => {
+    const path = relative(repositoryRoot, absolutePath).replaceAll("\\", "/");
+    return mappedPaths.has(path)
+      ? []
+      : [{ path, state: "disabled", reason: "unsealed", ref: null }];
+  });
+}
+
 export function summarizeInventory(suite, inventory) {
   return {
     schema: "kshiai/test-authority-selection/v2",
@@ -149,6 +159,14 @@ export function requireActiveTests(suite, active) {
   }
 }
 
+export function requireSealedTests(suite, inventory) {
+  const unsealed = inventory.filter((entry) => entry.reason === "unsealed" || entry.reason === "missing_ref");
+  if (unsealed.length > 0) {
+    const paths = unsealed.map((entry) => `${entry.path} (${entry.reason})`).join("\n");
+    throw new Error(`Unsealed ${suite} tests block execution (${unsealed.length}); inspect npm run test:inventory:\n${paths}`);
+  }
+}
+
 function run(command, args) {
   const result = spawnSync(command, args, { cwd: repositoryRoot, stdio: "inherit" });
   return result.status ?? 1;
@@ -158,8 +176,18 @@ async function main() {
   const suite = process.argv.includes("--e2e") ? "e2e" : "unit";
   const listOnly = process.argv.includes("--list");
   const configured = loadInventory();
+  const testPaths = discoverTests(suite);
+  if (!listOnly) {
+    const unmapped = findUnmappedTests(testPaths, configured.tests);
+    if (unmapped.length > 0) {
+      process.stderr.write(
+        `TEST_PREFLIGHT suite=${suite} unsealed=${unmapped.length} authority_evaluated=false\n`,
+      );
+      requireSealedTests(suite, unmapped);
+    }
+  }
   const statuses = await loadSealGraphStatus(configured.tests);
-  const inventory = buildInventory(discoverTests(suite), configured.tests, statuses);
+  const inventory = buildInventory(testPaths, configured.tests, statuses);
   const disabled = inventory.filter((entry) => entry.state === "disabled");
   const provisional = inventory.filter((entry) => entry.state === "provisional");
   const active = inventory.filter((entry) => entry.state === "active");
@@ -168,7 +196,6 @@ async function main() {
     process.stdout.write(`${JSON.stringify(summary, null, 2)}\n`);
     return;
   }
-  requireActiveTests(suite, active);
   process.stderr.write(
     `TEST_SELECTION suite=${suite} active=${active.length} provisional=${provisional.length} disabled=${disabled.length}\n`,
   );
@@ -178,6 +205,8 @@ async function main() {
   for (const entry of provisional) {
     process.stderr.write(`PROVISIONAL ${entry.path} ref=${entry.ref} reason=${entry.reason}\n`);
   }
+  requireSealedTests(suite, inventory);
+  requireActiveTests(suite, active);
   if (suite === "e2e") {
     process.exitCode = active.length
       ? run("npx", ["playwright", "test", ...active.map((entry) => entry.path)])

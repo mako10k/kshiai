@@ -1,0 +1,19 @@
+{
+  "reviewer": "battle_helper_contract_review",
+  "classification": "INSIDE after fixture isolation and negative admission scope correction",
+  "originalCases": 22,
+  "pass": 22,
+  "fail": 0,
+  "skip": 0,
+  "typecheckExit": 0,
+  "sealed": false,
+  "files": {
+    "backend/src/routes-cutover-http.test.ts": "0aacaf9328b0a0db435cf9c97d7990bd3b79666c627f368d4286d96fe4d51486",
+    "backend/src/services/character-v2-update-boundary.test.ts": "856bb4a622c8d0d2e55bf5647ec58a97571a9e34d9d5a1829dba95b0bd257702",
+    "backend/src/services/v3-battle-creation.test.ts": "5f6254f5f888c785a836feb3fcfcdcb635b0bb04ca9cbed28c05f9fc520a3e6c",
+    "backend/src/scripts/semantic-migration-probe-fixture.test.ts": "bbfc3baf480ea17abd09a717bbd32727853d37dc3acc788523113d4df17a4cd2",
+    "backend/src/scripts/semantic-migration-probe-run.test.ts": "59475275b3f3778669695c34438a6eb38a5edd0b77c89e81d32ddc348bd18edc"
+  },
+  "scope": "Local V2-read/V3-write retirement, immutable historical/awareness battle binding, negative cutover admission and synthetic probe isolation; not successful old trial or live execution",
+  "review": "docs/evidence/migration-probe-fixture-boundary-repair-2026-10-08.json"
+}

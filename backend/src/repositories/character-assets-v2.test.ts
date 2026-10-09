@@ -5,6 +5,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import {
   CharacterGenerationEnvelopeV2Schema,
+  CharacterGenerationEnvelopeV3Schema,
   CHARACTER_PROFILE_CLAIM_VALIDATOR_CONTRACT,
   REQUIRED_CHARACTER_COMPILERS_V2,
   defaultCharacterDisclosurePolicyV2,
@@ -30,6 +31,7 @@ const {
   getAssetGeneration,
 } = await import("../testing/historical-asset-generations.js");
 
+const { buildV3CharacterEnvelopeFixture } = await import("../testing/v3-character-envelope-fixture.js");
 after(async () => {
   await closeDatabase();
   rmSync(directory, { recursive: true, force: true });
@@ -108,8 +110,22 @@ function envelope(input: {
   });
 }
 
-describe("character authoring V2", () => {
-  it("requires owner acceptance and atomically activates one V2 generation", async () => {
+function currentEnvelope(input: Parameters<typeof envelope>[0]) {
+  const candidate = buildV3CharacterEnvelopeFixture(input.sheet);
+  return CharacterGenerationEnvelopeV3Schema.parse({ ...candidate,
+    provenance: { ...candidate.provenance, attemptId: input.attemptId,
+      sourceDigest: assetContentDigest(input.sourceText) },
+  });
+}
+
+async function activateReviewedCandidate(input: Parameters<typeof repo.activateCharacterAuthoringAttempt>[0]) {
+  const attempt = await repo.getCharacterAuthoringAttempt(input.attemptId, input.ownerUserId);
+  assert.ok(attempt?.candidateDigest);
+  return repo.activateCharacterAuthoringAttempt({ ...input, candidateDigest: attempt.candidateDigest });
+}
+
+describe("current V3 authoring and historical V2 reads", () => {
+  it("requires owner acceptance and atomically activates one V3 generation", async () => {
     await query(
       `INSERT INTO users (id, username, password_hash, created_at)
        VALUES ($1, $2, 'x', $3)`,
@@ -117,6 +133,7 @@ describe("character authoring V2", () => {
     );
     const sourceText = "青い外套の慎重な旅人";
     const started = await repo.beginCharacterAuthoringAttempt({
+      targetSchemaVersion: 3,
       ownerUserId: "owner-v2",
       kind: "create",
       idempotencyKey: "create:test-character-v2",
@@ -127,7 +144,7 @@ describe("character authoring V2", () => {
     assert.equal(started.attempt.status, "pending_structure");
     assert.equal(await characters.getSheet(started.attempt.characterId), null);
 
-    const candidate = envelope({
+    const candidate = currentEnvelope({
       attemptId: started.attempt.attemptId,
       sourceText,
       sheet: sheet(started.attempt.characterId),
@@ -141,11 +158,15 @@ describe("character authoring V2", () => {
     assert.equal(awaiting.status, "awaiting_owner_acceptance");
     assert.equal(await characters.getSheet(started.attempt.characterId), null);
 
-    const activated = await repo.activateCharacterAuthoringAttempt({
+    await assert.rejects(repo.activateCharacterAuthoringAttempt({
+      attemptId: started.attempt.attemptId, ownerUserId: "owner-v2",
+    }), /AUTHORING_REVIEW_DIGEST_MISMATCH/);
+    assert.equal(await characters.getSheet(started.attempt.characterId), null);
+    const activated = await activateReviewedCandidate({
       attemptId: started.attempt.attemptId,
       ownerUserId: "owner-v2",
     });
-    assert.equal(activated.generation.schemaVersion, 2);
+    assert.equal(activated.generation.schemaVersion, 3);
     assert.equal(activated.sheet.id, started.attempt.characterId);
     assert.equal((await repo.getCharacterCompatibility(
       started.attempt.characterId,
@@ -154,7 +175,7 @@ describe("character authoring V2", () => {
       started.attempt.characterId,
     ))?.generationId, activated.generation.generationId);
 
-    const replay = await repo.activateCharacterAuthoringAttempt({
+    const replay = await activateReviewedCandidate({
       attemptId: started.attempt.attemptId,
       ownerUserId: "owner-v2",
     });
@@ -167,7 +188,7 @@ describe("character authoring V2", () => {
         expectedGenerationId: activated.generation.generationId,
         operationId: "restore-without-history",
       }),
-      /NO_PREVIOUS_CHARACTER_GENERATION/,
+      /CHARACTER_UPDATE_UNAVAILABLE/,
     );
     await assert.rejects(
       repo.activateCharacterPortraitRevision({
@@ -179,7 +200,7 @@ describe("character authoring V2", () => {
         mediaRevisionId: "img-forbidden",
         sourceDigest: assetContentDigest("portrait-wrong-owner"),
       }),
-      /CHARACTER_V2_NOT_READY/,
+      /CHARACTER_OWNER_MISMATCH/,
     );
 
     const portrait = await repo.activateCharacterPortraitRevision({
@@ -215,7 +236,7 @@ describe("character authoring V2", () => {
       portrait.sheet,
       "owner-v2",
     );
-    assert.equal(ownerView.canRestoreRevision, true);
+    assert.equal(ownerView.canRestoreRevision, false);
     assert.equal(ownerView.canToggleImage, true);
     assert.equal(
       ownerView.appearance.previousImageUrl,
@@ -254,23 +275,15 @@ describe("character authoring V2", () => {
       `/api/media/characters/${activated.sheet.id}.new.jpg`,
     );
 
-    const restored = await repo.restorePreviousCharacterGeneration({
-      characterId: activated.sheet.id,
-      ownerUserId: "owner-v2",
-      expectedGenerationId: toggled.generation.generationId,
-      operationId: "generation-restore-1",
-    });
-    assert.equal(restored.generation.generation, toggled.generation.generation + 1);
-    assert.equal(
-      restored.sheet.appearance.imageUrl,
-      `/api/media/characters/${activated.sheet.id}.new.jpg`,
-    );
-    assert.equal(
-      restored.generation.content &&
-        CharacterGenerationEnvelopeV2Schema.parse(restored.generation.content)
-          .provenance.sourceKind,
-      "restore_revision",
-    );
+    const beforeRestore = await getAssetGeneration(toggled.generation.generationId);
+    await assert.rejects(repo.restorePreviousCharacterGeneration({
+      characterId: activated.sheet.id, ownerUserId: "owner-v2",
+      expectedGenerationId: toggled.generation.generationId, operationId: "generation-restore-1",
+    }), /CHARACTER_UPDATE_UNAVAILABLE/);
+    assert.equal((await repo.getReadyCharacterGeneration(activated.sheet.id))?.generationId,
+      toggled.generation.generationId);
+    assert.deepEqual((await getAssetGeneration(toggled.generation.generationId))?.content, beforeRestore?.content);
+
   });
 
   it("leaves an existing legacy row unsupported without an explicit upgrade", async () => {
@@ -290,6 +303,7 @@ describe("character authoring V2", () => {
 
     const sourceText = legacy.narrativeBlurb;
     const started = await repo.beginCharacterAuthoringAttempt({
+      targetSchemaVersion: 3,
       ownerUserId: legacy.ownerUserId,
       characterId: legacy.id,
       kind: "upgrade",
@@ -311,6 +325,7 @@ describe("character authoring V2", () => {
   it("persists expiry without activating a candidate or retaining an upgrade hold", async () => {
     const sourceText = "期限切れになる新規キャラクター";
     const create = await repo.beginCharacterAuthoringAttempt({
+      targetSchemaVersion: 3,
       ownerUserId: "owner-v2",
       kind: "create",
       idempotencyKey: "create:expired-character-v2",
@@ -322,7 +337,7 @@ describe("character authoring V2", () => {
     await repo.saveCharacterAuthoringCandidate({
       attemptId: create.attempt.attemptId,
       ownerUserId: "owner-v2",
-      envelope: envelope({
+      envelope: currentEnvelope({
         attemptId: create.attempt.attemptId,
         sourceText,
         sheet: sheet(create.attempt.characterId),
@@ -331,7 +346,7 @@ describe("character authoring V2", () => {
     });
 
     await assert.rejects(
-      repo.activateCharacterAuthoringAttempt({
+      activateReviewedCandidate({
         attemptId: create.attempt.attemptId,
         ownerUserId: "owner-v2",
       }),
@@ -358,6 +373,7 @@ describe("character authoring V2", () => {
       [legacy.id, legacy.ownerUserId, JSON.stringify(legacy), legacy.createdAt, legacy.updatedAt],
     );
     const upgrade = await repo.beginCharacterAuthoringAttempt({
+      targetSchemaVersion: 3,
       ownerUserId: legacy.ownerUserId,
       characterId: legacy.id,
       kind: "upgrade",
@@ -370,7 +386,7 @@ describe("character authoring V2", () => {
     await repo.saveCharacterAuthoringCandidate({
       attemptId: upgrade.attempt.attemptId,
       ownerUserId: legacy.ownerUserId,
-      envelope: envelope({
+      envelope: currentEnvelope({
         attemptId: upgrade.attempt.attemptId,
         sourceText: legacy.narrativeBlurb,
         sheet: legacy,
@@ -378,7 +394,7 @@ describe("character authoring V2", () => {
       assistantMessage: "期限切れアップグレード候補",
     });
     await assert.rejects(
-      repo.activateCharacterAuthoringAttempt({
+      activateReviewedCandidate({
         attemptId: upgrade.attempt.attemptId,
         ownerUserId: legacy.ownerUserId,
       }),
@@ -395,10 +411,16 @@ describe("character authoring V2", () => {
   it("rolls back a stale revision candidate after concurrent pointer drift", async () => {
     const currentSheet = sheet("concurrent-pointer-v2");
     await saveHistoricalCharacterFixture(currentSheet);
+    const currentGeneration = await createAssetGeneration({ assetType: "character", assetId: currentSheet.id,
+      schemaVersion: 3, content: currentEnvelope({ attemptId: "current-revision-fixture",
+        sourceText: currentSheet.narrativeBlurb, sheet: currentSheet }) });
+    await query("UPDATE character_asset_states SET current_generation_id = $2 WHERE character_id = $1",
+      [currentSheet.id, currentGeneration.generationId]);
     const original = await repo.getReadyCharacterGeneration(currentSheet.id);
     assert.ok(original);
     const sourceText = "表示名を構造子改へ更新する";
     const revision = await repo.beginCharacterAuthoringAttempt({
+      targetSchemaVersion: 3,
       ownerUserId: currentSheet.ownerUserId,
       characterId: currentSheet.id,
       kind: "revision",
@@ -410,7 +432,7 @@ describe("character authoring V2", () => {
     await repo.saveCharacterAuthoringCandidate({
       attemptId: revision.attempt.attemptId,
       ownerUserId: currentSheet.ownerUserId,
-      envelope: envelope({
+      envelope: currentEnvelope({
         attemptId: revision.attempt.attemptId,
         sourceText,
         sheet: { ...currentSheet, displayName: "構造子改" },
@@ -418,15 +440,23 @@ describe("character authoring V2", () => {
       assistantMessage: "更新候補",
     });
 
-    const concurrent = await repo.activateCharacterPortraitRevision({
-      characterId: currentSheet.id,
-      ownerUserId: currentSheet.ownerUserId,
-      expectedGenerationId: original.generationId,
-      operationId: "concurrent-portrait-v2",
-      mediaId: "/api/media/characters/concurrent.jpg",
-      mediaRevisionId: "concurrent-image-v2",
-      sourceDigest: assetContentDigest("concurrent-portrait-v2"),
-    });
+    await assert.rejects(repo.activateCharacterPortraitRevision({
+      characterId: currentSheet.id, ownerUserId: currentSheet.ownerUserId,
+      expectedGenerationId: original.generationId, operationId: "blocked-during-revision",
+      mediaId: "/api/media/characters/concurrent.jpg", mediaRevisionId: "concurrent-image-v3",
+      sourceDigest: assetContentDigest("concurrent-portrait-v3"),
+    }), /CHARACTER_V3_NOT_READY/);
+    // Separate fixture transition represents pointer drift; the held portrait
+    // route above cannot create it. Activation must still reject stale CAS input.
+    const driftedSheet = { ...currentSheet, appearance: { ...currentSheet.appearance,
+      imageUrl: "/api/media/characters/concurrent.jpg" } };
+    const concurrent = await createAssetGeneration({ assetType: "character", assetId: currentSheet.id,
+      schemaVersion: 3, content: currentEnvelope({ attemptId: "independent-pointer-drift",
+        sourceText: currentSheet.narrativeBlurb, sheet: driftedSheet }) });
+    await query("UPDATE character_asset_states SET current_generation_id = $2 WHERE character_id = $1",
+      [currentSheet.id, concurrent.generationId]);
+    await query("UPDATE characters SET sheet_json = $2 WHERE id = $1",
+      [currentSheet.id, JSON.stringify(driftedSheet)]);
     const generationCountBefore = await query<{ count: number }>(
       `SELECT COUNT(*) AS count FROM asset_generations
         WHERE asset_type = 'character' AND asset_id = $1`,
@@ -434,7 +464,7 @@ describe("character authoring V2", () => {
     );
 
     await assert.rejects(
-      repo.activateCharacterAuthoringAttempt({
+      activateReviewedCandidate({
         attemptId: revision.attempt.attemptId,
         ownerUserId: currentSheet.ownerUserId,
       }),
@@ -451,7 +481,7 @@ describe("character authoring V2", () => {
     );
     assert.equal(
       (await repo.getReadyCharacterGeneration(currentSheet.id))?.generationId,
-      concurrent.generation.generationId,
+      concurrent.generationId,
     );
     assert.equal(
       (await characters.getSheet(currentSheet.id))?.appearance.imageUrl,
@@ -509,7 +539,7 @@ describe("character authoring V2", () => {
       currentSheet.ownerUserId,
     );
     assert.equal(management.selectable, false);
-    assert.equal(management.upgradeAction?.targetSchemaVersion, 2);
+    assert.equal(management.upgradeAction?.targetSchemaVersion, 3);
   });
 
   it("reads but does not select a V2 generation with selectorless action norms", async () => {

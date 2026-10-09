@@ -1,3 +1,4 @@
+// R: Validate and project canonical battle world facts and their atomic transitions.
 import { z } from "zod";
 import {
   SemanticIdSchema,
@@ -308,7 +309,7 @@ function validateWorldReferences(
       });
     }
     if (entity.placement.type === "scene") {
-      if (!state.areas[entity.placement.areaId]) {
+      if (!Object.hasOwn(state.areas, entity.placement.areaId)) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
           path: ["entities", id, "placement", "areaId"],
@@ -1071,17 +1072,39 @@ function worldPlacementFromSemantic(
   return { type: "absent" };
 }
 
+export const BattleWorldInitialLayoutSchema = z.object({
+  areas: z.record(SemanticIdSchema, BattleWorldAreaSchema),
+  sceneAreaIds: z.record(SemanticIdSchema, SemanticIdSchema),
+}).strict();
+export type BattleWorldInitialLayout = z.infer<typeof BattleWorldInitialLayoutSchema>;
+
 export function createBattleWorldState(input: {
   semanticState: BattleSemanticState;
+  initialLayout?: BattleWorldInitialLayout;
 }): BattleWorldState {
-  const { areas, areaIdFor } = buildAreaMapping(input.semanticState);
+  const layout = input.initialLayout === undefined
+    ? undefined
+    : BattleWorldInitialLayoutSchema.parse(input.initialLayout);
+  if (layout) {
+    for (const [entityId, areaId] of Object.entries(layout.sceneAreaIds)) {
+      if (!Object.hasOwn(input.semanticState.entities, entityId) || !Object.hasOwn(layout.areas, areaId)) {
+        throw new Error("BATTLE_WORLD_INITIAL_LAYOUT_REFERENCE_INVALID");
+      }
+    }
+    for (const [entityId, entity] of Object.entries(input.semanticState.entities)) {
+      if (entity.location.type === "scene" && !Object.hasOwn(layout.sceneAreaIds, entityId)) {
+        throw new Error("BATTLE_WORLD_INITIAL_LAYOUT_PLACEMENT_REQUIRED");
+      }
+    }
+  }
+  const mapping = layout ? undefined : buildAreaMapping(input.semanticState);
+  const areas = layout?.areas ?? mapping!.areas;
   const entities: Record<string, BattleWorldEntity> = Object.fromEntries(
     Object.entries(input.semanticState.entities).map(([id, semanticEntity]) => {
       const requiredCharacter = id === "character.a" || id === "character.b";
-      const semanticPlacement = worldPlacementFromSemantic(
-        semanticEntity,
-        areaIdFor,
-      );
+      const semanticPlacement: WorldPlacement = layout && semanticEntity.location.type === "scene"
+        ? { type: "scene", areaId: layout.sceneAreaIds[id]! }
+        : worldPlacementFromSemantic(semanticEntity, (label) => mapping!.areaIdFor(label));
       const placement = semanticEntity.kind === "character" &&
           semanticPlacement.type !== "scene" &&
           semanticPlacement.type !== "absent"

@@ -1,0 +1,21 @@
+{
+  "wholeFiles": 7,
+  "originalCases": 43,
+  "unchangedFiles": [
+    "packages/shared/src/character-definition-check.test.ts",
+    "packages/shared/src/character-definition-rules.test.ts",
+    "packages/shared/src/character.test.ts",
+    "packages/shared/src/character-manifestation.test.ts",
+    "packages/shared/src/battle-asset-manifest.test.ts",
+    "backend/src/repositories/character-generation-reader.test.ts"
+  ],
+  "changedFile": "packages/shared/src/structured-character.test.ts",
+  "onlyChange": {
+    "from": "(CHARACTER_NORM_OBSERVED_EVENT_KINDS_V2 as readonly string[])\n        .includes(\"direct_address\")",
+    "to": "new Set<string>(CHARACTER_NORM_OBSERVED_EVENT_KINDS_V2)\n        .has(\"direct_address\")",
+    "equivalence": "same unchanged string-valued tuple, queried direct_address, SameValueZero membership, expected false unchanged"
+  },
+  "beforeSha256": "23652616c8f6ea123971e2edbb0d2d1dff25fc5418a7ac8729ee028a0074d1a2",
+  "afterSha256": "3d808ffb317e460a6c009fc508b304f8967e1506b62d879f8efac5adbff505c6",
+  "allOtherBytesPreserved": true
+}

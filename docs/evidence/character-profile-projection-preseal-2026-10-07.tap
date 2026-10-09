@@ -1,0 +1,34 @@
+TAP version 13
+# Subtest: preserves restrictive and preference norm values through the V3 profile adapter
+ok 1 - preserves restrictive and preference norm values through the V3 profile adapter
+  ---
+  duration_ms: 22.687441
+  type: 'test'
+  ...
+# Subtest: keeps previous profile facts exact when guidance has no explicit public permission
+ok 2 - keeps previous profile facts exact when guidance has no explicit public permission
+  ---
+  duration_ms: 10.545857
+  type: 'test'
+  ...
+# Subtest: projects only explicitly public unconditional guidance statements
+ok 3 - projects only explicitly public unconditional guidance statements
+  ---
+  duration_ms: 14.898747
+  type: 'test'
+  ...
+# Subtest: accepts a real V3 candidate with a guidance-backed unchanged public statement
+ok 4 - accepts a real V3 candidate with a guidance-backed unchanged public statement
+  ---
+  duration_ms: 22.572111
+  type: 'test'
+  ...
+1..4
+# tests 4
+# suites 0
+# pass 4
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 562.28797

@@ -1,0 +1,12 @@
+domain SEMANTIC_TARGET_ASSERTION:
+  description "Correct an unsupported invalid-grammar expectation while retaining legacy response refusal."
+evidence FAILURE:
+  "Only the old targetDefinitionSchema circular-reference assertion fails in the migration grammar revision case. Earlier assertion that old responseSchema is circular passes; corrected responseSchema is valid and distinct."
+evidence SOURCE:
+  "Read character-migration-prompts.ts: old target schema is native zodResponseFormat(CharacterDefinitionV3Schema), modern target uses duplicate-default repair helper. Generic recursive JSON remains in migration operation response, not inherently in target definition. Current target native grammar passes assertXaiResponseSchema. Test conflates target grammar with operation response grammar."
+premise ALTERNATIVES:
+  "A response refusal regression is ruled out by the earlier passing assert. No current contract requires an invalid target definition schema; making a valid schema invalid would violate repair purpose. Historical stored payload hash conformance is not established by this test, so no such claim is made. Exact past introducing commit remains uninspected."
+premise BOUNDS:
+  "Retain old prompt branch, no auto upgrade, old response rejection and corrected response distinction. Change only old target schema assertion from throws to doesNotThrow; current target validity stays. No provider call, source behavior, migration authority or frozen saved request changes. Owner all-tests repair scope and Accepted ADR0030 migration constraints govern."
+decision D1 based_on FAILURE, SOURCE, ALTERNATIVES, BOUNDS:
+  "Audit then correct this test expectation to reflect actual separate grammar roles, rerun migration regression and backend types, preserve source-diverged verification until reviewed Seal refresh."

@@ -1,0 +1,99 @@
+{
+  "schema": "kshiai/awareness-role-provider-cause-review/v1",
+  "upstream": [
+    {
+      "ref": "awareness-guidance-20261007/authority-current",
+      "sealId": "4a236b55e9ad9e4aa54eb2c6bbe9d77e0a318881ba8328363505153d16e151dd"
+    },
+    {
+      "ref": "awareness-guidance-20261007/basic-design",
+      "sealId": "1adba1d06106cfcc7537dcd2d85aa94f745a4a79ff6b3f5ac4911a11efdf79a8"
+    },
+    {
+      "ref": "awareness-guidance-20261007/input-contract",
+      "sealId": "56e673314fc7d2d4b1caef3c2c3411213422bba8d58a28bb6f8fbe5f3fa3df72"
+    },
+    {
+      "ref": "all-tests-20261007/implementation-awareness-policy",
+      "sealId": "c064db895ea9f010d2f6fb28360b243285cbe93156c19f8286e161ec2d0d731a"
+    },
+    {
+      "ref": "all-tests-20261007/authority-normal-waits",
+      "sealId": "7f8ac50262580d0a94e13d82627be496f8e2e8fd059c194c4d93d84d2af28f43"
+    },
+    {
+      "ref": "all-tests-20261007/authority-measurement",
+      "sealId": "66468c9b30e9ba4cd3a8649b7c3fa3f32a100622edb09d7864d54327be3db18a"
+    },
+    {
+      "ref": "all-tests-20261007/implementation-awareness-request",
+      "sealId": "bb7112ff39b462e2759e46e8fb60b5cbfb395412bb163c9beefe6e8f8c3e7be1"
+    },
+    {
+      "ref": "all-tests-20261007/contract-awareness-request-options",
+      "sealId": "55cd6ea44ebccfb4f9f0e3012c1edd96fcafa0f412c8eaeafeac922832b9a100"
+    },
+    {
+      "ref": "all-tests-20261007/design-model-request-options",
+      "sealId": "ca00579d72ce103d2da9fa943d7c907aefe27ed4f7668f9c476c2e076fcb44c2"
+    }
+  ],
+  "nodes": [
+    {
+      "key": "implementation-awareness-role-provider",
+      "path": "backend/src/llm/awareness-provider.ts",
+      "parents": [
+        "authority",
+        "basic",
+        "input",
+        "policy",
+        "normal",
+        "measurement",
+        "request",
+        "transport",
+        "model-design"
+      ],
+      "scope": "Only explicit Luna latent/Grok conscious transport routing, immutable supplied policy capture and per-call override, strict output parsing, latent tick equality and one-call no fallback behavior. Request builder contract governs prose and latest instructions for supported revision labels; no actual SDK or final character compression claim.",
+      "test": false,
+      "ref": "all-tests-20261007/implementation-awareness-role-provider",
+      "sha256": "d97ded70df5b50fe8364eaba6255354a9b4df821c68cd2c6622088a1a7d2b1a4"
+    },
+    {
+      "key": "awareness-role-provider",
+      "path": "backend/src/llm/awareness-provider.test.ts",
+      "parents": [
+        "authority",
+        "basic",
+        "input",
+        "policy",
+        "normal",
+        "measurement",
+        "request",
+        "transport",
+        "model-design",
+        "implementation-awareness-role-provider"
+      ],
+      "scope": "All eight typed local fake-transport tests: single latent reflex/affect call, explicit measured deadlines/caps, battle policy overrides, conscious owner-facing projection/source tick, supported revision identity with latest request instructions/unknown refusal, strict extra-field and stale-tick refusal, wrong provider route rejection. Legacy helper default deadlines are not normal operational policy. No paid/live or physiological/semantic-quality acceptance.",
+      "test": true,
+      "ref": "verification/awareness-role-provider-20261007",
+      "sha256": "a2140ee8c1a224edbb39a2d8c1fdf56fa9e0c145e8deac538a76a2ee551c66b3"
+    }
+  ],
+  "diagnostic": {
+    "pass": 57,
+    "fail": 0,
+    "skipped": 0,
+    "strictTypecheckExit": 0
+  },
+  "sealedFileTests": 8,
+  "clauses": [
+    "ADR0051 inherits ADR0050 D01/D03/D11/D12: role routing, one latent call, private conscious projection and schema limits",
+    "ADR0052 explicit long measurement policy and ADR0054 normal bound waiting policy",
+    "ADR0056 latest output instructions for supported historical labels via sealed request builder"
+  ],
+  "limitations": [
+    "Only eight role provider tests sealed from the 57-test diagnostic cohort",
+    "No SDK/live provider, semantic quality or complete compressed latent input claim",
+    "Default helper timing is historical and differs from normal bound policy"
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "beforeSourceSeal": "046b127d623138820b0ba14d0b15b619609d36a448b83a9e7e41e548fb0d01cb",
+  "beforeSha256": "7c9e7a83c5767688e1d5f702f12875d2664218b59a5998429295b94dc3bfd09d",
+  "afterSha256": "80eda28c060f4f789dfb64a13a3babf2e4d82db77a8b34cebeb938cba040bce8",
+  "exactChanges": [
+    "required agentStateA/B local type",
+    "remove A/B canonical assembly casts"
+  ],
+  "allOtherCurrentWorkPreserved": true,
+  "originalTestsUnchanged": true
+}

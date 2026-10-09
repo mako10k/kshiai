@@ -1,0 +1,86 @@
+{
+  "schema": "kshiai/character-http-focused-fixture-repair/v1",
+  "files": [
+    {
+      "path": "backend/src/testing/offline-focused-authoring-provider.ts",
+      "sha256": "0d2a99a5cc54ad5881974261a44d22eba437f0e728fecf634a358d7d9ebc4896"
+    },
+    {
+      "path": "backend/src/routes-structured-character-acceptance.test.ts",
+      "sha256": "3bfb30035755fd997156d6a3c2d97deb832c61be689db0e658dc4f9df9bc4d61"
+    }
+  ],
+  "scope": {
+    "paidCalls": 0,
+    "externalRequests": 0,
+    "productionCodeChanges": 0,
+    "testsRemoved": 0,
+    "testsSkipped": 0
+  },
+  "fixture": "Actual semantic-authoring provider prepare/parse using injected typed fetch with deterministic internal responses; persistence reservation and worker processing remain actual production components. Fixture output and usage are synthetic, not live model or billing evidence.",
+  "observations": [
+    "First controlled provider failure: technical_failure, one exchange, no candidate or asset generation.",
+    "Controlled failure after skeleton: technical_failure, two exchanges, no candidate or asset generation.",
+    "Successful focused result is persisted as semanticCandidateReview and advertised by reviewAttemptId, rather than a legacy public draft.",
+    "Old draft read test is independent of unrelated current attempts and retains exact legacy-row no-mutation assertions.",
+    "Queued discard and latest failed-attempt precedence pass through current worker."
+  ],
+  "diagnostic": {
+    "total": 15,
+    "passed": 8,
+    "failed": 7,
+    "skipped": 0,
+    "log": "docs/evidence/character-http-focused-fixture-tests-2026-10-07.tap"
+  },
+  "strictTypecheck": "passed",
+  "formalSeal": "not performed: complete test file still fails",
+  "remaining": [
+    {
+      "case": 2,
+      "issue": "Old V2 create/chat/confirm flow differs from focused terminal candidate storage; current focused new creation cannot activate. Preserve functional activation obligation until exact accepted connection scope is reconciled."
+    },
+    {
+      "case": 8,
+      "issue": "Version label still expects upgrade target 2; source is no-generation legacy row and current focused migration needs exact generation. No fallback writer should be restored."
+    },
+    {
+      "case": 9,
+      "issue": "Slow fixture overrides retired generateCharacterDefinitionV2; must exercise current focused transport and truthful progress without time sleeps as synchronization."
+    },
+    {
+      "case": 12,
+      "issue": "Focused create candidate is stored but canAccept is false. Need accepted functional/scope reconciliation, not merely change expectation to false."
+    },
+    {
+      "case": 13,
+      "issue": "No-generation migration fixture receives upgrade_start_failed; compare and stale-review behavior still required."
+    },
+    {
+      "case": 14,
+      "issue": "Historical candidate test reaches old no-generation migration prerequisite and assumes V2 candidate storage; retain historical-read/no-deserialization purpose via proper frozen historical candidate fixture."
+    },
+    {
+      "case": 15,
+      "issue": "Focused terminal readiness currently has no expected authoring_ready notification; exact shared delivery contract must be checked."
+    }
+  ],
+  "authorityForCompletedChecks": [
+    {
+      "path": "docs/adr/0043-v3-character-updates-with-historical-v2-display.md",
+      "clause": "Decision: focused V3 ordinary create/revise; fail before legacy fallback; retain immutable historical/test imports"
+    },
+    {
+      "path": "docs/structured-semantic-authoring-kernel-implementation-design-v1.md",
+      "clause": "sections 8-10: durable fenced terminal records, compatibility mapping and additive current command/review data"
+    }
+  ],
+  "limitations": [
+    "Unchecked contract casts remain in still-failing scenarios and must be closed during those repairs.",
+    "No claim that all activation requirements or all tests have passed."
+  ],
+  "allWorkspaceAndDeploymentTypecheckExitCode": 0,
+  "scopeReviewPointers": [
+    "docs/evidence/cc304-runtime-wip-2026-09-14.md: explicitly describes unrecognized focused candidates without acceptance; historical agent scope, not by itself owner authority",
+    "docs/structured-semantic-authoring-kernel-implementation-design-v1.md: section 10 says acceptance remains the existing different command; section 11 preserves activation behavior"
+  ]
+}

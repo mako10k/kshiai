@@ -1,3 +1,4 @@
+import { ActionEffortPolicyV1Schema, AppliedFreeActionPenaltyV1Schema, PendingDefenseExposureV1Schema } from "./action-effort-policy.js";
 import { validateConsequenceParameters } from "./battle-consequence-validation.js";
 import {
   validateBattleAgencyBindings,
@@ -556,6 +557,10 @@ export const CombatantStateSchema = z.object({
    * Combined with skill power → 1–9 turn cooldown (see skill-cooldown.ts).
    */
   skillLastUsedTurn: z.record(z.string(), z.number().int().nonnegative()).optional(),
+  /** Frozen at creation; absence preserves historical cooldown and fatigue semantics. */
+  actionEffortPolicy: ActionEffortPolicyV1Schema.optional(),
+  lastFreeActionPenalty: AppliedFreeActionPenaltyV1Schema.optional(),
+  pendingDefenseExposure: PendingDefenseExposureV1Schema.optional(),
 });
 export type CombatantState = z.infer<typeof CombatantStateSchema>;
 
@@ -613,6 +618,13 @@ const TurnEventObjectSchema = z.object({
   targetSides: z.array(z.enum(["a", "b"])).max(2).optional(),
   sourceActionId: z.string().min(1).optional(),
   sourceEffectId: z.string().min(1).max(120).optional(),
+  /** Server-owned repeat effort; missing on historical events. */
+  repeatEffort: z.object({
+    contractVersion: z.literal("battle-action-effort-v1"),
+    requestedStamina: z.union([z.literal(2), z.literal(4)]),
+    paidStamina: z.number().min(0).max(4),
+    unpaidStamina: z.number().min(0).max(4),
+  }).strict().optional(),
   skillName: z.string().optional(),
   /** Structured mechanical attribution; never infer these fields from summary. */
   parameterKey: ParamKeySchema.optional(),
@@ -659,7 +671,7 @@ const manifestationTurnEventSchema = TurnEventObjectSchema.extend({
   manifestation: TurnEventObjectSchema.shape.manifestation.unwrap(),
 });
 
-export const TurnEventSchema = z.discriminatedUnion("type", [
+const turnEventSchema = z.discriminatedUnion("type", [
   ordinaryTurnEventSchema, utteranceTurnEventSchema, manifestationTurnEventSchema,
 ]).and(z.union([
   z.object({
@@ -671,7 +683,8 @@ export const TurnEventSchema = z.discriminatedUnion("type", [
     sourceEffectId: TurnEventObjectSchema.shape.sourceEffectId,
   }),
 ]));
-export type TurnEvent = z.infer<typeof TurnEventSchema>;
+export type TurnEvent = z.output<typeof turnEventSchema>;
+export const TurnEventSchema: z.ZodType<TurnEvent, z.ZodTypeDef, z.input<typeof turnEventSchema>> = turnEventSchema;
 
 export const PendingBattleEffectSchema = z.object({
   schemaVersion: z.literal(1),
@@ -1740,7 +1753,7 @@ export type BattleTurnPipelineTrace = z.infer<
 >;
 
 /** Persisted engine facts for audit and agent cognition reconstruction. */
-export const BattleTurnRecordSchema = z.object({
+const battleTurnRecordSchema = z.object({
   turn: z.number().int().nonnegative(),
   temporalResolution: BattleTemporalPlanSchema.optional(),
   worldImpact: BattleTurnWorldImpactSchema.optional(),
@@ -1826,7 +1839,12 @@ export const BattleTurnRecordSchema = z.object({
     record.canonicalTransition?.world?.transition?.operations.length ?? 0,
   );
 });
-export type BattleTurnRecord = z.infer<typeof BattleTurnRecordSchema>;
+export type BattleTurnRecord = z.output<typeof battleTurnRecordSchema>;
+export const BattleTurnRecordSchema: z.ZodType<
+  BattleTurnRecord,
+  z.ZodTypeDef,
+  z.input<typeof battleTurnRecordSchema>
+> = battleTurnRecordSchema;
 
 /** Monotony tracker for environmental happenings (supervisor). */
 export const SupervisorStateSchema = z.object({

@@ -1,0 +1,526 @@
+{
+  "schema": "kshiai/battlefield-cohort-seal-registration/v1",
+  "scope": "Three test files / sixteen local cases under unchanged Accepted contracts",
+  "review": "docs/evidence/battlefield-cause-seal-review-2026-10-07.json",
+  "existingUpstreamSeals": [
+    {
+      "key": "v3",
+      "ref": "all-tests-20261007/authority-v3-writes",
+      "path": "docs/adr/0043-v3-character-updates-with-historical-v2-display.md",
+      "sealId": "480c02403f61dc6a9cd7d54861639b962dbc3bde86673481e02e0defc8415e17"
+    },
+    {
+      "key": "usage",
+      "ref": "awareness-guidance-20261007/authority-current",
+      "path": "docs/adr/0051-observed-llm-usage-accounting.md",
+      "sealId": "4a236b55e9ad9e4aa54eb2c6bbe9d77e0a318881ba8328363505153d16e151dd"
+    },
+    {
+      "key": "timing",
+      "ref": "all-tests-20261007/authority-normal-waits",
+      "path": "docs/adr/0054-normal-awareness-waiting-deadlines.md",
+      "sealId": "7f8ac50262580d0a94e13d82627be496f8e2e8fd059c194c4d93d84d2af28f43"
+    },
+    {
+      "key": "awareness",
+      "ref": "all-tests-20261007/contract-awareness-decisions",
+      "path": "docs/battle-consciousness-implementation-decisions-2026-10-05.md",
+      "sealId": "1edf3239229665d39a55aee22af5148f4408f6c8dfea24ca200ae835af46e02d"
+    },
+    {
+      "key": "queueAdoption",
+      "ref": "all-tests-20261007/authority-read-purity-adoption",
+      "path": "docs/adr/0024-detach-authoring-from-read-traffic.think",
+      "sealId": "3d5d1e8e4ec99ffe6fdef1851bbe1ba54593c86e365b620af601c1d97747fe8c"
+    }
+  ],
+  "entries": [
+    {
+      "key": "authority-selectable-envelope",
+      "path": "docs/adr/0010-structured-selectable-asset-envelope.md",
+      "parents": [],
+      "scope": "Accepted common generation identity, readiness, disclosure and read-only binding. Historical R3 cutover clauses are excluded from this cohort.",
+      "ref": "all-tests-20261007/authority-selectable-envelope",
+      "test": false,
+      "sha256": "52cb39bf97e85b85115a9182ebf6854e8d9babc1253916adb8bef0c90970530f",
+      "sealId": "fdaeaeb9f3694421a8776649f58ec4e89962ae6f95fc3249b8ca4b6a93b6e3ed",
+      "causeSealIds": []
+    },
+    {
+      "key": "authority-battlefield",
+      "path": "docs/adr/0012-structured-battlefield-definition.md",
+      "parents": [
+        "authority-selectable-envelope"
+      ],
+      "scope": "Accepted battlefield definition, immutable media revisions, deterministic seeds and compiled instances; no live-world evolution acceptance claim.",
+      "ref": "all-tests-20261007/authority-battlefield",
+      "test": false,
+      "sha256": "777c6e9a5cc39d8de5d90f2336eb31e6590d4841aee1adf2a1677b7f63bb8a2c",
+      "sealId": "a65c9b0a1bf9589c18778e7cf7ca7985d7ccde11c3a36c7e0b5db5874f34c7b8",
+      "causeSealIds": [
+        "fdaeaeb9f3694421a8776649f58ec4e89962ae6f95fc3249b8ca4b6a93b6e3ed"
+      ]
+    },
+    {
+      "key": "authority-authoring-review",
+      "path": "docs/adr/0014-queue-asset-authoring.md",
+      "parents": [],
+      "scope": "Owner-accepted review/notification/attempt identity rules; battlefield extension uses ADR0012 and the all-family ADR0024 queue contract.",
+      "ref": "all-tests-20261007/authority-authoring-review",
+      "test": false,
+      "sha256": "2439e6894f0bd54a05aa9903436f89e8cc57cfe8e7355fa73c333ca5020a244f",
+      "sealId": "811d0305e67ce73b5902135bb8662e7ee31e6efaf98852b0ad5de8d1f0c15007",
+      "causeSealIds": []
+    },
+    {
+      "key": "authority-family-queue",
+      "path": "docs/adr/0024-detach-authoring-from-read-traffic.md",
+      "parents": [
+        "queueAdoption",
+        "authority-authoring-review"
+      ],
+      "scope": "Accepted D2-D6 all-family authoring-owned queue, hold/review and fenced work. No cloud dispatch/deployment acceptance claim.",
+      "ref": "all-tests-20261007/authority-family-queue",
+      "test": false,
+      "sha256": "eb7ab630122a633302fe79062581ec3210ba09ea37924cb924f695ce1c167b30",
+      "sealId": "995d80276d4d54ad40871ddff2f44c1c96343282655f34a54af8f570ea1751b3",
+      "causeSealIds": [
+        "3d5d1e8e4ec99ffe6fdef1851bbe1ba54593c86e365b620af601c1d97747fe8c",
+        "811d0305e67ce73b5902135bb8662e7ee31e6efaf98852b0ad5de8d1f0c15007"
+      ]
+    },
+    {
+      "key": "design-selectable-envelope",
+      "path": "docs/structured-asset-envelope-design.md",
+      "parents": [
+        "authority-selectable-envelope",
+        "authority-authoring-review"
+      ],
+      "scope": "Immutable generation/CAS/disclosure invariants; subsequent ADR0014 owner hold governs activation timing.",
+      "ref": "all-tests-20261007/design-selectable-envelope",
+      "test": false,
+      "sha256": "33dc428d719782e8f54b7cdc6e34cf48e8412dcfcec3022a0d29a8bf4d2ae1b0",
+      "sealId": "a1e2179abb3dfcf09dd5104e3e38a6a7901c49e86604c37411b6989e6ee99366",
+      "causeSealIds": [
+        "811d0305e67ce73b5902135bb8662e7ee31e6efaf98852b0ad5de8d1f0c15007",
+        "fdaeaeb9f3694421a8776649f58ec4e89962ae6f95fc3249b8ca4b6a93b6e3ed"
+      ]
+    },
+    {
+      "key": "design-battlefield",
+      "path": "docs/structured-battlefield-definition-design.md",
+      "parents": [
+        "authority-selectable-envelope",
+        "authority-battlefield",
+        "design-selectable-envelope"
+      ],
+      "scope": "Accepted authoring/compatibility, compiler, projection and legacy mapping design; no full project acceptance claim.",
+      "ref": "all-tests-20261007/design-battlefield",
+      "test": false,
+      "sha256": "33446945f3b3b7c441123a52e95c69ac61891a11643c2f2e3f6432828569b113",
+      "sealId": "2f480bb1fcfa37434882f1059fff78b0914a9e39bb321f7aa8fea442c485673d",
+      "causeSealIds": [
+        "a1e2179abb3dfcf09dd5104e3e38a6a7901c49e86604c37411b6989e6ee99366",
+        "a65c9b0a1bf9589c18778e7cf7ca7985d7ccde11c3a36c7e0b5db5874f34c7b8",
+        "fdaeaeb9f3694421a8776649f58ec4e89962ae6f95fc3249b8ca4b6a93b6e3ed"
+      ]
+    },
+    {
+      "key": "contract-selectable-envelope",
+      "path": "packages/shared/src/structured-assets.ts",
+      "parents": [
+        "authority-selectable-envelope",
+        "design-selectable-envelope"
+      ],
+      "scope": "Typed envelope, disclosure, claim receipt and registered compiler contracts used by battlefield readiness.",
+      "ref": "all-tests-20261007/contract-selectable-envelope",
+      "test": false,
+      "sha256": "088c275e0d54a26be21451a23d5a6376ca7bf342e664d4b4370443e51643883c",
+      "sealId": "5a84c8424772e34504daf62f2737bb29646a8762a07c26db984696686be56e3c",
+      "causeSealIds": [
+        "a1e2179abb3dfcf09dd5104e3e38a6a7901c49e86604c37411b6989e6ee99366",
+        "fdaeaeb9f3694421a8776649f58ec4e89962ae6f95fc3249b8ca4b6a93b6e3ed"
+      ]
+    },
+    {
+      "key": "contract-battlefield-base",
+      "path": "packages/shared/src/battlefield.ts",
+      "parents": [
+        "authority-battlefield",
+        "design-battlefield"
+      ],
+      "scope": "Battlefield preset/instance schemas, coefficient vocabulary and deterministic system seed definitions.",
+      "ref": "all-tests-20261007/contract-battlefield-base",
+      "test": false,
+      "sha256": "13d20841ee041f60e17b393cdd255b562383e6419778dc0a81bcca77711c632a",
+      "sealId": "994193c651098e6afeaf3210c420c9c03e9c474e149387c381f354b01534d551",
+      "causeSealIds": [
+        "2f480bb1fcfa37434882f1059fff78b0914a9e39bb321f7aa8fea442c485673d",
+        "a65c9b0a1bf9589c18778e7cf7ca7985d7ccde11c3a36c7e0b5db5874f34c7b8"
+      ]
+    },
+    {
+      "key": "implementation-battlefield-compiler",
+      "path": "packages/shared/src/structured-battlefield.ts",
+      "parents": [
+        "authority-battlefield",
+        "design-battlefield",
+        "contract-selectable-envelope",
+        "contract-battlefield-base"
+      ],
+      "scope": "Schema reference checks, deterministic legacy mapping, projection filtering, ready compiler requirements and frozen instance compilation.",
+      "ref": "all-tests-20261007/implementation-battlefield-compiler",
+      "test": false,
+      "sha256": "d8fb37c1c5ef9957267e2b66673d8810be88f01fd9da5bc9fefab47ad0524b6e",
+      "sealId": "54f969c54c0489a5a5b7f3cb3fd3d97c4af5833c1d71d0e4d26649e4886db6d5",
+      "causeSealIds": [
+        "2f480bb1fcfa37434882f1059fff78b0914a9e39bb321f7aa8fea442c485673d",
+        "5a84c8424772e34504daf62f2737bb29646a8762a07c26db984696686be56e3c",
+        "994193c651098e6afeaf3210c420c9c03e9c474e149387c381f354b01534d551",
+        "a65c9b0a1bf9589c18778e7cf7ca7985d7ccde11c3a36c7e0b5db5874f34c7b8"
+      ]
+    },
+    {
+      "key": "implementation-battlefield-entry-world",
+      "path": "packages/shared/src/battle-engine.ts",
+      "parents": [
+        "authority-battlefield",
+        "design-battlefield",
+        "implementation-battlefield-compiler"
+      ],
+      "scope": "Only createBattleState initial semantic roots use exact authored entry areas; other engine resolution/pacing rules are not claimed.",
+      "ref": "all-tests-20261007/implementation-battlefield-entry-world",
+      "test": false,
+      "sha256": "c03ba6dff1f53ee4edaa86f21ceee74b82a307a993d875706da10400123c35f6",
+      "sealId": "d4539deffcf82b069039f4c463fd804c14f84e6ce76355c8d58cdc5f6cd77c5e",
+      "causeSealIds": [
+        "2f480bb1fcfa37434882f1059fff78b0914a9e39bb321f7aa8fea442c485673d",
+        "54f969c54c0489a5a5b7f3cb3fd3d97c4af5833c1d71d0e4d26649e4886db6d5",
+        "a65c9b0a1bf9589c18778e7cf7ca7985d7ccde11c3a36c7e0b5db5874f34c7b8"
+      ]
+    },
+    {
+      "key": "implementation-selectable-generation-storage",
+      "path": "backend/src/repositories/asset-generations.ts",
+      "parents": [
+        "authority-selectable-envelope",
+        "design-selectable-envelope",
+        "v3"
+      ],
+      "scope": "Immutable append/current pointer/CAS and current V3 character guard, not every asset API behavior.",
+      "ref": "all-tests-20261007/implementation-selectable-generation-storage",
+      "test": false,
+      "sha256": "09e98c31f676bc8f30ae5bc53d70a0126b728d3990862bd6d28f2b48a74c4a34",
+      "sealId": "edd5470e342cb4a99acba56c04e5cc6fcbd0f25dd04ebb26045b3b35c908db21",
+      "causeSealIds": [
+        "480c02403f61dc6a9cd7d54861639b962dbc3bde86673481e02e0defc8415e17",
+        "a1e2179abb3dfcf09dd5104e3e38a6a7901c49e86604c37411b6989e6ee99366",
+        "fdaeaeb9f3694421a8776649f58ec4e89962ae6f95fc3249b8ca4b6a93b6e3ed"
+      ]
+    },
+    {
+      "key": "implementation-battlefield-generations",
+      "path": "backend/src/repositories/battlefield-assets-v2.ts",
+      "parents": [
+        "authority-battlefield",
+        "design-battlefield",
+        "authority-family-queue",
+        "authority-authoring-review",
+        "implementation-selectable-generation-storage",
+        "implementation-battlefield-compiler"
+      ],
+      "scope": "Battlefield attempts, expiry/current drift rejection, owner confirmation, media/import append and ready lookup.",
+      "ref": "all-tests-20261007/implementation-battlefield-generations",
+      "test": false,
+      "sha256": "21d2057b5613317783667c4ce4fcf1b1c0ae3d634d2e2c593ec5f0f303ce36cf",
+      "sealId": "b4c3e3bc530e4707194dbdbebead357c1ba366ce7e24ab1f4a8b5440b6686459",
+      "causeSealIds": [
+        "2f480bb1fcfa37434882f1059fff78b0914a9e39bb321f7aa8fea442c485673d",
+        "54f969c54c0489a5a5b7f3cb3fd3d97c4af5833c1d71d0e4d26649e4886db6d5",
+        "811d0305e67ce73b5902135bb8662e7ee31e6efaf98852b0ad5de8d1f0c15007",
+        "995d80276d4d54ad40871ddff2f44c1c96343282655f34a54af8f570ea1751b3",
+        "a65c9b0a1bf9589c18778e7cf7ca7985d7ccde11c3a36c7e0b5db5874f34c7b8",
+        "edd5470e342cb4a99acba56c04e5cc6fcbd0f25dd04ebb26045b3b35c908db21"
+      ]
+    },
+    {
+      "key": "implementation-battlefield-management",
+      "path": "backend/src/repositories/battlefields.ts",
+      "parents": [
+        "authority-battlefield",
+        "design-battlefield",
+        "implementation-battlefield-generations"
+      ],
+      "scope": "Public/owner management, ready selectors, explicit import/copy, deterministic system seed refresh; no live provider acceptance.",
+      "ref": "all-tests-20261007/implementation-battlefield-management",
+      "test": false,
+      "sha256": "de61a9c73abeb2ac8d055b98e0bd84ab433ce86c6b7c65a9ace0f37eb30e196a",
+      "sealId": "c6ae9384dbe1557c3adb9d94530a4ce2e5f3e025c14cca05f418fd9879f1745c",
+      "causeSealIds": [
+        "2f480bb1fcfa37434882f1059fff78b0914a9e39bb321f7aa8fea442c485673d",
+        "a65c9b0a1bf9589c18778e7cf7ca7985d7ccde11c3a36c7e0b5db5874f34c7b8",
+        "b4c3e3bc530e4707194dbdbebead357c1ba366ce7e24ab1f4a8b5440b6686459"
+      ]
+    },
+    {
+      "key": "implementation-battlefield-authoring",
+      "path": "backend/src/services/battlefield-authoring-service.ts",
+      "parents": [
+        "authority-battlefield",
+        "design-battlefield",
+        "contract-selectable-envelope",
+        "implementation-battlefield-compiler"
+      ],
+      "scope": "Imported/worker-produced envelope, public projection and validation for tested structured authoring paths; gap-fill product approval is not claimed.",
+      "ref": "all-tests-20261007/implementation-battlefield-authoring",
+      "test": false,
+      "sha256": "8ee2a2333b953657b706edaa8df6f7b7c4f8b075690b0bcdfe62d6190a239e90",
+      "sealId": "08e378322bfc5c7d21c1df48e50b51713fdf7cc429f0e2229de8ff2eba6bd8fb",
+      "causeSealIds": [
+        "2f480bb1fcfa37434882f1059fff78b0914a9e39bb321f7aa8fea442c485673d",
+        "54f969c54c0489a5a5b7f3cb3fd3d97c4af5833c1d71d0e4d26649e4886db6d5",
+        "5a84c8424772e34504daf62f2737bb29646a8762a07c26db984696686be56e3c",
+        "a65c9b0a1bf9589c18778e7cf7ca7985d7ccde11c3a36c7e0b5db5874f34c7b8"
+      ]
+    },
+    {
+      "key": "implementation-family-authoring-storage",
+      "path": "backend/src/repositories/family-authoring-jobs.ts",
+      "parents": [
+        "authority-family-queue",
+        "authority-authoring-review"
+      ],
+      "scope": "Local authoring job claim/status/outbox storage exercised by explicit deterministic fixture draining.",
+      "ref": "all-tests-20261007/implementation-family-authoring-storage",
+      "test": false,
+      "sha256": "805d7e7fe19669d052edb9eaddd4e15ef9924b15ca0b4658a5dac5ee1eb15675",
+      "sealId": "6c63641741bfa06c8297572a7f303fa9c44bb2690fbceb44eb750ea294251afa",
+      "causeSealIds": [
+        "811d0305e67ce73b5902135bb8662e7ee31e6efaf98852b0ad5de8d1f0c15007",
+        "995d80276d4d54ad40871ddff2f44c1c96343282655f34a54af8f570ea1751b3"
+      ]
+    },
+    {
+      "key": "implementation-family-authoring-worker",
+      "path": "backend/src/services/character-authoring-jobs.ts",
+      "parents": [
+        "authority-family-queue",
+        "authority-authoring-review",
+        "implementation-family-authoring-storage",
+        "implementation-battlefield-authoring"
+      ],
+      "scope": "Only battlefield-family local worker dispatch/failure/candidate hold exercised here; character legacy authoring is not authorized or validated.",
+      "ref": "all-tests-20261007/implementation-family-authoring-worker",
+      "test": false,
+      "sha256": "28a2ea81f173a2bc53827f0bdfeb38918dfdc32b561f67ae28d9132c66d41d66",
+      "sealId": "b6f48bb19b9fc3a71a5c0dd0371df7841f1f4bf52f0c80fe63136be3966bcce5",
+      "causeSealIds": [
+        "08e378322bfc5c7d21c1df48e50b51713fdf7cc429f0e2229de8ff2eba6bd8fb",
+        "6c63641741bfa06c8297572a7f303fa9c44bb2690fbceb44eb750ea294251afa",
+        "811d0305e67ce73b5902135bb8662e7ee31e6efaf98852b0ad5de8d1f0c15007",
+        "995d80276d4d54ad40871ddff2f44c1c96343282655f34a54af8f570ea1751b3"
+      ]
+    },
+    {
+      "key": "fixture-current-v3-trial-builder",
+      "path": "backend/src/repositories/local-v3-trial-characters.ts",
+      "parents": [
+        "v3",
+        "awareness"
+      ],
+      "scope": "Existing local candidate preparation fixture supporting ready V3 participants; production registration or paid acceptance is not claimed.",
+      "ref": "all-tests-20261007/fixture-current-v3-trial-builder",
+      "test": false,
+      "sha256": "fb3900e27e97f9ce9f7631bedb6dfaef3924730dfe3a456285e1956085fb8ad2",
+      "sealId": "1d4a090d290087e4f67ae0d4409ce6761cb5b01fb849e04298536b8f7ce8ddbb",
+      "causeSealIds": [
+        "1edf3239229665d39a55aee22af5148f4408f6c8dfea24ca200ae835af46e02d",
+        "480c02403f61dc6a9cd7d54861639b962dbc3bde86673481e02e0defc8415e17"
+      ]
+    },
+    {
+      "key": "fixture-neva-v3-envelope",
+      "path": "backend/src/fixtures/neva-v3.ts",
+      "parents": [
+        "v3"
+      ],
+      "scope": "Existing frozen valid V3 participant candidate used as fixture data; character naturalness is not claimed.",
+      "ref": "all-tests-20261007/fixture-neva-v3-envelope",
+      "test": false,
+      "sha256": "24858ab3dc4812fe09d62452373e782bfd76404f5edbf72aac1addbdc93d9de3",
+      "sealId": "63bbfc08658ea806c48180ea5e813d4e5cefa4539dcd673f92cfc83517589cce",
+      "causeSealIds": [
+        "480c02403f61dc6a9cd7d54861639b962dbc3bde86673481e02e0defc8415e17"
+      ]
+    },
+    {
+      "key": "implementation-battlefield-http",
+      "path": "backend/src/routes.ts",
+      "parents": [
+        "authority-battlefield",
+        "design-battlefield",
+        "authority-authoring-review",
+        "authority-family-queue",
+        "v3",
+        "implementation-battlefield-generations",
+        "implementation-battlefield-management",
+        "implementation-family-authoring-worker"
+      ],
+      "scope": "Only battlefield authoring/management/confirmation/media/copy and selected match creation HTTP paths exercised by the eight local cases.",
+      "ref": "all-tests-20261007/implementation-battlefield-http",
+      "test": false,
+      "sha256": "1eb38c2f6f60364a423c81f3346116d8f4db68e5aaf67374604fdd54ff5dece4",
+      "sealId": "9fa712f404ae85a3404d6d983617c270c093775d35987a1f6ced6a8b3dd1adb3",
+      "causeSealIds": [
+        "2f480bb1fcfa37434882f1059fff78b0914a9e39bb321f7aa8fea442c485673d",
+        "480c02403f61dc6a9cd7d54861639b962dbc3bde86673481e02e0defc8415e17",
+        "811d0305e67ce73b5902135bb8662e7ee31e6efaf98852b0ad5de8d1f0c15007",
+        "995d80276d4d54ad40871ddff2f44c1c96343282655f34a54af8f570ea1751b3",
+        "a65c9b0a1bf9589c18778e7cf7ca7985d7ccde11c3a36c7e0b5db5874f34c7b8",
+        "b4c3e3bc530e4707194dbdbebead357c1ba366ce7e24ab1f4a8b5440b6686459",
+        "b6f48bb19b9fc3a71a5c0dd0371df7841f1f4bf52f0c80fe63136be3966bcce5",
+        "c6ae9384dbe1557c3adb9d94530a4ce2e5f3e025c14cca05f418fd9879f1745c"
+      ]
+    },
+    {
+      "key": "implementation-battlefield-battle-binding",
+      "path": "backend/src/services/battle-service.ts",
+      "parents": [
+        "authority-battlefield",
+        "design-battlefield",
+        "v3",
+        "usage",
+        "timing",
+        "awareness",
+        "implementation-battlefield-compiler",
+        "implementation-selectable-generation-storage",
+        "implementation-battlefield-generations",
+        "implementation-battlefield-management"
+      ],
+      "scope": "Only new ready V3/awareness battle creation and exact battlefield generation/compiler binding; no all battle behavior or old guidance proof equivalence claim.",
+      "ref": "all-tests-20261007/implementation-battlefield-battle-binding",
+      "test": false,
+      "sha256": "0c1982e7e9a0ed28a36654be55be3bfbd25fbb0ac445bcbb73c364bed91440fc",
+      "sealId": "c0175f9303505430027027820ddaded13c8fee1e5f05b779230d2a73a96fc4de",
+      "causeSealIds": [
+        "1edf3239229665d39a55aee22af5148f4408f6c8dfea24ca200ae835af46e02d",
+        "2f480bb1fcfa37434882f1059fff78b0914a9e39bb321f7aa8fea442c485673d",
+        "480c02403f61dc6a9cd7d54861639b962dbc3bde86673481e02e0defc8415e17",
+        "4a236b55e9ad9e4aa54eb2c6bbe9d77e0a318881ba8328363505153d16e151dd",
+        "54f969c54c0489a5a5b7f3cb3fd3d97c4af5833c1d71d0e4d26649e4886db6d5",
+        "7f8ac50262580d0a94e13d82627be496f8e2e8fd059c194c4d93d84d2af28f43",
+        "a65c9b0a1bf9589c18778e7cf7ca7985d7ccde11c3a36c7e0b5db5874f34c7b8",
+        "b4c3e3bc530e4707194dbdbebead357c1ba366ce7e24ab1f4a8b5440b6686459",
+        "c6ae9384dbe1557c3adb9d94530a4ce2e5f3e025c14cca05f418fd9879f1745c",
+        "edd5470e342cb4a99acba56c04e5cc6fcbd0f25dd04ebb26045b3b35c908db21"
+      ]
+    },
+    {
+      "key": "structured-battlefield",
+      "path": "packages/shared/src/structured-battlefield.test.ts",
+      "parents": [
+        "authority-battlefield",
+        "design-battlefield",
+        "authority-selectable-envelope",
+        "contract-selectable-envelope",
+        "implementation-battlefield-compiler",
+        "implementation-battlefield-entry-world"
+      ],
+      "scope": "Seven local schema/mapping/compiler/projection/initial-entry/readiness cases, not model naturalness or full field evolution acceptance.",
+      "ref": "verification/structured-battlefield-20261007",
+      "test": true,
+      "sha256": "2665db07e4c55cdb57f6093bb9eb258a089abfd0ff0a27e0e90fd1ec2cfde8b1",
+      "sealId": "62f33ca80c506f20cc271b230a3b8e92a4bcf238ac947ea8045e642d930772d5",
+      "causeSealIds": [
+        "2f480bb1fcfa37434882f1059fff78b0914a9e39bb321f7aa8fea442c485673d",
+        "54f969c54c0489a5a5b7f3cb3fd3d97c4af5833c1d71d0e4d26649e4886db6d5",
+        "5a84c8424772e34504daf62f2737bb29646a8762a07c26db984696686be56e3c",
+        "a65c9b0a1bf9589c18778e7cf7ca7985d7ccde11c3a36c7e0b5db5874f34c7b8",
+        "d4539deffcf82b069039f4c463fd804c14f84e6ce76355c8d58cdc5f6cd77c5e",
+        "fdaeaeb9f3694421a8776649f58ec4e89962ae6f95fc3249b8ca4b6a93b6e3ed"
+      ]
+    },
+    {
+      "key": "battlefield-http-acceptance",
+      "path": "backend/src/routes-structured-battlefield-acceptance.test.ts",
+      "parents": [
+        "authority-battlefield",
+        "design-battlefield",
+        "authority-selectable-envelope",
+        "design-selectable-envelope",
+        "authority-authoring-review",
+        "authority-family-queue",
+        "v3",
+        "usage",
+        "timing",
+        "awareness",
+        "implementation-battlefield-generations",
+        "implementation-battlefield-management",
+        "implementation-battlefield-authoring",
+        "implementation-family-authoring-worker",
+        "implementation-battlefield-http",
+        "implementation-battlefield-battle-binding",
+        "fixture-current-v3-trial-builder",
+        "fixture-neva-v3-envelope"
+      ],
+      "scope": "Eight local actual HTTP/persistence cases; no deployment, real provider/usage, paid media or broad migration acceptance.",
+      "ref": "verification/battlefield-http-acceptance-20261007",
+      "test": true,
+      "sha256": "c5ed65efc024fe12051ba4e52bbbacd07b857eee4215a3931b46c26967587558",
+      "sealId": "0524ddb6903582d4b63e5715b59638833e319d0cde74cbfe4deeab7547ed8066",
+      "causeSealIds": [
+        "08e378322bfc5c7d21c1df48e50b51713fdf7cc429f0e2229de8ff2eba6bd8fb",
+        "1d4a090d290087e4f67ae0d4409ce6761cb5b01fb849e04298536b8f7ce8ddbb",
+        "1edf3239229665d39a55aee22af5148f4408f6c8dfea24ca200ae835af46e02d",
+        "2f480bb1fcfa37434882f1059fff78b0914a9e39bb321f7aa8fea442c485673d",
+        "480c02403f61dc6a9cd7d54861639b962dbc3bde86673481e02e0defc8415e17",
+        "4a236b55e9ad9e4aa54eb2c6bbe9d77e0a318881ba8328363505153d16e151dd",
+        "63bbfc08658ea806c48180ea5e813d4e5cefa4539dcd673f92cfc83517589cce",
+        "7f8ac50262580d0a94e13d82627be496f8e2e8fd059c194c4d93d84d2af28f43",
+        "811d0305e67ce73b5902135bb8662e7ee31e6efaf98852b0ad5de8d1f0c15007",
+        "995d80276d4d54ad40871ddff2f44c1c96343282655f34a54af8f570ea1751b3",
+        "9fa712f404ae85a3404d6d983617c270c093775d35987a1f6ced6a8b3dd1adb3",
+        "a1e2179abb3dfcf09dd5104e3e38a6a7901c49e86604c37411b6989e6ee99366",
+        "a65c9b0a1bf9589c18778e7cf7ca7985d7ccde11c3a36c7e0b5db5874f34c7b8",
+        "b4c3e3bc530e4707194dbdbebead357c1ba366ce7e24ab1f4a8b5440b6686459",
+        "b6f48bb19b9fc3a71a5c0dd0371df7841f1f4bf52f0c80fe63136be3966bcce5",
+        "c0175f9303505430027027820ddaded13c8fee1e5f05b779230d2a73a96fc4de",
+        "c6ae9384dbe1557c3adb9d94530a4ce2e5f3e025c14cca05f418fd9879f1745c",
+        "fdaeaeb9f3694421a8776649f58ec4e89962ae6f95fc3249b8ca4b6a93b6e3ed"
+      ]
+    },
+    {
+      "key": "system-battlefield-seed",
+      "path": "backend/src/repositories/system-battlefield-seed.test.ts",
+      "parents": [
+        "authority-battlefield",
+        "design-battlefield",
+        "implementation-selectable-generation-storage",
+        "implementation-battlefield-generations",
+        "implementation-battlefield-management",
+        "implementation-battlefield-authoring",
+        "implementation-battlefield-compiler"
+      ],
+      "scope": "One deterministic maintained system-seed refresh appends once and replays idempotently; user legacy bulk upgrade is not authorized.",
+      "ref": "verification/system-battlefield-seed-20261007",
+      "test": true,
+      "sha256": "aa68b202370566bc42b25d9dddaafb277c9f5d349b1737002d901a1afd51e1c4",
+      "sealId": "e43609b39161b832c7cde04e7d655bc21ff48b6c7011d3b5deccccc6905e3107",
+      "causeSealIds": [
+        "08e378322bfc5c7d21c1df48e50b51713fdf7cc429f0e2229de8ff2eba6bd8fb",
+        "2f480bb1fcfa37434882f1059fff78b0914a9e39bb321f7aa8fea442c485673d",
+        "54f969c54c0489a5a5b7f3cb3fd3d97c4af5833c1d71d0e4d26649e4886db6d5",
+        "a65c9b0a1bf9589c18778e7cf7ca7985d7ccde11c3a36c7e0b5db5874f34c7b8",
+        "b4c3e3bc530e4707194dbdbebead357c1ba366ce7e24ab1f4a8b5440b6686459",
+        "c6ae9384dbe1557c3adb9d94530a4ce2e5f3e025c14cca05f418fd9879f1745c",
+        "edd5470e342cb4a99acba56c04e5cc6fcbd0f25dd04ebb26045b3b35c908db21"
+      ]
+    }
+  ],
+  "diagnostic": {
+    "tests": 16,
+    "pass": 16,
+    "fail": 0,
+    "skip": 0
+  }
+}

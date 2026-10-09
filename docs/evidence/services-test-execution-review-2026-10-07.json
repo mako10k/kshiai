@@ -1,0 +1,1726 @@
+{
+  "schema": "kshiai/services-test-execution-safety/v1",
+  "scope": [
+    "backend/src/services/**/*.test.ts",
+    "backend/src/routes-cutover-http.test.ts"
+  ],
+  "count": 67,
+  "readOnly": true,
+  "testExecutionPerformed": false,
+  "externalContactPerformed": false,
+  "paidCallsPerformed": false,
+  "plannedPreloader": {
+    "properties": [
+      "per-process fallback DATABASE_PATH",
+      "DATABASE_URL=\"\"",
+      "NODE_ENV=\"test\""
+    ],
+    "mustNot": "import config.ts or db.ts",
+    "purpose": "establish ownership before test module evaluation while allowing test-local env setup"
+  },
+  "findings": [
+    "No unmocked non-loopback external call was found in the 67 current test paths.",
+    "Cloud Tasks, metadata, awareness SDK, and HTTP-like calls use injected fetchers, node:test fetch mocks, fixture callbacks, or local loopback servers.",
+    "30 tests assign a test-owned DATABASE_PATH before dynamic db import; the remaining tests may use the per-process fallback if their service path opens SQLite.",
+    "No direct static db.js import was found in the test files; transitive service imports remain dependent on the preloader establishing env first.",
+    "No executable skip/todo/only conditions were found."
+  ],
+  "blockingUnmockedExternalPaths": [],
+  "stopIf": [
+    "Any test path reaches a non-loopback URL through ambient globalThis.fetch rather than the listed seam.",
+    "config/db is imported before the preloader sets DATABASE_PATH, or readback shows the owner/default database path."
+  ],
+  "entries": [
+    {
+      "testPath": "backend/src/services/authoring-task-dispatch.test.ts",
+      "nonLoopbackNetwork": {
+        "status": "injected",
+        "evidence": "enqueue function receives fetchImpl; metadata and Cloud Tasks URLs are called only through that injected function.",
+        "nonLoopbackCall": "none"
+      },
+      "paidCallRisk": "none observed; provider credentials/routes are test values and physical seams are mocked, injected, or not called.",
+      "database": {
+        "mode": "fallback-possible",
+        "evidence": "No test-local DATABASE_PATH assignment found; if the service/repository path opens SQLite, it uses the per-process fallback path supplied by the planned preloader.",
+        "preloaderEffect": "Safe from the owner-specified DB if fallback path is created before test module loading; writes may persist across tests sharing the same process fallback and require per-process isolation/cleanup.",
+        "defaultDbRisk": "no owner/default DB under stated preloader, but shared fallback contamination is possible"
+      },
+      "environmentAssumptions": [
+        "No test-local environment override detected; relies on process-level fallback and config defaults."
+      ],
+      "skipConditions": {
+        "markers": [],
+        "evidence": "No executable skip/todo/only marker found by static search."
+      },
+      "stopCondition": "No per-test stop condition required for external contact because no unmocked non-loopback call was found; stop the diagnostic if a fallback/preloader readback shows an owner DB path or any transport URL outside injected/mock seams.",
+      "confidence": 0.9
+    },
+    {
+      "testPath": "backend/src/services/awareness-adjudication-guard.test.ts",
+      "nonLoopbackNetwork": {
+        "status": "mocked_or_not_called",
+        "evidence": "Static inspection found no unmocked non-loopback transport call in the exercised test path; provider/task/HTTP seams are fixtures or callbacks where present.",
+        "nonLoopbackCall": "none"
+      },
+      "paidCallRisk": "none observed; provider credentials/routes are test values and physical seams are mocked, injected, or not called.",
+      "database": {
+        "mode": "test-owned-temp",
+        "evidence": "Sets DATABASE_URL=\"\" and a per-test DATABASE_PATH before dynamic db import; initializes/writes SQLite as part of the test.",
+        "preloaderEffect": "The fallback preloader must set its path before module loading, but this test deliberately overrides DATABASE_PATH before its dynamic db import; its own temp path should win unless config/db was imported earlier by another preload.",
+        "defaultDbRisk": "blocked by test-owned path when config/db has not been imported earlier"
+      },
+      "environmentAssumptions": [
+        "DATABASE_URL set by test to \"\"",
+        "DATABASE_PATH set by test to join(directory, \"test.db\")",
+        "AUTH_PROVIDER set by test to \"legacy\""
+      ],
+      "skipConditions": {
+        "markers": [],
+        "evidence": "No executable skip/todo/only marker found by static search."
+      },
+      "stopCondition": "No per-test stop condition required for external contact because no unmocked non-loopback call was found; stop the diagnostic if a fallback/preloader readback shows an owner DB path or any transport URL outside injected/mock seams.",
+      "confidence": 0.8
+    },
+    {
+      "testPath": "backend/src/services/awareness-battle-creation.test.ts",
+      "nonLoopbackNetwork": {
+        "status": "mocked",
+        "evidence": "node:test mock.method(globalThis, \"fetch\") supplies responses and asserts wire data.",
+        "nonLoopbackCall": "none"
+      },
+      "paidCallRisk": "none observed; provider credentials/routes are test values and physical seams are mocked, injected, or not called.",
+      "database": {
+        "mode": "test-owned-temp",
+        "evidence": "Sets DATABASE_URL=\"\" and a per-test DATABASE_PATH before dynamic db import; initializes/writes SQLite as part of the test.",
+        "preloaderEffect": "The fallback preloader must set its path before module loading, but this test deliberately overrides DATABASE_PATH before its dynamic db import; its own temp path should win unless config/db was imported earlier by another preload.",
+        "defaultDbRisk": "blocked by test-owned path when config/db has not been imported earlier"
+      },
+      "environmentAssumptions": [
+        "DATABASE_URL set by test to \"\"",
+        "DATABASE_PATH set by test to join(directory, \"test.db\")",
+        "AUTH_PROVIDER set by test to \"legacy\""
+      ],
+      "skipConditions": {
+        "markers": [],
+        "evidence": "No executable skip/todo/only marker found by static search."
+      },
+      "stopCondition": "No per-test stop condition required for external contact because no unmocked non-loopback call was found; stop the diagnostic if a fallback/preloader readback shows an owner DB path or any transport URL outside injected/mock seams.",
+      "confidence": 0.9
+    },
+    {
+      "testPath": "backend/src/services/awareness-battle-service.test.ts",
+      "nonLoopbackNetwork": {
+        "status": "mocked_or_not_called",
+        "evidence": "Static inspection found no unmocked non-loopback transport call in the exercised test path; provider/task/HTTP seams are fixtures or callbacks where present.",
+        "nonLoopbackCall": "none"
+      },
+      "paidCallRisk": "none observed; provider credentials/routes are test values and physical seams are mocked, injected, or not called.",
+      "database": {
+        "mode": "test-owned-temp",
+        "evidence": "Sets DATABASE_URL=\"\" and a per-test DATABASE_PATH before dynamic db import; initializes/writes SQLite as part of the test.",
+        "preloaderEffect": "The fallback preloader must set its path before module loading, but this test deliberately overrides DATABASE_PATH before its dynamic db import; its own temp path should win unless config/db was imported earlier by another preload.",
+        "defaultDbRisk": "blocked by test-owned path when config/db has not been imported earlier"
+      },
+      "environmentAssumptions": [
+        "DATABASE_URL set by test to \"\"",
+        "AUTH_PROVIDER set by test to \"legacy\"",
+        "DATABASE_PATH set by test to join(mkdtempSync(join(tmpdir(), \"awareness-battle-service-\")), \"test.db\")"
+      ],
+      "skipConditions": {
+        "markers": [],
+        "evidence": "No executable skip/todo/only marker found by static search."
+      },
+      "stopCondition": "No per-test stop condition required for external contact because no unmocked non-loopback call was found; stop the diagnostic if a fallback/preloader readback shows an owner DB path or any transport URL outside injected/mock seams.",
+      "confidence": 0.8
+    },
+    {
+      "testPath": "backend/src/services/awareness-clock.test.ts",
+      "nonLoopbackNetwork": {
+        "status": "mocked_or_not_called",
+        "evidence": "Static inspection found no unmocked non-loopback transport call in the exercised test path; provider/task/HTTP seams are fixtures or callbacks where present.",
+        "nonLoopbackCall": "none"
+      },
+      "paidCallRisk": "none observed; provider credentials/routes are test values and physical seams are mocked, injected, or not called.",
+      "database": {
+        "mode": "fallback-possible",
+        "evidence": "No test-local DATABASE_PATH assignment found; if the service/repository path opens SQLite, it uses the per-process fallback path supplied by the planned preloader.",
+        "preloaderEffect": "Safe from the owner-specified DB if fallback path is created before test module loading; writes may persist across tests sharing the same process fallback and require per-process isolation/cleanup.",
+        "defaultDbRisk": "no owner/default DB under stated preloader, but shared fallback contamination is possible"
+      },
+      "environmentAssumptions": [
+        "No test-local environment override detected; relies on process-level fallback and config defaults."
+      ],
+      "skipConditions": {
+        "markers": [],
+        "evidence": "No executable skip/todo/only marker found by static search."
+      },
+      "stopCondition": "No per-test stop condition required for external contact because no unmocked non-loopback call was found; stop the diagnostic if a fallback/preloader readback shows an owner DB path or any transport URL outside injected/mock seams.",
+      "confidence": 0.8
+    },
+    {
+      "testPath": "backend/src/services/awareness-context.test.ts",
+      "nonLoopbackNetwork": {
+        "status": "mocked_or_not_called",
+        "evidence": "Static inspection found no unmocked non-loopback transport call in the exercised test path; provider/task/HTTP seams are fixtures or callbacks where present.",
+        "nonLoopbackCall": "none"
+      },
+      "paidCallRisk": "none observed; provider credentials/routes are test values and physical seams are mocked, injected, or not called.",
+      "database": {
+        "mode": "fallback-possible",
+        "evidence": "No test-local DATABASE_PATH assignment found; if the service/repository path opens SQLite, it uses the per-process fallback path supplied by the planned preloader.",
+        "preloaderEffect": "Safe from the owner-specified DB if fallback path is created before test module loading; writes may persist across tests sharing the same process fallback and require per-process isolation/cleanup.",
+        "defaultDbRisk": "no owner/default DB under stated preloader, but shared fallback contamination is possible"
+      },
+      "environmentAssumptions": [
+        "No test-local environment override detected; relies on process-level fallback and config defaults."
+      ],
+      "skipConditions": {
+        "markers": [],
+        "evidence": "No executable skip/todo/only marker found by static search."
+      },
+      "stopCondition": "No per-test stop condition required for external contact because no unmocked non-loopback call was found; stop the diagnostic if a fallback/preloader readback shows an owner DB path or any transport URL outside injected/mock seams.",
+      "confidence": 0.8
+    },
+    {
+      "testPath": "backend/src/services/awareness-creation-encounter.test.ts",
+      "nonLoopbackNetwork": {
+        "status": "mocked",
+        "evidence": "node:test mock.method(globalThis, \"fetch\") supplies responses and asserts wire data.",
+        "nonLoopbackCall": "none"
+      },
+      "paidCallRisk": "none observed; provider credentials/routes are test values and physical seams are mocked, injected, or not called.",
+      "database": {
+        "mode": "test-owned-temp",
+        "evidence": "Sets DATABASE_URL=\"\" and a per-test DATABASE_PATH before dynamic db import; initializes/writes SQLite as part of the test.",
+        "preloaderEffect": "The fallback preloader must set its path before module loading, but this test deliberately overrides DATABASE_PATH before its dynamic db import; its own temp path should win unless config/db was imported earlier by another preload.",
+        "defaultDbRisk": "blocked by test-owned path when config/db has not been imported earlier"
+      },
+      "environmentAssumptions": [
+        "DATABASE_URL set by test to \"\"",
+        "DATABASE_PATH set by test to join(directory, \"test.db\")",
+        "AUTH_PROVIDER set by test to \"legacy\""
+      ],
+      "skipConditions": {
+        "markers": [],
+        "evidence": "No executable skip/todo/only marker found by static search."
+      },
+      "stopCondition": "No per-test stop condition required for external contact because no unmocked non-loopback call was found; stop the diagnostic if a fallback/preloader readback shows an owner DB path or any transport URL outside injected/mock seams.",
+      "confidence": 0.9
+    },
+    {
+      "testPath": "backend/src/services/awareness-execution.test.ts",
+      "nonLoopbackNetwork": {
+        "status": "mocked_or_not_called",
+        "evidence": "Static inspection found no unmocked non-loopback transport call in the exercised test path; provider/task/HTTP seams are fixtures or callbacks where present.",
+        "nonLoopbackCall": "none"
+      },
+      "paidCallRisk": "none observed; provider credentials/routes are test values and physical seams are mocked, injected, or not called.",
+      "database": {
+        "mode": "test-owned-temp",
+        "evidence": "Sets DATABASE_URL=\"\" and a per-test DATABASE_PATH before dynamic db import; initializes/writes SQLite as part of the test.",
+        "preloaderEffect": "The fallback preloader must set its path before module loading, but this test deliberately overrides DATABASE_PATH before its dynamic db import; its own temp path should win unless config/db was imported earlier by another preload.",
+        "defaultDbRisk": "blocked by test-owned path when config/db has not been imported earlier"
+      },
+      "environmentAssumptions": [
+        "DATABASE_URL set by test to \"\"",
+        "DATABASE_PATH set by test to join(directory, \"test.db\")",
+        "AUTH_PROVIDER set by test to \"legacy\""
+      ],
+      "skipConditions": {
+        "markers": [],
+        "evidence": "No executable skip/todo/only marker found by static search."
+      },
+      "stopCondition": "No per-test stop condition required for external contact because no unmocked non-loopback call was found; stop the diagnostic if a fallback/preloader readback shows an owner DB path or any transport URL outside injected/mock seams.",
+      "confidence": 0.8
+    },
+    {
+      "testPath": "backend/src/services/awareness-expression-commit.test.ts",
+      "nonLoopbackNetwork": {
+        "status": "mocked_or_not_called",
+        "evidence": "Static inspection found no unmocked non-loopback transport call in the exercised test path; provider/task/HTTP seams are fixtures or callbacks where present.",
+        "nonLoopbackCall": "none"
+      },
+      "paidCallRisk": "none observed; provider credentials/routes are test values and physical seams are mocked, injected, or not called.",
+      "database": {
+        "mode": "fallback-possible",
+        "evidence": "No test-local DATABASE_PATH assignment found; if the service/repository path opens SQLite, it uses the per-process fallback path supplied by the planned preloader.",
+        "preloaderEffect": "Safe from the owner-specified DB if fallback path is created before test module loading; writes may persist across tests sharing the same process fallback and require per-process isolation/cleanup.",
+        "defaultDbRisk": "no owner/default DB under stated preloader, but shared fallback contamination is possible"
+      },
+      "environmentAssumptions": [
+        "No test-local environment override detected; relies on process-level fallback and config defaults."
+      ],
+      "skipConditions": {
+        "markers": [],
+        "evidence": "No executable skip/todo/only marker found by static search."
+      },
+      "stopCondition": "No per-test stop condition required for external contact because no unmocked non-loopback call was found; stop the diagnostic if a fallback/preloader readback shows an owner DB path or any transport URL outside injected/mock seams.",
+      "confidence": 0.8
+    },
+    {
+      "testPath": "backend/src/services/awareness-narration-claim-snapshot.test.ts",
+      "nonLoopbackNetwork": {
+        "status": "mocked_or_not_called",
+        "evidence": "Static inspection found no unmocked non-loopback transport call in the exercised test path; provider/task/HTTP seams are fixtures or callbacks where present.",
+        "nonLoopbackCall": "none"
+      },
+      "paidCallRisk": "none observed; provider credentials/routes are test values and physical seams are mocked, injected, or not called.",
+      "database": {
+        "mode": "fallback-possible",
+        "evidence": "No test-local DATABASE_PATH assignment found; if the service/repository path opens SQLite, it uses the per-process fallback path supplied by the planned preloader.",
+        "preloaderEffect": "Safe from the owner-specified DB if fallback path is created before test module loading; writes may persist across tests sharing the same process fallback and require per-process isolation/cleanup.",
+        "defaultDbRisk": "no owner/default DB under stated preloader, but shared fallback contamination is possible"
+      },
+      "environmentAssumptions": [
+        "No test-local environment override detected; relies on process-level fallback and config defaults."
+      ],
+      "skipConditions": {
+        "markers": [],
+        "evidence": "No executable skip/todo/only marker found by static search."
+      },
+      "stopCondition": "No per-test stop condition required for external contact because no unmocked non-loopback call was found; stop the diagnostic if a fallback/preloader readback shows an owner DB path or any transport URL outside injected/mock seams.",
+      "confidence": 0.8
+    },
+    {
+      "testPath": "backend/src/services/awareness-narration-continuation.test.ts",
+      "nonLoopbackNetwork": {
+        "status": "mocked_or_not_called",
+        "evidence": "Static inspection found no unmocked non-loopback transport call in the exercised test path; provider/task/HTTP seams are fixtures or callbacks where present.",
+        "nonLoopbackCall": "none"
+      },
+      "paidCallRisk": "none observed; provider credentials/routes are test values and physical seams are mocked, injected, or not called.",
+      "database": {
+        "mode": "test-owned-temp",
+        "evidence": "Sets DATABASE_URL=\"\" and a per-test DATABASE_PATH before dynamic db import; initializes/writes SQLite as part of the test.",
+        "preloaderEffect": "The fallback preloader must set its path before module loading, but this test deliberately overrides DATABASE_PATH before its dynamic db import; its own temp path should win unless config/db was imported earlier by another preload.",
+        "defaultDbRisk": "blocked by test-owned path when config/db has not been imported earlier"
+      },
+      "environmentAssumptions": [
+        "DATABASE_URL set by test to \"\"",
+        "AUTH_PROVIDER set by test to \"legacy\"",
+        "DATABASE_PATH set by test to databasePath"
+      ],
+      "skipConditions": {
+        "markers": [],
+        "evidence": "No executable skip/todo/only marker found by static search."
+      },
+      "stopCondition": "No per-test stop condition required for external contact because no unmocked non-loopback call was found; stop the diagnostic if a fallback/preloader readback shows an owner DB path or any transport URL outside injected/mock seams.",
+      "confidence": 0.8
+    },
+    {
+      "testPath": "backend/src/services/awareness-narration-event-storage.test.ts",
+      "nonLoopbackNetwork": {
+        "status": "mocked_or_not_called",
+        "evidence": "Static inspection found no unmocked non-loopback transport call in the exercised test path; provider/task/HTTP seams are fixtures or callbacks where present.",
+        "nonLoopbackCall": "none"
+      },
+      "paidCallRisk": "none observed; provider credentials/routes are test values and physical seams are mocked, injected, or not called.",
+      "database": {
+        "mode": "test-owned-temp",
+        "evidence": "Sets DATABASE_URL=\"\" and a per-test DATABASE_PATH before dynamic db import; initializes/writes SQLite as part of the test.",
+        "preloaderEffect": "The fallback preloader must set its path before module loading, but this test deliberately overrides DATABASE_PATH before its dynamic db import; its own temp path should win unless config/db was imported earlier by another preload.",
+        "defaultDbRisk": "blocked by test-owned path when config/db has not been imported earlier"
+      },
+      "environmentAssumptions": [
+        "DATABASE_URL set by test to \"\"",
+        "DATABASE_PATH set by test to join(mkdtempSync(join(tmpdir(), \"narration-event-\")), \"test.db\")"
+      ],
+      "skipConditions": {
+        "markers": [],
+        "evidence": "No executable skip/todo/only marker found by static search."
+      },
+      "stopCondition": "No per-test stop condition required for external contact because no unmocked non-loopback call was found; stop the diagnostic if a fallback/preloader readback shows an owner DB path or any transport URL outside injected/mock seams.",
+      "confidence": 0.8
+    },
+    {
+      "testPath": "backend/src/services/awareness-narration-queue.test.ts",
+      "nonLoopbackNetwork": {
+        "status": "mocked_or_not_called",
+        "evidence": "Static inspection found no unmocked non-loopback transport call in the exercised test path; provider/task/HTTP seams are fixtures or callbacks where present.",
+        "nonLoopbackCall": "none"
+      },
+      "paidCallRisk": "none observed; provider credentials/routes are test values and physical seams are mocked, injected, or not called.",
+      "database": {
+        "mode": "fallback-possible",
+        "evidence": "No test-local DATABASE_PATH assignment found; if the service/repository path opens SQLite, it uses the per-process fallback path supplied by the planned preloader.",
+        "preloaderEffect": "Safe from the owner-specified DB if fallback path is created before test module loading; writes may persist across tests sharing the same process fallback and require per-process isolation/cleanup.",
+        "defaultDbRisk": "no owner/default DB under stated preloader, but shared fallback contamination is possible"
+      },
+      "environmentAssumptions": [
+        "No test-local environment override detected; relies on process-level fallback and config defaults."
+      ],
+      "skipConditions": {
+        "markers": [],
+        "evidence": "No executable skip/todo/only marker found by static search."
+      },
+      "stopCondition": "No per-test stop condition required for external contact because no unmocked non-loopback call was found; stop the diagnostic if a fallback/preloader readback shows an owner DB path or any transport URL outside injected/mock seams.",
+      "confidence": 0.8
+    },
+    {
+      "testPath": "backend/src/services/awareness-narration-urgency.test.ts",
+      "nonLoopbackNetwork": {
+        "status": "mocked_or_not_called",
+        "evidence": "Static inspection found no unmocked non-loopback transport call in the exercised test path; provider/task/HTTP seams are fixtures or callbacks where present.",
+        "nonLoopbackCall": "none"
+      },
+      "paidCallRisk": "none observed; provider credentials/routes are test values and physical seams are mocked, injected, or not called.",
+      "database": {
+        "mode": "fallback-possible",
+        "evidence": "No test-local DATABASE_PATH assignment found; if the service/repository path opens SQLite, it uses the per-process fallback path supplied by the planned preloader.",
+        "preloaderEffect": "Safe from the owner-specified DB if fallback path is created before test module loading; writes may persist across tests sharing the same process fallback and require per-process isolation/cleanup.",
+        "defaultDbRisk": "no owner/default DB under stated preloader, but shared fallback contamination is possible"
+      },
+      "environmentAssumptions": [
+        "No test-local environment override detected; relies on process-level fallback and config defaults."
+      ],
+      "skipConditions": {
+        "markers": [],
+        "evidence": "No executable skip/todo/only marker found by static search."
+      },
+      "stopCondition": "No per-test stop condition required for external contact because no unmocked non-loopback call was found; stop the diagnostic if a fallback/preloader readback shows an owner DB path or any transport URL outside injected/mock seams.",
+      "confidence": 0.8
+    },
+    {
+      "testPath": "backend/src/services/awareness-narration-worker.test.ts",
+      "nonLoopbackNetwork": {
+        "status": "mocked_or_not_called",
+        "evidence": "Static inspection found no unmocked non-loopback transport call in the exercised test path; provider/task/HTTP seams are fixtures or callbacks where present.",
+        "nonLoopbackCall": "none"
+      },
+      "paidCallRisk": "none observed; provider credentials/routes are test values and physical seams are mocked, injected, or not called.",
+      "database": {
+        "mode": "test-owned-temp",
+        "evidence": "Sets DATABASE_URL=\"\" and a per-test DATABASE_PATH before dynamic db import; initializes/writes SQLite as part of the test.",
+        "preloaderEffect": "The fallback preloader must set its path before module loading, but this test deliberately overrides DATABASE_PATH before its dynamic db import; its own temp path should win unless config/db was imported earlier by another preload.",
+        "defaultDbRisk": "blocked by test-owned path when config/db has not been imported earlier"
+      },
+      "environmentAssumptions": [
+        "DATABASE_URL set by test to \"\"",
+        "AUTH_PROVIDER set by test to \"legacy\"",
+        "DATABASE_PATH set by test to join(mkdtempSync(join(tmpdir(), \"awareness-narration-\")), \"test.db\")"
+      ],
+      "skipConditions": {
+        "markers": [],
+        "evidence": "No executable skip/todo/only marker found by static search."
+      },
+      "stopCondition": "No per-test stop condition required for external contact because no unmocked non-loopback call was found; stop the diagnostic if a fallback/preloader readback shows an owner DB path or any transport URL outside injected/mock seams.",
+      "confidence": 0.8
+    },
+    {
+      "testPath": "backend/src/services/awareness-trial-harness.test.ts",
+      "nonLoopbackNetwork": {
+        "status": "fixture-injected",
+        "evidence": "child test defaults to offline validation; --execute imports backend/src/testing/awareness-trial-http-fixture.ts, which supplies fixed transport behavior. No ambient real provider route is selected.",
+        "nonLoopbackCall": "none"
+      },
+      "paidCallRisk": "none observed; provider credentials/routes are test values and physical seams are mocked, injected, or not called.",
+      "database": {
+        "mode": "test-owned-temp",
+        "evidence": "Sets DATABASE_URL=\"\" and a per-test DATABASE_PATH before dynamic db import; initializes/writes SQLite as part of the test.",
+        "preloaderEffect": "The fallback preloader must set its path before module loading, but this test deliberately overrides DATABASE_PATH before its dynamic db import; its own temp path should win unless config/db was imported earlier by another preload.",
+        "defaultDbRisk": "blocked by test-owned path when config/db has not been imported earlier"
+      },
+      "environmentAssumptions": [
+        "No test-local environment override detected; relies on process-level fallback and config defaults."
+      ],
+      "skipConditions": {
+        "markers": [],
+        "evidence": "No executable skip/todo/only marker found by static search."
+      },
+      "stopCondition": "No per-test stop condition required for external contact because no unmocked non-loopback call was found; stop the diagnostic if a fallback/preloader readback shows an owner DB path or any transport URL outside injected/mock seams.",
+      "confidence": 0.9
+    },
+    {
+      "testPath": "backend/src/services/awareness-world-commit.test.ts",
+      "nonLoopbackNetwork": {
+        "status": "mocked_or_not_called",
+        "evidence": "Static inspection found no unmocked non-loopback transport call in the exercised test path; provider/task/HTTP seams are fixtures or callbacks where present.",
+        "nonLoopbackCall": "none"
+      },
+      "paidCallRisk": "none observed; provider credentials/routes are test values and physical seams are mocked, injected, or not called.",
+      "database": {
+        "mode": "test-owned-temp",
+        "evidence": "Sets DATABASE_URL=\"\" and a per-test DATABASE_PATH before dynamic db import; initializes/writes SQLite as part of the test.",
+        "preloaderEffect": "The fallback preloader must set its path before module loading, but this test deliberately overrides DATABASE_PATH before its dynamic db import; its own temp path should win unless config/db was imported earlier by another preload.",
+        "defaultDbRisk": "blocked by test-owned path when config/db has not been imported earlier"
+      },
+      "environmentAssumptions": [
+        "DATABASE_URL set by test to \"\"",
+        "DATABASE_PATH set by test to join(directory, \"test.db\")",
+        "AUTH_PROVIDER set by test to \"legacy\""
+      ],
+      "skipConditions": {
+        "markers": [],
+        "evidence": "No executable skip/todo/only marker found by static search."
+      },
+      "stopCondition": "No per-test stop condition required for external contact because no unmocked non-loopback call was found; stop the diagnostic if a fallback/preloader readback shows an owner DB path or any transport URL outside injected/mock seams.",
+      "confidence": 0.8
+    },
+    {
+      "testPath": "backend/src/services/battle-causal-narration.test.ts",
+      "nonLoopbackNetwork": {
+        "status": "mocked_or_not_called",
+        "evidence": "Static inspection found no unmocked non-loopback transport call in the exercised test path; provider/task/HTTP seams are fixtures or callbacks where present.",
+        "nonLoopbackCall": "none"
+      },
+      "paidCallRisk": "none observed; provider credentials/routes are test values and physical seams are mocked, injected, or not called.",
+      "database": {
+        "mode": "fallback-possible",
+        "evidence": "No test-local DATABASE_PATH assignment found; if the service/repository path opens SQLite, it uses the per-process fallback path supplied by the planned preloader.",
+        "preloaderEffect": "Safe from the owner-specified DB if fallback path is created before test module loading; writes may persist across tests sharing the same process fallback and require per-process isolation/cleanup.",
+        "defaultDbRisk": "no owner/default DB under stated preloader, but shared fallback contamination is possible"
+      },
+      "environmentAssumptions": [
+        "No test-local environment override detected; relies on process-level fallback and config defaults."
+      ],
+      "skipConditions": {
+        "markers": [],
+        "evidence": "No executable skip/todo/only marker found by static search."
+      },
+      "stopCondition": "No per-test stop condition required for external contact because no unmocked non-loopback call was found; stop the diagnostic if a fallback/preloader readback shows an owner DB path or any transport URL outside injected/mock seams.",
+      "confidence": 0.8
+    },
+    {
+      "testPath": "backend/src/services/battle-consumer-wiring.test.ts",
+      "nonLoopbackNetwork": {
+        "status": "mocked_or_not_called",
+        "evidence": "Static inspection found no unmocked non-loopback transport call in the exercised test path; provider/task/HTTP seams are fixtures or callbacks where present.",
+        "nonLoopbackCall": "none"
+      },
+      "paidCallRisk": "none observed; provider credentials/routes are test values and physical seams are mocked, injected, or not called.",
+      "database": {
+        "mode": "fallback-possible",
+        "evidence": "No test-local DATABASE_PATH assignment found; if the service/repository path opens SQLite, it uses the per-process fallback path supplied by the planned preloader.",
+        "preloaderEffect": "Safe from the owner-specified DB if fallback path is created before test module loading; writes may persist across tests sharing the same process fallback and require per-process isolation/cleanup.",
+        "defaultDbRisk": "no owner/default DB under stated preloader, but shared fallback contamination is possible"
+      },
+      "environmentAssumptions": [
+        "No test-local environment override detected; relies on process-level fallback and config defaults."
+      ],
+      "skipConditions": {
+        "markers": [],
+        "evidence": "No executable skip/todo/only marker found by static search."
+      },
+      "stopCondition": "No per-test stop condition required for external contact because no unmocked non-loopback call was found; stop the diagnostic if a fallback/preloader readback shows an owner DB path or any transport URL outside injected/mock seams.",
+      "confidence": 0.8
+    },
+    {
+      "testPath": "backend/src/services/battle-create-idempotency.test.ts",
+      "nonLoopbackNetwork": {
+        "status": "mocked_or_not_called",
+        "evidence": "Static inspection found no unmocked non-loopback transport call in the exercised test path; provider/task/HTTP seams are fixtures or callbacks where present.",
+        "nonLoopbackCall": "none"
+      },
+      "paidCallRisk": "none observed; provider credentials/routes are test values and physical seams are mocked, injected, or not called.",
+      "database": {
+        "mode": "test-owned-temp",
+        "evidence": "Sets DATABASE_URL=\"\" and a per-test DATABASE_PATH before dynamic db import; initializes/writes SQLite as part of the test.",
+        "preloaderEffect": "The fallback preloader must set its path before module loading, but this test deliberately overrides DATABASE_PATH before its dynamic db import; its own temp path should win unless config/db was imported earlier by another preload.",
+        "defaultDbRisk": "blocked by test-owned path when config/db has not been imported earlier"
+      },
+      "environmentAssumptions": [
+        "DATABASE_URL set by test to \"\"",
+        "AUTH_PROVIDER set by test to \"legacy\"",
+        "DATABASE_PATH set by test to join(temporaryDirectory, \"create.db\")",
+        "CHARACTER_FOCUS_SHADOW_MODE set by test to \"shadow\""
+      ],
+      "skipConditions": {
+        "markers": [],
+        "evidence": "No executable skip/todo/only marker found by static search."
+      },
+      "stopCondition": "No per-test stop condition required for external contact because no unmocked non-loopback call was found; stop the diagnostic if a fallback/preloader readback shows an owner DB path or any transport URL outside injected/mock seams.",
+      "confidence": 0.8
+    },
+    {
+      "testPath": "backend/src/services/battle-participation-eligibility.test.ts",
+      "nonLoopbackNetwork": {
+        "status": "mocked_or_not_called",
+        "evidence": "Static inspection found no unmocked non-loopback transport call in the exercised test path; provider/task/HTTP seams are fixtures or callbacks where present.",
+        "nonLoopbackCall": "none"
+      },
+      "paidCallRisk": "none observed; provider credentials/routes are test values and physical seams are mocked, injected, or not called.",
+      "database": {
+        "mode": "fallback-possible",
+        "evidence": "No test-local DATABASE_PATH assignment found; if the service/repository path opens SQLite, it uses the per-process fallback path supplied by the planned preloader.",
+        "preloaderEffect": "Safe from the owner-specified DB if fallback path is created before test module loading; writes may persist across tests sharing the same process fallback and require per-process isolation/cleanup.",
+        "defaultDbRisk": "no owner/default DB under stated preloader, but shared fallback contamination is possible"
+      },
+      "environmentAssumptions": [
+        "No test-local environment override detected; relies on process-level fallback and config defaults."
+      ],
+      "skipConditions": {
+        "markers": [],
+        "evidence": "No executable skip/todo/only marker found by static search."
+      },
+      "stopCondition": "No per-test stop condition required for external contact because no unmocked non-loopback call was found; stop the diagnostic if a fallback/preloader readback shows an owner DB path or any transport URL outside injected/mock seams.",
+      "confidence": 0.8
+    },
+    {
+      "testPath": "backend/src/services/battle-public.test.ts",
+      "nonLoopbackNetwork": {
+        "status": "mocked_or_not_called",
+        "evidence": "Static inspection found no unmocked non-loopback transport call in the exercised test path; provider/task/HTTP seams are fixtures or callbacks where present.",
+        "nonLoopbackCall": "none"
+      },
+      "paidCallRisk": "none observed; provider credentials/routes are test values and physical seams are mocked, injected, or not called.",
+      "database": {
+        "mode": "fallback-possible",
+        "evidence": "No test-local DATABASE_PATH assignment found; if the service/repository path opens SQLite, it uses the per-process fallback path supplied by the planned preloader.",
+        "preloaderEffect": "Safe from the owner-specified DB if fallback path is created before test module loading; writes may persist across tests sharing the same process fallback and require per-process isolation/cleanup.",
+        "defaultDbRisk": "no owner/default DB under stated preloader, but shared fallback contamination is possible"
+      },
+      "environmentAssumptions": [
+        "No test-local environment override detected; relies on process-level fallback and config defaults."
+      ],
+      "skipConditions": {
+        "markers": [],
+        "evidence": "No executable skip/todo/only marker found by static search."
+      },
+      "stopCondition": "No per-test stop condition required for external contact because no unmocked non-loopback call was found; stop the diagnostic if a fallback/preloader readback shows an owner DB path or any transport URL outside injected/mock seams.",
+      "confidence": 0.8
+    },
+    {
+      "testPath": "backend/src/services/battle-speech-wiring.test.ts",
+      "nonLoopbackNetwork": {
+        "status": "provider-fixture",
+        "evidence": "OpenAI-compatible provider path is subclassed/overridden with fixture responses; test provider URL is example.invalid.",
+        "nonLoopbackCall": "none"
+      },
+      "paidCallRisk": "none observed; provider credentials/routes are test values and physical seams are mocked, injected, or not called.",
+      "database": {
+        "mode": "fallback-possible",
+        "evidence": "No test-local DATABASE_PATH assignment found; if the service/repository path opens SQLite, it uses the per-process fallback path supplied by the planned preloader.",
+        "preloaderEffect": "Safe from the owner-specified DB if fallback path is created before test module loading; writes may persist across tests sharing the same process fallback and require per-process isolation/cleanup.",
+        "defaultDbRisk": "no owner/default DB under stated preloader, but shared fallback contamination is possible"
+      },
+      "environmentAssumptions": [
+        "No test-local environment override detected; relies on process-level fallback and config defaults."
+      ],
+      "skipConditions": {
+        "markers": [],
+        "evidence": "No executable skip/todo/only marker found by static search."
+      },
+      "stopCondition": "No per-test stop condition required for external contact because no unmocked non-loopback call was found; stop the diagnostic if a fallback/preloader readback shows an owner DB path or any transport URL outside injected/mock seams.",
+      "confidence": 0.8
+    },
+    {
+      "testPath": "backend/src/services/character-action-fallback.test.ts",
+      "nonLoopbackNetwork": {
+        "status": "mocked_or_not_called",
+        "evidence": "Static inspection found no unmocked non-loopback transport call in the exercised test path; provider/task/HTTP seams are fixtures or callbacks where present.",
+        "nonLoopbackCall": "none"
+      },
+      "paidCallRisk": "none observed; provider credentials/routes are test values and physical seams are mocked, injected, or not called.",
+      "database": {
+        "mode": "fallback-possible",
+        "evidence": "No test-local DATABASE_PATH assignment found; if the service/repository path opens SQLite, it uses the per-process fallback path supplied by the planned preloader.",
+        "preloaderEffect": "Safe from the owner-specified DB if fallback path is created before test module loading; writes may persist across tests sharing the same process fallback and require per-process isolation/cleanup.",
+        "defaultDbRisk": "no owner/default DB under stated preloader, but shared fallback contamination is possible"
+      },
+      "environmentAssumptions": [
+        "No test-local environment override detected; relies on process-level fallback and config defaults."
+      ],
+      "skipConditions": {
+        "markers": [],
+        "evidence": "No executable skip/todo/only marker found by static search."
+      },
+      "stopCondition": "No per-test stop condition required for external contact because no unmocked non-loopback call was found; stop the diagnostic if a fallback/preloader readback shows an owner DB path or any transport URL outside injected/mock seams.",
+      "confidence": 0.8
+    },
+    {
+      "testPath": "backend/src/services/character-agency-inventory.test.ts",
+      "nonLoopbackNetwork": {
+        "status": "blocked-mock",
+        "evidence": "globalThis.fetch is mocked to throw \"Network forbidden\" if reached.",
+        "nonLoopbackCall": "none"
+      },
+      "paidCallRisk": "none observed; provider credentials/routes are test values and physical seams are mocked, injected, or not called.",
+      "database": {
+        "mode": "test-owned-temp",
+        "evidence": "Sets DATABASE_URL=\"\" and a per-test DATABASE_PATH before dynamic db import; initializes/writes SQLite as part of the test.",
+        "preloaderEffect": "The fallback preloader must set its path before module loading, but this test deliberately overrides DATABASE_PATH before its dynamic db import; its own temp path should win unless config/db was imported earlier by another preload.",
+        "defaultDbRisk": "blocked by test-owned path when config/db has not been imported earlier"
+      },
+      "environmentAssumptions": [
+        "DATABASE_URL set by test to \"\"",
+        "AUTH_PROVIDER set by test to \"legacy\"",
+        "DATABASE_PATH set by test to join(temporaryDirectory, \"inventory.db\")"
+      ],
+      "skipConditions": {
+        "markers": [],
+        "evidence": "No executable skip/todo/only marker found by static search."
+      },
+      "stopCondition": "No per-test stop condition required for external contact because no unmocked non-loopback call was found; stop the diagnostic if a fallback/preloader readback shows an owner DB path or any transport URL outside injected/mock seams.",
+      "confidence": 0.9
+    },
+    {
+      "testPath": "backend/src/services/character-authoring-candidate.test.ts",
+      "nonLoopbackNetwork": {
+        "status": "mocked_or_not_called",
+        "evidence": "Static inspection found no unmocked non-loopback transport call in the exercised test path; provider/task/HTTP seams are fixtures or callbacks where present.",
+        "nonLoopbackCall": "none"
+      },
+      "paidCallRisk": "none observed; provider credentials/routes are test values and physical seams are mocked, injected, or not called.",
+      "database": {
+        "mode": "fallback-possible",
+        "evidence": "No test-local DATABASE_PATH assignment found; if the service/repository path opens SQLite, it uses the per-process fallback path supplied by the planned preloader.",
+        "preloaderEffect": "Safe from the owner-specified DB if fallback path is created before test module loading; writes may persist across tests sharing the same process fallback and require per-process isolation/cleanup.",
+        "defaultDbRisk": "no owner/default DB under stated preloader, but shared fallback contamination is possible"
+      },
+      "environmentAssumptions": [
+        "No test-local environment override detected; relies on process-level fallback and config defaults."
+      ],
+      "skipConditions": {
+        "markers": [],
+        "evidence": "No executable skip/todo/only marker found by static search."
+      },
+      "stopCondition": "No per-test stop condition required for external contact because no unmocked non-loopback call was found; stop the diagnostic if a fallback/preloader readback shows an owner DB path or any transport URL outside injected/mock seams.",
+      "confidence": 0.8
+    },
+    {
+      "testPath": "backend/src/services/character-authoring-jobs.test.ts",
+      "nonLoopbackNetwork": {
+        "status": "mocked_or_not_called",
+        "evidence": "Static inspection found no unmocked non-loopback transport call in the exercised test path; provider/task/HTTP seams are fixtures or callbacks where present.",
+        "nonLoopbackCall": "none"
+      },
+      "paidCallRisk": "none observed; provider credentials/routes are test values and physical seams are mocked, injected, or not called.",
+      "database": {
+        "mode": "test-owned-temp",
+        "evidence": "Sets DATABASE_URL=\"\" and a per-test DATABASE_PATH before dynamic db import; initializes/writes SQLite as part of the test.",
+        "preloaderEffect": "The fallback preloader must set its path before module loading, but this test deliberately overrides DATABASE_PATH before its dynamic db import; its own temp path should win unless config/db was imported earlier by another preload.",
+        "defaultDbRisk": "blocked by test-owned path when config/db has not been imported earlier"
+      },
+      "environmentAssumptions": [
+        "DATABASE_URL set by test to \"\"",
+        "AUTH_PROVIDER set by test to \"legacy\"",
+        "DATABASE_PATH set by test to join(directory, \"jobs.db\")",
+        "LLM_PROVIDER set by test to \"mock\""
+      ],
+      "skipConditions": {
+        "markers": [],
+        "evidence": "No executable skip/todo/only marker found by static search."
+      },
+      "stopCondition": "No per-test stop condition required for external contact because no unmocked non-loopback call was found; stop the diagnostic if a fallback/preloader readback shows an owner DB path or any transport URL outside injected/mock seams.",
+      "confidence": 0.8
+    },
+    {
+      "testPath": "backend/src/services/character-authoring-service.test.ts",
+      "nonLoopbackNetwork": {
+        "status": "mocked_or_not_called",
+        "evidence": "Static inspection found no unmocked non-loopback transport call in the exercised test path; provider/task/HTTP seams are fixtures or callbacks where present.",
+        "nonLoopbackCall": "none"
+      },
+      "paidCallRisk": "none observed; provider credentials/routes are test values and physical seams are mocked, injected, or not called.",
+      "database": {
+        "mode": "fallback-possible",
+        "evidence": "No test-local DATABASE_PATH assignment found; if the service/repository path opens SQLite, it uses the per-process fallback path supplied by the planned preloader.",
+        "preloaderEffect": "Safe from the owner-specified DB if fallback path is created before test module loading; writes may persist across tests sharing the same process fallback and require per-process isolation/cleanup.",
+        "defaultDbRisk": "no owner/default DB under stated preloader, but shared fallback contamination is possible"
+      },
+      "environmentAssumptions": [
+        "No test-local environment override detected; relies on process-level fallback and config defaults."
+      ],
+      "skipConditions": {
+        "markers": [],
+        "evidence": "No executable skip/todo/only marker found by static search."
+      },
+      "stopCondition": "No per-test stop condition required for external contact because no unmocked non-loopback call was found; stop the diagnostic if a fallback/preloader readback shows an owner DB path or any transport URL outside injected/mock seams.",
+      "confidence": 0.8
+    },
+    {
+      "testPath": "backend/src/services/character-focused-authoring.test.ts",
+      "nonLoopbackNetwork": {
+        "status": "loopback-only-injected",
+        "evidence": "creates a local node:http server on 127.0.0.1 and uses controlled semantic provider input; no non-loopback route is used.",
+        "nonLoopbackCall": "none"
+      },
+      "paidCallRisk": "none observed; provider credentials/routes are test values and physical seams are mocked, injected, or not called.",
+      "database": {
+        "mode": "test-owned-temp",
+        "evidence": "Sets DATABASE_URL=\"\" and a per-test DATABASE_PATH before dynamic db import; initializes/writes SQLite as part of the test.",
+        "preloaderEffect": "The fallback preloader must set its path before module loading, but this test deliberately overrides DATABASE_PATH before its dynamic db import; its own temp path should win unless config/db was imported earlier by another preload.",
+        "defaultDbRisk": "blocked by test-owned path when config/db has not been imported earlier"
+      },
+      "environmentAssumptions": [
+        "DATABASE_URL set by test to \"\"",
+        "DATABASE_PATH set by test to join(directory, \"test.db\")",
+        "AUTH_PROVIDER set by test to \"legacy\"",
+        "LLM_PROVIDER set by test to \"mock\""
+      ],
+      "skipConditions": {
+        "markers": [],
+        "evidence": "No executable skip/todo/only marker found by static search."
+      },
+      "stopCondition": "No per-test stop condition required for external contact because no unmocked non-loopback call was found; stop the diagnostic if a fallback/preloader readback shows an owner DB path or any transport URL outside injected/mock seams.",
+      "confidence": 0.9
+    },
+    {
+      "testPath": "backend/src/services/character-historical-view.test.ts",
+      "nonLoopbackNetwork": {
+        "status": "mocked_or_not_called",
+        "evidence": "Static inspection found no unmocked non-loopback transport call in the exercised test path; provider/task/HTTP seams are fixtures or callbacks where present.",
+        "nonLoopbackCall": "none"
+      },
+      "paidCallRisk": "none observed; provider credentials/routes are test values and physical seams are mocked, injected, or not called.",
+      "database": {
+        "mode": "fallback-possible",
+        "evidence": "No test-local DATABASE_PATH assignment found; if the service/repository path opens SQLite, it uses the per-process fallback path supplied by the planned preloader.",
+        "preloaderEffect": "Safe from the owner-specified DB if fallback path is created before test module loading; writes may persist across tests sharing the same process fallback and require per-process isolation/cleanup.",
+        "defaultDbRisk": "no owner/default DB under stated preloader, but shared fallback contamination is possible"
+      },
+      "environmentAssumptions": [
+        "No test-local environment override detected; relies on process-level fallback and config defaults."
+      ],
+      "skipConditions": {
+        "markers": [],
+        "evidence": "No executable skip/todo/only marker found by static search."
+      },
+      "stopCondition": "No per-test stop condition required for external contact because no unmocked non-loopback call was found; stop the diagnostic if a fallback/preloader readback shows an owner DB path or any transport URL outside injected/mock seams.",
+      "confidence": 0.8
+    },
+    {
+      "testPath": "backend/src/services/character-migration-diagnostics.test.ts",
+      "nonLoopbackNetwork": {
+        "status": "mocked_or_not_called",
+        "evidence": "Static inspection found no unmocked non-loopback transport call in the exercised test path; provider/task/HTTP seams are fixtures or callbacks where present.",
+        "nonLoopbackCall": "none"
+      },
+      "paidCallRisk": "none observed; provider credentials/routes are test values and physical seams are mocked, injected, or not called.",
+      "database": {
+        "mode": "fallback-possible",
+        "evidence": "No test-local DATABASE_PATH assignment found; if the service/repository path opens SQLite, it uses the per-process fallback path supplied by the planned preloader.",
+        "preloaderEffect": "Safe from the owner-specified DB if fallback path is created before test module loading; writes may persist across tests sharing the same process fallback and require per-process isolation/cleanup.",
+        "defaultDbRisk": "no owner/default DB under stated preloader, but shared fallback contamination is possible"
+      },
+      "environmentAssumptions": [
+        "No test-local environment override detected; relies on process-level fallback and config defaults."
+      ],
+      "skipConditions": {
+        "markers": [],
+        "evidence": "No executable skip/todo/only marker found by static search."
+      },
+      "stopCondition": "No per-test stop condition required for external contact because no unmocked non-loopback call was found; stop the diagnostic if a fallback/preloader readback shows an owner DB path or any transport URL outside injected/mock seams.",
+      "confidence": 0.8
+    },
+    {
+      "testPath": "backend/src/services/character-portrait-v3.test.ts",
+      "nonLoopbackNetwork": {
+        "status": "mocked_or_not_called",
+        "evidence": "Static inspection found no unmocked non-loopback transport call in the exercised test path; provider/task/HTTP seams are fixtures or callbacks where present.",
+        "nonLoopbackCall": "none"
+      },
+      "paidCallRisk": "none observed; provider credentials/routes are test values and physical seams are mocked, injected, or not called.",
+      "database": {
+        "mode": "test-owned-temp",
+        "evidence": "Sets DATABASE_URL=\"\" and a per-test DATABASE_PATH before dynamic db import; initializes/writes SQLite as part of the test.",
+        "preloaderEffect": "The fallback preloader must set its path before module loading, but this test deliberately overrides DATABASE_PATH before its dynamic db import; its own temp path should win unless config/db was imported earlier by another preload.",
+        "defaultDbRisk": "blocked by test-owned path when config/db has not been imported earlier"
+      },
+      "environmentAssumptions": [
+        "DATABASE_URL set by test to \"\"",
+        "DATABASE_PATH set by test to join(directory, \"test.db\")",
+        "AUTH_PROVIDER set by test to \"legacy\"",
+        "LLM_PROVIDER set by test to \"mock\""
+      ],
+      "skipConditions": {
+        "markers": [],
+        "evidence": "No executable skip/todo/only marker found by static search."
+      },
+      "stopCondition": "No per-test stop condition required for external contact because no unmocked non-loopback call was found; stop the diagnostic if a fallback/preloader readback shows an owner DB path or any transport URL outside injected/mock seams.",
+      "confidence": 0.8
+    },
+    {
+      "testPath": "backend/src/services/character-semantic-migration.test.ts",
+      "nonLoopbackNetwork": {
+        "status": "mocked_or_not_called",
+        "evidence": "Static inspection found no unmocked non-loopback transport call in the exercised test path; provider/task/HTTP seams are fixtures or callbacks where present.",
+        "nonLoopbackCall": "none"
+      },
+      "paidCallRisk": "none observed; provider credentials/routes are test values and physical seams are mocked, injected, or not called.",
+      "database": {
+        "mode": "test-owned-temp",
+        "evidence": "Sets DATABASE_URL=\"\" and a per-test DATABASE_PATH before dynamic db import; initializes/writes SQLite as part of the test.",
+        "preloaderEffect": "The fallback preloader must set its path before module loading, but this test deliberately overrides DATABASE_PATH before its dynamic db import; its own temp path should win unless config/db was imported earlier by another preload.",
+        "defaultDbRisk": "blocked by test-owned path when config/db has not been imported earlier"
+      },
+      "environmentAssumptions": [
+        "DATABASE_URL set by test to \"\"",
+        "AUTH_PROVIDER set by test to \"legacy\"",
+        "DATABASE_PATH set by test to join(directory, \"migration.db\")"
+      ],
+      "skipConditions": {
+        "markers": [],
+        "evidence": "No executable skip/todo/only marker found by static search."
+      },
+      "stopCondition": "No per-test stop condition required for external contact because no unmocked non-loopback call was found; stop the diagnostic if a fallback/preloader readback shows an owner DB path or any transport URL outside injected/mock seams.",
+      "confidence": 0.8
+    },
+    {
+      "testPath": "backend/src/services/character-update-policy.test.ts",
+      "nonLoopbackNetwork": {
+        "status": "mocked_or_not_called",
+        "evidence": "Static inspection found no unmocked non-loopback transport call in the exercised test path; provider/task/HTTP seams are fixtures or callbacks where present.",
+        "nonLoopbackCall": "none"
+      },
+      "paidCallRisk": "none observed; provider credentials/routes are test values and physical seams are mocked, injected, or not called.",
+      "database": {
+        "mode": "fallback-possible",
+        "evidence": "No test-local DATABASE_PATH assignment found; if the service/repository path opens SQLite, it uses the per-process fallback path supplied by the planned preloader.",
+        "preloaderEffect": "Safe from the owner-specified DB if fallback path is created before test module loading; writes may persist across tests sharing the same process fallback and require per-process isolation/cleanup.",
+        "defaultDbRisk": "no owner/default DB under stated preloader, but shared fallback contamination is possible"
+      },
+      "environmentAssumptions": [
+        "No test-local environment override detected; relies on process-level fallback and config defaults."
+      ],
+      "skipConditions": {
+        "markers": [],
+        "evidence": "No executable skip/todo/only marker found by static search."
+      },
+      "stopCondition": "No per-test stop condition required for external contact because no unmocked non-loopback call was found; stop the diagnostic if a fallback/preloader readback shows an owner DB path or any transport URL outside injected/mock seams.",
+      "confidence": 0.8
+    },
+    {
+      "testPath": "backend/src/services/character-v2-update-boundary.test.ts",
+      "nonLoopbackNetwork": {
+        "status": "mocked_or_not_called",
+        "evidence": "Static inspection found no unmocked non-loopback transport call in the exercised test path; provider/task/HTTP seams are fixtures or callbacks where present.",
+        "nonLoopbackCall": "none"
+      },
+      "paidCallRisk": "none observed; provider credentials/routes are test values and physical seams are mocked, injected, or not called.",
+      "database": {
+        "mode": "test-owned-temp",
+        "evidence": "Sets DATABASE_URL=\"\" and a per-test DATABASE_PATH before dynamic db import; initializes/writes SQLite as part of the test.",
+        "preloaderEffect": "The fallback preloader must set its path before module loading, but this test deliberately overrides DATABASE_PATH before its dynamic db import; its own temp path should win unless config/db was imported earlier by another preload.",
+        "defaultDbRisk": "blocked by test-owned path when config/db has not been imported earlier"
+      },
+      "environmentAssumptions": [
+        "DATABASE_URL set by test to \"\"",
+        "DATABASE_PATH set by test to join(directory, \"test.db\")",
+        "AUTH_PROVIDER set by test to \"legacy\"",
+        "LLM_PROVIDER set by test to \"mock\""
+      ],
+      "skipConditions": {
+        "markers": [],
+        "evidence": "No executable skip/todo/only marker found by static search."
+      },
+      "stopCondition": "No per-test stop condition required for external contact because no unmocked non-loopback call was found; stop the diagnostic if a fallback/preloader readback shows an owner DB path or any transport URL outside injected/mock seams.",
+      "confidence": 0.8
+    },
+    {
+      "testPath": "backend/src/services/character-v3-profile-adapter.test.ts",
+      "nonLoopbackNetwork": {
+        "status": "mocked_or_not_called",
+        "evidence": "Static inspection found no unmocked non-loopback transport call in the exercised test path; provider/task/HTTP seams are fixtures or callbacks where present.",
+        "nonLoopbackCall": "none"
+      },
+      "paidCallRisk": "none observed; provider credentials/routes are test values and physical seams are mocked, injected, or not called.",
+      "database": {
+        "mode": "fallback-possible",
+        "evidence": "No test-local DATABASE_PATH assignment found; if the service/repository path opens SQLite, it uses the per-process fallback path supplied by the planned preloader.",
+        "preloaderEffect": "Safe from the owner-specified DB if fallback path is created before test module loading; writes may persist across tests sharing the same process fallback and require per-process isolation/cleanup.",
+        "defaultDbRisk": "no owner/default DB under stated preloader, but shared fallback contamination is possible"
+      },
+      "environmentAssumptions": [
+        "No test-local environment override detected; relies on process-level fallback and config defaults."
+      ],
+      "skipConditions": {
+        "markers": [],
+        "evidence": "No executable skip/todo/only marker found by static search."
+      },
+      "stopCondition": "No per-test stop condition required for external contact because no unmocked non-loopback call was found; stop the diagnostic if a fallback/preloader readback shows an owner DB path or any transport URL outside injected/mock seams.",
+      "confidence": 0.8
+    },
+    {
+      "testPath": "backend/src/services/conscious-agency-binding.test.ts",
+      "nonLoopbackNetwork": {
+        "status": "mocked_or_not_called",
+        "evidence": "Static inspection found no unmocked non-loopback transport call in the exercised test path; provider/task/HTTP seams are fixtures or callbacks where present.",
+        "nonLoopbackCall": "none"
+      },
+      "paidCallRisk": "none observed; provider credentials/routes are test values and physical seams are mocked, injected, or not called.",
+      "database": {
+        "mode": "fallback-possible",
+        "evidence": "No test-local DATABASE_PATH assignment found; if the service/repository path opens SQLite, it uses the per-process fallback path supplied by the planned preloader.",
+        "preloaderEffect": "Safe from the owner-specified DB if fallback path is created before test module loading; writes may persist across tests sharing the same process fallback and require per-process isolation/cleanup.",
+        "defaultDbRisk": "no owner/default DB under stated preloader, but shared fallback contamination is possible"
+      },
+      "environmentAssumptions": [
+        "No test-local environment override detected; relies on process-level fallback and config defaults."
+      ],
+      "skipConditions": {
+        "markers": [],
+        "evidence": "No executable skip/todo/only marker found by static search."
+      },
+      "stopCondition": "No per-test stop condition required for external contact because no unmocked non-loopback call was found; stop the diagnostic if a fallback/preloader readback shows an owner DB path or any transport URL outside injected/mock seams.",
+      "confidence": 0.8
+    },
+    {
+      "testPath": "backend/src/services/conscious-agency-persistence.test.ts",
+      "nonLoopbackNetwork": {
+        "status": "mocked_or_not_called",
+        "evidence": "Static inspection found no unmocked non-loopback transport call in the exercised test path; provider/task/HTTP seams are fixtures or callbacks where present.",
+        "nonLoopbackCall": "none"
+      },
+      "paidCallRisk": "none observed; provider credentials/routes are test values and physical seams are mocked, injected, or not called.",
+      "database": {
+        "mode": "test-owned-temp",
+        "evidence": "Sets DATABASE_URL=\"\" and a per-test DATABASE_PATH before dynamic db import; initializes/writes SQLite as part of the test.",
+        "preloaderEffect": "The fallback preloader must set its path before module loading, but this test deliberately overrides DATABASE_PATH before its dynamic db import; its own temp path should win unless config/db was imported earlier by another preload.",
+        "defaultDbRisk": "blocked by test-owned path when config/db has not been imported earlier"
+      },
+      "environmentAssumptions": [
+        "DATABASE_URL set by test to \"\"",
+        "AUTH_PROVIDER set by test to \"legacy\"",
+        "DATABASE_PATH set by test to join(temporaryDirectory, \"state.db\")"
+      ],
+      "skipConditions": {
+        "markers": [],
+        "evidence": "No executable skip/todo/only marker found by static search."
+      },
+      "stopCondition": "No per-test stop condition required for external contact because no unmocked non-loopback call was found; stop the diagnostic if a fallback/preloader readback shows an owner DB path or any transport URL outside injected/mock seams.",
+      "confidence": 0.8
+    },
+    {
+      "testPath": "backend/src/services/conscious-agency-runtime.test.ts",
+      "nonLoopbackNetwork": {
+        "status": "provider-fixture",
+        "evidence": "OpenAI-compatible provider path is subclassed/overridden with fixture responses; test provider URL is example.invalid.",
+        "nonLoopbackCall": "none"
+      },
+      "paidCallRisk": "none observed; provider credentials/routes are test values and physical seams are mocked, injected, or not called.",
+      "database": {
+        "mode": "fallback-possible",
+        "evidence": "No test-local DATABASE_PATH assignment found; if the service/repository path opens SQLite, it uses the per-process fallback path supplied by the planned preloader.",
+        "preloaderEffect": "Safe from the owner-specified DB if fallback path is created before test module loading; writes may persist across tests sharing the same process fallback and require per-process isolation/cleanup.",
+        "defaultDbRisk": "no owner/default DB under stated preloader, but shared fallback contamination is possible"
+      },
+      "environmentAssumptions": [
+        "No test-local environment override detected; relies on process-level fallback and config defaults."
+      ],
+      "skipConditions": {
+        "markers": [],
+        "evidence": "No executable skip/todo/only marker found by static search."
+      },
+      "stopCondition": "No per-test stop condition required for external contact because no unmocked non-loopback call was found; stop the diagnostic if a fallback/preloader readback shows an owner DB path or any transport URL outside injected/mock seams.",
+      "confidence": 0.8
+    },
+    {
+      "testPath": "backend/src/services/cutover-admission.test.ts",
+      "nonLoopbackNetwork": {
+        "status": "mocked_or_not_called",
+        "evidence": "Static inspection found no unmocked non-loopback transport call in the exercised test path; provider/task/HTTP seams are fixtures or callbacks where present.",
+        "nonLoopbackCall": "none"
+      },
+      "paidCallRisk": "none observed; provider credentials/routes are test values and physical seams are mocked, injected, or not called.",
+      "database": {
+        "mode": "test-owned-temp",
+        "evidence": "Sets DATABASE_URL=\"\" and a per-test DATABASE_PATH before dynamic db import; initializes/writes SQLite as part of the test.",
+        "preloaderEffect": "The fallback preloader must set its path before module loading, but this test deliberately overrides DATABASE_PATH before its dynamic db import; its own temp path should win unless config/db was imported earlier by another preload.",
+        "defaultDbRisk": "blocked by test-owned path when config/db has not been imported earlier"
+      },
+      "environmentAssumptions": [
+        "DATABASE_URL set by test to \"\"",
+        "DIRECT_URL set by test to \"\"",
+        "DATABASE_PATH set by test to join(directory, \"test.sqlite\")",
+        "CUTOVER_ID set by test to \"local-control\"",
+        "CUTOVER_ARTIFACT_ID set by test to \"local-artifact\""
+      ],
+      "skipConditions": {
+        "markers": [],
+        "evidence": "No executable skip/todo/only marker found by static search."
+      },
+      "stopCondition": "No per-test stop condition required for external contact because no unmocked non-loopback call was found; stop the diagnostic if a fallback/preloader readback shows an owner DB path or any transport URL outside injected/mock seams.",
+      "confidence": 0.8
+    },
+    {
+      "testPath": "backend/src/services/cutover-background-dispatch.test.ts",
+      "nonLoopbackNetwork": {
+        "status": "mocked",
+        "evidence": "node:test mock.method(globalThis, \"fetch\") supplies responses and asserts wire data.",
+        "nonLoopbackCall": "none"
+      },
+      "paidCallRisk": "none observed; provider credentials/routes are test values and physical seams are mocked, injected, or not called.",
+      "database": {
+        "mode": "test-owned-temp",
+        "evidence": "Sets DATABASE_URL=\"\" and a per-test DATABASE_PATH before dynamic db import; initializes/writes SQLite as part of the test.",
+        "preloaderEffect": "The fallback preloader must set its path before module loading, but this test deliberately overrides DATABASE_PATH before its dynamic db import; its own temp path should win unless config/db was imported earlier by another preload.",
+        "defaultDbRisk": "blocked by test-owned path when config/db has not been imported earlier"
+      },
+      "environmentAssumptions": [
+        "DATABASE_URL set by test to \"\"",
+        "AUTH_PROVIDER set by test to \"legacy\"",
+        "DATABASE_PATH set by test to join(directory, \"cutover-background.db\")"
+      ],
+      "skipConditions": {
+        "markers": [],
+        "evidence": "No executable skip/todo/only marker found by static search."
+      },
+      "stopCondition": "No per-test stop condition required for external contact because no unmocked non-loopback call was found; stop the diagnostic if a fallback/preloader readback shows an owner DB path or any transport URL outside injected/mock seams.",
+      "confidence": 0.9
+    },
+    {
+      "testPath": "backend/src/services/cutover-http-admission.test.ts",
+      "nonLoopbackNetwork": {
+        "status": "mocked_or_not_called",
+        "evidence": "Static inspection found no unmocked non-loopback transport call in the exercised test path; provider/task/HTTP seams are fixtures or callbacks where present.",
+        "nonLoopbackCall": "none"
+      },
+      "paidCallRisk": "none observed; provider credentials/routes are test values and physical seams are mocked, injected, or not called.",
+      "database": {
+        "mode": "fallback-possible",
+        "evidence": "No test-local DATABASE_PATH assignment found; if the service/repository path opens SQLite, it uses the per-process fallback path supplied by the planned preloader.",
+        "preloaderEffect": "Safe from the owner-specified DB if fallback path is created before test module loading; writes may persist across tests sharing the same process fallback and require per-process isolation/cleanup.",
+        "defaultDbRisk": "no owner/default DB under stated preloader, but shared fallback contamination is possible"
+      },
+      "environmentAssumptions": [
+        "No test-local environment override detected; relies on process-level fallback and config defaults."
+      ],
+      "skipConditions": {
+        "markers": [],
+        "evidence": "No executable skip/todo/only marker found by static search."
+      },
+      "stopCondition": "No per-test stop condition required for external contact because no unmocked non-loopback call was found; stop the diagnostic if a fallback/preloader readback shows an owner DB path or any transport URL outside injected/mock seams.",
+      "confidence": 0.8
+    },
+    {
+      "testPath": "backend/src/services/cutover-stage-smoke.test.ts",
+      "nonLoopbackNetwork": {
+        "status": "mocked_or_not_called",
+        "evidence": "Static inspection found no unmocked non-loopback transport call in the exercised test path; provider/task/HTTP seams are fixtures or callbacks where present.",
+        "nonLoopbackCall": "none"
+      },
+      "paidCallRisk": "none observed; provider credentials/routes are test values and physical seams are mocked, injected, or not called.",
+      "database": {
+        "mode": "test-owned-temp",
+        "evidence": "Sets DATABASE_URL=\"\" and a per-test DATABASE_PATH before dynamic db import; initializes/writes SQLite as part of the test.",
+        "preloaderEffect": "The fallback preloader must set its path before module loading, but this test deliberately overrides DATABASE_PATH before its dynamic db import; its own temp path should win unless config/db was imported earlier by another preload.",
+        "defaultDbRisk": "blocked by test-owned path when config/db has not been imported earlier"
+      },
+      "environmentAssumptions": [
+        "DATABASE_URL set by test to \"\"",
+        "DIRECT_URL set by test to \"\"",
+        "DATABASE_PATH set by test to join(directory, \"test.sqlite\")",
+        "CUTOVER_ID set by test to \"smoke-control\"",
+        "CUTOVER_ARTIFACT_ID set by test to \"smoke-artifact\""
+      ],
+      "skipConditions": {
+        "markers": [],
+        "evidence": "No executable skip/todo/only marker found by static search."
+      },
+      "stopCondition": "No per-test stop condition required for external contact because no unmocked non-loopback call was found; stop the diagnostic if a fallback/preloader readback shows an owner DB path or any transport URL outside injected/mock seams.",
+      "confidence": 0.8
+    },
+    {
+      "testPath": "backend/src/services/distributed-guard.test.ts",
+      "nonLoopbackNetwork": {
+        "status": "mocked_or_not_called",
+        "evidence": "Static inspection found no unmocked non-loopback transport call in the exercised test path; provider/task/HTTP seams are fixtures or callbacks where present.",
+        "nonLoopbackCall": "none"
+      },
+      "paidCallRisk": "none observed; provider credentials/routes are test values and physical seams are mocked, injected, or not called.",
+      "database": {
+        "mode": "test-owned-temp",
+        "evidence": "Sets DATABASE_URL=\"\" and a per-test DATABASE_PATH before dynamic db import; initializes/writes SQLite as part of the test.",
+        "preloaderEffect": "The fallback preloader must set its path before module loading, but this test deliberately overrides DATABASE_PATH before its dynamic db import; its own temp path should win unless config/db was imported earlier by another preload.",
+        "defaultDbRisk": "blocked by test-owned path when config/db has not been imported earlier"
+      },
+      "environmentAssumptions": [
+        "DATABASE_URL set by test to \"\"",
+        "AUTH_PROVIDER set by test to \"legacy\"",
+        "DATABASE_PATH set by test to join(temporaryDirectory, \"distributed.db\")"
+      ],
+      "skipConditions": {
+        "markers": [],
+        "evidence": "No executable skip/todo/only marker found by static search."
+      },
+      "stopCondition": "No per-test stop condition required for external contact because no unmocked non-loopback call was found; stop the diagnostic if a fallback/preloader readback shows an owner DB path or any transport URL outside injected/mock seams.",
+      "confidence": 0.8
+    },
+    {
+      "testPath": "backend/src/services/e2e-session.test.ts",
+      "nonLoopbackNetwork": {
+        "status": "mocked_or_not_called",
+        "evidence": "Static inspection found no unmocked non-loopback transport call in the exercised test path; provider/task/HTTP seams are fixtures or callbacks where present.",
+        "nonLoopbackCall": "none"
+      },
+      "paidCallRisk": "none observed; provider credentials/routes are test values and physical seams are mocked, injected, or not called.",
+      "database": {
+        "mode": "test-owned-temp",
+        "evidence": "Sets DATABASE_URL=\"\" and a per-test DATABASE_PATH before dynamic db import; initializes/writes SQLite as part of the test.",
+        "preloaderEffect": "The fallback preloader must set its path before module loading, but this test deliberately overrides DATABASE_PATH before its dynamic db import; its own temp path should win unless config/db was imported earlier by another preload.",
+        "defaultDbRisk": "blocked by test-owned path when config/db has not been imported earlier"
+      },
+      "environmentAssumptions": [
+        "DATABASE_URL set by test to \"\"",
+        "AUTH_PROVIDER set by test to \"legacy\"",
+        "DATABASE_PATH set by test to join(temporaryDirectory, \"e2e-session.db\")",
+        "ADMIN_EMAILS set by test to \"mako10k@mk10.org\""
+      ],
+      "skipConditions": {
+        "markers": [],
+        "evidence": "No executable skip/todo/only marker found by static search."
+      },
+      "stopCondition": "No per-test stop condition required for external contact because no unmocked non-loopback call was found; stop the diagnostic if a fallback/preloader readback shows an owner DB path or any transport URL outside injected/mock seams.",
+      "confidence": 0.8
+    },
+    {
+      "testPath": "backend/src/services/free-action-service.test.ts",
+      "nonLoopbackNetwork": {
+        "status": "mocked_or_not_called",
+        "evidence": "Static inspection found no unmocked non-loopback transport call in the exercised test path; provider/task/HTTP seams are fixtures or callbacks where present.",
+        "nonLoopbackCall": "none"
+      },
+      "paidCallRisk": "none observed; provider credentials/routes are test values and physical seams are mocked, injected, or not called.",
+      "database": {
+        "mode": "fallback-possible",
+        "evidence": "No test-local DATABASE_PATH assignment found; if the service/repository path opens SQLite, it uses the per-process fallback path supplied by the planned preloader.",
+        "preloaderEffect": "Safe from the owner-specified DB if fallback path is created before test module loading; writes may persist across tests sharing the same process fallback and require per-process isolation/cleanup.",
+        "defaultDbRisk": "no owner/default DB under stated preloader, but shared fallback contamination is possible"
+      },
+      "environmentAssumptions": [
+        "No test-local environment override detected; relies on process-level fallback and config defaults."
+      ],
+      "skipConditions": {
+        "markers": [],
+        "evidence": "No executable skip/todo/only marker found by static search."
+      },
+      "stopCondition": "No per-test stop condition required for external contact because no unmocked non-loopback call was found; stop the diagnostic if a fallback/preloader readback shows an owner DB path or any transport URL outside injected/mock seams.",
+      "confidence": 0.8
+    },
+    {
+      "testPath": "backend/src/services/image-archive.test.ts",
+      "nonLoopbackNetwork": {
+        "status": "not-called",
+        "evidence": "URLs are data/assertion inputs or local file/strict request construction; no physical transport call in test path.",
+        "nonLoopbackCall": "none"
+      },
+      "paidCallRisk": "none observed; provider credentials/routes are test values and physical seams are mocked, injected, or not called.",
+      "database": {
+        "mode": "fallback-possible",
+        "evidence": "No test-local DATABASE_PATH assignment found; if the service/repository path opens SQLite, it uses the per-process fallback path supplied by the planned preloader.",
+        "preloaderEffect": "Safe from the owner-specified DB if fallback path is created before test module loading; writes may persist across tests sharing the same process fallback and require per-process isolation/cleanup.",
+        "defaultDbRisk": "no owner/default DB under stated preloader, but shared fallback contamination is possible"
+      },
+      "environmentAssumptions": [
+        "No test-local environment override detected; relies on process-level fallback and config defaults."
+      ],
+      "skipConditions": {
+        "markers": [],
+        "evidence": "No executable skip/todo/only marker found by static search."
+      },
+      "stopCondition": "No per-test stop condition required for external contact because no unmocked non-loopback call was found; stop the diagnostic if a fallback/preloader readback shows an owner DB path or any transport URL outside injected/mock seams.",
+      "confidence": 0.8
+    },
+    {
+      "testPath": "backend/src/services/image-service.test.ts",
+      "nonLoopbackNetwork": {
+        "status": "not-called",
+        "evidence": "URLs are data/assertion inputs or local file/strict request construction; no physical transport call in test path.",
+        "nonLoopbackCall": "none"
+      },
+      "paidCallRisk": "none observed; provider credentials/routes are test values and physical seams are mocked, injected, or not called.",
+      "database": {
+        "mode": "fallback-possible",
+        "evidence": "No test-local DATABASE_PATH assignment found; if the service/repository path opens SQLite, it uses the per-process fallback path supplied by the planned preloader.",
+        "preloaderEffect": "Safe from the owner-specified DB if fallback path is created before test module loading; writes may persist across tests sharing the same process fallback and require per-process isolation/cleanup.",
+        "defaultDbRisk": "no owner/default DB under stated preloader, but shared fallback contamination is possible"
+      },
+      "environmentAssumptions": [
+        "No test-local environment override detected; relies on process-level fallback and config defaults."
+      ],
+      "skipConditions": {
+        "markers": [],
+        "evidence": "No executable skip/todo/only marker found by static search."
+      },
+      "stopCondition": "No per-test stop condition required for external contact because no unmocked non-loopback call was found; stop the diagnostic if a fallback/preloader readback shows an owner DB path or any transport URL outside injected/mock seams.",
+      "confidence": 0.8
+    },
+    {
+      "testPath": "backend/src/services/internal-observability.test.ts",
+      "nonLoopbackNetwork": {
+        "status": "mocked_or_not_called",
+        "evidence": "Static inspection found no unmocked non-loopback transport call in the exercised test path; provider/task/HTTP seams are fixtures or callbacks where present.",
+        "nonLoopbackCall": "none"
+      },
+      "paidCallRisk": "none observed; provider credentials/routes are test values and physical seams are mocked, injected, or not called.",
+      "database": {
+        "mode": "test-owned-temp",
+        "evidence": "Sets DATABASE_URL=\"\" and a per-test DATABASE_PATH before dynamic db import; initializes/writes SQLite as part of the test.",
+        "preloaderEffect": "The fallback preloader must set its path before module loading, but this test deliberately overrides DATABASE_PATH before its dynamic db import; its own temp path should win unless config/db was imported earlier by another preload.",
+        "defaultDbRisk": "blocked by test-owned path when config/db has not been imported earlier"
+      },
+      "environmentAssumptions": [
+        "DATABASE_URL set by test to \"\"",
+        "AUTH_PROVIDER set by test to \"legacy\"",
+        "DATABASE_PATH set by test to join(temporaryDirectory, \"observations.db\")"
+      ],
+      "skipConditions": {
+        "markers": [],
+        "evidence": "No executable skip/todo/only marker found by static search."
+      },
+      "stopCondition": "No per-test stop condition required for external contact because no unmocked non-loopback call was found; stop the diagnostic if a fallback/preloader readback shows an owner DB path or any transport URL outside injected/mock seams.",
+      "confidence": 0.8
+    },
+    {
+      "testPath": "backend/src/services/llm-usage-cost-report.test.ts",
+      "nonLoopbackNetwork": {
+        "status": "mocked_or_not_called",
+        "evidence": "Static inspection found no unmocked non-loopback transport call in the exercised test path; provider/task/HTTP seams are fixtures or callbacks where present.",
+        "nonLoopbackCall": "none"
+      },
+      "paidCallRisk": "none observed; provider credentials/routes are test values and physical seams are mocked, injected, or not called.",
+      "database": {
+        "mode": "fallback-possible",
+        "evidence": "No test-local DATABASE_PATH assignment found; if the service/repository path opens SQLite, it uses the per-process fallback path supplied by the planned preloader.",
+        "preloaderEffect": "Safe from the owner-specified DB if fallback path is created before test module loading; writes may persist across tests sharing the same process fallback and require per-process isolation/cleanup.",
+        "defaultDbRisk": "no owner/default DB under stated preloader, but shared fallback contamination is possible"
+      },
+      "environmentAssumptions": [
+        "No test-local environment override detected; relies on process-level fallback and config defaults."
+      ],
+      "skipConditions": {
+        "markers": [],
+        "evidence": "No executable skip/todo/only marker found by static search."
+      },
+      "stopCondition": "No per-test stop condition required for external contact because no unmocked non-loopback call was found; stop the diagnostic if a fallback/preloader readback shows an owner DB path or any transport URL outside injected/mock seams.",
+      "confidence": 0.8
+    },
+    {
+      "testPath": "backend/src/services/narration-task-dispatch.test.ts",
+      "nonLoopbackNetwork": {
+        "status": "injected",
+        "evidence": "enqueue function receives fetchImpl; metadata and Cloud Tasks URLs are called only through that injected function.",
+        "nonLoopbackCall": "none"
+      },
+      "paidCallRisk": "none observed; provider credentials/routes are test values and physical seams are mocked, injected, or not called.",
+      "database": {
+        "mode": "fallback-possible",
+        "evidence": "No test-local DATABASE_PATH assignment found; if the service/repository path opens SQLite, it uses the per-process fallback path supplied by the planned preloader.",
+        "preloaderEffect": "Safe from the owner-specified DB if fallback path is created before test module loading; writes may persist across tests sharing the same process fallback and require per-process isolation/cleanup.",
+        "defaultDbRisk": "no owner/default DB under stated preloader, but shared fallback contamination is possible"
+      },
+      "environmentAssumptions": [
+        "No test-local environment override detected; relies on process-level fallback and config defaults."
+      ],
+      "skipConditions": {
+        "markers": [],
+        "evidence": "No executable skip/todo/only marker found by static search."
+      },
+      "stopCondition": "No per-test stop condition required for external contact because no unmocked non-loopback call was found; stop the diagnostic if a fallback/preloader readback shows an owner DB path or any transport URL outside injected/mock seams.",
+      "confidence": 0.9
+    },
+    {
+      "testPath": "backend/src/services/narration-worker-accounting.test.ts",
+      "nonLoopbackNetwork": {
+        "status": "mocked_or_not_called",
+        "evidence": "Static inspection found no unmocked non-loopback transport call in the exercised test path; provider/task/HTTP seams are fixtures or callbacks where present.",
+        "nonLoopbackCall": "none"
+      },
+      "paidCallRisk": "none observed; provider credentials/routes are test values and physical seams are mocked, injected, or not called.",
+      "database": {
+        "mode": "test-owned-temp",
+        "evidence": "Sets DATABASE_URL=\"\" and a per-test DATABASE_PATH before dynamic db import; initializes/writes SQLite as part of the test.",
+        "preloaderEffect": "The fallback preloader must set its path before module loading, but this test deliberately overrides DATABASE_PATH before its dynamic db import; its own temp path should win unless config/db was imported earlier by another preload.",
+        "defaultDbRisk": "blocked by test-owned path when config/db has not been imported earlier"
+      },
+      "environmentAssumptions": [
+        "DATABASE_URL set by test to \"\"",
+        "AUTH_PROVIDER set by test to \"legacy\"",
+        "DATABASE_PATH set by test to join(mkdtempSync(join(tmpdir(), \"narration-accounting-\")), \"test.db\")"
+      ],
+      "skipConditions": {
+        "markers": [],
+        "evidence": "No executable skip/todo/only marker found by static search."
+      },
+      "stopCondition": "No per-test stop condition required for external contact because no unmocked non-loopback call was found; stop the diagnostic if a fallback/preloader readback shows an owner DB path or any transport URL outside injected/mock seams.",
+      "confidence": 0.8
+    },
+    {
+      "testPath": "backend/src/services/narration-worker.test.ts",
+      "nonLoopbackNetwork": {
+        "status": "mocked_or_not_called",
+        "evidence": "Static inspection found no unmocked non-loopback transport call in the exercised test path; provider/task/HTTP seams are fixtures or callbacks where present.",
+        "nonLoopbackCall": "none"
+      },
+      "paidCallRisk": "none observed; provider credentials/routes are test values and physical seams are mocked, injected, or not called.",
+      "database": {
+        "mode": "test-owned-temp",
+        "evidence": "Sets DATABASE_URL=\"\" and a per-test DATABASE_PATH before dynamic db import; initializes/writes SQLite as part of the test.",
+        "preloaderEffect": "The fallback preloader must set its path before module loading, but this test deliberately overrides DATABASE_PATH before its dynamic db import; its own temp path should win unless config/db was imported earlier by another preload.",
+        "defaultDbRisk": "blocked by test-owned path when config/db has not been imported earlier"
+      },
+      "environmentAssumptions": [
+        "DATABASE_URL set by test to \"\"",
+        "AUTH_PROVIDER set by test to \"legacy\"",
+        "DATABASE_PATH set by test to join(tempDir, \"test.db\")"
+      ],
+      "skipConditions": {
+        "markers": [],
+        "evidence": "No executable skip/todo/only marker found by static search."
+      },
+      "stopCondition": "No per-test stop condition required for external contact because no unmocked non-loopback call was found; stop the diagnostic if a fallback/preloader readback shows an owner DB path or any transport URL outside injected/mock seams.",
+      "confidence": 0.8
+    },
+    {
+      "testPath": "backend/src/services/normal-awareness-policy.test.ts",
+      "nonLoopbackNetwork": {
+        "status": "method-mocked",
+        "evidence": "provider role methods are replaced with node:test mocks before the service path is exercised; URLs are test.invalid values.",
+        "nonLoopbackCall": "none"
+      },
+      "paidCallRisk": "none observed; provider credentials/routes are test values and physical seams are mocked, injected, or not called.",
+      "database": {
+        "mode": "test-owned-temp",
+        "evidence": "Sets DATABASE_URL=\"\" and a per-test DATABASE_PATH before dynamic db import; initializes/writes SQLite as part of the test.",
+        "preloaderEffect": "The fallback preloader must set its path before module loading, but this test deliberately overrides DATABASE_PATH before its dynamic db import; its own temp path should win unless config/db was imported earlier by another preload.",
+        "defaultDbRisk": "blocked by test-owned path when config/db has not been imported earlier"
+      },
+      "environmentAssumptions": [
+        "DATABASE_URL set by test to \"\"",
+        "DATABASE_PATH set by test to join(directory, \"test.db\")",
+        "AUTH_PROVIDER set by test to \"legacy\"",
+        "LLM_PROVIDER set by test to \"xai\"",
+        "ALLOW_MOCK_PROVIDER set by test to \"false\"",
+        "OPENAI_API_KEY set by test to \"test-only\"",
+        "XAI_API_KEY set by test to \"test-only\"",
+        "OPENAI_BASE_URL set by test to \"https://test.invalid/v1\"",
+        "XAI_BASE_URL set by test to \"https://test.invalid/v1\"",
+        "XAI_MODEL_ENGINE set by test to \"grok-4.5\"",
+        "XAI_MODEL_FAST set by test to \"grok-4.3\"",
+        "TRIAL_TEST_FAILURE set by test to \"\""
+      ],
+      "skipConditions": {
+        "markers": [],
+        "evidence": "No executable skip/todo/only marker found by static search."
+      },
+      "stopCondition": "No per-test stop condition required for external contact because no unmocked non-loopback call was found; stop the diagnostic if a fallback/preloader readback shows an owner DB path or any transport URL outside injected/mock seams.",
+      "confidence": 0.9
+    },
+    {
+      "testPath": "backend/src/services/r2-storage.test.ts",
+      "nonLoopbackNetwork": {
+        "status": "not-called",
+        "evidence": "URLs are data/assertion inputs or local file/strict request construction; no physical transport call in test path.",
+        "nonLoopbackCall": "none"
+      },
+      "paidCallRisk": "none observed; provider credentials/routes are test values and physical seams are mocked, injected, or not called.",
+      "database": {
+        "mode": "fallback-possible",
+        "evidence": "No test-local DATABASE_PATH assignment found; if the service/repository path opens SQLite, it uses the per-process fallback path supplied by the planned preloader.",
+        "preloaderEffect": "Safe from the owner-specified DB if fallback path is created before test module loading; writes may persist across tests sharing the same process fallback and require per-process isolation/cleanup.",
+        "defaultDbRisk": "no owner/default DB under stated preloader, but shared fallback contamination is possible"
+      },
+      "environmentAssumptions": [
+        "No test-local environment override detected; relies on process-level fallback and config defaults."
+      ],
+      "skipConditions": {
+        "markers": [],
+        "evidence": "No executable skip/todo/only marker found by static search."
+      },
+      "stopCondition": "No per-test stop condition required for external contact because no unmocked non-loopback call was found; stop the diagnostic if a fallback/preloader readback shows an owner DB path or any transport URL outside injected/mock seams.",
+      "confidence": 0.8
+    },
+    {
+      "testPath": "backend/src/services/rating-service-transaction.test.ts",
+      "nonLoopbackNetwork": {
+        "status": "mocked_or_not_called",
+        "evidence": "Static inspection found no unmocked non-loopback transport call in the exercised test path; provider/task/HTTP seams are fixtures or callbacks where present.",
+        "nonLoopbackCall": "none"
+      },
+      "paidCallRisk": "none observed; provider credentials/routes are test values and physical seams are mocked, injected, or not called.",
+      "database": {
+        "mode": "test-owned-temp",
+        "evidence": "Sets DATABASE_URL=\"\" and a per-test DATABASE_PATH before dynamic db import; initializes/writes SQLite as part of the test.",
+        "preloaderEffect": "The fallback preloader must set its path before module loading, but this test deliberately overrides DATABASE_PATH before its dynamic db import; its own temp path should win unless config/db was imported earlier by another preload.",
+        "defaultDbRisk": "blocked by test-owned path when config/db has not been imported earlier"
+      },
+      "environmentAssumptions": [
+        "DATABASE_URL set by test to \"\"",
+        "DATABASE_PATH set by test to join(directory, \"test.db\")",
+        "AUTH_PROVIDER set by test to \"legacy\""
+      ],
+      "skipConditions": {
+        "markers": [],
+        "evidence": "No executable skip/todo/only marker found by static search."
+      },
+      "stopCondition": "No per-test stop condition required for external contact because no unmocked non-loopback call was found; stop the diagnostic if a fallback/preloader readback shows an owner DB path or any transport URL outside injected/mock seams.",
+      "confidence": 0.8
+    },
+    {
+      "testPath": "backend/src/services/scene-beat-wiring.test.ts",
+      "nonLoopbackNetwork": {
+        "status": "mocked_or_not_called",
+        "evidence": "Static inspection found no unmocked non-loopback transport call in the exercised test path; provider/task/HTTP seams are fixtures or callbacks where present.",
+        "nonLoopbackCall": "none"
+      },
+      "paidCallRisk": "none observed; provider credentials/routes are test values and physical seams are mocked, injected, or not called.",
+      "database": {
+        "mode": "test-owned-temp",
+        "evidence": "Sets DATABASE_URL=\"\" and a per-test DATABASE_PATH before dynamic db import; initializes/writes SQLite as part of the test.",
+        "preloaderEffect": "The fallback preloader must set its path before module loading, but this test deliberately overrides DATABASE_PATH before its dynamic db import; its own temp path should win unless config/db was imported earlier by another preload.",
+        "defaultDbRisk": "blocked by test-owned path when config/db has not been imported earlier"
+      },
+      "environmentAssumptions": [
+        "DATABASE_URL set by test to \"\"",
+        "AUTH_PROVIDER set by test to \"legacy\"",
+        "DATABASE_PATH set by test to join(temporaryDirectory, \"scene-beat.db\")"
+      ],
+      "skipConditions": {
+        "markers": [],
+        "evidence": "No executable skip/todo/only marker found by static search."
+      },
+      "stopCondition": "No per-test stop condition required for external contact because no unmocked non-loopback call was found; stop the diagnostic if a fallback/preloader readback shows an owner DB path or any transport URL outside injected/mock seams.",
+      "confidence": 0.8
+    },
+    {
+      "testPath": "backend/src/services/semantic-authoring/adapters/character-v3.test.ts",
+      "nonLoopbackNetwork": {
+        "status": "mocked_or_not_called",
+        "evidence": "Static inspection found no unmocked non-loopback transport call in the exercised test path; provider/task/HTTP seams are fixtures or callbacks where present.",
+        "nonLoopbackCall": "none"
+      },
+      "paidCallRisk": "none observed; provider credentials/routes are test values and physical seams are mocked, injected, or not called.",
+      "database": {
+        "mode": "fallback-possible",
+        "evidence": "No test-local DATABASE_PATH assignment found; if the service/repository path opens SQLite, it uses the per-process fallback path supplied by the planned preloader.",
+        "preloaderEffect": "Safe from the owner-specified DB if fallback path is created before test module loading; writes may persist across tests sharing the same process fallback and require per-process isolation/cleanup.",
+        "defaultDbRisk": "no owner/default DB under stated preloader, but shared fallback contamination is possible"
+      },
+      "environmentAssumptions": [
+        "No test-local environment override detected; relies on process-level fallback and config defaults."
+      ],
+      "skipConditions": {
+        "markers": [],
+        "evidence": "No executable skip/todo/only marker found by static search."
+      },
+      "stopCondition": "No per-test stop condition required for external contact because no unmocked non-loopback call was found; stop the diagnostic if a fallback/preloader readback shows an owner DB path or any transport URL outside injected/mock seams.",
+      "confidence": 0.8
+    },
+    {
+      "testPath": "backend/src/services/semantic-authoring/conformance.test.ts",
+      "nonLoopbackNetwork": {
+        "status": "mocked_or_not_called",
+        "evidence": "Static inspection found no unmocked non-loopback transport call in the exercised test path; provider/task/HTTP seams are fixtures or callbacks where present.",
+        "nonLoopbackCall": "none"
+      },
+      "paidCallRisk": "none observed; provider credentials/routes are test values and physical seams are mocked, injected, or not called.",
+      "database": {
+        "mode": "fallback-possible",
+        "evidence": "No test-local DATABASE_PATH assignment found; if the service/repository path opens SQLite, it uses the per-process fallback path supplied by the planned preloader.",
+        "preloaderEffect": "Safe from the owner-specified DB if fallback path is created before test module loading; writes may persist across tests sharing the same process fallback and require per-process isolation/cleanup.",
+        "defaultDbRisk": "no owner/default DB under stated preloader, but shared fallback contamination is possible"
+      },
+      "environmentAssumptions": [
+        "No test-local environment override detected; relies on process-level fallback and config defaults."
+      ],
+      "skipConditions": {
+        "markers": [],
+        "evidence": "No executable skip/todo/only marker found by static search."
+      },
+      "stopCondition": "No per-test stop condition required for external contact because no unmocked non-loopback call was found; stop the diagnostic if a fallback/preloader readback shows an owner DB path or any transport URL outside injected/mock seams.",
+      "confidence": 0.8
+    },
+    {
+      "testPath": "backend/src/services/semantic-authoring/kernel-foundation.test.ts",
+      "nonLoopbackNetwork": {
+        "status": "mocked_or_not_called",
+        "evidence": "Static inspection found no unmocked non-loopback transport call in the exercised test path; provider/task/HTTP seams are fixtures or callbacks where present.",
+        "nonLoopbackCall": "none"
+      },
+      "paidCallRisk": "none observed; provider credentials/routes are test values and physical seams are mocked, injected, or not called.",
+      "database": {
+        "mode": "fallback-possible",
+        "evidence": "No test-local DATABASE_PATH assignment found; if the service/repository path opens SQLite, it uses the per-process fallback path supplied by the planned preloader.",
+        "preloaderEffect": "Safe from the owner-specified DB if fallback path is created before test module loading; writes may persist across tests sharing the same process fallback and require per-process isolation/cleanup.",
+        "defaultDbRisk": "no owner/default DB under stated preloader, but shared fallback contamination is possible"
+      },
+      "environmentAssumptions": [
+        "No test-local environment override detected; relies on process-level fallback and config defaults."
+      ],
+      "skipConditions": {
+        "markers": [],
+        "evidence": "No executable skip/todo/only marker found by static search."
+      },
+      "stopCondition": "No per-test stop condition required for external contact because no unmocked non-loopback call was found; stop the diagnostic if a fallback/preloader readback shows an owner DB path or any transport URL outside injected/mock seams.",
+      "confidence": 0.8
+    },
+    {
+      "testPath": "backend/src/services/semantic-authoring/public-mapping.test.ts",
+      "nonLoopbackNetwork": {
+        "status": "mocked_or_not_called",
+        "evidence": "Static inspection found no unmocked non-loopback transport call in the exercised test path; provider/task/HTTP seams are fixtures or callbacks where present.",
+        "nonLoopbackCall": "none"
+      },
+      "paidCallRisk": "none observed; provider credentials/routes are test values and physical seams are mocked, injected, or not called.",
+      "database": {
+        "mode": "fallback-possible",
+        "evidence": "No test-local DATABASE_PATH assignment found; if the service/repository path opens SQLite, it uses the per-process fallback path supplied by the planned preloader.",
+        "preloaderEffect": "Safe from the owner-specified DB if fallback path is created before test module loading; writes may persist across tests sharing the same process fallback and require per-process isolation/cleanup.",
+        "defaultDbRisk": "no owner/default DB under stated preloader, but shared fallback contamination is possible"
+      },
+      "environmentAssumptions": [
+        "No test-local environment override detected; relies on process-level fallback and config defaults."
+      ],
+      "skipConditions": {
+        "markers": [],
+        "evidence": "No executable skip/todo/only marker found by static search."
+      },
+      "stopCondition": "No per-test stop condition required for external contact because no unmocked non-loopback call was found; stop the diagnostic if a fallback/preloader readback shows an owner DB path or any transport URL outside injected/mock seams.",
+      "confidence": 0.8
+    },
+    {
+      "testPath": "backend/src/services/semantic-authoring/revision-scope-evaluation.test.ts",
+      "nonLoopbackNetwork": {
+        "status": "mocked_or_not_called",
+        "evidence": "Static inspection found no unmocked non-loopback transport call in the exercised test path; provider/task/HTTP seams are fixtures or callbacks where present.",
+        "nonLoopbackCall": "none"
+      },
+      "paidCallRisk": "none observed; provider credentials/routes are test values and physical seams are mocked, injected, or not called.",
+      "database": {
+        "mode": "fallback-possible",
+        "evidence": "No test-local DATABASE_PATH assignment found; if the service/repository path opens SQLite, it uses the per-process fallback path supplied by the planned preloader.",
+        "preloaderEffect": "Safe from the owner-specified DB if fallback path is created before test module loading; writes may persist across tests sharing the same process fallback and require per-process isolation/cleanup.",
+        "defaultDbRisk": "no owner/default DB under stated preloader, but shared fallback contamination is possible"
+      },
+      "environmentAssumptions": [
+        "No test-local environment override detected; relies on process-level fallback and config defaults."
+      ],
+      "skipConditions": {
+        "markers": [],
+        "evidence": "No executable skip/todo/only marker found by static search."
+      },
+      "stopCondition": "No per-test stop condition required for external contact because no unmocked non-loopback call was found; stop the diagnostic if a fallback/preloader readback shows an owner DB path or any transport URL outside injected/mock seams.",
+      "confidence": 0.8
+    },
+    {
+      "testPath": "backend/src/services/semantic-authoring/revision-scope-ollama.test.ts",
+      "nonLoopbackNetwork": {
+        "status": "mocked_or_not_called",
+        "evidence": "Static inspection found no unmocked non-loopback transport call in the exercised test path; provider/task/HTTP seams are fixtures or callbacks where present.",
+        "nonLoopbackCall": "none"
+      },
+      "paidCallRisk": "none observed; provider credentials/routes are test values and physical seams are mocked, injected, or not called.",
+      "database": {
+        "mode": "fallback-possible",
+        "evidence": "No test-local DATABASE_PATH assignment found; if the service/repository path opens SQLite, it uses the per-process fallback path supplied by the planned preloader.",
+        "preloaderEffect": "Safe from the owner-specified DB if fallback path is created before test module loading; writes may persist across tests sharing the same process fallback and require per-process isolation/cleanup.",
+        "defaultDbRisk": "no owner/default DB under stated preloader, but shared fallback contamination is possible"
+      },
+      "environmentAssumptions": [
+        "No test-local environment override detected; relies on process-level fallback and config defaults."
+      ],
+      "skipConditions": {
+        "markers": [],
+        "evidence": "No executable skip/todo/only marker found by static search."
+      },
+      "stopCondition": "No per-test stop condition required for external contact because no unmocked non-loopback call was found; stop the diagnostic if a fallback/preloader readback shows an owner DB path or any transport URL outside injected/mock seams.",
+      "confidence": 0.8
+    },
+    {
+      "testPath": "backend/src/services/semantic-authoring/scripted-ports.test.ts",
+      "nonLoopbackNetwork": {
+        "status": "mocked_or_not_called",
+        "evidence": "Static inspection found no unmocked non-loopback transport call in the exercised test path; provider/task/HTTP seams are fixtures or callbacks where present.",
+        "nonLoopbackCall": "none"
+      },
+      "paidCallRisk": "none observed; provider credentials/routes are test values and physical seams are mocked, injected, or not called.",
+      "database": {
+        "mode": "fallback-possible",
+        "evidence": "No test-local DATABASE_PATH assignment found; if the service/repository path opens SQLite, it uses the per-process fallback path supplied by the planned preloader.",
+        "preloaderEffect": "Safe from the owner-specified DB if fallback path is created before test module loading; writes may persist across tests sharing the same process fallback and require per-process isolation/cleanup.",
+        "defaultDbRisk": "no owner/default DB under stated preloader, but shared fallback contamination is possible"
+      },
+      "environmentAssumptions": [
+        "No test-local environment override detected; relies on process-level fallback and config defaults."
+      ],
+      "skipConditions": {
+        "markers": [],
+        "evidence": "No executable skip/todo/only marker found by static search."
+      },
+      "stopCondition": "No per-test stop condition required for external contact because no unmocked non-loopback call was found; stop the diagnostic if a fallback/preloader readback shows an owner DB path or any transport URL outside injected/mock seams.",
+      "confidence": 0.8
+    },
+    {
+      "testPath": "backend/src/services/supabase-identity.test.ts",
+      "nonLoopbackNetwork": {
+        "status": "not-called",
+        "evidence": "URLs are data/assertion inputs or local file/strict request construction; no physical transport call in test path.",
+        "nonLoopbackCall": "none"
+      },
+      "paidCallRisk": "none observed; provider credentials/routes are test values and physical seams are mocked, injected, or not called.",
+      "database": {
+        "mode": "fallback-possible",
+        "evidence": "No test-local DATABASE_PATH assignment found; if the service/repository path opens SQLite, it uses the per-process fallback path supplied by the planned preloader.",
+        "preloaderEffect": "Safe from the owner-specified DB if fallback path is created before test module loading; writes may persist across tests sharing the same process fallback and require per-process isolation/cleanup.",
+        "defaultDbRisk": "no owner/default DB under stated preloader, but shared fallback contamination is possible"
+      },
+      "environmentAssumptions": [
+        "No test-local environment override detected; relies on process-level fallback and config defaults."
+      ],
+      "skipConditions": {
+        "markers": [],
+        "evidence": "No executable skip/todo/only marker found by static search."
+      },
+      "stopCondition": "No per-test stop condition required for external contact because no unmocked non-loopback call was found; stop the diagnostic if a fallback/preloader readback shows an owner DB path or any transport URL outside injected/mock seams.",
+      "confidence": 0.8
+    },
+    {
+      "testPath": "backend/src/services/v3-battle-creation.test.ts",
+      "nonLoopbackNetwork": {
+        "status": "mocked_or_not_called",
+        "evidence": "Static inspection found no unmocked non-loopback transport call in the exercised test path; provider/task/HTTP seams are fixtures or callbacks where present.",
+        "nonLoopbackCall": "none"
+      },
+      "paidCallRisk": "none observed; provider credentials/routes are test values and physical seams are mocked, injected, or not called.",
+      "database": {
+        "mode": "test-owned-temp",
+        "evidence": "Sets DATABASE_URL=\"\" and a per-test DATABASE_PATH before dynamic db import; initializes/writes SQLite as part of the test.",
+        "preloaderEffect": "The fallback preloader must set its path before module loading, but this test deliberately overrides DATABASE_PATH before its dynamic db import; its own temp path should win unless config/db was imported earlier by another preload.",
+        "defaultDbRisk": "blocked by test-owned path when config/db has not been imported earlier"
+      },
+      "environmentAssumptions": [
+        "DATABASE_URL set by test to \"\"",
+        "AUTH_PROVIDER set by test to \"legacy\"",
+        "DATABASE_PATH set by test to join(temporaryDirectory, \"v3-battle.db\")"
+      ],
+      "skipConditions": {
+        "markers": [],
+        "evidence": "No executable skip/todo/only marker found by static search."
+      },
+      "stopCondition": "No per-test stop condition required for external contact because no unmocked non-loopback call was found; stop the diagnostic if a fallback/preloader readback shows an owner DB path or any transport URL outside injected/mock seams.",
+      "confidence": 0.8
+    },
+    {
+      "testPath": "backend/src/routes-cutover-http.test.ts",
+      "nonLoopbackNetwork": {
+        "status": "mocked_or_not_called",
+        "evidence": "Static inspection found no unmocked non-loopback transport call in the exercised test path; provider/task/HTTP seams are fixtures or callbacks where present.",
+        "nonLoopbackCall": "none"
+      },
+      "paidCallRisk": "none observed; provider credentials/routes are test values and physical seams are mocked, injected, or not called.",
+      "database": {
+        "mode": "test-owned-temp",
+        "evidence": "Sets DATABASE_URL=\"\" and a per-test DATABASE_PATH before dynamic db import; initializes/writes SQLite as part of the test.",
+        "preloaderEffect": "The fallback preloader must set its path before module loading, but this test deliberately overrides DATABASE_PATH before its dynamic db import; its own temp path should win unless config/db was imported earlier by another preload.",
+        "defaultDbRisk": "blocked by test-owned path when config/db has not been imported earlier"
+      },
+      "environmentAssumptions": [
+        "NODE_ENV set by test to \"test\"",
+        "DATABASE_URL set by test to \"\"",
+        "DIRECT_URL set by test to \"\"",
+        "AUTH_PROVIDER set by test to \"legacy\"",
+        "LLM_PROVIDER set by test to \"mock\"",
+        "DATABASE_PATH set by test to path.join(directory, \"test.db\")",
+        "CUTOVER_ID set by test to \"cutover-http-test\"",
+        "CUTOVER_ARTIFACT_ID set by test to \"artifact-http-test\""
+      ],
+      "skipConditions": {
+        "markers": [],
+        "evidence": "No executable skip/todo/only marker found by static search."
+      },
+      "stopCondition": "No per-test stop condition required for external contact because no unmocked non-loopback call was found; stop the diagnostic if a fallback/preloader readback shows an owner DB path or any transport URL outside injected/mock seams.",
+      "confidence": 0.8
+    }
+  ]
+}

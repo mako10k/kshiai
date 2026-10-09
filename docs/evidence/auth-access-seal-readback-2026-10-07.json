@@ -1,0 +1,14 @@
+{
+  "newRefs": 16,
+  "previousHeadsUnchanged": true,
+  "previousHeadCount": 853,
+  "totalRefs": 869,
+  "sourceBytesMatch": true,
+  "stale": 0,
+  "fsck": "ok",
+  "limitations": [
+    "SQLite and locally signed/injected-key/fetch tests only; no external identity or provider work",
+    "Historical origin runtime prices/limits and observation workflow directives not adopted by this binding",
+    "Four unsealed files registered, signed identity file rebound without removing any original cases or reviving discarded cutover trial"
+  ]
+}

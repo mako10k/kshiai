@@ -1,0 +1,114 @@
+{
+  "identity": "vt104-rc2-old-writers-closed-20261002",
+  "observedAt": "2026-10-02T02:05:38.034200+00:00",
+  "window": {
+    "stoppedAt": "2026-10-02T02:02:48.344Z",
+    "expiresAt": "2026-10-02T02:32:48.344Z"
+  },
+  "serviceManualZero": true,
+  "oldTaggedWriters": 0,
+  "publicTraffic": [
+    {
+      "percent": 100,
+      "revisionName": "kshiai-api-00141-vis"
+    }
+  ],
+  "queueState": "PAUSED",
+  "queuedTasks": 0,
+  "databaseReadonlyChecks": {
+    "observedAt": "2026-10-02T02:05:18.290Z",
+    "targetProject": "cvrbhpkfqkpqdegxfrlq",
+    "route": "existing session pooler",
+    "readonly": true,
+    "counts": {
+      "provider_operation_runs": 0,
+      "provider_operation_attempts": 0,
+      "battle_narration_attempts": 0,
+      "battle_narration_entries": 0,
+      "asset_authoring_outbox": 0,
+      "character_authoring_jobs": 0,
+      "battlefield_authoring_jobs": 0,
+      "narration_style_authoring_jobs": 0,
+      "battle_leases": 0,
+      "battle_narration_leases": 0
+    },
+    "migrations": {
+      "applied": [
+        "0001_initial_postgres.sql",
+        "0002_runtime_constraints.sql",
+        "0003_distributed_runtime.sql",
+        "0004_supabase_auth.sql",
+        "0005_normalize_legacy_battlefields.sql",
+        "0006_character_drafts.sql",
+        "0007_account_kind.sql",
+        "0007_friendships.sql",
+        "0008_developer_account_kind.sql",
+        "0009_dialogue_pipeline_settings.sql",
+        "0010_user_public_profile.sql",
+        "0011_asset_generations.sql",
+        "0012_battle_revision.sql",
+        "0013_battle_presentations.sql",
+        "0014_ordered_narration_worker.sql",
+        "0015_pipeline_recovery_fencing.sql",
+        "0016_provider_operation_accounting.sql",
+        "0017_structured_character_assets.sql",
+        "0018_structured_battlefield_assets.sql",
+        "0019_structured_narration_assets.sql",
+        "0020_character_authoring_jobs.sql",
+        "0021_owner_notifications.sql",
+        "0022_family_authoring_jobs.sql",
+        "0023_authoring_dispatch.sql",
+        "0024_character_semantic_migration.sql",
+        "0025_semantic_authoring_runs.sql"
+      ],
+      "pending": [
+        "0026_character_focused_authoring_payloads.sql",
+        "0027_character_revision_scope_resolution.sql",
+        "0028_semantic_authoring_provider_timeout.sql",
+        "0029_battle_discard_receipts.sql",
+        "0030_cutover_control.sql"
+      ]
+    }
+  },
+  "planDigest": "c5ac4056d81ce1f5722f42ab90cb92e188e6b5f636544e87f96331cb6f6c22f8",
+  "allCloudRunJobsIdleBeforeStop": true,
+  "ownerReportedLocalAndOtherChatUpdates": "していない",
+  "limitation": "Known Cloud Run/tag/queue/job routes and stated owner operator scope; not an assertion about every hypothetical external writer.",
+  "stopOperations": [
+    {
+      "operation": "queuePause",
+      "returncode": 0,
+      "stdout": "",
+      "stderr": "Paused queue [asia-northeast1/kshiai-narration].\n"
+    },
+    {
+      "operation": "clearOldTags",
+      "returncode": 2,
+      "stdout": "",
+      "stderr": "ERROR: (gcloud.run.services.update) unrecognized arguments: --clear-tags (did you mean '--clear-labels'?) \n\nTo search the help text of gcloud commands, run:\n  gcloud help -- SEARCH_TERMS\n"
+    },
+    {
+      "operation": "clearOldTags-corrected",
+      "argv": [
+        "gcloud",
+        "run",
+        "services",
+        "update-traffic",
+        "kshiai-api",
+        "--project=kshiai",
+        "--region=asia-northeast1",
+        "--clear-tags",
+        "--quiet"
+      ],
+      "returncode": 0,
+      "stdout": "URL: https://kshiai-api-crpgn6evfa-an.a.run.app\nTraffic:\n  100% kshiai-api-00141-vis\n",
+      "stderr": "Updating traffic...\nRouting traffic.....................done\nDone.\n"
+    },
+    {
+      "operation": "manualZero",
+      "returncode": 0,
+      "stdout": "",
+      "stderr": "Updating...\nDone.\nService [kshiai-api] has been updated.\n"
+    }
+  ]
+}

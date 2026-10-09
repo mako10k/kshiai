@@ -1,0 +1,24 @@
+{
+  "reviewer": "/root/battle_helper_contract_review",
+  "verdict": "PASS",
+  "files": {
+    "backend/src/scripts/authenticated-read-surface-smoke.test.ts": "09c0b4d0558e454f38b46becc7f894e151c45c97a7ceb4902cc593e077b63a70",
+    "backend/src/scripts/authenticated-read-surface-smoke.ts": "8d55f2b47c2af911cc5f34f3ef145ff30a57b994638f97af0ba721de965a8584",
+    "backend/src/scripts/authenticated-sse-smoke.test.ts": "4acfbb9e0d22c03f00aa8d9fd4fd44bf5976894ff33de4f26246e59b0b144f0e",
+    "backend/src/scripts/authenticated-sse-smoke.ts": "532cae4a7327b972a0e996e3bbf264ae1fc2068aebd88c36dfb19f3887d74f0a",
+    "backend/src/scripts/awareness-public-observation.test.ts": "20605b55d20c22a04589a044f872e68273981e24ae9a056b04ab7efad66738d3",
+    "backend/src/scripts/awareness-public-observation.ts": "35e9d96afdef13e57a0121c82969664aa5512eb0d94b395d208af5c0b3d959cc"
+  },
+  "cases": 7,
+  "diagnosticPass": 7,
+  "diagnosticFail": 0,
+  "diagnosticSkip": 0,
+  "inside": [],
+  "outside": [
+    "Injected fetch read probes are not13actual endpoints",
+    "Actual SSE terminal error fixture is not battle completion",
+    "Pure runtime/usage rows are not actual SDK/DB/provider public readback"
+  ],
+  "boundaryDisputes": [],
+  "noSourceEdits": true
+}

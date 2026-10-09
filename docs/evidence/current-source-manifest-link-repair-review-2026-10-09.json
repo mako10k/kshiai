@@ -1,0 +1,16 @@
+{
+  "schema": "kshiai/manifest-link-repair-review/v1",
+  "reviewer": "battle_helper_contract_review",
+  "reviewedAt": "2026-10-09T05:18:15.675862+00:00",
+  "planSha256": "d00d95d149ac0cdda4177d7b4cd30422731f98bfb5f011cc965ea63cf07f65fa",
+  "adoptionPlanSha256": "239a2008d5497391e58903ede00b8bc8edc4feed88385af1e9aeae3e0ba7edf8",
+  "verifierSha256": "00c20ba0e252949a5ed562326a96243a0c2f49294b4837094819ed8993db58ae",
+  "causeRepairResult": "PASS",
+  "remainingFiveWorkUnitResult": "PASS",
+  "unchangedPublisherAutomaticRecovery": "FAIL; assertions refuse legacy candidate before unlink. Not resumed.",
+  "method": "Check exact15 unchanged Cause metadata; link current cfb374 with previous cbef9; unlink old target; exact candidate readback; publish remaining5; full official CLI verifier follows.",
+  "existingPublishedNodes": 387,
+  "existingHeadsAnd674SourcesUnchanged": true,
+  "boundedWriterSha256": "233d2d7d5fb96da225840616d49cc8e278bc9db37b928a6b7a6500768cbc140c",
+  "completeClaim": false
+}

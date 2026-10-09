@@ -1,0 +1,164 @@
+{
+  "review": "docs/evidence/provider-accounting-current-cause-review-2026-10-07.json",
+  "entries": [
+    {
+      "key": "implementation-provider-control-sqlite-schema",
+      "path": "backend/src/db.ts",
+      "parents": [
+        "authority",
+        "observation",
+        "cutover",
+        "control-design"
+      ],
+      "scope": "Only temporary SQLite provider_operation_runs/attempts and cutover control/permit DDL exercised by this cohort, including unique physical identity and bounded metadata columns. No whole DB, migration deployment or PostgreSQL acceptance.",
+      "test": false,
+      "ref": "all-tests-20261007/implementation-provider-control-sqlite-schema",
+      "sha256": "0f0c255dd8665debcbb37261f9edf9878f81352d6e5ce0ec77676f66a373d33f",
+      "sealId": "4ea52a357e72328f2c5e136344aa945c23078b1c6957fc150f77a6153663ebee",
+      "causeSealIds": [
+        "4a236b55e9ad9e4aa54eb2c6bbe9d77e0a318881ba8328363505153d16e151dd",
+        "f37d62dd130cf26f48ced720565c4fad035b93a3f3ad1c3e98943cdc9bf585d1",
+        "6a551488cdc83fcd78916fb69d9cc9f11533ad4a545fd5c96cee39584f8b2226",
+        "4ae57d3d00b2485210aa3c0ee7c312fe26fed6fad7548d40d51af25b3316c7bf"
+      ]
+    },
+    {
+      "key": "implementation-provider-control-repository",
+      "path": "backend/src/repositories/cutover-control.ts",
+      "parents": [
+        "cutover",
+        "control-design",
+        "implementation-provider-control-sqlite-schema"
+      ],
+      "scope": "Only initialization/read, closed/open provider admission and reserved/sending/result-accounting-pending/settled/indeterminate permit state persistence used by accounting tests. No trial execution, owner registration, promotion, recovery or stopped barrier certification.",
+      "test": false,
+      "ref": "all-tests-20261007/implementation-provider-control-repository",
+      "sha256": "74a4f851bbcd72e19cec6e894529ea12262f040d260c8d7c5ce9ca062b14d30c",
+      "sealId": "63f18912b67987a5c8c31b6af4a38e1e51044e6dcebfd522a0bae9fde890481c",
+      "causeSealIds": [
+        "6a551488cdc83fcd78916fb69d9cc9f11533ad4a545fd5c96cee39584f8b2226",
+        "4ae57d3d00b2485210aa3c0ee7c312fe26fed6fad7548d40d51af25b3316c7bf",
+        "4ea52a357e72328f2c5e136344aa945c23078b1c6957fc150f77a6153663ebee"
+      ]
+    },
+    {
+      "key": "implementation-provider-control-admission",
+      "path": "backend/src/services/cutover-admission.ts",
+      "parents": [
+        "cutover",
+        "control-design",
+        "implementation-provider-control-repository"
+      ],
+      "scope": "Only configured closed refusal, open operation reserve/start, pending accounting and settled/indeterminate handle completion, and unconfigured noop handle. No revival of discarded trial or general route authorization claim.",
+      "test": false,
+      "ref": "all-tests-20261007/implementation-provider-control-admission",
+      "sha256": "d716a314bdf0f8072aa7ca1ee6ad99fbfe6b31b2cdddfe639713a889a4ab7701",
+      "sealId": "71f66465100d9d1b01533c37f03aee8554b204825a8aa3b3fc51ee5c7af2dbc2",
+      "causeSealIds": [
+        "6a551488cdc83fcd78916fb69d9cc9f11533ad4a545fd5c96cee39584f8b2226",
+        "4ae57d3d00b2485210aa3c0ee7c312fe26fed6fad7548d40d51af25b3316c7bf",
+        "63f18912b67987a5c8c31b6af4a38e1e51044e6dcebfd522a0bae9fde890481c"
+      ]
+    },
+    {
+      "key": "implementation-provider-accounting-current",
+      "path": "backend/src/llm/provider-accounting.ts",
+      "parents": [
+        "authority",
+        "observation",
+        "taxonomy",
+        "cutover",
+        "control-design",
+        "implementation-provider-control-sqlite-schema",
+        "implementation-provider-control-admission"
+      ],
+      "scope": "Current observation run creation/binding, actual SDK attempt capture, idempotent reservations and caller ceiling, fixed operation taxonomy/identity, success/failure/unknown receipts and completion readback, historical v2 ledger reads, bounded metadata. Cutover control linkage covers tested closed/open/failure permit states; trial-only branches outside this cohort.",
+      "test": false,
+      "ref": "all-tests-20261007/implementation-provider-accounting-current",
+      "sha256": "5c5465b99ed5c58b7dbbe92691c8dda51466bcd0b04a66d838e7fd52b2353181",
+      "sealId": "3e3d68c7042ed2fede7acc127dcdc9fe321a480cb43f8bf506605fde4dcae03e",
+      "causeSealIds": [
+        "4a236b55e9ad9e4aa54eb2c6bbe9d77e0a318881ba8328363505153d16e151dd",
+        "f37d62dd130cf26f48ced720565c4fad035b93a3f3ad1c3e98943cdc9bf585d1",
+        "8c5c86d6669841955ae7ddca134e76d66c91a983e6364535405f7546b73972c3",
+        "6a551488cdc83fcd78916fb69d9cc9f11533ad4a545fd5c96cee39584f8b2226",
+        "4ae57d3d00b2485210aa3c0ee7c312fe26fed6fad7548d40d51af25b3316c7bf",
+        "4ea52a357e72328f2c5e136344aa945c23078b1c6957fc150f77a6153663ebee",
+        "71f66465100d9d1b01533c37f03aee8554b204825a8aa3b3fc51ee5c7af2dbc2"
+      ]
+    },
+    {
+      "key": "implementation-provider-accounting-sdk-retries",
+      "path": "backend/src/llm/openai-compatible.ts",
+      "parents": [
+        "authority",
+        "observation",
+        "implementation-provider-accounting-current"
+      ],
+      "scope": "Only generic accounted JSON SDK send/retry path, ordinal and registered labels with independent physical usage; no automatic retry activation for awareness none-retry calls or full domain method certification.",
+      "test": false,
+      "ref": "all-tests-20261007/implementation-provider-accounting-sdk-retries",
+      "sha256": "8d4be097ddbfcb0da515dd0db402c7dc6dddccb763d625fce16165e7c524d2a5",
+      "sealId": "5ffd398315f200640d9f18b45ef7fdcb431c6f2ff542cdb4c18148b2b093cfdc",
+      "causeSealIds": [
+        "4a236b55e9ad9e4aa54eb2c6bbe9d77e0a318881ba8328363505153d16e151dd",
+        "f37d62dd130cf26f48ced720565c4fad035b93a3f3ad1c3e98943cdc9bf585d1",
+        "3e3d68c7042ed2fede7acc127dcdc9fe321a480cb43f8bf506605fde4dcae03e"
+      ]
+    },
+    {
+      "key": "provider-accounting-current",
+      "path": "backend/src/llm/provider-accounting.test.ts",
+      "parents": [
+        "authority",
+        "observation",
+        "taxonomy",
+        "cutover",
+        "control-design",
+        "implementation-provider-control-sqlite-schema",
+        "implementation-provider-control-repository",
+        "implementation-provider-control-admission",
+        "implementation-provider-accounting-current",
+        "implementation-provider-accounting-sdk-retries"
+      ],
+      "scope": "All twelve temporary SQLite/mocked SDK tests: closed transport refusal, known failure settled, ambiguous timeout indeterminate, accounting failure pending, physical retry capture, current taxonomy/historical layers, old v2 snapshot identity, fake retry unknown usage, idempotence, pre-send ceiling refusal, unknown/drift/inactive/rebinding refusal and bounded private-data-free metadata. No paid/public/PG or old cutover trial execution.",
+      "test": true,
+      "ref": "verification/provider-accounting-current-20261007",
+      "sha256": "3dd86e2bcfb7ac70ffd8581d52d8cbfa88cefb16915436456a7dd6182b3ac793",
+      "sealId": "d3c751c29a411de4346b89e816d54e795103a088c2b3939c16e2b67873243689",
+      "causeSealIds": [
+        "4a236b55e9ad9e4aa54eb2c6bbe9d77e0a318881ba8328363505153d16e151dd",
+        "f37d62dd130cf26f48ced720565c4fad035b93a3f3ad1c3e98943cdc9bf585d1",
+        "8c5c86d6669841955ae7ddca134e76d66c91a983e6364535405f7546b73972c3",
+        "6a551488cdc83fcd78916fb69d9cc9f11533ad4a545fd5c96cee39584f8b2226",
+        "4ae57d3d00b2485210aa3c0ee7c312fe26fed6fad7548d40d51af25b3316c7bf",
+        "4ea52a357e72328f2c5e136344aa945c23078b1c6957fc150f77a6153663ebee",
+        "63f18912b67987a5c8c31b6af4a38e1e51044e6dcebfd522a0bae9fde890481c",
+        "71f66465100d9d1b01533c37f03aee8554b204825a8aa3b3fc51ee5c7af2dbc2",
+        "3e3d68c7042ed2fede7acc127dcdc9fe321a480cb43f8bf506605fde4dcae03e",
+        "5ffd398315f200640d9f18b45ef7fdcb431c6f2ff542cdb4c18148b2b093cfdc"
+      ]
+    }
+  ],
+  "diagnostic": {
+    "pass": 15,
+    "fail": 0,
+    "skipped": 0,
+    "strictTypecheckExit": 0
+  },
+  "sealedFileTests": 12,
+  "diagnosticOtherTests": 3,
+  "readback": {
+    "sourceMatches": 6,
+    "stale": 0,
+    "previousHeadsUnchanged": 664,
+    "fsck": "ok"
+  },
+  "inventoryRebinding": {
+    "path": "backend/src/llm/provider-accounting.test.ts",
+    "previousRef": "verification/vt104-provider-accounting-20260930",
+    "previousSeal": "5ca4ea5ac9fad7d6d527a9c599d34984480dd6f5c1eb703ebcec3dd45060f6b5",
+    "newRef": "verification/provider-accounting-current-20261007",
+    "oldHistoryRetained": true
+  }
+}

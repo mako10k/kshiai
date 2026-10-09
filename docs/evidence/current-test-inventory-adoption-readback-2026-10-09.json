@@ -1,0 +1,31 @@
+{
+  "schema": "kshiai/current-test-inventory-adoption-readback/v1",
+  "nodes": [
+    {
+      "ref": "all-tests-20261009/readback/current-source-closure-result-r3",
+      "sealId": "9932d8592580dd5f46b3b2798854d8f8a432fcb2b43ed5ff2cd1cec6ec3b7fc9",
+      "sourceSha256": "3246f7494cf43a48dba882d220c9967e539387a21b4742c4b9a62728a6b49ec2",
+      "causeSealIds": [
+        "ed21b581503ea3f3aac63793edf12a98b3a532f2df8e61d8f016cd8f02b821c8",
+        "d9caba0cadb8918a7b6f97230bfbe0e7a30d45451489f1bee6d91742d272539a"
+      ]
+    },
+    {
+      "ref": "all-tests-20261009/registration/current-test-inventory",
+      "sealId": "8f061d86b8db21dea441b94b508396bac52df911276625d314e621a11227b1a7",
+      "sourceSha256": "1501c879b44d57788eaa4892f139e514bec79a0d91d542a9d6b39b174c6ae05a",
+      "causeSealIds": [
+        "cbd69b1da11de1854532c6f3e38b8f7496e79b6e6afb3efb6f4ca40bd3505223",
+        "9932d8592580dd5f46b3b2798854d8f8a432fcb2b43ed5ff2cd1cec6ec3b7fc9"
+      ]
+    }
+  ],
+  "testCount": 251,
+  "e2eCount": 4,
+  "inventorySha256": "1501c879b44d57788eaa4892f139e514bec79a0d91d542a9d6b39b174c6ae05a",
+  "readbackSha256": "3246f7494cf43a48dba882d220c9967e539387a21b4742c4b9a62728a6b49ec2",
+  "priorHeadsAndBindingsUnchanged": true,
+  "all251CurrentHeadsClean": true,
+  "sourceCohortUnchanged": true,
+  "formalTestPass": false
+}

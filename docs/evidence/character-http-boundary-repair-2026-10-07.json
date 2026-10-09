@@ -1,0 +1,44 @@
+{
+  "schema": "kshiai/character-http-boundary-repair/v1",
+  "file": "backend/src/routes-structured-character-acceptance.test.ts",
+  "sha256": "429d40df599081a5be44e14cb9ea4a151b07beea88ec14722e4f7d91885f36df",
+  "authority": [
+    {
+      "path": "docs/adr/0043-v3-character-updates-with-historical-v2-display.md",
+      "clause": "Decision: valid current V3 ordinary mutation target and historical V2 reads; Consequences: legacy restore unavailable"
+    },
+    {
+      "path": "docs/adr/0010-structured-selectable-asset-envelope.md",
+      "clause": "Decision: immutable generations and eligible selection only"
+    }
+  ],
+  "changes": [
+    "Ready fixture generation and character asset-state pointer agree on V3. Legacy rows remain historical.",
+    "Current image/toggle preserve immutable V3 generations and idempotency; restore rejects without changing generation or content.",
+    "Legacy mutation and direct battle rejection use current wire error contract.",
+    "Six repaired-path response casts replaced by runtime error/full public DTO schemas."
+  ],
+  "diagnostic": {
+    "total": 15,
+    "passed": 5,
+    "failed": 10,
+    "skipped": 0,
+    "repairedCases": [
+      4,
+      5,
+      6,
+      7
+    ],
+    "previousFailures": 14
+  },
+  "remaining": "10 current focused-authoring scenarios still use retired provider ports and old candidate acceptance fixtures. No cases removed or skipped.",
+  "formalSeal": "not performed: entire file still fails",
+  "scope": {
+    "productionCodeChanged": false,
+    "paidProviderCalls": 0,
+    "remoteChanges": 0
+  },
+  "next": "Provide typed controlled focused-authoring transport, keep actual reservation and owner digest gates, validate all repaired response contracts, then rerun all 15 cases before Seal.",
+  "strictTypecheckExitCode": 0,
+  "workspaceAndDeploymentTypecheckExitCode": 0
+}

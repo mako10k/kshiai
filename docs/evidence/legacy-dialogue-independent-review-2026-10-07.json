@@ -1,0 +1,25 @@
+{
+  "reviewer": "/root/llm_boundary_seal_audit",
+  "mode": "read-only, no test or graph execution",
+  "cases": {
+    "packages/shared/src/dialogue-context.test.ts": 10,
+    "packages/shared/src/compact-psyche-decode.test.ts": 5,
+    "packages/shared/src/psyche-reaction-policy.test.ts": 4
+  },
+  "candidateAuthority": [
+    "Accepted ADR0018 activation-source receipt",
+    "Accepted ADR0025 plus accepted dialogue-expression-realization requirement-v3 snapshot selector",
+    "Accepted ADR0026 strict Compact appraisal closure",
+    "Accepted ADR0047 retained historical V3 compatibility; ADR0028 historical text only",
+    "Accepted ADR0051 inherits old-generation continuation from superseded0050; no current adoption by superseded source alone",
+    "requirements F-BTL13/14/15/23/25/26/37/48"
+  ],
+  "candidateScopes": {
+    "dialogueContext": "Synthetic observer packets, changed percept/provenance filtering and snapshot selector representation; no physical/alternate-conversation-delivery/downstream selection proof",
+    "compactDecoder": "Tolerant envelope projection then strict schema and field/legacy-cost/continuity tests; no repair provider or awareness-v5 route. Legacy cost bearer self not asserted or exactly prescribed, no conversion semantics claim",
+    "reactionPolicy": "Deterministic retained V1 reaction/receipt/inhibition updates, not current LLM latent/conscious calls"
+  },
+  "typeFindings": "No banned test escapes; decoder raw unknown record inspection is followed by strict output parse",
+  "blockersFound": [],
+  "rootNext": "Read exact current clauses/bytes, run all three complete files and strict imported types; no Seal registered or authority accepted by this review itself"
+}

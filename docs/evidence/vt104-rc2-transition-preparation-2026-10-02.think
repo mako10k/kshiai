@@ -1,0 +1,17 @@
+domain PACKET:
+  description "Prepare exact RC2 shared-transition candidate without executing external writes."
+evidence SOURCE:
+  "HEAD7a4d417 branch cc304 remote same. Frozen source4ab RC2 image2e7051ec; successful readonly GCP execution4nsmc proves plan18/168/14, digestc5ac4056."
+evidence LIVE:
+  "Fresh cloud public revision00141-vis100percent, tags78, queueRUNNING tasks0, fivejobs no liveexecutions. Pooler readonly provider/authoring/lease counts0; migrations0026-0030pending."
+evidence ACCESS:
+  "secdat Cloudflare token required-key preflight fails; wrangler whoami loggedInfalse. No Cloudflare live preview settings observation."
+premise AUTHORITY:
+  "Existing ownerapproval covers sourceCI RC prepare and readonly probe only. Sharedstop, deletion, migration, deployment and authallowlist writes require exact disclosed approval. Goal permits local reviewable candidate preparation."
+pending LIMITS:
+  "Cloudflare shared-preview configuration and exact callback unknown. Stop times and receipts obtained only after real operations. Paid trialbudget not accepted. No realtimeinventoryquiescence claim beforestop."
+decision PREPARE based_on SOURCE, LIVE, ACCESS, AUTHORITY, LIMITS:
+  "Retain fresh evidence and new RC2 candidate with exact frozen plan, 8 secret identitiesversion1 subject to metadata recheck, operation bounds and sequence; expose dynamic receipt provenance. Keep all externalwrites0. Request smallest missingCloudflare authentication choice while preparing independent packet. Before sharedstop require preview readiness and full ownerapproval; do not create fake receipts or revive snapshot requirement."
+
+evidence PACKAGING:
+  "Local candidate wrapper syntaxcheck passed. Reviewed plan33509bytes base6444680 split3 envparts <=16384bytes; reconstructed bytesSHA matches. Wrapper binds real5key policy, executes compiledapplyonce and independentreadback; outputs only enum/generic error on failure. No GCPdeploy/execute during this preparation. Existing source/runtimeRC unchanged."

@@ -1,0 +1,18 @@
+domain AgencyStatePresenceTypes:
+  description "Required character state lost by a widened local BattleState annotation"
+problem P1:
+  "The exercised advanceCharacterAgents final canonical assembly asserts optional fields as CharacterAgentState rather than retaining their statically established presence."
+evidence E1:
+  "Current service constructs stateAfterUtterances with acceptedA.state and acceptedB.state. Each is a typed CharacterAgentState. Two later reassignments spread this same local state and alter only perception fields, not agent fields."
+evidence E2:
+  "The local variable is annotated BattleState, whose agentStateA/B are optional. Final conversation-history assembly casts each optional value as CharacterAgentState. Independent read-only review identifies these casts on the canonical state path."
+evidence E3:
+  "Before repair all seventeen unchanged binding/runtime/persistence tests and strict imported TypeScript check pass. The fixtures cover existing agent states; the casts prevent checking the missing-state possibility at the final assembly. No production missing-state failure or historical introduction is observed."
+evidence E4:
+  "Repository guidance requires closing contract-related type escapes found during a repair. The user asks to mechanically check handoffs through types and to preserve all original tests. No new state ownership, fallback or lifecycle rule is requested."
+premise U1:
+  "This finding is a static type-contract loss. It does not establish runtime data loss, actual absent agent states, or the cause of another pipeline incident. Existing raw unknown-record sanitization is independently schema-validated and is not this canonical state cast."
+decision D1 based_on P1, E1, E2, E3, E4, U1:
+  "The producing condition is the broad local BattleState annotation erasing the two required initialized fields; the casts mask that type obligation. The trigger is an independent path review. Detection gap: successful existing fixtures and strict checks cannot reject an obligation deliberately asserted by casts."
+decision D2 based_on D1, E1, E4, U1:
+  "Retain BattleState intersected with Required Pick of agentStateA/B for this local assembly, remove both casts, and keep every reassignment subject to that required type. No fallback, error branch or runtime behavior change. Reverify the seventeen original cases, related expression/state wiring suites, strict types and workspace types; read back the exact source and cause graph before accepting its Seal."

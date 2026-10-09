@@ -1,0 +1,167 @@
+{
+  "entries": [
+    {
+      "key": "design-native-pg-cohort",
+      "path": "docs/native-pg-test-contract-review-2026-10-07.md",
+      "parents": [
+        "current",
+        "narration"
+      ],
+      "scope": "Three unchanged files4cases native localPostgreSQL16 SQL/lock barriers only; no PG17/Supabase/full migrations/SSE/pipeline/price acceptance.",
+      "ref": "all-tests-20261007/design-native-pg-cohort",
+      "test": false,
+      "sha256": "0be912c590a09fe3f8ac19aba584b2e52d1275468c6079fd1701fe7c90eaefd2",
+      "sealId": "c5abcc709b2e26188df0dddf928010d2ff1c0156b4a796c72d8c9224fbb9ced8",
+      "causeSealIds": [
+        "4a236b55e9ad9e4aa54eb2c6bbe9d77e0a318881ba8328363505153d16e151dd",
+        "78f9fec1b418020c221d67930654a6ead967fb85393603a544651cea83a61371"
+      ]
+    },
+    {
+      "key": "implementation-native-pg-initialization",
+      "path": "backend/src/repositories/battle-awareness-initialization-query.ts",
+      "parents": [
+        "design-native-pg-cohort",
+        "runtime"
+      ],
+      "scope": "Independent typed SQL column parameters; owner/fence/expiry guard and conflict-preserved opaque text. ToyJSON not actual runtime validity.",
+      "ref": "all-tests-20261007/implementation-native-pg-initialization",
+      "test": false,
+      "sha256": "e83016454a4db541f0ac6aebf6b1eb61f01a25796504a96be41b4409dfb698e5",
+      "sealId": "d24c7a6b78a2b96c237fd7ca7258221909dd2f7bc892c4c65c7409950fc13e61",
+      "causeSealIds": [
+        "c5abcc709b2e26188df0dddf928010d2ff1c0156b4a796c72d8c9224fbb9ced8",
+        "8c03873ba349ed1531f1dc6adf2d11b86b8e525c3cf6e501e38ff6ff2bf25cef"
+      ]
+    },
+    {
+      "key": "implementation-native-pg-events",
+      "path": "backend/src/services/narration-event-storage.ts",
+      "parents": [
+        "design-native-pg-cohort",
+        "events"
+      ],
+      "scope": "Actual PostgreSQL advisory-lock sequence allocation/prune floor/rollback and per-battle isolation with minimal private schemas; not fullSSE/cursor/migration schema.",
+      "ref": "all-tests-20261007/implementation-native-pg-events",
+      "test": false,
+      "sha256": "6e9491bf319bdc73c964bcf08ecc6b71979f2db62d29288989e64c236c6176ef",
+      "sealId": "8de47fa96e70d8aeb0a135473368257cef348017a31fb0dcf474304a5851a660",
+      "causeSealIds": [
+        "c5abcc709b2e26188df0dddf928010d2ff1c0156b4a796c72d8c9224fbb9ced8",
+        "d064bd9b7b5a1cff846d2c79b56f213876e6157d0afede6f913f17fda0474e19"
+      ]
+    },
+    {
+      "key": "implementation-native-pg-reservation",
+      "path": "backend/src/repositories/battle-awareness-narration-reservation.ts",
+      "parents": [
+        "design-native-pg-cohort",
+        "reservation",
+        "runtime",
+        "state",
+        "policy"
+      ],
+      "scope": "Actual PostgreSQL row-lock budget reservation preserving world fence, concurrent rejection/rollback and stale narrator fence; directSQL world CAS model, not engine writer/pricing thresholds.",
+      "ref": "all-tests-20261007/implementation-native-pg-reservation",
+      "test": false,
+      "sha256": "9a0bdd97ddc7819a042f7a1bef06e052e6412c1a3a364040f26aec42630e2667",
+      "sealId": "5fed489bd5fc866e1f0a0271cb5195fe349a9516c695764e022cb8f11af6f9d1",
+      "causeSealIds": [
+        "c5abcc709b2e26188df0dddf928010d2ff1c0156b4a796c72d8c9224fbb9ced8",
+        "3aed68d44713782e7c1b6bd96ded8f20bc91524ac0c2cd0a6af648359f510774",
+        "8c03873ba349ed1531f1dc6adf2d11b86b8e525c3cf6e501e38ff6ff2bf25cef",
+        "cea338023663fcb0df2f08b3e889a61b0033e7d60008a6301090ccac8a3fe50a",
+        "c064db895ea9f010d2f6fb28360b243285cbe93156c19f8286e161ec2d0d731a"
+      ]
+    },
+    {
+      "key": "evidence-native-pg-private-run",
+      "path": "docs/evidence/native-pg-private-run-2026-10-07.json",
+      "parents": [
+        "design-native-pg-cohort",
+        "implementation-native-pg-initialization",
+        "implementation-native-pg-events",
+        "implementation-native-pg-reservation"
+      ],
+      "scope": "Fresh tmp cluster loopback identity,4pass0fail0skip and stop readback; server16 only/no system services or production target.",
+      "ref": "all-tests-20261007/evidence-native-pg-private-run",
+      "test": false,
+      "sha256": "3358fac0eda224e61f71833d33007ce328f1b89bc6d316c2a45f113326d6b8f1",
+      "sealId": "3dda5458b64147276f32c0182a0d2c8f0bd85932fa7b3c072198d0ba3ac2393e",
+      "causeSealIds": [
+        "c5abcc709b2e26188df0dddf928010d2ff1c0156b4a796c72d8c9224fbb9ced8",
+        "d24c7a6b78a2b96c237fd7ca7258221909dd2f7bc892c4c65c7409950fc13e61",
+        "8de47fa96e70d8aeb0a135473368257cef348017a31fb0dcf474304a5851a660",
+        "5fed489bd5fc866e1f0a0271cb5195fe349a9516c695764e022cb8f11af6f9d1"
+      ]
+    },
+    {
+      "key": "battle-awareness-postgres-bounded-native-pg",
+      "path": "backend/src/repositories/battle-awareness-postgres.test.ts",
+      "parents": [
+        "implementation-native-pg-initialization",
+        "evidence-native-pg-private-run"
+      ],
+      "scope": "Whole unchanged 2 cases native pg Client private tables and actual lock/query behavior; URL guard loopback/exact testDB,zero skip in recorded run. Not production17 or whole app acceptance.",
+      "ref": "verification/battle-awareness-postgres-bounded-native-pg-20261007",
+      "test": true,
+      "sha256": "315fb6c0727d81631a5e9502984fcc1c12654b6324b83eeb7788bd498a0302d4",
+      "sealId": "06e0b0932b0a397a9afe5bb462d4a46f2c861d5045759e8b35b271b011be6f72",
+      "causeSealIds": [
+        "d24c7a6b78a2b96c237fd7ca7258221909dd2f7bc892c4c65c7409950fc13e61",
+        "3dda5458b64147276f32c0182a0d2c8f0bd85932fa7b3c072198d0ba3ac2393e"
+      ]
+    },
+    {
+      "key": "battle-awareness-narration-events-postgres-bounded-native-pg",
+      "path": "backend/src/repositories/battle-awareness-narration-events-postgres.test.ts",
+      "parents": [
+        "implementation-native-pg-events",
+        "evidence-native-pg-private-run"
+      ],
+      "scope": "Whole unchanged 1 cases native pg Client private tables and actual lock/query behavior; URL guard loopback/exact testDB,zero skip in recorded run. Not production17 or whole app acceptance.",
+      "ref": "verification/battle-awareness-narration-events-postgres-bounded-native-pg-20261007",
+      "test": true,
+      "sha256": "1e4e39135aaa66e395818cb02c2d7132c17f667d60dc61860bdfcab8e69f5cdf",
+      "sealId": "c1eab360da712fdc31245031e91b7f9cd538e60e0f5a77dbbb5f36fcba118875",
+      "causeSealIds": [
+        "8de47fa96e70d8aeb0a135473368257cef348017a31fb0dcf474304a5851a660",
+        "3dda5458b64147276f32c0182a0d2c8f0bd85932fa7b3c072198d0ba3ac2393e"
+      ]
+    },
+    {
+      "key": "battle-awareness-narration-reservation-postgres-bounded-native-pg",
+      "path": "backend/src/repositories/battle-awareness-narration-reservation-postgres.test.ts",
+      "parents": [
+        "implementation-native-pg-reservation",
+        "evidence-native-pg-private-run"
+      ],
+      "scope": "Whole unchanged 1 cases native pg Client private tables and actual lock/query behavior; URL guard loopback/exact testDB,zero skip in recorded run. Not production17 or whole app acceptance.",
+      "ref": "verification/battle-awareness-narration-reservation-postgres-bounded-native-pg-20261007",
+      "test": true,
+      "sha256": "d8a956e1ca25037187bc99b7cd744320440ae80bb25c5ac5ab196b88a641b539",
+      "sealId": "8f07cc0fd68fda59395296ee12d83368fe210318b0fae94c6ca21ef1be3adfcf",
+      "causeSealIds": [
+        "5fed489bd5fc866e1f0a0271cb5195fe349a9516c695764e022cb8f11af6f9d1",
+        "3dda5458b64147276f32c0182a0d2c8f0bd85932fa7b3c072198d0ba3ac2393e"
+      ]
+    }
+  ],
+  "diagnostic": {
+    "focusedPass": 4,
+    "fail": 0,
+    "skipped": 0,
+    "strictTypecheckExit": 0,
+    "workspaceTypecheckExit": 0,
+    "workspaceEvidenceReused": "docs/evidence/awareness-creation-workspace-types-2026-10-07.log",
+    "reason": "No subsequent TypeScript source edits"
+  },
+  "limitations": [
+    "All three original files4cases and implementation bytes unchanged",
+    "Actual localPostgreSQL16.15 SQL/locks, not Supabase/PostgreSQL17 acceptance",
+    "Initialization toyJSON is opaque SQL text; reservation world CAS is directSQL model",
+    "Private minimal schemas, not full migrations/SSE/cursor/privacy/batch3/prices",
+    "Temporary cluster stopped and existing cluster/systemservices unchanged",
+    "251whole files/Owner gates/unsealed stop preserved"
+  ]
+}

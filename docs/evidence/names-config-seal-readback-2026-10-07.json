@@ -1,0 +1,16 @@
+{
+  "newRefs": 6,
+  "previousHeadsUnchanged": true,
+  "previousHeadCount": 1067,
+  "totalRefs": 1073,
+  "sourceHashesMatch": true,
+  "writerExactRawBytesReadback": true,
+  "causeTargetsMessagesPreviousVerified": true,
+  "stale": 0,
+  "fsck": "ok",
+  "limitations": [
+    "Original seven helper/parser cases only",
+    "No complete saving/regeneration or Stage activation authority proof",
+    "Source/implementation unchanged, full251 goal incomplete"
+  ]
+}

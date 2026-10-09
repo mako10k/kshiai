@@ -1,0 +1,30 @@
+
+> kshiai@0.23.0 test
+> node scripts/test-authority.mjs
+
+TEST_PREFLIGHT suite=unit unsealed=18 authority_evaluated=false
+Error: Unsealed unit tests block execution (18); inspect npm run test:inventory:
+backend/src/llm/fallback.test.ts (unsealed)
+backend/src/repositories/asset-visibility.test.ts (unsealed)
+backend/src/repositories/characters.test.ts (unsealed)
+backend/src/routes-structured-asset-integration.test.ts (unsealed)
+backend/src/routes-structured-character-acceptance.test.ts (unsealed)
+backend/src/services/battle-public.test.ts (unsealed)
+backend/src/services/rating-service-transaction.test.ts (unsealed)
+frontend/src/match-rating.test.ts (unsealed)
+packages/shared/src/action-feasibility.test.ts (unsealed)
+packages/shared/src/asset-visibility.test.ts (unsealed)
+packages/shared/src/balance-observe.test.ts (unsealed)
+packages/shared/src/balance.test.ts (unsealed)
+packages/shared/src/battle-engine.test.ts (unsealed)
+packages/shared/src/battle-pacing.test.ts (unsealed)
+packages/shared/src/character-improvement.test.ts (unsealed)
+packages/shared/src/rating.test.ts (unsealed)
+packages/shared/src/skill-cooldown.test.ts (unsealed)
+scripts/adr-historical-exceptions.test.mjs (unsealed)
+    at requireSealedTests (file:///home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/scripts/test-authority.mjs:166:11)
+    at main (file:///home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/scripts/test-authority.mjs:186:7)
+    at file:///home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/scripts/test-authority.mjs:236:3
+    at ModuleJob.run (node:internal/modules/esm/module_job:343:25)
+    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:681:26)
+    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:117:5)

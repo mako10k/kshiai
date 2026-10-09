@@ -1,0 +1,72 @@
+TAP version 13
+# Subtest: ordinary production startup without database configuration reaches the R2-specific guard
+ok 1 - ordinary production startup without database configuration reaches the R2-specific guard
+  ---
+  duration_ms: 691.958519
+  type: 'test'
+  ...
+# Subtest: either explicit cutover identity retains production application configuration validation
+ok 2 - either explicit cutover identity retains production application configuration validation
+  ---
+  duration_ms: 1270.791996
+  type: 'test'
+  ...
+# Subtest: cutover identity pair is still validated by the original configuration
+ok 3 - cutover identity pair is still validated by the original configuration
+  ---
+  duration_ms: 1564.759107
+  type: 'test'
+  ...
+# Subtest: release rollback target selection
+    # Subtest: selects the sole 100% Cloud Run revision independently of tag order
+    ok 1 - selects the sole 100% Cloud Run revision independently of tag order
+      ---
+      duration_ms: 1.570412
+      type: 'test'
+      ...
+    # Subtest: selects the sole 100% Worker version
+    ok 2 - selects the sole 100% Worker version
+      ---
+      duration_ms: 0.359177
+      type: 'test'
+      ...
+    # Subtest: rejects ambiguous or missing full-traffic targets
+    ok 3 - rejects ambiguous or missing full-traffic targets
+      ---
+      duration_ms: 2.477283
+      type: 'test'
+      ...
+    1..3
+ok 4 - release rollback target selection
+  ---
+  duration_ms: 6.311419
+  type: 'suite'
+  ...
+# Subtest: waitForExpectedHealth
+    # Subtest: waits for the expected revision and records stale observations
+    ok 1 - waits for the expected revision and records stale observations
+      ---
+      duration_ms: 2.934236
+      type: 'test'
+      ...
+    # Subtest: fails with every observed revision after the bounded horizon
+    ok 2 - fails with every observed revision after the bounded horizon
+      ---
+      duration_ms: 1.10658
+      type: 'test'
+      ...
+    1..2
+ok 5 - waitForExpectedHealth
+  ---
+  duration_ms: 5.550075
+  type: 'suite'
+  ...
+1..5
+# tests 8
+# suites 2
+# pass 8
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 3659.401517

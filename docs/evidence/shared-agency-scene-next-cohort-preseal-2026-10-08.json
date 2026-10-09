@@ -1,0 +1,23 @@
+{
+  "diagnostic": {
+    "pass": 32,
+    "fail": 0,
+    "skip": 0
+  },
+  "wholeFiles": 4,
+  "sha256": {
+    "packages/shared/src/battle-policy.test.ts": "89b428b76e219df6f39f23c4a626b55b156006ade3f0ea226864a27e0633b797",
+    "packages/shared/src/battle-social.test.ts": "7764d288f8a943baf84320355f9231e6c07361367143614f7ccaf33956966560",
+    "packages/shared/src/scene-beat.test.ts": "d9d31cdcc745f2b035622f8062ebb5243ac721dfbf929c8b54c57776ea718a2f",
+    "packages/shared/src/conscious-agency.test.ts": "bebc80fc9fdf90f71628cfc99b1e29e07768cf6ee5f4d523271e68a08c054776"
+  },
+  "reviewed": false,
+  "sealed": false,
+  "questions": [
+    "F-BTL16 selection mutualexclusion/empty meansunspecified",
+    "observer-local narrator identity and actualutterance boundaries",
+    "ADR0016 retainedbeat batching and closure; not inferV5runtimeconnection",
+    "ADR0028 closed agency state/partialacceptance and frozen oldabsence; no realmodelquality"
+  ],
+  "next": "Independent cause/current applicability review before Seal"
+}

@@ -1,0 +1,211 @@
+TAP version 13
+# Subtest: awareness immutable context projection
+    # Subtest: requires the current bodily effort projection for a newly bound policy
+    ok 1 - requires the current bodily effort projection for a newly bound policy
+      ---
+      duration_ms: 68.923784
+      type: 'test'
+      ...
+    # Subtest: includes hidden latent traits and background while conscious context uses only its aware compiler
+    ok 2 - includes hidden latent traits and background while conscious context uses only its aware compiler
+      ---
+      duration_ms: 29.139687
+      type: 'test'
+      ...
+    # Subtest: rejects missing or unevaluated guidance instead of treating it as no applicable principle
+    ok 3 - rejects missing or unevaluated guidance instead of treating it as no applicable principle
+      ---
+      duration_ms: 24.40243
+      type: 'test'
+      ...
+    # Subtest: rejects mismatched asset, generation, digest, and missing immutable compiler
+    ok 4 - rejects mismatched asset, generation, digest, and missing immutable compiler
+      ---
+      duration_ms: 60.66798
+      type: 'test'
+      ...
+    # Subtest: rejects a perception frame belonging to the other observer
+    ok 5 - rejects a perception frame belonging to the other observer
+      ---
+      duration_ms: 11.71609
+      type: 'test'
+      ...
+    # Subtest: makes stimuli only from changed current percepts and does not synthesize missing or removed history
+    ok 6 - makes stimuli only from changed current percepts and does not synthesize missing or removed history
+      ---
+      duration_ms: 13.657085
+      type: 'test'
+      ...
+    # Subtest: preserves a full valid V3 description without rejecting it on the smaller emotion bound
+    ok 7 - preserves a full valid V3 description without rejecting it on the smaller emotion bound
+      ---
+      duration_ms: 10.059628
+      type: 'test'
+      ...
+    1..7
+ok 1 - awareness immutable context projection
+  ---
+  duration_ms: 220.398436
+  type: 'suite'
+  ...
+# Subtest: awareness execution
+    # Subtest: delivers current bodily effort and the actual penalty result to both awareness roles
+    ok 1 - delivers current bodily effort and the actual penalty result to both awareness roles
+      ---
+      duration_ms: 59.17872
+      type: 'test'
+      ...
+    # Subtest: launches frozen A jobs before latent work, advances three ticks, and merges only at a later boundary
+    ok 2 - launches frozen A jobs before latent work, advances three ticks, and merges only at a later boundary
+      ---
+      duration_ms: 96.063538
+      type: 'test'
+      ...
+    # Subtest: restarts without resending outstanding jobs and reuses an already accepted latent tick
+    ok 3 - restarts without resending outstanding jobs and reuses an already accepted latent tick
+      ---
+      duration_ms: 32.790981
+      type: 'test'
+      ...
+    # Subtest: stops an incomplete tick after required failure without fabricating world results
+    ok 4 - stops an incomplete tick after required failure without fabricating world results
+      ---
+      duration_ms: 16.415482
+      type: 'test'
+      ...
+    # Subtest: requires verified full-input token and charge proof before any physical dispatch
+    ok 5 - requires verified full-input token and charge proof before any physical dispatch
+      ---
+      duration_ms: 5.403175
+      type: 'test'
+      ...
+    # Subtest: does not leak the counterpart's private felt projection into a frozen input
+    ok 6 - does not leak the counterpart's private felt projection into a frozen input
+      ---
+      duration_ms: 18.094346
+      type: 'test'
+      ...
+    # Subtest: keeps unaware tendencies and training on the latent side of the model boundary
+    ok 7 - keeps unaware tendencies and training on the latent side of the model boundary
+      ---
+      duration_ms: 24.522836
+      type: 'test'
+      ...
+    # Subtest: delivers live self-aware guidance from frozen assets through the actual decision and execution to the rendered prompt
+    ok 8 - delivers live self-aware guidance from frozen assets through the actual decision and execution to the rendered prompt
+      ---
+      duration_ms: 71.845704
+      type: 'test'
+      ...
+    # Subtest: rejects a missing guidance transfer before dispatching either character
+    ok 9 - rejects a missing guidance transfer before dispatching either character
+      ---
+      duration_ms: 2.975613
+      type: 'test'
+      ...
+    # Subtest: ends when an initial physical thought remains unknown past its deadline
+    ok 10 - ends when an initial physical thought remains unknown past its deadline
+      ---
+      duration_ms: 24.103576
+      type: 'test'
+      ...
+    # Subtest: does not free unknown physical slots after logical results and bounds their grace window
+    ok 11 - does not free unknown physical slots after logical results and bounds their grace window
+      ---
+      duration_ms: 85.714116
+      type: 'test'
+      ...
+    # Subtest: waits for a tick interval and retries the same target without duplicate model calls
+    ok 12 - waits for a tick interval and retries the same target without duplicate model calls
+      ---
+      duration_ms: 24.349846
+      type: 'test'
+      ...
+    # Subtest: merges results ready before the durable latent cutoff without a fixed tick delay
+    ok 13 - merges results ready before the durable latent cutoff without a fixed tick delay
+      ---
+      duration_ms: 22.576565
+      type: 'test'
+      ...
+    # Subtest: does not merge a post-cutoff result during a retry of the prepared tick
+    ok 14 - does not merge a post-cutoff result during a retry of the prepared tick
+      ---
+      duration_ms: 38.735348
+      type: 'test'
+      ...
+    # Subtest: admits combat tick 36 and rejects tick 37 without extra model dispatch
+    ok 15 - admits combat tick 36 and rejects tick 37 without extra model dispatch
+      ---
+      duration_ms: 19.59037
+      type: 'test'
+      ...
+    1..15
+ok 2 - awareness execution
+  ---
+  duration_ms: 545.116003
+  type: 'suite'
+  ...
+# Subtest: observed execution accepts explicit null-cost proofs and retains role/physical limits
+ok 3 - observed execution accepts explicit null-cost proofs and retains role/physical limits
+  ---
+  duration_ms: 17.886848
+  type: 'test'
+  ...
+# Subtest: keeps unknown thought failure slots reserved but closes observed late validation failures without applying them
+ok 4 - keeps unknown thought failure slots reserved but closes observed late validation failures without applying them
+  ---
+  duration_ms: 21.408348
+  type: 'test'
+  ...
+# Subtest: awareness-v5 authoritative contracts
+    # Subtest: retains unknown fees and requires scalar budgets to agree with reservations
+    ok 1 - retains unknown fees and requires scalar budgets to agree with reservations
+      ---
+      duration_ms: 3.347316
+      type: 'test'
+      ...
+    # Subtest: bounds narration batch coverage and rejects repeated receipt identities
+    ok 2 - bounds narration batch coverage and rejects repeated receipt identities
+      ---
+      duration_ms: 1.704634
+      type: 'test'
+      ...
+    # Subtest: locks adopted trial bounds and initializes independent character states
+    ok 3 - locks adopted trial bounds and initializes independent character states
+      ---
+      duration_ms: 5.723399
+      type: 'test'
+      ...
+    # Subtest: rejects out-of-range strength, nonpositive or overly long lifetime and mixed resources
+    ok 4 - rejects out-of-range strength, nonpositive or overly long lifetime and mixed resources
+      ---
+      duration_ms: 0.682854
+      type: 'test'
+      ...
+    # Subtest: keeps reflex and affective outputs separately sourced
+    ok 5 - keeps reflex and affective outputs separately sourced
+      ---
+      duration_ms: 0.375137
+      type: 'test'
+      ...
+    # Subtest: has no event or utterance history contract in latent model input
+    ok 6 - has no event or utterance history contract in latent model input
+      ---
+      duration_ms: 0.481793
+      type: 'test'
+      ...
+    1..6
+ok 5 - awareness-v5 authoritative contracts
+  ---
+  duration_ms: 14.510839
+  type: 'suite'
+  ...
+1..5
+# tests 30
+# suites 3
+# pass 30
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 1602.045849

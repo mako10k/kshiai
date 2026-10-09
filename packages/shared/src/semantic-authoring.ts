@@ -1,3 +1,4 @@
+/** R: Define typed semantic authoring run, execution, and causal receipt contracts. */
 import { z } from "zod";
 
 export type SemanticAuthoringModeV1 = "create" | "revise" | "migrate";
@@ -34,10 +35,8 @@ export type SemanticAuthoringRunV1 = Readonly<{
   }>;
 }>;
 
-export type SemanticAuthoringPolicyV1 = Readonly<{
-  identity: "semantic_authoring_policy_v1";
+type SemanticAuthoringPolicyLimitsV1 = Readonly<{
   maxConcurrentProviderRequests: 1;
-  maxLlmCalls: 8;
   maxCountedSteps: 48;
   maxInputTokensPerCall: 6_000;
   maxInputBytesPerCall: 24_576;
@@ -51,6 +50,12 @@ export type SemanticAuthoringPolicyV1 = Readonly<{
   pricingIdentity: string;
   tokenEstimatorIdentity: string;
 }>;
+
+// Each frozen identity fixes its call allowance; callers cannot mix versions and limits.
+export type SemanticAuthoringPolicyV1 = SemanticAuthoringPolicyLimitsV1 & (
+  | Readonly<{ identity: "semantic_authoring_policy_v1"; maxLlmCalls: 8 }>
+  | Readonly<{ identity: "character_complete_review_policy_v2"; maxLlmCalls: 10 }>
+);
 
 export type ProviderTransportPolicyV1 = Readonly<{
   identity: string;

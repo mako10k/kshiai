@@ -842,7 +842,7 @@ const semanticAuthoringSchemaSql = `
     CREATE TABLE IF NOT EXISTS semantic_authoring_provider_requests (
       request_id TEXT PRIMARY KEY,
       run_id TEXT NOT NULL REFERENCES semantic_authoring_runs(run_id) ON DELETE CASCADE,
-      ordinal INTEGER NOT NULL CHECK (ordinal BETWEEN 1 AND 8),
+      ordinal INTEGER NOT NULL CHECK (ordinal BETWEEN 1 AND 10),
       reservation_json TEXT NOT NULL,
       request_digest TEXT NOT NULL,
       provider_route TEXT NOT NULL,
@@ -909,14 +909,19 @@ function ensureSqliteSemanticAuthoring(database: SqliteDatabase.Database): void 
   }
   const requestTable = database.prepare(
     "SELECT sql FROM sqlite_master WHERE type = 'table' AND name = 'semantic_authoring_provider_requests'",
-  ).get() as { sql: string } | undefined;
-  if (requestTable && !requestTable.sql.includes("'provider_transport_timeout'")) {
+  ).get();
+  if (typeof requestTable !== "object" || requestTable === null || !("sql" in requestTable)
+    || typeof requestTable.sql !== "string") {
+    throw new Error("SEMANTIC_AUTHORING_REQUEST_SCHEMA_MISSING");
+  }
+  if (!requestTable.sql.includes("'provider_transport_timeout'")
+    || !requestTable.sql.includes("ordinal BETWEEN 1 AND 10")) {
     database.transaction(() => {
       database.exec(`
         CREATE TABLE semantic_authoring_provider_requests_next (
           request_id TEXT PRIMARY KEY,
           run_id TEXT NOT NULL REFERENCES semantic_authoring_runs(run_id) ON DELETE CASCADE,
-          ordinal INTEGER NOT NULL CHECK (ordinal BETWEEN 1 AND 8),
+          ordinal INTEGER NOT NULL CHECK (ordinal BETWEEN 1 AND 10),
           reservation_json TEXT NOT NULL,
           request_digest TEXT NOT NULL,
           provider_route TEXT NOT NULL,
@@ -935,6 +940,22 @@ function ensureSqliteSemanticAuthoring(database: SqliteDatabase.Database): void 
       `);
     })();
   }
+  // The widened table cap does not widen frozen old runs or another family.
+  const policyLimit = `CASE WHEN EXISTS (
+    SELECT 1 FROM semantic_authoring_runs WHERE run_id = NEW.run_id
+      AND family = 'character' AND mode IN ('create', 'revise')
+      AND policy_identity = 'character_complete_review_policy_v2'
+  ) THEN 10 ELSE 8 END`;
+  database.exec(`
+    CREATE TRIGGER IF NOT EXISTS semantic_authoring_request_policy_insert
+      BEFORE INSERT ON semantic_authoring_provider_requests
+      WHEN NEW.ordinal > (${policyLimit})
+      BEGIN SELECT RAISE(ABORT, 'SEMANTIC_AUTHORING_REQUEST_POLICY_LIMIT'); END;
+    CREATE TRIGGER IF NOT EXISTS semantic_authoring_request_policy_update
+      BEFORE UPDATE OF ordinal, run_id ON semantic_authoring_provider_requests
+      WHEN NEW.ordinal > (${policyLimit})
+      BEGIN SELECT RAISE(ABORT, 'SEMANTIC_AUTHORING_REQUEST_POLICY_LIMIT'); END;
+  `);
 }
 
 function ensureSqliteOwnerNotifications(database: SqliteDatabase.Database): void {

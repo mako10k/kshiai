@@ -1,0 +1,121 @@
+{
+  "entries": [
+    {
+      "key": "design-migration-probe-recovery",
+      "path": "docs/migration-probe-recovery-test-contract-review-2026-10-08.md",
+      "parents": [
+        "migration",
+        "retained"
+      ],
+      "scope": "Synthetic isolated migration fixture and independent run/prompt identity regression only. Preserve original3cases/assertions. No provider execution, ordinaryV2 write, old trial success or paid approval reuse.",
+      "ref": "all-tests-20261008/design-migration-probe-recovery",
+      "test": false,
+      "sha256": "eb4147c1b3bc4af65b7825eb8998c36946bc89f19a4e533987ced8a176ffe48e",
+      "sealId": "23a5289774922f0a948b890d68e71a89accf5263599e8f4468f7d4d210634754",
+      "causeSealIds": [
+        "2fb9650ddebe867a978634fea432e65d0611085c8cb823c36a6d6f3f5eaa2962",
+        "480c02403f61dc6a9cd7d54861639b962dbc3bde86673481e02e0defc8415e17"
+      ]
+    },
+    {
+      "key": "implementation-migration-probe-fixture-current",
+      "path": "backend/src/testing/semantic-migration-probe-fixture.ts",
+      "parents": [
+        "design-migration-probe-recovery",
+        "writer",
+        "import",
+        "digest",
+        "db",
+        "provider",
+        "identities"
+      ],
+      "scope": "Synthetic isolated migration fixture and independent run/prompt identity regression only. Preserve original3cases/assertions. No provider execution, ordinaryV2 write, old trial success or paid approval reuse.",
+      "ref": "all-tests-20261008/implementation-migration-probe-fixture-current",
+      "test": false,
+      "sha256": "3ec818b6e90fdaa2b190ea0ab7533d0ec283a5c1592ee55a0fcf0f156aa5c3c4",
+      "sealId": "69315aaf0137fd62cdecd0d85ae79e90cf61eeca43bb86b73ad34ecf00a1bd03",
+      "causeSealIds": [
+        "23a5289774922f0a948b890d68e71a89accf5263599e8f4468f7d4d210634754",
+        "9b3b176efd5f71b72166640ddc9b41af6f0b1a2786129ea8d10e43578fd6c297",
+        "06ee97e7eab1a6aac60ec88d8f9de3abd0488a2331e5bca654aff9937eab38f6",
+        "4e1f818486c40be8836cc745622d90621dbe9f1a3298ff3027e57a2bcab5d608",
+        "95bdd9c1de74a466708f8647c1af88b40820ac06ed834fe450b7a011e24e70c3",
+        "c5996a4f29e4d619d903f62e75e408c7da7b0686f40d6be8885962baff27aa42",
+        "d0e91dd4315198c54b286721df42b55a1e2855395040c7d716914b6dbdb97ae3"
+      ]
+    },
+    {
+      "key": "semantic-migration-probe-fixture-recovery-bounded-20261008",
+      "path": "backend/src/scripts/semantic-migration-probe-fixture.test.ts",
+      "parents": [
+        "implementation-migration-probe-fixture-current"
+      ],
+      "scope": "Synthetic isolated migration fixture and independent run/prompt identity regression only. Preserve original3cases/assertions. No provider execution, ordinaryV2 write, old trial success or paid approval reuse.",
+      "ref": "verification/semantic-migration-probe-fixture-recovery-bounded-20261008",
+      "test": true,
+      "sha256": "bbfc3baf480ea17abd09a717bbd32727853d37dc3acc788523113d4df17a4cd2",
+      "sealId": "dc5e5e08f0545821e7bc4aaa8f10940b958553455d86133fd57922ed3b6fa8e2",
+      "causeSealIds": [
+        "69315aaf0137fd62cdecd0d85ae79e90cf61eeca43bb86b73ad34ecf00a1bd03"
+      ]
+    },
+    {
+      "key": "semantic-migration-probe-run-recovery-bounded-20261008",
+      "path": "backend/src/scripts/semantic-migration-probe-run.test.ts",
+      "parents": [
+        "implementation-migration-probe-fixture-current",
+        "identities",
+        "context",
+        "merge",
+        "payload",
+        "provider",
+        "schema",
+        "db"
+      ],
+      "scope": "Synthetic isolated migration fixture and independent run/prompt identity regression only. Preserve original3cases/assertions. No provider execution, ordinaryV2 write, old trial success or paid approval reuse.",
+      "ref": "verification/semantic-migration-probe-run-recovery-bounded-20261008",
+      "test": true,
+      "sha256": "59475275b3f3778669695c34438a6eb38a5edd0b77c89e81d32ddc348bd18edc",
+      "sealId": "3d91b548be11f0624b6a88847c127e54a69140495041d50a133ea1cca9708423",
+      "causeSealIds": [
+        "69315aaf0137fd62cdecd0d85ae79e90cf61eeca43bb86b73ad34ecf00a1bd03",
+        "d0e91dd4315198c54b286721df42b55a1e2855395040c7d716914b6dbdb97ae3",
+        "693949593441f24ad2ffc0db92a9bed5d545f6040396eca86beb8aa22fd7a7a6",
+        "08529d586b5cd9aee651d49101df27b9f1686e1d7a526660ae3a6a918836e89f",
+        "e8216c2b951ab77812727048cac5a7324dcf60ffa41c623432a58eae7ba5c281",
+        "c5996a4f29e4d619d903f62e75e408c7da7b0686f40d6be8885962baff27aa42",
+        "f44e1e324e4106c510863a8af563cce4a7a06bf76e61f271bd54fba33d067bd4",
+        "95bdd9c1de74a466708f8647c1af88b40820ac06ed834fe450b7a011e24e70c3"
+      ]
+    }
+  ],
+  "roots": {
+    "migration": "all-tests-20261007/authority-migration-operation-wire",
+    "retained": "all-tests-20261007/authority-v3-writes",
+    "context": "all-tests-20261007/implementation-migration-probe-context",
+    "digest": "all-tests-20261007/implementation-migration-probe-initial-digest",
+    "merge": "all-tests-20261007/implementation-migration-probe-initial-merge",
+    "payload": "all-tests-20261007/implementation-migration-probe-payload",
+    "provider": "all-tests-20261007/implementation-migration-probe-transport",
+    "writer": "all-tests-20261007/fixture-migration-probe-historical-generation-writer",
+    "import": "all-tests-20261007/fixture-character-contract-import",
+    "db": "all-tests-20261007/implementation-provider-control-sqlite-schema",
+    "identities": "all-tests-20261007/implementation-migration-probe-run-identities",
+    "schema": "all-tests-20261008/implementation-provider-response-schema-recovery-bounded"
+  },
+  "rootSealIds": {
+    "migration": "2fb9650ddebe867a978634fea432e65d0611085c8cb823c36a6d6f3f5eaa2962",
+    "retained": "480c02403f61dc6a9cd7d54861639b962dbc3bde86673481e02e0defc8415e17",
+    "context": "693949593441f24ad2ffc0db92a9bed5d545f6040396eca86beb8aa22fd7a7a6",
+    "digest": "4e1f818486c40be8836cc745622d90621dbe9f1a3298ff3027e57a2bcab5d608",
+    "merge": "08529d586b5cd9aee651d49101df27b9f1686e1d7a526660ae3a6a918836e89f",
+    "payload": "e8216c2b951ab77812727048cac5a7324dcf60ffa41c623432a58eae7ba5c281",
+    "provider": "c5996a4f29e4d619d903f62e75e408c7da7b0686f40d6be8885962baff27aa42",
+    "writer": "9b3b176efd5f71b72166640ddc9b41af6f0b1a2786129ea8d10e43578fd6c297",
+    "import": "06ee97e7eab1a6aac60ec88d8f9de3abd0488a2331e5bca654aff9937eab38f6",
+    "db": "95bdd9c1de74a466708f8647c1af88b40820ac06ed834fe450b7a011e24e70c3",
+    "identities": "d0e91dd4315198c54b286721df42b55a1e2855395040c7d716914b6dbdb97ae3",
+    "schema": "f44e1e324e4106c510863a8af563cce4a7a06bf76e61f271bd54fba33d067bd4"
+  },
+  "elapsedSeconds": 134.461
+}

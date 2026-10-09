@@ -1,3 +1,4 @@
+// R: Build frozen character inventory variants and the battle fixture that consumes them.
 import { createHash } from "node:crypto";
 import {
   BattlefieldInstanceSchema,
@@ -130,7 +131,7 @@ export function createInventoryFixture(
   const settings = inventorySettings(mode);
   const state = createBattleState({
     id: "agency-inventory", sideA: mine, sideB: opp, turnLimit: 20,
-    battlefield, narrationStyle: style, prologuePending: false,
+    battlefield: { kind: "legacy", instance: battlefield }, narrationStyle: style, prologuePending: false,
   });
   state.createdAt = INVENTORY_STAMP;
   state.updatedAt = INVENTORY_STAMP;

@@ -1,0 +1,240 @@
+TAP version 13
+# [llm] inventory ready engine=inventory fast=inventory
+# [llm] inventory ready engine=inventory fast=inventory
+# [llm] inventory ready engine=inventory fast=inventory
+# [llm] inventory ready engine=inventory fast=inventory
+# [llm] inventory ready engine=inventory fast=inventory
+# [llm] inventory ready engine=inventory fast=inventory
+# [llm] inventory ready engine=inventory fast=inventory
+# [llm] inventory ready engine=inventory fast=inventory
+# [llm] inventory ready engine=inventory fast=inventory
+# [llm] inventory ready engine=inventory fast=inventory
+# [llm] inventory ready engine=inventory fast=inventory
+# [llm] inventory ready engine=inventory fast=inventory
+# [llm] inventory ready engine=inventory fast=inventory
+# [llm] inventory ready engine=inventory fast=inventory
+# [llm] inventory ready engine=inventory fast=inventory
+# [llm] inventory ready engine=inventory fast=inventory
+# [llm] inventory ready engine=inventory fast=inventory
+# [llm] inventory ready engine=inventory fast=inventory
+# [llm] inventory ready engine=inventory fast=inventory
+# [llm] inventory ready engine=inventory fast=inventory
+# [llm] inventory ready engine=inventory fast=inventory
+# [llm] inventory ready engine=inventory fast=inventory
+# [llm] inventory ready engine=inventory fast=inventory
+# Subtest: CA-00 existing agency boundary inventory (not model quality)
+    # Subtest: records legacy/prologue provider routing without network
+    ok 1 - records legacy/prologue provider routing without network
+      ---
+      duration_ms: 70.280068
+      type: 'test'
+      ...
+    # Subtest: records legacy/turn provider routing without network
+    ok 2 - records legacy/turn provider routing without network
+      ---
+      duration_ms: 30.849686
+      type: 'test'
+      ...
+    # Subtest: records legacy/aftermath provider routing without network
+    ok 3 - records legacy/aftermath provider routing without network
+      ---
+      duration_ms: 20.388081
+      type: 'test'
+      ...
+    # Subtest: records compact1/prologue provider routing without network
+    ok 4 - records compact1/prologue provider routing without network
+      ---
+      duration_ms: 23.45683
+      type: 'test'
+      ...
+    # Subtest: records compact1/turn provider routing without network
+    ok 5 - records compact1/turn provider routing without network
+      ---
+      duration_ms: 20.876493
+      type: 'test'
+      ...
+    # Subtest: records compact1/aftermath provider routing without network
+    ok 6 - records compact1/aftermath provider routing without network
+      ---
+      duration_ms: 20.140436
+      type: 'test'
+      ...
+    # Subtest: records compact2/prologue provider routing without network
+    ok 7 - records compact2/prologue provider routing without network
+      ---
+      duration_ms: 14.315751
+      type: 'test'
+      ...
+    # Subtest: records compact2/turn provider routing without network
+    ok 8 - records compact2/turn provider routing without network
+      ---
+      duration_ms: 18.758669
+      type: 'test'
+      ...
+    # Subtest: records compact2/aftermath provider routing without network
+    ok 9 - records compact2/aftermath provider routing without network
+      ---
+      duration_ms: 19.773308
+      type: 'test'
+      ...
+    # Subtest: retains the old unbound turn psyche call
+    ok 10 - retains the old unbound turn psyche call
+      ---
+      duration_ms: 16.879234
+      type: 'test'
+      ...
+    # Subtest: F01/F02 projects personality and known relationship without changing the fallback victory objective
+    ok 11 - F01/F02 projects personality and known relationship without changing the fallback victory objective
+      ---
+      duration_ms: 45.584334
+      type: 'test'
+      ...
+    # Subtest: F03/F04 removes unavailable skill and out-of-range basic action from the actual decision input
+    ok 12 - F03/F04 removes unavailable skill and out-of-range basic action from the actual decision input
+      ---
+      duration_ms: 40.893273
+      type: 'test'
+      ...
+    # Subtest: F05 changes conscious ability knowledge but not deterministic reaction
+    ok 13 - F05 changes conscious ability knowledge but not deterministic reaction
+      ---
+      duration_ms: 27.141808
+      type: 'test'
+      ...
+    # Subtest: F06 saves and reloads the old goal, rejects stale revisions, but still omits it from conscious input
+    ok 14 - F06 saves and reloads the old goal, rejects stale revisions, but still omits it from conscious input
+      ---
+      duration_ms: 110.064596
+      type: 'test'
+      ...
+    # Subtest: F07 records the later action adapter input without attributing an engine redecision to this helper test
+    ok 15 - F07 records the later action adapter input without attributing an engine redecision to this helper test
+      ---
+      duration_ms: 10.949254
+      type: 'test'
+      ...
+    # Subtest: F08 preserves repeated speech and keeps the private goal out of public projection
+    ok 16 - F08 preserves repeated speech and keeps the private goal out of public projection
+      ---
+      duration_ms: 24.179475
+      type: 'test'
+      ...
+    1..16
+ok 1 - CA-00 existing agency boundary inventory (not model quality)
+  ---
+  duration_ms: 517.330382
+  type: 'suite'
+  ...
+# [image] route_hit asset=portrait-character
+# [image] route_hit asset=portrait-character
+# [characters/image] test provider failure
+# [image] route_error asset=portrait-character test provider failure
+# Subtest: V3 portrait owner lifecycle
+    # Subtest: generates an immutable V3 revision, keeps definition/profile and replays without provider work
+    ok 1 - generates an immutable V3 revision, keeps definition/profile and replays without provider work
+      ---
+      duration_ms: 348.40899
+      type: 'test'
+      ...
+    # Subtest: rejects stale and non-owner activation without moving the pointer, then switches only the portrait
+    ok 2 - rejects stale and non-owner activation without moving the pointer, then switches only the portrait
+      ---
+      duration_ms: 52.833055
+      type: 'test'
+      ...
+    # Subtest: rejects active authoring and provider failure without appending a generation
+    ok 3 - rejects active authoring and provider failure without appending a generation
+      ---
+      duration_ms: 38.881882
+      type: 'test'
+      ...
+    1..3
+ok 2 - V3 portrait owner lifecycle
+  ---
+  duration_ms: 478.955395
+  type: 'suite'
+  ...
+# [battle] free-action adjudication unavailable timeout:adjudicateFreeActions:1000ms
+# Subtest: free action promotion and adjudication
+    # Subtest: classifies a malformed adjudication as an application schema failure
+    ok 1 - classifies a malformed adjudication as an application schema failure
+      ---
+      duration_ms: 3.793869
+      type: 'test'
+      ...
+    # Subtest: persists provider failure subtype without changing canonical state
+    ok 2 - persists provider failure subtype without changing canonical state
+      ---
+      duration_ms: 41.402047
+      type: 'test'
+      ...
+    # Subtest: adds no adjudication call for standard turns and one batched call for free actions
+    ok 3 - adds no adjudication call for standard turns and one batched call for free actions
+      ---
+      duration_ms: 13.488214
+      type: 'test'
+      ...
+    # Subtest: can apply a plausible direct action to the canonical counterpart
+    ok 4 - can apply a plausible direct action to the canonical counterpart
+      ---
+      duration_ms: 15.027084
+      type: 'test'
+      ...
+    # Subtest: fails the same ordinary grab when the canonical counterpart is far away
+    ok 5 - fails the same ordinary grab when the canonical counterpart is far away
+      ---
+      duration_ms: 16.236742
+      type: 'test'
+      ...
+    # Subtest: does not create an object when a believed stone has no canonical root
+    ok 6 - does not create an object when a believed stone has no canonical root
+      ---
+      duration_ms: 7.375019
+      type: 'test'
+      ...
+    # Subtest: promotes the real ball while preserving the actor's stone belief
+    ok 7 - promotes the real ball while preserving the actor's stone belief
+      ---
+      duration_ms: 12.202068
+      type: 'test'
+      ...
+    # Subtest: promotes a profile hat and leaves it in canonical scene state after removal
+    ok 8 - promotes a profile hat and leaves it in canonical scene state after removal
+      ---
+      duration_ms: 16.320217
+      type: 'test'
+      ...
+    # Subtest: can promote on a failed manipulation and concretize the same entity later
+    ok 9 - can promote on a failed manipulation and concretize the same entity later
+      ---
+      duration_ms: 19.914697
+      type: 'test'
+      ...
+    1..9
+ok 3 - free action promotion and adjudication
+  ---
+  duration_ms: 148.355836
+  type: 'suite'
+  ...
+# Subtest: internal battle observability
+    # Subtest: lists retained battles and exposes raw and canonical turn data
+    ok 1 - lists retained battles and exposes raw and canonical turn data
+      ---
+      duration_ms: 64.673465
+      type: 'test'
+      ...
+    1..1
+ok 4 - internal battle observability
+  ---
+  duration_ms: 66.092079
+  type: 'suite'
+  ...
+1..4
+# tests 29
+# suites 4
+# pass 29
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 1725.527322

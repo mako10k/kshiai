@@ -1,0 +1,14 @@
+{
+  "newRefs": 5,
+  "previousHeadsUnchanged": true,
+  "previousHeadCount": 886,
+  "totalRefs": 891,
+  "sourceBytesMatch": true,
+  "stale": 0,
+  "fsck": "ok",
+  "limitations": [
+    "Original eight cases/assertions retained; no code/test changes",
+    "Pure geometry/selection helpers, not browser/timer/storage/full operator reentry acceptance",
+    "Existing constants and text normalization are implementation regression details, not newly owner-prescribed policy"
+  ]
+}

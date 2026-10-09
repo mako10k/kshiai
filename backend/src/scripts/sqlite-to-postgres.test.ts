@@ -1,5 +1,7 @@
 import assert from "node:assert/strict";
 import { afterEach, describe, it } from "node:test";
+import { spawnSync } from "node:child_process";
+import { fileURLToPath } from "node:url";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
@@ -101,6 +103,12 @@ describe("SQLite to PostgreSQL source inspection", () => {
     assert.equal(snapshot.inspection.counts.users, 1);
     assert.equal(snapshot.inspection.counts.image_gen_events, 1);
     assert.equal(snapshot.inspection.warnings.length, 2);
+    assert.equal(snapshot.tables.get("image_gen_events")?.[0]?.user_id, "usr_deleted");
+    assert.equal(snapshot.tables.get("image_gen_events")?.[0]?.character_id, "chr_deleted");
+    assert.deepEqual(snapshot.inspection.warnings, [
+      "image_gen_events.user_id retains 1 historical IDs",
+      "image_gen_events.character_id retains 1 historical IDs",
+    ]);
     assert.deepEqual(snapshot.tables.get("battlefields")?.[0]?.sheet_json, {
       id: "bfp_1",
     });
@@ -120,5 +128,17 @@ describe("SQLite to PostgreSQL source inspection", () => {
         error.includes("characters[1].sheet_json is not valid JSON"),
       ),
     );
+    const result = spawnSync(process.execPath, [
+      "--import", "tsx",
+      fileURLToPath(new URL("./sqlite-to-postgres.ts", import.meta.url)),
+      "--source", sourcePath,
+    ], {
+      encoding: "utf8",
+      env: { ...process.env, DIRECT_URL: "", SUPABASE_PROJECT_REF: "" },
+      timeout: 20_000,
+    });
+    assert.equal(result.status, 1);
+    assert.match(result.stderr, /Source inspection failed/);
+    assert.doesNotMatch(result.stdout, /Source dry-run passed/);
   });
 });

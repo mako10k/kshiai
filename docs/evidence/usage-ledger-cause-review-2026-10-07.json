@@ -1,0 +1,162 @@
+{
+  "schema": "kshiai/usage-ledger-cause-review/v1",
+  "upstream": [
+    {
+      "ref": "awareness-guidance-20261007/authority-current",
+      "sealId": "4a236b55e9ad9e4aa54eb2c6bbe9d77e0a318881ba8328363505153d16e151dd"
+    },
+    {
+      "ref": "all-tests-20261007/implementation-usage-cost-report",
+      "sealId": "84c87b27c35d1e57f7444e54f100aface3df70ef988e22635b7839edecbe17a0"
+    }
+  ],
+  "nodes": [
+    {
+      "key": "authority-physical-completion-inherited",
+      "path": "docs/adr/0056-latest-prompt-contract-until-completion.md",
+      "parents": [],
+      "scope": "Accepted inherited ADR0053 physical completion distinction only: received response versus logical validation failure versus unknown transport. Prompt/narration policy outside this cohort.",
+      "ref": "all-tests-20261007/authority-physical-completion-inherited",
+      "sha256": "02cf47331d22417cfa7146864034aa2c0e476ca6d57f1ec98007f95933450e26"
+    },
+    {
+      "key": "authority-physical-completion-original",
+      "path": "docs/adr/0053-awareness-response-completion-repair.md",
+      "parents": [
+        "authority-physical-completion-inherited"
+      ],
+      "scope": "Only response-completion accounting clauses inherited unchanged by ADR0056; superseded prompt version binding and start condition are not current authority.",
+      "ref": "all-tests-20261007/authority-physical-completion-original",
+      "sha256": "ae6203fbbc6e3af26f457b7480a42797e86e2392df6b9d1693ca6f22db5b4508"
+    },
+    {
+      "key": "design-usage-ledger",
+      "path": "docs/battle-consciousness-usage-measurement-2026-10-05.md",
+      "parents": [
+        "authority"
+      ],
+      "scope": "Nullable durable physical usage, FK-free identity, SDK boundary and narrow domain correlation, parse-failure persistence, no prompt/response content in ledger. Discarded cutover branch and paid/live work excluded.",
+      "ref": "all-tests-20261007/design-usage-ledger",
+      "sha256": "0c79cd4e081e4223c2c96119672119c528eb9a1cf03edbc23eef8789097fd41e"
+    },
+    {
+      "key": "implementation-usage-ledger-schema",
+      "path": "backend/src/repositories/llm-usage-schema.ts",
+      "parents": [
+        "authority",
+        "design-usage-ledger"
+      ],
+      "scope": "FK-free physical identity SQL and immutable call/ordinal uniqueness as exercised in temporary SQLite; no PostgreSQL deployment/migration claim.",
+      "ref": "all-tests-20261007/implementation-usage-ledger-schema",
+      "sha256": "8fd4fbd996968a09d8830685c554abc1fccabe02733389a0821a042abc55f3d9"
+    },
+    {
+      "key": "implementation-usage-ledger-storage",
+      "path": "backend/src/repositories/llm-usage.ts",
+      "parents": [
+        "authority",
+        "design-usage-ledger",
+        "implementation-usage-ledger-schema"
+      ],
+      "scope": "Nullable normalized provider categories, start/finish/read snapshots, old diagnostics-less read, guarded finish and monotonic duration input. No provider semantic judgment.",
+      "ref": "all-tests-20261007/implementation-usage-ledger-storage",
+      "sha256": "7fdcdbb83737f0542eadc580bb53ab12c0efc6b843d0fd7a0c58c87872f4e861"
+    },
+    {
+      "key": "implementation-usage-scope",
+      "path": "backend/src/llm/llm-usage-context.ts",
+      "parents": [
+        "authority",
+        "design-usage-ledger"
+      ],
+      "scope": "AsyncLocalStorage domain correlation and frozen scope copied into physical observations; no domain state mutation.",
+      "ref": "all-tests-20261007/implementation-usage-scope",
+      "sha256": "0b1a84dbd5f79b4658c5d79d1ad64421f42eac412a139c98e2501394c2a1fb36"
+    },
+    {
+      "key": "implementation-physical-completion-scope",
+      "path": "backend/src/llm/llm-physical-completion.ts",
+      "parents": [
+        "authority-physical-completion-original",
+        "authority-physical-completion-inherited"
+      ],
+      "scope": "Invocation-local all-started-responses-received evidence and typed postresponse rejection; never confirms timeout/transport by logical refusal.",
+      "ref": "all-tests-20261007/implementation-physical-completion-scope",
+      "sha256": "5cca2badae36899fa00ba8ee0a812dc72fd9e74c02d61687f3ec4d33557aef12"
+    },
+    {
+      "key": "implementation-usage-physical-observer",
+      "path": "backend/src/repositories/llm-usage-observation.ts",
+      "parents": [
+        "authority",
+        "design-usage-ledger",
+        "implementation-usage-ledger-storage",
+        "implementation-usage-scope",
+        "implementation-physical-completion-scope"
+      ],
+      "scope": "Physical send start/end ledger, optional partial failure receipt, monotonic elapsed duration, usage persists before logical parse, missing usage remains unknown.",
+      "ref": "all-tests-20261007/implementation-usage-physical-observer",
+      "sha256": "4cacd95aece3d1d4de705de0e9c4f11c43dd54d4c77a39b6f989e7b6d3c5c11f"
+    },
+    {
+      "key": "implementation-sdk-usage-paths",
+      "path": "backend/src/llm/openai-compatible.ts",
+      "parents": [
+        "authority",
+        "implementation-usage-physical-observer"
+      ],
+      "scope": "Only physical observation of JSON, streaming and two tool sends, same logical call distinct retry ordinal, request/model/usage metadata and received-response diagnostics. No certification of every generation/prompt/domain method or enabling retries in awareness.",
+      "ref": "all-tests-20261007/implementation-sdk-usage-paths",
+      "sha256": "8d4be097ddbfcb0da515dd0db402c7dc6dddccb763d625fce16165e7c524d2a5"
+    },
+    {
+      "key": "implementation-usage-report-command",
+      "path": "backend/src/scripts/llm-usage-cost-report.ts",
+      "parents": [
+        "authority",
+        "implementation-usage-ledger-storage",
+        "cost"
+      ],
+      "scope": "Read-only CLI --battle unpriced report using durable ledger; optional explicit price path is implementation dependency, not separately exercised CLI price-file acceptance.",
+      "ref": "all-tests-20261007/implementation-usage-report-command",
+      "sha256": "ff1f5ba3a3a86899a33095dd71eab5af0d160807bf438da4ce68b487280a1c84"
+    },
+    {
+      "key": "usage-ledger-sdk",
+      "path": "backend/src/repositories/llm-usage.test.ts",
+      "parents": [
+        "authority",
+        "authority-physical-completion-inherited",
+        "authority-physical-completion-original",
+        "design-usage-ledger",
+        "implementation-usage-ledger-schema",
+        "implementation-usage-ledger-storage",
+        "implementation-usage-scope",
+        "implementation-physical-completion-scope",
+        "implementation-usage-physical-observer",
+        "implementation-sdk-usage-paths",
+        "implementation-usage-report-command",
+        "cost"
+      ],
+      "scope": "Eleven local mocked HTTP/temporary SQLite tests: empty/invalid response metadata, durable reload, missing/error/timeout/invalid categories, postresponse distinction, ordinal retries, streaming/tool paths, partial stream usage, CLI unpriced read, backward wall time with monotonic elapsed, late response. No real provider/paid/deployment or PostgreSQL acceptance.",
+      "ref": "verification/usage-ledger-sdk-20261007",
+      "sha256": "75cb58bd3953224b133b85cf023c46e4696270760e5c1a29ea64a1f211955c60"
+    }
+  ],
+  "clauses": [
+    "ADR0051 decision: one physical attempt record, nullable categories, durable despite parse failure, scope, model/request identity and no content",
+    "ADR0056 inherited ADR0053: received-response completion is independent of logical validation; unconfirmed transport remains unknown",
+    "Usage measurement design: FK-free ledger, scope port, category overlap, read-only repricing"
+  ],
+  "diagnostic": {
+    "pass": 11,
+    "fail": 0,
+    "skipped": 0,
+    "strictTypecheckExit": 0
+  },
+  "limitations": [
+    "Mocked HTTP and isolated SQLite only",
+    "No paid provider, production data or deployment changes",
+    "Physical generic retry test does not enable awareness retries"
+  ]
+}

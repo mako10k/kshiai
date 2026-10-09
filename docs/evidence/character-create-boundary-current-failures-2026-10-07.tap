@@ -1,0 +1,144 @@
+TAP version 13
+# [image] route_hit asset=route-ready-mine
+# Subtest: structured character route acceptance
+    # Subtest: records provider failures without exposing a partial character
+    ok 1 - records provider failures without exposing a partial character
+      ---
+      duration_ms: 59.097877
+      type: 'test'
+      ...
+    # Subtest: uses current V3 attempts for create review confirm and discard routes
+    not ok 2 - uses current V3 attempts for create review confirm and discard routes
+      ---
+      duration_ms: 62.652176
+      type: 'test'
+      location: '/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/routes-structured-character-acceptance.test.ts:9:542'
+      failureType: 'testCodeFailure'
+      error: |-
+        Expected values to be strictly equal:
+        
+        404 !== 202
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 202
+      actual: 404
+      operator: 'strictEqual'
+      stack: |-
+        TestContext.<anonymous> (/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/routes-structured-character-acceptance.test.ts:289:12)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async Suite.processPendingSubtests (node:internal/test_runner/test:744:7)
+      ...
+    # Subtest: does not read mutate confirm or delete legacy draft rows
+    ok 3 - does not read mutate confirm or delete legacy draft rows
+      ---
+      duration_ms: 7.13244
+      type: 'test'
+      ...
+    # Subtest: rejects legacy restore and portrait mutations before side effects
+    ok 4 - rejects legacy restore and portrait mutations before side effects
+      ---
+      duration_ms: 6.014666
+      type: 'test'
+      ...
+    # Subtest: commits immutable V3 portrait generations and rejects unavailable restore
+    ok 5 - commits immutable V3 portrait generations and rejects unavailable restore
+      ---
+      duration_ms: 346.716657
+      type: 'test'
+      ...
+    # Subtest: excludes unsupported characters from every selector route
+    ok 6 - excludes unsupported characters from every selector route
+      ---
+      duration_ms: 41.039816
+      type: 'test'
+      ...
+    # Subtest: rejects direct battle creation for either unsupported side
+    ok 7 - rejects direct battle creation for either unsupported side
+      ---
+      duration_ms: 9.851737
+      type: 'test'
+      ...
+    # Subtest: upgrades an existing character only after owner confirmation
+    ok 8 - upgrades an existing character only after owner confirmation
+      ---
+      duration_ms: 92.513818
+      type: 'test'
+      ...
+    # Subtest: exposes in-flight authoring progress while an upgrade is running
+    ok 9 - exposes in-flight authoring progress while an upgrade is running
+      ---
+      duration_ms: 46.497537
+      type: 'test'
+      ...
+    # Subtest: does not surface an older awaiting draft after a later attempt fails
+    ok 10 - does not surface an older awaiting draft after a later attempt fails
+      ---
+      duration_ms: 87.223839
+      type: 'test'
+      ...
+    # Subtest: discards an unclaimed queued attempt before the worker runs
+    ok 11 - discards an unclaimed queued attempt before the worker runs
+      ---
+      duration_ms: 4.123109
+      type: 'test'
+      ...
+    # Subtest: returns a create review without a current character
+    not ok 12 - returns a create review without a current character
+      ---
+      duration_ms: 30.286881
+      type: 'test'
+      location: '/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/routes-structured-character-acceptance.test.ts:12:13317'
+      failureType: 'testCodeFailure'
+      error: |-
+        {"body":{"attemptId":"cat_b1ac55ca49cf88126dc2b1aa","kind":"create","status":"awaiting_owner_acceptance","assistantMessage":"","expiresAt":"2026-10-08T04:42:04.917Z","latestAttemptId":"cat_b1ac55ca49cf88126dc2b1aa","stale":false,"canAccept":false,"failed":null,"progress":null,"reviewConfirmOnly":false,"characterId":"chr_f201118806ef6ac461033dce","candidate":null,"candidateDigest":null,"current":null,"acceptanceError":"FOCUSED_CHARACTER_MIGRATION_NOT_READY","sourceRetryAvailable":false,"semanticCandidateReview":{"schemaVersion":3,"fields":[{"key":"identity","label":"人物設定","source":null,"candidate":"{\n  \"displayName\": \"灯\",\n  \"names\": [],\n  \"presentation\": {\n    \"form\": null,\n    \"gender\": null,\n    \"ageDescription\": null,\n    \"pronouns\": []\n  },\n  \"tags\": []\n}"},{"key":"appearance","label":"外見","source":null,"candidate":"{\n  \"publicSummary\": \"青い外套\",\n  \"details\": [],\n  \"visualPrompt\": \"unspecified\",\n  \"portrait\": null\n}"},{"key":"profileBackground","label":"背景","source":null,"candidate":"[]"},{"key":"psycheDisposition","label":"心理傾向","source":null,"candidate":"{\n  \"dynamicsVersion\": \"psyche-trait-profile-v1\",\n  \"dynamics\": {\n    \"adverseSensitivity\": 500,\n    \"uncertaintySensitivity\": 500,\n    \"recoverySpeed\": 500,\n    \"irritationPersistence\": 500,\n    \"anxietyPersistence\": 500,\n    \"approachTendency\": 500,\n    \"withdrawalTendency\": 500,\n    \"impulseInhibition\": 500,\n    \"expressionRestraint\": 500\n  },\n  \"coreNeeds\": [\n    {\n      \"id\": \"protect\",\n      \"description\": {\n        \"text\": \"守る\",\n        \"consumerTags\": [],\n        \"sourceSupportRefs\": []\n      },\n      \"selfAwareness\": \"aware\"\n    }\n  ],\n  \"tendencies\": [],\n  \"description\": null\n}"},{"key":"speechPolicy","label":"話し方","source":null,"candidate":"{\n  \"selfAwareness\": \"aware\",\n  \"frequency\": \"measured\",\n  \"phasePolicy\": {\n    \"prologue\": \"allow\",\n    \"turn\": \"allow\",\n    \"aftermath\": \"allow\"\n  },\n  \"reactTo\": [\n    \"direct_address\",\n    \"self_impact\",\n    \"counterpart_impact\",\n    \"ambient_change\"\n  ],\n  \"silenceRules\": [],\n  \"register\": \"丁寧\",\n  \"cadence\": \"既存プロフィールからは特定しない\",\n  \"sentenceLength\": \"mixed\",\n  \"vocabularyHabits\": [],\n  \"addressRules\": [],\n  \"selfReferenceNameId\": null,\n  \"examples\": [],\n  \"counterexamples\": [],\n  \"description\": null\n}"},{"key":"relationshipSeeds","label":"関係性","source":null,"candidate":"[\n  {\n    \"id\": \"rival\",\n    \"target\": {\n      \"kind\": \"role\",\n      \"role\": \"rival\"\n    },\n    \"relationKinds\": [\n      \"rival\"\n    ],\n    \"historySummary\": null,\n    \"defaultAddress\": null,\n    \"selfAwareness\": \"aware\",\n    \"dynamics\": {\n      \"trust\": 0,\n      \"affiliation\": 0,\n      \"fear\": 0,\n      \"competition\": 0\n    },\n    \"priority\": 50\n  }\n]"},{"key":"combat","label":"戦闘設定","source":null,"candidate":"{\n  \"parameters\": {\n    \"hp\": 100,\n    \"maxHp\": 100,\n    \"mp\": 40,\n    \"maxMp\": 40,\n    \"stamina\": 50,\n    \"maxStamina\": 50,\n    \"atk\": 12,\n    \"def\": 10,\n    \"spd\": 10,\n    \"mag\": 10,\n    \"res\": 10,\n    \"focus\": 10,\n    \"luck\": 10\n  },\n  \"flags\": {\n    \"canFight\": true,\n    \"irreversibleIncapacitated\": false\n  }\n}"},{"key":"capabilities","label":"能力・行動","source":null,"candidate":"{\n  \"basicAction\": {\n    \"id\": \"basic-action\",\n    \"name\": \"構え\",\n    \"description\": {\n      \"text\": \"消耗時にも使える、そのキャラクターらしい基本行動。\",\n      \"consumerTags\": [\n        \"profile-generator\",\n        \"battle-mechanics\",\n        \"conscious-action\",\n        \"conscious-expression\"\n      ],\n      \"sourceSupportRefs\": []\n    },\n    \"kind\": \"basic\",\n    \"mechanics\": {\n      \"targetParameter\": \"hp\",\n      \"scalingParameter\": \"atk\",\n      \"resistanceParameter\": \"def\",\n      \"power\": 0.75,\n      \"costMp\": 0,\n      \"costStamina\": 0,\n      \"effects\": [],\n      \"constraints\": {\n        \"reach\": \"same_area\",\n        \"requiresSight\": false,\n        \"mobility\": \"limited\",\n        \"requiresSpeech\": false,\n        \"requiresUsableHeldObject\": false\n      }\n    },\n    \"tacticTags\": [],\n    \"expressionNotes\": null\n  },\n  \"skills\": []\n}"},{"key":"inventory","label":"所持品","source":null,"candidate":"[]"},{"key":"initialLoadout","label":"初期装備","source":null,"candidate":"[]"},{"key":"expressionNotes","label":"表現上の注記","source":null,"candidate":"{\n  \"text\": \"未設定\",\n  \"consumerTags\": [\n    \"profile-generator\",\n    \"deep-psyche\",\n    \"conscious-expression\"\n  ],\n  \"sourceSupportRefs\": []\n}"},{"key":"schemaVersion","label":"定義版","source":null,"candidate":"3"},{"key":"actionNorms","label":"行動規範","source":null,"candidate":"[\n  {\n    \"id\": \"prefer-basic\",\n    \"when\": {\n      \"match\": \"all\",\n      \"clauses\": [\n        {\n          \"kind\": \"always\",\n          \"operator\": \"is\",\n          \"value\": \"true\"\n        }\n      ]\n    },\n    \"response\": {\n      \"disposition\": \"prefer\",\n      \"actionRefs\": [\n        \"basic-action\"\n      ],\n      \"actionKinds\": [],\n      \"tacticTags\": []\n    },\n    \"priority\": 50,\n    \"force\": \"preference\",\n    \"exceptions\": [],\n    \"description\": null\n  }\n]"},{"key":"consciousGuidance","label":"意識的な指針","source":null,"candidate":"[]"},{"key":"mechanicalConflictFallbacks","label":"機械的な競合時の代替","source":null,"candidate":"[]"}],"sourceDispositions":[],"pendingPreservation":[],"deferredValues":[],"compatibility":null,"limitation":"構造化候補を保存しました。意味・公開範囲の検証と最終採用の接続は未完了です。現在の世代は変更していません。"}},"work":[{"kind":"skeleton","obligationIds":["identity","psycheDisposition:coreNeeds"]},{"kind":"skeleton","obligationIds":["capabilities:actions:basic-action","relationshipSeeds"]},{"kind":"cluster","cluster":"mechanics","obligationIds":["mechanics"]},{"kind":"cluster","cluster":"relationship-expression","obligationIds":["relationship-expression"]},{"kind":"cluster","cluster":"appearance","obligationIds":["appearance"]},{"kind":"ledger","obligationIds":["lens:compiler","lens:disclosure","lens:cross-reference"]},{"kind":"ledger","obligationIds":["lens:disclosure","lens:cross-reference"]},{"kind":"ledger","obligationIds":["lens:cross-reference"]},{"kind":"skeleton","obligationIds":["psycheDisposition:coreNeeds","relationshipSeeds"]},{"kind":"cluster","cluster":"mechanics","obligationIds":["mechanics"]},{"kind":"cluster","cluster":"relationship-expression","obligationIds":["relationship-expression"]},{"kind":"ledger","obligationIds":["source:speechPolicy"]},{"kind":"ledger","obligationIds":["lens:compiler","lens:disclosure","lens:cross-reference"]},{"kind":"ledger","obligationIds":["lens:disclosure","lens:cross-reference"]},{"kind":"ledger","obligationIds":["lens:cross-reference"]},{"kind":"skeleton","obligationIds":["identity","psycheDisposition:coreNeeds"]},{"kind":"skeleton","obligationIds":["capabilities:actions:basic-action","relationshipSeeds"]},{"kind":"cluster","cluster":"mechanics","obligationIds":["mechanics"]},{"kind":"cluster","cluster":"relationship-expression","obligationIds":["relationship-expression"]},{"kind":"cluster","cluster":"appearance","obligationIds":["appearance"]},{"kind":"ledger","obligationIds":["lens:compiler","lens:disclosure","lens:cross-reference"]},{"kind":"ledger","obligationIds":["lens:disclosure","lens:cross-reference"]},{"kind":"ledger","obligationIds":["lens:cross-reference"]},{"kind":"skeleton","obligationIds":["identity","psycheDisposition:coreNeeds"]},{"kind":"skeleton","obligationIds":["capabilities:actions:basic-action","relationshipSeeds"]},{"kind":"cluster","cluster":"mechanics","obligationIds":["mechanics"]},{"kind":"cluster","cluster":"relationship-expression","obligationIds":["relationship-expression"]},{"kind":"cluster","cluster":"appearance","obligationIds":["appearance"]},{"kind":"ledger","obligationIds":["lens:compiler","lens:disclosure","lens:cross-reference"]},{"kind":"ledger","obligationIds":["lens:disclosure","lens:cross-reference"]},{"kind":"ledger","obligationIds":["lens:cross-reference"]}]}
+        
+        false !== true
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: true
+      actual: false
+      operator: 'strictEqual'
+      stack: |-
+        TestContext.<anonymous> (/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/routes-structured-character-acceptance.test.ts:838:12)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async Suite.processPendingSubtests (node:internal/test_runner/test:744:7)
+      ...
+    # Subtest: returns a compare review for upgrade and marks an older attempt stale
+    ok 13 - returns a compare review for upgrade and marks an older attempt stale
+      ---
+      duration_ms: 94.895473
+      type: 'test'
+      ...
+    # Subtest: lists characters without deserializing a historical candidate
+    ok 14 - lists characters without deserializing a historical candidate
+      ---
+      duration_ms: 24.744724
+      type: 'test'
+      ...
+    # Subtest: projects ready and failed notifications without duplicating them
+    ok 15 - projects ready and failed notifications without duplicating them
+      ---
+      duration_ms: 42.491418
+      type: 'test'
+      ...
+    1..15
+not ok 1 - structured character route acceptance
+  ---
+  duration_ms: 981.723384
+  type: 'suite'
+  location: '/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/routes-structured-character-acceptance.test.ts:6:242'
+  failureType: 'subtestsFailed'
+  error: '2 subtests failed'
+  code: 'ERR_TEST_FAILURE'
+  ...
+1..1
+# tests 15
+# suites 1
+# pass 13
+# fail 2
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 2220.91479

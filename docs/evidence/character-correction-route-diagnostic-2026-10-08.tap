@@ -1,0 +1,157 @@
+TAP version 13
+# [image] route_hit asset=route-ready-mine
+# Subtest: structured character route acceptance
+    # Subtest: records provider failures without exposing a partial character
+    ok 1 - records provider failures without exposing a partial character
+      ---
+      duration_ms: 241.426901
+      type: 'test'
+      ...
+    # Subtest: uses current V3 attempts for create review confirm and discard routes
+    not ok 2 - uses current V3 attempts for create review confirm and discard routes
+      ---
+      duration_ms: 546.401842
+      type: 'test'
+      location: '/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/routes-structured-character-acceptance.test.ts:9:542'
+      failureType: 'testCodeFailure'
+      error: |-
+        review={"attemptId":"cat_514cf4340cbde26e38cb0cd1","characterId":"chr_c6a853f40fe771903762a6f6","kind":"create","errorCode":"resource_exhausted","updatedAt":"2026-10-08T08:44:15.307Z"}, work=[{"kind":"skeleton","obligationIds":["identity","psycheDisposition:coreNeeds"]},{"kind":"skeleton","obligationIds":["capabilities:actions:basic-action","relationshipSeeds"]},{"kind":"cluster","cluster":"mechanics","obligationIds":["mechanics"]},{"kind":"cluster","cluster":"relationship-expression","obligationIds":["relationship-expression"]},{"kind":"cluster","cluster":"appearance","obligationIds":["appearance"]},{"kind":"ledger","obligationIds":["lens:compiler","lens:disclosure","lens:cross-reference"]},{"kind":"ledger","obligationIds":["lens:disclosure","lens:cross-reference"]},{"kind":"ledger","obligationIds":["lens:cross-reference"]},{"kind":"profile_generation","obligationIds":["profile_generation"]},{"kind":"profile_claim_validation","obligationIds":["profile_claim_validation"]},{"kind":"scope","obligationIds":[]}], bounds=[{"inputTokens":3209,"inputBytes":3405,"outputTokens":1500},{"inputTokens":3835,"inputBytes":4107,"outputTokens":1500},{"inputTokens":5524,"inputBytes":6184,"outputTokens":1500},{"inputTokens":5646,"inputBytes":6364,"outputTokens":1500},{"inputTokens":2981,"inputBytes":3189,"outputTokens":1500},{"inputTokens":3154,"inputBytes":3386,"outputTokens":1500},{"inputTokens":3069,"inputBytes":3289,"outputTokens":1500},{"inputTokens":2982,"inputBytes":3190,"outputTokens":1500},{"inputTokens":3374,"inputBytes":3480,"outputTokens":1500},{"inputTokens":3862,"inputBytes":4047,"outputTokens":1500},{"inputTokens":1000,"inputBytes":945,"outputTokens":1500},{"inputTokens":6616,"inputBytes":7436,"outputTokens":1500}]
+        
+        false !== true
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: true
+      actual: false
+      operator: 'strictEqual'
+      stack: |-
+        TestContext.<anonymous> (/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/routes-structured-character-acceptance.test.ts:305:12)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async Suite.processPendingSubtests (node:internal/test_runner/test:744:7)
+      ...
+    # Subtest: does not read mutate confirm or delete legacy draft rows
+    not ok 3 - does not read mutate confirm or delete legacy draft rows
+      ---
+      duration_ms: 8.182045
+      type: 'test'
+      location: '/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/routes-structured-character-acceptance.test.ts:9:4357'
+      failureType: 'testCodeFailure'
+      error: |-
+        Expected values to be strictly equal:
+        + actual - expected
+        
+        + {
+        +   attemptId: 'cat_514cf4340cbde26e38cb0cd1',
+        +   characterId: 'chr_c6a853f40fe771903762a6f6',
+        +   errorCode: 'resource_exhausted',
+        +   kind: 'create',
+        +   updatedAt: '2026-10-08T08:44:15.307Z'
+        + }
+        - null
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: ~
+      actual:
+        attemptId: 'cat_514cf4340cbde26e38cb0cd1'
+        characterId: 'chr_c6a853f40fe771903762a6f6'
+        kind: 'create'
+        errorCode: 'resource_exhausted'
+        updatedAt: '2026-10-08T08:44:15.307Z'
+      operator: 'strictEqual'
+      stack: |-
+        TestContext.<anonymous> (/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/routes-structured-character-acceptance.test.ts:360:12)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async Suite.processPendingSubtests (node:internal/test_runner/test:744:7)
+      ...
+    # Subtest: rejects legacy restore and portrait mutations before side effects
+    ok 4 - rejects legacy restore and portrait mutations before side effects
+      ---
+      duration_ms: 17.353184
+      type: 'test'
+      ...
+    # Subtest: commits immutable V3 portrait generations and rejects unavailable restore
+    ok 5 - commits immutable V3 portrait generations and rejects unavailable restore
+      ---
+      duration_ms: 789.252044
+      type: 'test'
+      ...
+    # Subtest: excludes unsupported characters from every selector route
+    ok 6 - excludes unsupported characters from every selector route
+      ---
+      duration_ms: 142.845909
+      type: 'test'
+      ...
+    # Subtest: rejects direct battle creation for either unsupported side
+    ok 7 - rejects direct battle creation for either unsupported side
+      ---
+      duration_ms: 44.040152
+      type: 'test'
+      ...
+    # Subtest: upgrades an existing character only after owner confirmation
+    ok 8 - upgrades an existing character only after owner confirmation
+      ---
+      duration_ms: 240.948518
+      type: 'test'
+      ...
+    # Subtest: exposes in-flight authoring progress while an upgrade is running
+    ok 9 - exposes in-flight authoring progress while an upgrade is running
+      ---
+      duration_ms: 211.705034
+      type: 'test'
+      ...
+    # Subtest: does not surface an older awaiting draft after a later attempt fails
+    ok 10 - does not surface an older awaiting draft after a later attempt fails
+      ---
+      duration_ms: 443.513767
+      type: 'test'
+      ...
+    # Subtest: discards an unclaimed queued attempt before the worker runs
+    ok 11 - discards an unclaimed queued attempt before the worker runs
+      ---
+      duration_ms: 19.984088
+      type: 'test'
+      ...
+    # Subtest: returns a create review without a current character
+    ok 12 - returns a create review without a current character
+      ---
+      duration_ms: 246.564147
+      type: 'test'
+      ...
+    # Subtest: returns a compare review for upgrade and marks an older attempt stale
+    ok 13 - returns a compare review for upgrade and marks an older attempt stale
+      ---
+      duration_ms: 275.587972
+      type: 'test'
+      ...
+    # Subtest: lists characters without deserializing a historical candidate
+    ok 14 - lists characters without deserializing a historical candidate
+      ---
+      duration_ms: 70.80412
+      type: 'test'
+      ...
+    # Subtest: projects ready and failed notifications without duplicating them
+    ok 15 - projects ready and failed notifications without duplicating them
+      ---
+      duration_ms: 217.2759
+      type: 'test'
+      ...
+    1..15
+not ok 1 - structured character route acceptance
+  ---
+  duration_ms: 3604.18626
+  type: 'suite'
+  location: '/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/routes-structured-character-acceptance.test.ts:6:242'
+  failureType: 'subtestsFailed'
+  error: '2 subtests failed'
+  code: 'ERR_TEST_FAILURE'
+  ...
+1..1
+# tests 15
+# suites 1
+# pass 13
+# fail 2
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 8179.362881

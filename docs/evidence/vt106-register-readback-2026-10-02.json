@@ -1,0 +1,21 @@
+{
+  "verified": true,
+  "attempts": [
+    {
+      "attempt_id": "cat_bc4c7d9b548c9ddf0368bc82",
+      "owner_user_id": "usr_568b632d7ad86cfe3e356171",
+      "character_id": "stage-trial-neva-736a5e323e94f501",
+      "status": "awaiting_owner_acceptance",
+      "candidate_digest": "343ddb0ba3ebef5ac5b4fed1f5b07415c8013cd762505c72649e308612560744",
+      "result_generation_id": null
+    },
+    {
+      "attempt_id": "cat_c24f4ee50bb1c27378080b9f",
+      "owner_user_id": "usr_568b632d7ad86cfe3e356171",
+      "character_id": "stage-trial-rio-736a5e323e94f501",
+      "status": "awaiting_owner_acceptance",
+      "candidate_digest": "743ab0b84e76b3f419a19fbf1b7f78e19a4291721868222a47123ed7ca731ab3",
+      "result_generation_id": null
+    }
+  ]
+}

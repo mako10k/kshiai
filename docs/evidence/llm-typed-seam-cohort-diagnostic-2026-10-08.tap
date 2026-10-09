@@ -1,0 +1,96 @@
+TAP version 13
+# [llm] xai ready engine=grok-4-fast-non-reasoning fast=grok-4-fast-non-reasoning
+# [llm] xai/reconcileTurnSemanticState model=grok-4-fast-non-reasoning ok 74ms
+# [llm] xai ready engine=grok-4-fast-non-reasoning fast=grok-4-fast-non-reasoning
+# [llm] xai/reconcileTurnSemanticState model=grok-4-fast-non-reasoning ok 3ms
+# Subtest: XAI perception reconciliation
+    # Subtest: aligns environment proposals with representable canonical transitions
+    ok 1 - aligns environment proposals with representable canonical transitions
+      ---
+      duration_ms: 0.930502
+      type: 'test'
+      ...
+    # Subtest: keeps a valid world patch when the combined sensory section is invalid
+    ok 2 - keeps a valid world patch when the combined sensory section is invalid
+      ---
+      duration_ms: 80.341
+      type: 'test'
+      ...
+    # Subtest: keeps valid sensory evidence when the combined world section is invalid
+    ok 3 - keeps valid sensory evidence when the combined world section is invalid
+      ---
+      duration_ms: 4.65414
+      type: 'test'
+      ...
+    1..3
+ok 1 - XAI perception reconciliation
+  ---
+  duration_ms: 87.392616
+  type: 'suite'
+  ...
+# [llm] xai ready engine=grok-4.5 fast=grok-4.3
+# [llm] xai/fast model=grok-4.3 ok 40ms
+# [llm] openai ready engine=gpt-4.1 fast=gpt-4.1-mini
+# [llm] openai/fast model=gpt-4.1-mini ok 3ms
+# [llm] primary ready engine=engine-model fast=fast-model
+# [llm] primary ready engine=engine-model fast=fast-model
+# [llm] primary/test429 retry=1 reason=rate_limit delay=0ms same-provider
+# Subtest: OpenAI-compatible provider routing policy
+    # Subtest: requests xAI grok-4.3 directly with reasoning effort none
+    ok 1 - requests xAI grok-4.3 directly with reasoning effort none
+      ---
+      duration_ms: 44.859536
+      type: 'test'
+      ...
+    # Subtest: does not send xAI-only reasoning effort to another provider
+    ok 2 - does not send xAI-only reasoning effort to another provider
+      ---
+      duration_ms: 3.353613
+      type: 'test'
+      ...
+    # Subtest: routes turn-limit referee rationale through the fast tier
+    ok 3 - routes turn-limit referee rationale through the fast tier
+      ---
+      duration_ms: 0.989795
+      type: 'test'
+      ...
+# [llm] primary/test429 retry=2 reason=rate_limit delay=0ms same-provider
+# [llm] primary/test429 model=fast-model ok 14ms
+# [llm] primary ready engine=engine-model fast=fast-model
+# [llm] primary/test503 retry=1 reason=service_unavailable delay=0ms same-provider
+    # Subtest: uses the extended fast timeout and retries 429 in the same client
+    ok 4 - uses the extended fast timeout and retries 429 in the same client
+      ---
+      duration_ms: 16.50935
+      type: 'test'
+      ...
+# [llm] primary/test503 model=fast-model fail 5ms: unavailable
+# [llm] primary ready engine=engine-model fast=fast-model
+# [llm] primary/timeout model=fast-model fail 1ms: Request was aborted.
+    # Subtest: limits 503 to one same-provider retry
+    ok 5 - limits 503 to one same-provider retry
+      ---
+      duration_ms: 5.735969
+      type: 'test'
+      ...
+    # Subtest: does not retry an aborted timeout
+    ok 6 - does not retry an aborted timeout
+      ---
+      duration_ms: 2.080331
+      type: 'test'
+      ...
+    1..6
+ok 2 - OpenAI-compatible provider routing policy
+  ---
+  duration_ms: 75.313964
+  type: 'suite'
+  ...
+1..2
+# tests 9
+# suites 2
+# pass 9
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 892.504249

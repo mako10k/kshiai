@@ -1,0 +1,27 @@
+{
+  "reviewer": "/root/llm_boundary_seal_audit",
+  "mode": "read-only",
+  "cases": 20,
+  "files": [
+    {
+      "path": "packages/shared/src/conscious-dynamic.test.ts",
+      "sha256": "e35fb9cf68c433b0240a5cb0df97e983ab007eb6c286b66d83f69f42a66ad123"
+    },
+    {
+      "path": "backend/src/llm/conscious-dynamic.test.ts",
+      "sha256": "e420beea2467d72f8d3a68ce5bfc2c445d0f63c13e538e9c88cb9114e0a62e05"
+    },
+    {
+      "path": "backend/src/repositories/dialogue-pipeline-settings.test.ts",
+      "sha256": "2873dad08c18196dad4cdbc4d99d0d34df219eddb8c84d8666ed35fbceb55b63"
+    }
+  ],
+  "finding": "No exact Accepted contradiction or final-contract type escape found",
+  "rootAdditionalAuthority": "ADR0028 D2 retained through ADR0047/0051 explicitly governs V3 settings omission/CAS/compact constraint",
+  "limits": [
+    "Dynamic-v4 helper and mocked adapter only, not awareness-v5 or external quality",
+    "Injected repair reservation not persistent CAS/restart budget proof",
+    "Settings persistence/resolution only, not complete immutable receipt/override authorization",
+    "Generation writer reached but stored-generation content not asserted"
+  ]
+}

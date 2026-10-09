@@ -1,0 +1,2658 @@
+{
+  "schema": "kshiai/changed-source-binding-audit/v1",
+  "seconds": 0.589,
+  "bindings": [
+    {
+      "binding": {
+        "ref": "all-tests-20261007/contract-adjudication-free-action-wire",
+        "path": "packages/shared/src/free-action.ts"
+      },
+      "exitCode": 0,
+      "comparison": {
+        "schema": "sealgraph/source-compare/v1",
+        "ref": "all-tests-20261007/contract-adjudication-free-action-wire",
+        "path": "packages/shared/src/free-action.ts",
+        "baseline": "HEAD",
+        "baseline_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "686891b4f879bab524c492e7bbd50f02ec7c67e5fed8f1821ce700930a996311"
+        },
+        "workfile_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "5651afcd90bb1ca9baa529e9db3a14d764060937627d0230f9b03126f2de041b",
+          "bytes": 8353
+        },
+        "relation": "WORKFILE_DIFFERS_FROM_HEAD"
+      },
+      "error": null
+    },
+    {
+      "binding": {
+        "ref": "all-tests-20261007/contract-adjudication-perception-wire",
+        "path": "packages/shared/src/perception.ts"
+      },
+      "exitCode": 0,
+      "comparison": {
+        "schema": "sealgraph/source-compare/v1",
+        "ref": "all-tests-20261007/contract-adjudication-perception-wire",
+        "path": "packages/shared/src/perception.ts",
+        "baseline": "HEAD",
+        "baseline_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "9bc86559fe98654ec79583ce68a0995839d458dd7f74212d61001c0625d79111"
+        },
+        "workfile_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "2d230ec621a9fd7494fbcf7cbe1518e4617f0e557c68158d2aadb87d87e40027",
+          "bytes": 30301
+        },
+        "relation": "WORKFILE_DIFFERS_FROM_HEAD"
+      },
+      "error": null
+    },
+    {
+      "binding": {
+        "ref": "all-tests-20261007/contract-adjudication-referee-wire",
+        "path": "packages/shared/src/battle.ts"
+      },
+      "exitCode": 0,
+      "comparison": {
+        "schema": "sealgraph/source-compare/v1",
+        "ref": "all-tests-20261007/contract-adjudication-referee-wire",
+        "path": "packages/shared/src/battle.ts",
+        "baseline": "HEAD",
+        "baseline_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "68e09d65b4f6d92f6fe2703d939ff4b7314b3caef02d8e2a31d2f9f781ac99c1"
+        },
+        "workfile_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "47832bafe73e43797058c0efbd136be8df290e6099731985e8486964a0673af1",
+          "bytes": 114429
+        },
+        "relation": "WORKFILE_DIFFERS_FROM_HEAD"
+      },
+      "error": null
+    },
+    {
+      "binding": {
+        "ref": "all-tests-20261007/contract-character-focus-wire",
+        "path": "packages/shared/src/battle.ts"
+      },
+      "exitCode": 0,
+      "comparison": {
+        "schema": "sealgraph/source-compare/v1",
+        "ref": "all-tests-20261007/contract-character-focus-wire",
+        "path": "packages/shared/src/battle.ts",
+        "baseline": "HEAD",
+        "baseline_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "68e09d65b4f6d92f6fe2703d939ff4b7314b3caef02d8e2a31d2f9f781ac99c1"
+        },
+        "workfile_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "47832bafe73e43797058c0efbd136be8df290e6099731985e8486964a0673af1",
+          "bytes": 114429
+        },
+        "relation": "WORKFILE_DIFFERS_FROM_HEAD"
+      },
+      "error": null
+    },
+    {
+      "binding": {
+        "ref": "all-tests-20261007/contract-profile-anchor-character-source",
+        "path": "packages/shared/src/character.ts"
+      },
+      "exitCode": 0,
+      "comparison": {
+        "schema": "sealgraph/source-compare/v1",
+        "ref": "all-tests-20261007/contract-profile-anchor-character-source",
+        "path": "packages/shared/src/character.ts",
+        "baseline": "HEAD",
+        "baseline_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "31e7b04a8a7fd4b0baaa42857d530e4594a43ca569102c276790e37366a7aa31"
+        },
+        "workfile_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "4398c3985b461e991c7900fc382a923d5357e605189b5657350730d503516de9",
+          "bytes": 24731
+        },
+        "relation": "WORKFILE_DIFFERS_FROM_HEAD"
+      },
+      "error": null
+    },
+    {
+      "binding": {
+        "ref": "all-tests-20261007/contract-turn-event-conditional-delivery",
+        "path": "packages/shared/src/battle.ts"
+      },
+      "exitCode": 0,
+      "comparison": {
+        "schema": "sealgraph/source-compare/v1",
+        "ref": "all-tests-20261007/contract-turn-event-conditional-delivery",
+        "path": "packages/shared/src/battle.ts",
+        "baseline": "HEAD",
+        "baseline_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "68e09d65b4f6d92f6fe2703d939ff4b7314b3caef02d8e2a31d2f9f781ac99c1"
+        },
+        "workfile_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "47832bafe73e43797058c0efbd136be8df290e6099731985e8486964a0673af1",
+          "bytes": 114429
+        },
+        "relation": "WORKFILE_DIFFERS_FROM_HEAD"
+      },
+      "error": null
+    },
+    {
+      "binding": {
+        "ref": "all-tests-20261007/fixture-retained-agency-v3-mock-producer",
+        "path": "backend/src/llm/mock.ts"
+      },
+      "exitCode": 0,
+      "comparison": {
+        "schema": "sealgraph/source-compare/v1",
+        "ref": "all-tests-20261007/fixture-retained-agency-v3-mock-producer",
+        "path": "backend/src/llm/mock.ts",
+        "baseline": "HEAD",
+        "baseline_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "ba641587e19e4ae6383933ead3f607101ed1738aa9defb5d5e731108c9494c02"
+        },
+        "workfile_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "fb1da58aa4160d2124cdb7b3791f1e2311a13b7b05bc653451973930ee4dc2b0",
+          "bytes": 58636
+        },
+        "relation": "WORKFILE_DIFFERS_FROM_HEAD"
+      },
+      "error": null
+    },
+    {
+      "binding": {
+        "ref": "all-tests-20261007/implementation-absence-continuation",
+        "path": "packages/shared/src/battle.ts"
+      },
+      "exitCode": 0,
+      "comparison": {
+        "schema": "sealgraph/source-compare/v1",
+        "ref": "all-tests-20261007/implementation-absence-continuation",
+        "path": "packages/shared/src/battle.ts",
+        "baseline": "HEAD",
+        "baseline_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "68e09d65b4f6d92f6fe2703d939ff4b7314b3caef02d8e2a31d2f9f781ac99c1"
+        },
+        "workfile_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "47832bafe73e43797058c0efbd136be8df290e6099731985e8486964a0673af1",
+          "bytes": 114429
+        },
+        "relation": "WORKFILE_DIFFERS_FROM_HEAD"
+      },
+      "error": null
+    },
+    {
+      "binding": {
+        "ref": "all-tests-20261007/implementation-absence-engine",
+        "path": "packages/shared/src/battle-engine.ts"
+      },
+      "exitCode": 0,
+      "comparison": {
+        "schema": "sealgraph/source-compare/v1",
+        "ref": "all-tests-20261007/implementation-absence-engine",
+        "path": "packages/shared/src/battle-engine.ts",
+        "baseline": "HEAD",
+        "baseline_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "d2bd8b0ab1897709ab19aa471726f77851f9e806b1adf57c3ff75112df06c446"
+        },
+        "workfile_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "67a4b9e753216c125ee4954d0c7de26ec3551bdd18abf1bd00377c02f4520292",
+          "bytes": 140387
+        },
+        "relation": "WORKFILE_DIFFERS_FROM_HEAD"
+      },
+      "error": null
+    },
+    {
+      "binding": {
+        "ref": "all-tests-20261007/implementation-awareness-creation-public-service",
+        "path": "backend/src/services/battle-service.ts"
+      },
+      "exitCode": 0,
+      "comparison": {
+        "schema": "sealgraph/source-compare/v1",
+        "ref": "all-tests-20261007/implementation-awareness-creation-public-service",
+        "path": "backend/src/services/battle-service.ts",
+        "baseline": "HEAD",
+        "baseline_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "d8fee4c8c1a539a7c4a7f32ac264344956b4c49b84b878e2db7c946042557897"
+        },
+        "workfile_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "90bc06ac66cf8d1ff5d4ce02abf401b2bc90493476693541f491261d36fb7edb",
+          "bytes": 255333
+        },
+        "relation": "WORKFILE_DIFFERS_FROM_HEAD"
+      },
+      "error": null
+    },
+    {
+      "binding": {
+        "ref": "all-tests-20261007/implementation-battlefield-battle-binding",
+        "path": "backend/src/services/battle-service.ts"
+      },
+      "exitCode": 0,
+      "comparison": {
+        "schema": "sealgraph/source-compare/v1",
+        "ref": "all-tests-20261007/implementation-battlefield-battle-binding",
+        "path": "backend/src/services/battle-service.ts",
+        "baseline": "HEAD",
+        "baseline_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "f0af902a2511c00ac90895e687a0ac3f993af48c3a81e1fe37fa5c9f5c395183"
+        },
+        "workfile_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "90bc06ac66cf8d1ff5d4ce02abf401b2bc90493476693541f491261d36fb7edb",
+          "bytes": 255333
+        },
+        "relation": "WORKFILE_DIFFERS_FROM_HEAD"
+      },
+      "error": null
+    },
+    {
+      "binding": {
+        "ref": "all-tests-20261007/implementation-battlefield-entry-world",
+        "path": "packages/shared/src/battle-engine.ts"
+      },
+      "exitCode": 0,
+      "comparison": {
+        "schema": "sealgraph/source-compare/v1",
+        "ref": "all-tests-20261007/implementation-battlefield-entry-world",
+        "path": "packages/shared/src/battle-engine.ts",
+        "baseline": "HEAD",
+        "baseline_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "06dee27b7cdae563768d4dac6f0b45a6e307fb46be10055a5d87e4f747098c1c"
+        },
+        "workfile_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "67a4b9e753216c125ee4954d0c7de26ec3551bdd18abf1bd00377c02f4520292",
+          "bytes": 140387
+        },
+        "relation": "WORKFILE_DIFFERS_FROM_HEAD"
+      },
+      "error": null
+    },
+    {
+      "binding": {
+        "ref": "all-tests-20261007/implementation-canonical-narration-battle-service",
+        "path": "backend/src/services/battle-service.ts"
+      },
+      "exitCode": 0,
+      "comparison": {
+        "schema": "sealgraph/source-compare/v1",
+        "ref": "all-tests-20261007/implementation-canonical-narration-battle-service",
+        "path": "backend/src/services/battle-service.ts",
+        "baseline": "HEAD",
+        "baseline_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "d8fee4c8c1a539a7c4a7f32ac264344956b4c49b84b878e2db7c946042557897"
+        },
+        "workfile_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "90bc06ac66cf8d1ff5d4ce02abf401b2bc90493476693541f491261d36fb7edb",
+          "bytes": 255333
+        },
+        "relation": "WORKFILE_DIFFERS_FROM_HEAD"
+      },
+      "error": null
+    },
+    {
+      "binding": {
+        "ref": "all-tests-20261007/implementation-canonical-narration-fixture-engine",
+        "path": "packages/shared/src/battle-engine.ts"
+      },
+      "exitCode": 0,
+      "comparison": {
+        "schema": "sealgraph/source-compare/v1",
+        "ref": "all-tests-20261007/implementation-canonical-narration-fixture-engine",
+        "path": "packages/shared/src/battle-engine.ts",
+        "baseline": "HEAD",
+        "baseline_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "d2bd8b0ab1897709ab19aa471726f77851f9e806b1adf57c3ff75112df06c446"
+        },
+        "workfile_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "67a4b9e753216c125ee4954d0c7de26ec3551bdd18abf1bd00377c02f4520292",
+          "bytes": 140387
+        },
+        "relation": "WORKFILE_DIFFERS_FROM_HEAD"
+      },
+      "error": null
+    },
+    {
+      "binding": {
+        "ref": "all-tests-20261007/implementation-character-attempt-reads",
+        "path": "backend/src/repositories/character-assets-v2.ts"
+      },
+      "exitCode": 0,
+      "comparison": {
+        "schema": "sealgraph/source-compare/v1",
+        "ref": "all-tests-20261007/implementation-character-attempt-reads",
+        "path": "backend/src/repositories/character-assets-v2.ts",
+        "baseline": "HEAD",
+        "baseline_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "df8b6e04bef1f3b21583840e25b608e779e272f0a1f3b4f4f5528085d4cbba3a"
+        },
+        "workfile_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "275f7014e7121ece0515838d04da0c995a71066cb83a467cb5318a8c08fa0d7e",
+          "bytes": 65075
+        },
+        "relation": "WORKFILE_DIFFERS_FROM_HEAD"
+      },
+      "error": null
+    },
+    {
+      "binding": {
+        "ref": "all-tests-20261007/implementation-character-contract-battle-binding",
+        "path": "packages/shared/src/battle.ts"
+      },
+      "exitCode": 0,
+      "comparison": {
+        "schema": "sealgraph/source-compare/v1",
+        "ref": "all-tests-20261007/implementation-character-contract-battle-binding",
+        "path": "packages/shared/src/battle.ts",
+        "baseline": "HEAD",
+        "baseline_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "68e09d65b4f6d92f6fe2703d939ff4b7314b3caef02d8e2a31d2f9f781ac99c1"
+        },
+        "workfile_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "47832bafe73e43797058c0efbd136be8df290e6099731985e8486964a0673af1",
+          "bytes": 114429
+        },
+        "relation": "WORKFILE_DIFFERS_FROM_HEAD"
+      },
+      "error": null
+    },
+    {
+      "binding": {
+        "ref": "all-tests-20261007/implementation-character-contract-character",
+        "path": "packages/shared/src/character.ts"
+      },
+      "exitCode": 0,
+      "comparison": {
+        "schema": "sealgraph/source-compare/v1",
+        "ref": "all-tests-20261007/implementation-character-contract-character",
+        "path": "packages/shared/src/character.ts",
+        "baseline": "HEAD",
+        "baseline_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "31e7b04a8a7fd4b0baaa42857d530e4594a43ca569102c276790e37366a7aa31"
+        },
+        "workfile_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "4398c3985b461e991c7900fc382a923d5357e605189b5657350730d503516de9",
+          "bytes": 24731
+        },
+        "relation": "WORKFILE_DIFFERS_FROM_HEAD"
+      },
+      "error": null
+    },
+    {
+      "binding": {
+        "ref": "all-tests-20261007/implementation-character-repository-activation",
+        "path": "backend/src/repositories/character-assets-v2.ts"
+      },
+      "exitCode": 0,
+      "comparison": {
+        "schema": "sealgraph/source-compare/v1",
+        "ref": "all-tests-20261007/implementation-character-repository-activation",
+        "path": "backend/src/repositories/character-assets-v2.ts",
+        "baseline": "HEAD",
+        "baseline_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "df8b6e04bef1f3b21583840e25b608e779e272f0a1f3b4f4f5528085d4cbba3a"
+        },
+        "workfile_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "275f7014e7121ece0515838d04da0c995a71066cb83a467cb5318a8c08fa0d7e",
+          "bytes": 65075
+        },
+        "relation": "WORKFILE_DIFFERS_FROM_HEAD"
+      },
+      "error": null
+    },
+    {
+      "binding": {
+        "ref": "all-tests-20261007/implementation-closed-battle-contract",
+        "path": "packages/shared/src/battle.ts"
+      },
+      "exitCode": 0,
+      "comparison": {
+        "schema": "sealgraph/source-compare/v1",
+        "ref": "all-tests-20261007/implementation-closed-battle-contract",
+        "path": "packages/shared/src/battle.ts",
+        "baseline": "HEAD",
+        "baseline_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "68e09d65b4f6d92f6fe2703d939ff4b7314b3caef02d8e2a31d2f9f781ac99c1"
+        },
+        "workfile_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "47832bafe73e43797058c0efbd136be8df290e6099731985e8486964a0673af1",
+          "bytes": 114429
+        },
+        "relation": "WORKFILE_DIFFERS_FROM_HEAD"
+      },
+      "error": null
+    },
+    {
+      "binding": {
+        "ref": "all-tests-20261007/implementation-current-focused-pending-read",
+        "path": "backend/src/services/character-focused-authoring.ts"
+      },
+      "exitCode": 0,
+      "comparison": {
+        "schema": "sealgraph/source-compare/v1",
+        "ref": "all-tests-20261007/implementation-current-focused-pending-read",
+        "path": "backend/src/services/character-focused-authoring.ts",
+        "baseline": "HEAD",
+        "baseline_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "8a6430917c281afc4a57676f46bb64c1f7bec8c438a3fcda294fbdb73388ba53"
+        },
+        "workfile_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "ecad2bf99dc9aecf9ac6bf90285d5c21e6322385d7e07341bc536ec080b9d2b4",
+          "bytes": 49680
+        },
+        "relation": "WORKFILE_DIFFERS_FROM_HEAD"
+      },
+      "error": null
+    },
+    {
+      "binding": {
+        "ref": "all-tests-20261007/implementation-current-narration-builder-contracts",
+        "path": "backend/src/llm/openai-compatible.ts"
+      },
+      "exitCode": 0,
+      "comparison": {
+        "schema": "sealgraph/source-compare/v1",
+        "ref": "all-tests-20261007/implementation-current-narration-builder-contracts",
+        "path": "backend/src/llm/openai-compatible.ts",
+        "baseline": "HEAD",
+        "baseline_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "4646a44f0259c8be6cf7cb1cafa5608488f239566679a1b1b60bd89573ef54a3"
+        },
+        "workfile_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "4f41e44c31471b2a5b99cebebe3feedf567f216190f2742d82906211443bc932",
+          "bytes": 207519
+        },
+        "relation": "WORKFILE_DIFFERS_FROM_HEAD"
+      },
+      "error": null
+    },
+    {
+      "binding": {
+        "ref": "all-tests-20261007/implementation-direct-narration-projection-input",
+        "path": "backend/src/llm/openai-compatible.ts"
+      },
+      "exitCode": 0,
+      "comparison": {
+        "schema": "sealgraph/source-compare/v1",
+        "ref": "all-tests-20261007/implementation-direct-narration-projection-input",
+        "path": "backend/src/llm/openai-compatible.ts",
+        "baseline": "HEAD",
+        "baseline_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "4646a44f0259c8be6cf7cb1cafa5608488f239566679a1b1b60bd89573ef54a3"
+        },
+        "workfile_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "4f41e44c31471b2a5b99cebebe3feedf567f216190f2742d82906211443bc932",
+          "bytes": 207519
+        },
+        "relation": "WORKFILE_DIFFERS_FROM_HEAD"
+      },
+      "error": null
+    },
+    {
+      "binding": {
+        "ref": "all-tests-20261007/implementation-expression-observer-projection",
+        "path": "packages/shared/src/perception-projection.ts"
+      },
+      "exitCode": 0,
+      "comparison": {
+        "schema": "sealgraph/source-compare/v1",
+        "ref": "all-tests-20261007/implementation-expression-observer-projection",
+        "path": "packages/shared/src/perception-projection.ts",
+        "baseline": "HEAD",
+        "baseline_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "bb95189421e7af7ea837ecd8c2b0e970bb2832e76661b81d1fe0b3453c8bb322"
+        },
+        "workfile_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "2cd302b131a9e3f13edc1e1700e94ef0e801169a2bd6249628ffe11bbf1f6bc1",
+          "bytes": 50411
+        },
+        "relation": "WORKFILE_DIFFERS_FROM_HEAD"
+      },
+      "error": null
+    },
+    {
+      "binding": {
+        "ref": "all-tests-20261007/implementation-focused-character-review-reads",
+        "path": "backend/src/services/character-focused-authoring.ts"
+      },
+      "exitCode": 0,
+      "comparison": {
+        "schema": "sealgraph/source-compare/v1",
+        "ref": "all-tests-20261007/implementation-focused-character-review-reads",
+        "path": "backend/src/services/character-focused-authoring.ts",
+        "baseline": "HEAD",
+        "baseline_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "dd50dc7c4b5230f9c2694fad39fb22b84e8f8d5438c54c39f7ddf5eadf2400d0"
+        },
+        "workfile_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "ecad2bf99dc9aecf9ac6bf90285d5c21e6322385d7e07341bc536ec080b9d2b4",
+          "bytes": 49680
+        },
+        "relation": "WORKFILE_DIFFERS_FROM_HEAD"
+      },
+      "error": null
+    },
+    {
+      "binding": {
+        "ref": "all-tests-20261007/implementation-intent",
+        "path": "packages/shared/src/battle.ts"
+      },
+      "exitCode": 0,
+      "comparison": {
+        "schema": "sealgraph/source-compare/v1",
+        "ref": "all-tests-20261007/implementation-intent",
+        "path": "packages/shared/src/battle.ts",
+        "baseline": "HEAD",
+        "baseline_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "68e09d65b4f6d92f6fe2703d939ff4b7314b3caef02d8e2a31d2f9f781ac99c1"
+        },
+        "workfile_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "47832bafe73e43797058c0efbd136be8df290e6099731985e8486964a0673af1",
+          "bytes": 114429
+        },
+        "relation": "WORKFILE_DIFFERS_FROM_HEAD"
+      },
+      "error": null
+    },
+    {
+      "binding": {
+        "ref": "all-tests-20261007/implementation-narration-battle-binding",
+        "path": "backend/src/services/battle-service.ts"
+      },
+      "exitCode": 0,
+      "comparison": {
+        "schema": "sealgraph/source-compare/v1",
+        "ref": "all-tests-20261007/implementation-narration-battle-binding",
+        "path": "backend/src/services/battle-service.ts",
+        "baseline": "HEAD",
+        "baseline_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "f0af902a2511c00ac90895e687a0ac3f993af48c3a81e1fe37fa5c9f5c395183"
+        },
+        "workfile_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "90bc06ac66cf8d1ff5d4ce02abf401b2bc90493476693541f491261d36fb7edb",
+          "bytes": 255333
+        },
+        "relation": "WORKFILE_DIFFERS_FROM_HEAD"
+      },
+      "error": null
+    },
+    {
+      "binding": {
+        "ref": "all-tests-20261007/implementation-narration-phase-builders",
+        "path": "backend/src/llm/openai-compatible.ts"
+      },
+      "exitCode": 0,
+      "comparison": {
+        "schema": "sealgraph/source-compare/v1",
+        "ref": "all-tests-20261007/implementation-narration-phase-builders",
+        "path": "backend/src/llm/openai-compatible.ts",
+        "baseline": "HEAD",
+        "baseline_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "4646a44f0259c8be6cf7cb1cafa5608488f239566679a1b1b60bd89573ef54a3"
+        },
+        "workfile_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "4f41e44c31471b2a5b99cebebe3feedf567f216190f2742d82906211443bc932",
+          "bytes": 207519
+        },
+        "relation": "WORKFILE_DIFFERS_FROM_HEAD"
+      },
+      "error": null
+    },
+    {
+      "binding": {
+        "ref": "all-tests-20261007/implementation-observer-contact-projection",
+        "path": "packages/shared/src/perception-projection.ts"
+      },
+      "exitCode": 0,
+      "comparison": {
+        "schema": "sealgraph/source-compare/v1",
+        "ref": "all-tests-20261007/implementation-observer-contact-projection",
+        "path": "packages/shared/src/perception-projection.ts",
+        "baseline": "HEAD",
+        "baseline_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "bb95189421e7af7ea837ecd8c2b0e970bb2832e76661b81d1fe0b3453c8bb322"
+        },
+        "workfile_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "2cd302b131a9e3f13edc1e1700e94ef0e801169a2bd6249628ffe11bbf1f6bc1",
+          "bytes": 50411
+        },
+        "relation": "WORKFILE_DIFFERS_FROM_HEAD"
+      },
+      "error": null
+    },
+    {
+      "binding": {
+        "ref": "all-tests-20261007/implementation-observer-perception-schema-boundaries",
+        "path": "packages/shared/src/perception.ts"
+      },
+      "exitCode": 0,
+      "comparison": {
+        "schema": "sealgraph/source-compare/v1",
+        "ref": "all-tests-20261007/implementation-observer-perception-schema-boundaries",
+        "path": "packages/shared/src/perception.ts",
+        "baseline": "HEAD",
+        "baseline_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "9bc86559fe98654ec79583ce68a0995839d458dd7f74212d61001c0625d79111"
+        },
+        "workfile_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "2d230ec621a9fd7494fbcf7cbe1518e4617f0e557c68158d2aadb87d87e40027",
+          "bytes": 30301
+        },
+        "relation": "WORKFILE_DIFFERS_FROM_HEAD"
+      },
+      "error": null
+    },
+    {
+      "binding": {
+        "ref": "all-tests-20261007/implementation-own-area-creation-reference",
+        "path": "packages/shared/src/battlefield-creation.ts"
+      },
+      "exitCode": 0,
+      "comparison": {
+        "schema": "sealgraph/source-compare/v1",
+        "ref": "all-tests-20261007/implementation-own-area-creation-reference",
+        "path": "packages/shared/src/battlefield-creation.ts",
+        "baseline": "HEAD",
+        "baseline_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "94675a83f4bca1d069f7536934ed8120e7badc52c8104b5557090d4b18d9ae3d"
+        },
+        "workfile_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "4ca14a3574e317b99522b3251216e6d388304e1c381ce26f8acf3d1b5336177d",
+          "bytes": 4007
+        },
+        "relation": "WORKFILE_DIFFERS_FROM_HEAD"
+      },
+      "error": null
+    },
+    {
+      "binding": {
+        "ref": "all-tests-20261007/implementation-provider-accounting-sdk-retries",
+        "path": "backend/src/llm/openai-compatible.ts"
+      },
+      "exitCode": 0,
+      "comparison": {
+        "schema": "sealgraph/source-compare/v1",
+        "ref": "all-tests-20261007/implementation-provider-accounting-sdk-retries",
+        "path": "backend/src/llm/openai-compatible.ts",
+        "baseline": "HEAD",
+        "baseline_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "4646a44f0259c8be6cf7cb1cafa5608488f239566679a1b1b60bd89573ef54a3"
+        },
+        "workfile_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "4f41e44c31471b2a5b99cebebe3feedf567f216190f2742d82906211443bc932",
+          "bytes": 207519
+        },
+        "relation": "WORKFILE_DIFFERS_FROM_HEAD"
+      },
+      "error": null
+    },
+    {
+      "binding": {
+        "ref": "all-tests-20261007/implementation-retained-agency-v3-service-flow",
+        "path": "backend/src/services/battle-service.ts"
+      },
+      "exitCode": 0,
+      "comparison": {
+        "schema": "sealgraph/source-compare/v1",
+        "ref": "all-tests-20261007/implementation-retained-agency-v3-service-flow",
+        "path": "backend/src/services/battle-service.ts",
+        "baseline": "HEAD",
+        "baseline_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "d8fee4c8c1a539a7c4a7f32ac264344956b4c49b84b878e2db7c946042557897"
+        },
+        "workfile_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "90bc06ac66cf8d1ff5d4ce02abf401b2bc90493476693541f491261d36fb7edb",
+          "bytes": 255333
+        },
+        "relation": "WORKFILE_DIFFERS_FROM_HEAD"
+      },
+      "error": null
+    },
+    {
+      "binding": {
+        "ref": "all-tests-20261007/implementation-retained-compact-expression-decoder",
+        "path": "backend/src/llm/openai-compatible.ts"
+      },
+      "exitCode": 0,
+      "comparison": {
+        "schema": "sealgraph/source-compare/v1",
+        "ref": "all-tests-20261007/implementation-retained-compact-expression-decoder",
+        "path": "backend/src/llm/openai-compatible.ts",
+        "baseline": "HEAD",
+        "baseline_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "4646a44f0259c8be6cf7cb1cafa5608488f239566679a1b1b60bd89573ef54a3"
+        },
+        "workfile_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "4f41e44c31471b2a5b99cebebe3feedf567f216190f2742d82906211443bc932",
+          "bytes": 207519
+        },
+        "relation": "WORKFILE_DIFFERS_FROM_HEAD"
+      },
+      "error": null
+    },
+    {
+      "binding": {
+        "ref": "all-tests-20261007/implementation-sdk-awareness-adjudication-result",
+        "path": "backend/src/llm/openai-compatible.ts"
+      },
+      "exitCode": 0,
+      "comparison": {
+        "schema": "sealgraph/source-compare/v1",
+        "ref": "all-tests-20261007/implementation-sdk-awareness-adjudication-result",
+        "path": "backend/src/llm/openai-compatible.ts",
+        "baseline": "HEAD",
+        "baseline_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "4646a44f0259c8be6cf7cb1cafa5608488f239566679a1b1b60bd89573ef54a3"
+        },
+        "workfile_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "4f41e44c31471b2a5b99cebebe3feedf567f216190f2742d82906211443bc932",
+          "bytes": 207519
+        },
+        "relation": "WORKFILE_DIFFERS_FROM_HEAD"
+      },
+      "error": null
+    },
+    {
+      "binding": {
+        "ref": "all-tests-20261007/implementation-sdk-awareness-dispatch",
+        "path": "backend/src/llm/openai-compatible.ts"
+      },
+      "exitCode": 0,
+      "comparison": {
+        "schema": "sealgraph/source-compare/v1",
+        "ref": "all-tests-20261007/implementation-sdk-awareness-dispatch",
+        "path": "backend/src/llm/openai-compatible.ts",
+        "baseline": "HEAD",
+        "baseline_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "4646a44f0259c8be6cf7cb1cafa5608488f239566679a1b1b60bd89573ef54a3"
+        },
+        "workfile_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "4f41e44c31471b2a5b99cebebe3feedf567f216190f2742d82906211443bc932",
+          "bytes": 207519
+        },
+        "relation": "WORKFILE_DIFFERS_FROM_HEAD"
+      },
+      "error": null
+    },
+    {
+      "binding": {
+        "ref": "all-tests-20261007/implementation-sdk-json-accounting-boundary",
+        "path": "backend/src/llm/openai-compatible.ts"
+      },
+      "exitCode": 0,
+      "comparison": {
+        "schema": "sealgraph/source-compare/v1",
+        "ref": "all-tests-20261007/implementation-sdk-json-accounting-boundary",
+        "path": "backend/src/llm/openai-compatible.ts",
+        "baseline": "HEAD",
+        "baseline_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "4646a44f0259c8be6cf7cb1cafa5608488f239566679a1b1b60bd89573ef54a3"
+        },
+        "workfile_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "4f41e44c31471b2a5b99cebebe3feedf567f216190f2742d82906211443bc932",
+          "bytes": 207519
+        },
+        "relation": "WORKFILE_DIFFERS_FROM_HEAD"
+      },
+      "error": null
+    },
+    {
+      "binding": {
+        "ref": "all-tests-20261007/implementation-sdk-model-options",
+        "path": "backend/src/llm/openai-compatible.ts"
+      },
+      "exitCode": 0,
+      "comparison": {
+        "schema": "sealgraph/source-compare/v1",
+        "ref": "all-tests-20261007/implementation-sdk-model-options",
+        "path": "backend/src/llm/openai-compatible.ts",
+        "baseline": "HEAD",
+        "baseline_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "4646a44f0259c8be6cf7cb1cafa5608488f239566679a1b1b60bd89573ef54a3"
+        },
+        "workfile_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "4f41e44c31471b2a5b99cebebe3feedf567f216190f2742d82906211443bc932",
+          "bytes": 207519
+        },
+        "relation": "WORKFILE_DIFFERS_FROM_HEAD"
+      },
+      "error": null
+    },
+    {
+      "binding": {
+        "ref": "all-tests-20261007/implementation-sdk-response-schema-ordinary-gate",
+        "path": "backend/src/llm/openai-compatible.ts"
+      },
+      "exitCode": 0,
+      "comparison": {
+        "schema": "sealgraph/source-compare/v1",
+        "ref": "all-tests-20261007/implementation-sdk-response-schema-ordinary-gate",
+        "path": "backend/src/llm/openai-compatible.ts",
+        "baseline": "HEAD",
+        "baseline_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "4646a44f0259c8be6cf7cb1cafa5608488f239566679a1b1b60bd89573ef54a3"
+        },
+        "workfile_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "4f41e44c31471b2a5b99cebebe3feedf567f216190f2742d82906211443bc932",
+          "bytes": 207519
+        },
+        "relation": "WORKFILE_DIFFERS_FROM_HEAD"
+      },
+      "error": null
+    },
+    {
+      "binding": {
+        "ref": "all-tests-20261007/implementation-sdk-retained-agency-v3-dispatch",
+        "path": "backend/src/llm/openai-compatible.ts"
+      },
+      "exitCode": 0,
+      "comparison": {
+        "schema": "sealgraph/source-compare/v1",
+        "ref": "all-tests-20261007/implementation-sdk-retained-agency-v3-dispatch",
+        "path": "backend/src/llm/openai-compatible.ts",
+        "baseline": "HEAD",
+        "baseline_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "4646a44f0259c8be6cf7cb1cafa5608488f239566679a1b1b60bd89573ef54a3"
+        },
+        "workfile_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "4f41e44c31471b2a5b99cebebe3feedf567f216190f2742d82906211443bc932",
+          "bytes": 207519
+        },
+        "relation": "WORKFILE_DIFFERS_FROM_HEAD"
+      },
+      "error": null
+    },
+    {
+      "binding": {
+        "ref": "all-tests-20261007/implementation-sdk-retained-dynamic-v4-dispatch",
+        "path": "backend/src/llm/openai-compatible.ts"
+      },
+      "exitCode": 0,
+      "comparison": {
+        "schema": "sealgraph/source-compare/v1",
+        "ref": "all-tests-20261007/implementation-sdk-retained-dynamic-v4-dispatch",
+        "path": "backend/src/llm/openai-compatible.ts",
+        "baseline": "HEAD",
+        "baseline_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "4646a44f0259c8be6cf7cb1cafa5608488f239566679a1b1b60bd89573ef54a3"
+        },
+        "workfile_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "4f41e44c31471b2a5b99cebebe3feedf567f216190f2742d82906211443bc932",
+          "bytes": 207519
+        },
+        "relation": "WORKFILE_DIFFERS_FROM_HEAD"
+      },
+      "error": null
+    },
+    {
+      "binding": {
+        "ref": "all-tests-20261007/implementation-sdk-usage-paths",
+        "path": "backend/src/llm/openai-compatible.ts"
+      },
+      "exitCode": 0,
+      "comparison": {
+        "schema": "sealgraph/source-compare/v1",
+        "ref": "all-tests-20261007/implementation-sdk-usage-paths",
+        "path": "backend/src/llm/openai-compatible.ts",
+        "baseline": "HEAD",
+        "baseline_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "4646a44f0259c8be6cf7cb1cafa5608488f239566679a1b1b60bd89573ef54a3"
+        },
+        "workfile_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "4f41e44c31471b2a5b99cebebe3feedf567f216190f2742d82906211443bc932",
+          "bytes": 207519
+        },
+        "relation": "WORKFILE_DIFFERS_FROM_HEAD"
+      },
+      "error": null
+    },
+    {
+      "binding": {
+        "ref": "all-tests-20261007/implementation-stable-area-battle-initialization",
+        "path": "packages/shared/src/battle-engine.ts"
+      },
+      "exitCode": 0,
+      "comparison": {
+        "schema": "sealgraph/source-compare/v1",
+        "ref": "all-tests-20261007/implementation-stable-area-battle-initialization",
+        "path": "packages/shared/src/battle-engine.ts",
+        "baseline": "HEAD",
+        "baseline_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "d2bd8b0ab1897709ab19aa471726f77851f9e806b1adf57c3ff75112df06c446"
+        },
+        "workfile_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "67a4b9e753216c125ee4954d0c7de26ec3551bdd18abf1bd00377c02f4520292",
+          "bytes": 140387
+        },
+        "relation": "WORKFILE_DIFFERS_FROM_HEAD"
+      },
+      "error": null
+    },
+    {
+      "binding": {
+        "ref": "all-tests-20261007/implementation-stable-area-ready-binding",
+        "path": "backend/src/services/battle-service.ts"
+      },
+      "exitCode": 0,
+      "comparison": {
+        "schema": "sealgraph/source-compare/v1",
+        "ref": "all-tests-20261007/implementation-stable-area-ready-binding",
+        "path": "backend/src/services/battle-service.ts",
+        "baseline": "HEAD",
+        "baseline_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "d8fee4c8c1a539a7c4a7f32ac264344956b4c49b84b878e2db7c946042557897"
+        },
+        "workfile_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "90bc06ac66cf8d1ff5d4ce02abf401b2bc90493476693541f491261d36fb7edb",
+          "bytes": 255333
+        },
+        "relation": "WORKFILE_DIFFERS_FROM_HEAD"
+      },
+      "error": null
+    },
+    {
+      "binding": {
+        "ref": "all-tests-20261007/implementation-typed-battlefield-creation",
+        "path": "packages/shared/src/battlefield-creation.ts"
+      },
+      "exitCode": 0,
+      "comparison": {
+        "schema": "sealgraph/source-compare/v1",
+        "ref": "all-tests-20261007/implementation-typed-battlefield-creation",
+        "path": "packages/shared/src/battlefield-creation.ts",
+        "baseline": "HEAD",
+        "baseline_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "4db918ef2605d4b8cb441d24a69b1e5bca412f4b253cfe24172d2e28a6d33200"
+        },
+        "workfile_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "4ca14a3574e317b99522b3251216e6d388304e1c381ce26f8acf3d1b5336177d",
+          "bytes": 4007
+        },
+        "relation": "WORKFILE_DIFFERS_FROM_HEAD"
+      },
+      "error": null
+    },
+    {
+      "binding": {
+        "ref": "all-tests-20261008/character-complete-source/candidate-repository",
+        "path": "backend/src/repositories/character-focused-candidate.ts"
+      },
+      "exitCode": 0,
+      "comparison": {
+        "schema": "sealgraph/source-compare/v1",
+        "ref": "all-tests-20261008/character-complete-source/candidate-repository",
+        "path": "backend/src/repositories/character-focused-candidate.ts",
+        "baseline": "HEAD",
+        "baseline_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "6f8b398a2c80e95e2ac1dd32a9ff6d7789f47d1c9a0863e63006c4d1014e3664"
+        },
+        "workfile_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "337241bdd6d74210d02036af11d0c3692129e42911300e3809b34e82921221c5",
+          "bytes": 12450
+        },
+        "relation": "WORKFILE_DIFFERS_FROM_HEAD"
+      },
+      "error": null
+    },
+    {
+      "binding": {
+        "ref": "all-tests-20261008/character-complete-source/complete-adapter",
+        "path": "backend/src/services/semantic-authoring/adapters/character-complete.ts"
+      },
+      "exitCode": 0,
+      "comparison": {
+        "schema": "sealgraph/source-compare/v1",
+        "ref": "all-tests-20261008/character-complete-source/complete-adapter",
+        "path": "backend/src/services/semantic-authoring/adapters/character-complete.ts",
+        "baseline": "HEAD",
+        "baseline_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "c25b714e92752f7e1fde75c93694b76862120e0a336bdb06357eac5285141d4d"
+        },
+        "workfile_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "28fdc36294e0579c5919576861cd4a18657b5d1601d9d05f3d70787a852d0685",
+          "bytes": 14327
+        },
+        "relation": "WORKFILE_DIFFERS_FROM_HEAD"
+      },
+      "error": null
+    },
+    {
+      "binding": {
+        "ref": "all-tests-20261008/current-source-closure/all-tests-20261007/fixture-retained-agency-v3-mock-producer",
+        "path": "backend/src/llm/mock.ts"
+      },
+      "exitCode": 0,
+      "comparison": {
+        "schema": "sealgraph/source-compare/v1",
+        "ref": "all-tests-20261008/current-source-closure/all-tests-20261007/fixture-retained-agency-v3-mock-producer",
+        "path": "backend/src/llm/mock.ts",
+        "baseline": "HEAD",
+        "baseline_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "ba641587e19e4ae6383933ead3f607101ed1738aa9defb5d5e731108c9494c02"
+        },
+        "workfile_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "fb1da58aa4160d2124cdb7b3791f1e2311a13b7b05bc653451973930ee4dc2b0",
+          "bytes": 58636
+        },
+        "relation": "WORKFILE_DIFFERS_FROM_HEAD"
+      },
+      "error": null
+    },
+    {
+      "binding": {
+        "ref": "all-tests-20261008/current-source-closure/all-tests-20261007/implementation-awareness-creation-public-service",
+        "path": "backend/src/services/battle-service.ts"
+      },
+      "exitCode": 0,
+      "comparison": {
+        "schema": "sealgraph/source-compare/v1",
+        "ref": "all-tests-20261008/current-source-closure/all-tests-20261007/implementation-awareness-creation-public-service",
+        "path": "backend/src/services/battle-service.ts",
+        "baseline": "HEAD",
+        "baseline_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "8ea93519d82b1716ef3bf769a9fef999fd3203870a4e92357c297eb368034bae"
+        },
+        "workfile_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "90bc06ac66cf8d1ff5d4ce02abf401b2bc90493476693541f491261d36fb7edb",
+          "bytes": 255333
+        },
+        "relation": "WORKFILE_DIFFERS_FROM_HEAD"
+      },
+      "error": null
+    },
+    {
+      "binding": {
+        "ref": "all-tests-20261008/current-source-closure/all-tests-20261007/implementation-canonical-narration-battle-service",
+        "path": "backend/src/services/battle-service.ts"
+      },
+      "exitCode": 0,
+      "comparison": {
+        "schema": "sealgraph/source-compare/v1",
+        "ref": "all-tests-20261008/current-source-closure/all-tests-20261007/implementation-canonical-narration-battle-service",
+        "path": "backend/src/services/battle-service.ts",
+        "baseline": "HEAD",
+        "baseline_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "8ea93519d82b1716ef3bf769a9fef999fd3203870a4e92357c297eb368034bae"
+        },
+        "workfile_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "90bc06ac66cf8d1ff5d4ce02abf401b2bc90493476693541f491261d36fb7edb",
+          "bytes": 255333
+        },
+        "relation": "WORKFILE_DIFFERS_FROM_HEAD"
+      },
+      "error": null
+    },
+    {
+      "binding": {
+        "ref": "all-tests-20261008/current-source-closure/all-tests-20261007/implementation-character-attempt-reads",
+        "path": "backend/src/repositories/character-assets-v2.ts"
+      },
+      "exitCode": 0,
+      "comparison": {
+        "schema": "sealgraph/source-compare/v1",
+        "ref": "all-tests-20261008/current-source-closure/all-tests-20261007/implementation-character-attempt-reads",
+        "path": "backend/src/repositories/character-assets-v2.ts",
+        "baseline": "HEAD",
+        "baseline_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "b4221398084b1950a90667157691bcda9be7cda4bf0e8acc3522c403d05d13aa"
+        },
+        "workfile_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "275f7014e7121ece0515838d04da0c995a71066cb83a467cb5318a8c08fa0d7e",
+          "bytes": 65075
+        },
+        "relation": "WORKFILE_DIFFERS_FROM_HEAD"
+      },
+      "error": null
+    },
+    {
+      "binding": {
+        "ref": "all-tests-20261008/current-source-closure/all-tests-20261007/implementation-character-repository-activation",
+        "path": "backend/src/repositories/character-assets-v2.ts"
+      },
+      "exitCode": 0,
+      "comparison": {
+        "schema": "sealgraph/source-compare/v1",
+        "ref": "all-tests-20261008/current-source-closure/all-tests-20261007/implementation-character-repository-activation",
+        "path": "backend/src/repositories/character-assets-v2.ts",
+        "baseline": "HEAD",
+        "baseline_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "b4221398084b1950a90667157691bcda9be7cda4bf0e8acc3522c403d05d13aa"
+        },
+        "workfile_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "275f7014e7121ece0515838d04da0c995a71066cb83a467cb5318a8c08fa0d7e",
+          "bytes": 65075
+        },
+        "relation": "WORKFILE_DIFFERS_FROM_HEAD"
+      },
+      "error": null
+    },
+    {
+      "binding": {
+        "ref": "all-tests-20261008/current-source-closure/all-tests-20261007/implementation-current-focused-pending-read",
+        "path": "backend/src/services/character-focused-authoring.ts"
+      },
+      "exitCode": 0,
+      "comparison": {
+        "schema": "sealgraph/source-compare/v1",
+        "ref": "all-tests-20261008/current-source-closure/all-tests-20261007/implementation-current-focused-pending-read",
+        "path": "backend/src/services/character-focused-authoring.ts",
+        "baseline": "HEAD",
+        "baseline_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "b4b5c9106104cd4e858149476a97141b75915ea0c3122a25be3d214ee88824d5"
+        },
+        "workfile_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "ecad2bf99dc9aecf9ac6bf90285d5c21e6322385d7e07341bc536ec080b9d2b4",
+          "bytes": 49680
+        },
+        "relation": "WORKFILE_DIFFERS_FROM_HEAD"
+      },
+      "error": null
+    },
+    {
+      "binding": {
+        "ref": "all-tests-20261008/current-source-closure/all-tests-20261007/implementation-current-narration-builder-contracts",
+        "path": "backend/src/llm/openai-compatible.ts"
+      },
+      "exitCode": 0,
+      "comparison": {
+        "schema": "sealgraph/source-compare/v1",
+        "ref": "all-tests-20261008/current-source-closure/all-tests-20261007/implementation-current-narration-builder-contracts",
+        "path": "backend/src/llm/openai-compatible.ts",
+        "baseline": "HEAD",
+        "baseline_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "7d1420aeea8a45e5deb5ed27232603297bdf74f15b186671ac3ff3160facde47"
+        },
+        "workfile_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "4f41e44c31471b2a5b99cebebe3feedf567f216190f2742d82906211443bc932",
+          "bytes": 207519
+        },
+        "relation": "WORKFILE_DIFFERS_FROM_HEAD"
+      },
+      "error": null
+    },
+    {
+      "binding": {
+        "ref": "all-tests-20261008/current-source-closure/all-tests-20261007/implementation-expression-observer-projection",
+        "path": "packages/shared/src/perception-projection.ts"
+      },
+      "exitCode": 0,
+      "comparison": {
+        "schema": "sealgraph/source-compare/v1",
+        "ref": "all-tests-20261008/current-source-closure/all-tests-20261007/implementation-expression-observer-projection",
+        "path": "packages/shared/src/perception-projection.ts",
+        "baseline": "HEAD",
+        "baseline_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "bb95189421e7af7ea837ecd8c2b0e970bb2832e76661b81d1fe0b3453c8bb322"
+        },
+        "workfile_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "2cd302b131a9e3f13edc1e1700e94ef0e801169a2bd6249628ffe11bbf1f6bc1",
+          "bytes": 50411
+        },
+        "relation": "WORKFILE_DIFFERS_FROM_HEAD"
+      },
+      "error": null
+    },
+    {
+      "binding": {
+        "ref": "all-tests-20261008/current-source-closure/all-tests-20261007/implementation-narration-phase-builders",
+        "path": "backend/src/llm/openai-compatible.ts"
+      },
+      "exitCode": 0,
+      "comparison": {
+        "schema": "sealgraph/source-compare/v1",
+        "ref": "all-tests-20261008/current-source-closure/all-tests-20261007/implementation-narration-phase-builders",
+        "path": "backend/src/llm/openai-compatible.ts",
+        "baseline": "HEAD",
+        "baseline_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "7d1420aeea8a45e5deb5ed27232603297bdf74f15b186671ac3ff3160facde47"
+        },
+        "workfile_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "4f41e44c31471b2a5b99cebebe3feedf567f216190f2742d82906211443bc932",
+          "bytes": 207519
+        },
+        "relation": "WORKFILE_DIFFERS_FROM_HEAD"
+      },
+      "error": null
+    },
+    {
+      "binding": {
+        "ref": "all-tests-20261008/current-source-closure/all-tests-20261007/implementation-observer-contact-projection",
+        "path": "packages/shared/src/perception-projection.ts"
+      },
+      "exitCode": 0,
+      "comparison": {
+        "schema": "sealgraph/source-compare/v1",
+        "ref": "all-tests-20261008/current-source-closure/all-tests-20261007/implementation-observer-contact-projection",
+        "path": "packages/shared/src/perception-projection.ts",
+        "baseline": "HEAD",
+        "baseline_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "bb95189421e7af7ea837ecd8c2b0e970bb2832e76661b81d1fe0b3453c8bb322"
+        },
+        "workfile_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "2cd302b131a9e3f13edc1e1700e94ef0e801169a2bd6249628ffe11bbf1f6bc1",
+          "bytes": 50411
+        },
+        "relation": "WORKFILE_DIFFERS_FROM_HEAD"
+      },
+      "error": null
+    },
+    {
+      "binding": {
+        "ref": "all-tests-20261008/current-source-closure/all-tests-20261007/implementation-provider-accounting-sdk-retries",
+        "path": "backend/src/llm/openai-compatible.ts"
+      },
+      "exitCode": 0,
+      "comparison": {
+        "schema": "sealgraph/source-compare/v1",
+        "ref": "all-tests-20261008/current-source-closure/all-tests-20261007/implementation-provider-accounting-sdk-retries",
+        "path": "backend/src/llm/openai-compatible.ts",
+        "baseline": "HEAD",
+        "baseline_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "7d1420aeea8a45e5deb5ed27232603297bdf74f15b186671ac3ff3160facde47"
+        },
+        "workfile_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "4f41e44c31471b2a5b99cebebe3feedf567f216190f2742d82906211443bc932",
+          "bytes": 207519
+        },
+        "relation": "WORKFILE_DIFFERS_FROM_HEAD"
+      },
+      "error": null
+    },
+    {
+      "binding": {
+        "ref": "all-tests-20261008/current-source-closure/all-tests-20261007/implementation-retained-agency-v3-service-flow",
+        "path": "backend/src/services/battle-service.ts"
+      },
+      "exitCode": 0,
+      "comparison": {
+        "schema": "sealgraph/source-compare/v1",
+        "ref": "all-tests-20261008/current-source-closure/all-tests-20261007/implementation-retained-agency-v3-service-flow",
+        "path": "backend/src/services/battle-service.ts",
+        "baseline": "HEAD",
+        "baseline_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "8ea93519d82b1716ef3bf769a9fef999fd3203870a4e92357c297eb368034bae"
+        },
+        "workfile_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "90bc06ac66cf8d1ff5d4ce02abf401b2bc90493476693541f491261d36fb7edb",
+          "bytes": 255333
+        },
+        "relation": "WORKFILE_DIFFERS_FROM_HEAD"
+      },
+      "error": null
+    },
+    {
+      "binding": {
+        "ref": "all-tests-20261008/current-source-closure/all-tests-20261007/implementation-retained-compact-expression-decoder",
+        "path": "backend/src/llm/openai-compatible.ts"
+      },
+      "exitCode": 0,
+      "comparison": {
+        "schema": "sealgraph/source-compare/v1",
+        "ref": "all-tests-20261008/current-source-closure/all-tests-20261007/implementation-retained-compact-expression-decoder",
+        "path": "backend/src/llm/openai-compatible.ts",
+        "baseline": "HEAD",
+        "baseline_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "7d1420aeea8a45e5deb5ed27232603297bdf74f15b186671ac3ff3160facde47"
+        },
+        "workfile_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "4f41e44c31471b2a5b99cebebe3feedf567f216190f2742d82906211443bc932",
+          "bytes": 207519
+        },
+        "relation": "WORKFILE_DIFFERS_FROM_HEAD"
+      },
+      "error": null
+    },
+    {
+      "binding": {
+        "ref": "all-tests-20261008/current-source-closure/all-tests-20261007/implementation-sdk-awareness-adjudication-result",
+        "path": "backend/src/llm/openai-compatible.ts"
+      },
+      "exitCode": 0,
+      "comparison": {
+        "schema": "sealgraph/source-compare/v1",
+        "ref": "all-tests-20261008/current-source-closure/all-tests-20261007/implementation-sdk-awareness-adjudication-result",
+        "path": "backend/src/llm/openai-compatible.ts",
+        "baseline": "HEAD",
+        "baseline_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "7d1420aeea8a45e5deb5ed27232603297bdf74f15b186671ac3ff3160facde47"
+        },
+        "workfile_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "4f41e44c31471b2a5b99cebebe3feedf567f216190f2742d82906211443bc932",
+          "bytes": 207519
+        },
+        "relation": "WORKFILE_DIFFERS_FROM_HEAD"
+      },
+      "error": null
+    },
+    {
+      "binding": {
+        "ref": "all-tests-20261008/current-source-closure/all-tests-20261007/implementation-sdk-awareness-dispatch",
+        "path": "backend/src/llm/openai-compatible.ts"
+      },
+      "exitCode": 0,
+      "comparison": {
+        "schema": "sealgraph/source-compare/v1",
+        "ref": "all-tests-20261008/current-source-closure/all-tests-20261007/implementation-sdk-awareness-dispatch",
+        "path": "backend/src/llm/openai-compatible.ts",
+        "baseline": "HEAD",
+        "baseline_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "7d1420aeea8a45e5deb5ed27232603297bdf74f15b186671ac3ff3160facde47"
+        },
+        "workfile_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "4f41e44c31471b2a5b99cebebe3feedf567f216190f2742d82906211443bc932",
+          "bytes": 207519
+        },
+        "relation": "WORKFILE_DIFFERS_FROM_HEAD"
+      },
+      "error": null
+    },
+    {
+      "binding": {
+        "ref": "all-tests-20261008/current-source-closure/all-tests-20261007/implementation-sdk-json-accounting-boundary",
+        "path": "backend/src/llm/openai-compatible.ts"
+      },
+      "exitCode": 0,
+      "comparison": {
+        "schema": "sealgraph/source-compare/v1",
+        "ref": "all-tests-20261008/current-source-closure/all-tests-20261007/implementation-sdk-json-accounting-boundary",
+        "path": "backend/src/llm/openai-compatible.ts",
+        "baseline": "HEAD",
+        "baseline_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "7d1420aeea8a45e5deb5ed27232603297bdf74f15b186671ac3ff3160facde47"
+        },
+        "workfile_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "4f41e44c31471b2a5b99cebebe3feedf567f216190f2742d82906211443bc932",
+          "bytes": 207519
+        },
+        "relation": "WORKFILE_DIFFERS_FROM_HEAD"
+      },
+      "error": null
+    },
+    {
+      "binding": {
+        "ref": "all-tests-20261008/current-source-closure/all-tests-20261007/implementation-sdk-model-options",
+        "path": "backend/src/llm/openai-compatible.ts"
+      },
+      "exitCode": 0,
+      "comparison": {
+        "schema": "sealgraph/source-compare/v1",
+        "ref": "all-tests-20261008/current-source-closure/all-tests-20261007/implementation-sdk-model-options",
+        "path": "backend/src/llm/openai-compatible.ts",
+        "baseline": "HEAD",
+        "baseline_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "7d1420aeea8a45e5deb5ed27232603297bdf74f15b186671ac3ff3160facde47"
+        },
+        "workfile_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "4f41e44c31471b2a5b99cebebe3feedf567f216190f2742d82906211443bc932",
+          "bytes": 207519
+        },
+        "relation": "WORKFILE_DIFFERS_FROM_HEAD"
+      },
+      "error": null
+    },
+    {
+      "binding": {
+        "ref": "all-tests-20261008/current-source-closure/all-tests-20261007/implementation-sdk-response-schema-ordinary-gate",
+        "path": "backend/src/llm/openai-compatible.ts"
+      },
+      "exitCode": 0,
+      "comparison": {
+        "schema": "sealgraph/source-compare/v1",
+        "ref": "all-tests-20261008/current-source-closure/all-tests-20261007/implementation-sdk-response-schema-ordinary-gate",
+        "path": "backend/src/llm/openai-compatible.ts",
+        "baseline": "HEAD",
+        "baseline_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "7d1420aeea8a45e5deb5ed27232603297bdf74f15b186671ac3ff3160facde47"
+        },
+        "workfile_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "4f41e44c31471b2a5b99cebebe3feedf567f216190f2742d82906211443bc932",
+          "bytes": 207519
+        },
+        "relation": "WORKFILE_DIFFERS_FROM_HEAD"
+      },
+      "error": null
+    },
+    {
+      "binding": {
+        "ref": "all-tests-20261008/current-source-closure/all-tests-20261007/implementation-sdk-retained-agency-v3-dispatch",
+        "path": "backend/src/llm/openai-compatible.ts"
+      },
+      "exitCode": 0,
+      "comparison": {
+        "schema": "sealgraph/source-compare/v1",
+        "ref": "all-tests-20261008/current-source-closure/all-tests-20261007/implementation-sdk-retained-agency-v3-dispatch",
+        "path": "backend/src/llm/openai-compatible.ts",
+        "baseline": "HEAD",
+        "baseline_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "7d1420aeea8a45e5deb5ed27232603297bdf74f15b186671ac3ff3160facde47"
+        },
+        "workfile_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "4f41e44c31471b2a5b99cebebe3feedf567f216190f2742d82906211443bc932",
+          "bytes": 207519
+        },
+        "relation": "WORKFILE_DIFFERS_FROM_HEAD"
+      },
+      "error": null
+    },
+    {
+      "binding": {
+        "ref": "all-tests-20261008/current-source-closure/all-tests-20261007/implementation-sdk-usage-paths",
+        "path": "backend/src/llm/openai-compatible.ts"
+      },
+      "exitCode": 0,
+      "comparison": {
+        "schema": "sealgraph/source-compare/v1",
+        "ref": "all-tests-20261008/current-source-closure/all-tests-20261007/implementation-sdk-usage-paths",
+        "path": "backend/src/llm/openai-compatible.ts",
+        "baseline": "HEAD",
+        "baseline_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "7d1420aeea8a45e5deb5ed27232603297bdf74f15b186671ac3ff3160facde47"
+        },
+        "workfile_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "4f41e44c31471b2a5b99cebebe3feedf567f216190f2742d82906211443bc932",
+          "bytes": 207519
+        },
+        "relation": "WORKFILE_DIFFERS_FROM_HEAD"
+      },
+      "error": null
+    },
+    {
+      "binding": {
+        "ref": "all-tests-20261008/current-source-closure/all-tests-20261007/implementation-stable-area-battle-initialization",
+        "path": "packages/shared/src/battle-engine.ts"
+      },
+      "exitCode": 0,
+      "comparison": {
+        "schema": "sealgraph/source-compare/v1",
+        "ref": "all-tests-20261008/current-source-closure/all-tests-20261007/implementation-stable-area-battle-initialization",
+        "path": "packages/shared/src/battle-engine.ts",
+        "baseline": "HEAD",
+        "baseline_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "d2bd8b0ab1897709ab19aa471726f77851f9e806b1adf57c3ff75112df06c446"
+        },
+        "workfile_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "67a4b9e753216c125ee4954d0c7de26ec3551bdd18abf1bd00377c02f4520292",
+          "bytes": 140387
+        },
+        "relation": "WORKFILE_DIFFERS_FROM_HEAD"
+      },
+      "error": null
+    },
+    {
+      "binding": {
+        "ref": "all-tests-20261008/current-source-closure/all-tests-20261007/implementation-stable-area-ready-binding",
+        "path": "backend/src/services/battle-service.ts"
+      },
+      "exitCode": 0,
+      "comparison": {
+        "schema": "sealgraph/source-compare/v1",
+        "ref": "all-tests-20261008/current-source-closure/all-tests-20261007/implementation-stable-area-ready-binding",
+        "path": "backend/src/services/battle-service.ts",
+        "baseline": "HEAD",
+        "baseline_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "8ea93519d82b1716ef3bf769a9fef999fd3203870a4e92357c297eb368034bae"
+        },
+        "workfile_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "90bc06ac66cf8d1ff5d4ce02abf401b2bc90493476693541f491261d36fb7edb",
+          "bytes": 255333
+        },
+        "relation": "WORKFILE_DIFFERS_FROM_HEAD"
+      },
+      "error": null
+    },
+    {
+      "binding": {
+        "ref": "all-tests-20261008/current-source-closure/all-tests-20261007/implementation-typed-battlefield-creation",
+        "path": "packages/shared/src/battlefield-creation.ts"
+      },
+      "exitCode": 0,
+      "comparison": {
+        "schema": "sealgraph/source-compare/v1",
+        "ref": "all-tests-20261008/current-source-closure/all-tests-20261007/implementation-typed-battlefield-creation",
+        "path": "packages/shared/src/battlefield-creation.ts",
+        "baseline": "HEAD",
+        "baseline_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "94675a83f4bca1d069f7536934ed8120e7badc52c8104b5557090d4b18d9ae3d"
+        },
+        "workfile_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "4ca14a3574e317b99522b3251216e6d388304e1c381ce26f8acf3d1b5336177d",
+          "bytes": 4007
+        },
+        "relation": "WORKFILE_DIFFERS_FROM_HEAD"
+      },
+      "error": null
+    },
+    {
+      "binding": {
+        "ref": "all-tests-20261008/current-source-closure/all-tests-20261008/implementation-boundary-battle",
+        "path": "backend/src/services/battle-service.ts"
+      },
+      "exitCode": 0,
+      "comparison": {
+        "schema": "sealgraph/source-compare/v1",
+        "ref": "all-tests-20261008/current-source-closure/all-tests-20261008/implementation-boundary-battle",
+        "path": "backend/src/services/battle-service.ts",
+        "baseline": "HEAD",
+        "baseline_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "8ea93519d82b1716ef3bf769a9fef999fd3203870a4e92357c297eb368034bae"
+        },
+        "workfile_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "90bc06ac66cf8d1ff5d4ce02abf401b2bc90493476693541f491261d36fb7edb",
+          "bytes": 255333
+        },
+        "relation": "WORKFILE_DIFFERS_FROM_HEAD"
+      },
+      "error": null
+    },
+    {
+      "binding": {
+        "ref": "all-tests-20261008/current-source-closure/all-tests-20261008/implementation-historical-agency-inventory",
+        "path": "backend/src/services/battle-service.ts"
+      },
+      "exitCode": 0,
+      "comparison": {
+        "schema": "sealgraph/source-compare/v1",
+        "ref": "all-tests-20261008/current-source-closure/all-tests-20261008/implementation-historical-agency-inventory",
+        "path": "backend/src/services/battle-service.ts",
+        "baseline": "HEAD",
+        "baseline_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "8ea93519d82b1716ef3bf769a9fef999fd3203870a4e92357c297eb368034bae"
+        },
+        "workfile_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "90bc06ac66cf8d1ff5d4ce02abf401b2bc90493476693541f491261d36fb7edb",
+          "bytes": 255333
+        },
+        "relation": "WORKFILE_DIFFERS_FROM_HEAD"
+      },
+      "error": null
+    },
+    {
+      "binding": {
+        "ref": "all-tests-20261008/current-source-closure/all-tests-20261008/implementation-openai-compatible-character-definition-recovery-bounded",
+        "path": "backend/src/llm/openai-compatible.ts"
+      },
+      "exitCode": 0,
+      "comparison": {
+        "schema": "sealgraph/source-compare/v1",
+        "ref": "all-tests-20261008/current-source-closure/all-tests-20261008/implementation-openai-compatible-character-definition-recovery-bounded",
+        "path": "backend/src/llm/openai-compatible.ts",
+        "baseline": "HEAD",
+        "baseline_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "7d1420aeea8a45e5deb5ed27232603297bdf74f15b186671ac3ff3160facde47"
+        },
+        "workfile_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "4f41e44c31471b2a5b99cebebe3feedf567f216190f2742d82906211443bc932",
+          "bytes": 207519
+        },
+        "relation": "WORKFILE_DIFFERS_FROM_HEAD"
+      },
+      "error": null
+    },
+    {
+      "binding": {
+        "ref": "all-tests-20261008/current-source-closure/all-tests-20261008/implementation-perception-typed-seam",
+        "path": "backend/src/llm/openai-compatible.ts"
+      },
+      "exitCode": 0,
+      "comparison": {
+        "schema": "sealgraph/source-compare/v1",
+        "ref": "all-tests-20261008/current-source-closure/all-tests-20261008/implementation-perception-typed-seam",
+        "path": "backend/src/llm/openai-compatible.ts",
+        "baseline": "HEAD",
+        "baseline_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "7d1420aeea8a45e5deb5ed27232603297bdf74f15b186671ac3ff3160facde47"
+        },
+        "workfile_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "4f41e44c31471b2a5b99cebebe3feedf567f216190f2742d82906211443bc932",
+          "bytes": 207519
+        },
+        "relation": "WORKFILE_DIFFERS_FROM_HEAD"
+      },
+      "error": null
+    },
+    {
+      "binding": {
+        "ref": "all-tests-20261008/current-source-closure/all-tests-20261008/implementation-portrait-v3-activation",
+        "path": "backend/src/repositories/character-assets-v2.ts"
+      },
+      "exitCode": 0,
+      "comparison": {
+        "schema": "sealgraph/source-compare/v1",
+        "ref": "all-tests-20261008/current-source-closure/all-tests-20261008/implementation-portrait-v3-activation",
+        "path": "backend/src/repositories/character-assets-v2.ts",
+        "baseline": "HEAD",
+        "baseline_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "b4221398084b1950a90667157691bcda9be7cda4bf0e8acc3522c403d05d13aa"
+        },
+        "workfile_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "275f7014e7121ece0515838d04da0c995a71066cb83a467cb5318a8c08fa0d7e",
+          "bytes": 65075
+        },
+        "relation": "WORKFILE_DIFFERS_FROM_HEAD"
+      },
+      "error": null
+    },
+    {
+      "binding": {
+        "ref": "all-tests-20261008/current-source-closure/all-tests-20261008/implementation-psyche-repair-bounded",
+        "path": "backend/src/llm/openai-compatible.ts"
+      },
+      "exitCode": 0,
+      "comparison": {
+        "schema": "sealgraph/source-compare/v1",
+        "ref": "all-tests-20261008/current-source-closure/all-tests-20261008/implementation-psyche-repair-bounded",
+        "path": "backend/src/llm/openai-compatible.ts",
+        "baseline": "HEAD",
+        "baseline_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "7d1420aeea8a45e5deb5ed27232603297bdf74f15b186671ac3ff3160facde47"
+        },
+        "workfile_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "4f41e44c31471b2a5b99cebebe3feedf567f216190f2742d82906211443bc932",
+          "bytes": 207519
+        },
+        "relation": "WORKFILE_DIFFERS_FROM_HEAD"
+      },
+      "error": null
+    },
+    {
+      "binding": {
+        "ref": "all-tests-20261008/current-source-closure/all-tests-20261008/implementation-routing-typed-seam",
+        "path": "backend/src/llm/openai-compatible.ts"
+      },
+      "exitCode": 0,
+      "comparison": {
+        "schema": "sealgraph/source-compare/v1",
+        "ref": "all-tests-20261008/current-source-closure/all-tests-20261008/implementation-routing-typed-seam",
+        "path": "backend/src/llm/openai-compatible.ts",
+        "baseline": "HEAD",
+        "baseline_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "7d1420aeea8a45e5deb5ed27232603297bdf74f15b186671ac3ff3160facde47"
+        },
+        "workfile_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "4f41e44c31471b2a5b99cebebe3feedf567f216190f2742d82906211443bc932",
+          "bytes": 207519
+        },
+        "relation": "WORKFILE_DIFFERS_FROM_HEAD"
+      },
+      "error": null
+    },
+    {
+      "binding": {
+        "ref": "all-tests-20261008/current-source-closure/awareness-guidance-20261007/battle-frame",
+        "path": "backend/src/services/battle-service.ts"
+      },
+      "exitCode": 0,
+      "comparison": {
+        "schema": "sealgraph/source-compare/v1",
+        "ref": "all-tests-20261008/current-source-closure/awareness-guidance-20261007/battle-frame",
+        "path": "backend/src/services/battle-service.ts",
+        "baseline": "HEAD",
+        "baseline_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "8ea93519d82b1716ef3bf769a9fef999fd3203870a4e92357c297eb368034bae"
+        },
+        "workfile_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "90bc06ac66cf8d1ff5d4ce02abf401b2bc90493476693541f491261d36fb7edb",
+          "bytes": 255333
+        },
+        "relation": "WORKFILE_DIFFERS_FROM_HEAD"
+      },
+      "error": null
+    },
+    {
+      "binding": {
+        "ref": "all-tests-20261008/current-source-closure/awareness-guidance-20261007/verification-execution",
+        "path": "backend/src/services/awareness-execution.test.ts"
+      },
+      "exitCode": 0,
+      "comparison": {
+        "schema": "sealgraph/source-compare/v1",
+        "ref": "all-tests-20261008/current-source-closure/awareness-guidance-20261007/verification-execution",
+        "path": "backend/src/services/awareness-execution.test.ts",
+        "baseline": "HEAD",
+        "baseline_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "a69a7264944c2136d7b9ad653092299aa35942b1e538f0874631d9af400f485c"
+        },
+        "workfile_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "8eb001f929081303826fe476ded6ae624b8e0dd44b370a76ab1572988ef2edfc",
+          "bytes": 23270
+        },
+        "relation": "WORKFILE_DIFFERS_FROM_HEAD"
+      },
+      "error": null
+    },
+    {
+      "binding": {
+        "ref": "all-tests-20261008/implementation-action-feasibility-bounded",
+        "path": "packages/shared/src/action-feasibility.ts"
+      },
+      "exitCode": 0,
+      "comparison": {
+        "schema": "sealgraph/source-compare/v1",
+        "ref": "all-tests-20261008/implementation-action-feasibility-bounded",
+        "path": "packages/shared/src/action-feasibility.ts",
+        "baseline": "HEAD",
+        "baseline_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "ada3b971d3f58b2533981971f6d093c6955e8b2306862082ef53baad7e22ce6e"
+        },
+        "workfile_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "df7bbe397f62571ef6f2997b19440840b3ea43e49cc31aa97e7c27111a6ed21c",
+          "bytes": 18292
+        },
+        "relation": "WORKFILE_DIFFERS_FROM_HEAD"
+      },
+      "error": null
+    },
+    {
+      "binding": {
+        "ref": "all-tests-20261008/implementation-agent-typed-seam",
+        "path": "backend/src/llm/openai-compatible.ts"
+      },
+      "exitCode": 0,
+      "comparison": {
+        "schema": "sealgraph/source-compare/v1",
+        "ref": "all-tests-20261008/implementation-agent-typed-seam",
+        "path": "backend/src/llm/openai-compatible.ts",
+        "baseline": "HEAD",
+        "baseline_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "4646a44f0259c8be6cf7cb1cafa5608488f239566679a1b1b60bd89573ef54a3"
+        },
+        "workfile_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "4f41e44c31471b2a5b99cebebe3feedf567f216190f2742d82906211443bc932",
+          "bytes": 207519
+        },
+        "relation": "WORKFILE_DIFFERS_FROM_HEAD"
+      },
+      "error": null
+    },
+    {
+      "binding": {
+        "ref": "all-tests-20261008/implementation-battle-policy-bounded",
+        "path": "packages/shared/src/battle.ts"
+      },
+      "exitCode": 0,
+      "comparison": {
+        "schema": "sealgraph/source-compare/v1",
+        "ref": "all-tests-20261008/implementation-battle-policy-bounded",
+        "path": "packages/shared/src/battle.ts",
+        "baseline": "HEAD",
+        "baseline_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "68e09d65b4f6d92f6fe2703d939ff4b7314b3caef02d8e2a31d2f9f781ac99c1"
+        },
+        "workfile_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "47832bafe73e43797058c0efbd136be8df290e6099731985e8486964a0673af1",
+          "bytes": 114429
+        },
+        "relation": "WORKFILE_DIFFERS_FROM_HEAD"
+      },
+      "error": null
+    },
+    {
+      "binding": {
+        "ref": "all-tests-20261008/implementation-boundary-battle",
+        "path": "backend/src/services/battle-service.ts"
+      },
+      "exitCode": 0,
+      "comparison": {
+        "schema": "sealgraph/source-compare/v1",
+        "ref": "all-tests-20261008/implementation-boundary-battle",
+        "path": "backend/src/services/battle-service.ts",
+        "baseline": "HEAD",
+        "baseline_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "d8fee4c8c1a539a7c4a7f32ac264344956b4c49b84b878e2db7c946042557897"
+        },
+        "workfile_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "90bc06ac66cf8d1ff5d4ce02abf401b2bc90493476693541f491261d36fb7edb",
+          "bytes": 255333
+        },
+        "relation": "WORKFILE_DIFFERS_FROM_HEAD"
+      },
+      "error": null
+    },
+    {
+      "binding": {
+        "ref": "all-tests-20261008/implementation-boundary-character-assets",
+        "path": "backend/src/repositories/character-assets-v2.ts"
+      },
+      "exitCode": 0,
+      "comparison": {
+        "schema": "sealgraph/source-compare/v1",
+        "ref": "all-tests-20261008/implementation-boundary-character-assets",
+        "path": "backend/src/repositories/character-assets-v2.ts",
+        "baseline": "HEAD",
+        "baseline_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "df8b6e04bef1f3b21583840e25b608e779e272f0a1f3b4f4f5528085d4cbba3a"
+        },
+        "workfile_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "275f7014e7121ece0515838d04da0c995a71066cb83a467cb5318a8c08fa0d7e",
+          "bytes": 65075
+        },
+        "relation": "WORKFILE_DIFFERS_FROM_HEAD"
+      },
+      "error": null
+    },
+    {
+      "binding": {
+        "ref": "all-tests-20261008/implementation-free-action-service-bounded",
+        "path": "backend/src/services/free-action-service.ts"
+      },
+      "exitCode": 0,
+      "comparison": {
+        "schema": "sealgraph/source-compare/v1",
+        "ref": "all-tests-20261008/implementation-free-action-service-bounded",
+        "path": "backend/src/services/free-action-service.ts",
+        "baseline": "HEAD",
+        "baseline_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "73efa7221726e20c2dc5fe7e97876c1fd1e070a2c319021f0eab1f29e80805f9"
+        },
+        "workfile_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "6aafda87137471cfddfcf0a8f2e53e4392e4b4aef5fcb742b0dc19997d4513a4",
+          "bytes": 44105
+        },
+        "relation": "WORKFILE_DIFFERS_FROM_HEAD"
+      },
+      "error": null
+    },
+    {
+      "binding": {
+        "ref": "all-tests-20261008/implementation-historical-agency-inventory",
+        "path": "backend/src/services/battle-service.ts"
+      },
+      "exitCode": 0,
+      "comparison": {
+        "schema": "sealgraph/source-compare/v1",
+        "ref": "all-tests-20261008/implementation-historical-agency-inventory",
+        "path": "backend/src/services/battle-service.ts",
+        "baseline": "HEAD",
+        "baseline_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "d8fee4c8c1a539a7c4a7f32ac264344956b4c49b84b878e2db7c946042557897"
+        },
+        "workfile_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "90bc06ac66cf8d1ff5d4ce02abf401b2bc90493476693541f491261d36fb7edb",
+          "bytes": 255333
+        },
+        "relation": "WORKFILE_DIFFERS_FROM_HEAD"
+      },
+      "error": null
+    },
+    {
+      "binding": {
+        "ref": "all-tests-20261008/implementation-mock-bounded",
+        "path": "backend/src/llm/mock.ts"
+      },
+      "exitCode": 0,
+      "comparison": {
+        "schema": "sealgraph/source-compare/v1",
+        "ref": "all-tests-20261008/implementation-mock-bounded",
+        "path": "backend/src/llm/mock.ts",
+        "baseline": "HEAD",
+        "baseline_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "ba641587e19e4ae6383933ead3f607101ed1738aa9defb5d5e731108c9494c02"
+        },
+        "workfile_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "fb1da58aa4160d2124cdb7b3791f1e2311a13b7b05bc653451973930ee4dc2b0",
+          "bytes": 58636
+        },
+        "relation": "WORKFILE_DIFFERS_FROM_HEAD"
+      },
+      "error": null
+    },
+    {
+      "binding": {
+        "ref": "all-tests-20261008/implementation-openai-compatible-character-definition-recovery-bounded",
+        "path": "backend/src/llm/openai-compatible.ts"
+      },
+      "exitCode": 0,
+      "comparison": {
+        "schema": "sealgraph/source-compare/v1",
+        "ref": "all-tests-20261008/implementation-openai-compatible-character-definition-recovery-bounded",
+        "path": "backend/src/llm/openai-compatible.ts",
+        "baseline": "HEAD",
+        "baseline_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "4646a44f0259c8be6cf7cb1cafa5608488f239566679a1b1b60bd89573ef54a3"
+        },
+        "workfile_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "4f41e44c31471b2a5b99cebebe3feedf567f216190f2742d82906211443bc932",
+          "bytes": 207519
+        },
+        "relation": "WORKFILE_DIFFERS_FROM_HEAD"
+      },
+      "error": null
+    },
+    {
+      "binding": {
+        "ref": "all-tests-20261008/implementation-owner-rating-viewer",
+        "path": "backend/src/services/battle-service.ts"
+      },
+      "exitCode": 0,
+      "comparison": {
+        "schema": "sealgraph/source-compare/v1",
+        "ref": "all-tests-20261008/implementation-owner-rating-viewer",
+        "path": "backend/src/services/battle-service.ts",
+        "baseline": "HEAD",
+        "baseline_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "8ea93519d82b1716ef3bf769a9fef999fd3203870a4e92357c297eb368034bae"
+        },
+        "workfile_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "90bc06ac66cf8d1ff5d4ce02abf401b2bc90493476693541f491261d36fb7edb",
+          "bytes": 255333
+        },
+        "relation": "WORKFILE_DIFFERS_FROM_HEAD"
+      },
+      "error": null
+    },
+    {
+      "binding": {
+        "ref": "all-tests-20261008/implementation-perception-typed-seam",
+        "path": "backend/src/llm/openai-compatible.ts"
+      },
+      "exitCode": 0,
+      "comparison": {
+        "schema": "sealgraph/source-compare/v1",
+        "ref": "all-tests-20261008/implementation-perception-typed-seam",
+        "path": "backend/src/llm/openai-compatible.ts",
+        "baseline": "HEAD",
+        "baseline_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "4646a44f0259c8be6cf7cb1cafa5608488f239566679a1b1b60bd89573ef54a3"
+        },
+        "workfile_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "4f41e44c31471b2a5b99cebebe3feedf567f216190f2742d82906211443bc932",
+          "bytes": 207519
+        },
+        "relation": "WORKFILE_DIFFERS_FROM_HEAD"
+      },
+      "error": null
+    },
+    {
+      "binding": {
+        "ref": "all-tests-20261008/implementation-portrait-v3-activation",
+        "path": "backend/src/repositories/character-assets-v2.ts"
+      },
+      "exitCode": 0,
+      "comparison": {
+        "schema": "sealgraph/source-compare/v1",
+        "ref": "all-tests-20261008/implementation-portrait-v3-activation",
+        "path": "backend/src/repositories/character-assets-v2.ts",
+        "baseline": "HEAD",
+        "baseline_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "df8b6e04bef1f3b21583840e25b608e779e272f0a1f3b4f4f5528085d4cbba3a"
+        },
+        "workfile_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "275f7014e7121ece0515838d04da0c995a71066cb83a467cb5318a8c08fa0d7e",
+          "bytes": 65075
+        },
+        "relation": "WORKFILE_DIFFERS_FROM_HEAD"
+      },
+      "error": null
+    },
+    {
+      "binding": {
+        "ref": "all-tests-20261008/implementation-psyche-repair-bounded",
+        "path": "backend/src/llm/openai-compatible.ts"
+      },
+      "exitCode": 0,
+      "comparison": {
+        "schema": "sealgraph/source-compare/v1",
+        "ref": "all-tests-20261008/implementation-psyche-repair-bounded",
+        "path": "backend/src/llm/openai-compatible.ts",
+        "baseline": "HEAD",
+        "baseline_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "4646a44f0259c8be6cf7cb1cafa5608488f239566679a1b1b60bd89573ef54a3"
+        },
+        "workfile_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "4f41e44c31471b2a5b99cebebe3feedf567f216190f2742d82906211443bc932",
+          "bytes": 207519
+        },
+        "relation": "WORKFILE_DIFFERS_FROM_HEAD"
+      },
+      "error": null
+    },
+    {
+      "binding": {
+        "ref": "all-tests-20261008/implementation-retained-agency-schema-bounded",
+        "path": "packages/shared/src/battle.ts"
+      },
+      "exitCode": 0,
+      "comparison": {
+        "schema": "sealgraph/source-compare/v1",
+        "ref": "all-tests-20261008/implementation-retained-agency-schema-bounded",
+        "path": "packages/shared/src/battle.ts",
+        "baseline": "HEAD",
+        "baseline_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "68e09d65b4f6d92f6fe2703d939ff4b7314b3caef02d8e2a31d2f9f781ac99c1"
+        },
+        "workfile_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "47832bafe73e43797058c0efbd136be8df290e6099731985e8486964a0673af1",
+          "bytes": 114429
+        },
+        "relation": "WORKFILE_DIFFERS_FROM_HEAD"
+      },
+      "error": null
+    },
+    {
+      "binding": {
+        "ref": "all-tests-20261008/implementation-routing-typed-seam",
+        "path": "backend/src/llm/openai-compatible.ts"
+      },
+      "exitCode": 0,
+      "comparison": {
+        "schema": "sealgraph/source-compare/v1",
+        "ref": "all-tests-20261008/implementation-routing-typed-seam",
+        "path": "backend/src/llm/openai-compatible.ts",
+        "baseline": "HEAD",
+        "baseline_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "4646a44f0259c8be6cf7cb1cafa5608488f239566679a1b1b60bd89573ef54a3"
+        },
+        "workfile_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "4f41e44c31471b2a5b99cebebe3feedf567f216190f2742d82906211443bc932",
+          "bytes": 207519
+        },
+        "relation": "WORKFILE_DIFFERS_FROM_HEAD"
+      },
+      "error": null
+    },
+    {
+      "binding": {
+        "ref": "awareness-guidance-20261007/battle-frame",
+        "path": "backend/src/services/battle-service.ts"
+      },
+      "exitCode": 0,
+      "comparison": {
+        "schema": "sealgraph/source-compare/v1",
+        "ref": "awareness-guidance-20261007/battle-frame",
+        "path": "backend/src/services/battle-service.ts",
+        "baseline": "HEAD",
+        "baseline_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "819181cdcb97ba5299a6722e8379bbce00ff996beb3e238de047427cf42577f9"
+        },
+        "workfile_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "90bc06ac66cf8d1ff5d4ce02abf401b2bc90493476693541f491261d36fb7edb",
+          "bytes": 255333
+        },
+        "relation": "WORKFILE_DIFFERS_FROM_HEAD"
+      },
+      "error": null
+    },
+    {
+      "binding": {
+        "ref": "awareness-guidance-20261007/context",
+        "path": "backend/src/services/awareness-context.ts"
+      },
+      "exitCode": 0,
+      "comparison": {
+        "schema": "sealgraph/source-compare/v1",
+        "ref": "awareness-guidance-20261007/context",
+        "path": "backend/src/services/awareness-context.ts",
+        "baseline": "HEAD",
+        "baseline_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "5fd382bd75daabe7379d0d36288c93352727a1527de6763c703ae85a8b98f446"
+        },
+        "workfile_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "a413371fc5f325211644e94bbb3296bfe46073da7a25c26592b90de763d9e66c",
+          "bytes": 3747
+        },
+        "relation": "WORKFILE_DIFFERS_FROM_HEAD"
+      },
+      "error": null
+    },
+    {
+      "binding": {
+        "ref": "awareness-guidance-20261007/execution",
+        "path": "backend/src/services/awareness-execution.ts"
+      },
+      "exitCode": 0,
+      "comparison": {
+        "schema": "sealgraph/source-compare/v1",
+        "ref": "awareness-guidance-20261007/execution",
+        "path": "backend/src/services/awareness-execution.ts",
+        "baseline": "HEAD",
+        "baseline_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "164a183b988356d72d9c0dae1389e7dc6c400e99369e717bb262e8a78fa5c261"
+        },
+        "workfile_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "7af16a7fab6612f15318a6423fe735b6f4a70167e86d1955e82638770093873d",
+          "bytes": 18031
+        },
+        "relation": "WORKFILE_DIFFERS_FROM_HEAD"
+      },
+      "error": null
+    },
+    {
+      "binding": {
+        "ref": "awareness-guidance-20261007/input-contract",
+        "path": "packages/shared/src/awareness-pipeline.ts"
+      },
+      "exitCode": 0,
+      "comparison": {
+        "schema": "sealgraph/source-compare/v1",
+        "ref": "awareness-guidance-20261007/input-contract",
+        "path": "packages/shared/src/awareness-pipeline.ts",
+        "baseline": "HEAD",
+        "baseline_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "e1e362ff28d34e7efbec10a9b378e231f78ff663e95cc3330f7e3dfc829dca1e"
+        },
+        "workfile_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "a13f29d8185d882c59d3123ec1d980ffa9cd60878ff93dcb16c5b0ba9dbb706e",
+          "bytes": 13823
+        },
+        "relation": "WORKFILE_DIFFERS_FROM_HEAD"
+      },
+      "error": null
+    },
+    {
+      "binding": {
+        "ref": "awareness-guidance-20261007/shared-exports",
+        "path": "packages/shared/src/index.ts"
+      },
+      "exitCode": 0,
+      "comparison": {
+        "schema": "sealgraph/source-compare/v1",
+        "ref": "awareness-guidance-20261007/shared-exports",
+        "path": "packages/shared/src/index.ts",
+        "baseline": "HEAD",
+        "baseline_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "a23d688bb5f453a45f9d17a1eff8ab678027b3192bfaf432b720d5a7d7d3366f"
+        },
+        "workfile_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "f06df3dc9597f38fcf16077e4cbe5c9a9935d6bba078e490bdd52455834cca11",
+          "bytes": 3077
+        },
+        "relation": "WORKFILE_DIFFERS_FROM_HEAD"
+      },
+      "error": null
+    },
+    {
+      "binding": {
+        "ref": "awareness-guidance-20261007/verification-context",
+        "path": "backend/src/services/awareness-context.test.ts"
+      },
+      "exitCode": 0,
+      "comparison": {
+        "schema": "sealgraph/source-compare/v1",
+        "ref": "awareness-guidance-20261007/verification-context",
+        "path": "backend/src/services/awareness-context.test.ts",
+        "baseline": "HEAD",
+        "baseline_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "31cd59c1b3a0853663ae546b6f9cb33811b0dd4448f95957b79181a846e5050b"
+        },
+        "workfile_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "a90076de833c2d8e119f3378af56b7d5abedeeec319b8d053d1cd862da00ff05",
+          "bytes": 9264
+        },
+        "relation": "WORKFILE_DIFFERS_FROM_HEAD"
+      },
+      "error": null
+    },
+    {
+      "binding": {
+        "ref": "awareness-guidance-20261007/verification-execution",
+        "path": "backend/src/services/awareness-execution.test.ts"
+      },
+      "exitCode": 0,
+      "comparison": {
+        "schema": "sealgraph/source-compare/v1",
+        "ref": "awareness-guidance-20261007/verification-execution",
+        "path": "backend/src/services/awareness-execution.test.ts",
+        "baseline": "HEAD",
+        "baseline_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "a69a7264944c2136d7b9ad653092299aa35942b1e538f0874631d9af400f485c"
+        },
+        "workfile_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "8eb001f929081303826fe476ded6ae624b8e0dd44b370a76ab1572988ef2edfc",
+          "bytes": 23270
+        },
+        "relation": "WORKFILE_DIFFERS_FROM_HEAD"
+      },
+      "error": null
+    },
+    {
+      "binding": {
+        "ref": "verification/awareness-pipeline-20261007",
+        "path": "packages/shared/src/awareness-pipeline.test.ts"
+      },
+      "exitCode": 0,
+      "comparison": {
+        "schema": "sealgraph/source-compare/v1",
+        "ref": "verification/awareness-pipeline-20261007",
+        "path": "packages/shared/src/awareness-pipeline.test.ts",
+        "baseline": "HEAD",
+        "baseline_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "8beba4ca30223021adf6beb4c114fa7cf67acd91a1e2612c9f529437361e6acb"
+        },
+        "workfile_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "da6a7c4d7b23bf6dd484d1df217dab53d03b7e88b408470dddfc5d3b04827756",
+          "bytes": 4225
+        },
+        "relation": "WORKFILE_DIFFERS_FROM_HEAD"
+      },
+      "error": null
+    },
+    {
+      "binding": {
+        "ref": "verification/free-action-service-bounded-20261008",
+        "path": "backend/src/services/free-action-service.test.ts"
+      },
+      "exitCode": 0,
+      "comparison": {
+        "schema": "sealgraph/source-compare/v1",
+        "ref": "verification/free-action-service-bounded-20261008",
+        "path": "backend/src/services/free-action-service.test.ts",
+        "baseline": "HEAD",
+        "baseline_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "181d97869b21f270fe009f3d326f7b9c88aac4c6d8096b1d01bfd9cdc9c62525"
+        },
+        "workfile_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "69b5beb81fe35aba914c2dfe2112e31ab097e7b7eecbdee6482a5da377f77709",
+          "bytes": 22660
+        },
+        "relation": "WORKFILE_DIFFERS_FROM_HEAD"
+      },
+      "error": null
+    }
+  ]
+}

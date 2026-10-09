@@ -183,18 +183,19 @@ export function CharacterReviewPage() {
           assistantMessage={review.assistantMessage}
           confirmLabel={confirmLabels[review.kind]}
           busy={busy}
-          chat={review.kind === "create" && review.canEditCandidate !== false && !review.reviewConfirmOnly ? {
+          chat={review.canEditCandidate === true && !review.reviewConfirmOnly ? {
             value: draftMessage,
             placeholder: "例: もっと防御寄りに。髪色を暗い赤に。",
             busy,
             onChange: setDraftMessage,
             onSubmit: (event) => {
               event.preventDefault();
-              if (!draftMessage.trim()) return;
+              const candidateDigest = review.candidateDigest;
+              if (!draftMessage.trim() || !candidateDigest) return;
               runReviewAction(setBusy, setError, async () => {
-                await api.chatCharacterDraft(review.attemptId, draftMessage.trim());
+                const corrected = await api.chatCharacterDraft(review.attemptId, draftMessage.trim(), candidateDigest);
                 setDraftMessage("");
-                setReview(await getCharacterReview(review.attemptId));
+                nav(`/reviews/${corrected.attemptId}`, { replace: true });
               }, "failed");
             },
           } : undefined}

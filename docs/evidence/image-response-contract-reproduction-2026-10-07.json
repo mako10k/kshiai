@@ -1,0 +1,9 @@
+{
+  "mockFetchOnly": true,
+  "sourceUrlType": "number",
+  "result": {
+    "sourceUrl": 123
+  },
+  "contract": "sourceUrl: string",
+  "violated": true
+}

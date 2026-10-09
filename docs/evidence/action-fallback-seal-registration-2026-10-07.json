@@ -1,0 +1,27 @@
+{
+  "scope": "ADR-0045 Decision: exclude free_action and reflect capability metadata from fabricated fallback intents; use complete ordinary or existing skill intents, null when none. Existing attack/spacing preference regression retains current behavior; no new ranking policy is adopted.",
+  "entries": [
+    {
+      "ref": "all-tests-20261007/implementation-action-fallback",
+      "path": "backend/src/services/character-action-fallback.ts",
+      "parents": [
+        "ba3333b9f05bf5cfdb70a40dfb2ced8db112164cefb13ccfd80e0f4dc42afe8b",
+        "7dbc6d9ea7ddfcfeb7f7659c1a8fd47c5a39b48988ba64b5de04048140c9098f"
+      ],
+      "scope": "ADR-0045 Decision: exclude free_action and reflect capability metadata from fabricated fallback intents; use complete ordinary or existing skill intents, null when none. Existing attack/spacing preference regression retains current behavior; no new ranking policy is adopted.",
+      "sha256": "b614132aabd2ae579f24e0c6a16e2862d8c98a261b173601f07e33a0b3754d6c",
+      "sealId": "4f90e3c0b9b4d0724a14ef676a54bf9d04bff511dcf14471dce1ea6b0c6b5a40"
+    },
+    {
+      "ref": "verification/action-fallback-20261007",
+      "path": "backend/src/services/character-action-fallback.test.ts",
+      "parents": [
+        "4f90e3c0b9b4d0724a14ef676a54bf9d04bff511dcf14471dce1ea6b0c6b5a40",
+        "ba3333b9f05bf5cfdb70a40dfb2ced8db112164cefb13ccfd80e0f4dc42afe8b"
+      ],
+      "scope": "ADR-0045 Decision: exclude free_action and reflect capability metadata from fabricated fallback intents; use complete ordinary or existing skill intents, null when none. Existing attack/spacing preference regression retains current behavior; no new ranking policy is adopted.",
+      "sha256": "4d9f6a47a0cca291f80fa36ea9ddbf00c8eac09379f72b2971fb3333f03cb7e4",
+      "sealId": "fee427307dc6c65a9712c00d05e593a083a57e6042f423adf711cad1c1b0656a"
+    }
+  ]
+}

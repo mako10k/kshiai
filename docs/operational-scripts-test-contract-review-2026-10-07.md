@@ -1,0 +1,9 @@
+# 運用スクリプトの局所回帰契約
+
+対象3ファイル8ケースを変更せず封印する。現行docs/release_process.mdはrelease規則のsource of truthで、Release flow5/6/7/8およびRollbackが根拠。rollback selectorのsole100%は既存promote-release.ymlの100%切替consumerに対する厳格な選択であり、全Cloud Run traffic構成一般の仕様ではない。曖昧・欠落時は操作前に停止する。公開rollback成功を主張しない。
+
+R2起動3ケースはdocs/evidence/r2-smoke-startup-dependency-repair-2026-10-06.thinkのOWNER/REVIEW/APPLYで記録された同一契約の依存分離修復を確認。普通のR2検査にDBを必須にせず、いずれかのcutover identity指定なら既存app configとpair guardを保持する。旧試行は破棄済み。guardを保持することから試行の再実行・復活・受入権限を推論しない。invalid/test設定で送信前にerrorとなり、実R2アクセスを確認しない。configレビュー範囲はproduction DATABASE_URL必須とCUTOVER_ID/ARTIFACT_ID pair条件のみ。
+
+health helper2ケースは期待revisionに達するまでの古い応答観測と有限回数の失敗診断をfake response/注入waitで確認。実時間、公開HTML/runtime marker、direct origin404はこのテストの保証外。Release flow5/8のhealth照合に必要な局所機能。default12/5000msや実公開収束の数値受入ではない。
+
+独立レビュー証跡docs/evidence/operational-scripts-independent-review-2026-10-07.json。ADR0040本文のcandidate optionや未整合ADR0039を独立根拠へ借りない。全ケースとassertion、実装は変更しない。251files原範囲、未Seal実行前停止を保持。

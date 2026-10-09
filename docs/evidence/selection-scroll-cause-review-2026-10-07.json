@@ -1,0 +1,85 @@
+{
+  "nodes": [
+    {
+      "key": "design-selection-scroll-test-contract",
+      "path": "docs/selection-scroll-test-contract-review-2026-10-07.md",
+      "parents": [
+        "requirements",
+        "viewport"
+      ],
+      "scope": "Existing eight-case helper conformance: F-MTCH07 per-kind recent ordering/search and Accepted ADR0015 Decision10 usable viewport above bottom navigation. Existing normalization/hold/threshold values are implementation regression, not newly prescribed owner policy; no browser/DOM/timer/storage acceptance.",
+      "ref": "all-tests-20261007/design-selection-scroll-test-contract",
+      "test": false,
+      "sha256": "a8c05514029bfd36dd142d6d4229e81b870d898181adfe81db91ddbc6d9aaf12"
+    },
+    {
+      "key": "implementation-selection-recent-search-preferences",
+      "path": "frontend/src/match-selection-preferences.ts",
+      "parents": [
+        "requirements",
+        "design-selection-scroll-test-contract"
+      ],
+      "scope": "Three exercised pure-helper scenarios: record valid typed selections independently, stable recent-first sort, normalized multi-field query. NFKC/case/kana normalization is existing F-MTCH07 implementation detail; capacity100, all kind variants, storage/MatchPage/browser and invalid runtime keys not certified.",
+      "ref": "all-tests-20261007/implementation-selection-recent-search-preferences",
+      "test": false,
+      "sha256": "1153afa9262f46eb96d5243879826c4910e6a038b8c0ee39a710bd9ca294c076"
+    },
+    {
+      "key": "implementation-battle-scroll-viewport-helpers",
+      "path": "frontend/src/battle-scroll.ts",
+      "parents": [
+        "viewport",
+        "design-selection-scroll-test-contract"
+      ],
+      "scope": "Five pure-helper scenarios: one-minute constant/hold extension, latest marker vs usable viewport/inset/scrollport, following after moving below marker and latest scroll target above bottom inset. Existing 60000ms/48px choices regression only, not ADR-prescribed values or actual timed browser/DOM behavior.",
+      "ref": "all-tests-20261007/implementation-battle-scroll-viewport-helpers",
+      "test": false,
+      "sha256": "2ad81ca2c2caefc3922d90af770b08138d8c30d8a6f1250755a283aa619a9795"
+    },
+    {
+      "key": "selection-preferences-current",
+      "path": "frontend/src/match-selection-preferences.test.ts",
+      "parents": [
+        "requirements",
+        "implementation-selection-recent-search-preferences",
+        "design-selection-scroll-test-contract"
+      ],
+      "scope": "Entire unchanged three-case file: recency with stable unused ordering, separate mine/opponent history and case/width/kana/multi-field search. F-MTCH07 exact clause verified after incomplete independent audit; no implementation/policy changes or storage/browser acceptance.",
+      "ref": "verification/selection-preferences-current-20261007",
+      "test": true,
+      "sha256": "2de0d6fc896f98967efaaab331b40f2538807e6738b20ef0b143c5541e2e2b06"
+    },
+    {
+      "key": "battle-scroll-viewport-current",
+      "path": "frontend/src/battle-scroll.test.ts",
+      "parents": [
+        "viewport",
+        "implementation-battle-scroll-viewport-helpers",
+        "design-selection-scroll-test-contract"
+      ],
+      "scope": "Entire unchanged five-case file: preserved60000ms constant/extension, bottomInset/scrollport latest thresholds, below-latest following and scrollY coordinate. Unit geometry/implementation regression only; ADR0015 actual Playwright acceptance and 60s real waiting unproven.",
+      "ref": "verification/battle-scroll-viewport-current-20261007",
+      "test": true,
+      "sha256": "01396339deee311bf69812e7bb24b87d01af1399767c0fec1f1614942f43f582"
+    }
+  ],
+  "seeds": {
+    "requirements": "all-tests-20261007/authority-semantic-observation-requirements",
+    "viewport": "all-tests-20261007/authority-retained-operator-identity"
+  },
+  "authority": [
+    "requirements F-MTCH07 per-kind recent order and search",
+    "Accepted ADR0015 Decision10 usable viewport"
+  ],
+  "diagnostic": {
+    "focusedPass": 8,
+    "fail": 0,
+    "skipped": 0,
+    "strictTypecheckExit": 0
+  },
+  "limitations": [
+    "Original eight cases/assertions retained; no code/test changes",
+    "Pure geometry/selection helpers, not browser/timer/storage/full operator reentry acceptance",
+    "Existing constants and text normalization are implementation regression details, not newly owner-prescribed policy"
+  ]
+}

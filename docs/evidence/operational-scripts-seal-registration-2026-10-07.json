@@ -1,0 +1,166 @@
+{
+  "entries": [
+    {
+      "key": "authority-release-policy",
+      "path": "docs/release_process.md",
+      "parents": [],
+      "scope": "Existing release source of truth only; no new execution permission or release policy changes.",
+      "ref": "all-tests-20261007/authority-release-policy",
+      "test": false,
+      "sha256": "1255ae837cd8944cc1760267ba78c2ce967853b0de52b057d3d95f7b0911fcc0",
+      "sealId": "b76d73dc1a4b1a0cd6304c89eae2f5642327adbc48cafef6e7b192ebf8f24d1e",
+      "causeSealIds": []
+    },
+    {
+      "key": "evidence-r2-conformance-repair",
+      "path": "docs/evidence/r2-smoke-startup-dependency-repair-2026-10-06.think",
+      "parents": [
+        "authority-release-policy"
+      ],
+      "scope": "Recorded owner-directed local same-contract dependency repair; historical live evidence not current verification or old trial permission.",
+      "ref": "all-tests-20261007/evidence-r2-conformance-repair",
+      "test": false,
+      "sha256": "9089ed4d22a9ff87fc33c8168ef847e94f7461344512b7ccdbfc4ed96b1f2d9c",
+      "sealId": "fb48133d33b6241ccfd666dd2085193a5460fae26693213f280412b31162ee72",
+      "causeSealIds": [
+        "b76d73dc1a4b1a0cd6304c89eae2f5642327adbc48cafef6e7b192ebf8f24d1e"
+      ]
+    },
+    {
+      "key": "design-operational-scripts",
+      "path": "docs/operational-scripts-test-contract-review-2026-10-07.md",
+      "parents": [
+        "authority-release-policy",
+        "evidence-r2-conformance-repair"
+      ],
+      "scope": "Three unchanged whole files eight local regression cases; no remote acceptance.",
+      "ref": "all-tests-20261007/design-operational-scripts",
+      "test": false,
+      "sha256": "1b8701385c6c7663eb0690de64cc42bffd4c3b75cc46ceefef428405fc1417d7",
+      "sealId": "5714e0bd85151d3688d916d0ebe017cadb5f31b984d2f37d709faa6da5c06a72",
+      "causeSealIds": [
+        "b76d73dc1a4b1a0cd6304c89eae2f5642327adbc48cafef6e7b192ebf8f24d1e",
+        "fb48133d33b6241ccfd666dd2085193a5460fae26693213f280412b31162ee72"
+      ]
+    },
+    {
+      "key": "implementation-rollback-selector",
+      "path": "scripts/select-release-rollback-target.mjs",
+      "parents": [
+        "design-operational-scripts"
+      ],
+      "scope": "Only sole100percent rollback identity selection for existing current workflow consumer; reject ambiguous/missing.",
+      "ref": "all-tests-20261007/implementation-rollback-selector",
+      "test": false,
+      "sha256": "6c19d8dec4cf2bd95da2f2f6d19bd8fc508a2ee7f04ddc9f74190e475729c6c4",
+      "sealId": "3839b2a1c91627de9cb7459c6007149ce9c430c6f370fd454626262b37072b1a",
+      "causeSealIds": [
+        "5714e0bd85151d3688d916d0ebe017cadb5f31b984d2f37d709faa6da5c06a72"
+      ]
+    },
+    {
+      "key": "implementation-health-convergence",
+      "path": "scripts/smoke-deployment.mjs",
+      "parents": [
+        "design-operational-scripts"
+      ],
+      "scope": "Only helper bounded expected-revision observation; whole deployment main path is outside test scope.",
+      "ref": "all-tests-20261007/implementation-health-convergence",
+      "test": false,
+      "sha256": "4cbc34fd8b8b13a911b58d8058fef7ccdd5f1d5ac29992f2b607242587c4a910",
+      "sealId": "163b6425136829c2a3e079e870b767b89b08d18924f9e6f2e0db6f91edce7234",
+      "causeSealIds": [
+        "5714e0bd85151d3688d916d0ebe017cadb5f31b984d2f37d709faa6da5c06a72"
+      ]
+    },
+    {
+      "key": "implementation-r2-startup",
+      "path": "backend/src/scripts/r2-smoke.ts",
+      "parents": [
+        "design-operational-scripts"
+      ],
+      "scope": "Only lazy app imports and startup R2-required env failure; no actual R2 IO success proof.",
+      "ref": "all-tests-20261007/implementation-r2-startup",
+      "test": false,
+      "sha256": "4fed3496f8faa64f87ccb19b7e9d399a1927b5cc3661df34420d52309cfd88a1",
+      "sealId": "ee83397ba1b8fde180e3ff33e0ca1703ce68182d04e0caa1169e56d600d50c3b",
+      "causeSealIds": [
+        "5714e0bd85151d3688d916d0ebe017cadb5f31b984d2f37d709faa6da5c06a72"
+      ]
+    },
+    {
+      "key": "implementation-r2-config-guard",
+      "path": "backend/src/config.ts",
+      "parents": [
+        "design-operational-scripts"
+      ],
+      "scope": "Only production DB required and cutover identity-pair fail-closed predicates, not whole config or discarded trial execution.",
+      "ref": "all-tests-20261007/implementation-r2-config-guard",
+      "test": false,
+      "sha256": "6b58fd9428c378fefee216abc3e7f062d9798a9cec9d28c8d2ac831fb3cdc750",
+      "sealId": "75d959df0b043a451683e3d49acc429ecc1a2a577e5905b5dce3b037e4ae19ce",
+      "causeSealIds": [
+        "5714e0bd85151d3688d916d0ebe017cadb5f31b984d2f37d709faa6da5c06a72"
+      ]
+    },
+    {
+      "key": "rollback-selector-bounded",
+      "path": "scripts/select-release-rollback-target.test.mjs",
+      "parents": [
+        "implementation-rollback-selector"
+      ],
+      "scope": "Whole original three cases unchanged; no real rollback traffic or split-traffic promise.",
+      "ref": "verification/rollback-selector-bounded-20261007",
+      "test": true,
+      "sha256": "b5e04f515a579f9523f5ad048de93700ef9c11147313516271d3833037826b9b",
+      "sealId": "5f7296c6d3b3f046712ebe81e38d931f81046a223f6ba0f916eae4d52c38ed51",
+      "causeSealIds": [
+        "3839b2a1c91627de9cb7459c6007149ce9c430c6f370fd454626262b37072b1a"
+      ]
+    },
+    {
+      "key": "health-convergence-bounded",
+      "path": "scripts/smoke-deployment.test.mjs",
+      "parents": [
+        "implementation-health-convergence"
+      ],
+      "scope": "Whole original two cases unchanged; injected responses/wait, not live health or actual elapsed deadline.",
+      "ref": "verification/health-convergence-bounded-20261007",
+      "test": true,
+      "sha256": "f2efcd89aa39ff8affc91a8718e4f015117c8b17ad569c0bba9aa560a79163fb",
+      "sealId": "acea68afba449d2d93efc539a13ff31ee1d6f02e92852e1cece844faaf3f4938",
+      "causeSealIds": [
+        "163b6425136829c2a3e079e870b767b89b08d18924f9e6f2e0db6f91edce7234"
+      ]
+    },
+    {
+      "key": "r2-startup-bounded",
+      "path": "scripts/r2-smoke-startup.test.mjs",
+      "parents": [
+        "implementation-r2-startup",
+        "implementation-r2-config-guard"
+      ],
+      "scope": "Whole original three cases unchanged production startup subprocesses stop before network; old cutover trial remains discarded.",
+      "ref": "verification/r2-startup-bounded-20261007",
+      "test": true,
+      "sha256": "fb249f61d05e4711f7e8d1656eb66e9503f7eaae9a214b03794878ab2887da49",
+      "sealId": "7f9cf1f0bea6e6dd23e38e63ec9c1d673e4172bfedb3c7a528ebcf3c2b849a15",
+      "causeSealIds": [
+        "ee83397ba1b8fde180e3ff33e0ca1703ce68182d04e0caa1169e56d600d50c3b",
+        "75d959df0b043a451683e3d49acc429ecc1a2a577e5905b5dce3b037e4ae19ce"
+      ]
+    }
+  ],
+  "diagnostic": {
+    "focusedPass": 8,
+    "fail": 0,
+    "skipped": 0,
+    "workspaceTypecheckEvidence": "docs/evidence/backend-implicit-any-workspace-types-2026-10-07.log"
+  },
+  "limitations": [
+    "All original three files eight cases and implementations unchanged",
+    "Only local helper/startup contracts",
+    "No public rollback/R2 health/cutover execution",
+    "251 original files and unsealed fail-closed preserved"
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "newRefs": 8,
+  "previousHeadsUnchanged": true,
+  "previousHeadCount": 1038,
+  "totalRefs": 1046,
+  "sourceBytesMatch": true,
+  "stale": 0,
+  "fsck": "ok",
+  "limitations": [
+    "All three original files4cases and implementation bytes unchanged",
+    "Actual localPostgreSQL16.15 SQL/locks, not Supabase/PostgreSQL17 acceptance",
+    "Initialization toyJSON is opaque SQL text; reservation world CAS is directSQL model",
+    "Private minimal schemas, not full migrations/SSE/cursor/privacy/batch3/prices",
+    "Temporary cluster stopped and existing cluster/systemservices unchanged",
+    "251whole files/Owner gates/unsealed stop preserved"
+  ]
+}

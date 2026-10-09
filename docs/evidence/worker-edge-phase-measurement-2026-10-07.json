@@ -1,0 +1,20 @@
+{
+  "startedUnix": 1791369195.223488,
+  "scope": "review consolidation to readback, prior diagnostics excluded",
+  "finishedUnix": 1791369417.8593256,
+  "elapsedSeconds": 222.63583827018738,
+  "wholeFiles": 1,
+  "cases": 3,
+  "writer": {
+    "scope": "registration writer only, excludes prior review and verification",
+    "elapsedSeconds": 78.28028059005737,
+    "wholeFiles": 1,
+    "newRefs": 4,
+    "causeEdges": 5
+  },
+  "firstAttempt": "terminal before any add due to preseal path mismatch; corrected path, no partial registration",
+  "limits": [
+    "includes failed setup attempt",
+    "heterogeneous workload, no general speed claim"
+  ]
+}

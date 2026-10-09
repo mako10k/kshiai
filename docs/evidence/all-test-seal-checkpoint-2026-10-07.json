@@ -1,0 +1,1438 @@
+{
+  "schema": "kshiai/all-test-seal-progress/v3",
+  "date": "2026-10-07",
+  "goalComplete": false,
+  "coverage": {
+    "unitFiles": 247,
+    "e2eFiles": 4,
+    "mappedFiles": 251,
+    "missing": [],
+    "duplicates": []
+  },
+  "unitEligibility": {
+    "active": 175,
+    "provisional": 1,
+    "disabled": 71,
+    "unsealed": 61
+  },
+  "formalAggregate": {
+    "executedTests": false,
+    "result": "blocked_before_execution",
+    "exit": 1,
+    "reason": "61 unsealed unit files",
+    "log": "docs/evidence/all-test-gate-after-image-provider-boundary-seal-2026-10-07.log"
+  },
+  "diagnosticRepairs": [
+    {
+      "scope": "LLM plus image43files",
+      "passed": 236,
+      "failed": 0,
+      "skipped": 0,
+      "proof": "/tmp/kshiai-llm-after-repair.tap"
+    },
+    {
+      "scope": "semantic migration file",
+      "passed": 25,
+      "failed": 0,
+      "skipped": 0,
+      "proof": "/tmp/kshiai-semantic-after-repair.tap"
+    },
+    {
+      "scope": "one scene beat fixture case, not whole file",
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "proof": "/tmp/kshiai-scene-first-after-repair.tap"
+    },
+    {
+      "scope": "retired authoring and V3 profile adapter",
+      "passed": 9,
+      "failed": 0,
+      "skipped": 0,
+      "proof": "/tmp/kshiai-authoring-retirement-after-repair.tap"
+    },
+    {
+      "scope": "reservation regression after type-only correction",
+      "passed": 9,
+      "failed": 0,
+      "skipped": 0,
+      "proof": "/tmp/kshiai-reservation-after-type-repair.tap"
+    },
+    {
+      "scope": "affected E2E two files after display correction before role fixture",
+      "passed": 5,
+      "failed": 1,
+      "proof": "/tmp/kshiai-e2e-label-after-repair.log"
+    },
+    {
+      "scope": "guidance three files after settled-result tuple correction",
+      "passed": 23,
+      "failed": 0,
+      "skipped": 0,
+      "proof": "/tmp/kshiai-guidance-after-agent-tuple.tap"
+    },
+    {
+      "scope": "V3 public profile projection and readiness, 4 local tests",
+      "passed": 4,
+      "failed": 0,
+      "skipped": 0,
+      "proof": "docs/evidence/character-profile-projection-preseal-2026-10-07.tap",
+      "sealRegistration": "docs/evidence/character-profile-projection-seal-registration-2026-10-07.json"
+    },
+    {
+      "scope": "estimated usage cost report, 4 synthetic local tests",
+      "passed": 4,
+      "failed": 0,
+      "skipped": 0,
+      "proof": "docs/evidence/usage-cost-report-preseal-2026-10-07.tap",
+      "sealRegistration": "docs/evidence/usage-cost-report-seal-registration-2026-10-07.json"
+    },
+    {
+      "scope": "usage-ledger",
+      "passed": 11,
+      "failed": 0,
+      "skipped": 0,
+      "proof": "docs/evidence/usage-ledger-preseal-2026-10-07.tap",
+      "sealRegistration": "docs/evidence/usage-ledger-seal-registration-2026-10-07.json"
+    },
+    {
+      "scope": "physical-completion-scope",
+      "passed": 4,
+      "failed": 0,
+      "skipped": 0,
+      "proof": "docs/evidence/physical-completion-scope-preseal-2026-10-07.tap",
+      "sealRegistration": "docs/evidence/physical-completion-scope-seal-registration-2026-10-07.json"
+    },
+    {
+      "scope": "latent and conscious output guidance helper renderers, two files",
+      "passed": 5,
+      "failed": 0,
+      "skipped": 0,
+      "proof": "docs/evidence/output-guidance-preseal-2026-10-07.tap",
+      "sealRegistration": "docs/evidence/output-guidance-seal-registration-2026-10-07.json"
+    },
+    {
+      "scope": "awareness request preparation and prose rendering, two files",
+      "passed": 9,
+      "failed": 0,
+      "skipped": 0,
+      "proof": "docs/evidence/request-prose-preseal-2026-10-07.tap",
+      "sealRegistration": "docs/evidence/request-prose-seal-registration-2026-10-07.json"
+    },
+    {
+      "scope": "model options selection and SDK wire serialization, two files",
+      "passed": 7,
+      "failed": 0,
+      "skipped": 0,
+      "proof": "docs/evidence/model-options-preseal-2026-10-07.tap",
+      "sealRegistration": "docs/evidence/model-options-seal-registration-2026-10-07.json"
+    },
+    {
+      "scope": "provider JSON accounting boundary, refresh of source-diverged existing test binding",
+      "passed": 2,
+      "failed": 0,
+      "skipped": 0,
+      "proof": "docs/evidence/provider-json-preseal-2026-10-07.tap",
+      "sealRegistration": "docs/evidence/provider-json-seal-registration-2026-10-07.json"
+    },
+    {
+      "scope": "provider accounting type escapes removed and actual SDK retry verified; sealing pending full control source review",
+      "passed": 15,
+      "failed": 0,
+      "skipped": 0,
+      "proof": "docs/evidence/provider-accounting-type-repair-2026-10-07.tap",
+      "review": "docs/evidence/provider-accounting-type-repair-2026-10-07.json"
+    },
+    {
+      "scope": "all 12 physical accounting test cases rebound to individual current sources; 3 error tests separately remain unsealed",
+      "passed": 15,
+      "failed": 0,
+      "skipped": 0,
+      "sealedFileTests": 12,
+      "proof": "docs/evidence/provider-accounting-current-preseal-2026-10-07.tap",
+      "sealRegistration": "docs/evidence/provider-accounting-current-seal-registration-2026-10-07.json"
+    },
+    {
+      "scope": "awareness LLM ten-file diagnostic cohort; role provider eight tests newly sealed",
+      "passed": 57,
+      "failed": 0,
+      "skipped": 0,
+      "sealedFileTests": 8,
+      "proof": "docs/evidence/awareness-role-provider-cohort-preseal-2026-10-07.tap",
+      "sealRegistration": "docs/evidence/awareness-role-provider-seal-registration-2026-10-07.json"
+    },
+    {
+      "scope": "Narration batch/frozen phase output and explicit role factory, three files",
+      "passed": 19,
+      "failed": 0,
+      "skipped": 0,
+      "strictTypecheckExit": 0,
+      "allWorkspaceTypecheckExit": 0,
+      "proof": "docs/evidence/narration-factory-preseal-2026-10-07.tap",
+      "sealRegistration": "docs/evidence/narration-factory-seal-registration-2026-10-07.json"
+    },
+    {
+      "scope": "Exact dispatch admission/SDK and strict adjudication results plus prose, four files",
+      "passed": 22,
+      "failed": 0,
+      "skipped": 0,
+      "strictTypecheckExit": 0,
+      "proof": "docs/evidence/dispatch-adjudication-preseal-2026-10-07.tap",
+      "sealRegistration": "docs/evidence/dispatch-adjudication-seal-registration-2026-10-07.json"
+    },
+    {
+      "scope": "Historical narration grammar and schema graph tests sealed; direct narration private seam repair remains diagnostic",
+      "passed": 14,
+      "failed": 0,
+      "skipped": 0,
+      "sealedFileTests": 11,
+      "strictTypecheckExit": 0,
+      "workspaceTypecheckExit": 0,
+      "proof": "docs/evidence/current-narration-contract-preseal-2026-10-07.tap",
+      "sealRegistration": "docs/evidence/current-narration-contract-seal-registration-2026-10-07.json",
+      "typeRepair": "docs/evidence/direct-narration-test-type-repair-2026-10-07.json"
+    },
+    {
+      "scope": "Direct narration input projection and shared viewpoint/brief/focus, two files",
+      "passed": 14,
+      "failed": 0,
+      "skipped": 0,
+      "strictTypecheckExit": 0,
+      "proof": "docs/evidence/narration-projection-preseal-2026-10-07.tap",
+      "sealRegistration": "docs/evidence/narration-projection-seal-registration-2026-10-07.json"
+    },
+    {
+      "scope": "Provider reported failure classification and retained retry helper, two files",
+      "passed": 7,
+      "failed": 0,
+      "skipped": 0,
+      "strictTypecheckExit": 0,
+      "proof": "docs/evidence/provider-failure-control-preseal-2026-10-07.tap",
+      "sealRegistration": "docs/evidence/provider-failure-control-seal-registration-2026-10-07.json"
+    },
+    {
+      "scope": "narrator presentation focus local protocol",
+      "passed": 4,
+      "failed": 0,
+      "skipped": 0,
+      "proof": "docs/evidence/presentation-protocol-preseal-2026-10-07.tap",
+      "strictTypecheckExit": 0
+    },
+    {
+      "scope": "deterministic character focus and local ablation protocol/report",
+      "passed": 12,
+      "failed": 0,
+      "skipped": 0,
+      "proof": "docs/evidence/character-focus-protocol-preseal-2026-10-07.tap",
+      "strictTypecheckExit": 0
+    },
+    {
+      "scope": "entire shared package diagnostic, unsealed files included; not authoritative aggregate",
+      "files": 66,
+      "passed": 415,
+      "failed": 0,
+      "skipped": 0,
+      "proof": "docs/evidence/shared-current-diagnostic-2026-10-07.tap"
+    },
+    {
+      "scope": "profile anchors/world object projection and authoring progress helper",
+      "passed": 5,
+      "failed": 0,
+      "skipped": 0,
+      "proof": "docs/evidence/profile-progress-preseal-2026-10-07.tap",
+      "strictTypecheckExit": 0
+    },
+    {
+      "scope": "Structured narration shared and route acceptance, stored style validation repair",
+      "passed": 10,
+      "failed": 0,
+      "skipped": 0,
+      "proof": "docs/evidence/structured-narration-preseal-2026-10-07.tap",
+      "strictTypecheckExit": 0,
+      "workspaceTypecheckExit": 0,
+      "readPurityRegressionPassed": 1,
+      "sealReadback": "docs/evidence/structured-narration-seal-readback-2026-10-07.json",
+      "sourceFreshnessLimitation": "Prior narration attempt reads Seal source now diverges; source snapshot refresh remains pending although read-purity regression passes."
+    },
+    {
+      "scope": "current pending draft GET read purity",
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "proof": "docs/evidence/current-read-purity-preseal-2026-10-07.tap",
+      "strictTypecheckExit": 0,
+      "inventoryRef": "verification/authoring-read-purity-current-20261007",
+      "previousRefRetained": "verification/authoring-read-purity-20261007"
+    },
+    {
+      "scope": "turn event contract and utterance perception",
+      "passed": 6,
+      "failed": 0,
+      "skipped": 0,
+      "proof": "docs/evidence/expression-delivery-preseal-2026-10-07.tap",
+      "strictTypecheckExit": 0,
+      "sealReadback": "docs/evidence/read-purity-expression-seal-readback-2026-10-07.json"
+    },
+    {
+      "scope": "semantic state pure patches and observer snapshots",
+      "passed": 24,
+      "failed": 0,
+      "skipped": 0,
+      "proof": "docs/evidence/semantic-state-preseal-2026-10-07.tap",
+      "strictTypecheckExit": 0,
+      "sealReadback": "docs/evidence/semantic-state-seal-readback-2026-10-07.json"
+    },
+    {
+      "scope": "New canonical battlefield initialization and tested one-hop movement",
+      "repairApplied": true,
+      "sourceHashes": [
+        {
+          "path": "packages/shared/src/battlefield-creation.ts",
+          "sha256": "f6206d609be71e280a821ea7730b355bbaae83e1d8cbe24641283039ace95637"
+        },
+        {
+          "path": "packages/shared/src/battle-world.ts",
+          "sha256": "f14926cad2ed92274b0373d15da068399eee0ed48cac7a1d77d76476ca4c72d4"
+        },
+        {
+          "path": "packages/shared/src/battle-engine.ts",
+          "sha256": "5d838d68b5a7832ef051670770ce117b5aec53d3eb650233a9b8ad0c0971f0ae"
+        },
+        {
+          "path": "backend/src/services/battle-service.ts",
+          "sha256": "7c9e7a83c5767688e1d5f702f12875d2664218b59a5998429295b94dc3bfd09d"
+        },
+        {
+          "path": "packages/shared/src/reposition-transition.test.ts",
+          "sha256": "d0926e719277e998293d177deb7beb35287fa7cc2b42e629178042f58c33cf45"
+        },
+        {
+          "path": "packages/shared/src/structured-battlefield.test.ts",
+          "sha256": "2881118bb9a2cc42652a1f1f884b3104f1050c394237e34d79aece611cf70b91"
+        }
+      ],
+      "diagnostic": {
+        "targeted8Files": {
+          "pass": 110,
+          "fail": 0,
+          "skip": 0,
+          "proof": "docs/evidence/stable-area-preseal-2026-10-07.tap"
+        },
+        "sharedAll66Files": {
+          "pass": 419,
+          "fail": 0,
+          "skip": 0,
+          "proof": "docs/evidence/stable-area-shared-all-2026-10-07.tap"
+        }
+      },
+      "strictImportedTypes": {
+        "exit": 0,
+        "proof": "docs/evidence/stable-area-repair-strict-2026-10-07.log"
+      },
+      "workspaceTypes": {
+        "exit": 0,
+        "proof": "docs/evidence/stable-area-repair-workspace-types-2026-10-07.log"
+      },
+      "causalAudit": "docs/evidence/stable-area-repair-review-audit-2026-10-07.json",
+      "sealReadback": "docs/evidence/stable-area-seal-readback-2026-10-07.json",
+      "registration": {
+        "sourceAndTestRefs": 16,
+        "fullTestFiles": 6,
+        "newlyRegisteredFiles": 3,
+        "refReplacements": 3,
+        "historyPreserved": true
+      },
+      "limitations": [
+        "Local pure and isolated SQLite diagnostics; no live provider/deployment acceptance.",
+        "Only six full files sealed here, including three already sealed files refreshed. Other diagnostic files retain their own unsealed gate.",
+        "Existing saved world state retained; previously saved mismatched areas are not migrated.",
+        "Prior broader source snapshots for changed world/engine/service/fixtures need remaining scope reconciliation."
+      ]
+    },
+    {
+      "scope": "Own-key initial/canonical area reference repair; 3 current test inventory refs replaced, 2 implementation refs sealed",
+      "sharedPassed": 421,
+      "targetedPassed": 42,
+      "failed": 0,
+      "skipped": 0,
+      "strictTypecheckExit": 0,
+      "allWorkspaceTypecheckExit": 0,
+      "proof": "docs/evidence/own-area-preseal-2026-10-07.tap",
+      "sealRegistration": "docs/evidence/own-area-seal-registration-2026-10-07.json"
+    },
+    {
+      "scope": "ADR0046 finite branch contracts, action norm and compiler/skeleton schema; 2 full files",
+      "passed": 3,
+      "failed": 0,
+      "skipped": 0,
+      "strictTypecheckExit": 0,
+      "proof": "docs/evidence/conditional-contract-preseal-2026-10-07.tap",
+      "sealRegistration": "docs/evidence/conditional-contract-seal-registration-2026-10-07.json"
+    },
+    {
+      "scope": "Current migration received-value branches and outgoing generic JSON grammar; 2 diverged whole test file refs replaced",
+      "passed": 8,
+      "failed": 0,
+      "skipped": 0,
+      "strictTypecheckExit": 0,
+      "proof": "docs/evidence/migration-wire-preseal-2026-10-07.tap",
+      "sealRegistration": "docs/evidence/migration-wire-seal-registration-2026-10-07.json"
+    },
+    {
+      "scope": "Isolated historical semantic probe fixture/run and injected-fetch transport; 2 unsealed whole files registered and 1 stale file ref replaced",
+      "passed": 12,
+      "failed": 0,
+      "skipped": 0,
+      "strictTypecheckExit": 0,
+      "proof": "docs/evidence/migration-probe-preseal-2026-10-07.tap",
+      "sealRegistration": "docs/evidence/migration-probe-seal-registration-2026-10-07.json"
+    },
+    {
+      "scope": "Retained migration diagnostics, bounded generation/review/repair and SQLite ledger; 3 diverged whole-file test refs replaced",
+      "passed": 39,
+      "failed": 0,
+      "skipped": 0,
+      "caseCounts": {
+        "diagnostics": 8,
+        "generation": 25,
+        "persistence": 6
+      },
+      "strictTypecheckExit": 0,
+      "allWorkspaceTypecheckExit": 0,
+      "proof": "docs/evidence/migration-repair-preseal-2026-10-07.tap",
+      "sealRegistration": "docs/evidence/migration-repair-seal-registration-2026-10-07.json",
+      "typeRepair": "Diagnostic input object casts replaced by JSON-object boundary validation; test expectations retained"
+    },
+    {
+      "scope": "Two unchanged whole name/config helper/parser files; bounded seals only",
+      "passed": 7,
+      "failed": 0,
+      "skipped": 0,
+      "proof": "docs/evidence/names-config-preseal-2026-10-07.tap",
+      "sealRegistration": "docs/evidence/names-config-seal-registration-2026-10-07.json"
+    },
+    {
+      "scope": "Image response unknown-to-string boundary repaired; original two cases/assertions preserved plus three regressions",
+      "passed": 5,
+      "failed": 0,
+      "skipped": 0,
+      "proof": "docs/evidence/image-provider-boundary-repaired-2026-10-07.tap",
+      "sealRegistration": "docs/evidence/image-provider-boundary-seal-registration-2026-10-07.json"
+    }
+  ],
+  "verificationSeals": [
+    "verification/action-intent-contract-20261007",
+    "verification/awareness-pipeline-20261007",
+    "verification/awareness-policy-20261007",
+    "verification/awareness-state-20261007",
+    "verification/retired-character-authoring-20261007",
+    "verification/test-authority-execution-gate-20261007",
+    "verification/character-assets-repository-20261007"
+  ],
+  "limitations": [
+    "Full all-test success remains unproved.",
+    "Source-diverged/draft/stale and failures remain explicit.",
+    "All changes local; no remote/public synchronization.",
+    "Current awareness local integration passed diagnostically; its formal Seal remains pending."
+  ],
+  "strictChecks": {
+    "fixture": {
+      "exitCode": 0,
+      "scope": "new typed role helper"
+    },
+    "integrationSpecAndImportedBackend": {
+      "exitCode": 0,
+      "log": "/tmp/kshiai-e2e-current-spec-types-after-tuple.log"
+    },
+    "normalAllWorkspaces": {
+      "exitCode": 0,
+      "log": "/tmp/kshiai-all-tests-types-after-fixture-repairs.log"
+    }
+  },
+  "previousSealReadback": {
+    "newRefs": 22,
+    "reviewedRevisedRefs": 4,
+    "newAndRevisedSourcesMatch": true,
+    "newAndRevisedStale": 0,
+    "prior548HeadsChanged": 4,
+    "other544HeadsChanged": 0,
+    "fsck": "ok"
+  },
+  "sealReadback": {
+    "newRefs": 68,
+    "reviewedRevisedRefs": 4,
+    "totalRefs": 616,
+    "newSixSourcesMatch": true,
+    "newSixStale": 0,
+    "fsck": "ok",
+    "pendingSourceReview": [
+      "awareness-guidance-20261007/battle-frame: production waiting change differs from sealed source; prior type-equivalence proof does not cover this change",
+      "New routes.ts upgrade fixes and focused-character execution/notification changes require scoped current-source review before head revision."
+    ],
+    "otherHistoricalProofs": "preserved as exact historical evidence, not refreshed execution measurements",
+    "latestReadPurityRefs": {
+      "count": 8,
+      "sourcesMatch": true,
+      "stale": 0,
+      "fsck": "ok",
+      "proof": "docs/evidence/authoring-read-purity-seal-registration-2026-10-07.json"
+    },
+    "latestBattlefieldRefs": {
+      "count": 23,
+      "sourcesMatch": true,
+      "stale": 0,
+      "proof": "docs/evidence/battlefield-cohort-seal-registration-2026-10-07.json"
+    },
+    "latestFallbackRefs": {
+      "count": 2,
+      "sourcesMatch": true,
+      "stale": 0,
+      "proof": "docs/evidence/action-fallback-seal-registration-2026-10-07.json"
+    },
+    "latestCharacterRepositoryRefs": {
+      "count": 7,
+      "sourcesMatch": true,
+      "stale": 0,
+      "previous609HeadsChanged": 0,
+      "fsck": "ok",
+      "proof": "docs/evidence/character-repository-seal-registration-2026-10-07.json"
+    },
+    "latestRoleProviderRefs": {
+      "count": 2,
+      "sourcesMatch": true,
+      "stale": 0,
+      "previous670HeadsChanged": 0,
+      "totalRefs": 672,
+      "proof": "docs/evidence/awareness-role-provider-seal-registration-2026-10-07.json"
+    },
+    "latestNarrationFactoryRefs": {
+      "newRefs": 14,
+      "sourceMatch": true,
+      "stale": 0,
+      "previousHeadsChanged": 0,
+      "previousRefs": 672,
+      "totalRefs": 686,
+      "fsck": "ok",
+      "unitEligibility": {
+        "active": 69,
+        "provisional": 1,
+        "disabled": 177,
+        "unsealed": 161
+      }
+    },
+    "latestDispatchAdjudicationRefs": {
+      "newRefs": 16,
+      "sourceMatch": true,
+      "stale": 0,
+      "previousHeadsChanged": 0,
+      "previousRefs": 686,
+      "totalRefs": 702,
+      "fsck": "ok",
+      "unitEligibility": {
+        "active": 73,
+        "provisional": 1,
+        "disabled": 173,
+        "unsealed": 157
+      }
+    },
+    "latestCurrentNarrationContractRefs": {
+      "newRefs": 5,
+      "sourceMatch": true,
+      "stale": 0,
+      "previousHeadsChanged": 0,
+      "previousRefs": 702,
+      "totalRefs": 707,
+      "fsck": "ok",
+      "unitEligibility": {
+        "active": 75,
+        "provisional": 1,
+        "disabled": 171,
+        "unsealed": 155
+      }
+    },
+    "latestNarrationProjectionRefs": {
+      "newRefs": 9,
+      "sourceMatch": true,
+      "stale": 0,
+      "previousHeadsChanged": 0,
+      "previousRefs": 707,
+      "totalRefs": 716,
+      "fsck": "ok",
+      "unitEligibility": {
+        "active": 77,
+        "provisional": 1,
+        "disabled": 169,
+        "unsealed": 153
+      }
+    },
+    "latestProviderFailureControlRefs": {
+      "newRefs": 5,
+      "sourceMatch": true,
+      "stale": 0,
+      "previousHeadsChanged": 0,
+      "previousRefs": 716,
+      "totalRefs": 721,
+      "fsck": "ok",
+      "unitEligibility": {
+        "active": 79,
+        "provisional": 1,
+        "disabled": 167,
+        "unsealed": 151
+      }
+    }
+  },
+  "latestDiagnostic": {
+    "tickWaitAndGuidance": {
+      "passed": 27,
+      "failed": 0,
+      "proof": "docs/evidence/tick-wait-tests-2026-10-07.tap"
+    },
+    "allWorkspaceAndDeploymentTypecheck": "passed",
+    "e2eImportedStrictTypes": "passed",
+    "currentLocalIntegration": {
+      "passed": 1,
+      "failed": 0,
+      "combatTicks": 36,
+      "narrationEntries": 38,
+      "proof": "docs/evidence/current-awareness-local-integration-result-2026-10-07.json"
+    },
+    "routeThreeFiles": {
+      "passed": 11,
+      "failed": 0,
+      "readPuritySeal": "current",
+      "otherTwoSeals": "pending full case-to-authority review",
+      "validation": "23 unchecked assertions replaced; full canonical envelope/public DTO validation and raw wire privacy/parity checks retained"
+    },
+    "characters": {
+      "passed": 6,
+      "failed": 0,
+      "formalSeal": "pending"
+    },
+    "sceneBeat": {
+      "passed": 7,
+      "failed": 0,
+      "skipped": 0,
+      "formalSeal": "pending",
+      "proof": "docs/evidence/scene-historical-fixture-repair-2026-10-07.json"
+    },
+    "battlefieldCohort": {
+      "files": 3,
+      "passed": 16,
+      "failed": 0,
+      "skipped": 0,
+      "formalSeal": "current"
+    },
+    "currentCreationFixture": {
+      "passed": 17,
+      "failed": 0,
+      "scope": "4 files including creation idempotency, awareness encounter admission and two HTTP integration suites",
+      "proof": "docs/evidence/current-creation-fixture-repair-2026-10-07.json",
+      "formalSeal": "pending",
+      "allWorkspaceAndDeploymentTypecheck": "passed"
+    },
+    "v3BattleCreation": {
+      "passed": 4,
+      "failed": 0,
+      "skipped": 0,
+      "formalSeal": "pending",
+      "proof": "docs/evidence/historical-v4-and-awareness-repair-2026-10-07.json",
+      "allWorkspaceAndDeploymentTypecheck": "passed"
+    },
+    "repositoryProbeNarration": {
+      "proof": "docs/evidence/repository-probe-narration-repair-2026-10-07.json",
+      "repositoryAndProbePassed": 9,
+      "narrationPassed": 5,
+      "remainingKnownCohortFailures": 14,
+      "formalSeal": "pending",
+      "typechecks": "strict repaired paths and all workspaces/deployment passed"
+    },
+    "characterRepositorySeal": {
+      "passed": 6,
+      "failed": 0,
+      "skipped": 0,
+      "formalSeal": "current",
+      "strictTypecheck": "passed",
+      "proof": "docs/evidence/character-repository-seal-registration-2026-10-07.json"
+    },
+    "characterHttpBoundary": {
+      "passed": 5,
+      "failed": 10,
+      "skipped": 0,
+      "previousFailures": 14,
+      "formalSeal": "not performed: entire file still fails",
+      "typechecks": "strict repaired path plus all workspaces/deployment passed",
+      "proof": "docs/evidence/character-http-boundary-repair-2026-10-07.json"
+    },
+    "characterHttpFocusedFixture": {
+      "passed": 8,
+      "failed": 7,
+      "skipped": 0,
+      "previousFailures": 10,
+      "formalSeal": "not performed: entire file still fails",
+      "typechecks": "strict fixture and test imports plus all workspaces/deployment passed",
+      "proof": "docs/evidence/character-http-focused-fixture-repair-2026-10-07.json"
+    },
+    "characterHttpMigrationProgressNotification": {
+      "characterHttpPassed": 13,
+      "characterHttpFailed": 2,
+      "previousFailures": 7,
+      "cohortPassed": 31,
+      "cohortFailed": 2,
+      "otherHttpRegressionPassed": 15,
+      "otherHttpRegressionFailed": 0,
+      "strictImportedTypes": "passed",
+      "workspaceAndDeploymentTypes": "passed",
+      "formalSeal": "not performed: whole HTTP file still fails",
+      "proof": "docs/evidence/character-http-migration-progress-notification-repair-2026-10-07.json"
+    }
+  },
+  "remainingCharacterCreateBoundary": {
+    "passed": 13,
+    "failed": 2,
+    "audit": "docs/evidence/character-create-boundary-rca-2026-10-07-audit.txt",
+    "sourceSnapshot": "docs/evidence/character-create-boundary-rca-source-snapshot-2026-10-07.json",
+    "correctionComplete": false
+  },
+  "latestWorkspaceTypecheck": {
+    "exit": 0,
+    "proof": "docs/evidence/image-response-repaired-workspace-types-2026-10-07.log"
+  },
+  "pendingOwnerDecision": {
+    "artifact": "docs/adr/0059-complete-focused-character-review-payload.think",
+    "revision": 1,
+    "status": "Proposed",
+    "sha256": "f017bf581e300044aa7cfbdee18128d07b74a5f7e3e34ae1818acd68a3b612f7",
+    "scope": "complete profile envelope, one-run max10 create/revise calls, immutable draft correction",
+    "implementationApplied": false
+  },
+  "adrProjectCheck": {
+    "exit": 0,
+    "proof": "docs/evidence/adr0039-repaired-whole-check-2026-10-07.log",
+    "historicalPinnedExceptions": 4,
+    "historicalExceptionPolicyAdoptionNotClaimed": true,
+    "adr0059OwnAudit": "fatal0 error0 warning0, pending acceptance remains"
+  },
+  "latestSealRefs": [
+    "all-tests-20261007/design-image-provider-boundary",
+    "all-tests-20261007/contract-image-provider",
+    "all-tests-20261007/implementation-image-response-decoder",
+    "all-tests-20261007/implementation-image-http-adapter",
+    "all-tests-20261007/implementation-image-priority-fallback",
+    "verification/image-provider-response-bounded-20261007"
+  ],
+  "remainingRepositionAreaIdentity": {
+    "passed": 4,
+    "failed": 0,
+    "repairApplied": true,
+    "closure": "docs/evidence/stable-area-identity-repair-closure-2026-10-07.json",
+    "scope": "New canonical initialization; saved historical mismatches not migrated",
+    "formalSeal": "verification/own-area-reposition-transition-20261007",
+    "latestFollowup": "docs/evidence/own-area-seal-readback-2026-10-07.json"
+  },
+  "latestOwnAreaSeal": {
+    "newRefs": 5,
+    "totalRefs": 792,
+    "sourceBytesMatch": true,
+    "previous787HeadsUnchanged": true,
+    "fsck": "ok",
+    "readback": "docs/evidence/own-area-seal-readback-2026-10-07.json",
+    "limitations": [
+      "Existing upstream workfile snapshot freshness outside this cohort remains to be reconciled.",
+      "No aggregate test success or production acceptance."
+    ]
+  },
+  "latestConditionalContractSeal": {
+    "newRefs": 6,
+    "totalRefs": 798,
+    "previous792HeadsUnchanged": true,
+    "sourceBytesMatch": true,
+    "stale": 0,
+    "fsck": "ok",
+    "proof": "docs/evidence/conditional-contract-seal-readback-2026-10-07.json",
+    "limitations": [
+      "Two local schema test files; actual semantic generation/whole pipeline not certified.",
+      "All 247 unit and 4 E2E files still retained; incomplete eligibility prevents aggregate success."
+    ]
+  },
+  "latestMigrationWireSeal": {
+    "newRefs": 6,
+    "totalRefs": 804,
+    "previous798HeadsUnchanged": true,
+    "sourceBytesMatch": true,
+    "stale": 0,
+    "fsck": "ok",
+    "readback": "docs/evidence/migration-wire-seal-readback-2026-10-07.json",
+    "wholeFilesRebound": 2,
+    "limitations": [
+      "Pure schema/grammar tests; no live provider or whole migration engine acceptance.",
+      "Original 247 unit and 4 E2E files retained; all-tests goal remains incomplete."
+    ]
+  },
+  "latestMigrationProbeSeal": {
+    "newRefs": 12,
+    "totalRefs": 816,
+    "previous804HeadsUnchanged": true,
+    "sourceBytesMatch": true,
+    "stale": 0,
+    "fsck": "ok",
+    "readback": "docs/evidence/migration-probe-seal-readback-2026-10-07.json",
+    "wholeFilesRegistered": 2,
+    "wholeFilesRebound": 1,
+    "limitations": [
+      "Injected-fetch transport and isolated synthetic SQLite fixture proof only.",
+      "Historical price arithmetic is frozen test data; no current price or paid execution claim.",
+      "Full migration engine, actual model correctness, production acceptance and aggregate all-tests success remain unproven."
+    ]
+  },
+  "latestMigrationRepairSeal": {
+    "newRefs": 17,
+    "totalRefs": 833,
+    "previous816HeadsUnchanged": true,
+    "sourceBytesMatch": true,
+    "stale": 0,
+    "fsck": "ok",
+    "retainedCorpusHashesVerified": 19,
+    "readback": "docs/evidence/migration-repair-seal-readback-2026-10-07.json",
+    "wholeFilesRebound": 3,
+    "withinCohortCauseCompletion": "Explicit received-operation parser added; orchestration and generation verification advanced with exact previous Cause assertion",
+    "limitations": [
+      "Scripted provider, retained input corpus and isolated SQLite proof only.",
+      "Historical initial input comparison excludes targetDefinitionSchema representation. Minimal ledger source/target bytes are not strict domain validity proof.",
+      "No current focused-authoring public path, actual model quality, PostgreSQL concurrency or activation/live acceptance certified.",
+      "Original 247 unit and 4 E2E files retained; full all-tests goal remains incomplete."
+    ]
+  },
+  "latestTemporalCausalSeal": {
+    "newRefs": 7,
+    "previousHeadsUnchanged": true,
+    "previousHeadCount": 833,
+    "totalRefs": 840,
+    "sourceBytesMatch": true,
+    "stale": 0,
+    "fsck": "ok",
+    "limitations": [
+      "Serializable checkpoint only; no DB durability or observer delivery proof",
+      "Legacy temporal helpers retained for historical interpretation",
+      "No current awareness-v5 dispatch or live provider acceptance"
+    ],
+    "wholeFilesRegistered": 2,
+    "readback": "docs/evidence/temporal-causal-seal-readback-2026-10-07.json",
+    "diagnostic": {
+      "focusedPass": 20,
+      "sharedPass": 424,
+      "fail": 0,
+      "skipped": 0,
+      "strictTypecheckExit": 0,
+      "workspaceTypecheckExit": 0
+    }
+  },
+  "latestCausalProjectionSeal": {
+    "newRefs": 8,
+    "previousHeadsUnchanged": true,
+    "previousHeadCount": 840,
+    "totalRefs": 848,
+    "sourceBytesMatch": true,
+    "stale": 0,
+    "fsck": "ok",
+    "limitations": [
+      "Original17cases retained; no source or test changes required",
+      "Pure synthetic/shared tests; not provider, persistence or whole current pipeline acceptance",
+      "Design file binding applies only to named retained clauses; contradictory historical ordering/speech/winner clauses elsewhere not adopted"
+    ],
+    "wholeFilesRegistered": 3,
+    "readback": "docs/evidence/causal-projection-seal-readback-2026-10-07.json",
+    "diagnostic": {
+      "pass": 17,
+      "fail": 0,
+      "skipped": 0,
+      "strictTypecheckExit": 0
+    },
+    "withinCohortAuthorityCompletion": "Accepted ADR0051 exact current inheritance Cause added; seven affected heads advanced with previous-target assertions; superseded ADR0050 used only as inherited text"
+  },
+  "latestObserverPerceptionSeal": {
+    "newRefs": 5,
+    "previousHeadsUnchanged": true,
+    "previousHeadCount": 848,
+    "totalRefs": 853,
+    "sourceBytesMatch": true,
+    "stale": 0,
+    "fsck": "ok",
+    "limitations": [
+      "Original cases retained; two test fixtures repaired without runtime/schema/algorithm changes",
+      "Runtime refinement tests are not blanket static typing guarantees",
+      "Synthetic evidence/current shared helper behavior, not provider, persistence or full awareness-v5 integration acceptance"
+    ],
+    "wholeFilesRegistered": 2,
+    "readback": "docs/evidence/observer-perception-seal-readback-2026-10-07.json",
+    "diagnostic": {
+      "focusedPass": 21,
+      "sharedPass": 424,
+      "fail": 0,
+      "skipped": 0,
+      "strictTypecheckExit": 0,
+      "workspaceTypecheckExit": 0
+    },
+    "fixtureRepair": "Remove unchecked frame-record casts and reserve-key cast, retain every original case, strengthen refusal path and counterpart-role evidence; no runtime code changes"
+  },
+  "latestAuthAccessSeal": {
+    "newRefs": 16,
+    "previousHeadsUnchanged": true,
+    "previousHeadCount": 853,
+    "totalRefs": 869,
+    "sourceBytesMatch": true,
+    "stale": 0,
+    "fsck": "ok",
+    "limitations": [
+      "SQLite and locally signed/injected-key/fetch tests only; no external identity or provider work",
+      "Historical origin runtime prices/limits and observation workflow directives not adopted by this binding",
+      "Four unsealed files registered, signed identity file rebound without removing any original cases or reviving discarded cutover trial"
+    ],
+    "wholeFilesRegistered": 4,
+    "wholeFilesRebound": 1,
+    "readback": "docs/evidence/auth-access-seal-readback-2026-10-07.json",
+    "diagnostic": {
+      "focusedPass": 15,
+      "relatedPass": 6,
+      "fail": 0,
+      "skipped": 0,
+      "strictTypecheckExit": 0,
+      "workspaceTypecheckExit": 0
+    }
+  },
+  "latestNarrationClientSeal": {
+    "newRefs": 6,
+    "previousHeadsUnchanged": true,
+    "previousHeadCount": 869,
+    "totalRefs": 875,
+    "sourceBytesMatch": true,
+    "stale": 0,
+    "fsck": "ok",
+    "limitations": [
+      "Pure synthetic DTO helper tests only; no provider, persistence, browser, reset/reconnect or full pipeline acceptance",
+      "Original six cases/assertions retained; no runtime or test code changes",
+      "Current public narration remains terminal-only; superseded ADR0005 not direct authority"
+    ],
+    "wholeFilesRegistered": 2,
+    "readback": "docs/evidence/narration-client-seal-readback-2026-10-07.json",
+    "independentReview": "docs/evidence/narration-client-independent-review-2026-10-07.json",
+    "diagnostic": {
+      "focusedPass": 6,
+      "fail": 0,
+      "skipped": 0,
+      "strictTypecheckExit": 0
+    }
+  },
+  "latestExpressionEvidenceSeal": {
+    "newRefs": 5,
+    "previousHeadsUnchanged": true,
+    "previousHeadCount": 875,
+    "totalRefs": 880,
+    "sourceBytesMatch": true,
+    "stale": 0,
+    "fsck": "ok",
+    "limitations": [
+      "Original six cases/assertions retained; no code changes",
+      "Pure supplied-evidence/retained decoder tests, not current awareness-v5 or live provider/physical truth/atomic integration",
+      "First mechanical negative fixture combines invalid inputs; independent refusal of each field not proven"
+    ],
+    "wholeFilesRegistered": 2,
+    "readback": "docs/evidence/expression-evidence-seal-readback-2026-10-07.json",
+    "diagnostic": {
+      "focusedPass": 6,
+      "fail": 0,
+      "skipped": 0,
+      "strictTypecheckExit": 0
+    }
+  },
+  "latestPerceptionEvaluatorSeal": {
+    "newRefs": 6,
+    "previousHeadsUnchanged": true,
+    "previousHeadCount": 880,
+    "totalRefs": 886,
+    "sourceBytesMatch": true,
+    "stale": 0,
+    "fsck": "ok",
+    "limitations": [
+      "Original eleven cases/assertions retained; test-only validated fixture construction",
+      "27 fake calls, no external API; stored model strings not current provider specifications or primary selection proof",
+      "Schema/operation comparison not runtime semantic commit or real provider quality"
+    ],
+    "wholeFilesRegistered": 1,
+    "readback": "docs/evidence/perception-evaluator-seal-readback-2026-10-07.json",
+    "casePreservation": "docs/evidence/perception-evaluator-case-preservation-2026-10-07.json",
+    "diagnostic": {
+      "focusedPass": 11,
+      "fail": 0,
+      "skipped": 0,
+      "strictTypecheckExit": 0,
+      "workspaceTypecheckExit": 0
+    }
+  },
+  "latestSelectionScrollSeal": {
+    "newRefs": 5,
+    "previousHeadsUnchanged": true,
+    "previousHeadCount": 886,
+    "totalRefs": 891,
+    "sourceBytesMatch": true,
+    "stale": 0,
+    "fsck": "ok",
+    "limitations": [
+      "Original eight cases/assertions retained; no code/test changes",
+      "Pure geometry/selection helpers, not browser/timer/storage/full operator reentry acceptance",
+      "Existing constants and text normalization are implementation regression details, not newly owner-prescribed policy"
+    ],
+    "wholeFilesRegistered": 2,
+    "readback": "docs/evidence/selection-scroll-seal-readback-2026-10-07.json",
+    "diagnostic": {
+      "focusedPass": 8,
+      "fail": 0,
+      "skipped": 0,
+      "strictTypecheckExit": 0
+    },
+    "authorityCorrection": "Existing F-MTCH07 establishes per-kind recent order and search; independent audit corrected without altering requirement or policy"
+  },
+  "latestProviderConfigSeal": {
+    "newRefs": 3,
+    "previousHeadsUnchanged": true,
+    "previousHeadCount": 891,
+    "totalRefs": 894,
+    "sourceBytesMatch": true,
+    "stale": 0,
+    "fsck": "ok",
+    "limitations": [
+      "Original four cases and top-level assertion retained; no code/test/config change",
+      "Exact Accepted model-default and mode-allowlist clauses not confirmed; stored-value assertions are regression only",
+      "No current model capability/default selection, production boot, dispatch, fallback resolution or live provider acceptance"
+    ],
+    "wholeFilesRegistered": 1,
+    "readback": "docs/evidence/provider-config-seal-readback-2026-10-07.json",
+    "diagnostic": {
+      "focusedPass": 4,
+      "moduleLevelAssertion": "passed",
+      "fail": 0,
+      "skipped": 0,
+      "strictTypecheckExit": 0
+    }
+  },
+  "latestRealmSessionSeal": {
+    "newRefs": 10,
+    "previousHeadsUnchanged": true,
+    "previousHeadCount": 894,
+    "totalRefs": 904,
+    "sourceBytesMatch": true,
+    "stale": 0,
+    "fsck": "ok",
+    "limitations": [
+      "Original three files five cases retained; no code/test changes",
+      "Injected rotation/identity and isolatedSQLite proof only; no actual Supabase password invalidation, registered endpoint, production or GUI acceptance",
+      "Separate visibility-tier policy test remains unsealed pending precise authority scope review; no tests removed"
+    ],
+    "wholeFilesRegistered": 3,
+    "readback": "docs/evidence/realm-session-seal-readback-2026-10-07.json",
+    "independentReview": "docs/evidence/realm-session-independent-review-2026-10-07.json",
+    "diagnostic": {
+      "cohortPass": 6,
+      "sealedFileCases": 5,
+      "extraUnsealedDiagnosticCases": 1,
+      "fail": 0,
+      "skipped": 0,
+      "strictTypecheckExit": 0
+    }
+  },
+  "latestLegacyDialogueSeal": {
+    "newRefs": 15,
+    "previousHeadsUnchanged": true,
+    "previousHeadCount": 904,
+    "totalRefs": 919,
+    "sourceBytesMatch": true,
+    "stale": 0,
+    "fsck": "ok",
+    "limitations": [
+      "Original19 cases/assertions retained; no code/test changes",
+      "Pure retained legacy helper/synthetic frame tests, not awareness-v5 model/privacy/physical/persistence/full-pipeline acceptance",
+      "Snapshot representation and result-packet exclusion not downstream selector or alternateconversation delivery",
+      "V3 caller missing-input hold distinct from oldhelper null regression; legacy cost bearer semantics not asserted"
+    ],
+    "wholeFilesRegistered": 3,
+    "readback": "docs/evidence/legacy-dialogue-seal-readback-2026-10-07.json",
+    "independentReview": "docs/evidence/legacy-dialogue-independent-review-2026-10-07.json",
+    "diagnostic": {
+      "focusedPass": 19,
+      "fail": 0,
+      "skipped": 0,
+      "strictTypecheckExit": 0
+    }
+  },
+  "latestDynamicSettingsSeal": {
+    "newRefs": 13,
+    "previousHeadsUnchanged": true,
+    "previousHeadCount": 919,
+    "totalRefs": 932,
+    "sourceBytesMatch": true,
+    "stale": 0,
+    "fsck": "ok",
+    "limitations": [
+      "Original20 cases/assertions retained; no code/test changes",
+      "Dynamic-v4 helper and mocked HTTPadapter; not awareness-v5 or live provider quality",
+      "Injected reservation not persistent CAS/restart repairbudget proof",
+      "IsolatedSQLite settings only, not complete receipt/Stage/adminHTTP/Postgres/generationcontent acceptance"
+    ],
+    "wholeFilesRegistered": 3,
+    "readback": "docs/evidence/dynamic-settings-seal-readback-2026-10-07.json",
+    "independentReview": "docs/evidence/dynamic-settings-independent-review-2026-10-07.json",
+    "diagnostic": {
+      "focusedPass": 20,
+      "fail": 0,
+      "skipped": 0,
+      "strictTypecheckExit": 0
+    }
+  },
+  "latestAgencyIntegrationSeal": {
+    "newRefs": 17,
+    "existingRefsRefreshed": 4,
+    "otherPreviousHeadsUnchanged": true,
+    "previousHeadCount": 932,
+    "unchangedPreviousHeads": 928,
+    "totalRefs": 949,
+    "sourceBytesMatch": true,
+    "stale": 0,
+    "exactPreviousCauseRelations": true,
+    "fsck": "ok",
+    "limitations": [
+      "All17original cases retained; local type annotation plus2cast removals only, no runtimechange",
+      "Synthetic historicalV3 helpers/service/SQLite, not publiccreation success or discardedtrial revival",
+      "Mocked chat; not current awareness-v5/live provider/completeprivacy acceptance",
+      "Four existing scoped area refs refreshed with exactpreviouscauses after14HTTPpass, other928existingheads unchanged"
+    ],
+    "wholeFilesRegistered": 3,
+    "wholeFilesRebound": 2,
+    "readback": "docs/evidence/agency-integration-seal-readback-2026-10-07.json",
+    "independentReview": "docs/evidence/agency-integration-independent-review-2026-10-07.json",
+    "diagnostic": {
+      "focusedPass": 17,
+      "relatedHttpPass": 14,
+      "relatedWiringPass": 45,
+      "totalLocalPass": 76,
+      "fail": 0,
+      "skipped": 0,
+      "strictTypecheckExit": 0,
+      "workspaceTypecheckExit": 0
+    },
+    "typeRepair": "Required local canonical agentStateA/B presence; two final state casts removed, runtime behavior unchanged",
+    "sourceDelta": "docs/evidence/agency-state-presence-types-source-delta-2026-10-07.json"
+  },
+  "latestNarrationStorageSeal": {
+    "newRefs": 15,
+    "previousHeadsUnchanged": true,
+    "previousHeadCount": 949,
+    "totalRefs": 964,
+    "sourceBytesMatch": true,
+    "stale": 0,
+    "fsck": "ok",
+    "limitations": [
+      "All eleven original cases/assertions retained; no source/test changes",
+      "SQLite and fake ports only; no PostgreSQL isolation/concurrency, live provider, cryptographic digest or full privacy acceptance"
+    ],
+    "wholeFilesRegistered": 4,
+    "diagnostic": {
+      "focusedPass": 11,
+      "fail": 0,
+      "skipped": 0,
+      "strictTypecheckExit": 0
+    },
+    "readback": "docs/evidence/narration-storage-seal-readback-2026-10-07.json",
+    "registrationMeasurement": "docs/evidence/narration-storage-registration-measurement-2026-10-07.json"
+  },
+  "latestCanonicalNarrationSeal": {
+    "newRefs": 44,
+    "previousHeadsUnchanged": true,
+    "previousHeadCount": 964,
+    "totalRefs": 1008,
+    "sourceBytesMatch": true,
+    "stale": 0,
+    "fsck": "ok",
+    "limitations": [
+      "All original77cases/assertions preserved; two test fixture/type repairs only",
+      "Local SQLite/fake HTTP/clock/provider/pure helper proofs, not PostgreSQL/live/public completion or actual pricing",
+      "Existing backend noImplicitAny:false is bypassed by targeted standalone strict compiler; normal workspace success alone not that proof",
+      "Normal-policy synthetic seed not discarded cutover revival; old certified/explicit timing policies retained",
+      "Whole251files retained, unresolved owner paths and unsealed fail-closed gate unchanged"
+    ],
+    "wholeFilesRegistered": 12,
+    "diagnostic": {
+      "focusedPass": 77,
+      "fail": 0,
+      "skipped": 0,
+      "strictTypecheckExit": 0,
+      "workspaceTypecheckExit": 0
+    },
+    "readback": "docs/evidence/canonical-narration-seal-readback-2026-10-07.json",
+    "registrationMeasurement": "docs/evidence/canonical-narration-registration-measurement-2026-10-07.json",
+    "casePreservation": "docs/evidence/canonical-narration-case-preservation-2026-10-07.json",
+    "phaseMeasurement": "docs/evidence/canonical-narration-phase-measurement-2026-10-07.json"
+  },
+  "latestCharacterContractSeal": {
+    "newRefs": 18,
+    "previousHeadsUnchanged": true,
+    "previousHeadCount": 1008,
+    "totalRefs": 1026,
+    "sourceBytesMatch": true,
+    "stale": 0,
+    "fsck": "ok",
+    "limitations": [
+      "All original43cases and six untouched files preserved; one equivalent negative membership query only",
+      "Pure/local schemas, deterministic helpers and synthetic versioned reader, not DB lifecycle/model/public acceptance",
+      "Reader scope is selected compared fields and rejection paths, not all semantic preservation",
+      "V2 helper/test imports do not reopen ordinary V2 writes; Owner decision gates unchanged",
+      "251 whole files retained and unsealed stop preserved"
+    ],
+    "wholeFilesRegistered": 7,
+    "diagnostic": {
+      "focusedPass": 43,
+      "fail": 0,
+      "skipped": 0,
+      "strictTypecheckExit": 0,
+      "workspaceTypecheckExit": 0
+    },
+    "readback": "docs/evidence/character-contract-seal-readback-2026-10-07.json",
+    "registrationMeasurement": "docs/evidence/character-contract-registration-measurement-2026-10-07.json",
+    "casePreservation": "docs/evidence/character-contract-case-preservation-2026-10-07.json",
+    "phaseMeasurement": "docs/evidence/character-contract-phase-measurement-2026-10-07.json"
+  },
+  "latestAwarenessCreationSeal": {
+    "newRefs": 12,
+    "previousHeadsUnchanged": true,
+    "previousHeadCount": 1026,
+    "totalRefs": 1038,
+    "sourceBytesMatch": true,
+    "stale": 0,
+    "fsck": "ok",
+    "limitations": [
+      "29original cases/all51changed-file assertions preserved; annotation/import only; other5files unchanged",
+      "Private SQLite/offline/fakeSDK, not PG/live provider/pricing/full latest prompt/public completion",
+      "Certified proof-refusal only prior explicit policy; current ordinary observed usage-v2 not weakened",
+      "Idempotency timeout fixture string is not elapsed-time proof and exact usage-v2 revision not asserted by that case",
+      "251 whole files/unsealed stop/Owner decision gates preserved"
+    ],
+    "wholeFilesRegistered": 6,
+    "diagnostic": {
+      "focusedPass": 29,
+      "fail": 0,
+      "skipped": 0,
+      "strictTypecheckExit": 0,
+      "workspaceTypecheckExit": 0
+    },
+    "readback": "docs/evidence/awareness-creation-seal-readback-2026-10-07.json",
+    "registrationMeasurement": "docs/evidence/awareness-creation-registration-measurement-2026-10-07.json",
+    "casePreservation": "docs/evidence/awareness-creation-case-preservation-2026-10-07.json",
+    "phaseMeasurement": "docs/evidence/awareness-creation-phase-measurement-2026-10-07.json"
+  },
+  "latestNativePgSeal": {
+    "newRefs": 8,
+    "previousHeadsUnchanged": true,
+    "previousHeadCount": 1038,
+    "totalRefs": 1046,
+    "sourceBytesMatch": true,
+    "stale": 0,
+    "fsck": "ok",
+    "limitations": [
+      "All three original files4cases and implementation bytes unchanged",
+      "Actual localPostgreSQL16.15 SQL/locks, not Supabase/PostgreSQL17 acceptance",
+      "Initialization toyJSON is opaque SQL text; reservation world CAS is directSQL model",
+      "Private minimal schemas, not full migrations/SSE/cursor/privacy/batch3/prices",
+      "Temporary cluster stopped and existing cluster/systemservices unchanged",
+      "251whole files/Owner gates/unsealed stop preserved"
+    ],
+    "wholeFilesRegistered": 3,
+    "diagnostic": {
+      "focusedPass": 4,
+      "fail": 0,
+      "skipped": 0,
+      "strictTypecheckExit": 0,
+      "workspaceTypecheckExit": 0,
+      "workspaceEvidenceReused": "docs/evidence/awareness-creation-workspace-types-2026-10-07.log",
+      "reason": "No subsequent TypeScript source edits"
+    },
+    "readback": "docs/evidence/native-pg-seal-readback-2026-10-07.json",
+    "registrationMeasurement": "docs/evidence/native-pg-registration-measurement-2026-10-07.json",
+    "allThreeFilesUnchanged": true,
+    "privatePostgresRun": "docs/evidence/native-pg-private-run-2026-10-07.json",
+    "phaseMeasurement": "docs/evidence/native-pg-phase-measurement-2026-10-07.json"
+  },
+  "latestTypeContainment": {
+    "test": "backend/src/services/character-historical-view.test.ts",
+    "cases": 5,
+    "pass": 5,
+    "fail": 0,
+    "skip": 0,
+    "seal": "b4a376fe18ab482053fdb83de819a1bfe81881efd847dc28b7eb59128fa96cc7",
+    "backendNoImplicitAny": "inherits strict true",
+    "negativeControl": "docs/evidence/backend-implicit-any-negative-control-2026-10-07.json",
+    "readback": "docs/evidence/historical-view-type-repair-seal-readback-2026-10-07.json",
+    "fullStrictExit": 0,
+    "workspaceTypecheckExit": 0,
+    "workspaceTypecheckLog": "docs/evidence/backend-implicit-any-workspace-types-2026-10-07.log"
+  },
+  "latestAbsenceSeal": {
+    "newRefs": 4,
+    "previousHeadsUnchanged": true,
+    "previousHeadCount": 1046,
+    "totalRefs": 1050,
+    "sourceBytesMatch": true,
+    "stale": 0,
+    "fsck": "ok",
+    "limitations": [
+      "Only absence/strict intent paths, not whole engine or numeric balancing",
+      "All original12cases/assertions unchanged",
+      "251files and unsealed fail-closed preserved"
+    ],
+    "wholeFilesRegistered": 1,
+    "diagnostic": {
+      "focusedPass": 12,
+      "fail": 0,
+      "skipped": 0,
+      "strictTypecheckExit": 0,
+      "workspaceTypecheckExit": 0,
+      "workspaceEvidenceReused": "docs/evidence/backend-implicit-any-workspace-types-2026-10-07.log"
+    },
+    "readback": "docs/evidence/absence-seal-readback-2026-10-07.json",
+    "registrationMeasurement": "docs/evidence/absence-registration-measurement-2026-10-07.json",
+    "allOriginalCasesUnchanged": true,
+    "phaseMeasurement": "docs/evidence/absence-phase-measurement-2026-10-07.json"
+  },
+  "latestRuntimeDirectoriesSeal": {
+    "newRefs": 3,
+    "previousHeadsUnchanged": true,
+    "previousHeadCount": 1050,
+    "totalRefs": 1053,
+    "sourceBytesMatch": true,
+    "stale": 0,
+    "fsck": "ok",
+    "limitations": [
+      "Only two original runtime-directory cases",
+      "Not full object tree comparison",
+      "Full251 goal incomplete"
+    ],
+    "wholeFilesRegistered": 1,
+    "diagnostic": {
+      "focusedPass": 2,
+      "fail": 0,
+      "skipped": 0
+    },
+    "registrationMeasurement": "docs/evidence/runtime-directories-registration-measurement-2026-10-07.json"
+  },
+  "latestOperationalScriptsSeal": {
+    "newRefs": 10,
+    "previousHeadsUnchanged": true,
+    "previousHeadCount": 1053,
+    "totalRefs": 1063,
+    "sourceBytesMatch": true,
+    "stale": 0,
+    "fsck": "ok",
+    "limitations": [
+      "All original three files eight cases and implementations unchanged",
+      "Only local helper/startup contracts",
+      "No public rollback/R2 health/cutover execution",
+      "251 original files and unsealed fail-closed preserved"
+    ],
+    "wholeFilesRegistered": 3,
+    "diagnostic": {
+      "focusedPass": 8,
+      "fail": 0,
+      "skipped": 0,
+      "workspaceTypecheckEvidence": "docs/evidence/backend-implicit-any-workspace-types-2026-10-07.log"
+    },
+    "readback": "docs/evidence/operational-scripts-seal-readback-2026-10-07.json",
+    "registrationMeasurement": "docs/evidence/operational-scripts-registration-measurement-2026-10-07.json",
+    "allOriginalCasesUnchanged": true,
+    "phaseMeasurement": "docs/evidence/operational-scripts-phase-measurement-2026-10-07.json"
+  },
+  "latestWorkerEdgeSeal": {
+    "newRefs": 4,
+    "previousHeadsUnchanged": true,
+    "previousHeadCount": 1063,
+    "totalRefs": 1067,
+    "sourceBytesMatch": true,
+    "stale": 0,
+    "fsck": "ok",
+    "limitations": [
+      "Only original three local worker cases",
+      "Injected fetch/static assets, not deployment or actual backend verifier",
+      "Source/implementation unchanged, full251 goal incomplete"
+    ],
+    "wholeFilesRegistered": 1,
+    "diagnostic": {
+      "focusedPass": 3,
+      "fail": 0,
+      "skipped": 0,
+      "workspaceTypecheckEvidence": "docs/evidence/backend-implicit-any-workspace-types-2026-10-07.log"
+    },
+    "readback": "docs/evidence/worker-edge-seal-readback-2026-10-07.json",
+    "registrationMeasurement": "docs/evidence/worker-edge-registration-measurement-2026-10-07.json",
+    "allOriginalCasesUnchanged": true,
+    "phaseMeasurement": "docs/evidence/worker-edge-phase-measurement-2026-10-07.json"
+  },
+  "latestAdr0039ReceiptRepair": {
+    "bodyPreservation": "docs/evidence/adr0039-acceptance-marker-preservation-2026-10-07.json",
+    "dslAudit": "docs/evidence/adr0039-repaired-source-audit-2026-10-07.json",
+    "wholeAdrCheckExit": 0,
+    "wholeAdrCheckLog": "docs/evidence/adr0039-repaired-whole-check-2026-10-07.log",
+    "sealPropagation": "complete",
+    "newOwnerDecision": false,
+    "updatedRefs": 115,
+    "heldRefs": 8,
+    "proof": "docs/evidence/adr0039-receipt-propagation-readback-2026-10-07.json",
+    "oldObservedSealsRetained": 1405,
+    "testPassClaimed": false
+  },
+  "updatedAt": "2026-10-07T12:00:59.458467+00:00",
+  "latestNamesConfigSeal": {
+    "wholeFiles": 2,
+    "cases": 7,
+    "sourceTestsUnchanged": true,
+    "newRefs": 6,
+    "causeEdges": 7,
+    "registration": "docs/evidence/names-config-seal-registration-2026-10-07.json",
+    "readback": "docs/evidence/names-config-seal-readback-2026-10-07.json",
+    "independentReview": "docs/evidence/names-config-independent-review-2026-10-07.json",
+    "targetPreservation": "docs/evidence/names-config-full-target-preservation-2026-10-07.json",
+    "full251GoalComplete": false
+  },
+  "latestSealReadback": {
+    "totalRefs": 1079,
+    "fsck": "ok",
+    "proof": "docs/evidence/image-provider-boundary-seal-readback-2026-10-07.json"
+  },
+  "latestImageProviderBoundarySeal": {
+    "wholeFiles": 1,
+    "cases": 5,
+    "originalCases": 2,
+    "addedCases": 3,
+    "newRefs": 6,
+    "repairedDefect": "Numeric URL leaked from unknown provider JSON into sourceUrl:string",
+    "rca": "docs/evidence/image-response-contract-rca-2026-10-07.think",
+    "reproduction": "docs/evidence/image-response-contract-reproduction-2026-10-07.json",
+    "casePreservation": "docs/evidence/image-provider-original-case-preservation-2026-10-07.json",
+    "registration": "docs/evidence/image-provider-boundary-seal-registration-2026-10-07.json",
+    "readback": "docs/evidence/image-provider-boundary-seal-readback-2026-10-07.json",
+    "independentReview": "docs/evidence/image-provider-repaired-independent-review-2026-10-07.json",
+    "scope": "Injected fetch/helper behavior only, no live/quota/storage certification"
+  },
+  "goalState": "paused",
+  "goalPauseReason": "User requested stop today and handoff for tomorrow; shared worktime must remain open",
+  "handoff": "docs/all-test-seal-handoff-2026-10-07.md",
+  "nextReviewedUnsealedCohort": {
+    "files": [
+      "backend/src/services/r2-storage.test.ts",
+      "backend/src/services/image-service.test.ts"
+    ],
+    "cases": 7,
+    "passed": 7,
+    "sealed": false,
+    "titleOnlyCorrection": true,
+    "assertionsPreserved": true,
+    "review": "docs/evidence/image-storage-independent-review-2026-10-07.json",
+    "reasoningAudit": "docs/evidence/image-storage-seal-reasoning-audit-2026-10-07.json",
+    "diagnostic": "docs/evidence/image-storage-cohort-preseal-2026-10-07.tap"
+  }
+}

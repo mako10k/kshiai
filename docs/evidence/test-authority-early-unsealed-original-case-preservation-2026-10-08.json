@@ -1,0 +1,27 @@
+{
+  "method": "TypeScript AST case title and assertion-call text, whitespace normalized",
+  "originalRuntimeCases": 15,
+  "currentRuntimeCases": 19,
+  "entries": [
+    {
+      "path": "scripts/test-authority-empty.test.mjs",
+      "beforeSha256": "a9eec7067e7b89db53d06a2248cc3e938d8ca1654896b7b46b58db889b7b43ba",
+      "afterSha256": "1c61ac3d490672ccca276be9d7c77b172a9181c602669f507ac48126c516c5af",
+      "originalDeclaredCases": 6,
+      "currentDeclaredCases": 9,
+      "originalAssertions": 11,
+      "currentAssertions": 28,
+      "allOriginalCasesAndAssertionsRetained": true
+    },
+    {
+      "path": "scripts/test-authority.test.mjs",
+      "beforeSha256": "1dd5102a8c3b342925798ff2b0a7fdf9a37a4ac85774e3ee683c94f81fb0a52a",
+      "afterSha256": "1dd5102a8c3b342925798ff2b0a7fdf9a37a4ac85774e3ee683c94f81fb0a52a",
+      "originalDeclaredCases": 9,
+      "currentDeclaredCases": 9,
+      "originalAssertions": 20,
+      "currentAssertions": 20,
+      "allOriginalCasesAndAssertionsRetained": true
+    }
+  ]
+}

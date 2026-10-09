@@ -1,0 +1,40 @@
+{
+  "scope": "ADR-0058 unsealed/missing_ref execution gate, diagnostic listing and retained classifications",
+  "entries": [
+    {
+      "ref": "all-tests-20261007/authority-test-gate-adoption",
+      "path": "docs/adr/0058-stop-test-runs-with-unsealed-tests.think",
+      "sealId": "cbd69b1da11de1854532c6f3e38b8f7496e79b6e6afb3efb6f4ca40bd3505223",
+      "sha256": "9cb0035a67ec96a371ef071c2bd408b68bdbf8ae6821b636231354475303c93b",
+      "causeSealIds": []
+    },
+    {
+      "ref": "all-tests-20261007/authority-test-gate",
+      "path": "docs/adr/0058-stop-test-runs-with-unsealed-tests.md",
+      "sealId": "ac14858b7b48b7a0857eba65a94a7659b11752383804a6aea41efc934518186a",
+      "sha256": "af8e2690b085dca8b39c112b3d47cd0868685c7c86b1f431662323094723591a",
+      "causeSealIds": [
+        "cbd69b1da11de1854532c6f3e38b8f7496e79b6e6afb3efb6f4ca40bd3505223"
+      ]
+    },
+    {
+      "ref": "all-tests-20261007/implementation-test-gate",
+      "path": "scripts/test-authority.mjs",
+      "sealId": "a60ab5ee48719a22b11a15393c734fc9379ee6cb1b3b1b27c9aff089663fa019",
+      "sha256": "3b724f7c9ab0cca87f770d2bbdccd5d2f4724a3521c3f2ac46d96cf83e90862a",
+      "causeSealIds": [
+        "ac14858b7b48b7a0857eba65a94a7659b11752383804a6aea41efc934518186a"
+      ]
+    },
+    {
+      "ref": "verification/test-authority-execution-gate-20261007",
+      "path": "scripts/test-authority-empty.test.mjs",
+      "sealId": "17c619b637fbf40f79c36ad18566da75dce4356fe18b9ef7f4bee7786ad7fc77",
+      "sha256": "a9eec7067e7b89db53d06a2248cc3e938d8ca1654896b7b46b58db889b7b43ba",
+      "causeSealIds": [
+        "a60ab5ee48719a22b11a15393c734fc9379ee6cb1b3b1b27c9aff089663fa019",
+        "ac14858b7b48b7a0857eba65a94a7659b11752383804a6aea41efc934518186a"
+      ]
+    }
+  ]
+}

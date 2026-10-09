@@ -1,0 +1,51 @@
+{
+  "scope": "Adopted finite waiting and minimum tick interval only; E2E completion is a separate diagnostic",
+  "evidence": {
+    "typecheck": "/tmp/kshiai-tick-wait-types.log",
+    "test": "/tmp/kshiai-tick-wait-tests.tap",
+    "passed": 27,
+    "failed": 0
+  },
+  "entries": [
+    {
+      "ref": "all-tests-20261007/implementation-awareness-clock",
+      "path": "backend/src/services/awareness-clock.ts",
+      "sealId": "fc54c4ffbc6bedd844b9e1e489fc436ca217a6e9abce6417de58c79b5ecc671b",
+      "sha256": "10bca90935dde3c9656c12898b763ffbf52a1ae0f49a95d0024a85cf86f6659e",
+      "causeSealIds": [
+        "1edf3239229665d39a55aee22af5148f4408f6c8dfea24ca200ae835af46e02d",
+        "4a236b55e9ad9e4aa54eb2c6bbe9d77e0a318881ba8328363505153d16e151dd",
+        "7f8ac50262580d0a94e13d82627be496f8e2e8fd059c194c4d93d84d2af28f43"
+      ]
+    },
+    {
+      "ref": "verification/awareness-clock-20261007",
+      "path": "backend/src/services/awareness-clock.test.ts",
+      "sealId": "e498c21b29bdba1e05acfb0c212b62a077ed02a7b0dfb5dd27e4d4b627e31d92",
+      "sha256": "2a25712a45c5d54924a935fd4014fc7feef2adeb6bdc988c1d89367fe32e5a47",
+      "causeSealIds": [
+        "1edf3239229665d39a55aee22af5148f4408f6c8dfea24ca200ae835af46e02d",
+        "4a236b55e9ad9e4aa54eb2c6bbe9d77e0a318881ba8328363505153d16e151dd",
+        "7f8ac50262580d0a94e13d82627be496f8e2e8fd059c194c4d93d84d2af28f43",
+        "fc54c4ffbc6bedd844b9e1e489fc436ca217a6e9abce6417de58c79b5ecc671b"
+      ]
+    }
+  ],
+  "existingUpstreamSeals": [
+    {
+      "ref": "all-tests-20261007/authority-normal-waits",
+      "path": "docs/adr/0054-normal-awareness-waiting-deadlines.md",
+      "sealId": "7f8ac50262580d0a94e13d82627be496f8e2e8fd059c194c4d93d84d2af28f43"
+    },
+    {
+      "ref": "all-tests-20261007/contract-awareness-decisions",
+      "path": "docs/battle-consciousness-implementation-decisions-2026-10-05.md",
+      "sealId": "1edf3239229665d39a55aee22af5148f4408f6c8dfea24ca200ae835af46e02d"
+    },
+    {
+      "ref": "awareness-guidance-20261007/authority-current",
+      "path": "docs/adr/0051-observed-llm-usage-accounting.md",
+      "sealId": "4a236b55e9ad9e4aa54eb2c6bbe9d77e0a318881ba8328363505153d16e151dd"
+    }
+  ]
+}

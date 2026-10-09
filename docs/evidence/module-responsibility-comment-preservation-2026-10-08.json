@@ -1,0 +1,29 @@
+[
+  {
+    "ref": "all-tests-20261008/implementation-local-media-store",
+    "path": "backend/src/services/local-media-store.ts",
+    "oldSealId": "637edecb93b11419b985df4c5c33b9d5ba32b8e958589a2af8a90df02ad22f06",
+    "beforeSha256": "fb68dc04e3f866a3e03ccaf6e8b0fc10815206392d02faa633b04a246ac040c4",
+    "afterSha256": "cfca0b70b26fb2e5e5c4515b83d6610526241985c4fb58933b2e47768c138b5b",
+    "soleChange": "// R: Resolve and archive local media files under a caller-owned filesystem root.",
+    "bodyOtherwiseByteIdentical": true
+  },
+  {
+    "ref": "all-tests-20261007/implementation-image-prompt-and-failure",
+    "path": "backend/src/services/image-service.ts",
+    "oldSealId": "ea0f1b545851ccf646289c09e0bc35ca7b2de1d316046d3ac182ce59fa61d203",
+    "beforeSha256": "0cb1cd245fa214059ca86e638c954a5f2c096dec9d4742f860bc6e4ef245e88d",
+    "afterSha256": "cd9b5cc1e018a65074a32ff15a59d6c74b2bf0bc941218fb6f8250f4235c8da1",
+    "soleChange": "// R: Coordinate asset image generation through provider and media storage contracts.",
+    "bodyOtherwiseByteIdentical": true
+  },
+  {
+    "ref": "all-tests-20261008/implementation-sqlite-source-inspection",
+    "path": "backend/src/scripts/sqlite-to-postgres.ts",
+    "oldSealId": "6019b83c60e92e172f3a8a64a033c3831dc2be774550c81fe9a0d5af8ed0817c",
+    "beforeSha256": "76f9ff7ffc9e286681d3b24122994c939dc4eb80e8996079bd62cbcdf81f977d",
+    "afterSha256": "5e5aa8c4e9d4cde49edb0211c4fb664e620bacff9d9f648c382e53d4f223fe09",
+    "soleChange": "// R: Coordinate explicitly requested SQLite source inspection and PostgreSQL migration.",
+    "bodyOtherwiseByteIdentical": true
+  }
+]

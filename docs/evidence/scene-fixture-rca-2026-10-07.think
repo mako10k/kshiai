@@ -1,0 +1,12 @@
+domain SCENE_FIXTURE:
+  description "Restore the pre-existing-battle setup required by the narration UPDATE test."
+evidence FAILURE:
+  "scene-beat-wiring first case fails BATTLE_NOT_FOUND at saveBattleWithNarrationOutbox; fixture constructs state but never inserts it."
+evidence IMPLEMENTATION:
+  "battles.ts insertNewBattle validates and INSERTs; saveBattleWithNarrationOutbox calls writeBattle UPDATE-only and deliberately rejects absent IDs. completeAdvancePhases generates deferred receipt correctly before persistence failure."
+premise ALTERNATIVES:
+  "Changing UPDATE to upsert would undermine the Accepted lifecycle distinction and create unintended battles. Inserting this local fixture through the actual creation repository is sufficient without changing any production behavior. Other6 scene-beat cases fail V3 fixture admission and remain separately unresolved. After explicit INSERT the same test exposes BATTLE_REVISION_CONFLICT: completeAdvancePhases advances revision0 to1 and marks operation completed, so UPDATE default expects1 while persisted state is0. Production callers explicitly pass operation expectedRevision."
+premise SCOPE:
+  "Owner all-test repair; Accepted ADR0039 lifecycle and existing canonical insert/update contract. Import insertNewBattle and assert created before phase completion/update in this test only. Pass the before-state revision0 explicitly to the guarded UPDATE; keep the transition next revision1. Retain original deferred narration and empty-outbox assertions. No provider call, DB contract, old writer or trial restart."
+decision D1 based_on FAILURE, IMPLEMENTATION, ALTERNATIVES, SCOPE:
+  "Audit, add explicit test setup, run only the repaired case and types, leave six unrelated failures visible and test unsealed."

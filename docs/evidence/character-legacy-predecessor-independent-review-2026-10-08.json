@@ -1,0 +1,40 @@
+{
+  "reviewer": "/root/battle_helper_contract_review",
+  "mode": "readonly",
+  "verdict": "PASS",
+  "classification": "INSIDE_ACCEPTED_ADR0059_D5_LEGACY_PREDECESSOR",
+  "sourceSha256": {
+    "backend/src/repositories/character-focused-candidate.ts": "b34a819f680e19b32cecb7351b5154d2f57a7dac73a936709c5dca827b79304a",
+    "backend/src/services/semantic-authoring/character-review-correction-source.ts": "c7259a7e91b8cc7ddf25976188dc62e267d00a43c912627cb041457301bc35aa",
+    "backend/src/repositories/character-assets-v2.ts": "4dc5580a4eefcbfd5ebba9b373f0e16aa960300d9f1de4293820dbb433aac318",
+    "backend/src/services/character-focused-authoring.ts": "d97aa8c0f89bb6664567c775178ee56d3b20318d116b3328c7c772796c55e7e0",
+    "backend/src/routes.ts": "e3933522bcf92ccf011290105b71febb5f3a48ba0ebbfd4e09268b6b43da20be",
+    "backend/src/services/character-authoring-candidate.ts": "629c9f30ef065a808d4c1110012fc5e25d76f2a5be12c3ec8e23b0db95e7029a",
+    "backend/src/services/character-focused-authoring.test.ts": "bae9232e23ef47a5578cb526a463a12b2fe8dad0697c817a2d0738659bce1475"
+  },
+  "confirmed": [
+    "legacy create and pending-scope revision use authentic historical producer",
+    "owner/run/attempt/source/policy/adapter/coverage/result digest and receipt binding",
+    "exact immutable revision definition and disclosure inherited",
+    "GET and rejected legacy confirm perform no provider work",
+    "explicit successor only; predecessor attempt/result and current generation preserved",
+    "complete predecessor requires complete policy/adapter/receipt identities"
+  ],
+  "diagnostic": {
+    "pass": 59,
+    "fail": 0,
+    "skip": 0,
+    "seconds": 7.528382324,
+    "originalHttpCases": 15,
+    "log": "docs/evidence/character-legacy-final-diagnostic-2026-10-08.tap"
+  },
+  "workspaceTypecheck": {
+    "exit": 0,
+    "log": "docs/evidence/character-legacy-final-typecheck-2026-10-08.log"
+  },
+  "remaining": [
+    "whole-feature current-source Seal propagation",
+    "all original 251 formal files passing"
+  ],
+  "newSealRefs": 0
+}

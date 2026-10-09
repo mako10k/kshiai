@@ -1,0 +1,17 @@
+{
+  "scope": "from recorded review-document preparation timestamp through final readback; preceding diagnostic and independent review excluded",
+  "elapsedSeconds": 201.60615706443787,
+  "wholeFiles": 1,
+  "cases": 12,
+  "writer": {
+    "scope": "registration writer only, excludes prior review and verification",
+    "elapsedSeconds": 73.14448237419128,
+    "wholeFiles": 1,
+    "newRefs": 4,
+    "causeEdges": 7
+  },
+  "limits": [
+    "one-file workload is not a general performance comparison",
+    "full251 goal incomplete"
+  ]
+}

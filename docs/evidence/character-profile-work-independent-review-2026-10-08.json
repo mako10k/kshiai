@@ -1,0 +1,46 @@
+{
+  "schema": "kshiai/independent-implementation-review/v1",
+  "reviewer": "/root/battle_helper_contract_review",
+  "authority": "Accepted ADR0059 D1/D2; dedicated profile module intermediate phase",
+  "files": {
+    "backend/src/services/semantic-authoring/adapters/character-profile-work.ts": "46a4a973405daccdcd45ba10818920fdeafe2074e520d20455ef9b3a07f53336",
+    "backend/src/llm/character-profile-prompts.ts": "b301af617f104f8ecbf6d212b15053aaee77d6188b306be766e6738ec7316cc4",
+    "backend/src/llm/openai-compatible.ts": "75fdc50d0ff5550712fc50e967f7880950aad035fbab87fa40f2b5d9d0d6daaa",
+    "backend/src/services/character-v3-profile-adapter.test.ts": "5635313b3991b5471398521314b20208be7c9d645134c8ff3d82f4259428d57b",
+    "backend/src/llm/openai-compatible-agent.test.ts": "f9264a02b157718875368702f403a790ceaf34c248f930750dfba7b873978985"
+  },
+  "initialFinding": {
+    "classification": "INSIDE",
+    "verdict": "NEEDS_FIX",
+    "defect": "projector accepted arbitrary raw sourceText without frozen/public-safe binding",
+    "resolution": "removed raw text argument; only approved public projection inputs are sent"
+  },
+  "profileFixVerdict": "PASS / INSIDE",
+  "decoderDeltaVerdict": "PASS",
+  "materialDefectsRemaining": [],
+  "verified": [
+    "pending/generated/validated states and generated output cannot inject claim receipt",
+    "definition/disclosure/mode/attempt/source digests prevent stale restored progress",
+    "complete review requires structural caller receipt, profile receipt, independent claim receipt and consistent envelope/digest",
+    "original prompts reused; no raw owner/private source in new profile requests",
+    "outer/segment contract casts closed without changing valid object normalization/fallback"
+  ],
+  "outsideRequired": [
+    "current adapter and same-run guarded execution wiring",
+    "atomic candidate_json/digest/family final persistence",
+    "immutable correction attempt and original15HTTP success",
+    "all affected source/Cause propagation and final251 formal tests"
+  ],
+  "diagnostic": {
+    "originalCasesRetained": 10,
+    "addedCases": 7,
+    "passed": 17,
+    "failed": 0,
+    "skipped": 0,
+    "elapsedMs": 4589.897,
+    "formal": false,
+    "log": "docs/evidence/character-profile-work-diagnostic-2026-10-08.tap"
+  },
+  "backendTypecheckExit": 0,
+  "externalOrPaidExecution": false
+}

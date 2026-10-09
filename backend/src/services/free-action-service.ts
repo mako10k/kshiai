@@ -1,9 +1,13 @@
+import { validateFreeActionPenalty, applyFreeActionPenalty, executableFreeActionChanges, isPartialFreeAction,
+  partialSubjectIsBound, freeActionReceiptOutcome, freeActionResultSummary } from "./free-action-penalties.js";
 import {
   BattleWorldEntitySchema,
   FreeActionAdjudicationBatchSchema,
   FreeActionAdjudicationProposalSchema,
   FreeActionResolutionReceiptSchema,
   WorldExposureSchema,
+  WorldActorStateSchema,
+  WorldObjectStateSchema,
   WorldPlacementSchema,
   applyBattleWorldTransition,
   projectCharacterActionIntent,
@@ -658,6 +662,9 @@ export async function prepareFreeActionsForTurn(input: {
   }
   try {
     const result = await input.llm.adjudicateFreeActions({
+      penaltyContext: { baseWorldRevision: input.state.worldState?.revision ?? 0,
+        policyBySide: { a: input.state.sideA.actionEffortPolicy?.contractVersion ?? null,
+          b: input.state.sideB.actionEffortPolicy?.contractVersion ?? null } },
       turn: input.state.turn + 1,
       scene: input.state.situation.scene,
       actors: {
@@ -808,47 +815,39 @@ function translateChange(input: {
     input.change.path === "/actorState/restraint" &&
     input.state.worldState?.entities[targetId]?.actorState
   ) {
-    const restraint = input.change.value;
-    if (![
-      "free",
-      "partially_restrained",
-      "restrained",
-    ].includes(String(restraint))) return null;
+    const parsed = WorldActorStateSchema.shape.restraint.safeParse(input.change.value);
+    if (!parsed.success) return null;
+    const restraint = parsed.data;
     const current = input.state.worldState?.entities[targetId]?.actorState?.restraint;
     if (current === "free" && restraint === "restrained") return null;
     return {
       op: "set_actor_state",
       entityId: targetId,
-      changes: { restraint: restraint as "free" | "partially_restrained" | "restrained" },
+      changes: { restraint },
     };
   }
   if (
     input.change.path === "/actorState/posture" &&
     input.state.worldState?.entities[targetId]?.actorState
   ) {
-    const posture = input.change.value;
-    if (![
-      "standing",
-      "crouched",
-      "prone",
-      "airborne",
-      "other",
-    ].includes(String(posture))) return null;
+    const parsed = WorldActorStateSchema.shape.posture.safeParse(input.change.value);
+    if (!parsed.success) return null;
     return {
       op: "set_actor_state",
       entityId: targetId,
-      changes: { posture: posture as "standing" | "crouched" | "prone" | "airborne" | "other" },
+      changes: { posture: parsed.data },
     };
   }
   if (
     input.change.path === "/objectState/cover" &&
-    input.change.target === "subject" &&
-    ["none", "partial", "full"].includes(String(input.change.value))
+    input.change.target === "subject"
   ) {
+    const cover = WorldObjectStateSchema.shape.cover.safeParse(input.change.value);
+    if (!cover.success) return null;
     return {
       op: "set_object_state",
       entityId: targetId,
-      changes: { cover: input.change.value as "none" | "partial" | "full" },
+      changes: { cover: cover.data },
     };
   }
   return null;
@@ -951,6 +950,21 @@ export function commitFreeActionAdjudications(input: {
       }));
       continue;
     }
+    if (!validateFreeActionPenalty(input.beforeState, side, intentText, proposal)) {
+      updateActionFailure(actions, side, "free_action_rejected");
+      receipts.push(receipt({ actionId: action.id, actorSide: side, intentText, outcome: "failed",
+        reason: "invalid_proposal", subjectRef: null, canonicalEntityId: null, promotion: "rejected",
+        operationKinds: [], summary: "行動の負担について有効な裁定を受領できなかった。" }));
+      continue;
+    }
+    if (proposal.penalty?.kind === "execution_limit" && proposal.penalty.execution === "not_executed") {
+      updateActionFailure(actions, side, "free_action_impossible");
+      const penalty = applyFreeActionPenalty(state, side, action.id, proposal.penalty);
+      receipts.push(receipt({ actionId: action.id, actorSide: side, intentText, outcome: "failed",
+        reason: "impossible", subjectRef: null, canonicalEntityId: null, promotion: "rejected",
+        operationKinds: [], penalty, summary: `実行不成立：${proposal.penalty.reason}` }));
+      continue;
+    }
     const root = proposal.subject
       ? input.preparation.roots.find((candidate) =>
           candidate.ref === proposal.subject!.rootRef
@@ -1035,6 +1049,13 @@ export function commitFreeActionAdjudications(input: {
         entity.objectProfile?.sourceRef === root.sourceRef &&
         entity.objectProfile.candidateKey === proposal.subject?.candidateKey
       );
+    if (!partialSubjectIsBound(proposal, root, existingPromotion !== undefined)) {
+      updateActionFailure(actions, side, "free_action_rejected");
+      receipts.push(receipt({ actionId: action.id, actorSide: side, intentText, outcome: "failed",
+        reason: "invalid_proposal", subjectRef: root.ref, canonicalEntityId: null, promotion: "rejected",
+        operationKinds: [], summary: "部分実行の対象が正準状態に確定していない。" }));
+      continue;
+    }
     const subjectEntityId = root.existingEntityId ?? existingPromotion?.[0] ??
       `object.free.${side}.${simpleHash(`${root.sourceRef}:${proposal.subject.candidateKey}`)}`;
     const operations: BattleWorldOperation[] = [];
@@ -1077,39 +1098,41 @@ export function commitFreeActionAdjudications(input: {
     } else if (!root.existingEntityId && existingPromotion) {
       promotion = "already_promoted";
     }
-    const currentProfile = rootKind === "object"
-      ? state.worldState?.entities[subjectEntityId]?.objectProfile
-      : null;
-    if (
-      currentProfile &&
-      !currentProfile.canonicalLabel &&
-      proposal.subject.canonicalLabel
-    ) {
-      operations.push({
-        op: "concretize_object",
-        entityId: subjectEntityId,
-        canonicalLabel: proposal.subject.canonicalLabel,
-        statement: proposal.subject.description,
-        resolvedAspects: ["identity"],
-        remainingOpenAspects: proposal.subject.knownOpenAspects.filter((item) =>
-          item !== "identity"
-        ),
-        evidenceRefs: [root.sourceRef],
-      });
-    }
-    if (rootKind === "object") {
-      operations.push({
-        op: "set_object_state",
-        entityId: subjectEntityId,
-        changes: {
-          portable: proposal.subject.portable,
-          usable: proposal.subject.usable,
-          causalEnvelope: proposal.subject.causalEnvelope,
-        },
-      });
+    if (!isPartialFreeAction(proposal)) {
+      const currentProfile = rootKind === "object"
+        ? state.worldState?.entities[subjectEntityId]?.objectProfile
+        : null;
+      if (
+        currentProfile &&
+        !currentProfile.canonicalLabel &&
+        proposal.subject.canonicalLabel
+      ) {
+        operations.push({
+          op: "concretize_object",
+          entityId: subjectEntityId,
+          canonicalLabel: proposal.subject.canonicalLabel,
+          statement: proposal.subject.description,
+          resolvedAspects: ["identity"],
+          remainingOpenAspects: proposal.subject.knownOpenAspects.filter((item) =>
+            item !== "identity"
+          ),
+          evidenceRefs: [root.sourceRef],
+        });
+      }
+      if (rootKind === "object") {
+        operations.push({
+          op: "set_object_state",
+          entityId: subjectEntityId,
+          changes: {
+            portable: proposal.subject.portable,
+            usable: proposal.subject.usable,
+            causalEnvelope: proposal.subject.causalEnvelope,
+          },
+        });
+      }
     }
     if (proposal.outcome === "possible") {
-      const translated = proposal.changes.map((change) =>
+      const translated = executableFreeActionChanges(proposal).map((change) =>
         translateChange({ state, side, subjectEntityId, change })
       );
       if (translated.some((operation) => operation === null)) {
@@ -1187,7 +1210,8 @@ export function commitFreeActionAdjudications(input: {
     };
     const succeeded = proposal.outcome === "possible";
     if (!succeeded) updateActionFailure(actions, side, "free_action_impossible");
-    const summary = succeeded ? proposal.successSummary : proposal.failureSummary;
+    const penalty = applyFreeActionPenalty(state, side, action.id, proposal.penalty);
+    const summary = freeActionResultSummary(proposal);
     events.push({
       id: `turn-${state.turn}-free-action-${side}`,
       type: "free_action",
@@ -1199,9 +1223,10 @@ export function commitFreeActionAdjudications(input: {
     });
     receipts.push(receipt({
       actionId: action.id,
+      penalty,
       actorSide: side,
       intentText,
-      outcome: succeeded ? "accepted" : "failed",
+      outcome: freeActionReceiptOutcome(proposal),
       reason: succeeded ? "accepted" : "impossible",
       subjectRef: root.ref,
       canonicalEntityId: subjectEntityId,
@@ -1219,7 +1244,7 @@ export function commitFreeActionAdjudications(input: {
           candidate.ref === proposal.subject!.rootRef
         )
       : null;
-    const affectsCounterpart = proposal?.changes.some((change) =>
+    const affectsCounterpart = proposal && executableFreeActionChanges(proposal).some((change) =>
       change.target === "counterpart"
     ) || root?.existingEntityId === actorId(otherSide(side));
     const finalEvent: TurnEvent = {

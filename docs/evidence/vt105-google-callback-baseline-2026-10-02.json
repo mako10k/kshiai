@@ -1,0 +1,7 @@
+{
+  "observedAt": "2026-10-02T02:20:53.961Z",
+  "projectRef": "cvrbhpkfqkpqdegxfrlq",
+  "site_url": "https://kshiai.mk10.org",
+  "uri_allow_list": "https://kshiai.mk10.org/auth/callback,http://localhost:5188/auth/callback,http://127.0.0.1:5188/auth/callback",
+  "external_google_enabled": true
+}

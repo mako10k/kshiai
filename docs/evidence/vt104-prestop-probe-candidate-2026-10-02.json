@@ -1,0 +1,63 @@
+{
+  "schema": "kshiai/prestop-readonly-probe-candidate/v1",
+  "status": "Proposed",
+  "sourceCommit": "4ab19719ef7fa61cdfb8571c4579c3c64cc96dfb",
+  "releaseTag": "v0.23.0-rc.2",
+  "prepareRunId": "36857282507",
+  "imageRef": "asia-northeast1-docker.pkg.dev/kshiai/kshiai/backend@sha256:2e7051ec6395d36a27124ace0cad8d032bbb6b47878509339b05ce27c679c056",
+  "localGcpAccount": "mako10k@mk10.org",
+  "databaseProjectRef": "cvrbhpkfqkpqdegxfrlq",
+  "schemaName": "public",
+  "maximumWrites": {
+    "jobDeploy": 1,
+    "jobExecute": 1,
+    "databaseWrites": 0,
+    "runtimeServiceChanges": 0,
+    "authSettingsChanges": 0,
+    "paidLlmCalls": 0
+  },
+  "jobDeployArgv": [
+    "gcloud",
+    "run",
+    "jobs",
+    "deploy",
+    "kshiai-v3-trial-preflight",
+    "--project=kshiai",
+    "--region=asia-northeast1",
+    "--image=asia-northeast1-docker.pkg.dev/kshiai/kshiai/backend@sha256:2e7051ec6395d36a27124ace0cad8d032bbb6b47878509339b05ce27c679c056",
+    "--service-account=kshiai-cloud-run@kshiai.iam.gserviceaccount.com",
+    "--set-secrets=DIRECT_URL=kshiai-direct-url:1",
+    "--set-env-vars=NODE_ENV=development,DATABASE_SCHEMA=public,AUTH_PROVIDER=supabase,SUPABASE_URL=https://cvrbhpkfqkpqdegxfrlq.supabase.co",
+    "--command=node",
+    "--args=backend/dist/scripts/prepare-unreleased-v3-trial.js,preview,--configured-database,--project-ref,cvrbhpkfqkpqdegxfrlq,--schema,public,--cutover-id,v3-trial-rc2-20261001,--cutover-at,2026-10-01T11:52:57.316Z",
+    "--tasks=1",
+    "--parallelism=1",
+    "--max-retries=0",
+    "--task-timeout=120s",
+    "--cpu=1",
+    "--memory=512Mi",
+    "--quiet"
+  ],
+  "jobExecuteArgv": [
+    "gcloud",
+    "run",
+    "jobs",
+    "execute",
+    "kshiai-v3-trial-preflight",
+    "--project=kshiai",
+    "--region=asia-northeast1",
+    "--wait"
+  ],
+  "beforeExecute": [
+    "owner approval",
+    "same-account GCP reauthentication completed",
+    "fresh job absent readback; if present stop for target reconciliation",
+    "fresh immutable image registry digest matches",
+    "read back job image/command/args/env/secretVersion/retries/tasks/timeout"
+  ],
+  "afterExecute": [
+    "single returned execution ID retained",
+    "terminal execution success and exact plan/target metadata readback",
+    "failure or ambiguous result inspected without redispatch"
+  ]
+}

@@ -1,0 +1,88 @@
+{
+  "observedAt": "2026-10-02T01:02:25.213428+00:00",
+  "scope": "approvedreadonlyjobcreate1execute1 at512Mi; no DB writes",
+  "ownerResponse": "承認します。GCPは再ログイン済です。",
+  "approvedCandidateSha256": "2e8be1d4b6dc1d2dd1ac672f80fd48feb7fecf405c3c5d94b1d9b89394c192d1",
+  "job": "kshiai-v3-trial-preflight",
+  "execution": "kshiai-v3-trial-preflight-b6wkr",
+  "imageRef": "asia-northeast1-docker.pkg.dev/kshiai/kshiai/backend@sha256:2e7051ec6395d36a27124ace0cad8d032bbb6b47878509339b05ce27c679c056",
+  "failedCount": 1,
+  "completedAt": "2026-10-02T00:57:46.471877Z",
+  "completionCondition": {
+    "lastTransitionTime": "2026-10-02T00:57:46.471877Z",
+    "message": "Task kshiai-v3-trial-preflight-b6wkr-task0 failed with exit code: 0 and message: The configured memory limit was reached.",
+    "status": "False",
+    "type": "Completed"
+  },
+  "logs": [
+    "Out-of-memory event detected in container",
+    "Container terminated on signal 9."
+  ],
+  "memoryLimit": "512Mi",
+  "directDatabaseConnectionOutcome": "unknown; no completedplan beforeOOM",
+  "localSameSourceProfile": {
+    "stages": [
+      {
+        "stage": "beforeDbImport",
+        "rss": 48447488,
+        "heapTotal": 5873664,
+        "heapUsed": 4874144,
+        "external": 1894144,
+        "arrayBuffers": 10625,
+        "maxRssKiB": 47312
+      },
+      {
+        "stage": "afterDbImport",
+        "rss": 59346944,
+        "heapTotal": 11116544,
+        "heapUsed": 6244432,
+        "external": 2141410,
+        "arrayBuffers": 16655,
+        "maxRssKiB": 57956
+      },
+      {
+        "stage": "afterPreparationImport",
+        "rss": 60936192,
+        "heapTotal": 11386880,
+        "heapUsed": 7637424,
+        "external": 2327549,
+        "arrayBuffers": 200061,
+        "maxRssKiB": 59556
+      },
+      {
+        "stage": "afterPayloadSizeRead",
+        "rss": 66199552,
+        "heapTotal": 12328960,
+        "heapUsed": 8000432,
+        "external": 2270316,
+        "arrayBuffers": 26009,
+        "maxRssKiB": 64648
+      },
+      {
+        "stage": "afterReadonlyPreview",
+        "rss": 352387072,
+        "heapTotal": 262103040,
+        "heapUsed": 234789192,
+        "external": 15126194,
+        "arrayBuffers": 12882079,
+        "maxRssKiB": 630764
+      }
+    ],
+    "sizes": {
+      "count": "186",
+      "total_bytes": "117922187",
+      "max_bytes": 3046729
+    },
+    "preview": {
+      "targets": 18,
+      "finished": 168,
+      "finishedOutbox": 14
+    },
+    "scope": "local compiled same-source preview through existing pooler; not Cloud Run peak proof"
+  },
+  "localPeakMiB": 615.98046875,
+  "sharedRuntimeChanged": false,
+  "databaseMutationCommands": 0,
+  "extraExecutions": 0,
+  "nextCandidate": "docs/evidence/vt104-prestop-probe-memory-candidate-2026-10-02.json"
+}

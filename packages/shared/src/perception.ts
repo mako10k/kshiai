@@ -1,3 +1,4 @@
+import { SelfActionEffortPerceptionV1Schema } from "./action-effort-policy.js";
 import { z } from "zod";
 import { ParamKeySchema } from "./character.js";
 import { SemanticIdSchema } from "./semantic-state.js";
@@ -588,6 +589,8 @@ export const PerceptionDiffSchema = z.object({
 export type PerceptionDiff = z.infer<typeof PerceptionDiffSchema>;
 
 export const CharacterPerceptionFrameSchema = z.object({
+  /** Present for the bound effort contract; historical frames remain readable. */
+  actionEffort: SelfActionEffortPerceptionV1Schema.optional(),
   schemaVersion: z.literal(1),
   observer: z.object({
     side: BattleSideSchema,

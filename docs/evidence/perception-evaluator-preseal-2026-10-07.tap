@@ -1,0 +1,83 @@
+TAP version 13
+# Subtest: perception prompt strategy
+    # Subtest: keeps all fixed fixtures inside canonical and sensory contracts
+    ok 1 - keeps all fixed fixtures inside canonical and sensory contracts
+      ---
+      duration_ms: 10.443309
+      type: 'test'
+      ...
+    # Subtest: keeps world and sensory responsibilities independently stated
+    ok 2 - keeps world and sensory responsibilities independently stated
+      ---
+      duration_ms: 1.492638
+      type: 'test'
+      ...
+    # Subtest: constrains combined XAI output without a repair call
+    ok 3 - constrains combined XAI output without a repair call
+      ---
+      duration_ms: 4.062798
+      type: 'test'
+      ...
+    # Subtest: scores deterministic reference outputs perfectly for both topologies
+    ok 4 - scores deterministic reference outputs perfectly for both topologies
+      ---
+      duration_ms: 2.244735
+      type: 'test'
+      ...
+    # Subtest: does not invalidate a valid combined world patch when sensory JSON fails
+    ok 5 - does not invalidate a valid combined world patch when sensory JSON fails
+      ---
+      duration_ms: 2.071911
+      type: 'test'
+      ...
+    # Subtest: detects wrong attribution and an unknown-identity name leak
+    ok 6 - detects wrong attribution and an unknown-identity name leak
+      ---
+      duration_ms: 1.56355
+      type: 'test'
+      ...
+    # Subtest: prefers combined only when it meets every quality floor
+    ok 7 - prefers combined only when it meets every quality floor
+      ---
+      duration_ms: 0.487463
+      type: 'test'
+      ...
+    # Subtest: refuses to select from too few samples or two failing candidates
+    ok 8 - refuses to select from too few samples or two failing candidates
+      ---
+      duration_ms: 1.210372
+      type: 'test'
+      ...
+    # Subtest: aggregates latency and tokens without inventing missing usage
+    ok 9 - aggregates latency and tokens without inventing missing usage
+      ---
+      duration_ms: 1.629106
+      type: 'test'
+      ...
+    # Subtest: requires an exact reviewed provider and model pair
+    ok 10 - requires an exact reviewed provider and model pair
+      ---
+      duration_ms: 1.276008
+      type: 'test'
+      ...
+    # Subtest: runs fixed combined and parallel split matrices without adaptive retries
+    ok 11 - runs fixed combined and parallel split matrices without adaptive retries
+      ---
+      duration_ms: 46.805138
+      type: 'test'
+      ...
+    1..11
+ok 1 - perception prompt strategy
+  ---
+  duration_ms: 78.161441
+  type: 'suite'
+  ...
+1..1
+# tests 11
+# suites 1
+# pass 11
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 1005.078837

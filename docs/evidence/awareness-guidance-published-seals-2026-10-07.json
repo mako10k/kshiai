@@ -1,0 +1,184 @@
+{
+  "schema": "kshiai/scoped-seal-readback/v1",
+  "publishedLocallyOnly": true,
+  "entries": [
+    {
+      "ref": "awareness-guidance-20261007/authority-inherited",
+      "path": "docs/adr/0050-asynchronous-awareness-projected-character-pipeline.think",
+      "sealId": "d5695200a29531ed085f10c0d502effc2af325ee206874b1f32c61db6872fba4",
+      "causes": []
+    },
+    {
+      "ref": "awareness-guidance-20261007/authority-current",
+      "path": "docs/adr/0051-observed-llm-usage-accounting.md",
+      "sealId": "4a236b55e9ad9e4aa54eb2c6bbe9d77e0a318881ba8328363505153d16e151dd",
+      "causes": [
+        "d5695200a29531ed085f10c0d502effc2af325ee206874b1f32c61db6872fba4"
+      ]
+    },
+    {
+      "ref": "awareness-guidance-20261007/requirements",
+      "path": "docs/battle-consciousness-requirements-2026-10-05.md",
+      "sealId": "bfad7f3d9646ec7657e4db701b034d71990427ee991a8a037efe3d09f5367e48",
+      "causes": [
+        "4a236b55e9ad9e4aa54eb2c6bbe9d77e0a318881ba8328363505153d16e151dd"
+      ]
+    },
+    {
+      "ref": "awareness-guidance-20261007/basic-design",
+      "path": "docs/battle-consciousness-basic-design-2026-10-05.md",
+      "sealId": "1adba1d06106cfcc7537dcd2d85aa94f745a4a79ff6b3f5ac4911a11efdf79a8",
+      "causes": [
+        "bfad7f3d9646ec7657e4db701b034d71990427ee991a8a037efe3d09f5367e48",
+        "4a236b55e9ad9e4aa54eb2c6bbe9d77e0a318881ba8328363505153d16e151dd"
+      ]
+    },
+    {
+      "ref": "awareness-guidance-20261007/detail",
+      "path": "docs/awareness-guidance-delivery-detail-2026-10-07.md",
+      "sealId": "474d2d4458679df6cb71e6e8f049a3f051192620c36f9e3f9b18799d1bda5317",
+      "causes": [
+        "1adba1d06106cfcc7537dcd2d85aa94f745a4a79ff6b3f5ac4911a11efdf79a8"
+      ]
+    },
+    {
+      "ref": "awareness-guidance-20261007/guidance-contract",
+      "path": "packages/shared/src/awareness-guidance.ts",
+      "sealId": "3c21eecd043b8b60217a9bef09b3dd9d7a57bdd10bc143bace584e18f046d045",
+      "causes": [
+        "474d2d4458679df6cb71e6e8f049a3f051192620c36f9e3f9b18799d1bda5317"
+      ]
+    },
+    {
+      "ref": "awareness-guidance-20261007/input-contract",
+      "path": "packages/shared/src/awareness-pipeline.ts",
+      "sealId": "56e673314fc7d2d4b1caef3c2c3411213422bba8d58a28bb6f8fbe5f3fa3df72",
+      "causes": [
+        "1adba1d06106cfcc7537dcd2d85aa94f745a4a79ff6b3f5ac4911a11efdf79a8"
+      ]
+    },
+    {
+      "ref": "awareness-guidance-20261007/shared-exports",
+      "path": "packages/shared/src/index.ts",
+      "sealId": "62321c18ea6d4ff743097d54e2a6666aa7fdf735ae6ed8ba99dcd7adf3a98f5a",
+      "causes": [
+        "3c21eecd043b8b60217a9bef09b3dd9d7a57bdd10bc143bace584e18f046d045",
+        "56e673314fc7d2d4b1caef3c2c3411213422bba8d58a28bb6f8fbe5f3fa3df72"
+      ]
+    },
+    {
+      "ref": "awareness-guidance-20261007/execution",
+      "path": "backend/src/services/awareness-execution.ts",
+      "sealId": "6eb5f3240dfbfcf076911bba3a4ae3c8f0289ea0411368d58e5098fcf5426d91",
+      "causes": [
+        "474d2d4458679df6cb71e6e8f049a3f051192620c36f9e3f9b18799d1bda5317",
+        "3c21eecd043b8b60217a9bef09b3dd9d7a57bdd10bc143bace584e18f046d045",
+        "56e673314fc7d2d4b1caef3c2c3411213422bba8d58a28bb6f8fbe5f3fa3df72"
+      ]
+    },
+    {
+      "ref": "awareness-guidance-20261007/context",
+      "path": "backend/src/services/awareness-context.ts",
+      "sealId": "352509199d80c1220249893bfa4167f305c6790b2529001ebf8933b354143d8f",
+      "causes": [
+        "474d2d4458679df6cb71e6e8f049a3f051192620c36f9e3f9b18799d1bda5317",
+        "3c21eecd043b8b60217a9bef09b3dd9d7a57bdd10bc143bace584e18f046d045",
+        "56e673314fc7d2d4b1caef3c2c3411213422bba8d58a28bb6f8fbe5f3fa3df72",
+        "6eb5f3240dfbfcf076911bba3a4ae3c8f0289ea0411368d58e5098fcf5426d91"
+      ]
+    },
+    {
+      "ref": "awareness-guidance-20261007/boundary",
+      "path": "backend/src/services/awareness-battle-boundary.ts",
+      "sealId": "90e466f427cb1a6c1a6161c7ee913c177bff496bc6d363cd3109a585faeb6a95",
+      "causes": [
+        "474d2d4458679df6cb71e6e8f049a3f051192620c36f9e3f9b18799d1bda5317",
+        "352509199d80c1220249893bfa4167f305c6790b2529001ebf8933b354143d8f",
+        "6eb5f3240dfbfcf076911bba3a4ae3c8f0289ea0411368d58e5098fcf5426d91"
+      ]
+    },
+    {
+      "ref": "awareness-guidance-20261007/battle-frame",
+      "path": "backend/src/services/battle-service.ts",
+      "sealId": "b98f66956fd4cdcf715e44ebd26c18d43b9ac81bf2f4ed77bb0a7964b87f0e78",
+      "causes": [
+        "474d2d4458679df6cb71e6e8f049a3f051192620c36f9e3f9b18799d1bda5317",
+        "90e466f427cb1a6c1a6161c7ee913c177bff496bc6d363cd3109a585faeb6a95",
+        "3c21eecd043b8b60217a9bef09b3dd9d7a57bdd10bc143bace584e18f046d045"
+      ]
+    },
+    {
+      "ref": "awareness-guidance-20261007/prompt",
+      "path": "backend/src/llm/awareness-request.ts",
+      "sealId": "2fb338bc68a8b07de76319443b6204612712153361a12043832b89957828e0d9",
+      "causes": [
+        "56e673314fc7d2d4b1caef3c2c3411213422bba8d58a28bb6f8fbe5f3fa3df72",
+        "1adba1d06106cfcc7537dcd2d85aa94f745a4a79ff6b3f5ac4911a11efdf79a8"
+      ]
+    },
+    {
+      "ref": "awareness-guidance-20261007/fixture",
+      "path": "backend/src/services/awareness-guidance-test-fixture.ts",
+      "sealId": "51d31cd3aa7d1daa3b12d62186f663eae29e39d87a7571820b9fc17c8bd59ded",
+      "causes": [
+        "474d2d4458679df6cb71e6e8f049a3f051192620c36f9e3f9b18799d1bda5317",
+        "56e673314fc7d2d4b1caef3c2c3411213422bba8d58a28bb6f8fbe5f3fa3df72"
+      ]
+    },
+    {
+      "ref": "awareness-guidance-20261007/verification-guidance",
+      "path": "packages/shared/src/awareness-guidance.test.ts",
+      "sealId": "c33efcbab05dc4f71b5051272f6fc00cea60a44b9177427e3700dcf14910f119",
+      "causes": [
+        "474d2d4458679df6cb71e6e8f049a3f051192620c36f9e3f9b18799d1bda5317",
+        "3c21eecd043b8b60217a9bef09b3dd9d7a57bdd10bc143bace584e18f046d045"
+      ]
+    },
+    {
+      "ref": "awareness-guidance-20261007/verification-context",
+      "path": "backend/src/services/awareness-context.test.ts",
+      "sealId": "58e65d4179a3c0ff99386543d8bf586daba163d0edac1f53fa055128885bf8fd",
+      "causes": [
+        "474d2d4458679df6cb71e6e8f049a3f051192620c36f9e3f9b18799d1bda5317",
+        "352509199d80c1220249893bfa4167f305c6790b2529001ebf8933b354143d8f",
+        "3c21eecd043b8b60217a9bef09b3dd9d7a57bdd10bc143bace584e18f046d045"
+      ]
+    },
+    {
+      "ref": "awareness-guidance-20261007/verification-execution",
+      "path": "backend/src/services/awareness-execution.test.ts",
+      "sealId": "8e733694b5e06c8adaf059c72a3922dfba0c315b3df7e823c3dcca33622d7bea",
+      "causes": [
+        "474d2d4458679df6cb71e6e8f049a3f051192620c36f9e3f9b18799d1bda5317",
+        "b98f66956fd4cdcf715e44ebd26c18d43b9ac81bf2f4ed77bb0a7964b87f0e78",
+        "90e466f427cb1a6c1a6161c7ee913c177bff496bc6d363cd3109a585faeb6a95",
+        "352509199d80c1220249893bfa4167f305c6790b2529001ebf8933b354143d8f",
+        "6eb5f3240dfbfcf076911bba3a4ae3c8f0289ea0411368d58e5098fcf5426d91",
+        "2fb338bc68a8b07de76319443b6204612712153361a12043832b89957828e0d9",
+        "51d31cd3aa7d1daa3b12d62186f663eae29e39d87a7571820b9fc17c8bd59ded"
+      ]
+    },
+    {
+      "ref": "awareness-guidance-20261007/static-omission-evidence",
+      "path": "docs/evidence/awareness-guidance-static-omission-readback-2026-10-07.json",
+      "sealId": "dff92f17526cdd0f865e11d604f155a7eec24237f58a21222ec390c3625d463c",
+      "causes": [
+        "3c21eecd043b8b60217a9bef09b3dd9d7a57bdd10bc143bace584e18f046d045",
+        "b98f66956fd4cdcf715e44ebd26c18d43b9ac81bf2f4ed77bb0a7964b87f0e78",
+        "90e466f427cb1a6c1a6161c7ee913c177bff496bc6d363cd3109a585faeb6a95",
+        "352509199d80c1220249893bfa4167f305c6790b2529001ebf8933b354143d8f",
+        "6eb5f3240dfbfcf076911bba3a4ae3c8f0289ea0411368d58e5098fcf5426d91"
+      ]
+    },
+    {
+      "ref": "awareness-guidance-20261007/runtime-readback",
+      "path": "docs/evidence/awareness-guidance-delivery-readback-2026-10-07.json",
+      "sealId": "a02d1c9aad355d589e7708366206c8206caf114f242451cbe286eb9a81b37570",
+      "causes": [
+        "c33efcbab05dc4f71b5051272f6fc00cea60a44b9177427e3700dcf14910f119",
+        "58e65d4179a3c0ff99386543d8bf586daba163d0edac1f53fa055128885bf8fd",
+        "8e733694b5e06c8adaf059c72a3922dfba0c315b3df7e823c3dcca33622d7bea"
+      ]
+    }
+  ]
+}

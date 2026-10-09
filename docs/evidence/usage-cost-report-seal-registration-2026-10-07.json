@@ -1,0 +1,85 @@
+{
+  "review": "docs/evidence/usage-cost-report-cause-review-2026-10-07.json",
+  "entries": [
+    {
+      "key": "design-usage-cost-report",
+      "path": "docs/battle-consciousness-usage-measurement-2026-10-05.md",
+      "parents": [
+        "authority"
+      ],
+      "scope": "Cost read model and explicit versioned prices, nullable usage, partial-known totals, reasoning included in completion. Excludes ledger writing, admission, old discarded trial and paid/live acceptance.",
+      "ref": "all-tests-20261007/design-usage-cost-report",
+      "sha256": "0c79cd4e081e4223c2c96119672119c528eb9a1cf03edbc23eef8789097fd41e",
+      "sealId": "63570cd57908bb7659535e8df9fa841ff17ad7be62debf91f42b1a03cee0cef5",
+      "causeSealIds": [
+        "4a236b55e9ad9e4aa54eb2c6bbe9d77e0a318881ba8328363505153d16e151dd"
+      ]
+    },
+    {
+      "key": "contract-usage-attempt-cost-input",
+      "path": "backend/src/repositories/llm-usage.ts",
+      "parents": [
+        "authority",
+        "design-usage-cost-report"
+      ],
+      "scope": "LlmUsageAttempt schema/type used by cost calculation only: physical identity, provider/model/role and nullable token categories. No persistence or SDK observation conformance claim.",
+      "ref": "all-tests-20261007/contract-usage-attempt-cost-input",
+      "sha256": "7fdcdbb83737f0542eadc580bb53ab12c0efc6b843d0fd7a0c58c87872f4e861",
+      "sealId": "e0982bdae1f29ff816a33a8898953b441887a7c1a0bb777a9bfe11bc9639897e",
+      "causeSealIds": [
+        "4a236b55e9ad9e4aa54eb2c6bbe9d77e0a318881ba8328363505153d16e151dd",
+        "63570cd57908bb7659535e8df9fa841ff17ad7be62debf91f42b1a03cee0cef5"
+      ]
+    },
+    {
+      "key": "implementation-usage-cost-report",
+      "path": "backend/src/services/llm-usage-cost-report.ts",
+      "parents": [
+        "authority",
+        "design-usage-cost-report",
+        "contract-usage-attempt-cost-input"
+      ],
+      "scope": "Pure cost report: explicit validated rates, cached input split, reasoning not added twice, incomplete and impossible calculations exposed, price changes leave observations unchanged.",
+      "ref": "all-tests-20261007/implementation-usage-cost-report",
+      "sha256": "24e9a9671599ae69c6ccf7e2fb617172f555fa369b9b4ae16b9e5d1d2eda22f2",
+      "sealId": "84c87b27c35d1e57f7444e54f100aface3df70ef988e22635b7839edecbe17a0",
+      "causeSealIds": [
+        "4a236b55e9ad9e4aa54eb2c6bbe9d77e0a318881ba8328363505153d16e151dd",
+        "63570cd57908bb7659535e8df9fa841ff17ad7be62debf91f42b1a03cee0cef5",
+        "e0982bdae1f29ff816a33a8898953b441887a7c1a0bb777a9bfe11bc9639897e"
+      ]
+    },
+    {
+      "key": "usage-cost-report",
+      "path": "backend/src/services/llm-usage-cost-report.test.ts",
+      "parents": [
+        "authority",
+        "design-usage-cost-report",
+        "contract-usage-attempt-cost-input",
+        "implementation-usage-cost-report"
+      ],
+      "scope": "Four synthetic local cost-report tests. Covers category split, partial totals, unknown usage/prices, token grouping, impossible cached overlap, repricing and duplicate rate rejection. No invoice or real provider prices.",
+      "ref": "verification/usage-cost-report-20261007",
+      "sha256": "a54ab5683edd7334024b2d629ee1569aa356fcd1823f10744d7bc1accfb8607a",
+      "sealId": "884a10862318c3d096579664974eea5b894537cb1e052b566e7b0a4cbe04d752",
+      "causeSealIds": [
+        "4a236b55e9ad9e4aa54eb2c6bbe9d77e0a318881ba8328363505153d16e151dd",
+        "63570cd57908bb7659535e8df9fa841ff17ad7be62debf91f42b1a03cee0cef5",
+        "e0982bdae1f29ff816a33a8898953b441887a7c1a0bb777a9bfe11bc9639897e",
+        "84c87b27c35d1e57f7444e54f100aface3df70ef988e22635b7839edecbe17a0"
+      ]
+    }
+  ],
+  "diagnostic": {
+    "pass": 4,
+    "fail": 0,
+    "skipped": 0,
+    "strictTypecheckExit": 0
+  },
+  "readback": {
+    "sourceMatches": 4,
+    "stale": 0,
+    "existingHeadsUnchanged": 623,
+    "fsck": "ok"
+  }
+}

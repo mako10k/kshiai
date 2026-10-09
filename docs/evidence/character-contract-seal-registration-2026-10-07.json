@@ -1,0 +1,342 @@
+{
+  "entries": [
+    {
+      "key": "evidence-character-contract-vocabulary",
+      "path": "docs/evidence/character-contract-vocabulary-rca-2026-10-07.think",
+      "parents": [
+        "profile",
+        "conditional"
+      ],
+      "scope": "Audited local test-only membership cast removal; no production vocabulary or historical cause claim.",
+      "ref": "all-tests-20261007/evidence-character-contract-vocabulary",
+      "test": false,
+      "sha256": "fad6d2373c5832ffcb0a54ddbd730789caaef8da2233990f22d9eb55561b2a61",
+      "sealId": "04127d15562e55e6af299a18170310fe998e5f7bf4ded993ecbe16d1835b5fdd",
+      "causeSealIds": [
+        "51b88502ce6cf07710e956c6d10f128b83233b93d97309ce392a37a631be3dba",
+        "df1074f8d520f877ab0f1fb62633520c31da784118e1933cfaa5a1b3d409d577"
+      ]
+    },
+    {
+      "key": "design-character-contract-cohort",
+      "path": "docs/character-contract-test-review-2026-10-07.md",
+      "parents": [
+        "envelope",
+        "profile",
+        "retirement",
+        "intent",
+        "conditional",
+        "evidence-character-contract-vocabulary"
+      ],
+      "scope": "Seven whole files43cases; definition-to-bound-reader local regression only. V2 retained helper/fixture reads, V3 ordinary mutation boundary unchanged. Reader selected fields only, not all semantics.",
+      "ref": "all-tests-20261007/design-character-contract-cohort",
+      "test": false,
+      "sha256": "d1bbbc7c51f765d5b24e737f3aefb0eac218f9fdf051213d1eac7a865b04db6f",
+      "sealId": "5ccd79522b8f46791fa48104ffac5c1bdc0f821ebf3344cd60785ffd51749756",
+      "causeSealIds": [
+        "fdaeaeb9f3694421a8776649f58ec4e89962ae6f95fc3249b8ca4b6a93b6e3ed",
+        "51b88502ce6cf07710e956c6d10f128b83233b93d97309ce392a37a631be3dba",
+        "a1c688a46b255e61a935098665e31e0e6f368cc259b72b0b81d87a4ec1552c3a",
+        "ab8f65b4b5ef87ffa12a3ad16c7c30ae920717ec65c799bfa82524177750f8eb",
+        "df1074f8d520f877ab0f1fb62633520c31da784118e1933cfaa5a1b3d409d577",
+        "04127d15562e55e6af299a18170310fe998e5f7bf4ded993ecbe16d1835b5fdd"
+      ]
+    },
+    {
+      "key": "implementation-character-contract-character",
+      "path": "packages/shared/src/character.ts",
+      "parents": [
+        "design-character-contract-cohort",
+        "oldCharacter"
+      ],
+      "scope": "Only six legacy parse/display, image swap/revision utility, operational snapshot exclusion and patch functions; no ordinary V2 writes or rating equation acceptance.",
+      "ref": "all-tests-20261007/implementation-character-contract-character",
+      "test": false,
+      "sha256": "cfaf17cf30266a55256ccacc5878194d2a70dfe1971fe40b719c44d1b1533d90",
+      "sealId": "cbef9de20b431a38f89505c9d0f1f194fe9b63d0d1f9aa5e45d9156c36221fe3",
+      "causeSealIds": [
+        "5ccd79522b8f46791fa48104ffac5c1bdc0f821ebf3344cd60785ffd51749756",
+        "0a644f4030dfc8699a17a56cc993e2b18443acd89adebf26a227ea4106ae9574"
+      ]
+    },
+    {
+      "key": "implementation-character-contract-vocabulary",
+      "path": "packages/shared/src/character-norm-clause-v2.ts",
+      "parents": [
+        "design-character-contract-cohort"
+      ],
+      "scope": "Registered observed-event versus speech reactTo constants/validator prompt as queried by three schema cases; not all rule semantics.",
+      "ref": "all-tests-20261007/implementation-character-contract-vocabulary",
+      "test": false,
+      "sha256": "2005398c8dcac71108101aeb7f559cba5d402db70f6d2f124751a07fd2c90d7b",
+      "sealId": "376cc3466392373da6b386d46e822ac7a8dc1dd58e8d90fe5873eeca75c36dca",
+      "causeSealIds": [
+        "5ccd79522b8f46791fa48104ffac5c1bdc0f821ebf3344cd60785ffd51749756"
+      ]
+    },
+    {
+      "key": "implementation-character-contract-structured",
+      "path": "packages/shared/src/structured-character.ts",
+      "parents": [
+        "design-character-contract-cohort",
+        "implementation-character-contract-character",
+        "implementation-character-contract-vocabulary",
+        "envelopeSchema"
+      ],
+      "scope": "Pure selected V2 schema/compiler/projections/claim validator/gap conversion; not live authoring or model claim truth.",
+      "ref": "all-tests-20261007/implementation-character-contract-structured",
+      "test": false,
+      "sha256": "b505129a97ad24c44285f6779e0be2736433a8560e66a312a4ddbc62f874aa42",
+      "sealId": "dc6c837f6d1c590196e829ca59119ace316499c4110e96f830b2bb8c903b5fa8",
+      "causeSealIds": [
+        "5ccd79522b8f46791fa48104ffac5c1bdc0f821ebf3344cd60785ffd51749756",
+        "cbef9de20b431a38f89505c9d0f1f194fe9b63d0d1f9aa5e45d9156c36221fe3",
+        "376cc3466392373da6b386d46e822ac7a8dc1dd58e8d90fe5873eeca75c36dca",
+        "5a84c8424772e34504daf62f2737bb29646a8762a07c26db984696686be56e3c"
+      ]
+    },
+    {
+      "key": "implementation-character-contract-rules",
+      "path": "packages/shared/src/character-definition-rules.ts",
+      "parents": [
+        "design-character-contract-cohort",
+        "implementation-character-contract-structured",
+        "implementation-character-contract-vocabulary"
+      ],
+      "scope": "Ten structured predicate/action/relationship local cases including explicit legacy defer and deterministic selectors; not all normative matrix or live V2 authoring.",
+      "ref": "all-tests-20261007/implementation-character-contract-rules",
+      "test": false,
+      "sha256": "617df09b099755e6c086c8bfbbe8bd3e8864ee14b6336c9c397c5fad602774d2",
+      "sealId": "4e52ae21a6e36bb0e4c74a39b4a51bf9593ee467398fb71c7a5cdd066429afc9",
+      "causeSealIds": [
+        "5ccd79522b8f46791fa48104ffac5c1bdc0f821ebf3344cd60785ffd51749756",
+        "dc6c837f6d1c590196e829ca59119ace316499c4110e96f830b2bb8c903b5fa8",
+        "376cc3466392373da6b386d46e822ac7a8dc1dd58e8d90fe5873eeca75c36dca"
+      ]
+    },
+    {
+      "key": "implementation-character-contract-check",
+      "path": "packages/shared/src/character-definition-check.ts",
+      "parents": [
+        "design-character-contract-cohort",
+        "implementation-character-contract-rules",
+        "implementation-character-contract-structured"
+      ],
+      "scope": "Six gap/fill normalization and restore-authority helper cases; no actual upgrade activation/provider acceptance.",
+      "ref": "all-tests-20261007/implementation-character-contract-check",
+      "test": false,
+      "sha256": "b98e79dd80c096b5194625943133d7ccc4784667332105875fe4331baa0c936f",
+      "sealId": "d19cdafcda2ec9a65e0f23e41e6bd42c905ec6bef86f5b65ee0b9e44365e052c",
+      "causeSealIds": [
+        "5ccd79522b8f46791fa48104ffac5c1bdc0f821ebf3344cd60785ffd51749756",
+        "4e52ae21a6e36bb0e4c74a39b4a51bf9593ee467398fb71c7a5cdd066429afc9",
+        "dc6c837f6d1c590196e829ca59119ace316499c4110e96f830b2bb8c903b5fa8"
+      ]
+    },
+    {
+      "key": "implementation-character-contract-manifestation",
+      "path": "packages/shared/src/character-manifestation.ts",
+      "parents": [
+        "design-character-contract-cohort",
+        "oldManifestation",
+        "battle"
+      ],
+      "scope": "Three observer-grounding/carrier-expression commit/swap helper cases only; no whole pipeline wiring.",
+      "ref": "all-tests-20261007/implementation-character-contract-manifestation",
+      "test": false,
+      "sha256": "c2d8bdbe5b9ed78f87e8b04ee1d287e0590e905e871a4156237c6c7218234bab",
+      "sealId": "25369f07668eb66d119f5c1171118d10ded87e61f446f3849205851fcd89a290",
+      "causeSealIds": [
+        "5ccd79522b8f46791fa48104ffac5c1bdc0f821ebf3344cd60785ffd51749756",
+        "16be9b8a43befa369a76887d79cffa96b9d953994bb1f917056fe279b26401af",
+        "fd2692da29f2deaf81b6567e5499276f95ece18dfd67f0a669fd1a2077292209"
+      ]
+    },
+    {
+      "key": "implementation-character-contract-battle-binding",
+      "path": "packages/shared/src/battle.ts",
+      "parents": [
+        "design-character-contract-cohort",
+        "battle",
+        "implementation-character-contract-character"
+      ],
+      "scope": "Required basicAttack and V1 legacy-default provenance/V2 generation matching; not new legacy battle authoring or production migration.",
+      "ref": "all-tests-20261007/implementation-character-contract-battle-binding",
+      "test": false,
+      "sha256": "fc5d492df5fd5252b66e12017b265a4697cc3f798acc2811434b3c33d23b0752",
+      "sealId": "1cfe34d09cd50a541ad9f2d6c15ed977f1614987b2c70dadc8096ced4b9fc8ee",
+      "causeSealIds": [
+        "5ccd79522b8f46791fa48104ffac5c1bdc0f821ebf3344cd60785ffd51749756",
+        "fd2692da29f2deaf81b6567e5499276f95ece18dfd67f0a669fd1a2077292209",
+        "cbef9de20b431a38f89505c9d0f1f194fe9b63d0d1f9aa5e45d9156c36221fe3"
+      ]
+    },
+    {
+      "key": "fixture-character-contract-import",
+      "path": "backend/src/services/character-authoring-service.ts",
+      "parents": [
+        "design-character-contract-cohort",
+        "oldAuthoring",
+        "envelopeSchema"
+      ],
+      "scope": "Only buildImportedCharacterEnvelopeV2 pure synthesis for local reader fixture; no actual provider/activation/writes or old authoring reinstatement.",
+      "ref": "all-tests-20261007/fixture-character-contract-import",
+      "test": false,
+      "sha256": "6b5cc4aa7cfb26064de0439883da515d0172cf95cc4a631ab9709db8577cdfd0",
+      "sealId": "06ee97e7eab1a6aac60ec88d8f9de3abd0488a2331e5bca654aff9937eab38f6",
+      "causeSealIds": [
+        "5ccd79522b8f46791fa48104ffac5c1bdc0f821ebf3344cd60785ffd51749756",
+        "fe98078e33db80587a9694804807184024b6fe2f27f281eb74f92c8353e6e998",
+        "5a84c8424772e34504daf62f2737bb29646a8762a07c26db984696686be56e3c"
+      ]
+    },
+    {
+      "key": "implementation-character-contract-reader",
+      "path": "backend/src/repositories/character-generation-reader.ts",
+      "parents": [
+        "design-character-contract-cohort",
+        "v3",
+        "storage",
+        "fixture-character-contract-import",
+        "implementation-character-contract-structured",
+        "implementation-character-contract-character"
+      ],
+      "scope": "readCharacterGeneration selected V2/V3 return fields/storage-envelope mismatch/content digest rejection, not DB load or all semantic preservation.",
+      "ref": "all-tests-20261007/implementation-character-contract-reader",
+      "test": false,
+      "sha256": "fc9a928238f3f6446b1aedb03c81d48da57f4c1d3cc6f1178c0802318a6f8bfb",
+      "sealId": "a5131fda394922d8d6fa8be20b56395ed29f75aea8ec47d9a467dc824f6d0f54",
+      "causeSealIds": [
+        "5ccd79522b8f46791fa48104ffac5c1bdc0f821ebf3344cd60785ffd51749756",
+        "256c436664b69e1d7ddcc50f818d90173bbaf402b3b9bd322dd96c3d150771db",
+        "edd5470e342cb4a99acba56c04e5cc6fcbd0f25dd04ebb26045b3b35c908db21",
+        "06ee97e7eab1a6aac60ec88d8f9de3abd0488a2331e5bca654aff9937eab38f6",
+        "dc6c837f6d1c590196e829ca59119ace316499c4110e96f830b2bb8c903b5fa8",
+        "cbef9de20b431a38f89505c9d0f1f194fe9b63d0d1f9aa5e45d9156c36221fe3"
+      ]
+    },
+    {
+      "key": "character-definition-check-bounded-character-contract",
+      "path": "packages/shared/src/character-definition-check.test.ts",
+      "parents": [
+        "implementation-character-contract-check"
+      ],
+      "scope": "Whole original 6 cases preserved. Bounded pure/local schema/helper/read compatibility regression; no live acceptance or ordinary V2 authoring.",
+      "ref": "verification/character-definition-check-bounded-character-contract-20261007",
+      "test": true,
+      "sha256": "d1e000a7622d35ac68516f2d0ebc592ed05728576b6f604323ecc8cdbfe7cf63",
+      "sealId": "dda0106ae33970ab0bdd0fe796fce20a24b29e96ab7fd184a3cc694af406d7c8",
+      "causeSealIds": [
+        "d19cdafcda2ec9a65e0f23e41e6bd42c905ec6bef86f5b65ee0b9e44365e052c"
+      ]
+    },
+    {
+      "key": "character-definition-rules-bounded-character-contract",
+      "path": "packages/shared/src/character-definition-rules.test.ts",
+      "parents": [
+        "implementation-character-contract-rules"
+      ],
+      "scope": "Whole original 10 cases preserved. Bounded pure/local schema/helper/read compatibility regression; no live acceptance or ordinary V2 authoring.",
+      "ref": "verification/character-definition-rules-bounded-character-contract-20261007",
+      "test": true,
+      "sha256": "c8c3099b821e394a5c6f9de4a719c16d1ec8e00b8f99923bb92614896a4bc8c1",
+      "sealId": "679bce7aadf5980abdfefe1324b5c8d4bd5d961a120f90085da349785c1d6ef9",
+      "causeSealIds": [
+        "4e52ae21a6e36bb0e4c74a39b4a51bf9593ee467398fb71c7a5cdd066429afc9"
+      ]
+    },
+    {
+      "key": "structured-character-bounded-character-contract",
+      "path": "packages/shared/src/structured-character.test.ts",
+      "parents": [
+        "implementation-character-contract-structured",
+        "implementation-character-contract-vocabulary"
+      ],
+      "scope": "Whole original 12 cases preserved. Bounded pure/local schema/helper/read compatibility regression; no live acceptance or ordinary V2 authoring.",
+      "ref": "verification/structured-character-bounded-character-contract-20261007",
+      "test": true,
+      "sha256": "3d808ffb317e460a6c009fc508b304f8967e1506b62d879f8efac5adbff505c6",
+      "sealId": "5d3e7b9d8530f3ba01a78f25ae224d5a5151663633ff01a33ad37be083584534",
+      "causeSealIds": [
+        "dc6c837f6d1c590196e829ca59119ace316499c4110e96f830b2bb8c903b5fa8",
+        "376cc3466392373da6b386d46e822ac7a8dc1dd58e8d90fe5873eeca75c36dca"
+      ]
+    },
+    {
+      "key": "character-bounded-character-contract",
+      "path": "packages/shared/src/character.test.ts",
+      "parents": [
+        "implementation-character-contract-character"
+      ],
+      "scope": "Whole original 6 cases preserved. Bounded pure/local schema/helper/read compatibility regression; no live acceptance or ordinary V2 authoring.",
+      "ref": "verification/character-bounded-character-contract-20261007",
+      "test": true,
+      "sha256": "f9aa19089a7637382fe1a880de27ccfa6f56eb435375a8cac2d2e191396a4e2d",
+      "sealId": "b7d6a956e9db0e444d17d54748fff2ff43eea6740157e912c016520a42d23ac6",
+      "causeSealIds": [
+        "cbef9de20b431a38f89505c9d0f1f194fe9b63d0d1f9aa5e45d9156c36221fe3"
+      ]
+    },
+    {
+      "key": "character-manifestation-bounded-character-contract",
+      "path": "packages/shared/src/character-manifestation.test.ts",
+      "parents": [
+        "implementation-character-contract-manifestation"
+      ],
+      "scope": "Whole original 3 cases preserved. Bounded pure/local schema/helper/read compatibility regression; no live acceptance or ordinary V2 authoring.",
+      "ref": "verification/character-manifestation-bounded-character-contract-20261007",
+      "test": true,
+      "sha256": "6fd22f2478176d4890b7b9afb9d11098ed476758daae69b3c541875a3e59c6ca",
+      "sealId": "876097eba731aa019bd69b2d48f46733c85746df31891b096a71d1f76bcc022f",
+      "causeSealIds": [
+        "25369f07668eb66d119f5c1171118d10ded87e61f446f3849205851fcd89a290"
+      ]
+    },
+    {
+      "key": "battle-asset-manifest-bounded-character-contract",
+      "path": "packages/shared/src/battle-asset-manifest.test.ts",
+      "parents": [
+        "implementation-character-contract-battle-binding"
+      ],
+      "scope": "Whole original 3 cases preserved. Bounded pure/local schema/helper/read compatibility regression; no live acceptance or ordinary V2 authoring.",
+      "ref": "verification/battle-asset-manifest-bounded-character-contract-20261007",
+      "test": true,
+      "sha256": "bb4e60750c8ec18c662e69c98fae2d38f721af33b797cb6b57f4b38f6b6314ae",
+      "sealId": "7a239f09a9cef64998df7969c7e32b35ac0f1505c8fea7f686ad68b58ebabc5c",
+      "causeSealIds": [
+        "1cfe34d09cd50a541ad9f2d6c15ed977f1614987b2c70dadc8096ced4b9fc8ee"
+      ]
+    },
+    {
+      "key": "character-generation-reader-bounded-character-contract",
+      "path": "backend/src/repositories/character-generation-reader.test.ts",
+      "parents": [
+        "implementation-character-contract-reader",
+        "fixture-character-contract-import"
+      ],
+      "scope": "Whole original 3 cases preserved. Bounded pure/local schema/helper/read compatibility regression; no live acceptance or ordinary V2 authoring.",
+      "ref": "verification/character-generation-reader-bounded-character-contract-20261007",
+      "test": true,
+      "sha256": "3e9a3f665b5f6a7d3aede38cb43a73a9246ec859279e87ba427df5eb46ab0371",
+      "sealId": "2ca174b89c55b02c82ba1b93494f2f5660ca1b7546c01e0500dbfcda8b44e8ab",
+      "causeSealIds": [
+        "a5131fda394922d8d6fa8be20b56395ed29f75aea8ec47d9a467dc824f6d0f54",
+        "06ee97e7eab1a6aac60ec88d8f9de3abd0488a2331e5bca654aff9937eab38f6"
+      ]
+    }
+  ],
+  "diagnostic": {
+    "focusedPass": 43,
+    "fail": 0,
+    "skipped": 0,
+    "strictTypecheckExit": 0,
+    "workspaceTypecheckExit": 0
+  },
+  "limitations": [
+    "All original43cases and six untouched files preserved; one equivalent negative membership query only",
+    "Pure/local schemas, deterministic helpers and synthetic versioned reader, not DB lifecycle/model/public acceptance",
+    "Reader scope is selected compared fields and rejection paths, not all semantic preservation",
+    "V2 helper/test imports do not reopen ordinary V2 writes; Owner decision gates unchanged",
+    "251 whole files retained and unsealed stop preserved"
+  ]
+}

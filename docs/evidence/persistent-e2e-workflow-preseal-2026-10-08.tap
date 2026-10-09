@@ -1,0 +1,59 @@
+TAP version 13
+# Subtest: persistent E2E workflow contract
+    # Subtest: binds the administrator in Stage and verifies it before Promote
+    ok 1 - binds the administrator in Stage and verifies it before Promote
+      ---
+      duration_ms: 1.235355
+      type: 'test'
+      ...
+    # Subtest: freezes the selected pacing policy into Stage and verifies it before Promote
+    ok 2 - freezes the selected pacing policy into Stage and verifies it before Promote
+      ---
+      duration_ms: 0.418878
+      type: 'test'
+      ...
+    # Subtest: binds isolated dialogue overrides to Stage and rejects them at Promote
+    ok 3 - binds isolated dialogue overrides to Stage and rejects them at Promote
+      ---
+      duration_ms: 0.303745
+      type: 'test'
+      ...
+    # Subtest: runs the observer only against a confirmed immutable production revision
+    ok 4 - runs the observer only against a confirmed immutable production revision
+      ---
+      duration_ms: 0.528961
+      type: 'test'
+      ...
+    # Subtest: requires exact Compact battle evidence before production promotion
+    ok 5 - requires exact Compact battle evidence before production promotion
+      ---
+      duration_ms: 0.516537
+      type: 'test'
+      ...
+    # Subtest: proves narration and authoring queue OIDC delivery against the staged revision
+    ok 6 - proves narration and authoring queue OIDC delivery against the staged revision
+      ---
+      duration_ms: 0.598874
+      type: 'test'
+      ...
+    # Subtest: keeps the paid A3 smoke opt-in and records the B8 read proof
+    ok 7 - keeps the paid A3 smoke opt-in and records the B8 read proof
+      ---
+      duration_ms: 0.392655
+      type: 'test'
+      ...
+    1..7
+ok 1 - persistent E2E workflow contract
+  ---
+  duration_ms: 5.267654
+  type: 'suite'
+  ...
+1..1
+# tests 7
+# suites 1
+# pass 7
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 238.869615

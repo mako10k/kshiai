@@ -1,0 +1,5 @@
+# SealGraphテスト準備の契約照合
+
+Accepted0058は0034の根拠・履歴保持条件を継承する。既存config/objects/refsがある場合だけ、破棄可能なindex/cache/logs/locks/tmpをmkdirする。所有者の全テスト封印作業に必要な既存正準データの保持であり、空repoのbootstrapではない。
+
+独立レビュー /root/llm_boundary_seal_audit は元の2ケース全体とhelperを確認しINSIDE矛盾なし。証跡はdocs/evidence/test-gates-independent-review-2026-10-07.json。テストは2回の呼出とconfig内容保持、5dir存在、config欠落時throwと.sealgraph未作成を確認。objects全内容の同一性やfsckをこのテスト単独の保証としない。helperは既存正準要素をstatしてmkdirするだけで、write/delete/seal更新をしない。全251filesの範囲を維持する。

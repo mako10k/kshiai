@@ -1,0 +1,345 @@
+TAP version 13
+# Subtest: versioned character generation reader
+    # Subtest: reads historical V2 and new V3 without changing either meaning
+    ok 1 - reads historical V2 and new V3 without changing either meaning
+      ---
+      duration_ms: 122.340179
+      type: 'test'
+      ...
+    # Subtest: rejects mixed storage and envelope versions
+    ok 2 - rejects mixed storage and envelope versions
+      ---
+      duration_ms: 41.883973
+      type: 'test'
+      ...
+    # Subtest: rejects content identity drift
+    ok 3 - rejects content identity drift
+      ---
+      duration_ms: 58.484033
+      type: 'test'
+      ...
+    1..3
+ok 1 - versioned character generation reader
+  ---
+  duration_ms: 227.900271
+  type: 'suite'
+  ...
+# Subtest: battle character asset bindings
+    # Subtest: rejects missing basicAttack at the current battle boundary
+    ok 1 - rejects missing basicAttack at the current battle boundary
+      ---
+      duration_ms: 7.975757
+      type: 'test'
+      ...
+    # Subtest: labels a version-one compatibility default with its source generation
+    ok 2 - labels a version-one compatibility default with its source generation
+      ---
+      duration_ms: 5.004949
+      type: 'test'
+      ...
+    # Subtest: requires the basic-action receipt to match the bound generation
+    ok 3 - requires the basic-action receipt to match the bound generation
+      ---
+      duration_ms: 4.67808
+      type: 'test'
+      ...
+    1..3
+ok 2 - battle character asset bindings
+  ---
+  duration_ms: 21.195405
+  type: 'suite'
+  ...
+# Subtest: character definition upgrade checks
+    # Subtest: lists empty structured sections on a legacy conversion
+    ok 1 - lists empty structured sections on a legacy conversion
+      ---
+      duration_ms: 23.863856
+      type: 'test'
+      ...
+    # Subtest: fills only upgrade gaps and drops exact character targets
+    ok 2 - fills only upgrade gaps and drops exact character targets
+      ---
+      duration_ms: 4.768341
+      type: 'test'
+      ...
+    # Subtest: restores combat and identity when an upgrade candidate drifts
+    ok 3 - restores combat and identity when an upgrade candidate drifts
+      ---
+      duration_ms: 7.366394
+      type: 'test'
+      ...
+    # Subtest: normalizes a review fill without changing preserved mechanics
+    ok 4 - normalizes a review fill without changing preserved mechanics
+      ---
+      duration_ms: 33.50383
+      type: 'test'
+      ...
+    # Subtest: accepts a natural string-description fill the JSON schema can emit
+    ok 5 - accepts a natural string-description fill the JSON schema can emit
+      ---
+      duration_ms: 8.337108
+      type: 'test'
+      ...
+    # Subtest: rejects an incomplete action norm instead of inventing its mechanics
+    ok 6 - rejects an incomplete action norm instead of inventing its mechanics
+      ---
+      duration_ms: 5.694706
+      type: 'test'
+      ...
+    1..6
+ok 3 - character definition upgrade checks
+  ---
+  duration_ms: 86.952015
+  type: 'suite'
+  ...
+# Subtest: CharacterDefinitionV2 deterministic rule compilers
+    # Subtest: rejects an unstructured legacy principle instead of inventing mechanics
+    ok 1 - rejects an unstructured legacy principle instead of inventing mechanics
+      ---
+      duration_ms: 9.827286
+      type: 'test'
+      ...
+    # Subtest: defers legacy principles only through the explicit structured-generation preparation
+    ok 2 - defers legacy principles only through the explicit structured-generation preparation
+      ---
+      duration_ms: 17.320233
+      type: 'test'
+      ...
+    # Subtest: reads a persisted V2 norm but rejects compiling it without selectors
+    ok 3 - reads a persisted V2 norm but rejects compiling it without selectors
+      ---
+      duration_ms: 8.957017
+      type: 'test'
+      ...
+    # Subtest: rejects statically contradictory equal-rank constraints
+    ok 4 - rejects statically contradictory equal-rank constraints
+      ---
+      duration_ms: 13.322118
+      type: 'test'
+      ...
+    # Subtest: records a conflicting constraint and selects the highest legal declared fallback
+    ok 5 - records a conflicting constraint and selects the highest legal declared fallback
+      ---
+      duration_ms: 20.62658
+      type: 'test'
+      ...
+    # Subtest: never invents an illegal fallback and uses the legal wait action
+    ok 6 - never invents an illegal fallback and uses the legal wait action
+      ---
+      duration_ms: 9.461018
+      type: 'test'
+      ...
+    # Subtest: orders soft norms by force, priority, specificity, and stable ID
+    ok 7 - orders soft norms by force, priority, specificity, and stable ID
+      ---
+      duration_ms: 6.99127
+      type: 'test'
+      ...
+    # Subtest: rejects unknown predicate values and records applicable exceptions
+    ok 8 - rejects unknown predicate values and records applicable exceptions
+      ---
+      duration_ms: 13.329626
+      type: 'test'
+      ...
+    # Subtest: resolves exact logical targets before roles, then priority and stable ID
+    ok 9 - resolves exact logical targets before roles, then priority and stable ID
+      ---
+      duration_ms: 37.586582
+      type: 'test'
+      ...
+    # Subtest: preserves the same rule outcome under an A/B swap
+    ok 10 - preserves the same rule outcome under an A/B swap
+      ---
+      duration_ms: 20.55441
+      type: 'test'
+      ...
+    1..10
+ok 4 - CharacterDefinitionV2 deterministic rule compilers
+  ---
+  duration_ms: 164.884512
+  type: 'suite'
+  ...
+# Subtest: structured character manifestation boundary
+    # Subtest: drops a private proposal that is not grounded in the observer packet
+    ok 1 - drops a private proposal that is not grounded in the observer packet
+      ---
+      duration_ms: 12.415929
+      type: 'test'
+      ...
+    # Subtest: keeps a proposal invisible until a carrier expression commits
+    ok 2 - keeps a proposal invisible until a carrier expression commits
+      ---
+      duration_ms: 6.775591
+      type: 'test'
+      ...
+    # Subtest: preserves structure when A and B are swapped
+    ok 3 - preserves structure when A and B are swapped
+      ---
+      duration_ms: 1.276335
+      type: 'test'
+      ...
+    1..3
+ok 5 - structured character manifestation boundary
+  ---
+  duration_ms: 24.30035
+  type: 'suite'
+  ...
+# Subtest: coalesceNonEmptyList
+    # Subtest: keeps current when patch is empty, null, or undefined
+    ok 1 - keeps current when patch is empty, null, or undefined
+      ---
+      duration_ms: 9.693813
+      type: 'test'
+      ...
+    # Subtest: uses a non-empty patch
+    ok 2 - uses a non-empty patch
+      ---
+      duration_ms: 0.346118
+      type: 'test'
+      ...
+    1..2
+ok 6 - coalesceNonEmptyList
+  ---
+  duration_ms: 14.981215
+  type: 'suite'
+  ...
+# Subtest: portrait toggle
+    # Subtest: swaps current and previous image urls
+    ok 1 - swaps current and previous image urls
+      ---
+      duration_ms: 30.207036
+      type: 'test'
+      ...
+    1..1
+ok 7 - portrait toggle
+  ---
+  duration_ms: 44.885264
+  type: 'suite'
+  ...
+# Subtest: revision snapshot restore
+    # Subtest: restores mutable fields and clears the undo buffer
+    ok 1 - restores mutable fields and clears the undo buffer
+      ---
+      duration_ms: 21.958486
+      type: 'test'
+      ...
+    1..1
+ok 8 - revision snapshot restore
+  ---
+  duration_ms: 22.950207
+  type: 'suite'
+  ...
+# Subtest: character combat extensions
+    # Subtest: excludes mutable owner and record state from battle snapshots
+    ok 1 - excludes mutable owner and record state from battle snapshots
+      ---
+      duration_ms: 33.53124
+      type: 'test'
+      ...
+    # Subtest: keeps legacy character JSON compatible and supplies a public default attack
+    ok 2 - keeps legacy character JSON compatible and supplies a public default attack
+      ---
+      duration_ms: 5.107313
+      type: 'test'
+      ...
+    1..2
+ok 9 - character combat extensions
+  ---
+  duration_ms: 40.576012
+  type: 'suite'
+  ...
+# Subtest: CharacterDefinitionV2 projections
+    # Subtest: requires an authored basic action in every modern definition
+    ok 1 - requires an authored basic action in every modern definition
+      ---
+      duration_ms: 27.229264
+      type: 'test'
+      ...
+    # Subtest: keeps restricted dynamics out of public and private descriptive projections
+    ok 2 - keeps restricted dynamics out of public and private descriptive projections
+      ---
+      duration_ms: 26.243665
+      type: 'test'
+      ...
+    # Subtest: applies self-awareness independently from profile publication
+    ok 3 - applies self-awareness independently from profile publication
+      ---
+      duration_ms: 6.549496
+      type: 'test'
+      ...
+    # Subtest: compiles distinct external, self-inner, and omniscient narrator views
+    ok 4 - compiles distinct external, self-inner, and omniscient narrator views
+      ---
+      duration_ms: 18.692579
+      type: 'test'
+      ...
+    # Subtest: builds an appearance-only image brief
+    ok 5 - builds an appearance-only image brief
+      ---
+      duration_ms: 8.534177
+      type: 'test'
+      ...
+    # Subtest: reveals an exact relationship only to its authorized learned target
+    ok 6 - reveals an exact relationship only to its authorized learned target
+      ---
+      duration_ms: 6.673875
+      type: 'test'
+      ...
+    # Subtest: rejects dangling references and duplicate stable IDs
+    ok 7 - rejects dangling references and duplicate stable IDs
+      ---
+      duration_ms: 10.158718
+      type: 'test'
+      ...
+    # Subtest: fails closed when the independent validator rejects a material claim
+    ok 8 - fails closed when the independent validator rejects a material claim
+      ---
+      duration_ms: 16.633837
+      type: 'test'
+      ...
+    # Subtest: stores a complete claim receipt only for allowed support references
+    ok 9 - stores a complete claim receipt only for allowed support references
+      ---
+      duration_ms: 18.248525
+      type: 'test'
+      ...
+    1..9
+ok 10 - CharacterDefinitionV2 projections
+  ---
+  duration_ms: 145.67628
+  type: 'suite'
+  ...
+# Subtest: CharacterNormClauseV2 registered vocabularies
+    # Subtest: rejects speech reactTo values as observed_event_kind
+    ok 1 - rejects speech reactTo values as observed_event_kind
+      ---
+      duration_ms: 1.316904
+      type: 'test'
+      ...
+    # Subtest: accepts utterance as the addressed-event kind
+    ok 2 - accepts utterance as the addressed-event kind
+      ---
+      duration_ms: 0.639754
+      type: 'test'
+      ...
+    # Subtest: keeps speech reactTo distinct from observed event kinds
+    ok 3 - keeps speech reactTo distinct from observed event kinds
+      ---
+      duration_ms: 0.535184
+      type: 'test'
+      ...
+    1..3
+ok 11 - CharacterNormClauseV2 registered vocabularies
+  ---
+  duration_ms: 3.405089
+  type: 'suite'
+  ...
+1..11
+# tests 43
+# suites 11
+# pass 43
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 2532.80782
