@@ -1,0 +1,161 @@
+[
+  {
+    "ref": "all-tests-20261008/current-source-closure/all-tests-20261007/implementation-canonical-narration-expression-commit",
+    "path": "backend/src/services/awareness-expression-commit.ts",
+    "sealId": "96dc9dec0ae16e12fa23264890eb456b11087d1b460a9cae45ddc15a544fd182",
+    "previousHead": "ac990fdaaafb264f950ae0ccbe3c7bf62fde65884078f6f5986e8cb3ea086fb1",
+    "sourceSha256": "c9001043fec20777d263c966f723232e0cb5c282263c7166630b9b177399eaa6",
+    "exactCausesReadBack": true,
+    "causeLinks": [
+      {
+        "target_seal": "126d34cef3d0bfcdc8a5e42930bd3f00f46483256cde684b0b62ffa6d2c284a9",
+        "previous_revision_seal_of_target_seal": [
+          "3b787ba784dcb9b2594f7d2dc82b8eb5b5a019c59711a0f3fb121e84a8fc19f8",
+          "a6bf11b8b7f44ce01470acc41b8b93ac2f8aa84b08c9461ea2016e6795dbc912"
+        ],
+        "messages": [
+          "Current-source closure 2026-10-08: original scoped observations/limits are retained as history; current source and all affected original cases are revalidated. This link does not adopt production pacing, new STA numbers, live/deploy or paid work.",
+          "Selected voices physically admitted to canonical utterances and observer frames/record; five pure cases, not all service wiring."
+        ]
+      },
+      {
+        "target_seal": "198135d364442b19afab2c1728bd1e313dda3d9854b1c47852931d1540f28e7c",
+        "previous_revision_seal_of_target_seal": [
+          "0bdac62e7b0fe13e7a3fa5c78268242aede0de8fc853882e6c2b1552eddc1b10",
+          "f6cd3f76e5e1fd9e559e33dc09754baadd630a8bfb8de5387ba73f6aa8f7276c"
+        ],
+        "messages": [
+          "Current-source closure 2026-10-08: original scoped observations/limits are retained as history; current source and all affected original cases are revalidated. This link does not adopt production pacing, new STA numbers, live/deploy or paid work.",
+          "Selected voices physically admitted to canonical utterances and observer frames/record; five pure cases, not all service wiring."
+        ]
+      },
+      {
+        "target_seal": "c92c2029d4a9f03e7f6dd4b4206e9f980c0bd697003795fcca68252cca0b9341",
+        "previous_revision_seal_of_target_seal": [
+          "6a27811e1eb660c9de4c5c7f4a1adf9f8561c4af42d15847c3e0f2f622787c1b"
+        ],
+        "messages": [
+          "Current-source closure 2026-10-08: original scoped observations/limits are retained as history; current source and all affected original cases are revalidated. This link does not adopt production pacing, new STA numbers, live/deploy or paid work.",
+          "Selected voices physically admitted to canonical utterances and observer frames/record; five pure cases, not all service wiring."
+        ]
+      },
+      {
+        "target_seal": "e3f93325f9df72ada899fddf2a87017a57a3b8e4963c1ca537f68a857554e18c",
+        "previous_revision_seal_of_target_seal": [],
+        "messages": [
+          "ADR0062 requires current bodily effort and known consequences through perception to both awareness roles. The speech replacement projects current state, preserves legacy absent-policy behavior and does not change canonical costs or add model calls."
+        ]
+      },
+      {
+        "target_seal": "eed3979998bd79dce983e77c637571d4088d71223e502b4f4be231737978a1d6",
+        "previous_revision_seal_of_target_seal": [],
+        "messages": [
+          "ADR0062 requires current bodily effort and known consequences through perception to both awareness roles. The speech replacement projects current state, preserves legacy absent-policy behavior and does not change canonical costs or add model calls."
+        ]
+      },
+      {
+        "target_seal": "f32a6e8815e72a3186332393e8182c1fe1f096b30fc5cf3e9715593fafebaaba",
+        "previous_revision_seal_of_target_seal": [],
+        "messages": [
+          "Current-source closure 2026-10-08: original scoped observations/limits are retained as history; current source and all affected original cases are revalidated. This link does not adopt production pacing, new STA numbers, live/deploy or paid work.",
+          "Selected voices physically admitted to canonical utterances and observer frames/record; five pure cases, not all service wiring."
+        ]
+      }
+    ],
+    "elapsedSeconds": 43.0
+  },
+  {
+    "ref": "all-tests-20261008/current-source-closure/verification/awareness-expression-commit-bounded-current-20261007",
+    "path": "backend/src/services/awareness-expression-commit.test.ts",
+    "sealId": "f32541ace67464eb09dfb72850bcd3cbb6cf996dd19f4a5fa6810c3711142d5c",
+    "previousHead": "e5b1244df657098048e397f306aa6c5afdc358d6995c7d0f8b39f3f6213a3a3c",
+    "sourceSha256": "0d608e17db614eadd392d888901a1e0a88e24e3c237ae5cb1f9cc45d3d7e37ec",
+    "exactCausesReadBack": true,
+    "causeLinks": [
+      {
+        "target_seal": "829ee39a0cf9c5e54ec0772f8582b4f7bc09dcdf16c8c6ce666c724cbed5e591",
+        "previous_revision_seal_of_target_seal": [
+          "6ac6f7936f62bf30134d2c26620c335f7b71357945f0713f35f4635a70754a31"
+        ],
+        "messages": [
+          "Current-source closure 2026-10-08: original scoped observations/limits are retained as history; current source and all affected original cases are revalidated. This link does not adopt production pacing, new STA numbers, live/deploy or paid work.",
+          "Whole unchanged5cases selected voice physical/sensory evidence/private exclusion and tick identity; pure helper only."
+        ]
+      },
+      {
+        "target_seal": "96dc9dec0ae16e12fa23264890eb456b11087d1b460a9cae45ddc15a544fd182",
+        "previous_revision_seal_of_target_seal": [
+          "151d8b04970f49a91d895edf577bfc34fae41dfd48995c196df8694011f6decf",
+          "a7ebc3885929116751d1ca8b004bdefb37438a01bef62e5641d69c0bdf6a34ec",
+          "ac990fdaaafb264f950ae0ccbe3c7bf62fde65884078f6f5986e8cb3ea086fb1"
+        ],
+        "messages": [
+          "Current-source closure 2026-10-08: original scoped observations/limits are retained as history; current source and all affected original cases are revalidated. This link does not adopt production pacing, new STA numbers, live/deploy or paid work.",
+          "Reviewed original five speech cases against the corrected frame replacement; expectations and bytes unchanged. Extra self-effort projection is additive and legacy policy-less fixtures remain policy-less.",
+          "Whole unchanged5cases selected voice physical/sensory evidence/private exclusion and tick identity; pure helper only."
+        ]
+      }
+    ],
+    "elapsedSeconds": 64.508
+  },
+  {
+    "ref": "all-tests-20261009/current-source-closure/awareness-guidance-20261007/verification-context",
+    "path": "backend/src/services/awareness-context.test.ts",
+    "sealId": "a16ca2ff5cec100995d7fcaf9412b6248c9611c8bc06212fce18aef66ca442d4",
+    "previousHead": "111100c343ff94031479198d568ab34f291277d08995439a313b599c19ac2878",
+    "sourceSha256": "9769666b31680374da42cd3bec4846ad959936d4ce2d22e63a8eb0c9dfde0920",
+    "exactCausesReadBack": true,
+    "causeLinks": [
+      {
+        "target_seal": "0e1231a8ff6a1df28e090d11c571e892759b5f847a5aa1d5f7296bca8fe5d8e4",
+        "previous_revision_seal_of_target_seal": [],
+        "messages": [
+          "Required current typed producer for this source path. Retain the original bounded claim alongside explicitly accepted current contracts; no unrelated behavior or deployment result certified."
+        ]
+      },
+      {
+        "target_seal": "3c21eecd043b8b60217a9bef09b3dd9d7a57bdd10bc143bace584e18f046d045",
+        "previous_revision_seal_of_target_seal": [],
+        "messages": [
+          "Current-source closure 2026-10-09: retain original scoped observations as history; revalidate current source and original cases. New effort/equipment rules are authorized only through explicit ADR0062/0063 branches; this link certifies no live quality, formal test result, CI or deployment.",
+          "Reviewed guidance delivery dependency; scoped registration only"
+        ]
+      },
+      {
+        "target_seal": "474d2d4458679df6cb71e6e8f049a3f051192620c36f9e3f9b18799d1bda5317",
+        "previous_revision_seal_of_target_seal": [],
+        "messages": [
+          "Current-source closure 2026-10-09: retain original scoped observations as history; revalidate current source and original cases. New effort/equipment rules are authorized only through explicit ADR0062/0063 branches; this link certifies no live quality, formal test result, CI or deployment.",
+          "Reviewed guidance delivery dependency; scoped registration only"
+        ]
+      },
+      {
+        "target_seal": "4bcda8c336122eecdc17b8d0c6c8076e2f6f7fd5f6287e14b927de0d4bef5efb",
+        "previous_revision_seal_of_target_seal": [
+          "352509199d80c1220249893bfa4167f305c6790b2529001ebf8933b354143d8f"
+        ],
+        "messages": [
+          "Current-source closure 2026-10-09: retain original scoped observations as history; revalidate current source and original cases. New effort/equipment rules are authorized only through explicit ADR0062/0063 branches; this link certifies no live quality, formal test result, CI or deployment.",
+          "Reviewed guidance delivery dependency; scoped registration only"
+        ]
+      },
+      {
+        "target_seal": "96dc9dec0ae16e12fa23264890eb456b11087d1b460a9cae45ddc15a544fd182",
+        "previous_revision_seal_of_target_seal": [
+          "ac990fdaaafb264f950ae0ccbe3c7bf62fde65884078f6f5986e8cb3ea086fb1"
+        ],
+        "messages": [
+          "Original seven context cases retained plus regression: prologue utterance replacement must recompute current effort for both sides, then deliver it to actual immutable awareness context. Before repair fails exact Stage reason; after repair passes. Diagnostic success is not formal or paid Stage acceptance."
+        ]
+      },
+      {
+        "target_seal": "eed3979998bd79dce983e77c637571d4088d71223e502b4f4be231737978a1d6",
+        "previous_revision_seal_of_target_seal": [],
+        "messages": [
+          "Current bodily self projection is the expected value in the two-side regression, with stale prior fatigue deliberately replaced. No opponent numerical resources are exposed."
+        ]
+      }
+    ],
+    "elapsedSeconds": 120.631
+  }
+]

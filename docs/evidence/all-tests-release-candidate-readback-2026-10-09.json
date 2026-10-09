@@ -1,6 +1,6 @@
 {
   "schema": "kshiai/ci-release-candidate-readback/v1",
-  "observedAt": "2026-10-09T07:15:08.443496+00:00",
+  "observedAt": "2026-10-09T09:12:48.808151+00:00",
   "pr": 172,
   "branchHead": "fc54a385aca20dc96487478cac328e8a5c08b4df",
   "branchCiRun": 37895501276,
@@ -11,12 +11,20 @@
   "formalExecutionReceiptSeal": "4335ddd900d57976bf554c7b799d776f22b0c020aac4be00734737b6efcc7f1f",
   "releaseTagCandidate": "v0.23.0-rc.18",
   "mainCiPassed": true,
-  "stageDispatched": false,
-  "paidStageAuthorization": "pending",
-  "gcloudIndependentReadback": "reauthentication_required",
+  "stageDispatched": true,
+  "paidStageAuthorization": "one_approved_run_exhausted_no_retry",
+  "gcloudIndependentReadback": "verified_after_stage_failure",
   "mainCiRun": 37896554555,
   "releaseTag": "v0.23.0-rc.18",
   "releaseTagObject": "c360cdeda44ee1708a891b822540f69d6ba751ae",
   "tagRemoteReadback": true,
-  "publicPromoted": false
+  "publicPromoted": false,
+  "stageRun": 37901860044,
+  "stageConclusion": "failure",
+  "nextCandidate": "v0.23.0-rc.19",
+  "nextCandidateTagCreated": false,
+  "repairCiPending": true,
+  "previousObservedAt": "2026-10-09T07:15:08.443496+00:00",
+  "repairedFormalReceiptSeal": "9489aee70c43f8ab677ab54189553124685103816b0f22b8cdbcb712ac542dfa",
+  "repairedFormalAllTestsPassed": true
 }

@@ -5,6 +5,19 @@ based on Keep a Changelog, and releases follow Semantic Versioning.
 
 ## [Unreleased]
 
+## [0.23.0-rc.19] - 2026-10-09
+
+This release candidate uses application package version 0.23.0.
+
+### Fixed
+
+- Recompute each character's current effort perception when physically admitted
+  speech replaces their observer frame. The next awareness context receives
+  fatigue and penalty cues; legacy battles without an effort policy retain their
+  recorded behavior. This adds no LLM calls and changes no stamina costs.
+- Add a regression through prologue speech, both observer frames and the actual
+  immutable awareness context, preserving all original test files and cases.
+
 ## [0.23.0-rc.18] - 2026-10-09
 
 This release candidate uses application package version 0.23.0.

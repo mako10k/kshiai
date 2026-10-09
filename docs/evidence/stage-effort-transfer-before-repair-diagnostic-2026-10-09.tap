@@ -1,0 +1,34 @@
+▶ awareness immutable context projection
+  ✖ delivers current bodily effort to both awareness contexts after admitted prologue speech (126.253897ms)
+  ✔ requires the current bodily effort projection for a newly bound policy (57.275595ms)
+  ✔ includes hidden latent traits and background while conscious context uses only its aware compiler (38.229718ms)
+  ✔ rejects missing or unevaluated guidance instead of treating it as no applicable principle (25.09777ms)
+  ✔ rejects mismatched asset, generation, digest, and missing immutable compiler (92.948126ms)
+  ✔ rejects a perception frame belonging to the other observer (14.288836ms)
+  ✔ makes stimuli only from changed current percepts and does not synthesize missing or removed history (17.026167ms)
+  ✔ preserves a full valid V3 description without rejecting it on the smaller emotion bound (15.872231ms)
+✖ awareness immutable context projection (389.723955ms)
+ℹ tests 8
+ℹ suites 1
+ℹ pass 7
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1422.292622
+
+✖ failing tests:
+
+test at backend/src/services/awareness-context.test.ts:1:4124
+✖ delivers current bodily effort to both awareness contexts after admitted prologue speech (126.253897ms)
+  Error: AWARENESS_EFFORT_PERCEPTION_REQUIRED
+      at requireObserverPerception (/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/awareness-context.ts:16:71)
+      at buildAwarenessExecutionContext (/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/awareness-context.ts:39:22)
+      at TestContext.<anonymous> (/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/backend/src/services/awareness-context.test.ts:77:23)
+      at Test.runInAsyncScope (node:async_hooks:213:14)
+      at Test.run (node:internal/test_runner/test:1106:25)
+      at Test.start (node:internal/test_runner/test:1003:17)
+      at node:internal/test_runner/test:1516:71
+      at node:internal/per_context/primordials:466:82
+      at new Promise (<anonymous>)
+      at new SafePromise (node:internal/per_context/primordials:435:3)

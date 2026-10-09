@@ -1,0 +1,172 @@
+[
+  {
+    "id": "d37f8274-645a-453d-8ac2-945452db1983",
+    "source": "wrangler",
+    "strategy": "percentage",
+    "author_email": "mako10k@mk10.org",
+    "annotations": {
+      "workers/message": "Automatic rollback after failed v0.22.0-rc.10 smoke",
+      "workers/triggered_by": "deployment"
+    },
+    "versions": [
+      {
+        "version_id": "7c522815-34e5-4371-b0ef-d68d30d4ef5d",
+        "percentage": 100
+      }
+    ],
+    "created_on": "2026-09-08T06:42:52.494146Z"
+  },
+  {
+    "id": "b37cdee3-9ffe-4237-a502-15a9848aa0cb",
+    "source": "wrangler",
+    "strategy": "percentage",
+    "author_email": "mako10k@mk10.org",
+    "annotations": {
+      "workers/message": "Promote v0.22.0-rc.11",
+      "workers/triggered_by": "deployment"
+    },
+    "versions": [
+      {
+        "version_id": "5942f1cb-fd54-43c7-95df-51ae380df862",
+        "percentage": 100
+      }
+    ],
+    "created_on": "2026-09-08T08:00:48.447741Z"
+  },
+  {
+    "id": "a588e455-a9ec-4de4-b07c-33b0967e82b0",
+    "source": "wrangler",
+    "strategy": "percentage",
+    "author_email": "mako10k@mk10.org",
+    "annotations": {
+      "workers/message": "",
+      "workers/triggered_by": "deployment"
+    },
+    "versions": [
+      {
+        "version_id": "84fcfed4-05a9-404e-b836-e2eebeb584d3",
+        "percentage": 100
+      }
+    ],
+    "created_on": "2026-10-02T11:02:45.292517Z"
+  },
+  {
+    "id": "a3921757-5d1a-41eb-b467-b9ebdae3c84e",
+    "source": "wrangler",
+    "strategy": "percentage",
+    "author_email": "mako10k@mk10.org",
+    "annotations": {
+      "workers/message": "Deploy verified action contract repair 98f4c4f",
+      "workers/triggered_by": "deployment"
+    },
+    "versions": [
+      {
+        "version_id": "46c49e30-a740-40b9-ac4e-c46ab15d8ede",
+        "percentage": 100
+      }
+    ],
+    "created_on": "2026-10-02T15:37:42.783698Z"
+  },
+  {
+    "id": "396161c9-7e9b-4648-9a68-9ee875ac1365",
+    "source": "wrangler",
+    "strategy": "percentage",
+    "author_email": "mako10k@mk10.org",
+    "annotations": {
+      "workers/message": "Deploy verified dynamic conscious output contracts 702f9ac",
+      "workers/triggered_by": "deployment"
+    },
+    "versions": [
+      {
+        "version_id": "846622a8-af95-4d33-909f-5e238e9a36dd",
+        "percentage": 100
+      }
+    ],
+    "created_on": "2026-10-03T06:21:35.89293Z"
+  },
+  {
+    "id": "089896b2-442c-4273-8615-2a2d4e55fc8c",
+    "source": "wrangler",
+    "strategy": "percentage",
+    "author_email": "mako10k@mk10.org",
+    "annotations": {
+      "workers/message": "Deploy verified V3 profile guidance projection c341bfd",
+      "workers/triggered_by": "deployment"
+    },
+    "versions": [
+      {
+        "version_id": "40f39b55-0661-4114-88bc-97faa4baeb13",
+        "percentage": 100
+      }
+    ],
+    "created_on": "2026-10-03T07:46:53.056056Z"
+  },
+  {
+    "id": "fb269345-7091-4d2d-8787-e85a6879ed13",
+    "source": "wrangler",
+    "strategy": "percentage",
+    "author_email": "mako10k@mk10.org",
+    "annotations": {
+      "workers/message": "Deploy verified V3 portraits and speech guidance 5726fc4",
+      "workers/triggered_by": "deployment"
+    },
+    "versions": [
+      {
+        "version_id": "8bfd14fe-4bc1-4c81-a139-9387d123ea12",
+        "percentage": 100
+      }
+    ],
+    "created_on": "2026-10-03T08:36:33.446874Z"
+  },
+  {
+    "id": "643b03bb-fd4f-4610-bc4e-9af805af7ebe",
+    "source": "wrangler",
+    "strategy": "percentage",
+    "author_email": "mako10k@mk10.org",
+    "annotations": {
+      "workers/message": "Remove speech fade and strengthen conversational continuity",
+      "workers/triggered_by": "deployment"
+    },
+    "versions": [
+      {
+        "version_id": "48e290c4-fca2-4132-9428-bec0ff216163",
+        "percentage": 100
+      }
+    ],
+    "created_on": "2026-10-03T11:07:16.542893Z"
+  },
+  {
+    "id": "084dc02e-2a3b-4854-b177-79c9c890f500",
+    "source": "wrangler",
+    "strategy": "percentage",
+    "author_email": "mako10k@mk10.org",
+    "annotations": {
+      "workers/message": "Promote v0.23.0-rc.16",
+      "workers/triggered_by": "deployment"
+    },
+    "versions": [
+      {
+        "version_id": "bfc7338f-041f-4787-97a5-bc03cd6b76f5",
+        "percentage": 100
+      }
+    ],
+    "created_on": "2026-10-06T07:47:51.359513Z"
+  },
+  {
+    "id": "9a0c79e7-2422-498c-a237-2aecf3b1771f",
+    "source": "wrangler",
+    "strategy": "percentage",
+    "author_email": "mako10k@mk10.org",
+    "annotations": {
+      "workers/message": "Promote v0.23.0-rc.17",
+      "workers/triggered_by": "deployment"
+    },
+    "versions": [
+      {
+        "version_id": "4a34e357-c390-4ec1-9429-5b0452ce2fbc",
+        "percentage": 100
+      }
+    ],
+    "created_on": "2026-10-06T08:51:06.882702Z"
+  }
+]

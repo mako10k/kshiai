@@ -2,7 +2,7 @@
 project KSHIAI_ALL_TEST_SEAL_DELIVERY:
   version 5
   title "全原試験の因果封印・正式合格・CI成功と配備"
-  description "Canonical plan for the user goal: causally seal and formally pass all original tests, full CI success, then deployment. Preserve historic SealGraph/PERT scopes; no paid trial is included. 2026-10-09 estimate 8-14 internal hours low confidence; velocity not yet measured."
+  description "Canonical user goal: causally seal and formally pass all original 251 test files, exact-SHA four-check CI success, standard staging and production deployment with independent readback. Owner authorized one paid Stage battle on 2026-10-09: at most 200 physical LLM calls and 38 advances, no extra character-create smoke, actual token accounting with unknown monetary cost and no monetary hard guard. No paid retry after failure or unknown result. Preserve historical scopes and all original cases."
   duration_unit point
   finish DEPLOYED
   goal_owner user
@@ -53,7 +53,7 @@ task ci FORMAL_PASSED -> CI_PASSED:
 
 task deploy CI_PASSED -> DEPLOYED:
   title "既存公開環境へ配備しrevisionとhealth照合"
-  description "User goal 2026-10-09. Original 251 files and cases retained. Diagnostic checks do not replace formal acceptance. Points are provisional difficulty, not observed hours."
+  description "Existing public deployment goal remains active. Stage run37901860044 failed at initial utterance perception replacement with AWARENESS_EFFORT_PERCEPTION_REQUIRED. Repair missing self-effort transfer under accepted ADR0062, retain original251 cases, reseal current causes and repeat formal tests/CI before a new immutable release candidate. The approved one paid Stage is exhausted: no paid retry or public promotion until separately authorized. Historical completed test and CI receipts remain evidence for their original source snapshots, not repaired source."
   duration 2p
   status active
 

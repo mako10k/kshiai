@@ -1,0 +1,17 @@
+{
+  "metadata": {
+    "labels": {
+      "cloud.googleapis.com/location": "asia-northeast1",
+      "run.googleapis.com/startupProbeType": "Default",
+      "serving.knative.dev/configuration": "kshiai-api",
+      "serving.knative.dev/configurationGeneration": "108",
+      "serving.knative.dev/route": "kshiai-api",
+      "serving.knative.dev/service": "kshiai-api",
+      "serving.knative.dev/serviceUid": "3bcca184-a1cf-4805-9f07-53b9139dc1f1"
+    },
+    "name": "kshiai-api-00185-tik"
+  },
+  "status": {
+    "imageDigest": "asia-northeast1-docker.pkg.dev/kshiai/kshiai/backend@sha256:afce6cf3378b9d39b98a2056fb5f2e2465eb223f69fe3b51657e94be763299b9"
+  }
+}

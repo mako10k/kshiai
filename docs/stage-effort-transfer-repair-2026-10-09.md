@@ -1,0 +1,27 @@
+# 発声後の身体負担情報の受け渡し修正 — 2026-10-09
+
+## 根拠と範囲
+
+所有者の全原試験・CI・公開配備目標の継続修正。Accepted ADR0062 Decisionの「事前の疲労・予想消耗・危険と事後の理由・結果は当人の知覚へ渡す」が実装根拠。新しい数値・移行・モデル呼び出し・試験除外は導入しない。Stage製品候補v0.23.0-rc.18は失敗した履歴として保持し、タグを動かさない。有料Stage再実行は未許可。
+
+## 設計と実装
+
+正準状態からの身体負担投影は既存sharedのprojectBattleActionEffortが所有する。発声の確定と知覚の更新を所有するcommitAwarenessExpressionsは、知覚を置換するたびに現在のstateから各当人の投影を計算し、projectObserverPerceptionへ明示的に渡す。古い知覚の値をコピーしない。
+
+発声処理のprojection入力にはactionEffortを必須フィールドとする型制約を付ける。値nullはポリシー未束縛の旧状態を表す既存意味。意識contextにおける「ポリシーがあるのに知覚に情報がない」停止条件は保持する。汎用知覚projectionの旧caller契約を変える必要はない。
+
+## 検出が遅れた境界
+
+汎用projectObserverPerceptionのactionEffortは旧／直接callerのためoptionalだが、ポリシー束縛済みの戦闘では必須。そのため発声callerの省略は型チェックを通り、次の意識contextの実行時チェックまで残った。旧expression5ケースは発声の物理成立・知覚・秘密除去・イベントIDを確認し、旧contextの負担ケースは知覚へ値を手で追加して受領を確認していた。発声で置換した知覚を次の実contextへ渡す接続ケースはなかった。追加回帰はこの接続を直接通し、callerの入力型は必須フィールドの省略をコンパイル時に拒否する。汎用型の旧caller意味は維持する。
+
+## 検証
+
+元251ファイルと元ケースは保持する。awareness-contextの原7ケースに、序幕発声を確定→両側の知覚を生成→実際のimmutable awareness contextを構築する回帰1ケースを追加。前の知覚へ古い疲労を入れ、現在のSTA0から再生成される感覚を両者で確認する。
+
+修正前診断は同じAWARENESS_EFFORT_PERCEPTION_REQUIREDで1ケース失敗。修正後診断はcontext8＋expression5＝13件合格、skip0。全体型チェック合格。これらは原因・修正の診断証拠であり、正式全試験・CI・公開完了の代わりにしない。
+
+## 作業単位と未達
+
+修正実装1REF、同実装を参照する不変の原5ケース1REF、追加回帰を含むcontext1REFだけを個別レビューし、旧Causeメッセージ・previous revision・不変の元REFを保持して新HEADを作る。関係のない392ノードの再公開はしない。各新Sealのsource／全Cause／previous／messagesをCLIでreadbackし、他HEAD保持とfsck、全251の正式実行を別に確認する。
+
+欠落除去の純粋経路検証と、有料Stageの実際の完走を分ける。E2EのBATTLE_FINISHEDによる元停止理由の見えにくさは既存ログ・DB照合で確認済みだが、今回は新しい診断仕様を導入しない。新候補のStage再実行承認・公開配備・独立runtime照合が未達。

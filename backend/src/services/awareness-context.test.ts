@@ -12,6 +12,7 @@ import { assetContentDigest } from "../repositories/asset-generations.js";
 import { buildImportedCharacterEnvelopeV2 } from "./character-authoring-service.js";
 import { buildAwarenessExecutionContext } from "./awareness-context.js";
 import { validAwarenessBattleFixture } from "./awareness-test-fixture.js";
+import { commitAwarenessExpressions } from "./awareness-expression-commit.js";
 
 function envelopeV3(sheet: CharacterSheet) {
   const source = buildImportedCharacterEnvelopeV2({ sheet, attemptId: `awareness-context-${sheet.id}` });
@@ -49,6 +50,40 @@ function project(input: ReturnType<typeof fixture>) {
 }
 
 describe("awareness immutable context projection", () => {
+  it("delivers current bodily effort to both awareness contexts after admitted prologue speech", () => {
+    const input = fixture();
+    for (const side of ["a", "b"] as const) {
+      const actor = side === "a" ? input.state.sideA : input.state.sideB;
+      actor.actionEffortPolicy = CurrentActionEffortPolicyV1;
+      actor.parameters.stamina = 0;
+      const frame = side === "a" ? input.state.perceptionFrameA : input.state.perceptionFrameB;
+      assert.ok(frame);
+      // A previous value must be recomputed from current bodily facts, not carried forward.
+      const effort = projectBattleActionEffort(input.state, side);
+      assert.ok(effort);
+      frame.actionEffort = { ...effort, fatigue: "古い感覚" };
+    }
+    const committed = commitAwarenessExpressions({ before: input.state, after: input.state, tick: 0,
+      voices: { a: { id: "prologue-voice", source: "conscious", strength: 0.8,
+        startTick: 0, validUntilTick: 2, resource: "voice", speech: "正面から来い。" }, b: null },
+      events: [{ type: "situation", summary: "向き合っている。" }], actions: [] });
+    for (const side of ["a", "b"] as const) {
+      const manifest = committed.state.assetManifest;
+      assert.ok(manifest?.schemaVersion === 5);
+      const binding = manifest.characters[side];
+      const content = side === "a" ? input.content : envelopeV3(binding.snapshot);
+      binding.contentDigest = assetContentDigest(content);
+      const generation: AssetGeneration = { assetType: "character", assetId: binding.assetId,
+        generation: 1, generationId: binding.generationId, schemaVersion: 3, content,
+        contentDigest: binding.contentDigest, createdAt: manifest.boundAt };
+      const context = buildAwarenessExecutionContext({ state: committed.state, side, generation,
+        availableActions: [], consciousGuidance: { kind: "none" }, receivedSpeech: side === "b",
+        intentCompleted: false, intentInvalid: false });
+      assert.deepEqual(context.actionEffort, projectBattleActionEffort(committed.state, side));
+      assert.deepEqual(context.perception.actionEffort, context.actionEffort);
+      assert.equal(context.actionEffort?.fatigue, "力が入らない");
+    }
+  });
   it("requires the current bodily effort projection for a newly bound policy", () => {
     const input = fixture();
     input.state.sideA.actionEffortPolicy = CurrentActionEffortPolicyV1;

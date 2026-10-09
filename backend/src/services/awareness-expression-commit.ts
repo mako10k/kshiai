@@ -1,9 +1,10 @@
 // R: Commit selected awareness voices through physical speech and observer perception rules.
 import {
   buildCommittedUtteranceEvents, buildUtterancePerceptionEvidence, projectObserverPerception,
-  buildServerOnlyReserveCues, buildBattleTurnRecord,
+  buildServerOnlyReserveCues, buildBattleTurnRecord, projectBattleActionEffort,
   type AwarenessDesire, type BattleState, type TurnEvent, type ResolvedBattleAction,
   type PerceptionEvidence, type QuantizedMechanicalEvidence, type CommittedMechanicalEvidence,
+  type ObserverPerceptionProjectionInput,
 } from "@kshiai/shared";
 import type { CharacterSpeechSource } from "../llm/types.js";
 
@@ -35,6 +36,7 @@ export function commitAwarenessExpressions(input: {
     const semanticState = state.semanticState;
     const project = (side: "a" | "b") => projectObserverPerception({
       observerSide: side, turn: state.turn, semanticState, worldState: state.worldState,
+      actionEffort: projectBattleActionEffort(state, side),
       events, sensoryEvidence: [...(input.sensoryEvidence ?? []), ...evidence],
       quantizedMechanicalEvidence: [...(input.quantizedMechanicalEvidence ?? [])],
       priorityEvidenceIds: evidence.map((item) => item.evidenceId),
@@ -44,7 +46,8 @@ export function commitAwarenessExpressions(input: {
       previousFrame: side === "a" ? state.perceptionFrameA : state.perceptionFrameB,
       previousRegistry: side === "a" ? state.perceptionRegistryA : state.perceptionRegistryB,
       legacyCounterpartIdentified: false,
-    });
+      // Speech replaces the whole frame; current bodily effort is a required transfer.
+    } satisfies ObserverPerceptionProjectionInput & { actionEffort: ReturnType<typeof projectBattleActionEffort> });
     const a = project("a"); const b = project("b");
     state = { ...state, perceptionFrameA: a.frame, perceptionFrameB: b.frame,
       perceptionRegistryA: a.registry, perceptionRegistryB: b.registry };
