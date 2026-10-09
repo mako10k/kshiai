@@ -5,6 +5,48 @@ based on Keep a Changelog, and releases follow Semantic Versioning.
 
 ## [Unreleased]
 
+## [0.23.0-rc.18] - 2026-10-09
+
+This release candidate uses application package version 0.23.0.
+
+### Changed
+
+- New battles replace skill cooldowns with stamina costs: repeated uses of the
+  same basic attack, skill, or reflection add 2 STA on attempts 2–3 and 4 STA
+  thereafter. Existing battles retain their recorded policy.
+- Free-action adjudication can apply bounded extra effort, one-attack defense
+  exposure, or partial/nonexecution. Expected effort and actual consequences
+  reach perception and both consciousness roles without additional LLM calls.
+- Unknown visibility is private. Friend access follows the owner's viewer list,
+  and historical ratings display the snapshot recorded at that time.
+- HTTP 429 switches to the alternate provider for one hour. Character creation
+  and revision use the accepted complete-profile review policy; improvement
+  analysis retains the owner-only manual 5-match / additional 10-match rule.
+
+### Fixed
+
+- Preserve all four equipment effects when adding a server-generated stamina
+  tradeoff. The optional balanceTradeoff field reaches battle compilation and
+  cannot be supplied by character-generation output.
+- Require missing consciousness guidance at typed producer/consumer boundaries.
+  Unsealed tests stop formal execution; all original 247 unit files and four
+  E2E files have current-source causal seals and verified execution evidence.
+- Refactor image, authoring and battle modules to satisfy the existing static
+  checks; update sharp to 0.35.5 and its locked dependencies.
+
+### Operations
+
+- Apply forward-only migration 0036_character_complete_review_call_budget.sql.
+  It admits requests 9–10 only under character_complete_review_policy_v2;
+  historical policies retain their eight-request limit and existing token/cost
+  limits. Application rollback does not downgrade this migration.
+- Deploy through the standard tagged Stage/Promote workflow, preserving the
+  backend digest and Worker version between environments. A staged real-provider
+  battle needs separate count/cost authorization; actual tokens are recorded,
+  and observed accounting does not enforce a monetary ceiling.
+- This is candidate metadata. CI, staging acceptance and public deployment must
+  be recorded separately before claiming release completion.
+
 ## [0.23.0] - 2026-09-30
 
 ### Awareness pipeline
