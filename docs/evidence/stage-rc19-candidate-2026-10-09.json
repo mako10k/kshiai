@@ -1,0 +1,31 @@
+{
+  "schema": "kshiai.stage-candidate.v1",
+  "tag": "v0.23.0-rc.19",
+  "tagObject": "5cc41d8ad1fa22f44841ca3ff02233a1b5e31b51",
+  "sourceSha": "64d33efd9e64650491a6df2f9165fa1807811c85",
+  "mainCiRun": 37911506954,
+  "mainCiConclusion": "success",
+  "formalUnitFiles": 247,
+  "formalE2eFiles": 4,
+  "paidExecutionAuthorized": true,
+  "priorApprovalExhausted": true,
+  "maximumBattles": 1,
+  "maximumPhysicalLlmCalls": 200,
+  "maximumAdvances": 38,
+  "characterCreateSmoke": false,
+  "monetaryHardGuard": false,
+  "costKnown": false,
+  "paidRetryAuthorized": false,
+  "priorFailedBattle": {
+    "id": "btl_111779337b677728cd3a14aede6a84f5",
+    "physicalCalls": 6,
+    "providerTotalTokens": 31214,
+    "reason": "AWARENESS_EFFORT_PERCEPTION_REQUIRED"
+  },
+  "workflow": ".github/workflows/stage-release.yml",
+  "publicPromotionBeforeStageSuccess": false,
+  "authorization": "Owner approved one additional run for this exact candidate",
+  "stageRunId": 37912860756,
+  "stageRunUrl": "https://github.com/mako10k/kshiai/actions/runs/37912860756",
+  "dispatchedAt": "2026-10-09T09:41:10Z"
+}

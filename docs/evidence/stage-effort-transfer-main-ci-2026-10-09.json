@@ -1,0 +1,447 @@
+{
+  "conclusion": "success",
+  "headSha": "64d33efd9e64650491a6df2f9165fa1807811c85",
+  "jobs": [
+    {
+      "completedAt": "2026-10-09T09:35:56Z",
+      "conclusion": "success",
+      "databaseId": 113757508158,
+      "name": "validate",
+      "startedAt": "2026-10-09T09:28:38Z",
+      "status": "completed",
+      "steps": [
+        {
+          "completedAt": "2026-10-09T09:28:41Z",
+          "conclusion": "success",
+          "name": "Set up job",
+          "number": 1,
+          "startedAt": "2026-10-09T09:28:39Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-09T09:28:55Z",
+          "conclusion": "success",
+          "name": "Initialize containers",
+          "number": 2,
+          "startedAt": "2026-10-09T09:28:41Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-09T09:28:59Z",
+          "conclusion": "success",
+          "name": "Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+          "number": 3,
+          "startedAt": "2026-10-09T09:28:55Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-09T09:29:00Z",
+          "conclusion": "success",
+          "name": "Run actions/setup-node@820762786026740c76f36085b0efc47a31fe5020",
+          "number": 4,
+          "startedAt": "2026-10-09T09:28:59Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-09T09:29:00Z",
+          "conclusion": "success",
+          "name": "Run actions/setup-python@83679a892e2d95755f2dac6acb0bfd1e9ac5d548",
+          "number": 5,
+          "startedAt": "2026-10-09T09:29:00Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-09T09:29:01Z",
+          "conclusion": "success",
+          "name": "Run actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e",
+          "number": 6,
+          "startedAt": "2026-10-09T09:29:00Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-09T09:29:08Z",
+          "conclusion": "success",
+          "name": "Install SealGraph",
+          "number": 7,
+          "startedAt": "2026-10-09T09:29:01Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-09T09:29:10Z",
+          "conclusion": "success",
+          "name": "Prepare test authority runtime",
+          "number": 8,
+          "startedAt": "2026-10-09T09:29:08Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-09T09:29:17Z",
+          "conclusion": "success",
+          "name": "Run npm ci",
+          "number": 9,
+          "startedAt": "2026-10-09T09:29:10Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-09T09:29:18Z",
+          "conclusion": "success",
+          "name": "Run python3 -m pip install --disable-pip-version-check --requirement requirements-static.txt",
+          "number": 10,
+          "startedAt": "2026-10-09T09:29:17Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-09T09:29:50Z",
+          "conclusion": "success",
+          "name": "Run npm run build",
+          "number": 11,
+          "startedAt": "2026-10-09T09:29:18Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-09T09:30:19Z",
+          "conclusion": "success",
+          "name": "Run npm run lint",
+          "number": 12,
+          "startedAt": "2026-10-09T09:29:50Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-09T09:34:47Z",
+          "conclusion": "success",
+          "name": "Run npm test",
+          "number": 13,
+          "startedAt": "2026-10-09T09:30:19Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-09T09:35:52Z",
+          "conclusion": "success",
+          "name": "Verify accepted awareness execution and prompt contracts",
+          "number": 14,
+          "startedAt": "2026-10-09T09:34:47Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-09T09:35:52Z",
+          "conclusion": "success",
+          "name": "Verify generated files are clean",
+          "number": 15,
+          "startedAt": "2026-10-09T09:35:52Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-09T09:35:52Z",
+          "conclusion": "success",
+          "name": "Post Run actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e",
+          "number": 26,
+          "startedAt": "2026-10-09T09:35:52Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-09T09:35:52Z",
+          "conclusion": "success",
+          "name": "Post Run actions/setup-python@83679a892e2d95755f2dac6acb0bfd1e9ac5d548",
+          "number": 27,
+          "startedAt": "2026-10-09T09:35:52Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-09T09:35:52Z",
+          "conclusion": "success",
+          "name": "Post Run actions/setup-node@820762786026740c76f36085b0efc47a31fe5020",
+          "number": 28,
+          "startedAt": "2026-10-09T09:35:52Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-09T09:35:52Z",
+          "conclusion": "success",
+          "name": "Post Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+          "number": 29,
+          "startedAt": "2026-10-09T09:35:52Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-09T09:35:53Z",
+          "conclusion": "success",
+          "name": "Stop containers",
+          "number": 30,
+          "startedAt": "2026-10-09T09:35:52Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-09T09:35:53Z",
+          "conclusion": "success",
+          "name": "Complete job",
+          "number": 31,
+          "startedAt": "2026-10-09T09:35:53Z",
+          "status": "completed"
+        }
+      ],
+      "url": "https://github.com/mako10k/kshiai/actions/runs/37911506954/job/113757508158"
+    },
+    {
+      "completedAt": "2026-10-09T09:29:04Z",
+      "conclusion": "success",
+      "databaseId": 113757508401,
+      "name": "security",
+      "startedAt": "2026-10-09T09:28:38Z",
+      "status": "completed",
+      "steps": [
+        {
+          "completedAt": "2026-10-09T09:28:41Z",
+          "conclusion": "success",
+          "name": "Set up job",
+          "number": 1,
+          "startedAt": "2026-10-09T09:28:39Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-09T09:28:44Z",
+          "conclusion": "success",
+          "name": "Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+          "number": 2,
+          "startedAt": "2026-10-09T09:28:41Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-09T09:28:47Z",
+          "conclusion": "success",
+          "name": "Run actions/setup-node@820762786026740c76f36085b0efc47a31fe5020",
+          "number": 3,
+          "startedAt": "2026-10-09T09:28:44Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-09T09:28:48Z",
+          "conclusion": "success",
+          "name": "Check dependency advisories",
+          "number": 4,
+          "startedAt": "2026-10-09T09:28:47Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-09T09:29:01Z",
+          "conclusion": "success",
+          "name": "Scan repository secrets",
+          "number": 5,
+          "startedAt": "2026-10-09T09:28:48Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-09T09:29:01Z",
+          "conclusion": "success",
+          "name": "Post Scan repository secrets",
+          "number": 8,
+          "startedAt": "2026-10-09T09:29:01Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-09T09:29:01Z",
+          "conclusion": "success",
+          "name": "Post Run actions/setup-node@820762786026740c76f36085b0efc47a31fe5020",
+          "number": 9,
+          "startedAt": "2026-10-09T09:29:01Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-09T09:29:01Z",
+          "conclusion": "success",
+          "name": "Post Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+          "number": 10,
+          "startedAt": "2026-10-09T09:29:01Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-09T09:29:01Z",
+          "conclusion": "success",
+          "name": "Complete job",
+          "number": 11,
+          "startedAt": "2026-10-09T09:29:01Z",
+          "status": "completed"
+        }
+      ],
+      "url": "https://github.com/mako10k/kshiai/actions/runs/37911506954/job/113757508401"
+    },
+    {
+      "completedAt": "2026-10-09T09:29:19Z",
+      "conclusion": "success",
+      "databaseId": 113757508494,
+      "name": "worker",
+      "startedAt": "2026-10-09T09:28:38Z",
+      "status": "completed",
+      "steps": [
+        {
+          "completedAt": "2026-10-09T09:28:40Z",
+          "conclusion": "success",
+          "name": "Set up job",
+          "number": 1,
+          "startedAt": "2026-10-09T09:28:39Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-09T09:28:42Z",
+          "conclusion": "success",
+          "name": "Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+          "number": 2,
+          "startedAt": "2026-10-09T09:28:40Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-09T09:28:43Z",
+          "conclusion": "success",
+          "name": "Run actions/setup-node@820762786026740c76f36085b0efc47a31fe5020",
+          "number": 3,
+          "startedAt": "2026-10-09T09:28:42Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-09T09:28:52Z",
+          "conclusion": "success",
+          "name": "Run npm ci",
+          "number": 4,
+          "startedAt": "2026-10-09T09:28:43Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-09T09:28:52Z",
+          "conclusion": "success",
+          "name": "Run npm run test:deployment",
+          "number": 5,
+          "startedAt": "2026-10-09T09:28:52Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-09T09:28:53Z",
+          "conclusion": "success",
+          "name": "Run npm run typecheck:deployment",
+          "number": 6,
+          "startedAt": "2026-10-09T09:28:52Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-09T09:29:17Z",
+          "conclusion": "success",
+          "name": "Run npm run build:worker",
+          "number": 7,
+          "startedAt": "2026-10-09T09:28:53Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-09T09:29:17Z",
+          "conclusion": "success",
+          "name": "Post Run actions/setup-node@820762786026740c76f36085b0efc47a31fe5020",
+          "number": 13,
+          "startedAt": "2026-10-09T09:29:17Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-09T09:29:17Z",
+          "conclusion": "success",
+          "name": "Post Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+          "number": 14,
+          "startedAt": "2026-10-09T09:29:17Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-09T09:29:17Z",
+          "conclusion": "success",
+          "name": "Complete job",
+          "number": 15,
+          "startedAt": "2026-10-09T09:29:17Z",
+          "status": "completed"
+        }
+      ],
+      "url": "https://github.com/mako10k/kshiai/actions/runs/37911506954/job/113757508494"
+    },
+    {
+      "completedAt": "2026-10-09T09:29:53Z",
+      "conclusion": "success",
+      "databaseId": 113757508504,
+      "name": "backend-image",
+      "startedAt": "2026-10-09T09:28:38Z",
+      "status": "completed",
+      "steps": [
+        {
+          "completedAt": "2026-10-09T09:28:40Z",
+          "conclusion": "success",
+          "name": "Set up job",
+          "number": 1,
+          "startedAt": "2026-10-09T09:28:39Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-09T09:28:43Z",
+          "conclusion": "success",
+          "name": "Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+          "number": 2,
+          "startedAt": "2026-10-09T09:28:40Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-09T09:29:36Z",
+          "conclusion": "success",
+          "name": "Build backend image",
+          "number": 3,
+          "startedAt": "2026-10-09T09:28:43Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-09T09:29:37Z",
+          "conclusion": "success",
+          "name": "Import compiled API modules from the runtime image",
+          "number": 4,
+          "startedAt": "2026-10-09T09:29:36Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-09T09:29:51Z",
+          "conclusion": "success",
+          "name": "Scan backend image",
+          "number": 5,
+          "startedAt": "2026-10-09T09:29:37Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-09T09:29:51Z",
+          "conclusion": "success",
+          "name": "Post Scan backend image",
+          "number": 9,
+          "startedAt": "2026-10-09T09:29:51Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-09T09:29:51Z",
+          "conclusion": "success",
+          "name": "Post Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+          "number": 10,
+          "startedAt": "2026-10-09T09:29:51Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-09T09:29:51Z",
+          "conclusion": "success",
+          "name": "Complete job",
+          "number": 11,
+          "startedAt": "2026-10-09T09:29:51Z",
+          "status": "completed"
+        }
+      ],
+      "url": "https://github.com/mako10k/kshiai/actions/runs/37911506954/job/113757508504"
+    }
+  ],
+  "status": "completed",
+  "runId": 37911506954,
+  "url": "https://github.com/mako10k/kshiai/actions/runs/37911506954",
+  "unitTestSummary": {
+    "activeFiles": 247,
+    "tests": 1469,
+    "pass": 1469,
+    "fail": 0,
+    "skipped": 0
+  },
+  "rawLogSha256": "9249e0a6745e3d645c04f13b9f6f9ee735a1bc56cd8180533bdcd2211887b3e3",
+  "compressedLogSha256": "79464303d5a1b76c0526c6895e96cef1e694a5640f9d2d23d74d30c60598e620",
+  "watchExitCode": 0
+}

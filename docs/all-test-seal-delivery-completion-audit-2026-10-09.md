@@ -86,3 +86,9 @@ R3処理は387/392件で実際にexit1となり、現行へ改訂済みのcharac
 失敗後の独立readbackで公開Cloud Runはkshiai-api-00183-wey 100％、Workerは4a34e357-c390-4ec1-9429-5b0452ce2fbc 100％。新stage revision185とWorker dcbe1267は公開へ昇格していない。Stageのforward-only migration実行と候補作成は行われたため、全外部状態不変とは主張しない。公開配信先のみ従来維持。
 
 修正候補は製品リリース候補v0.23.0-rc.19。タグは未作成。正式原全試験→同一SHA CI→次の有料Stageの具体的承認→標準公開配備と独立runtime照合が未達。正本deploy taskをこの経路へ具体化してCLIでcheck/schedule/nextを再検査済み。共有終了予定20:00は維持、stop/endなし。
+
+## 修正候補のmain CI・タグ照合（18:40 JST）
+
+PR173のmainコミット `64d33efd9e64650491a6df2f9165fa1807811c85` はCI run37911506954のvalidate・security・worker・backend-imageがすべて成功。unit247ファイル、1469件成功、失敗・skip0。修正後の正式実行は元のunit247＋E2E4ファイルを維持した。注釈付き `v0.23.0-rc.19` を同コミットへ固定し、リモートtag objectとpeeled commitを照合した。Stageの追加有料実行は未許可・未実行。前回の1回許可は失敗終了で消費済み。次候補は1試合・physical呼出200・advance38・追加キャラ作成なし・料金上限なし・金額不明・有料再試行なし。候補の詳細は `docs/evidence/stage-rc19-candidate-2026-10-09.json`。公開配備完了は未達。
+
+18:41 JST、所有者が上記候補の追加1回を承認。Stage run37912860756を同タグ・同ソースへ一度だけdispatchし、run identityを照合した。開始時点では結果未確定、公開配備は未実行。
