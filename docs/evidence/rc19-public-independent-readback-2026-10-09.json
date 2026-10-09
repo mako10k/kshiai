@@ -1,0 +1,48 @@
+{
+  "observedAt": "2026-10-09T10:00:53.936073+00:00",
+  "sourceSha": "64d33efd9e64650491a6df2f9165fa1807811c85",
+  "releaseTag": "v0.23.0-rc.19",
+  "stageRunId": 37912860756,
+  "promotionRunId": 37914395177,
+  "promotionConclusion": "success",
+  "promotionWatchExitCode": 0,
+  "cloudRunRevision": "kshiai-api-00186-zop",
+  "cloudRunImage": "asia-northeast1-docker.pkg.dev/kshiai/kshiai/backend@sha256:0e4b35dc8d2e3821da8a7b6ae9c0405bd38d7a7bf8342cb3d08f2a38ae9063dd",
+  "cloudRunTraffic": [
+    {
+      "percent": 100,
+      "revisionName": "kshiai-api-00186-zop",
+      "tag": "stage-37912860756-1",
+      "url": "https://stage-37912860756-1---kshiai-api-crpgn6evfa-an.a.run.app"
+    }
+  ],
+  "workerDeployment": {
+    "id": "0d3a5a7f-4151-482e-a97a-352e0e63b878",
+    "source": "wrangler",
+    "strategy": "percentage",
+    "author_email": "mako10k@mk10.org",
+    "annotations": {
+      "workers/message": "Promote v0.23.0-rc.19",
+      "workers/triggered_by": "deployment"
+    },
+    "versions": [
+      {
+        "version_id": "3c4e3d68-c7ed-4c8b-88eb-f22f108eaf24",
+        "percentage": 100
+      }
+    ],
+    "created_on": "2026-10-09T09:58:18.456876Z"
+  },
+  "independentSmokeExitCode": 0,
+  "independentSmoke": "Deployment smoke passed: https://kshiai.mk10.org",
+  "release": {
+    "isPrerelease": true,
+    "publishedAt": "2026-10-09T09:58:53Z",
+    "tagName": "v0.23.0-rc.19",
+    "targetCommitish": "main",
+    "url": "https://github.com/mako10k/kshiai/releases/tag/v0.23.0-rc.19"
+  },
+  "allOriginalTestFiles": 251,
+  "formalExecutionReceipt": "9489aee70c43f8ab677ab54189553124685103816b0f22b8cdbcb712ac542dfa",
+  "goalAchieved": true
+}

@@ -92,3 +92,11 @@ R3処理は387/392件で実際にexit1となり、現行へ改訂済みのcharac
 PR173のmainコミット `64d33efd9e64650491a6df2f9165fa1807811c85` はCI run37911506954のvalidate・security・worker・backend-imageがすべて成功。unit247ファイル、1469件成功、失敗・skip0。修正後の正式実行は元のunit247＋E2E4ファイルを維持した。注釈付き `v0.23.0-rc.19` を同コミットへ固定し、リモートtag objectとpeeled commitを照合した。Stageの追加有料実行は未許可・未実行。前回の1回許可は失敗終了で消費済み。次候補は1試合・physical呼出200・advance38・追加キャラ作成なし・料金上限なし・金額不明・有料再試行なし。候補の詳細は `docs/evidence/stage-rc19-candidate-2026-10-09.json`。公開配備完了は未達。
 
 18:41 JST、所有者が上記候補の追加1回を承認。Stage run37912860756を同タグ・同ソースへ一度だけdispatchし、run identityを照合した。開始時点では結果未確定、公開配備は未実行。
+
+## 追加Stage成功・公開レビュー待ち
+
+Stage run37912860756成功、元の251ファイルの正式合格とmain4 CI成功を維持した同一ソース64d33の候補rc19。試合btl_06c3a5ddc4235bcee96b42b4e11d88ecは30tick、正常finished、実呼出123、outstanding0。入力813735・出力33387・プロバイダー報告合計875033トークン、unknown0。金額は未確定。保存状態で両キャラのactionEffort保持を確認。Stage artifactのcommit・revision・Worker・実行IDを照合し、標準promotion run37914395177を同候補へdispatch。GitHub production所有者レビュー待ち。公開切替・独立readback・PERT deploy完了は未実施。承認後10〜20分を暫定見込みとする。
+
+## 公開配備完了（19:00 JST）
+
+所有者のGitHub production承認後、promotion run37914395177成功。同一候補rc19/source64d33、Cloud Run kshiai-api-00186-zopのdigest0e4b35dc8d2e3821da8a7b6ae9c0405bd38d7a7bf8342cb3d08f2a38ae9063dd、Worker3c4e3d68-c7ed-4c8b-88eb-f22f108eaf24を100%へ切替。独立したservice/revision/Worker readbackと公開smokeが成功。リリース公開も照合。PERT deployを公式CLIのpreview・digest guard・writeで実時刻2026-10-09T10:00:06.064563Zに完了記録、再検査・schedule・nextを実施。全原251ファイルの現在因果封印・正式合格・main4 CI成功・Stage完走・標準公開配備という今回の目的は達成。全歴史refの整理や入力圧縮完了はこの達成には含めない。料金は未確定、実トークンは保存済み。共有worktimectl stop/endは行っていない。
