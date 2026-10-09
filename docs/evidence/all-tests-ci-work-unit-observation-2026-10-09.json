@@ -1,0 +1,17 @@
+{
+  "schema": "kshiai/ci-work-unit-observation/v1",
+  "observedAt": "2026-10-09T07:08:09.694826+00:00",
+  "unit": "one immutable source tree, one CI run, four required checks",
+  "branchCommit": "fc54a385aca20dc96487478cac328e8a5c08b4df",
+  "ciRunId": 37895501276,
+  "elapsedSeconds": 507.0,
+  "jobSeconds": {
+    "backend-image": 66.0,
+    "security": 16.0,
+    "worker": 36.0,
+    "validate": 506.0
+  },
+  "activeEffortHours": null,
+  "deployExtrapolation": "not_applied_different_work_class",
+  "nextCheckpoint": "main exact SHA CI completion"
+}

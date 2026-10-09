@@ -1,0 +1,9 @@
+{
+  "image_summary": {
+    "digest": "sha256:afce6cf3378b9d39b98a2056fb5f2e2465eb223f69fe3b51657e94be763299b9",
+    "fully_qualified_digest": "asia-northeast1-docker.pkg.dev/kshiai/kshiai/backend@sha256:afce6cf3378b9d39b98a2056fb5f2e2465eb223f69fe3b51657e94be763299b9",
+    "registry": "asia-northeast1-docker.pkg.dev",
+    "repository": "kshiai",
+    "slsa_build_level": "unknown"
+  }
+}

@@ -1,0 +1,172 @@
+[
+  {
+    "id": "685b7cf3-afa0-4fee-b324-16fd1e582460",
+    "number": 95,
+    "metadata": {
+      "created_on": "2026-10-06T02:46:40.031029Z",
+      "source": "wrangler",
+      "author_id": "e3bd18ff33da022dc9059e50ab145e01",
+      "author_email": "mako10k@mk10.org",
+      "has_preview": true
+    },
+    "annotations": {
+      "workers/alias": "stage-37405299375-1",
+      "workers/message": "Release v0.23.0-rc.9 from fd9753d3a382ce3b85bfd57990a6619025b0cf45",
+      "workers/tag": "v0.23.0-rc.9",
+      "workers/triggered_by": "version_upload"
+    }
+  },
+  {
+    "id": "306dff60-cc84-493e-8852-c8e84beb5c37",
+    "number": 96,
+    "metadata": {
+      "created_on": "2026-10-06T04:05:44.500211Z",
+      "source": "wrangler",
+      "author_id": "e3bd18ff33da022dc9059e50ab145e01",
+      "author_email": "mako10k@mk10.org",
+      "has_preview": true
+    },
+    "annotations": {
+      "workers/alias": "stage-37411570366-1",
+      "workers/message": "Release v0.23.0-rc.10 from 6e4922976312fc0e846122d59912e6c99bc0d897",
+      "workers/tag": "v0.23.0-rc.10",
+      "workers/triggered_by": "version_upload"
+    }
+  },
+  {
+    "id": "33121963-a6d7-438b-92e9-3a6d19ebd06c",
+    "number": 97,
+    "metadata": {
+      "created_on": "2026-10-06T04:38:34.453838Z",
+      "source": "wrangler",
+      "author_id": "e3bd18ff33da022dc9059e50ab145e01",
+      "author_email": "mako10k@mk10.org",
+      "has_preview": true
+    },
+    "annotations": {
+      "workers/alias": "stage-37414189824-1",
+      "workers/message": "Release v0.23.0-rc.11 from aa3adb0e2841b05230a39b7e1f38f9f3e6667100",
+      "workers/tag": "v0.23.0-rc.11",
+      "workers/triggered_by": "version_upload"
+    }
+  },
+  {
+    "id": "64e55fea-7481-4098-be78-485616beb13b",
+    "number": 98,
+    "metadata": {
+      "created_on": "2026-10-06T05:03:03.695588Z",
+      "source": "wrangler",
+      "author_id": "e3bd18ff33da022dc9059e50ab145e01",
+      "author_email": "mako10k@mk10.org",
+      "has_preview": true
+    },
+    "annotations": {
+      "workers/alias": "stage-37416162174-1",
+      "workers/message": "Release v0.23.0-rc.12 from 5a64e3cb5206e8deb41d311947264a51ddb153dc",
+      "workers/tag": "v0.23.0-rc.12",
+      "workers/triggered_by": "version_upload"
+    }
+  },
+  {
+    "id": "4d0c6912-1bad-4fd2-8837-85c34b05b880",
+    "number": 99,
+    "metadata": {
+      "created_on": "2026-10-06T05:35:46.247416Z",
+      "source": "wrangler",
+      "author_id": "e3bd18ff33da022dc9059e50ab145e01",
+      "author_email": "mako10k@mk10.org",
+      "has_preview": true
+    },
+    "annotations": {
+      "workers/alias": "stage-37418838781-1",
+      "workers/message": "Release v0.23.0-rc.13 from 4f0ad2dc1a049b4ca6b27e26236a37c918a24ebc",
+      "workers/tag": "v0.23.0-rc.13",
+      "workers/triggered_by": "version_upload"
+    }
+  },
+  {
+    "id": "b2cc2e56-5675-4060-b078-db8d92c98114",
+    "number": 100,
+    "metadata": {
+      "created_on": "2026-10-06T06:02:20.130251Z",
+      "source": "wrangler",
+      "author_id": "e3bd18ff33da022dc9059e50ab145e01",
+      "author_email": "mako10k@mk10.org",
+      "has_preview": true
+    },
+    "annotations": {
+      "workers/alias": "stage-37421048966-1",
+      "workers/message": "Release v0.23.0-rc.14 from 8d87ed88605af082cf6d0d41399f594d92151547",
+      "workers/tag": "v0.23.0-rc.14",
+      "workers/triggered_by": "version_upload"
+    }
+  },
+  {
+    "id": "98c92fe2-1c5f-41e7-8572-d2aa67119f21",
+    "number": 101,
+    "metadata": {
+      "created_on": "2026-10-06T06:32:58.332872Z",
+      "source": "wrangler",
+      "author_id": "e3bd18ff33da022dc9059e50ab145e01",
+      "author_email": "mako10k@mk10.org",
+      "has_preview": true
+    },
+    "annotations": {
+      "workers/alias": "stage-37423808342-1",
+      "workers/message": "Release v0.23.0-rc.15 from f9d046279c9c9fae718c0cbebb8451131b0ddf68",
+      "workers/tag": "v0.23.0-rc.15",
+      "workers/triggered_by": "version_upload"
+    }
+  },
+  {
+    "id": "bfc7338f-041f-4787-97a5-bc03cd6b76f5",
+    "number": 102,
+    "metadata": {
+      "created_on": "2026-10-06T07:15:23.693505Z",
+      "source": "wrangler",
+      "author_id": "e3bd18ff33da022dc9059e50ab145e01",
+      "author_email": "mako10k@mk10.org",
+      "has_preview": true
+    },
+    "annotations": {
+      "workers/alias": "stage-37427930873-1",
+      "workers/message": "Release v0.23.0-rc.16 from 876a6d61ef4d457535efa36cc9d14f63f29c0c63",
+      "workers/tag": "v0.23.0-rc.16",
+      "workers/triggered_by": "version_upload"
+    }
+  },
+  {
+    "id": "4a34e357-c390-4ec1-9429-5b0452ce2fbc",
+    "number": 103,
+    "metadata": {
+      "created_on": "2026-10-06T08:42:32.879247Z",
+      "source": "wrangler",
+      "author_id": "e3bd18ff33da022dc9059e50ab145e01",
+      "author_email": "mako10k@mk10.org",
+      "has_preview": true
+    },
+    "annotations": {
+      "workers/alias": "stage-37437242681-1",
+      "workers/message": "Release v0.23.0-rc.17 from aa1f5d75221bef546c7cd566fa4ba858ccb6e133",
+      "workers/tag": "v0.23.0-rc.17",
+      "workers/triggered_by": "version_upload"
+    }
+  },
+  {
+    "id": "dcbe1267-90c7-441a-8607-a8fd9a6dc494",
+    "number": 104,
+    "metadata": {
+      "created_on": "2026-10-09T08:01:45.348042Z",
+      "source": "wrangler",
+      "author_id": "e3bd18ff33da022dc9059e50ab145e01",
+      "author_email": "mako10k@mk10.org",
+      "has_preview": true
+    },
+    "annotations": {
+      "workers/alias": "stage-37901860044-1",
+      "workers/message": "Release v0.23.0-rc.18 from 1eb97c18c4af580cac2922fd64844128b281bd79",
+      "workers/tag": "v0.23.0-rc.18",
+      "workers/triggered_by": "version_upload"
+    }
+  }
+]

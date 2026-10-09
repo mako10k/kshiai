@@ -1,0 +1,468 @@
+{
+  "apiVersion": "serving.knative.dev/v1",
+  "kind": "Service",
+  "metadata": {
+    "annotations": {
+      "run.googleapis.com/client-name": "gcloud",
+      "run.googleapis.com/client-version": "568.0.0",
+      "run.googleapis.com/ingress": "all",
+      "run.googleapis.com/ingress-status": "all",
+      "run.googleapis.com/maxScale": "20",
+      "run.googleapis.com/operation-id": "243708bf-e412-4adb-af0c-2559545fd099",
+      "run.googleapis.com/scalingMode": "automatic",
+      "run.googleapis.com/urls": "[\"https://kshiai-api-639316264814.asia-northeast1.run.app\",\"https://kshiai-api-crpgn6evfa-an.a.run.app\"]",
+      "serving.knative.dev/creator": "mako10k@mk10.org",
+      "serving.knative.dev/lastModifier": "kshiai-github-deploy@kshiai.iam.gserviceaccount.com"
+    },
+    "creationTimestamp": "2026-08-03T10:39:16.335845Z",
+    "generation": 185,
+    "labels": {
+      "cloud.googleapis.com/location": "asia-northeast1"
+    },
+    "name": "kshiai-api",
+    "namespace": "639316264814",
+    "resourceVersion": "AAZdY72kdfo",
+    "selfLink": "/apis/serving.knative.dev/v1/namespaces/639316264814/services/kshiai-api",
+    "uid": "3bcca184-a1cf-4805-9f07-53b9139dc1f1"
+  },
+  "spec": {
+    "template": {
+      "metadata": {
+        "annotations": {
+          "autoscaling.knative.dev/maxScale": "20",
+          "run.googleapis.com/client-name": "gcloud",
+          "run.googleapis.com/client-version": "568.0.0",
+          "run.googleapis.com/cpu-throttling": "true",
+          "run.googleapis.com/execution-environment": "gen2",
+          "run.googleapis.com/startup-cpu-boost": "true"
+        },
+        "labels": {
+          "run.googleapis.com/startupProbeType": "Default"
+        },
+        "name": "kshiai-api-00185-tik"
+      },
+      "spec": {
+        "containerConcurrency": 8,
+        "containers": [
+          {
+            "env": [
+              {
+                "name": "AUTH_PROVIDER",
+                "value": "supabase"
+              },
+              {
+                "name": "MEDIA_STORAGE",
+                "value": "r2"
+              },
+              {
+                "name": "DATABASE_POOL_MAX",
+                "value": "5"
+              },
+              {
+                "name": "LLM_PROVIDER",
+                "value": "xai"
+              },
+              {
+                "name": "CORS_ORIGIN",
+                "value": "https://kshiai.mk10.org"
+              },
+              {
+                "name": "SUPABASE_URL",
+                "value": "https://cvrbhpkfqkpqdegxfrlq.supabase.co"
+              },
+              {
+                "name": "SUPABASE_JWKS_URL",
+                "value": "https://cvrbhpkfqkpqdegxfrlq.supabase.co/auth/v1/.well-known/jwks.json"
+              },
+              {
+                "name": "R2_ACCOUNT_ID",
+                "value": "aa22d9ebf49d126306d9aac2d842584d"
+              },
+              {
+                "name": "R2_BUCKET",
+                "value": "kshiai-media"
+              },
+              {
+                "name": "R2_PUBLIC_BASE_URL",
+                "value": "https://media.kshiai.mk10.org"
+              },
+              {
+                "name": "DATABASE_URL",
+                "valueFrom": {
+                  "secretKeyRef": {
+                    "key": "1",
+                    "name": "kshiai-database-url"
+                  }
+                }
+              },
+              {
+                "name": "R2_ACCESS_KEY_ID",
+                "valueFrom": {
+                  "secretKeyRef": {
+                    "key": "1",
+                    "name": "kshiai-r2-access-key-id"
+                  }
+                }
+              },
+              {
+                "name": "R2_SECRET_ACCESS_KEY",
+                "valueFrom": {
+                  "secretKeyRef": {
+                    "key": "1",
+                    "name": "kshiai-r2-secret-access-key"
+                  }
+                }
+              },
+              {
+                "name": "OPENAI_API_KEY",
+                "valueFrom": {
+                  "secretKeyRef": {
+                    "key": "1",
+                    "name": "kshiai-openai-api-key"
+                  }
+                }
+              },
+              {
+                "name": "XAI_API_KEY",
+                "valueFrom": {
+                  "secretKeyRef": {
+                    "key": "1",
+                    "name": "kshiai-xai-api-key"
+                  }
+                }
+              },
+              {
+                "name": "VENICEAI_API_KEY",
+                "valueFrom": {
+                  "secretKeyRef": {
+                    "key": "1",
+                    "name": "kshiai-venice-api-key"
+                  }
+                }
+              },
+              {
+                "name": "ORIGIN_SHARED_SECRET",
+                "valueFrom": {
+                  "secretKeyRef": {
+                    "key": "1",
+                    "name": "kshiai-origin-shared-secret"
+                  }
+                }
+              },
+              {
+                "name": "BATTLE_CAUSAL_NARRATION_MODE",
+                "value": "narration_guarded"
+              },
+              {
+                "name": "ADMIN_EMAILS",
+                "value": "mako10k@mk10.org"
+              },
+              {
+                "name": "BATTLE_PACING_POLICY",
+                "value": "current"
+              },
+              {
+                "name": "NARRATION_TASK_PROJECT",
+                "value": "kshiai"
+              },
+              {
+                "name": "NARRATION_TASK_LOCATION",
+                "value": "asia-northeast1"
+              },
+              {
+                "name": "NARRATION_TASK_QUEUE",
+                "value": "kshiai-narration"
+              },
+              {
+                "name": "NARRATION_TASK_TARGET_URL",
+                "value": "https://stage-37901860044-1---kshiai-api-crpgn6evfa-an.a.run.app/api/internal/narration/task"
+              },
+              {
+                "name": "NARRATION_TASK_SERVICE_ACCOUNT_EMAIL",
+                "value": "kshiai-cloud-run@kshiai.iam.gserviceaccount.com"
+              },
+              {
+                "name": "NARRATION_TASK_AUDIENCE",
+                "value": "https://stage-37901860044-1---kshiai-api-crpgn6evfa-an.a.run.app/api/internal/narration/task"
+              },
+              {
+                "name": "SUPABASE_SECRET_KEY",
+                "valueFrom": {
+                  "secretKeyRef": {
+                    "key": "latest",
+                    "name": "kshiai-supabase-secret-key"
+                  }
+                }
+              }
+            ],
+            "image": "asia-northeast1-docker.pkg.dev/kshiai/kshiai/backend@sha256:afce6cf3378b9d39b98a2056fb5f2e2465eb223f69fe3b51657e94be763299b9",
+            "ports": [
+              {
+                "containerPort": 8080,
+                "name": "http1"
+              }
+            ],
+            "resources": {
+              "limits": {
+                "cpu": "1",
+                "memory": "512Mi"
+              }
+            },
+            "startupProbe": {
+              "failureThreshold": 1,
+              "periodSeconds": 240,
+              "tcpSocket": {
+                "port": 8080
+              },
+              "timeoutSeconds": 240
+            }
+          }
+        ],
+        "serviceAccountName": "kshiai-cloud-run@kshiai.iam.gserviceaccount.com",
+        "timeoutSeconds": 300
+      }
+    },
+    "traffic": [
+      {
+        "percent": 100,
+        "revisionName": "kshiai-api-00183-wey"
+      },
+      {
+        "revisionName": "kshiai-api-v2-retired-fce86a5",
+        "tag": "v2-retire-458af76"
+      },
+      {
+        "revisionName": "kshiai-api-v2-retired-fce86a5",
+        "tag": "v3-trial-36954429062-1"
+      },
+      {
+        "revisionName": "kshiai-api-contract-98f4c4f",
+        "tag": "contract-98f4c4f"
+      },
+      {
+        "revisionName": "kshiai-api-dynamic-702f9ac",
+        "tag": "dynamic-702f9ac"
+      },
+      {
+        "revisionName": "kshiai-api-profile-c341bfd",
+        "tag": "profile-c341bfd"
+      },
+      {
+        "revisionName": "kshiai-api-recovery-5726fc4",
+        "tag": "recovery-5726fc4"
+      },
+      {
+        "revisionName": "kshiai-api-speech-9ce565d",
+        "tag": "speech-9ce565d"
+      },
+      {
+        "revisionName": "kshiai-api-00168-zud",
+        "tag": "stage-37311012189-1"
+      },
+      {
+        "revisionName": "kshiai-api-00169-juz",
+        "tag": "stage-37313815167-1"
+      },
+      {
+        "revisionName": "kshiai-api-00170-dek",
+        "tag": "stage-37317011221-1"
+      },
+      {
+        "revisionName": "kshiai-api-00171-nuw",
+        "tag": "stage-37397433691-1"
+      },
+      {
+        "revisionName": "kshiai-api-00172-qag",
+        "tag": "stage-37400614046-1"
+      },
+      {
+        "revisionName": "kshiai-api-00173-vuk",
+        "tag": "stage-37402978782-1"
+      },
+      {
+        "revisionName": "kshiai-api-00174-fes",
+        "tag": "stage-37405299375-1"
+      },
+      {
+        "revisionName": "kshiai-api-00175-did",
+        "tag": "stage-37411570366-1"
+      },
+      {
+        "revisionName": "kshiai-api-00176-jag",
+        "tag": "stage-37414189824-1"
+      },
+      {
+        "revisionName": "kshiai-api-00177-vah",
+        "tag": "stage-37416162174-1"
+      },
+      {
+        "revisionName": "kshiai-api-00178-bep",
+        "tag": "stage-37418838781-1"
+      },
+      {
+        "revisionName": "kshiai-api-00179-jun",
+        "tag": "stage-37421048966-1"
+      },
+      {
+        "revisionName": "kshiai-api-00180-sav",
+        "tag": "stage-37423808342-1"
+      },
+      {
+        "revisionName": "kshiai-api-00181-wuw",
+        "tag": "stage-37427930873-1"
+      },
+      {
+        "revisionName": "kshiai-api-00183-wey",
+        "tag": "stage-37437242681-1"
+      },
+      {
+        "revisionName": "kshiai-api-00185-tik",
+        "tag": "stage-37901860044-1"
+      }
+    ]
+  },
+  "status": {
+    "address": {
+      "url": "https://kshiai-api-crpgn6evfa-an.a.run.app"
+    },
+    "conditions": [
+      {
+        "lastTransitionTime": "2026-10-09T08:00:25.081338Z",
+        "status": "True",
+        "type": "Ready"
+      },
+      {
+        "lastTransitionTime": "2026-10-09T08:00:24.347131Z",
+        "status": "True",
+        "type": "ConfigurationsReady"
+      },
+      {
+        "lastTransitionTime": "2026-10-09T08:00:25.031868Z",
+        "status": "True",
+        "type": "RoutesReady"
+      }
+    ],
+    "latestCreatedRevisionName": "kshiai-api-00185-tik",
+    "latestReadyRevisionName": "kshiai-api-00185-tik",
+    "observedGeneration": 185,
+    "traffic": [
+      {
+        "revisionName": "kshiai-api-00168-zud",
+        "tag": "stage-37311012189-1",
+        "url": "https://stage-37311012189-1---kshiai-api-crpgn6evfa-an.a.run.app"
+      },
+      {
+        "revisionName": "kshiai-api-00169-juz",
+        "tag": "stage-37313815167-1",
+        "url": "https://stage-37313815167-1---kshiai-api-crpgn6evfa-an.a.run.app"
+      },
+      {
+        "revisionName": "kshiai-api-00170-dek",
+        "tag": "stage-37317011221-1",
+        "url": "https://stage-37317011221-1---kshiai-api-crpgn6evfa-an.a.run.app"
+      },
+      {
+        "revisionName": "kshiai-api-00171-nuw",
+        "tag": "stage-37397433691-1",
+        "url": "https://stage-37397433691-1---kshiai-api-crpgn6evfa-an.a.run.app"
+      },
+      {
+        "revisionName": "kshiai-api-00172-qag",
+        "tag": "stage-37400614046-1",
+        "url": "https://stage-37400614046-1---kshiai-api-crpgn6evfa-an.a.run.app"
+      },
+      {
+        "revisionName": "kshiai-api-00173-vuk",
+        "tag": "stage-37402978782-1",
+        "url": "https://stage-37402978782-1---kshiai-api-crpgn6evfa-an.a.run.app"
+      },
+      {
+        "revisionName": "kshiai-api-00174-fes",
+        "tag": "stage-37405299375-1",
+        "url": "https://stage-37405299375-1---kshiai-api-crpgn6evfa-an.a.run.app"
+      },
+      {
+        "revisionName": "kshiai-api-00175-did",
+        "tag": "stage-37411570366-1",
+        "url": "https://stage-37411570366-1---kshiai-api-crpgn6evfa-an.a.run.app"
+      },
+      {
+        "revisionName": "kshiai-api-00176-jag",
+        "tag": "stage-37414189824-1",
+        "url": "https://stage-37414189824-1---kshiai-api-crpgn6evfa-an.a.run.app"
+      },
+      {
+        "revisionName": "kshiai-api-00177-vah",
+        "tag": "stage-37416162174-1",
+        "url": "https://stage-37416162174-1---kshiai-api-crpgn6evfa-an.a.run.app"
+      },
+      {
+        "revisionName": "kshiai-api-00178-bep",
+        "tag": "stage-37418838781-1",
+        "url": "https://stage-37418838781-1---kshiai-api-crpgn6evfa-an.a.run.app"
+      },
+      {
+        "revisionName": "kshiai-api-00179-jun",
+        "tag": "stage-37421048966-1",
+        "url": "https://stage-37421048966-1---kshiai-api-crpgn6evfa-an.a.run.app"
+      },
+      {
+        "revisionName": "kshiai-api-00180-sav",
+        "tag": "stage-37423808342-1",
+        "url": "https://stage-37423808342-1---kshiai-api-crpgn6evfa-an.a.run.app"
+      },
+      {
+        "revisionName": "kshiai-api-00181-wuw",
+        "tag": "stage-37427930873-1",
+        "url": "https://stage-37427930873-1---kshiai-api-crpgn6evfa-an.a.run.app"
+      },
+      {
+        "percent": 100,
+        "revisionName": "kshiai-api-00183-wey",
+        "tag": "stage-37437242681-1",
+        "url": "https://stage-37437242681-1---kshiai-api-crpgn6evfa-an.a.run.app"
+      },
+      {
+        "revisionName": "kshiai-api-00185-tik",
+        "tag": "stage-37901860044-1",
+        "url": "https://stage-37901860044-1---kshiai-api-crpgn6evfa-an.a.run.app"
+      },
+      {
+        "revisionName": "kshiai-api-contract-98f4c4f",
+        "tag": "contract-98f4c4f",
+        "url": "https://contract-98f4c4f---kshiai-api-crpgn6evfa-an.a.run.app"
+      },
+      {
+        "revisionName": "kshiai-api-dynamic-702f9ac",
+        "tag": "dynamic-702f9ac",
+        "url": "https://dynamic-702f9ac---kshiai-api-crpgn6evfa-an.a.run.app"
+      },
+      {
+        "revisionName": "kshiai-api-profile-c341bfd",
+        "tag": "profile-c341bfd",
+        "url": "https://profile-c341bfd---kshiai-api-crpgn6evfa-an.a.run.app"
+      },
+      {
+        "revisionName": "kshiai-api-recovery-5726fc4",
+        "tag": "recovery-5726fc4",
+        "url": "https://recovery-5726fc4---kshiai-api-crpgn6evfa-an.a.run.app"
+      },
+      {
+        "revisionName": "kshiai-api-speech-9ce565d",
+        "tag": "speech-9ce565d",
+        "url": "https://speech-9ce565d---kshiai-api-crpgn6evfa-an.a.run.app"
+      },
+      {
+        "revisionName": "kshiai-api-v2-retired-fce86a5",
+        "tag": "v2-retire-458af76",
+        "url": "https://v2-retire-458af76---kshiai-api-crpgn6evfa-an.a.run.app"
+      },
+      {
+        "revisionName": "kshiai-api-v2-retired-fce86a5",
+        "tag": "v3-trial-36954429062-1",
+        "url": "https://v3-trial-36954429062-1---kshiai-api-crpgn6evfa-an.a.run.app"
+      }
+    ],
+    "url": "https://kshiai-api-crpgn6evfa-an.a.run.app"
+  }
+}

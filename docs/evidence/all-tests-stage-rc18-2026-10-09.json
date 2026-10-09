@@ -1,0 +1,32 @@
+{
+  "schema": "kshiai/stage-release-execution/v1",
+  "observedAt": "2026-10-09T08:19:25.064209+00:00",
+  "runId": 37901860044,
+  "url": "https://github.com/mako10k/kshiai/actions/runs/37901860044",
+  "releaseTag": "v0.23.0-rc.18",
+  "releaseCommit": "1eb97c18c4af580cac2922fd64844128b281bd79",
+  "status": "completed",
+  "conclusion": "failure",
+  "inputs": {
+    "battle_causal_narration_mode": "narration_guarded",
+    "dialogue_context_projection_override": "none",
+    "expected_dialogue_projection": "compact",
+    "e2e_max_advances": 38,
+    "e2e_provider_operation_ceiling": 200,
+    "character_create_smoke": false,
+    "battle_pacing_policy": "current"
+  },
+  "paidRetryAuthorized": false,
+  "completed": true,
+  "accepted": false,
+  "battleId": "btl_111779337b677728cd3a14aede6a84f5",
+  "storedStatus": "incomplete",
+  "storedIncompleteReason": "AWARENESS_EFFORT_PERCEPTION_REQUIRED",
+  "paidRetryExecuted": false,
+  "reportedTotalTokens": 31214,
+  "physicalAttempts": 6,
+  "physicalOutstanding": 0,
+  "monetaryCost": "unknown",
+  "productionCloudRunRevision": "kshiai-api-00183-wey",
+  "productionWorkerVersion": "4a34e357-c390-4ec1-9429-5b0452ce2fbc"
+}

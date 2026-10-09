@@ -1,0 +1,2004 @@
+{
+  "schema": "kshiai/formal-all-tests/v1",
+  "startedAt": "2026-10-09T08:33:06.832595+00:00",
+  "formalAuthority": true,
+  "inventorySha256": "1501c879b44d57788eaa4892f139e514bec79a0d91d542a9d6b39b174c6ae05a",
+  "registrySealId": "8f061d86b8db21dea441b94b508396bac52df911276625d314e621a11227b1a7",
+  "mappedTestHeads": [
+    {
+      "path": "backend/src/services/character-authoring-candidate.test.ts",
+      "ref": "verification/vt103-owner-review-20260930",
+      "sealId": "18c4773af2609a1350c3819dd7bad6432691eb56d8bd220d21049b9b4c0511bf"
+    },
+    {
+      "path": "e2e/v3-local-integration.spec.ts",
+      "ref": "all-tests-20261008/current-source-closure/verification/local-integration-current-20261008",
+      "sealId": "a182d0ac92b43bbd97e2265ec738689c906d64aaadda76cba84947ebccea8cc3"
+    },
+    {
+      "path": "backend/src/services/battle-participation-eligibility.test.ts",
+      "ref": "verification/vt110-eligibility-20260930",
+      "sealId": "1ca27bbc543c57a61c75a37604e1dd23cde6305691eee673f52b5c015a09ed02"
+    },
+    {
+      "path": "backend/src/repositories/battle-lifecycle-storage.test.ts",
+      "ref": "verification/vt110-storage-20260930",
+      "sealId": "200a84d3ff1649af299059c27aa1dce04daad2177de39f2cb1b63eca8580862f"
+    },
+    {
+      "path": "packages/shared/src/battle-receipt-zero-net.test.ts",
+      "ref": "verification/vt110-zero-net-receipt-20260930",
+      "sealId": "68bfc74fe0c3975f06a45fc7caa48fad3926f5bf2c33443b5a4c46ccceba2a92"
+    },
+    {
+      "path": "backend/src/services/v3-battle-creation.test.ts",
+      "ref": "all-tests-20261008/current-source-closure/verification/v3-battle-creation-recovery-bounded-20261008",
+      "sealId": "058329254cce0f97dfedbac71acb74eae7394265e353e9a952d8aa55c34c4c69"
+    },
+    {
+      "path": "packages/shared/src/character-battle-compiler-v4.test.ts",
+      "ref": "verification/vt102-v4-compiler-20260930",
+      "sealId": "8c3b7dd93ea2f7dca8e60678ba1998c3598273b61f28cf9b39406bb83373b3f7"
+    },
+    {
+      "path": "packages/shared/src/battle-action-norm-gate.test.ts",
+      "ref": "verification/vt102-engine-norm-gate-20260930",
+      "sealId": "24cfbe89481a7861ec30b4b4ac29f9831f41ce40d364a4168bff1b2ac0569685"
+    },
+    {
+      "path": "backend/src/llm/character-definition-response-schema.test.ts",
+      "ref": "verification/character-definition-response-schema-recovery-bounded-20261008",
+      "sealId": "435919a76019bae6fe15c51c14676e4a181d40e113a9ae8d5d81ec5b0ab93bb1"
+    },
+    {
+      "path": "backend/src/llm/character-migration-ollama-provider.test.ts",
+      "ref": "verification/character-migration-ollama-provider-recovery-bounded-20261008",
+      "sealId": "7e49158e2010b3d20eadda5df0caee16ca7a5b35e5ccb8b6ea62805c536d5814"
+    },
+    {
+      "path": "backend/src/llm/character-migration-probe-provider.test.ts",
+      "ref": "verification/migration-probe-provider-current-20261007",
+      "sealId": "da4ab586c3186d6927f415c076dfb1633b0624742592b26204caaa67e7dd107c"
+    },
+    {
+      "path": "backend/src/llm/character-migration-response-schema.test.ts",
+      "ref": "verification/migration-response-projection-current-20261007",
+      "sealId": "ab615ddec3258a1abc3f9331aefa7f3e35c7525ca940db6afbb37c6b3d8993f3"
+    },
+    {
+      "path": "backend/src/llm/openai-compatible-character-definition.test.ts",
+      "ref": "all-tests-20261008/current-source-closure/verification/openai-compatible-character-definition-recovery-bounded-20261008",
+      "sealId": "bc161187f7bccd3acd70198bb2d99df332e02149f4cc86320311f9b649aaa6fc"
+    },
+    {
+      "path": "backend/src/llm/provider-json.test.ts",
+      "ref": "all-tests-20261008/current-source-closure/verification/provider-json-accounting-20261007",
+      "sealId": "48d880774f0a224a4f8dfb4b996030638677eb0336e3dbfdf3d8b2cacaebc297"
+    },
+    {
+      "path": "backend/src/llm/semantic-authoring-provider.test.ts",
+      "ref": "all-tests-20261008/current-source-closure/verification/semantic-recovery-provider-bounded-20261008",
+      "sealId": "3921541be5af635084f8b51291d531a7ecaac009127bef0cbc81bfc1350f6c69"
+    },
+    {
+      "path": "backend/src/repositories/local-v3-trial-characters.test.ts",
+      "ref": "all-tests-20261008/character-complete-source/fixed-trial-test",
+      "sealId": "abecf79b0767dba3b296a3cb8dfdf3e7139a4802e8ff399a60ed897dde16ae24"
+    },
+    {
+      "path": "backend/src/repositories/character-semantic-migration.test.ts",
+      "ref": "verification/migration-repair-persistence-current-20261007",
+      "sealId": "58f543bdf13814a9acb24d7694e64d6c7e40d7fa5bd39fc563201bb2d84575c7"
+    },
+    {
+      "path": "backend/src/repositories/semantic-authoring.test.ts",
+      "ref": "all-tests-20261008/current-source-closure/verification/semantic-authoring-durable-repository-20260918",
+      "sealId": "d5dee6729c5971ed8ae6b6698c3d58c799bf2b08e24fa692f3047bf3f94e8f6c"
+    },
+    {
+      "path": "backend/src/services/character-focused-authoring.test.ts",
+      "ref": "all-tests-20261008/current-source-closure/verification/character-focused-authoring-current-20260925",
+      "sealId": "7d53147994e3c7b7764314c255c0d76f977542fa15d5691219b4c72d9c639ac1"
+    },
+    {
+      "path": "backend/src/services/character-migration-diagnostics.test.ts",
+      "ref": "verification/migration-repair-diagnostics-current-20261007",
+      "sealId": "f0cb773e2acd98b6b6a5e4b98431ecba096bbb64423b233549f8a1738a532bbc"
+    },
+    {
+      "path": "backend/src/services/character-semantic-migration.test.ts",
+      "ref": "verification/migration-repair-generation-current-20261007",
+      "sealId": "59e66ec9cc3a96deac707c2c8ba28cba415b6dc3e1a646b5268003eb479ed25f"
+    },
+    {
+      "path": "backend/src/services/semantic-authoring/adapters/character-v3.test.ts",
+      "ref": "all-tests-20261008/current-source-closure/verification/semantic-recovery-character-adapter-bounded-20261008",
+      "sealId": "d32358c0148d42bc2f676c97ec738c3e7d87a759993774a2bc9d799f18e5e1b6"
+    },
+    {
+      "path": "backend/src/services/semantic-authoring/conformance.test.ts",
+      "ref": "all-tests-20261008/current-source-closure/verification/semantic-recovery-conformance-bounded-20261008",
+      "sealId": "489b377336fc7457f9bf29de708445e167b975e6c29eee08bdcb290f67c11947"
+    },
+    {
+      "path": "backend/src/services/semantic-authoring/kernel-foundation.test.ts",
+      "ref": "verification/semantic-authoring-kernel-foundation-v1-current",
+      "sealId": "09cf6446d96834aa021a812a7f60cbb9edf48fbf77a8ef8b3ab440d8a6ff04bd"
+    },
+    {
+      "path": "backend/src/services/semantic-authoring/public-mapping.test.ts",
+      "ref": "verification/semantic-recovery-public-mapping-bounded-20261008",
+      "sealId": "2f3b6bec2875281902834e1c5ffb62345bae870f806a6d51df18578caf65a534"
+    },
+    {
+      "path": "backend/src/services/semantic-authoring/scripted-ports.test.ts",
+      "ref": "verification/semantic-authoring-scripted-port-boundary-20260918",
+      "sealId": "1eda914477c26f1bdc03cbc726d2ea302cd667f24de6bafffffff25c32608642"
+    },
+    {
+      "path": "e2e/character-focused-review.spec.ts",
+      "ref": "all-tests-20261008/current-source-closure/verification/character-focused-review-current-20261008",
+      "sealId": "f61aad8f087fdce496ef3d2dce84bf6f15f190031a3ec165412c8691c3914ef6"
+    },
+    {
+      "path": "packages/shared/src/character-definition-v3.test.ts",
+      "ref": "verification/character-definition-v3-current-20260918",
+      "sealId": "3461b8eae260b66f3e7905d986cf5d919a59f5ec74025380fe43077fd0ca3c25"
+    },
+    {
+      "path": "packages/shared/src/character-semantic-change-set.test.ts",
+      "ref": "verification/migration-change-set-wire-current-20261007",
+      "sealId": "84e59f2d467a58b1804404687f8b6590be3ed830b3389f024fb4816103672dd7"
+    },
+    {
+      "path": "packages/shared/src/character-semantic-authoring.test.ts",
+      "ref": "verification/semantic-recovery-character-contracts-bounded-20261008",
+      "sealId": "77ff51eceaa58daedbd1002d60b15b6c42ab7eb54cb27b66db3ef37efa569345"
+    },
+    {
+      "path": "packages/shared/src/semantic-authoring.test.ts",
+      "ref": "verification/semantic-authoring-shared-contracts-v1-current",
+      "sealId": "2154dc04be218596caa4eb9917ecc2b4f725beee0b670b895eb469a49dc9e6c6"
+    },
+    {
+      "path": "scripts/test-authority.test.mjs",
+      "ref": "verification/test-authority-selector-synthetic-20260918",
+      "sealId": "56bffd6fcd014547963c5bd3833ae85d7cc5542c9437d4912819b0f015454b49"
+    },
+    {
+      "path": "backend/src/cutover-config.test.ts",
+      "ref": "verification/vt104-cutover-config-20260930",
+      "sealId": "fc275e28e03c96a375557d5a11fd4f847957159ffa1913fcad55fa88f98002b1"
+    },
+    {
+      "path": "backend/src/cutover-startup.test.ts",
+      "ref": "verification/vt104-cutover-startup-20260930",
+      "sealId": "367d6b4d3222b09f51dc70914de0fc977c1b3f9b4e4113f2f753dbd78aebab19"
+    },
+    {
+      "path": "backend/src/repositories/cutover-control.test.ts",
+      "ref": "verification/vt104-cutover-control-20260930",
+      "sealId": "794e2b0291daa9cfe703142cdfbd6929e4b0f290a8509bf04a0aab5d8661c88c"
+    },
+    {
+      "path": "backend/src/scripts/cutover-control.test.ts",
+      "ref": "verification/vt104-cutover-control-cli-20260930",
+      "sealId": "e15b0a4680f8528e2dca15edffc64645bde00ea5f340dad6345c554145bf9dad"
+    },
+    {
+      "path": "backend/src/services/cutover-admission.test.ts",
+      "ref": "verification/vt104-cutover-admission-20260930",
+      "sealId": "2930c70f685f5496693e38355d83ffdddf695a39412e5db00064df3d8b192754"
+    },
+    {
+      "path": "backend/src/services/cutover-http-admission.test.ts",
+      "ref": "verification/vt104-cutover-http-admission-20260930",
+      "sealId": "f5599f9a2a2a13fe2f3b2438d0cdf9b80af7d5b1e289c664d8b4dabf7aa05c19"
+    },
+    {
+      "path": "backend/src/routes-cutover-http.test.ts",
+      "ref": "all-tests-20261008/current-source-closure/verification/routes-cutover-http-recovery-bounded-20261008",
+      "sealId": "e9d92d0a02ab89457bf728b4ac267e5ea6cc452e1e0b7fe6cdce5a45bd5f1753"
+    },
+    {
+      "path": "backend/src/services/cutover-background-dispatch.test.ts",
+      "ref": "verification/vt104-cutover-background-dispatch-20260930",
+      "sealId": "ccbb3a0262204c72e3febc49ffda3e571c06c750d6b26f7823144d31ae7684bf"
+    },
+    {
+      "path": "backend/src/services/narration-worker.test.ts",
+      "ref": "verification/vt104-narration-worker-20260930",
+      "sealId": "28881bf7678482fbb32de683337c260d635b8941d25c9d4a38cd9c4a36c79488"
+    },
+    {
+      "path": "backend/src/services/narration-task-dispatch.test.ts",
+      "ref": "verification/vt104-narration-task-dispatch-20260930",
+      "sealId": "8f7c733417864f5bd5ac8002f3f0e9c7c0660b839d4111bb750fde1d97b42ebe"
+    },
+    {
+      "path": "backend/src/services/authoring-task-dispatch.test.ts",
+      "ref": "verification/vt104-authoring-task-dispatch-20260930",
+      "sealId": "004bd62c0d2f752836ab0280f5ac183a13a98a346b70c6eb85f194405dd63ee6"
+    },
+    {
+      "path": "backend/src/services/character-authoring-jobs.test.ts",
+      "ref": "verification/vt104-character-authoring-jobs-20260930",
+      "sealId": "b8337b87fe89356e2c81ab4b27e17dcb5510aeba78818dbf52ad0576d59cb208"
+    },
+    {
+      "path": "backend/src/llm/provider-accounting.test.ts",
+      "ref": "all-tests-20261008/current-source-closure/verification/provider-accounting-current-20261007",
+      "sealId": "c78207309d069012d7611f74736270ce44c2fb24671ccb741c63303959edea9e"
+    },
+    {
+      "path": "backend/src/services/supabase-identity.test.ts",
+      "ref": "verification/supabase-signed-identity-current-20261007",
+      "sealId": "a975bd69e04610204f930a1f7ce53a4d11bf8589564f49d2cac7b1729291def5"
+    },
+    {
+      "path": "backend/src/services/cutover-stage-smoke.test.ts",
+      "ref": "verification/vt104-stage-smoke-20260930",
+      "sealId": "17f3e46b0a11714629382d5611ab26fa126b21858875f15db850555f593ea6da"
+    },
+    {
+      "path": "backend/src/scripts/stage-auth-smoke.test.ts",
+      "ref": "verification/vt104-stage-auth-cli-20260930",
+      "sealId": "830e1dafc48acb783e8332120e8667a88e2d193fc86505978c20bb189160ea93"
+    },
+    {
+      "path": "scripts/verify-v3-trial-evidence.test.mjs",
+      "ref": "verification/vt104-trial-evidence-20261001",
+      "sealId": "f5b8aeb204d487979d7a864b3190f76fa473c939110fd75d4bcdee4d57fc9c90"
+    },
+    {
+      "path": "backend/src/services/narration-worker-accounting.test.ts",
+      "ref": "verification/vt104-narration-accounting-20261001",
+      "sealId": "832a2a22f9a292aa0b2be44885a2207080b51ca183f17e688d394e0f55285f84"
+    },
+    {
+      "path": "backend/src/repositories/unreleased-trial-preparation.test.ts",
+      "ref": "verification/vt104-trial-disposal-20261001",
+      "sealId": "58b670444a2a6d6530d72e75a7f8e3042fc4eb0d515b11d261a1685f6e326483"
+    },
+    {
+      "path": "backend/src/scripts/prepare-unreleased-v3-trial.test.ts",
+      "ref": "verification/vt104-trial-disposal-cli-20261001",
+      "sealId": "14a0c81c669e5d77233a952f23ad09c06bfecb86ea68c73c975f8c47c5d6a760"
+    },
+    {
+      "path": "backend/src/services/character-update-policy.test.ts",
+      "ref": "verification/character-v3-update-policy-20261002",
+      "sealId": "2b33c11a792e6ad7087e1a64a5fc463fc8c18eca1c48cbfda1fc3fc1b1bd1ef7"
+    },
+    {
+      "path": "backend/src/services/character-v2-update-boundary.test.ts",
+      "ref": "all-tests-20261008/current-source-closure/verification/character-v2-update-boundary-recovery-bounded-20261008",
+      "sealId": "74946377e4df0c75e244ddfcdcca0e605ba6505dcd8381ceeebef4f40b6b9e50"
+    },
+    {
+      "path": "backend/src/services/character-historical-view.test.ts",
+      "ref": "verification/character-historical-view-20261002",
+      "sealId": "b4a376fe18ab482053fdb83de819a1bfe81881efd847dc28b7eb59128fa96cc7"
+    },
+    {
+      "path": "backend/src/e2e-observer.test.ts",
+      "ref": "verification/observer-v3-only-20261002",
+      "sealId": "85187aebe755df650f716bc476481168b26f5445d98c19b14dd9badf91eaa367"
+    },
+    {
+      "path": "backend/src/repositories/asset-generations.test.ts",
+      "ref": "verification/immutable-generic-generation-current-20261002",
+      "sealId": "7ad3f131e588fd6824c6f80374050e9be1b1db33927181c24e6f12545305862e"
+    },
+    {
+      "path": "e2e/history-character-navigation.spec.ts",
+      "ref": "verification/history-character-navigation-20261002",
+      "sealId": "a694e5e0c4ccea14a18e72910ed150ac0564230c24aaba4eb2d9ec22ee6e4def"
+    },
+    {
+      "path": "packages/shared/src/awareness-guidance.test.ts",
+      "ref": "awareness-guidance-20261007/verification-guidance",
+      "sealId": "c33efcbab05dc4f71b5051272f6fc00cea60a44b9177427e3700dcf14910f119"
+    },
+    {
+      "path": "backend/src/services/awareness-context.test.ts",
+      "ref": "all-tests-20261009/current-source-closure/awareness-guidance-20261007/verification-context",
+      "sealId": "a16ca2ff5cec100995d7fcaf9412b6248c9611c8bc06212fce18aef66ca442d4"
+    },
+    {
+      "path": "backend/src/services/awareness-execution.test.ts",
+      "ref": "all-tests-20261008/current-source-closure/awareness-guidance-20261007/verification-execution",
+      "sealId": "130f81cade0fbf5549e1bc2ec985ff4ce61a6210937d37499105501cfec7590e"
+    },
+    {
+      "path": "packages/shared/src/action-intent-contract.test.ts",
+      "ref": "all-tests-20261009/current-source-closure/verification/action-intent-contract-20261007",
+      "sealId": "9235cead735bba4cb3c0dd2067f8de382894f5d0d5276074d4760b32bbe7125e"
+    },
+    {
+      "path": "scripts/test-authority-empty.test.mjs",
+      "ref": "verification/test-authority-execution-gate-20261007",
+      "sealId": "74753b27ec2ac54c40ac38ab6a7275dc4e0f7e4f6ed84593b2d7bcca077d55dc"
+    },
+    {
+      "path": "packages/shared/src/awareness-state.test.ts",
+      "ref": "all-tests-20261009/current-source-closure/verification/awareness-state-20261007",
+      "sealId": "233dd908d44be952965bd5e03a51ed247a45677f2c719b74c5d1d7ac0ffc40ad"
+    },
+    {
+      "path": "packages/shared/src/awareness-policy.test.ts",
+      "ref": "all-tests-20261009/current-source-closure/verification/awareness-policy-20261007",
+      "sealId": "3fce4a3c0c5ea1165106c11b3bb7e26acd5f7dc0205bd31f08f9a0a13d240ffd"
+    },
+    {
+      "path": "packages/shared/src/awareness-pipeline.test.ts",
+      "ref": "all-tests-20261009/current-source-closure/verification/awareness-pipeline-20261007",
+      "sealId": "8f56e38101b59ebf45c40cc055937312ac7700bb1f8aa6654e46f633e61ca35d"
+    },
+    {
+      "path": "backend/src/services/character-authoring-service.test.ts",
+      "ref": "verification/retired-character-authoring-20261007",
+      "sealId": "a1dbfceecc9981e91c75cbb07700039a7f519ccd2be5116f73070231f422b701"
+    },
+    {
+      "path": "packages/shared/src/battle-contract-types.test.ts",
+      "ref": "all-tests-20261009/current-source-closure/verification/battle-contract-types-20261007",
+      "sealId": "54d3906ca8e4c28c1da4700e0cce646eb42c25c27846e7b2c0cdf9d8cf89eede"
+    },
+    {
+      "path": "backend/src/services/awareness-clock.test.ts",
+      "ref": "verification/awareness-clock-20261007",
+      "sealId": "e498c21b29bdba1e05acfb0c212b62a077ed02a7b0dfb5dd27e4d4b627e31d92"
+    },
+    {
+      "path": "backend/src/routes-authoring-read-purity.test.ts",
+      "ref": "all-tests-20261008/current-source-closure/verification/authoring-read-purity-current-20261007",
+      "sealId": "8cce32ec7ee5ecd71fb3d9fcd67d4a166f38634fc3ec3aaf75ea362d275bae96"
+    },
+    {
+      "path": "packages/shared/src/structured-battlefield.test.ts",
+      "ref": "all-tests-20261009/current-source-closure/verification/own-area-structured-battlefield-20261007",
+      "sealId": "acbf73234c8998518138f4c6f262ea1e9c081f483134ffd34b535346aeb65e90"
+    },
+    {
+      "path": "backend/src/routes-structured-battlefield-acceptance.test.ts",
+      "ref": "all-tests-20261008/current-source-closure/verification/stable-area-battlefield-http-acceptance-20261007",
+      "sealId": "9e430e3538bbd18c533c8f5859397f668a33e1d67115ace301b48ff525820faa"
+    },
+    {
+      "path": "backend/src/repositories/system-battlefield-seed.test.ts",
+      "ref": "verification/system-battlefield-seed-20261007",
+      "sealId": "e43609b39161b832c7cde04e7d655bc21ff48b6c7011d3b5deccccc6905e3107"
+    },
+    {
+      "path": "backend/src/services/character-action-fallback.test.ts",
+      "ref": "all-tests-20261009/current-source-closure/verification/action-fallback-20261007",
+      "sealId": "b89f5db0f0901a087a555e4d3bac89df96f83ac23703abf8a2360e395da590fe"
+    },
+    {
+      "path": "backend/src/repositories/character-assets-v2.test.ts",
+      "ref": "all-tests-20261008/current-source-closure/verification/character-assets-repository-20261007",
+      "sealId": "019147827813f9c23ae23285203de6f46b5080c11b1265c5e7743c24be455502"
+    },
+    {
+      "path": "backend/src/services/character-v3-profile-adapter.test.ts",
+      "ref": "all-tests-20261008/current-source-closure/verification/character-profile-v3-projection-20261007",
+      "sealId": "afda2b4871cffb3c4003f78c90c745a48786a9d2d52ca6b5bc18d13f04f61938"
+    },
+    {
+      "path": "backend/src/services/llm-usage-cost-report.test.ts",
+      "ref": "verification/usage-cost-report-20261007",
+      "sealId": "884a10862318c3d096579664974eea5b894537cb1e052b566e7b0a4cbe04d752"
+    },
+    {
+      "path": "backend/src/repositories/llm-usage.test.ts",
+      "ref": "all-tests-20261008/current-source-closure/verification/usage-ledger-sdk-20261007",
+      "sealId": "0ee494a912893c0d72afaec9790ab2ecab4f9bec422f7f5532ba3a42dddbd460"
+    },
+    {
+      "path": "backend/src/llm/llm-physical-completion.test.ts",
+      "ref": "verification/physical-completion-scope-20261007",
+      "sealId": "e9023fc2ef2652c2eb7fe457a1774c4a19995ac2d9803010f0d50d831e888fee"
+    },
+    {
+      "path": "backend/src/llm/awareness-output-contract.test.ts",
+      "ref": "all-tests-20261009/current-source-closure/verification/action-output-guidance-20261007",
+      "sealId": "1b0df7addd56253b65fcfda918c91c89a63e101424d58e8e0c84629873cabdbd"
+    },
+    {
+      "path": "backend/src/llm/awareness-latent-output-guidance.test.ts",
+      "ref": "all-tests-20261009/current-source-closure/verification/latent-output-brevity-20261007",
+      "sealId": "1781e32b82723205257e1277e35b91e7652181401e3583b3e4b14326febe2d66"
+    },
+    {
+      "path": "backend/src/llm/prompt-prose.test.ts",
+      "ref": "verification/prompt-prose-20261007",
+      "sealId": "c5855ba84cd538bda8869636bb81a3d3b54160fb0b72c51627398b706c1627bb"
+    },
+    {
+      "path": "backend/src/llm/awareness-request.test.ts",
+      "ref": "all-tests-20261009/current-source-closure/verification/awareness-request-20261007",
+      "sealId": "864d432fd605944b4a12b6b3f3a5fea2f6581390b8027b0c527c05c2505f0b27"
+    },
+    {
+      "path": "backend/src/llm/model-request-options.test.ts",
+      "ref": "verification/model-request-options-20261007",
+      "sealId": "64fa7f6f4605872f5292e2294b26f17f3a7841b7af56b4accedc4422ad71a09e"
+    },
+    {
+      "path": "backend/src/llm/openai-compatible-model-options.test.ts",
+      "ref": "all-tests-20261008/current-source-closure/verification/sdk-model-options-20261007",
+      "sealId": "b4dbac111d19688e92f8a409922a3f7f2918a5cce3633fdf40ee29162555ed95"
+    },
+    {
+      "path": "backend/src/llm/awareness-provider.test.ts",
+      "ref": "all-tests-20261009/current-source-closure/verification/awareness-role-provider-20261007",
+      "sealId": "722e0b834e70ef88b0f4eb431311e89eb056a595a42709a466907e9e1dd4ba40"
+    },
+    {
+      "path": "backend/src/llm/awareness-narration.test.ts",
+      "ref": "all-tests-20261008/current-source-closure/verification/awareness-narration-batch-20261007",
+      "sealId": "6e1019aa24fbc09b7c9783f85d9426f6141a5e3a707a561856911cb8c45158db"
+    },
+    {
+      "path": "backend/src/llm/awareness-frozen-narration.test.ts",
+      "ref": "all-tests-20261008/current-source-closure/verification/awareness-frozen-narration-20261007",
+      "sealId": "c8bdc22c4690d34115448776d19e9393e1480cd16148bf66353a39ac07f48f97"
+    },
+    {
+      "path": "backend/src/llm/awareness-provider-factory.test.ts",
+      "ref": "all-tests-20261008/current-source-closure/verification/awareness-provider-factory-20261007",
+      "sealId": "f0de05eafbd3b92ad4e2aee3c575b82477e50f35f97b7a7f6b0bef08c953160b"
+    },
+    {
+      "path": "backend/src/llm/adjudication-prompt-prose.test.ts",
+      "ref": "verification/adjudication-prose-20261007",
+      "sealId": "c7005e56015792e083c2eca785b4bab9e5ac1ae4f131e9018ef1900e75ba5dd6"
+    },
+    {
+      "path": "backend/src/llm/awareness-dispatch-admission.test.ts",
+      "ref": "all-tests-20261009/current-source-closure/verification/awareness-dispatch-admission-20261007",
+      "sealId": "bdae2ca6065c13de1567d7ffda94713b86f25c55a8cafd3e82bc22b4f1de962c"
+    },
+    {
+      "path": "backend/src/llm/awareness-dispatch-context.test.ts",
+      "ref": "all-tests-20261008/current-source-closure/verification/awareness-dispatch-context-20261007",
+      "sealId": "7ee9fc384ab2a725eacb862a9cf9a2b7dbd0da359186e4449b4a5a2a6c102df6"
+    },
+    {
+      "path": "backend/src/llm/awareness-adjudication-result.test.ts",
+      "ref": "all-tests-20261008/current-source-closure/verification/awareness-adjudication-result-20261007",
+      "sealId": "7583e3c88444dee088f00736d8bd8c5399f3bc4fd385ffaaed2df02ecf6e44e5"
+    },
+    {
+      "path": "backend/src/llm/narration-prompt-contract.test.ts",
+      "ref": "all-tests-20261008/current-source-closure/verification/narration-prompt-contract-20261007",
+      "sealId": "49c8abe02bb9bf68005ca1f1b627976770e1b4362548486599a0dd2766659d2b"
+    },
+    {
+      "path": "backend/src/llm/provider-response-schema.test.ts",
+      "ref": "all-tests-20261008/current-source-closure/verification/provider-response-schema-20261007",
+      "sealId": "160922180aa54704983e7c7f2c5da68364b57d252f2b362cf97094ccdbe2220e"
+    },
+    {
+      "path": "packages/shared/src/narration-perception.test.ts",
+      "ref": "all-tests-20261009/current-source-closure/verification/narration-perception-projection-20261007",
+      "sealId": "722f4c301d409d98cf4e5cf6aa59fc86905a6dcbeb9a6f36291da05e407751d4"
+    },
+    {
+      "path": "backend/src/llm/openai-compatible-narration.test.ts",
+      "ref": "all-tests-20261008/current-source-closure/verification/direct-narration-projection-input-20261007",
+      "sealId": "3de3177b578afe62a65ae64a8348beb46a5a5120baa5834eb26c86980b964d53"
+    },
+    {
+      "path": "backend/src/llm/provider-errors.test.ts",
+      "ref": "verification/provider-errors-20261007",
+      "sealId": "d99ac91be3f7261fa349f25e9b081a6385a30f5216ae5793a3ade7674822d8fa"
+    },
+    {
+      "path": "backend/src/llm/provider-retry.test.ts",
+      "ref": "verification/provider-retry-20261007",
+      "sealId": "229ed9d2df2ab970f344f2b0e2f8ce5ec224e317f4eb20199920c7267bbf0589"
+    },
+    {
+      "path": "backend/src/llm/narrator-presentation-focus-evaluation.test.ts",
+      "ref": "all-tests-20261008/current-source-closure/verification/presentation-protocol-20261007",
+      "sealId": "69a49ed3830b35a7e8e590f84dcd2924741c52feef3370da5ea8ced6fc6a09f3"
+    },
+    {
+      "path": "packages/shared/src/character-focus-policy.test.ts",
+      "ref": "all-tests-20261009/current-source-closure/verification/character-focus-shadow-20261007",
+      "sealId": "c2ad3d9548d4aa048b84053b4e0e90881d4afbf0ea30bf5709faa4344f81506f"
+    },
+    {
+      "path": "backend/src/llm/character-focus-ablation.test.ts",
+      "ref": "all-tests-20261009/current-source-closure/verification/character-focus-ablation-20261007",
+      "sealId": "2488c7fd17d845e53ffbddbe64b689daf1c4bcfed441d4c4d368ffd6d11bcdeb"
+    },
+    {
+      "path": "backend/src/llm/character-focus-ablation-report.test.ts",
+      "ref": "all-tests-20261009/current-source-closure/verification/character-focus-ablation-report-20261007",
+      "sealId": "0c6074815c7b47776d8b73dbe0507a54dcf9e9f62e53bb7c5a4a1176577419ca"
+    },
+    {
+      "path": "packages/shared/src/profile-grounding.test.ts",
+      "ref": "all-tests-20261008/current-source-closure/verification/profile-grounding-20261007",
+      "sealId": "9d59b9c32465c28f24b3916eb83ad5a57b3f858401272d9c4089473377d36219"
+    },
+    {
+      "path": "packages/shared/src/structured-assets.test.ts",
+      "ref": "verification/authoring-progress-presentation-20261007",
+      "sealId": "da7b1c78e89d6bec4f11f7eced816ed7776d15f952b6674a34cc2f4ff7c8ca56"
+    },
+    {
+      "path": "packages/shared/src/structured-narration.test.ts",
+      "ref": "verification/structured-narration-20261007",
+      "sealId": "b969163c4cdecc17864344cd362a16d0c1070e82d4c0c61520e752b548059d77"
+    },
+    {
+      "path": "backend/src/routes-structured-narration-acceptance.test.ts",
+      "ref": "all-tests-20261008/current-source-closure/verification/stable-area-narration-http-acceptance-20261007",
+      "sealId": "995fcaff8b91512b55a3269df0426dbf1d7ace6f1a8ef4fd73a1083c7ef8ab3d"
+    },
+    {
+      "path": "packages/shared/src/turn-event-contract.test.ts",
+      "ref": "all-tests-20261009/current-source-closure/verification/turn-event-contract-20261007",
+      "sealId": "b463b5477df184a44773b5491b79769548aeb704740937f2247003dc030f3681"
+    },
+    {
+      "path": "packages/shared/src/utterance-perception.test.ts",
+      "ref": "all-tests-20261008/current-source-closure/verification/utterance-perception-20261007",
+      "sealId": "60ad23da6753573781e7aa6fcf6b8f803333c09ac2763756298342798aba05a7"
+    },
+    {
+      "path": "packages/shared/src/semantic-state.test.ts",
+      "ref": "verification/semantic-state-20261007",
+      "sealId": "ab7903dd325752de4ca28afe43daf80091d413a353e15d2a2ed93ddb71e32364"
+    },
+    {
+      "path": "packages/shared/src/reposition-transition.test.ts",
+      "ref": "all-tests-20261009/current-source-closure/verification/own-area-reposition-transition-20261007",
+      "sealId": "23fb6919cfa22ddb3acb39bb030f1b116cbdbcff8720d6254a805624e227de5e"
+    },
+    {
+      "path": "packages/shared/src/battle-world.test.ts",
+      "ref": "verification/own-area-world-state-20261007",
+      "sealId": "efa2e596e953081ed8f2155463d0b4cecc403a1b943534b02f1478881ec29c49"
+    },
+    {
+      "path": "packages/shared/src/awareness-battle.test.ts",
+      "ref": "all-tests-20261008/current-source-closure/verification/stable-area-awareness-battle-contract-20261007",
+      "sealId": "2981a3a43e297acf784f270b2e42f9a2919636aa7d2f32c7fa69c498bf625122"
+    },
+    {
+      "path": "packages/shared/src/action-norm-contract.test.ts",
+      "ref": "verification/conditional-action-norm-contract-20261007",
+      "sealId": "9604a73031c8f95e3db9412c5c9cb4b13faba1e9631fde550f020553edc9796a"
+    },
+    {
+      "path": "packages/shared/src/compiler-phase-contract.test.ts",
+      "ref": "verification/conditional-compiler-phase-contract-20261007",
+      "sealId": "715280eb1c2ba5512f2a2875dac09dde038770d966565b9fc46bef3f0173ef88"
+    },
+    {
+      "path": "backend/src/scripts/semantic-migration-probe-fixture.test.ts",
+      "ref": "all-tests-20261008/current-source-closure/verification/semantic-migration-probe-fixture-recovery-bounded-20261008",
+      "sealId": "4dbb74f9d18fa26a0564f1e5acb62de47d56772e9e7e751ca8b98b61d63e3144"
+    },
+    {
+      "path": "backend/src/scripts/semantic-migration-probe-run.test.ts",
+      "ref": "all-tests-20261008/current-source-closure/verification/semantic-migration-probe-run-recovery-bounded-20261008",
+      "sealId": "134d3dac093f8fdbc027f1b938b93a601d13e9494a2c066ca1a25c395c85a889"
+    },
+    {
+      "path": "packages/shared/src/battle-temporal-rules.test.ts",
+      "ref": "verification/temporal-plan-current-20261007",
+      "sealId": "d4ef82752128036ae42f4d507e58fd34e66c76719c64c130aadb462427d33e5a"
+    },
+    {
+      "path": "packages/shared/src/battle-causal-execution.test.ts",
+      "ref": "verification/causal-checkpoint-current-20261007",
+      "sealId": "ecbea24931f21a918ed1bd5ca9e64a452acafabe723aee6cec935450e0d77352"
+    },
+    {
+      "path": "packages/shared/src/perception-quantization.test.ts",
+      "ref": "all-tests-20261009/current-source-closure/verification/perception-quantization-current-20261007",
+      "sealId": "b1b0a9f0458a81e03ba39b619c572bc5d51ab7ef9ab3fce142fb8434eacb0021"
+    },
+    {
+      "path": "packages/shared/src/narration-perspective.test.ts",
+      "ref": "all-tests-20261009/current-source-closure/verification/narration-perspective-current-20261007",
+      "sealId": "e89e0f4c7813230e22cb34bbf032601da99ec293fd69fd26242278f7dbf07ad0"
+    },
+    {
+      "path": "packages/shared/src/battle-turn-causal-receipt.test.ts",
+      "ref": "all-tests-20261008/current-source-closure/verification/turn-causal-receipt-current-20261007",
+      "sealId": "9f1a2b6f5b93eee3ec97931dadb37a29bad6ee3e6622983d7fa8503b9b35cbf1"
+    },
+    {
+      "path": "packages/shared/src/perception.test.ts",
+      "ref": "all-tests-20261009/current-source-closure/verification/perception-schema-current-20261007",
+      "sealId": "e39b5c07af8a8ac38a808c5358217ca18fc0987f7f43755f623e20d69c9b7b8d"
+    },
+    {
+      "path": "packages/shared/src/perception-projection.test.ts",
+      "ref": "all-tests-20261008/current-source-closure/verification/perception-projection-current-20261007",
+      "sealId": "6d5a52455bf1f1a65c65e967179cc1ba8afe2f9470724a40ef90216155a6b0d3"
+    },
+    {
+      "path": "backend/src/account-access.test.ts",
+      "ref": "all-tests-20261008/current-source-closure/verification/account-realm-access-current-20261007",
+      "sealId": "3169da356e5be739c1cf0b83721e4a986adad15b8d60360ef8bbbe9343c49e04"
+    },
+    {
+      "path": "backend/src/auth.test.ts",
+      "ref": "all-tests-20261008/current-source-closure/verification/authentication-persistence-current-20261007",
+      "sealId": "d93b78dcf717f58f5cbec8838231558d6ba45c7011f29ccbf3e193d97147e77b"
+    },
+    {
+      "path": "backend/src/origin-verification.test.ts",
+      "ref": "verification/origin-secret-comparison-current-20261007",
+      "sealId": "45241218e04a3d27dc62edac99b30378ca1513751ebdb5d40393ba1603af4635"
+    },
+    {
+      "path": "frontend/src/authenticated-fetch.test.ts",
+      "ref": "verification/browser-authenticated-fetch-current-20261007",
+      "sealId": "973d65369dffff5e9c015b41f6ce64ff90352e88018d2753af91d74c420c1d7a"
+    },
+    {
+      "path": "frontend/src/battle-narration.test.ts",
+      "ref": "verification/narration-client-reducer-current-20261007",
+      "sealId": "0761c09a28c45671d10ac6d14df8c9b92cef509f63f63fdcec1bf56b6ffee22c"
+    },
+    {
+      "path": "frontend/src/battle-screen.test.ts",
+      "ref": "verification/narration-client-screen-current-20261007",
+      "sealId": "3e6e243c9da8f3fc46ce10550017bbd6204e071ce4a5fed2123027ac8a80821a"
+    },
+    {
+      "path": "backend/src/llm/character-expression-contract.test.ts",
+      "ref": "all-tests-20261008/current-source-closure/verification/retained-compact-expression-decoder-current-20261007",
+      "sealId": "4465021c7cbe61547dfab5acc6f6faad7fd99ecb01a8359f8605610a4db6290b"
+    },
+    {
+      "path": "backend/src/llm/perception-evidence.test.ts",
+      "ref": "all-tests-20261009/current-source-closure/verification/committed-perception-evidence-current-20261007",
+      "sealId": "496c155f25565f963f8283a78c814b71b776f081158d4286c908203f73276821"
+    },
+    {
+      "path": "backend/src/llm/perception-prompt-strategy.test.ts",
+      "ref": "all-tests-20261009/current-source-closure/verification/perception-fixed-evaluation-current-20261007",
+      "sealId": "1d284c080dcb35df41f0594b07a4c798672cc49e7f1b91fabb6bdaf49e24c8d9"
+    },
+    {
+      "path": "frontend/src/match-selection-preferences.test.ts",
+      "ref": "verification/selection-preferences-current-20261007",
+      "sealId": "6f71fd5cf9e10e5c86fa9c2953b30765ad114a28d4311e83edf1960b096c7c46"
+    },
+    {
+      "path": "frontend/src/battle-scroll.test.ts",
+      "ref": "verification/battle-scroll-viewport-current-20261007",
+      "sealId": "5b2c894e90e274f7a9c84c7a9216c98dd658097a50267d9d72fa1d5b42abb185"
+    },
+    {
+      "path": "backend/src/llm/provider-config.test.ts",
+      "ref": "verification/provider-config-boundaries-current-20261007",
+      "sealId": "a35d00f59c2e79ac5a4cebe1a3df0b281f8bc88bb050e989de83eec8b44adecf"
+    },
+    {
+      "path": "backend/src/repositories/test-realm-assets.test.ts",
+      "ref": "all-tests-20261008/current-source-closure/verification/test-realm-assets-current-20261007",
+      "sealId": "096527b8d49b6eddcbf4836f8ab56a7a850c51662560152d2dc7bae0d27eb757"
+    },
+    {
+      "path": "backend/src/services/e2e-session.test.ts",
+      "ref": "all-tests-20261008/current-source-closure/verification/injected-e2e-session-current-20261007",
+      "sealId": "202588ec5d15bfa9b479e1e4c2dfe195932d68bbe203d68eae6b6dcdfb0cfcf0"
+    },
+    {
+      "path": "backend/src/routes-e2e-session.test.ts",
+      "ref": "all-tests-20261008/current-source-closure/verification/e2e-session-middleware-current-20261007",
+      "sealId": "958b6eba8304e250e7104a27dad3dedf0651302575e47734c243d79ebd77e12a"
+    },
+    {
+      "path": "packages/shared/src/dialogue-context.test.ts",
+      "ref": "all-tests-20261008/current-source-closure/verification/retained-dialogue-context-current-20261007",
+      "sealId": "717542a47be9ec38b131ce5b470ea806d357277ba6efb9e28bca29fee1c5c54b"
+    },
+    {
+      "path": "packages/shared/src/compact-psyche-decode.test.ts",
+      "ref": "all-tests-20261009/current-source-closure/verification/retained-compact-psyche-decoder-current-20261007",
+      "sealId": "fdb6bbdf1a9a4bba3b2c4a900dc2f04ac648569808cdeeee2f169f0ad2327936"
+    },
+    {
+      "path": "packages/shared/src/psyche-reaction-policy.test.ts",
+      "ref": "all-tests-20261009/current-source-closure/verification/retained-psyche-reaction-v1-current-20261007",
+      "sealId": "66e0028821a4d107240e29f3da44f3d67d462675d9dd92a937be05ae0c8db054"
+    },
+    {
+      "path": "packages/shared/src/conscious-dynamic.test.ts",
+      "ref": "all-tests-20261009/current-source-closure/verification/dynamic-v4-shared-current-20261007",
+      "sealId": "dd0c8f93c3a83d7277f10944ac9ee2170900e84bf9cad8ee3d75bdddab63cd21"
+    },
+    {
+      "path": "backend/src/llm/conscious-dynamic.test.ts",
+      "ref": "all-tests-20261008/current-source-closure/verification/dynamic-v4-provider-current-20261007",
+      "sealId": "341bbe306bf4e4b53bf3334cfae19e809833d31bf6ad94498c4067525c4009f0"
+    },
+    {
+      "path": "backend/src/repositories/dialogue-pipeline-settings.test.ts",
+      "ref": "all-tests-20261008/current-source-closure/verification/dialogue-settings-storage-current-20261007",
+      "sealId": "45f029074ecfb7213001799a9dae1e2b409ed18965d9df11359e92d6c7f91b55"
+    },
+    {
+      "path": "backend/src/services/conscious-agency-binding.test.ts",
+      "ref": "all-tests-20261008/current-source-closure/verification/retained-agency-v3-binding-current-20261007",
+      "sealId": "a349ef18605a00e722db10a54502502bcecc6dabd36bf84f5648b736601e50c6"
+    },
+    {
+      "path": "backend/src/services/conscious-agency-runtime.test.ts",
+      "ref": "all-tests-20261008/current-source-closure/verification/retained-agency-v3-runtime-current-20261007",
+      "sealId": "932c8052058c8385b9d8ee09f565ac501196f893ec274c9417b45e9cfe8fad59"
+    },
+    {
+      "path": "backend/src/services/conscious-agency-persistence.test.ts",
+      "ref": "all-tests-20261008/current-source-closure/verification/retained-agency-v3-persistence-current-20261007",
+      "sealId": "1c3e921b5d2d26658deec48e36c55480a9a75729ef07339a5b88c114c5d945e2"
+    },
+    {
+      "path": "backend/src/repositories/battle-awareness-narration-reservation.test.ts",
+      "ref": "all-tests-20261008/current-source-closure/verification/narration-reservation-storage-current-20261007",
+      "sealId": "7d74049e84ffe422b3292e06764e48cadd08026c694c86d864ee0c9690cec4d7"
+    },
+    {
+      "path": "backend/src/repositories/battle-awareness-narrator.test.ts",
+      "ref": "all-tests-20261008/current-source-closure/verification/narrator-continuity-storage-current-20261007",
+      "sealId": "1e10a3acc258e77fef935180bc2ecc40b38bc4adb648db3b8631968ac8eed63d"
+    },
+    {
+      "path": "backend/src/services/awareness-narration-claim-snapshot.test.ts",
+      "ref": "all-tests-20261008/current-source-closure/verification/narration-claim-snapshot-current-20261007",
+      "sealId": "a5958ab82e216d8a7651e5a3dc6acfb63aa99d5bcbe93007b40ebc53736be672"
+    },
+    {
+      "path": "backend/src/services/awareness-narration-event-storage.test.ts",
+      "ref": "all-tests-20261008/current-source-closure/verification/narration-event-storage-current-20261007",
+      "sealId": "9e3cba5fc5d8589acb4afd80d0c454daa4c3a8aae84283edf865f18b3a08d8cc"
+    },
+    {
+      "path": "backend/src/services/awareness-narration-worker.test.ts",
+      "ref": "all-tests-20261008/current-source-closure/verification/awareness-narration-worker-bounded-current-20261007",
+      "sealId": "c230271fb4a42174824d021a78705a6ef19a520b85a23ffaec26be3af5ef2882"
+    },
+    {
+      "path": "backend/src/services/awareness-narration-continuation.test.ts",
+      "ref": "all-tests-20261008/current-source-closure/verification/awareness-narration-continuation-bounded-current-20261007",
+      "sealId": "a378104c32366345aee78dca589e6b64d294ae592f9fdf5bb448b60188ef17e1"
+    },
+    {
+      "path": "backend/src/services/awareness-narration-queue.test.ts",
+      "ref": "verification/awareness-narration-queue-bounded-current-20261007",
+      "sealId": "fa88e0ebb919cdf52263c397f61f98f11085837f1df1a4b2d23c697416bd98f7"
+    },
+    {
+      "path": "backend/src/services/awareness-narration-urgency.test.ts",
+      "ref": "all-tests-20261009/current-source-closure/verification/awareness-narration-urgency-bounded-current-20261007",
+      "sealId": "fd826049f83dae950de974a53166aa8c3a47eaf93d7279d1ff590ab0c2f49057"
+    },
+    {
+      "path": "backend/src/scripts/awareness-narration-convergence.test.ts",
+      "ref": "verification/awareness-narration-convergence-bounded-current-20261007",
+      "sealId": "f59361225f9c06e9a785db582d8732f4aabe7846f05d01f68e9759ce87f9cffb"
+    },
+    {
+      "path": "backend/src/services/awareness-world-commit.test.ts",
+      "ref": "all-tests-20261008/current-source-closure/verification/awareness-world-commit-bounded-current-20261007",
+      "sealId": "f4a3c1e2bfe8dc7bec4bbf23583b8261c3792c9a93f74bb384471ff8ad5d6327"
+    },
+    {
+      "path": "backend/src/services/awareness-expression-commit.test.ts",
+      "ref": "all-tests-20261008/current-source-closure/verification/awareness-expression-commit-bounded-current-20261007",
+      "sealId": "f32541ace67464eb09dfb72850bcd3cbb6cf996dd19f4a5fa6810c3711142d5c"
+    },
+    {
+      "path": "backend/src/services/awareness-adjudication-guard.test.ts",
+      "ref": "all-tests-20261008/current-source-closure/verification/awareness-adjudication-guard-bounded-current-20261007",
+      "sealId": "f4c2637f66047b08ae627ebb51ca81bc6c50aaad3f0056dde5be99cae9e3e4aa"
+    },
+    {
+      "path": "backend/src/services/normal-awareness-policy.test.ts",
+      "ref": "all-tests-20261008/current-source-closure/verification/normal-awareness-policy-bounded-current-20261007",
+      "sealId": "2920b625359df10a66a9d24a0c0feca14e481d2a8380091f4a5741a199bcd689"
+    },
+    {
+      "path": "backend/src/services/distributed-guard.test.ts",
+      "ref": "all-tests-20261008/current-source-closure/verification/distributed-guard-bounded-current-20261007",
+      "sealId": "51b27c6d9c36dc305b44803c1c2c7339746213e37102076b59e802632c03be12"
+    },
+    {
+      "path": "backend/src/services/battle-causal-narration.test.ts",
+      "ref": "all-tests-20261008/current-source-closure/verification/battle-causal-narration-bounded-current-20261007",
+      "sealId": "089832c38778d97956fa0bce0682376d01af16350dd29a2a14585a3fa0bb891e"
+    },
+    {
+      "path": "backend/src/services/battle-consumer-wiring.test.ts",
+      "ref": "all-tests-20261008/current-source-closure/verification/battle-consumer-wiring-bounded-current-20261007",
+      "sealId": "100304b989a031475d147d87abda44131e48ab3c3df5c1013c6bf1eed994bc5e"
+    },
+    {
+      "path": "packages/shared/src/character-definition-check.test.ts",
+      "ref": "all-tests-20261009/current-source-closure/verification/character-definition-check-bounded-character-contract-20261007",
+      "sealId": "95efe8929542fa9b7e6d3c96e77531f6a942d87caa6e2193de1ee62f3e9a84ec"
+    },
+    {
+      "path": "packages/shared/src/character-definition-rules.test.ts",
+      "ref": "all-tests-20261009/current-source-closure/verification/character-definition-rules-bounded-character-contract-20261007",
+      "sealId": "203336392dfba0643d8b90327ac795ff7cadeb68b800a675be2d04be892b3449"
+    },
+    {
+      "path": "packages/shared/src/structured-character.test.ts",
+      "ref": "all-tests-20261009/current-source-closure/verification/structured-character-bounded-character-contract-20261007",
+      "sealId": "0e6e0f218045253ded86e60acdc3bb7d802f06c3a534d5951c879b209ac0dea1"
+    },
+    {
+      "path": "packages/shared/src/character.test.ts",
+      "ref": "all-tests-20261009/current-source-closure/verification/character-bounded-character-contract-20261007",
+      "sealId": "8eb0fda6c6ca2eab1e269373740bee3817a5e7e380a40dade916432061ae68ef"
+    },
+    {
+      "path": "packages/shared/src/character-manifestation.test.ts",
+      "ref": "all-tests-20261008/current-source-closure/verification/character-manifestation-bounded-character-contract-20261007",
+      "sealId": "849b4017632bd719a891d91bd19106ae8e95cf03aa0621031e024c6505e7ae9e"
+    },
+    {
+      "path": "packages/shared/src/battle-asset-manifest.test.ts",
+      "ref": "all-tests-20261009/current-source-closure/verification/battle-asset-manifest-bounded-character-contract-20261007",
+      "sealId": "cc7e7806289760541bdd2fba1d679ba4af9986d24d8bafa98fcb83371cbdf3b4"
+    },
+    {
+      "path": "backend/src/repositories/character-generation-reader.test.ts",
+      "ref": "all-tests-20261009/current-source-closure/verification/character-generation-reader-bounded-character-contract-20261007",
+      "sealId": "3ccb8de454e1c2c4e90d79b5f2ed16144787aee656cf438611353923e3472846"
+    },
+    {
+      "path": "backend/src/repositories/battle-awareness-creation.test.ts",
+      "ref": "all-tests-20261008/current-source-closure/verification/battle-awareness-creation-bounded-awareness-creation-20261007",
+      "sealId": "f25a783edf5d3007eb531b1c59909729eb7d8b646e586a02afb326c0bf9199eb"
+    },
+    {
+      "path": "backend/src/repositories/battle-awareness.test.ts",
+      "ref": "all-tests-20261008/current-source-closure/verification/battle-awareness-bounded-awareness-creation-20261007",
+      "sealId": "f9e8c1d5a76a0d1cdd32d07369bd02de2e85999e073369fb2e063da830085fee"
+    },
+    {
+      "path": "backend/src/services/awareness-battle-creation.test.ts",
+      "ref": "all-tests-20261008/current-source-closure/verification/awareness-battle-creation-bounded-awareness-creation-20261007",
+      "sealId": "c405ab492c9289283e22346a2ba7edf418812dc4bd914a5ffbbd113486e51156"
+    },
+    {
+      "path": "backend/src/services/awareness-battle-service.test.ts",
+      "ref": "all-tests-20261008/current-source-closure/verification/awareness-battle-service-bounded-awareness-creation-20261007",
+      "sealId": "1ee61b8723956e02581f26ac16496fb73f2e2015b7522e8979c1314163842646"
+    },
+    {
+      "path": "backend/src/services/awareness-creation-encounter.test.ts",
+      "ref": "all-tests-20261008/current-source-closure/verification/awareness-creation-encounter-bounded-awareness-creation-20261007",
+      "sealId": "84f04cb70506445207eafe33dbe815c84d31507ec73198093d2771bd07d1f9c6"
+    },
+    {
+      "path": "backend/src/services/battle-create-idempotency.test.ts",
+      "ref": "all-tests-20261008/current-source-closure/verification/battle-create-idempotency-bounded-awareness-creation-20261007",
+      "sealId": "e58fa7b83a3d14ee6ed88668589fa550d11e414f336a27f88d3c8ffcec900c75"
+    },
+    {
+      "path": "backend/src/repositories/battle-awareness-postgres.test.ts",
+      "ref": "all-tests-20261008/current-source-closure/verification/battle-awareness-postgres-bounded-native-pg-20261007",
+      "sealId": "b3f247d89388136a4b644bf2c067a7df834f5856c2d7f77734a3920f85c157a6"
+    },
+    {
+      "path": "backend/src/repositories/battle-awareness-narration-events-postgres.test.ts",
+      "ref": "all-tests-20261008/current-source-closure/verification/battle-awareness-narration-events-postgres-bounded-native-pg-20261007",
+      "sealId": "6e1419fee34ab5c6dcc09637586bde9778e527495424af69323ae0d859da8874"
+    },
+    {
+      "path": "backend/src/repositories/battle-awareness-narration-reservation-postgres.test.ts",
+      "ref": "all-tests-20261008/current-source-closure/verification/battle-awareness-narration-reservation-postgres-bounded-native-pg-20261007",
+      "sealId": "04d56ceb000e6fa7df80d248647dd95c84fddb6806ef0362ec702d3ac2766af6"
+    },
+    {
+      "path": "packages/shared/src/battle-engine-absence.test.ts",
+      "ref": "all-tests-20261009/current-source-closure/verification/battle-engine-absence-bounded-20261007",
+      "sealId": "26eb489630dc747040085d72465b75cb4a453c7cc9a8e7623ebad24a2e459281"
+    },
+    {
+      "path": "scripts/sealgraph-runtime-dirs.test.mjs",
+      "ref": "verification/sealgraph-runtime-directories-bounded-20261007",
+      "sealId": "a97751865e7a8918af21f3d816d80735f46f2a8f6d1eb275ccf3b063a5205a19"
+    },
+    {
+      "path": "scripts/select-release-rollback-target.test.mjs",
+      "ref": "verification/rollback-selector-bounded-20261007",
+      "sealId": "5f7296c6d3b3f046712ebe81e38d931f81046a223f6ba0f916eae4d52c38ed51"
+    },
+    {
+      "path": "scripts/smoke-deployment.test.mjs",
+      "ref": "verification/health-convergence-bounded-20261007",
+      "sealId": "acea68afba449d2d93efc539a13ff31ee1d6f02e92852e1cece844faaf3f4938"
+    },
+    {
+      "path": "scripts/r2-smoke-startup.test.mjs",
+      "ref": "verification/r2-startup-bounded-20261007",
+      "sealId": "7f9cf1f0bea6e6dd23e38e63ec9c1d673e4172bfedb3c7a528ebcf3c2b849a15"
+    },
+    {
+      "path": "infra/cloudflare-worker/src/index.test.ts",
+      "ref": "verification/worker-edge-bounded-20261007",
+      "sealId": "40ad7bb09f6a1ce91292f2ff4ac443be2233d5201296fe231a6c37d60a5b6c2e"
+    },
+    {
+      "path": "backend/src/character-name-uniqueness.test.ts",
+      "ref": "verification/character-name-helper-bounded-20261007",
+      "sealId": "e92d2c6cb92a5d64482a512a0794eebba763f2737d0e7d398daf01c384216927"
+    },
+    {
+      "path": "backend/src/config-pacing.test.ts",
+      "ref": "verification/config-name-parser-bounded-20261007",
+      "sealId": "6068d365e83a3a7c41319f6e4d812dc24284989fdad70d0e80393c349b6a92a8"
+    },
+    {
+      "path": "backend/src/image/openai-compatible.test.ts",
+      "ref": "verification/image-provider-response-bounded-20261007",
+      "sealId": "c9464bde4d6357e8096a64f7f8821baa75a2be17ac12761cdd88117802a3227b"
+    },
+    {
+      "path": "backend/src/services/r2-storage.test.ts",
+      "ref": "verification/r2-object-writer-bounded-20261008",
+      "sealId": "45b9038112c9bcc5457a59b4ef5d38db892060df76afd1a56969dd72bf1aab67"
+    },
+    {
+      "path": "backend/src/services/image-service.test.ts",
+      "ref": "verification/image-prompt-failure-bounded-20261008",
+      "sealId": "f6f6c57a1e0ae68341cdfb3afbdaf2dff040f12c6eade2b063c55001bd6bc939"
+    },
+    {
+      "path": "backend/src/services/image-archive.test.ts",
+      "ref": "verification/local-media-archive-connected-20261008",
+      "sealId": "fad071e09fe375121929ac3a9a5ec1ddf6b6bd11e68d547b75fd3f941662e288"
+    },
+    {
+      "path": "backend/src/postgres-config.test.ts",
+      "ref": "verification/postgres-ca-path-bounded-20261008",
+      "sealId": "f3110c18db1f5fcb4572f5a367b76dd13df82d47fa241097e4ab10e3304dfbed"
+    },
+    {
+      "path": "backend/src/scripts/postgres-migrations.test.ts",
+      "ref": "verification/postgres-migration-discovery-bounded-20261008",
+      "sealId": "b4a63fe7e8f599f18c1d94eaf94d8cfbcecfa392d3f218e925c7f6a3b0208be6"
+    },
+    {
+      "path": "backend/src/scripts/sqlite-to-postgres.test.ts",
+      "ref": "verification/sqlite-source-inspection-bounded-20261008",
+      "sealId": "0efb54a00d9ce6ca57531bd264941816eefd130dae8eb81ad506d1db67fe2257"
+    },
+    {
+      "path": "packages/shared/src/battlefield-definition-check.test.ts",
+      "ref": "verification/battlefield-gap-helper-bounded-20261008",
+      "sealId": "ef160a6e37cb81a3c3a1013fba9a24450e673c2278d22acbc934908798cb0a66"
+    },
+    {
+      "path": "packages/shared/src/battle-stream.test.ts",
+      "ref": "verification/partial-narrator-helper-bounded-20261008",
+      "sealId": "4abe2b43067214713b9cc5d4b2640fbaec72d871803c39615ff9c24b2738abd7"
+    },
+    {
+      "path": "packages/shared/src/narration-composer.test.ts",
+      "ref": "verification/narration-composer-helper-bounded-20261008",
+      "sealId": "f97587fa8a72adddf2aa299a4a089196420ca802255dfa78b9339bb7cf286560"
+    },
+    {
+      "path": "packages/shared/src/narrative.test.ts",
+      "ref": "verification/narrative-helper-bounded-20261008",
+      "sealId": "2899bc4c911cfbfe741cc06083de92e8254e9765a9be96939330bda69492416b"
+    },
+    {
+      "path": "packages/shared/src/drama.test.ts",
+      "ref": "verification/drama-helper-bounded-20261008",
+      "sealId": "ab1c401b20aa60c604fcaeb25318c06b5be2ba426944d4d629a6fadd8a60d242"
+    },
+    {
+      "path": "packages/shared/src/supervisor.test.ts",
+      "ref": "verification/supervisor-helper-bounded-20261008",
+      "sealId": "19aefab08aafb331a4191980f3707c37ae4b312d3f76e6252e2b6be83089588d"
+    },
+    {
+      "path": "backend/src/scripts/authenticated-read-surface-smoke.test.ts",
+      "ref": "verification/authenticated-read-probes-bounded-20261008",
+      "sealId": "19145d3259b132dd95234a6efb7f91c24f5332baf02276aa4de421ad31fcc5c2"
+    },
+    {
+      "path": "backend/src/scripts/authenticated-sse-smoke.test.ts",
+      "ref": "verification/authenticated-terminal-sse-bounded-20261008",
+      "sealId": "19a06de5bddea608f147aaf1535ab9dc42336dd92c99681225adf348eb4af63e"
+    },
+    {
+      "path": "backend/src/scripts/awareness-public-observation.test.ts",
+      "ref": "verification/awareness-usage-verifier-bounded-20261008",
+      "sealId": "ac60a741618d22d1327f2778d28271e7ca775500378a98a4a3ba49ff8a0364a8"
+    },
+    {
+      "path": "backend/src/llm/openai-compatible-agent.test.ts",
+      "ref": "all-tests-20261008/current-source-closure/verification/agent-typed-seam-bounded-20261008",
+      "sealId": "440e7d55124ec7f56cf744b0b21a743dedbfe4c5bf116bc64fec92966d32af1b"
+    },
+    {
+      "path": "backend/src/llm/openai-compatible-perception.test.ts",
+      "ref": "all-tests-20261008/current-source-closure/verification/perception-typed-seam-bounded-20261008",
+      "sealId": "1d3c61cebe161f9b2b1077d3f524197468deb6aa89c4524a78fe1612ef64921e"
+    },
+    {
+      "path": "backend/src/llm/openai-compatible-routing.test.ts",
+      "ref": "all-tests-20261008/current-source-closure/verification/routing-typed-seam-bounded-20261008",
+      "sealId": "3100f4a228a7f519b709fe861b0ccd12fd969443bc30228a1e10dbbd476ea5e0"
+    },
+    {
+      "path": "backend/src/llm/openai-compatible-psyche-repair.test.ts",
+      "ref": "all-tests-20261008/current-source-closure/verification/psyche-repair-bounded-20261008",
+      "sealId": "c408f063097fb6b6891c11c0c1900b8096730b016a898b98fa9b586bc9bb46f2"
+    },
+    {
+      "path": "backend/src/llm/mock.test.ts",
+      "ref": "all-tests-20261009/current-source-closure/verification/mock-bounded-20261008",
+      "sealId": "bd95bcf2775331a6fdf674887309e73ed00e5e74abf11e6688534319a80d1b3a"
+    },
+    {
+      "path": "backend/src/services/character-portrait-v3.test.ts",
+      "ref": "all-tests-20261008/current-source-closure/verification/portrait-v3-bounded-20261008",
+      "sealId": "6489832fe0628d99a66fdd292032a92e14c246dd372d8c9a9d95b5bb52c7cbe2"
+    },
+    {
+      "path": "backend/src/services/free-action-service.test.ts",
+      "ref": "all-tests-20261009/current-source-closure/verification/free-action-service-bounded-20261008",
+      "sealId": "97519bb390532f7bc1833a751c26920de5fa704b1d78e723e9604b65988d1ac7"
+    },
+    {
+      "path": "backend/src/services/internal-observability.test.ts",
+      "ref": "verification/internal-observation-private-bounded-20261008",
+      "sealId": "fdf4b790726e0fe94c41df8be3d288cd950c1a804e353c684a77de3b5c365d71"
+    },
+    {
+      "path": "backend/src/services/character-agency-inventory.test.ts",
+      "ref": "all-tests-20261008/current-source-closure/verification/historical-agency-inventory-bounded-20261008",
+      "sealId": "a00c23f342a71748f30348ecb0d981e2493e27ad1c7d4dd3722d5ee35dfdb522"
+    },
+    {
+      "path": "backend/src/scripts/dialogue-quality.test.ts",
+      "ref": "verification/dialogue-quality-helper-bounded-20261008",
+      "sealId": "33fde13e943800ce703f40de84ec258d1b32fc29abc11111e70cb8a3681bb44d"
+    },
+    {
+      "path": "backend/src/scripts/migrate-legacy-account.test.ts",
+      "ref": "verification/migrate-legacy-account-helper-bounded-20261008",
+      "sealId": "ce4d44e6acae36036701a69c359bd546751af60e16b4c90e8c3fec89501251bd"
+    },
+    {
+      "path": "backend/src/scripts/supabase-auth-smoke.test.ts",
+      "ref": "verification/supabase-auth-smoke-helper-bounded-20261008",
+      "sealId": "c28f9d37d91f63838cf59555ffe23c05dfe221c11caf4e8aa5a51f9ba342a37f"
+    },
+    {
+      "path": "packages/shared/src/battle-policy.test.ts",
+      "ref": "all-tests-20261009/current-source-closure/verification/battle-policy-bounded-20261008",
+      "sealId": "b7880a18b07a22fb047996a3d54a6e9501225da745b65e175521357d5fd7ae9a"
+    },
+    {
+      "path": "packages/shared/src/battle-social.test.ts",
+      "ref": "verification/battle-social-bounded-20261008",
+      "sealId": "3d2bd33f046c7c392b4cdc307d51269816e2ec7d1559926080a53a895c12db30"
+    },
+    {
+      "path": "packages/shared/src/scene-beat.test.ts",
+      "ref": "verification/scene-beat-bounded-20261008",
+      "sealId": "21ed669001fec8551e91a491c3cc3332bc16e67c4536fd4e089222930105dbc0"
+    },
+    {
+      "path": "packages/shared/src/conscious-agency.test.ts",
+      "ref": "all-tests-20261009/current-source-closure/verification/conscious-agency-bounded-20261008",
+      "sealId": "369cf9dcf5460a2e8ebc1b857c0501e65dbd8e0cfea03e7793dcc2c905c526b0"
+    },
+    {
+      "path": "packages/shared/src/battle-causality.test.ts",
+      "ref": "verification/battle-causality-bounded-20261008",
+      "sealId": "c306bd4c3408cdaee91d1de27710aa83bb9d02f6eac0ef17886c789cd4dde64d"
+    },
+    {
+      "path": "packages/shared/src/battle-effects.test.ts",
+      "ref": "verification/battle-effects-bounded-20261008",
+      "sealId": "d2c5fa7877ab37286d7a80bf5dab0f7d9c287ba945742b7966e3a3fd9cd40bd2"
+    },
+    {
+      "path": "backend/src/repositories/battle-presentations.test.ts",
+      "ref": "verification/battle-presentations-history-bounded-20261008",
+      "sealId": "cbf36ad6adbed63c111fd1fbbc86e494e3f05f5b7cd85539f07024289d600597"
+    },
+    {
+      "path": "backend/src/repositories/battles-improvement.test.ts",
+      "ref": "verification/battles-improvement-history-bounded-20261008",
+      "sealId": "0e3732f9bded71d9345bba978299671d4bc7293e5de9a715e0094c83a7b1bc0f"
+    },
+    {
+      "path": "backend/src/services/awareness-trial-harness.test.ts",
+      "ref": "verification/awareness-trial-harness-bounded-20261008",
+      "sealId": "67e8867798e7ae95ae016116db826e745fda94a76513e764752020314ff50a3d"
+    },
+    {
+      "path": "backend/src/scripts/persistent-e2e-workflow.test.ts",
+      "ref": "verification/persistent-e2e-workflow-bounded-20261008",
+      "sealId": "09bc5ef000c38601bc679fe851b224233b6bdd9b8179fdb277992bd9311bf509"
+    },
+    {
+      "path": "backend/src/services/semantic-authoring/revision-scope-evaluation.test.ts",
+      "ref": "verification/revision-scope-evaluation-bounded-20261008",
+      "sealId": "028c3ccd50f29c77b4cd51d3434c66bf85499e0f82445658d4380ffc5d894194"
+    },
+    {
+      "path": "backend/src/services/semantic-authoring/revision-scope-ollama.test.ts",
+      "ref": "verification/revision-scope-ollama-bounded-20261008",
+      "sealId": "5a9f61a3a053d790c0f4bc84bb07b8d8664e95db4e7e246bbb71cc3ea2eacbff"
+    },
+    {
+      "path": "backend/src/scripts/persistent-battle-e2e.test.ts",
+      "ref": "all-tests-20261008/current-source-closure/verification/persistent-battle-e2e-bounded-20261008",
+      "sealId": "d0927ecc685188f6e0d52ba602a9f616b2abab4b069421ef09b58000b92451b6"
+    },
+    {
+      "path": "backend/src/scripts/character-authoring-a2-freeze.test.ts",
+      "ref": "all-tests-20261008/current-source-closure/verification/character-authoring-a2-freeze-bounded-20261008",
+      "sealId": "597d76d11e775ba1908550aa9ec961d8d9bf3e42be3508be6b2752e1ae0be661"
+    },
+    {
+      "path": "backend/src/services/scene-beat-wiring.test.ts",
+      "ref": "all-tests-20261008/current-source-closure/verification/scene-beat-wiring-bounded-20261008",
+      "sealId": "a86bb6b18eebebb9e62e1946f7819b129893574faf4560e29074e5e905109ab4"
+    },
+    {
+      "path": "backend/src/services/battle-speech-wiring.test.ts",
+      "ref": "all-tests-20261008/current-source-closure/verification/battle-speech-wiring-bounded-20261008",
+      "sealId": "3c392d71f5494979f5cf34210bb52ecad18e4b38176e509bedbef554451150f8"
+    },
+    {
+      "path": "scripts/adr-historical-exceptions.test.mjs",
+      "ref": "all-tests-20261008/current-source-closure/verification/adr-historical-exceptions-bounded-20261008",
+      "sealId": "250006c8684a5c8922ad18cf40053dbb431114f24011010366732c48eb2296f8"
+    },
+    {
+      "path": "packages/shared/src/balance-observe.test.ts",
+      "ref": "verification/balance-observe-bounded-20261008",
+      "sealId": "45d5711186d18c3af6ca159b562e93acdb091d50a2c5bb196d159e3045043acc"
+    },
+    {
+      "path": "e2e/battle-screen.spec.ts",
+      "ref": "verification/battle-screen-current-20261008",
+      "sealId": "95b27cfc2a1136346829d0a0958fb8f6d55ec9796019168cb4f40526a56e316c"
+    },
+    {
+      "path": "packages/shared/src/action-feasibility.test.ts",
+      "ref": "all-tests-20261009/current-source-closure/verification/action-feasibility-bounded-20261008",
+      "sealId": "c9714ebfe5bea124f0cd8f2ef2b6983b0538a8713c08eafcb477f1038fdcabeb"
+    },
+    {
+      "path": "packages/shared/src/battle-pacing.test.ts",
+      "ref": "all-tests-20261008/current-source-closure/verification/pacing-representation-bounded-20261008",
+      "sealId": "b9644fe53c3ab716ff5e2baa578dc3058e2f9ad718d98e9ef7d82fe1a89865d8"
+    },
+    {
+      "path": "backend/src/routes-structured-asset-integration.test.ts",
+      "ref": "all-tests-20261008/current-source-closure/verification/structured-asset-integration-bounded-20261008",
+      "sealId": "89da8c7a97531530f97e85f26b40eb6050d4d443f6783d4eaf985c83103cf1d5"
+    },
+    {
+      "path": "packages/shared/src/asset-visibility.test.ts",
+      "ref": "verification/owner-shared-visibility-20261008",
+      "sealId": "774078d7a91807ccded4a11b6197a7c2d8b0071962bb5a3f608f8e98bdd86b6e"
+    },
+    {
+      "path": "backend/src/repositories/asset-visibility.test.ts",
+      "ref": "verification/owner-backend-visibility-20261008",
+      "sealId": "178cfb8335f544de73e62c954d2eeab772b3f43dfd9b86eb38770e9a7e80b75b"
+    },
+    {
+      "path": "backend/src/llm/fallback.test.ts",
+      "ref": "all-tests-20261009/current-source-closure/verification/owner-fallback-20261008",
+      "sealId": "0695b5887ec66a3ae261f82d2d9f60cc78f1e70b0cc6283d69923c59970d6c27"
+    },
+    {
+      "path": "backend/src/services/battle-public.test.ts",
+      "ref": "all-tests-20261009/current-source-closure/verification/owner-battle-public-20261008",
+      "sealId": "e63b66a4a916cca8a15e9c1cda6ed71ffa6f1ed701b865387132865838310e6e"
+    },
+    {
+      "path": "packages/shared/src/character-improvement.test.ts",
+      "ref": "verification/owner-improvement-20261008",
+      "sealId": "a481501c572e460481e221ff08443f59d6f69b82d0807d6a8638999b5f2eba44"
+    },
+    {
+      "path": "packages/shared/src/rating.test.ts",
+      "ref": "verification/owner-rating-arithmetic-20261008",
+      "sealId": "9f5feb58aa57a15525182aea345cb298b287b0346050edc552122ac441863c92"
+    },
+    {
+      "path": "frontend/src/match-rating.test.ts",
+      "ref": "verification/owner-match-rating-20261008",
+      "sealId": "f10813ec09147c460afeea3c1294f0685a1b2e59dae3dc55320207e9e9cbdee4"
+    },
+    {
+      "path": "backend/src/repositories/characters.test.ts",
+      "ref": "all-tests-20261008/current-source-closure/verification/owner-characters-rating-20261008",
+      "sealId": "7a056b572c185ddafa3d5626045f94bf2b23dd56b8c0334bd7c586edd7e36a60"
+    },
+    {
+      "path": "backend/src/services/rating-service-transaction.test.ts",
+      "ref": "all-tests-20261008/current-source-closure/verification/owner-rating-transaction-20261008",
+      "sealId": "b685dd02bfb80fcde9ed5731ed2ef06c05eedfcedc51ebc9ba8e0e90e20bf8cc"
+    },
+    {
+      "path": "backend/src/routes-structured-character-acceptance.test.ts",
+      "ref": "all-tests-20261008/character-complete-source/original-http-test",
+      "sealId": "193d923f554979897a23564c1a70349915e663dbb6bce0faf0db3513d6e6b5ec"
+    },
+    {
+      "path": "packages/shared/src/balance.test.ts",
+      "ref": "all-tests-20261009/original-tests/balance-test",
+      "sealId": "0f0ae114f27c2c36a6b00a67efbb323bf0a7c5ea17fc9dbcd4f9b684d3bc4c6e"
+    },
+    {
+      "path": "packages/shared/src/battle-engine.test.ts",
+      "ref": "all-tests-20261009/original-tests/engine-test",
+      "sealId": "b6a9f578a922ad2fdd909f02227102a267c0f9dea734c7bb99365230ec388df5"
+    },
+    {
+      "path": "packages/shared/src/skill-cooldown.test.ts",
+      "ref": "all-tests-20261009/original-tests/cooldown-test",
+      "sealId": "0925309d85fa45296881d877278a43eeac29767421644260c7c644ca5a381c04"
+    }
+  ],
+  "sourceSha256": {
+    "backend/src/account-access.test.ts": "acded520435db19591c025137404ffdf7672cff94b307d73ad62c4023b6d5d64",
+    "backend/src/account-access.ts": "9bebaf7d75b6c6a0e5e962fe827a7b21ee4b361586f46785fa15e2486b2226a6",
+    "backend/src/auth.test.ts": "12c0393c51f4af35c0abdcc1a0d6866982fabc8712a5a75ac22a553b12b87224",
+    "backend/src/auth.ts": "497c87571118b8d64709a90f9fbca77eca6c931402ab7115cbf983f0ec510256",
+    "backend/src/character-name-uniqueness.test.ts": "11d201dda5f9998639eb8848a8dae9382820a0c9473cab547b0d1c692b776309",
+    "backend/src/character-name-uniqueness.ts": "ebcf352f92dcbb9a79b3f664a77b4e4fee8725578b3402d60770dfe392cc13aa",
+    "backend/src/config-pacing.test.ts": "5a3bd5ed3e0e33114a5acaa5bf426a0781debd10212ca3a5d8b714ec89afeb6c",
+    "backend/src/config.ts": "6b58fd9428c378fefee216abc3e7f062d9798a9cec9d28c8d2ac831fb3cdc750",
+    "backend/src/cutover-config.test.ts": "f2080cc93e097e561e184405c75583ed04d3be84203008caed0bce470fdda13c",
+    "backend/src/cutover-startup.test.ts": "c63af346165bb3e2b62b318b5c502e818d7be297ca9194e788d5c362c949c77c",
+    "backend/src/db.ts": "70bacc4e8b0e53f88fe25c15e45c0a1d9aa1c67d6a3925282d9fdec277b8f77e",
+    "backend/src/e2e-observer.test.ts": "c15a08012099c1bf999f246600ee1e8d5f18814d756271b0b28b5dc8eeb595f3",
+    "backend/src/e2e-observer.ts": "942466696c4ad9066c7fbe1581abcff36dc519ad356f5115837776bcce9a6b0d",
+    "backend/src/e2e-supabase-admin.ts": "bc758ee22afab68cb86936c3b211216c3ca13b99a030d9a2fff7e58d20e54058",
+    "backend/src/fixtures/fixture-content-digest.ts": "6f37ec4be336dfbd2426ca1b7bdf70fa20cd8b327ec4769528bce22bb216ef38",
+    "backend/src/fixtures/neva-v3.ts": "24858ab3dc4812fe09d62452373e782bfd76404f5edbf72aac1addbdc93d9de3",
+    "backend/src/fixtures/rio-v3.ts": "19946585c3104c2894abfe8185d06c95ae77c99fadbcce07b1c0209c9ac7cab1",
+    "backend/src/id.ts": "bca239086c235c70ef2de0012399dfdb365a977886b60df02e2d103ed63e1cb1",
+    "backend/src/image/fallback.ts": "94e6de293d26771dfc2cab337e3d11a0646f9c6acc0ba92b3d55164273448395",
+    "backend/src/image/image-response.ts": "c4d64fb2ce0bd8434c51d3ffe97e524d913596f5c7929a97b04c2755ec1da6ba",
+    "backend/src/image/index.ts": "3870d62e26c64e57e25d56654179f4b3d735e2d051127a255fd31c3474284935",
+    "backend/src/image/openai-compatible.test.ts": "f0be06a1fe3fa8db6cc690d97ad73c59d82b41595aa189e68410f0c868fe894a",
+    "backend/src/image/openai-compatible.ts": "d315ec1aa6e85e2260dee35cf3abcabea4240c179926734913d8de957d03ec7f",
+    "backend/src/image/types.ts": "0397f52023874802a0245cabd7453112dfb53a57e029e340d30d54d21221a9f1",
+    "backend/src/index.ts": "8baf4d43ef60e59669b1af1dd3c7c8714761556f98edd69a51e7aeace8a85984",
+    "backend/src/llm/adjudication-prompt-prose.test.ts": "48e0b68a75325ca10353edae71b65d4f44ad1595c8b297ef283c8166a537d9ce",
+    "backend/src/llm/adjudication-prompt-prose.ts": "8fd1d0c125eb65dea5d615f5b7c70d15736b12a9bfaf45f98d0292f100011a93",
+    "backend/src/llm/awareness-adjudication-result.test.ts": "c8b7b4f7ad6589ec1c73a2d3162009639ab999744f88582beb9a85b833db2de2",
+    "backend/src/llm/awareness-adjudication-result.ts": "e5077a022406f0c01db609ccd9bf9b5ca4871c704b343dfe647ba9925ac66492",
+    "backend/src/llm/awareness-dispatch-admission.test.ts": "702c77c494da1d79e4c5203f4d593791a581713d24a33182712bfb9d07033691",
+    "backend/src/llm/awareness-dispatch-admission.ts": "a6df626e1c9d7f4df5a72e29357e1a00f5fd0057f15cc3e2c552bba65f487248",
+    "backend/src/llm/awareness-dispatch-context.test.ts": "c07e444968c6952867c4ad0d0c14e7d0c29b3cee65f9540091a541926ddf1370",
+    "backend/src/llm/awareness-dispatch-context.ts": "fd309621d2bcfd31b7ce2fa8cb55a1aca358295f909cf83bc74b137e6b4202bd",
+    "backend/src/llm/awareness-frozen-narration.test.ts": "169e8844021f414756bc65796b4de8a8dcc3b0c393fb49b67805e4494dba5f99",
+    "backend/src/llm/awareness-frozen-narration.ts": "449233deacc537927d6455d03f21cbb9a26963ebfd2693c3ed9e74712ae0a715",
+    "backend/src/llm/awareness-latent-output-guidance.test.ts": "b15f5270a5704ca436a7abddb617f3dc42dc868cc853fac9f58d8f5eb0572d3b",
+    "backend/src/llm/awareness-latent-output-guidance.ts": "28f84d9024356aef649f204134b02c4e312824330aa8aebce0d39a1b6f345544",
+    "backend/src/llm/awareness-narration-phase.ts": "794b013dae0943c1a9cbcd0ae738c42066169dd680bc4f18f713c6963d6e18bb",
+    "backend/src/llm/awareness-narration-response-schema.ts": "8e63072b0a8881ea0b5dcb97490135fc7e52a4b21859f6403ffa836d10c7e196",
+    "backend/src/llm/awareness-narration.test.ts": "eb646e9d0c720b86f40b4bf32973013c35c96c63465385e3406fa570fbac0096",
+    "backend/src/llm/awareness-narration.ts": "a32f94cb75d85fb34cf1f502061622ed606136cf99d2bcf29d48506437fd524f",
+    "backend/src/llm/awareness-narrator-context.ts": "89b451e1d64ede824b6b8a7c70a18f3ad919b54376ef52ed20f50ab3429b0f68",
+    "backend/src/llm/awareness-output-contract.test.ts": "0d2efd8b046f7cab91edbdcca7ac466502846d247cafa8f03257bcb118899c18",
+    "backend/src/llm/awareness-output-contract.ts": "2b956aa7592f6c48cf911e75b66e39bc450982f195ada5b84bdc93035a46e772",
+    "backend/src/llm/awareness-provider-contract.ts": "f4b4ea8eba8f7910d256dcc4fdf3d9e83ac6a816c0270270542960ff8f402bb4",
+    "backend/src/llm/awareness-provider-factory.test.ts": "8f81ea03ce3aac3bf277d368477c193b4a9f418ff2e146b4806e7e3645ba0b2f",
+    "backend/src/llm/awareness-provider-factory.ts": "f4c116093a1499212e44c1175d891bb2a188c6c0f527b29bca9ad936ce1c1325",
+    "backend/src/llm/awareness-provider.test.ts": "a2140ee8c1a224edbb39a2d8c1fdf56fa9e0c145e8deac538a76a2ee551c66b3",
+    "backend/src/llm/awareness-provider.ts": "d97ded70df5b50fe8364eaba6255354a9b4df821c68cd2c6622088a1a7d2b1a4",
+    "backend/src/llm/awareness-request.test.ts": "d712d2cbe95b1a4d2c89a9c4a7d7ff00ed25ba626a738bb5a0a8f6d3c6cb71a5",
+    "backend/src/llm/awareness-request.ts": "1d14e53095da42c7c1891d5f91f389a97a045e4b067ba3727a650be006118995",
+    "backend/src/llm/character-definition-response-schema.test.ts": "17372875baea26e49c6609a270bdd5dc82ea84f3924a69979acea06e55666f85",
+    "backend/src/llm/character-definition-response-schema.ts": "1bde925d3b5326e5af3da3e625432cc1ffec452c119e1f75e0ea55433e087949",
+    "backend/src/llm/character-expression-contract.test.ts": "a0332c070d14db9e679d6c7d64efc1e403be98204a808d919b328203ffb5f8c9",
+    "backend/src/llm/character-expression-prompt.ts": "06210c2705e00910b043ad290c848348764ab5abba3a064e1593310939900272",
+    "backend/src/llm/character-focus-ablation-report.test.ts": "82c22072fe5b0624a73601a379fdc762926cbb1fbcae8eee6ced22b772e2109f",
+    "backend/src/llm/character-focus-ablation-report.ts": "cafa505c9f839422df2bf28191893288efa4b3fd9a65d1d82e6656654285c0e1",
+    "backend/src/llm/character-focus-ablation.test.ts": "1555c232768ac42f8ba27afebaaee5b562ec731bae6fd4cc45ca8f245356fcd5",
+    "backend/src/llm/character-focus-ablation.ts": "87192b681c4b9e9a6a222ded88992d4a9a8ec9165a1a45fcdfe44301af93b529",
+    "backend/src/llm/character-migration-ollama-provider.test.ts": "7c42f81dd9c98d9b367e51f8f50061aac1cd6f066678e6628e8b8b83e75153f5",
+    "backend/src/llm/character-migration-ollama-provider.ts": "7cef1a87df486d894ad5848f78c9800c2746f266698e892d04ba85bd47cf5816",
+    "backend/src/llm/character-migration-probe-provider.test.ts": "f202053a23251db35835a61fdebf75d1b56ce33e847cf1710dbbb48d9012f0c0",
+    "backend/src/llm/character-migration-probe-provider.ts": "902c259fcc3df21e531db32ece78b769a3a74c4b7de2c5372a8fd97248f84107",
+    "backend/src/llm/character-migration-response-schema.test.ts": "862f6ff90435afb66e3d66b5f8151f463ba7d96fec57b311414be851b3d8b3b4",
+    "backend/src/llm/character-migration-response-schema.ts": "8674f0b1faac36b2f5b2f6a481999a95fa0c09f2b6f948d7a15722e8cc49e2fc",
+    "backend/src/llm/character-profile-prompts.ts": "b301af617f104f8ecbf6d212b15053aaee77d6188b306be766e6738ec7316cc4",
+    "backend/src/llm/conscious-agency.ts": "7f8d227dbebe1a6542a4764520014baa08022220052d3e06bc0afc71af922136",
+    "backend/src/llm/conscious-dynamic.test.ts": "e420beea2467d72f8d3a68ce5bfc2c445d0f63c13e538e9c88cb9114e0a62e05",
+    "backend/src/llm/conscious-dynamic.ts": "7d1a92d3384ac63bac7e12ad3ead79aa59ffd64c7188a81927cf526352ca012d",
+    "backend/src/llm/conscious-prompt-input.ts": "eaffd97e8a373ee8ceebcd09087bce2561fc953aeee92595427582d4160ed3e0",
+    "backend/src/llm/fallback.test.ts": "e8aac7f8f90681ed530bf23cf7b1d7ddd1dccbba3077c14ce939d93353186b70",
+    "backend/src/llm/fallback.ts": "4651355187f8fc0040d03c8d37b8ca6d05f0c96fb9721db734b1beb55bf32ba6",
+    "backend/src/llm/index.ts": "f478870163f6c295f643c27c18d498780a1e55221020544bb79509cc11e50855",
+    "backend/src/llm/llm-physical-completion.test.ts": "4273a99be45d4a94e6a567a311aa0fb7109b607fa3b2312b7c2b8780368e95fa",
+    "backend/src/llm/llm-physical-completion.ts": "5cca2badae36899fa00ba8ee0a812dc72fd9e74c02d61687f3ec4d33557aef12",
+    "backend/src/llm/llm-usage-context.ts": "0b1a84dbd5f79b4658c5d79d1ad64421f42eac412a139c98e2501394c2a1fb36",
+    "backend/src/llm/mock.test.ts": "bff68bfca3e264fdd8a1c2a73f092b6c382781ac09c1e2d99d26072c16759a3c",
+    "backend/src/llm/mock.ts": "a002cbc35aceaab54d49455c7d3b2ed115e3e7a5c7a31feb94e2e4f27be8f7a4",
+    "backend/src/llm/model-request-options.test.ts": "a5186ef8fa5403f46ea84d190f464c5f503297889db4944996c201d4f1eb9e32",
+    "backend/src/llm/model-request-options.ts": "2bc830ce2b6d7bbaf6c581e14433c72813064d9526074397ec3c61c370dd9eeb",
+    "backend/src/llm/narration-prompt-contract.test.ts": "dfb2b63e8d46121c1be39be749385101bc03f1ee4f531935d885627d01a43367",
+    "backend/src/llm/narration-prompt-contract.ts": "70bad55a2adca722d49d5a1484e1eda5b8e873ba1e21745c330bf749a23d2853",
+    "backend/src/llm/narration-receipt-contract.ts": "3734b96bd1b004d2b5729057fcb1b6aa8b7e8a7336ce833b693cda134c1d65b9",
+    "backend/src/llm/narrator-presentation-focus-evaluation.test.ts": "3981dd4731cca26eaa189e670e4866852628d6b84e25922a8cd03c1f90279bd1",
+    "backend/src/llm/narrator-presentation-focus-evaluation.ts": "40f455852b16006b37bfb5be098b8865e1efdb474c7b9aa5a7936624ad5e051d",
+    "backend/src/llm/openai-compatible-agent.test.ts": "f9264a02b157718875368702f403a790ceaf34c248f930750dfba7b873978985",
+    "backend/src/llm/openai-compatible-character-definition.test.ts": "19cac8805bf1830aad7a4405efc0b0fcc6430057363701cebdb76345c0cd6b68",
+    "backend/src/llm/openai-compatible-model-options.test.ts": "034206142283136011189366f124ba2a25f1b9eb49e11d94dd69020f81c8460e",
+    "backend/src/llm/openai-compatible-narration.test.ts": "986e751f9e43d24da92088b479a386cdbf6ccef9d03ceb45b6a083f002138aa1",
+    "backend/src/llm/openai-compatible-perception.test.ts": "b7ca04101d8e6943cf4fd2ea4f2ac5030286cde106f8d197b0babc99087e9c03",
+    "backend/src/llm/openai-compatible-psyche-repair.test.ts": "4f142cca3295556e9c369f0522ae77701a00e60b8460b30dfab111f11c2143c0",
+    "backend/src/llm/openai-compatible-routing.test.ts": "eeb519cdbacdfdab3f995c001825293896dcb7f31b5397a2ac8ffe9c8336caf8",
+    "backend/src/llm/openai-compatible.ts": "260824cdb5253361d056324a4d8eaf5dd7eb2597e1300231400c16e83d1e8eba",
+    "backend/src/llm/perception-evidence.test.ts": "5e9a188d0c504ee32266fc6be89857bd5a2bd4395da62dab4a33a98fb1a3208f",
+    "backend/src/llm/perception-evidence.ts": "3137c1459f318d9b9eb1c6433c42691bf1c25ba7a2dd5a4d0303c1259d639a13",
+    "backend/src/llm/perception-prompt-runner.ts": "228393d7856b51b6fae492a2b991b796b734527011756e50125abb74c4fd9239",
+    "backend/src/llm/perception-prompt-strategy.test.ts": "2a99ec675907bae7ef155765378bb01928b696aeeb7166ab824fe328d8aa8737",
+    "backend/src/llm/perception-prompt-strategy.ts": "88e0b2107da52b58e4cca8cc66b754256d947e8fa132dd3652178eec155b8b01",
+    "backend/src/llm/perception-topology.ts": "cb1f44d221021f5e5bf241995d5e4aa06565f69ba724eb5040deb427a2249958",
+    "backend/src/llm/prompt-prose.test.ts": "21b6e8d2ee33aac6938f8287194b6d4866d7cd91e4478a9c3141886c5471c52a",
+    "backend/src/llm/prompt-prose.ts": "4f7145c57b85b5d75db80b4ffd9f5441eef506f809f0165997fc47429b939650",
+    "backend/src/llm/provider-accounting.test.ts": "3dd86e2bcfb7ac70ffd8581d52d8cbfa88cefb16915436456a7dd6182b3ac793",
+    "backend/src/llm/provider-accounting.ts": "5c5465b99ed5c58b7dbbe92691c8dda51466bcd0b04a66d838e7fd52b2353181",
+    "backend/src/llm/provider-config.test.ts": "a09853f84c1a9988ff3b1c8e90a70fbf8d75f1ea33715a46bdbfde4fd42d33eb",
+    "backend/src/llm/provider-errors.test.ts": "a3daa816166230f6d96ebbcf9ac7c9012e96366536b27bafa7296c69115785d6",
+    "backend/src/llm/provider-errors.ts": "e11320210883062c34809ae2cc32ffb7686e24b828ec5e294a83c4264a9fc2a6",
+    "backend/src/llm/provider-json.test.ts": "56eeca3caa87e99bdf8ed94ff9ecb90d9786e4b5835a7f570b01847831afecdf",
+    "backend/src/llm/provider-json.ts": "66f8d5f878ee06a8f9c732f8b3f24a51e9d2171e0e6ddfc8de2df3a91ddc282e",
+    "backend/src/llm/provider-operation-taxonomy.ts": "c418e9f1fe00ae6fe5180d79c9174b3236c448ae824c05501f63146f47ec47a4",
+    "backend/src/llm/provider-response-schema.test.ts": "86849fa71237b6557ae393eefbab58b77e565d0d2e125094d9438e8d5f2564c5",
+    "backend/src/llm/provider-response-schema.ts": "252d84ebbd83a63c6fd81fab89fcae0faef6b0fd9ab46def4af957e055a1987a",
+    "backend/src/llm/provider-retry.test.ts": "86959d337c539db3dc801949629f6fd5aa988a9dd45ad5c4dcdddd7ea7a16bd7",
+    "backend/src/llm/provider-retry.ts": "b827adab5f4a64864810762b0d0c2a29b6de0a4cb721d9adef740692fdf4dfb2",
+    "backend/src/llm/semantic-authoring-provider.test.ts": "4a08690a38f094750ab2abc5df72fd5523b948fecb0f480153e43e72f9dd376a",
+    "backend/src/llm/semantic-authoring-provider.ts": "8e3ab10f643f3f3624705ccb7f4536789cff2f0894fef29e91e0e6847e9a5731",
+    "backend/src/llm/types.ts": "13be24b8dd82b4b42491e33c991c35dc729f388ce5e5eaf4fd8a9e4249ad1960",
+    "backend/src/origin-verification.test.ts": "75b4a418869ae5ff50e7e9acebe1d42ec95582d81dfe59efc6f26a8a23582940",
+    "backend/src/origin-verification.ts": "9db278d5239920a9d9b88d1cbe78c271862b1812e01362cbe91c7279ea5b499b",
+    "backend/src/postgres-config.test.ts": "f1459e2994c6934d8ca25e4e4fbe8659929472b3a203844a834b2d6b49553a19",
+    "backend/src/postgres-config.ts": "d7d4548434eef8685dc1caa2afc725595d7b1b05010db46a97b5b382b456e347",
+    "backend/src/repositories/asset-generations.test.ts": "9c329b69823b5ce01509da1b7efd00e53dfab9f966b3c1d6b576930591266905",
+    "backend/src/repositories/asset-generations.ts": "09e98c31f676bc8f30ae5bc53d70a0126b728d3990862bd6d28f2b48a74c4a34",
+    "backend/src/repositories/asset-visibility.test.ts": "79bf98763472116d1f727ec673c10791ca033e50284236e058f2b1142d66337b",
+    "backend/src/repositories/asset-visibility.ts": "93106967599716a73b6845b7794b462f21fda05ce7f3593e3ce255a84499f550",
+    "backend/src/repositories/authoring-attempt-row.ts": "8506daee92fe5bfde6ecf97f483c0658475b227b44c5371d2967b33d082e471f",
+    "backend/src/repositories/awareness-narration-storage-schema.ts": "3cda7e5c7a6690133ddaa84a5f4d2e26ace08a3275958fec550131c1b419258e",
+    "backend/src/repositories/awareness-narrator-storage-schema.ts": "c1a25275d2147d0964d90a5fc7442f5b523e3e80d1f9dd63bb39752af50f3cc2",
+    "backend/src/repositories/awareness-reservation-budget.ts": "38158534908bb95843cdf333cd80bf0689b492d6a072a4e3098fac9bf392019a",
+    "backend/src/repositories/battle-awareness-creation-schema.ts": "72da60ed73282af94244fb4863ce4d5dcf42e93dad6e9fa840e0d215d6e20a35",
+    "backend/src/repositories/battle-awareness-creation.test.ts": "4661dd253bcebae3d66da54925308c50e28ba99a213c6390b678505223cf7c86",
+    "backend/src/repositories/battle-awareness-creation.ts": "0fa81094da6da7c061318719a2651836d4ad1adc883bb21e2289e4e8c92ea378",
+    "backend/src/repositories/battle-awareness-initialization-query.ts": "e83016454a4db541f0ac6aebf6b1eb61f01a25796504a96be41b4409dfb698e5",
+    "backend/src/repositories/battle-awareness-narration-events-postgres.test.ts": "1e4e39135aaa66e395818cb02c2d7132c17f667d60dc61860bdfcab8e69f5cdf",
+    "backend/src/repositories/battle-awareness-narration-reservation-postgres.test.ts": "d8a956e1ca25037187bc99b7cd744320440ae80bb25c5ac5ab196b88a641b539",
+    "backend/src/repositories/battle-awareness-narration-reservation.test.ts": "1ed5e287b8cd89856a54cb77b3ac5a3c486f4db42cb8062cf128cbfc149d7282",
+    "backend/src/repositories/battle-awareness-narration-reservation.ts": "9a0bdd97ddc7819a042f7a1bef06e052e6412c1a3a364040f26aec42630e2667",
+    "backend/src/repositories/battle-awareness-narrator.test.ts": "e40e13bf97d2abf4a5f3d1e33e03218228d9a4bfdcab6f6db43c79015cc153dd",
+    "backend/src/repositories/battle-awareness-narrator.ts": "65fa8352467a3d2bbe226e7815a57e41b11c4ec120017366e8f21638f87ed6ca",
+    "backend/src/repositories/battle-awareness-postgres.test.ts": "315fb6c0727d81631a5e9502984fcc1c12654b6324b83eeb7788bd498a0302d4",
+    "backend/src/repositories/battle-awareness-schema.ts": "6ce9dffcfc9252503d8ac4bc024d1b1c173811bb641cff09cbacff60b8a6c79e",
+    "backend/src/repositories/battle-awareness.test.ts": "ecba9bd7f98d72569df255962199f3b244f27a0ea7bd9d04bafc74201ff3f76e",
+    "backend/src/repositories/battle-awareness.ts": "7a1fb475a5b52153a4262f80a987bb0158988319a6cc0bf6f2b8df44beff2953",
+    "backend/src/repositories/battle-cutover.ts": "abb298bf4b6fa9043eda1957f714bf19a62a60bec0d0a8f9e4de8748d4db2895",
+    "backend/src/repositories/battle-historical-characters.ts": "b5bc61bde4f68dd8f5b64876df24cba3c8b096a551a4f66cc1829ec3f3ae3169",
+    "backend/src/repositories/battle-lifecycle-storage.test.ts": "23acaafa5a86c1fed2af6bb7fa76d56c50f59725129909990487c39ba51e5dea",
+    "backend/src/repositories/battle-presentations.test.ts": "16dfad9077d834de752daec64eeb7b2ed3116351995e8e723599743ffccfac01",
+    "backend/src/repositories/battle-presentations.ts": "a05b21f7a93cc38c9b76b7d1f7c4df3c293ab41f6007497303625e93175b1f91",
+    "backend/src/repositories/battlefield-assets-v2.ts": "21d2057b5613317783667c4ce4fcf1b1c0ae3d634d2e2c593ec5f0f303ce36cf",
+    "backend/src/repositories/battlefields.ts": "de61a9c73abeb2ac8d055b98e0bd84ab433ce86c6b7c65a9ace0f37eb30e196a",
+    "backend/src/repositories/battles-improvement.test.ts": "f570216761031d2b12be725c3162578c9d65b2d08932d551f234c69c3c483903",
+    "backend/src/repositories/battles.ts": "e0f5d0977e5a103249a382bbd5ac318f0a7a7b2abcde95ad2f4491ead5ca892f",
+    "backend/src/repositories/character-assets-v2.test.ts": "1f5b846b59218d4792907f01bec524ffcf54f5c80c614e2a74514219023d0c57",
+    "backend/src/repositories/character-assets-v2.ts": "3efd14caf7b057d6539987f77b97b0b4461c0c7736ceede41bf7c2ff4959bd04",
+    "backend/src/repositories/character-battle-accounting.ts": "a2b493fac7a9b158fcf849fe309eec50a53f59fc6b76f25671fa1e28ba924570",
+    "backend/src/repositories/character-focused-candidate.ts": "a04fd748974ddf8bc9c804e00d5624f32adddb345afea204b2889626e45879e9",
+    "backend/src/repositories/character-generation-reader.test.ts": "3e9a3f665b5f6a7d3aede38cb43a73a9246ec859279e87ba427df5eb46ab0371",
+    "backend/src/repositories/character-generation-reader.ts": "fc9a928238f3f6446b1aedb03c81d48da57f4c1d3cc6f1178c0802318a6f8bfb",
+    "backend/src/repositories/character-migration-readiness.ts": "841edfb163b9b63bc2ea57207ebacae98e3c9480219da1f7269c9c54337e22bc",
+    "backend/src/repositories/character-semantic-migration.test.ts": "6ff6ff9f2334abbfc5e3423dadcb4b67c0db36a624d4560fcb893e8fcd6c781d",
+    "backend/src/repositories/character-semantic-migration.ts": "8a5ecc5380f5018c0c1753493e25420872e6750902ada34432392a9bf2c43efa",
+    "backend/src/repositories/characters.test.ts": "3bace9c3766a651f31db306bb72eacc00a70b788817812f7c368c8f87664da0c",
+    "backend/src/repositories/characters.ts": "3ea23344eefe964550f2a775beda786cff5bb03512444c14d38ce6d9839335ce",
+    "backend/src/repositories/cutover-control.test.ts": "10e2d983b544c28f05b227f6ef5fc119c41f69847877bd3c9d3100c854bdd5c8",
+    "backend/src/repositories/cutover-control.ts": "74a4f851bbcd72e19cec6e894529ea12262f040d260c8d7c5ce9ca062b14d30c",
+    "backend/src/repositories/dialogue-pipeline-settings.test.ts": "2873dad08c18196dad4cdbc4d99d0d34df219eddb8c84d8666ed35fbceb55b63",
+    "backend/src/repositories/dialogue-pipeline-settings.ts": "5d3c3c3f418abe8969029e25a3c51a04738e8245140fe0d113ce90ac5679250b",
+    "backend/src/repositories/family-authoring-jobs.ts": "805d7e7fe19669d052edb9eaddd4e15ef9924b15ca0b4658a5dac5ee1eb15675",
+    "backend/src/repositories/friends.ts": "ab5e4bb89e6cbd3a77bf53c6db424351cc0a28ae6e944d4af1a1f7fa3643c12a",
+    "backend/src/repositories/llm-usage-observation.ts": "4cacd95aece3d1d4de705de0e9c4f11c43dd54d4c77a39b6f989e7b6d3c5c11f",
+    "backend/src/repositories/llm-usage-schema.ts": "8fd4fbd996968a09d8830685c554abc1fccabe02733389a0821a042abc55f3d9",
+    "backend/src/repositories/llm-usage.test.ts": "75cb58bd3953224b133b85cf023c46e4696270760e5c1a29ea64a1f211955c60",
+    "backend/src/repositories/llm-usage.ts": "7fdcdbb83737f0542eadc580bb53ab12c0efc6b843d0fd7a0c58c87872f4e861",
+    "backend/src/repositories/local-v3-trial-characters.test.ts": "b8f54d679618281a319d478f1d0efe46921273e03f90c91198b1b27aa49ae57c",
+    "backend/src/repositories/local-v3-trial-characters.ts": "fb3900e27e97f9ce9f7631bedb6dfaef3924730dfe3a456285e1956085fb8ad2",
+    "backend/src/repositories/narration-style-assets-v2.ts": "049d5bc7fa565eb24714deb6392b85d5f061655a5c335f68bc5c22bb6d431aa1",
+    "backend/src/repositories/narration-styles.ts": "bf3c3ce3a652c630bd09b2c5716e23484e3aaaa85d81404f0869d38f0621c858",
+    "backend/src/repositories/owner-notifications.ts": "9b7bfde9023d3893af94ee5a68372fa22d75622d59eb78f6ca8d7e908e00cd34",
+    "backend/src/repositories/semantic-authoring.test.ts": "248a451fd87353f5a9ec435a11b9af1a77d8b3559d10735dcc394b6ea4da1c00",
+    "backend/src/repositories/semantic-authoring.ts": "ae02c7883eef020c98266b44df525bb06404691dda585fc5385392c301563a40",
+    "backend/src/repositories/system-battlefield-seed.test.ts": "aa68b202370566bc42b25d9dddaafb277c9f5d349b1737002d901a1afd51e1c4",
+    "backend/src/repositories/test-realm-assets.test.ts": "637c8b19bf868052729bda430702db78a3fd7e52fec52c42bf95df387c937c54",
+    "backend/src/repositories/unreleased-trial-preparation.test.ts": "cbe5a1187d5adc287867a4eb58442a3a6b27642f61988a65c1467411cb100ab2",
+    "backend/src/repositories/unreleased-trial-preparation.ts": "8dc90542ef3dfa749b6f254af49819491e68472e608fbbc4b6c99a26ab31e88f",
+    "backend/src/repositories/users.ts": "4808aac3b07b7c66829707aaf017625a7bb7564d2cbc8915946b75048cf2fd67",
+    "backend/src/routes-authoring-read-purity.test.ts": "9b6a4162be627690488c80299eb1d4877ef98fc55b4f7a978d8d5e9314346be0",
+    "backend/src/routes-cutover-http.test.ts": "0aacaf9328b0a0db435cf9c97d7990bd3b79666c627f368d4286d96fe4d51486",
+    "backend/src/routes-e2e-session.test.ts": "6b0e0e9cce9a80c957598543e457958701b31a183f8b294a8df36dc8b1e5d440",
+    "backend/src/routes-structured-asset-integration.test.ts": "4278c5e9881d4568f7ae31f9e40826498ec9d2e5de6b96dc69ea69e2126edd7f",
+    "backend/src/routes-structured-battlefield-acceptance.test.ts": "c5ed65efc024fe12051ba4e52bbbacd07b857eee4215a3931b46c26967587558",
+    "backend/src/routes-structured-character-acceptance.test.ts": "d09290555d0c72923389f47633c51e5cbebea7198cdb168d0b6145bc9f2be3e1",
+    "backend/src/routes-structured-narration-acceptance.test.ts": "6f29961ea9996842bf7b28421491c8b002efb56b40d44242c7316ff43707d385",
+    "backend/src/routes.ts": "ec2500cac883a552bc4527b1878c16029cfab3160b2402b34a4e10219fbeee71",
+    "backend/src/scripts/aggregate-character-focus-reviews.ts": "b8ed6d282b447992593f01b4aca8944046e6bb65d554e03c8118777b2c1f0509",
+    "backend/src/scripts/ask-grok-replay-cause.ts": "b3dccb77add3608b526a3f311e7e67a8a6104512539865786e7c96f1b5162221",
+    "backend/src/scripts/authenticated-read-surface-smoke.test.ts": "09c0b4d0558e454f38b46becc7f894e151c45c97a7ceb4902cc593e077b63a70",
+    "backend/src/scripts/authenticated-read-surface-smoke.ts": "8d55f2b47c2af911cc5f34f3ef145ff30a57b994638f97af0ba721de965a8584",
+    "backend/src/scripts/authenticated-sse-smoke.test.ts": "4acfbb9e0d22c03f00aa8d9fd4fd44bf5976894ff33de4f26246e59b0b144f0e",
+    "backend/src/scripts/authenticated-sse-smoke.ts": "532cae4a7327b972a0e996e3bbf264ae1fc2068aebd88c36dfb19f3887d74f0a",
+    "backend/src/scripts/awareness-narration-convergence.test.ts": "3d3d6ed84c9f8131452dd8206d82dfae181fee214de05cd58617a681f05f7f0f",
+    "backend/src/scripts/awareness-narration-convergence.ts": "a3b9d1a9e924bd638dd8823902836027f0a46bb0c7d33ad33249d5bc71578704",
+    "backend/src/scripts/awareness-observation-advances.ts": "28122676ecb21681f4a9356f160232f62bddde04f84240a47fa7e1cafef7b5c3",
+    "backend/src/scripts/awareness-public-observation.test.ts": "20605b55d20c22a04589a044f872e68273981e24ae9a056b04ab7efad66738d3",
+    "backend/src/scripts/awareness-public-observation.ts": "35e9d96afdef13e57a0121c82969664aa5512eb0d94b395d208af5c0b3d959cc",
+    "backend/src/scripts/backfill-character-identities.ts": "fb5e56902536e7e6fb97dd6f83abe1f9b4787452a9dcd234e8a9f0cc8b39907e",
+    "backend/src/scripts/battle-semantic-state.ts": "1abf2f0428bcfc5e53f35a22012e1ff7f24930636ee3a731188e53ec051a42bc",
+    "backend/src/scripts/character-authoring-a2-execute.ts": "225ef54442e3ec354be1bf407f405b57194b3651e1d0470b42d28e883908a0c2",
+    "backend/src/scripts/character-authoring-a2-freeze.test.ts": "0e4bdd3c7bb781b9b5d3a55dd5fd8cdc9efb90c8eff2ad557ce4e08f26402180",
+    "backend/src/scripts/character-authoring-a2-freeze.ts": "30f41943dbcfacd2ad0bb8247fd6f87dd5ba0feb8669b988d89253abe231559c",
+    "backend/src/scripts/character-authoring-a2-probe.ts": "40c24eabbfe789db1486a4b138999bc9d1b2177b34699ddd754ff32ffcb420c1",
+    "backend/src/scripts/check-semantic-migration-ollama-contract.ts": "71de5120c5d47241041cdd747f179b28978c3fd94bc8dc7b4b8931c7529e11e8",
+    "backend/src/scripts/cutover-control.test.ts": "35cd39c98dcaa1091463fa90332f0e2a025b6913097dba06c482af0169e7a3ea",
+    "backend/src/scripts/cutover-control.ts": "7636d80411190789fe464b1af18a9ab490e761408c6a0d015b11f588bc45b140",
+    "backend/src/scripts/dialogue-quality.test.ts": "0b25b468ed443b0ca4f1dfac639b5c5c3a98d55e72f7dc6d01be491c1441c18a",
+    "backend/src/scripts/dialogue-quality.ts": "a493c3c850b35edd0456d62a510a57842fc554640a2933ea7f249fb3634fb951",
+    "backend/src/scripts/evaluate-perception-prompts.ts": "fb598a2397778606f2d734896b924c9fbc4dddf8957a3dfc77099b9c8d05478a",
+    "backend/src/scripts/llm-usage-cost-report.ts": "ff1f5ba3a3a86899a33095dd71eab5af0d160807bf438da4ce68b487280a1c84",
+    "backend/src/scripts/migrate-legacy-account.test.ts": "a8ed9bbc264676345fdea46ee135ff18d155dfeb00265829a5afe88548ffd340",
+    "backend/src/scripts/migrate-legacy-account.ts": "7d6de2faa35f84ec7caaa40258b3de6b1c868ce662207fa1cd7414dfa0b97e63",
+    "backend/src/scripts/persistent-battle-e2e-advance.ts": "7f781bf67a2b447578648647d430cb224f9494653b2bbfd3580f96a259fb67a4",
+    "backend/src/scripts/persistent-battle-e2e.test.ts": "f66c6844461bb0c4b3c25851ed0beeddab1c28b4f284e795d2822259861df8d7",
+    "backend/src/scripts/persistent-battle-e2e.ts": "cbfb373590a3c99fda40176805f2d2b95ce07c15e33bdf5ffde2469094578b10",
+    "backend/src/scripts/persistent-e2e-workflow.test.ts": "b343a85e85c4ff2f47386ce7d99a6ad883d88e951c81266b38a794922a770371",
+    "backend/src/scripts/postgres-migrations.test.ts": "e3b41f8d8d5acff6e2859cf56fea0de0b842ae956b46db6d8450ff9b631a524d",
+    "backend/src/scripts/postgres-migrations.ts": "7e1bff3fa02c75299d4f9e17a37746221114c06236c1ba97fef96768b9fd3e2e",
+    "backend/src/scripts/postgres-runtime-smoke.ts": "c56d7c5d19940deddf58c5075396c35e390b28ea8317d7238a3a96ce4d75c108",
+    "backend/src/scripts/prepare-awareness-trial.ts": "4466dba045a3580ccd64803d6db2ebea36a666c6d16b6dedf51be4c228bc525f",
+    "backend/src/scripts/prepare-unreleased-v3-trial.test.ts": "4c9b4ac27b99ae0848c685311e98f08db35ea3b7895daf3e7bfb8efd325f78d4",
+    "backend/src/scripts/prepare-unreleased-v3-trial.ts": "f5c8fe03cdd1a9e6244582391058edaa832fa3877b731a6f887c3748253ce53f",
+    "backend/src/scripts/r2-smoke.ts": "4fed3496f8faa64f87ccb19b7e9d399a1927b5cc3661df34420d52309cfd88a1",
+    "backend/src/scripts/register-v3-stage-trial.ts": "83bbf26f074b53bc841f502f9dd0d920f10622db2fc926faf1566cd5f96ecb7c",
+    "backend/src/scripts/replay-character-focus-ablation.ts": "d615fd16c5944bc8509356dfb6cde076ef811cd6a9d0a5d24f6470987d2a081c",
+    "backend/src/scripts/replay-character-revision-scopes.ts": "d2db76cc5e8803ac2cc026c129d837f56e52fc3173cf9cd6127920b107496b1d",
+    "backend/src/scripts/replay-compact-v2-provider.ts": "5229a30a08507fd8346f19c8eaf9db881710a1c04ec383560c261ace2faf2dde",
+    "backend/src/scripts/replay-narrator-presentation-focus.ts": "639d1f6c033612a2f6ca8cf8332c8c0bac6cf373cce9aef3f1f9fb6a40d0af0d",
+    "backend/src/scripts/run-awareness-trial.ts": "702e898034d578d235495a154de07409af18d47e4f90d13ea50116332a13d5b3",
+    "backend/src/scripts/semantic-migration-probe-fixture.test.ts": "bbfc3baf480ea17abd09a717bbd32727853d37dc3acc788523113d4df17a4cd2",
+    "backend/src/scripts/semantic-migration-probe-run.test.ts": "59475275b3f3778669695c34438a6eb38a5edd0b77c89e81d32ddc348bd18edc",
+    "backend/src/scripts/semantic-migration-probe-run.ts": "94ced94b5518b493f649fc0437429a098102de085878b18827335cc2bf034c9d",
+    "backend/src/scripts/semantic-migration-probe-snapshot.ts": "b342e8f04115ecc60705add7c529d05b33b7cf41ad1360908c58c21071caef10",
+    "backend/src/scripts/sqlite-to-postgres.test.ts": "ee644bb4ede42f337c0d6a882fceb8e83ba3e4cce9170b721e54840b251bac49",
+    "backend/src/scripts/sqlite-to-postgres.ts": "5e5aa8c4e9d4cde49edb0211c4fb664e620bacff9d9f648c382e53d4f223fe09",
+    "backend/src/scripts/stage-auth-smoke.test.ts": "fe9a9e53897140ae5bb293619ef1c79c4d93faf28cebb1bf599a0ebc3af51b02",
+    "backend/src/scripts/stage-auth-smoke.ts": "373610c0243005299395bfb1e91014399312b42428f914090d5e5ca95ae36bab",
+    "backend/src/scripts/stage-http-smoke.ts": "86a93de305e5b6fc6d512dd455859c57d9a151ec767413c6a886597e3da64cf0",
+    "backend/src/scripts/stage-postgres-smoke.ts": "4ad3a76897326a3090b2684b6621aac5d9dfe60b6931292d513308ee54c6a761",
+    "backend/src/scripts/stage-v3-smoke.ts": "e56335daf72bc76388015e49b0ee2fc016f9c476e59a7453f9b69cd2bbc6086c",
+    "backend/src/scripts/supabase-auth-smoke.test.ts": "fd6ee6d6987d13df9fa9c7fac26505fb7ad4d3e904447a5981a08478dd0fa1ee",
+    "backend/src/scripts/supabase-auth-smoke.ts": "93aaed4f15fed5efe4a88250a06500986854b9b970e8de8def50393b0a75a08c",
+    "backend/src/services/authoring-task-dispatch.test.ts": "92b2dfeffc6da21e8faca6ff4cc0147a5fa5c0f1f99b277f1d5bda501d359aa2",
+    "backend/src/services/authoring-task-dispatch.ts": "8ac610e548ebcaf71d2e917aea2d48ef75caac96dc6cbbaf9d0fac5cea9c271d",
+    "backend/src/services/awareness-adjudication-guard.test.ts": "64324f627e1900fa9310042b91c243d6457cdbde113685e6888e9b4b93a5674b",
+    "backend/src/services/awareness-adjudication-guard.ts": "d807ac499b21bddd093d44e823c059b3c3cbc162e6522ea0c226a35da98d9153",
+    "backend/src/services/awareness-advance-context.ts": "006126609e26cab68ac4a530b8471f2c64d8238f7401732bdb93adc459f44434",
+    "backend/src/services/awareness-battle-boundary.ts": "23b45fb9136ec0d28d3a300439c4a6ff340cf8c330a53e8f099ca45e5ef6c8b6",
+    "backend/src/services/awareness-battle-creation.test.ts": "cbf4526395d59be0d4883808e2a77a3b74a5cf156c76a43601a000e1095bc564",
+    "backend/src/services/awareness-battle-service.test.ts": "c7e61249546b9538e40c64cb49cd79feaaec87df0c31ef50cc60cf45d8176d45",
+    "backend/src/services/awareness-clock.test.ts": "2a25712a45c5d54924a935fd4014fc7feef2adeb6bdc988c1d89367fe32e5a47",
+    "backend/src/services/awareness-clock.ts": "10bca90935dde3c9656c12898b763ffbf52a1ae0f49a95d0024a85cf86f6659e",
+    "backend/src/services/awareness-context.test.ts": "9769666b31680374da42cd3bec4846ad959936d4ce2d22e63a8eb0c9dfde0920",
+    "backend/src/services/awareness-context.ts": "2b0831f27574930b808b1ffe237497011e1845ebd60c0216b54605db0b1036e4",
+    "backend/src/services/awareness-creation-encounter.test.ts": "e800433ecfeaaba35bf6e500e1cd46a72559fc9a467417b706397c4cf91531bf",
+    "backend/src/services/awareness-creation-encounter.ts": "84dd49b45795edf215bac5baf3114a847f421724a4f16b1b1c35c76d0dc399a0",
+    "backend/src/services/awareness-execution-admission.ts": "fe70d8363624240267da2964b3920d3d2d5ddeee542fba473d98247974bf6380",
+    "backend/src/services/awareness-execution-boundary.ts": "e9fa712a751df163e649cd42804ac4217fe65d64eeca3550111a4603cff1b990",
+    "backend/src/services/awareness-execution-factory.ts": "f73d6da09e187e88ef01c2d8dc96bc5c63b72eeae12642766bdb08ba9cefd220",
+    "backend/src/services/awareness-execution-storage.ts": "6f7773266d8c118178dba9c6988351c164852fccc6411d9457d96edbc99485bf",
+    "backend/src/services/awareness-execution.test.ts": "a80c75b5009316b82becad53391bc2df1c8d6b239f5b21d177bd24409d24748a",
+    "backend/src/services/awareness-execution.ts": "f3ab31ed95580f23aabe6019e72e5835aa5460af90afa61d995853464bd40a70",
+    "backend/src/services/awareness-expression-commit.test.ts": "0d608e17db614eadd392d888901a1e0a88e24e3c237ae5cb1f9cc45d3d7e37ec",
+    "backend/src/services/awareness-expression-commit.ts": "c9001043fec20777d263c966f723232e0cb5c282263c7166630b9b177399eaa6",
+    "backend/src/services/awareness-guidance-test-fixture.ts": "be0fe4fb8ea78fa78bc414723ce5b471bfeac6ea84abec67e8bae1b7e621682f",
+    "backend/src/services/awareness-narration-claim-snapshot.test.ts": "800e7f2532359b912a981606fdd27ac032ff48f1b641a349fe4bd1bb6e1e03c3",
+    "backend/src/services/awareness-narration-claim-snapshot.ts": "fda5e8040ec1665a665725a7e11017d6b67c385cbc1159508c85541066d00a55",
+    "backend/src/services/awareness-narration-continuation.test.ts": "15d760b34cb85f9562bbfb931ad1c267e6fdef200eb7876e767a51d801edabb3",
+    "backend/src/services/awareness-narration-event-storage.test.ts": "b122739d04537224cead567e658d2d9dd205566f150100631623e24b187d67ab",
+    "backend/src/services/awareness-narration-queue.test.ts": "c98182bc664f259a2379e598905ee126769a893fdc685c832ee0a39b3d3390ac",
+    "backend/src/services/awareness-narration-queue.ts": "54438681b3fe27d9a871c012fc391037172753fe6b82e34650d4b45e788934d8",
+    "backend/src/services/awareness-narration-urgency.test.ts": "9d5f5e396a475213428a5427059d15f986aaa419db5de11de6180085e2f28651",
+    "backend/src/services/awareness-narration-urgency.ts": "194c24cab9bae228bae958ca7dfb09aa9e5394436fa7ec964a09c59a26472bdf",
+    "backend/src/services/awareness-narration-worker-claim.ts": "4f722f32cf28b5f72302f42fe0ae0a5ea0a9bdc2f967d6efc3cb51caf9b34124",
+    "backend/src/services/awareness-narration-worker-contract.ts": "072f7c1680a4724e01d70b2deb9f6c992a437a1991a9ec99d559111f659523ef",
+    "backend/src/services/awareness-narration-worker-dispatch.ts": "4c90158f18ad0e2c790677d22c0d088e018ad81f2ad3973acf77b0074cffd184",
+    "backend/src/services/awareness-narration-worker-lifecycle.ts": "4c0b879175780e4bda737e2efdd454a621884db69f3e4b83d35bf9553104dec3",
+    "backend/src/services/awareness-narration-worker-material.ts": "496a5ff5faba0f0dbbf7143108cde2e062ed6c3845cfc89f8ca2b7d6ae287af2",
+    "backend/src/services/awareness-narration-worker-publication.ts": "b35c383c88966d7bb72e8d414303fef4047415ae93474e1af61267614df569cb",
+    "backend/src/services/awareness-narration-worker.test.ts": "49357c9c606e188b12e9bb93d079afd8895107568ff040a8395d18107158a426",
+    "backend/src/services/awareness-narration-worker.ts": "960b5b71712ae2a3a3d9d1e8ddb31c6729349db19994b4d3b3e6e4ca6b8be6be",
+    "backend/src/services/awareness-test-fixture.ts": "6004a1019014000d2c155cd171eb2e4ea98f7880e258bdc82bf709dd4bba28b0",
+    "backend/src/services/awareness-trial-candidate.ts": "04bb11f519b4cc9e317d6944fe0ec4ef5563e2e21911c470722861cf3d58c760",
+    "backend/src/services/awareness-trial-execution.ts": "3db6e2474a467ce7a97378ecb263da313bcf4218065b663195be56853ec69f1b",
+    "backend/src/services/awareness-trial-harness.test.ts": "2774eedb6d4739f1a6b11ab0eb7ca49321e3dd6c5be0d09aff6b196b26fc0619",
+    "backend/src/services/awareness-trial-input-sizes.ts": "32516c5dd6f47b7e988a507332a33dd68d818b3530d4190bdf080bb4211da1d7",
+    "backend/src/services/awareness-trial-seed.ts": "32947a08475ef8063e0f061e50a8d42e0ff0467f5b6622ea549bbba7be328974",
+    "backend/src/services/awareness-world-commit.test.ts": "8a867e171939cacf798eb2b70e997ba5baa2709b77c3955df2e053d1f7617b45",
+    "backend/src/services/awareness-world-commit.ts": "72ae18cc27dca377d1faaccb5e5bac18c1decd8f9d476ba620269dedc44dc9ac",
+    "backend/src/services/awareness-world-validation.ts": "e082f4d7f3e5d427b9b2a2e804a27a36fb5dea96ba67322111b30c009ad8afda",
+    "backend/src/services/balance-observe.ts": "106178f2bfabc12b1cc7bdf273b1495710b8ba86b04dd3246f8b41cabb723c78",
+    "backend/src/services/battle-causal-narration.test.ts": "de513b805a8c5be525e4e44aa8d16a22a7bd4b6debba99d9986eebb4bbc49985",
+    "backend/src/services/battle-consumer-wiring.test.ts": "879473f6c4379c113c48e8694247f9908a10a65f5f0f7983b13a15ae843beba1",
+    "backend/src/services/battle-create-idempotency.test.ts": "77256250fdd27414968c91b923bbec81c8355de6b128cff1b8d32f9a6fac7855",
+    "backend/src/services/battle-engine-test-helper.ts": "4208b6c13e405452478a768fce9a304395a3d962c8da843b71f59adc1ce528fd",
+    "backend/src/services/battle-lifecycle-access.ts": "4f2d0835939656b96c09364009220987fa0255f55504ebae9e06c88bbdf14f18",
+    "backend/src/services/battle-participation-eligibility.test.ts": "620ed5ee9d4d0d0a69ddd22cd020de2b595fa2cc0f1fd9e05105ecfa7b9577c8",
+    "backend/src/services/battle-participation-eligibility.ts": "9cd7beb95d5ce9f2e9ee5069941be5ee183cd578a64db229aa6e7ed2a227f417",
+    "backend/src/services/battle-public-projection.ts": "df6e8d86c696507428e05ce8eb370949b79726f58a6e266ae0ff0ecfa434dc56",
+    "backend/src/services/battle-public.test.ts": "2395441fbd8f6b1cd879eb6a132eab77b28cab569e1d99d6ae6514c5a976621a",
+    "backend/src/services/battle-service.ts": "b8d5a8f51767374734181093a4077f448177438589a9a836dafa75ba32c710b3",
+    "backend/src/services/battle-speech-wiring.test.ts": "9546f063aaceec17aa7cd528bde0ad91431a3e0d803f65bf96b850656314ff48",
+    "backend/src/services/battlefield-authoring-service.ts": "8ee2a2333b953657b706edaa8df6f7b7c4f8b075690b0bcdfe62d6190a239e90",
+    "backend/src/services/character-action-fallback.test.ts": "4d9f6a47a0cca291f80fa36ea9ddbf00c8eac09379f72b2971fb3333f03cb7e4",
+    "backend/src/services/character-action-fallback.ts": "b614132aabd2ae579f24e0c6a16e2862d8c98a261b173601f07e33a0b3754d6c",
+    "backend/src/services/character-agency-inventory.fixtures.ts": "997c8d115eef2caf8c609dc63c6b22dee03f8aaf1473559c1d05f9cb0fa8b90e",
+    "backend/src/services/character-agency-inventory.test.ts": "5526bd5b27046ddc7f47539542ec7e5811bbdae632dffc3c9c4ddee6029a7262",
+    "backend/src/services/character-authoring-candidate.test.ts": "ae5c15c57b50b0cdcee0bfa05a6f6c3d8a79ad2e54d71716d04b40d5be98708e",
+    "backend/src/services/character-authoring-candidate.ts": "629c9f30ef065a808d4c1110012fc5e25d76f2a5be12c3ec8e23b0db95e7029a",
+    "backend/src/services/character-authoring-jobs.test.ts": "6139b9368b2bfd690123674e67bb4bfbf819c0ae832deb71efc37fc2dc78fdb3",
+    "backend/src/services/character-authoring-jobs.ts": "28a2ea81f173a2bc53827f0bdfeb38918dfdc32b561f67ae28d9132c66d41d66",
+    "backend/src/services/character-authoring-service.test.ts": "9c18e623b611d9c9b90feab095fcf689eb07c90ac935749f32c19ec6bb91a1de",
+    "backend/src/services/character-authoring-service.ts": "6b5cc4aa7cfb26064de0439883da515d0172cf95cc4a631ab9709db8577cdfd0",
+    "backend/src/services/character-focused-authoring.test.ts": "bae9232e23ef47a5578cb526a463a12b2fe8dad0697c817a2d0738659bce1475",
+    "backend/src/services/character-focused-authoring.ts": "43baff7a324561676708b5d715576cd4789f7f0d9c53b48ee36115dda4dd57a0",
+    "backend/src/services/character-historical-view.test.ts": "d26c2cdecf0640c3228865611ab6dcbf50e75f07833656ca71facfd9fb46b947",
+    "backend/src/services/character-historical-view.ts": "99fb352eea06bebdf71d21893166b0d1ce130412fbde6d54ad72982e6b547e97",
+    "backend/src/services/character-improvement.ts": "6a9454234f601fcedebfb50c851bfa09b6ff762f79301ba6684eb66df5394d0e",
+    "backend/src/services/character-migration-context.ts": "6e944fb5d153794261e5332718e0f72c05e4f62c86abf1fafa2cf73cbcffcd57",
+    "backend/src/services/character-migration-deferred.ts": "194efb62fec78039f5c4186759bf6b9283e49d11d4706763293357cc7eb9656d",
+    "backend/src/services/character-migration-diagnostics.test.ts": "80abf4b61dc15dda60772af32a2e8a9b0fbe4d4b84594996750bbe40f54da0f1",
+    "backend/src/services/character-migration-diagnostics.ts": "e81d949870bf800532287212c1d75ddd1e37ce133f9ca2f71092ea88b58e08f1",
+    "backend/src/services/character-migration-merge.ts": "590167d42454f17c1bff94416ea20c0873d025321e7cd7eb84a01cb9d012fa0a",
+    "backend/src/services/character-migration-prompts.ts": "b1cd78d1ba768002913388cefb60ec0a49ca15a446fa0eeaa1c0bca61af38c68",
+    "backend/src/services/character-migration-references.ts": "8c6fa8e6c44d167328d85e9f4d56a6a8621e7517fd2bc32ae30795162c824fd5",
+    "backend/src/services/character-migration-requests.ts": "621971836f819db2b6ad7570163dcbfe3984d3ffb22064fbaebb0f58fef5a56c",
+    "backend/src/services/character-migration-response.ts": "42fdc8820fe5586f18dde79372135b8dd23e64c7d7644bd6eac51bf125679d86",
+    "backend/src/services/character-migration-validation.ts": "d7836b31b4a9fe84fd89bef142cb35bdd9379e5cfff959b3c378cf03ea13caab",
+    "backend/src/services/character-portrait-v3.test.ts": "d4ce4330bc1de1c11f913a9d6050f496d8f5cc5fd4bec7c67241281f91383c14",
+    "backend/src/services/character-semantic-migration.test.ts": "5ed75343e6d0d7e5396d5ead8632612ebb30091abfb82fed2b96150490b1c079",
+    "backend/src/services/character-semantic-migration.ts": "8d1abface2e7ef8f63bab627c5b12098239d3c9493c497d51d5c2e8ac44dad05",
+    "backend/src/services/character-update-policy.test.ts": "002956f9b898e55a209ead3789f170c5f20c7ddf3288e541596871be4d3a7b67",
+    "backend/src/services/character-update-policy.ts": "990ef4b323fef52fb8697bce4c9bb36b0bddbf7fe317b63dfa201d6d8d6d36eb",
+    "backend/src/services/character-v2-update-boundary.test.ts": "856bb4a622c8d0d2e55bf5647ec58a97571a9e34d9d5a1829dba95b0bd257702",
+    "backend/src/services/character-v3-profile-adapter.test.ts": "f1e94ef111185dd7fd3e2e5447f7dea3e6f406fc5ee4dbabfa6003823add882d",
+    "backend/src/services/character-v3-profile-adapter.ts": "157df530fb025777ef72904d91c338d18b728060cfe55e61c7a1ea94a219960f",
+    "backend/src/services/conscious-agency-binding.test.ts": "4b0af7bbfe5cb5a24f7dac2974dee11bbe9b42a4a69fd4aa778e46d9a4be9c08",
+    "backend/src/services/conscious-agency-persistence.test.ts": "2ca92b44d0b2abedd6c521f4319f4242abfc917021546a7b61ded1299fcf0ec6",
+    "backend/src/services/conscious-agency-runtime.test.ts": "5e67fe87518c6699ded7dd5f4f799f4ca8a1c4ab8dbb7dccb64a5b6c23f93198",
+    "backend/src/services/conscious-agency.fixtures.ts": "46c307d406e47a414372b8033c9b0a9df27524854810befe1252d0f49521900b",
+    "backend/src/services/cutover-admission.test.ts": "7634cd2249f191fca60f357bfed79f5d8adf23eee3e0c47a9fad8e681ed1bd9f",
+    "backend/src/services/cutover-admission.ts": "d716a314bdf0f8072aa7ca1ee6ad99fbfe6b31b2cdddfe639713a889a4ab7701",
+    "backend/src/services/cutover-background-dispatch.test.ts": "e26787b291685c5b9aa88d66a30063e7f8d1644b7ff89a96f09251a7b32b99b7",
+    "backend/src/services/cutover-http-admission.test.ts": "2f1664b3cdf3b22b6b911063e6425b278c0640e48f88b988d1a6d066c43067ca",
+    "backend/src/services/cutover-http-admission.ts": "f0ff4972171fa2243486c3b8579c72ad98a20d9700c997845fd1f618b0e93678",
+    "backend/src/services/cutover-http-auth.ts": "c5995e50bc838ddbaf1c5d4d18b6028a1cf65c0e27c7410c8ae6e38e0690f259",
+    "backend/src/services/cutover-http-response.ts": "47c9a4438b34fdead4c59952d441815ab6808c66760b853be8b3c2c6bf8fc7a6",
+    "backend/src/services/cutover-http-trial.ts": "365de72bfade272d83f3e66d6455cd70c6d5a08a5336d6a9312db0e84e398096",
+    "backend/src/services/cutover-stage-smoke.test.ts": "6c42690f08e65d0073162f80d1696d5505f53e0a1b2b11eeff459e30b11c1339",
+    "backend/src/services/cutover-stage-smoke.ts": "4c825b725c47e53f0c27a1473877017cbdcea50d712fc3248645caeaad74d3bc",
+    "backend/src/services/deferred-narration-source.ts": "1121a6a90b7d9ff232633cfe5623114e42526ccd914ee113552749721a3cf6e1",
+    "backend/src/services/dialogue-pipeline-activation.ts": "37cae40cbe581864bf06203153a45c6aa2c7bae1f635f77712e1b8bef337573b",
+    "backend/src/services/distributed-guard.test.ts": "6ea0a9822d20a85fe31cbee6512f2650ec3a74efe4ac618e65db70e60f8d1aab",
+    "backend/src/services/distributed-guard.ts": "e0a248101fd14555a3aca0dd371c9d6ab2965290064358f88b23aa48aac8ac3c",
+    "backend/src/services/e2e-session.test.ts": "05fcb962ecd9afc8d1322867072c7004e18dddb7f038f3356ff26b1d385e24c4",
+    "backend/src/services/e2e-session.ts": "e0ce59de3bd0310c70a5e38b91f8dbc3995bcb105d4cfc7587b4323da8abfae3",
+    "backend/src/services/family-authoring-runners.ts": "b8a15b2b733da84dbf0fbb979a5cc05e54bdebe30f51ccf32d2d0b9434cc52df",
+    "backend/src/services/free-action-penalties.ts": "1ea394a61635357a3fe91ae3b343c10ff5ba1c8553ad458c5380700aaab14606",
+    "backend/src/services/free-action-service.test.ts": "60e0f14b576092a35f47cbe01f25cd5ecde8b7cfcdb2f3c1049a22eb83594cca",
+    "backend/src/services/free-action-service.ts": "6256f175c899dae56e78f9f8cc194889406b1ec49938cb5ddcb075d9565c2ce9",
+    "backend/src/services/image-archive.test.ts": "ce81fffdc4a5c16bea360033ef2c819dcbb12cafcebb39ed0efc87b3500b3dec",
+    "backend/src/services/image-quota.ts": "e68ce563aa5777839d0746bbfc8b82fe96ff5a7c4517dd1998bce3280de65e89",
+    "backend/src/services/image-service.test.ts": "cf9e1fa231f684d3263cc9f07bde9d18467d7014e0dfc76b05ea09524e6c1826",
+    "backend/src/services/image-service.ts": "cd9b5cc1e018a65074a32ff15a59d6c74b2bf0bc941218fb6f8250f4235c8da1",
+    "backend/src/services/internal-observability.test.ts": "fd3cd392b7a93c5f8215e2d08783550aeddf6e6d7a5b8b9a56322f2c6aee1c5a",
+    "backend/src/services/internal-observability.ts": "612627778c66ec7b434aaaf2b1defae562ee8e1b43663232d09b595ec2808e98",
+    "backend/src/services/llm-usage-cost-report.test.ts": "a54ab5683edd7334024b2d629ee1569aa356fcd1823f10744d7bc1accfb8607a",
+    "backend/src/services/llm-usage-cost-report.ts": "24e9a9671599ae69c6ccf7e2fb617172f555fa369b9b4ae16b9e5d1d2eda22f2",
+    "backend/src/services/local-media-store.ts": "cfca0b70b26fb2e5e5c4515b83d6610526241985c4fb58933b2e47768c138b5b",
+    "backend/src/services/narration-event-storage.ts": "6e9491bf319bdc73c964bcf08ecc6b71979f2db62d29288989e64c236c6176ef",
+    "backend/src/services/narration-style-authoring-service.ts": "cbba4b90456aeb594303242ef32abb69dc20635fcf6720874d1e88434790c6e7",
+    "backend/src/services/narration-task-dispatch.test.ts": "eb100709c5cb177bba87b37a2bd7a4eb3f887de04b725d0316ffa5bc2eec8a95",
+    "backend/src/services/narration-task-dispatch.ts": "0d3099ff9bce0f2973bd22d14715aaa3e1d19cf673ea300cdfda47a24fde7552",
+    "backend/src/services/narration-worker-accounting.test.ts": "eb81d07803a011f9131f195cc52878fd18ece28354ce1fe47e0ff6377902a280",
+    "backend/src/services/narration-worker.test.ts": "51992c99afed9cade27e98f63fc261ed48e694074f540688dcf5e7754d18f1fe",
+    "backend/src/services/narration-worker.ts": "c974acbc5a95035d2d6ae0a25a3d6954f60779cad8c7ff45eab1e2b5cca55c9d",
+    "backend/src/services/normal-awareness-policy.test.ts": "1087c1538e41f95ed62224e11a464e5d08d412a32d865bad04e07ea2d27a078c",
+    "backend/src/services/r2-storage.test.ts": "e6eb03a74cfd1750b7c53009bdd91ed9d055c929e91f0dec55b368a694ed49dd",
+    "backend/src/services/r2-storage.ts": "4b0983f09246c6f64b0ca02d097a1ce57a8b6c2f2da16b6aa0a4cdd32a15b03c",
+    "backend/src/services/rating-service-transaction.test.ts": "3e221c88bf7d3bb10e7787d2d17174cd59ed9b09f6fb1f1218175160354d5685",
+    "backend/src/services/rating-service.ts": "17912afa98143f0d52cecf2119d9da8949598e95339839d744aba1b3975e8e7f",
+    "backend/src/services/scene-beat-wiring.test.ts": "76e81f3717ecb271da902e629e6cc44cb21454f154b5599ca712dcf998616490",
+    "backend/src/services/semantic-authoring/accounting.ts": "85c6dd9fd36317ee61f73e9a7c839ae21fdc89675cc9ffb8c9847951832c39bb",
+    "backend/src/services/semantic-authoring/adapters/battlefield-conformance.ts": "d967296ee577eb33300458e4d2a5135a1e5fc34a19ac3c57a607b74408876ba6",
+    "backend/src/services/semantic-authoring/adapters/character-complete.ts": "6b6fd26056125a9faca17d4e0bd07375acea0f2fa8709f104e1dab4293c14bd9",
+    "backend/src/services/semantic-authoring/adapters/character-context.ts": "09b805192da9243d88bf7619feaa598c50750e6733c3ab5bef532ffd4e8b8d77",
+    "backend/src/services/semantic-authoring/adapters/character-deferral.ts": "82ebe28c2c938aef672918f6c574ab1b6c6d94b849a791cd99ed7855454ae9ed",
+    "backend/src/services/semantic-authoring/adapters/character-profile-work.ts": "46a4a973405daccdcd45ba10818920fdeafe2074e520d20455ef9b3a07f53336",
+    "backend/src/services/semantic-authoring/adapters/character-source-ledger.ts": "39f0a111dea9b6e73e0f481b337556c382a2b7dc2c93728ed3f7118f642fc986",
+    "backend/src/services/semantic-authoring/adapters/character-v3.test.ts": "fd544e0245832e806755cceb7ad9259ecaf15fc6e2f785566cb886735e26e8c1",
+    "backend/src/services/semantic-authoring/adapters/character-v3.ts": "988dd3ea8184d3bd9b36ada67be0ada1a76e144d5bbf26b7806d09f0ca204231",
+    "backend/src/services/semantic-authoring/adapters/family-conformance.ts": "dac65edb552b541dcacb6e68543f69a5beb6351e8838a7d802065d6ea4c6cc60",
+    "backend/src/services/semantic-authoring/adapters/narration-conformance.ts": "9428ef31f2f3d83601e6fa2a316199169625207ae3be320336c07f2cf36351e0",
+    "backend/src/services/semantic-authoring/adapters/pending-preservation-json.ts": "0894a58025ef530b6870e4521ff0a874df730cbb05c318050086f8d031a9b1ac",
+    "backend/src/services/semantic-authoring/adapters/schema-notation.ts": "d5c422cdb9994b00cf9f2135fcdbb66beca3feed53b9a50bf427667f928191a9",
+    "backend/src/services/semantic-authoring/capability-session.ts": "16786f35f5e7a558bd6116f07f0214e99e5320e7f186e7308202190501ec3195",
+    "backend/src/services/semantic-authoring/character-review-correction-source.ts": "c7259a7e91b8cc7ddf25976188dc62e267d00a43c912627cb041457301bc35aa",
+    "backend/src/services/semantic-authoring/character-revision-scope-source.ts": "19ce28ea8901991494a6dde89329e33e8d5e738f5372646d986ed9d53903ad0b",
+    "backend/src/services/semantic-authoring/character-revision-scope.ts": "f7d9c396ac221599c5557c09cc640561ad2ca490950f24eddde6a4a503e6dff4",
+    "backend/src/services/semantic-authoring/conformance.test.ts": "0e9ababee0db7df3a18c365ae8fac859e518c0f4fa07d473296b27092479ee31",
+    "backend/src/services/semantic-authoring/durable-execution.ts": "a967a1b19c42295a6d172c172c57bdca25344087ebd48e9396222e373b00a9e4",
+    "backend/src/services/semantic-authoring/execution-policy.ts": "9693736ed735375d7ffd6a9efb722a9bc729c8f3c584d6620456bf7fd31ebb6a",
+    "backend/src/services/semantic-authoring/execution.ts": "da4a87f102f4b0c957cb1f5b9a8f0c9e5a7072d3a98d56c5f787a6fa1ce1cca6",
+    "backend/src/services/semantic-authoring/kernel-foundation.test.ts": "a8047e4cb87dd8171c2bdc2cb915bc0de4999724c611617531aaa9c20cf8c63e",
+    "backend/src/services/semantic-authoring/kernel.ts": "283f85c87235d4a77327827d4971e0ec453e7dbcaa96c91d814681cce0584b43",
+    "backend/src/services/semantic-authoring/orchestration.ts": "a2d936cac5b11329ac050a4476a957cea6c4ff9f12d90d24b5a15c502550b29b",
+    "backend/src/services/semantic-authoring/ports.ts": "850b811140cd5c7f036cef63b0f17ab3da92d1bb0839b06effaecd636c4e73aa",
+    "backend/src/services/semantic-authoring/progress-monitor.ts": "99b113848b12a69b90513e1ae31eb815b3b088cda3bd4d4f5cfdda7b3c470653",
+    "backend/src/services/semantic-authoring/proposal-decoder.ts": "0fa806814eb320c8832f7077c493caa823c58d98f152e47bd2f81131d7ae5ff8",
+    "backend/src/services/semantic-authoring/public-mapping.test.ts": "5589d87f82716abea927164acfc781bd3a26f2d808bab9287d73fab1c482ffe8",
+    "backend/src/services/semantic-authoring/public-mapping.ts": "5a761f2d7cf65ec60b2d4284207f734f41a6c022bc22d5d2c8ac39309299b368",
+    "backend/src/services/semantic-authoring/revision-scope-evaluation.test.ts": "0c65e651a1ed72151d6c570f5caf0befabf26bb182305a9eca1c7958a2742d6f",
+    "backend/src/services/semantic-authoring/revision-scope-evaluation.ts": "97ed2c1009a1e589e4688f61eb2d14f4fb18a42f6cb1d08763b725ad0e133a3a",
+    "backend/src/services/semantic-authoring/revision-scope-ollama.test.ts": "58f843892d35eed50dfcb11c925d229afc60977f420c333767d378631f0ad1c7",
+    "backend/src/services/semantic-authoring/revision-scope-ollama.ts": "07fdf87d44d07bd413b59c1196fecca17f6052c216fe074987040833451e555d",
+    "backend/src/services/semantic-authoring/run-state.ts": "562ae18094206cfc5f8a92b62819b5f25164c8bfc4e0f7fbb88ead8a0687610c",
+    "backend/src/services/semantic-authoring/scripted-ports.test.ts": "f937a2d40efe7ae6954cd3af48cf18d27c5f4cdc3c7a90b2e1910f92a2ea90ee",
+    "backend/src/services/semantic-authoring/scripted-ports.ts": "712e5edf90cb2b899e1188dba76b75e4e33bceb916097786251786680ba694a4",
+    "backend/src/services/stage-auth-smoke.ts": "1c421a93f9553c5d800e046383bccceb0ed7ccb58f0fcfed5a93dc5ff3de78cf",
+    "backend/src/services/stage-http-smoke.ts": "5b619bae5e0e2caa3374c54615193837ba8e3906a63372589e56fb3f1a1243d4",
+    "backend/src/services/stage-r2-smoke.ts": "53c7b4848800114e3be9f83553d50b65e955fec23151d53fcc6b07b5bc853136",
+    "backend/src/services/stage-smoke-manifest.ts": "2a91a987e8517ed7523191ccf0fe45c89f27e5e12f30fe484130afe195d0e348",
+    "backend/src/services/stage-v3-smoke.ts": "c4f00d74feffe0ac9016a6d2494a252cb7001b85f4621059526edf3e31b865e2",
+    "backend/src/services/supabase-identity.test.ts": "26c0e2b31412cac39d0fee5bb0a93cd94d826c90e3d4392a3afe2627fa144753",
+    "backend/src/services/supabase-identity.ts": "b7f441f85250fb198295e882015a9d2b842a73517d324da710fe45c3994f3f1f",
+    "backend/src/services/v3-battle-creation.test.ts": "5f6254f5f888c785a836feb3fcfcdcb635b0bb04ca9cbed28c05f9fc520a3e6c",
+    "backend/src/testing/awareness-trial-http-fixture.ts": "088fc7ab1a38dc5f22da317e2dd7af97804e8790360aa88c2a1f4367c4fafc91",
+    "backend/src/testing/historical-asset-generations.ts": "1f853f953dbd5c2a9aa3c5628652b72d251b4e7d1b1f2e91afbc8334c2cced5a",
+    "backend/src/testing/historical-character-fixtures.ts": "c29d82b0b3d86b882e4670829d6fb365f80c6dbe5a363b73e008263495fed165",
+    "backend/src/testing/historical-v4-battle-fixture.ts": "8faaa6e6140db2a33037a2e6189aa3d27396b568b90a56ae1806cc1fd046a650",
+    "backend/src/testing/offline-awareness-provider.ts": "1eca62e07410c63ad3b89a02cde87b5c45694a719d99470fa0cf4e7e3494147e",
+    "backend/src/testing/offline-focused-authoring-provider.ts": "409df20ddf4fa6e07db6fea2e55b1f3c31473aae159780916fef03e9a662c2f6",
+    "backend/src/testing/replay-semantic-migration-v3.ts": "8e20ff26b82863316b48de0fd460b940d854ee92a123fb129f2c16e396087b2e",
+    "backend/src/testing/replay-semantic-migration.ts": "860dcecc7312f4e5352238182e518ef7c4650074dfbe2f8a92201f425afc4d79",
+    "backend/src/testing/semantic-migration-probe-fixture.ts": "3ec818b6e90fdaa2b190ea0ab7533d0ec283a5c1592ee55a0fcf0f156aa5c3c4",
+    "backend/src/testing/v3-character-envelope-fixture.ts": "c3eff395a23dc3ee82cee6a5a20d1525ee2fb2984ce28bc24f1d2cc61e420c57",
+    "e2e/battle-screen.spec.ts": "294aab09315703b2ef1dd60c8e5de4e7c143dc6ed0f2148da0867cf11cff0a20",
+    "e2e/character-focused-review.spec.ts": "48bc0247aaddd380c29304d60403d37006caa3763e010d46f77a2530e2ce5d0c",
+    "e2e/fixtures/battle.ts": "b88253bfe84bbe466f2aeac05828f3748d5339eb76a909694c5c701a6de4c4cc",
+    "e2e/history-character-navigation.spec.ts": "679bdf16202090a41257e4d7b1c49990f85d1f43d2a6c4dbd8a7973f6de32e7d",
+    "e2e/v3-local-integration.spec.ts": "fd0d642a0cbaaac8c93da00dcd1276424193d640c383dcecfa1313be19f9bd88",
+    "frontend/src/App.tsx": "5339210aea145ec9d2c97db1d8dfb4bab920db42624b35b3d03c868f5010a68a",
+    "frontend/src/api.ts": "0e2862ce0e666cc6ba56ae63e091c3f2f7171b2eed8a2e5d18d668787d657f38",
+    "frontend/src/auth.tsx": "a0457b99af19fb31d7ec9d78531d92e3b768e70b038cf6797f2c55f406da89d4",
+    "frontend/src/authenticated-fetch.test.ts": "52204b72bdc75e23f4bcee685bd12341f2574bca7e85c587e1a6e2eed634b415",
+    "frontend/src/authenticated-fetch.ts": "996a035bfaced338150ef4184c6a71de49c9891bc010ade3914da22fe64ca080",
+    "frontend/src/authoring-api.ts": "01a7dfede33fa4c182f8c83872555e39a09c4e5e54715765c045141e55d34cdc",
+    "frontend/src/battle-narration.test.ts": "7b0296db798885446fe49943d564241cc22bc26e400fefdbb5493552e38caff2",
+    "frontend/src/battle-narration.ts": "f39334303da5c779724901456fea6a8d3a7afbb24a997612b186c231732c0423",
+    "frontend/src/battle-screen.test.ts": "4f7a7bc0f344cda46866abf98ab8e2f2efa97acb3dfad2717e75d4495c6f4819",
+    "frontend/src/battle-screen.ts": "f39628cc61703708a2cd9db93224bc199965a56dc08ccd2ab591c592b056c474",
+    "frontend/src/battle-scroll.test.ts": "01396339deee311bf69812e7bb24b87d01af1399767c0fec1f1614942f43f582",
+    "frontend/src/battle-scroll.ts": "2ad81ca2c2caefc3922d90af770b08138d8c30d8a6f1250755a283aa619a9795",
+    "frontend/src/components/AssetVisibilityField.tsx": "f5fed45dbe121553d35fd77c2e42ab85ddd7b20668d1e9e15d274d4f785d3af0",
+    "frontend/src/components/AuthoringProgressNotice.tsx": "1ea04f5b322ef9416a5e9f86e801395352f854eaa06b3dbb3305eaa05949f58f",
+    "frontend/src/components/BottomNav.tsx": "566b8dd3491e476f79388d121e5a70121e66e3f8f44c7483eab1697a2d443cce",
+    "frontend/src/components/BurgerMenu.tsx": "9fd8a3a94047de3d81a56a2138e94918fad29f3d0f456314aaa8824e9580774b",
+    "frontend/src/components/BurgerNotifications.tsx": "51ed20d5e8c2a0e69abeb37a2c6f9a81da650f43b267b4f1d0baf47f9e54bd26",
+    "frontend/src/components/E2eSessionReentry.tsx": "0135509ba5cb873fa57221c889d28c5467ac831c677007c82021bdd574270409",
+    "frontend/src/hooks/useAssetReview.ts": "5111994d684b5c70d7de00914f9fe01a4eb788c5f581a7da34c4ffbf2168b743",
+    "frontend/src/hooks/useAuthoringProgressPoll.ts": "9d0ac62d670cd233dc17c2c1d7d307f8bd56158f4d646fc79bb0eded4b052a10",
+    "frontend/src/hooks/useCharacterAuthoringSync.ts": "dd775257adfa77d6ba5b054b7b0258eb0e1b8c2096edd22654fa58f45e62f408",
+    "frontend/src/hooks/useLocalDraft.ts": "a846adaecefbcfd4b566d74a71c5477106a9749402a3335eab213f73f907b355",
+    "frontend/src/main.tsx": "0dc6877cc77353b34857e05db88270e49ba0014702b7c753212cce0969827e3a",
+    "frontend/src/match-rating.test.ts": "1267896f6290efe93c6e96f0d99e8f61021253f8c73841ce9514cf9c1ef5290a",
+    "frontend/src/match-rating.ts": "441306c1a95cabd43c1db1860ab4d8bd8617f7745631d5121659f13217bd48e9",
+    "frontend/src/match-selection-preferences.test.ts": "2de0d6fc896f98967efaaab331b40f2538807e6738b20ef0b143c5541e2e2b06",
+    "frontend/src/match-selection-preferences.ts": "1153afa9262f46eb96d5243879826c4910e6a038b8c0ee39a710bd9ca294c076",
+    "frontend/src/media.ts": "2e870fcbf14ab8f7005b96c1a17773b500a4f640f98790cfcefe9c362244fda1",
+    "frontend/src/pages/AdminDialoguePipelinePage.tsx": "7f40adc5cb0b27d6e092abb10e9190dcf966ae3ec938686ffda2a19ba14e8c03",
+    "frontend/src/pages/AuthCallbackPage.tsx": "89c087a90da093c7f91add5b9a54c96f45d5a1fdba864f14f64364b3cee079fc",
+    "frontend/src/pages/BattlePage.tsx": "a1b9b58cbe9537f8ba7a95f4fbb77a60e82d854acd4ae58de934e3619b26e110",
+    "frontend/src/pages/BattlePageView.tsx": "a029ed8776d1e9ff97179609a192ef738024539a4767308053f4cd3556ca8c28",
+    "frontend/src/pages/BattlefieldDetailPage.tsx": "d2f7627c691a3e8eade92215b75a0922eb2fa4f7aa1dab874c7c72d18074b78f",
+    "frontend/src/pages/BattlefieldReviewPage.tsx": "33319c10a875f0834b0571479ef440e36318f6fff2eea63f1cd072e3541e9b79",
+    "frontend/src/pages/BattlefieldsPage.tsx": "7db68352a9e5b5ec1fb9347c0cf545065c1001b935f0559f96b0c97feb0f079b",
+    "frontend/src/pages/CharacterCreatePage.tsx": "cb0414e82104ba5f947ba0da684acc0082a989954cbbf17bc01d63508e919c1e",
+    "frontend/src/pages/CharacterDetailPage.tsx": "4b57f748c6ddaa9576f6f0e17bcc5b128ae1523e088293876037d72b1f511c99",
+    "frontend/src/pages/CharacterReviewMark.tsx": "7d530378c55f605348477cb66f498425d39feb7d4a46c16069761cf8f54d4aa1",
+    "frontend/src/pages/CharacterReviewPage.tsx": "dddcb952af6acc8714161ebc64e6bd9a73eda295128afb2d5ee2bd015bbd16b1",
+    "frontend/src/pages/CharactersPage.tsx": "dcb726a90a1823f85dc62c9e98f76149b694f79e1b8dba3380ddd4331e7cbd0c",
+    "frontend/src/pages/FriendsPage.tsx": "38db8343fd965ad5047afd5fb82a08e3200a94f2114126e7ecfbd8472b748b26",
+    "frontend/src/pages/HistoryPage.tsx": "7d6c6c4a8152ae384ef8a2e0a931c2af304b38bdfefca65b49f1b9e5e2691fa9",
+    "frontend/src/pages/InternalObservationsPage.tsx": "0012e7c027a9eae2c39f91578a93c60d1d059e49d002e7f63764b285d6e808ff",
+    "frontend/src/pages/LoginPage.tsx": "f819ebcb3db2cc35cbe1fa494fe5440bf27d83bb967e5e37af89bfcae8cf4690",
+    "frontend/src/pages/MatchPage.tsx": "ebb34800c03ed69982ac1461fce66ea466d8dfcdf9b7bf91fc3812e35da993b5",
+    "frontend/src/pages/MenuPage.tsx": "0012ccf4d2966799e4387b72c04eb8dfd86f68d1c05846075e3402af8468c644",
+    "frontend/src/pages/NarrationStyleReviewPage.tsx": "e51a6c440defc5580b8bf8d42c88f029fceda40bf7ecb332b97ae3de03d0b2f1",
+    "frontend/src/pages/NarrationStylesPage.tsx": "74f7362995d291950108e674c92de075fe28048449d7d4a98909a6d83c145d9f",
+    "frontend/src/pages/NotificationsPage.tsx": "57a60c5909bbe6cf28119ab602d3d7ab225b196d9ee3288b7219392981de71ce",
+    "frontend/src/pages/ResetPasswordPage.tsx": "7b197a1dbef2ad0c2d5904ba71b31c97dc76d91bedd3273a9b8a10264143f046",
+    "frontend/src/pages/UserProfilePage.tsx": "7e736b28432e2c3b7983e201021789e85284f3239673d04efc7704d5ced91eb7",
+    "frontend/src/pages/asset-review-shared.tsx": "895d1c01fd14eaeb2db79384563daf93fa0bfb8f4637070d5eb9a51f504a5908",
+    "frontend/src/supabase.ts": "f4eb7ea6de445ae1026f51762fc5fed22cc9ec9087e7dfa55abccf989fb22ee9",
+    "frontend/src/vite-env.d.ts": "65996936fbb042915f7b74a200fcdde7e410f32a669b1ab9597cfaa4b0faddb5",
+    "infra/cloudflare-worker/src/index.test.ts": "aeb049eb06feb0667f6502c63526dc3f4f573bda17b1203e6da3772c6f5542ca",
+    "infra/cloudflare-worker/src/index.ts": "b7987b341f53a64f223e5e124db81434418fb5b30c03f237a56ccc59c987fb57",
+    "packages/shared/src/action-effort-policy.ts": "dabb6d35f829374b587a7d2be4fd812d6a3a44ed417b28d084b15e5f98a23a24",
+    "packages/shared/src/action-feasibility.test.ts": "5e0ab7a50a339ed3e4a1e2986e17a1635edf2230b4f5a85551a5c30cd832102a",
+    "packages/shared/src/action-feasibility.ts": "1fb17511ac4a54e6ff85523a0e1ec4f015c19086791a4cd09cdb077540597e0a",
+    "packages/shared/src/action-intent-contract.test.ts": "d815773f34cfe9781a254cd493ba29e34eb2ed635b4dc3cc1a481b3b808dea3a",
+    "packages/shared/src/action-norm-contract.test.ts": "c0ec6e636194d3821c8779f772431856ffb6e6af6450a07db7487619a2ebff4d",
+    "packages/shared/src/api.ts": "a49ecbc152c827582ee244a86ee7b40c9c3be5962c6f30465191651be67637dd",
+    "packages/shared/src/asset-visibility.test.ts": "2de6ec2d9b0a400b23cd303d2b6b124922e7c92759d768b1bbfdaa9595011524",
+    "packages/shared/src/asset-visibility.ts": "9f5053543357b4cfc81c0d8f99e4509f68fd77fde21ad480dcd12794effb3c97",
+    "packages/shared/src/awareness-battle.test.ts": "dbaf06b2576d6702f3892575bf3e26fe71011dd5ad503f1ab836e80e33cc3f84",
+    "packages/shared/src/awareness-guidance.test.ts": "32221a7446d7dd70bb4c7fa84505fec4e4f3a615ddf55288f0550e1a1c056300",
+    "packages/shared/src/awareness-guidance.ts": "2d0aee17f34bba6cdc1265174d4b0bc52a6037b56ba9dba9588de93687bb9163",
+    "packages/shared/src/awareness-narration-contract.ts": "828bf7fde81d8156023b406d002ca1899b4b1c66f6fd28d7abf32645c35b7d3d",
+    "packages/shared/src/awareness-narration-source.ts": "f93755b8d5cb9feac25022dfe38314d3820b4b4783bb66d1ab18caea5065e7ed",
+    "packages/shared/src/awareness-pipeline.test.ts": "6a2bd24592978f991c5433031b20b024e69da9b227975a144a80e29eff40d252",
+    "packages/shared/src/awareness-pipeline.ts": "e2c189c2ffd43ca5d0f1a1ac55d0f177cafb3b31bff2c8dbab53d06e387ec8e0",
+    "packages/shared/src/awareness-policy.test.ts": "98260f87570863821bb684a1153820624a1addc67d59f349f680e0172e9c7816",
+    "packages/shared/src/awareness-policy.ts": "e77a702f8f6b8e831723940491e9f2966a4de48a6c1cba126da3f413a04aa2b1",
+    "packages/shared/src/awareness-prompt-revision.ts": "88f00ca976e2c74a1ea93ac9e6f23b3679b22315bff61734344f994b0b4660e6",
+    "packages/shared/src/awareness-state.test.ts": "7b397e955d18e08c1486164ac4832a006877b14bd91342a8b50e938db66787de",
+    "packages/shared/src/awareness-state.ts": "a3cb6a4bb7fb4fd44aa5a8d054496a69ee791045c5271261b5e59d7aeebad43a",
+    "packages/shared/src/balance-observe.test.ts": "9a494d9f37eef76631bffbc72718815df20bfafd475a695fb51b219c5c3da19d",
+    "packages/shared/src/balance-observe.ts": "f5876b904f1089004f2a63cfc2769dbedd478534e843a5d42ef0dced445a266b",
+    "packages/shared/src/balance.test.ts": "7374a26ee2ba43fc3ef320195f14758dcfce04fb02abca139c28823d022d6486",
+    "packages/shared/src/balance.ts": "30fc1936b5493253e4432b1ae7541a204c48aaae590d9adcf934023132bf36ae",
+    "packages/shared/src/battle-action-norm-gate.test.ts": "2b2bba07c542844b6d7ce1bc49d057a9c426bed61552cd61f91effbc63580536",
+    "packages/shared/src/battle-action-norm-gate.ts": "935f546ceed9294fcc57cffe355e0bd8175a0afcded0f71782ee8beccfc4d702",
+    "packages/shared/src/battle-asset-manifest.test.ts": "bb4e60750c8ec18c662e69c98fae2d38f721af33b797cb6b57f4b38f6b6314ae",
+    "packages/shared/src/battle-causal-execution.test.ts": "1d0f42450f216a9a5df6bd51dab348412a16e9d4623d085b29537b3c06d7736b",
+    "packages/shared/src/battle-causal-execution.ts": "3db000ba05ebe16b62a359b1c668f30a111123e907c366ef4c50d65310e3e365",
+    "packages/shared/src/battle-causality.test.ts": "4d7024d3cda2c34dcdcd52dfeaefd32e0fd804ddead4269105d0e752d6d6a8f5",
+    "packages/shared/src/battle-causality.ts": "a3748c02f1a2eef130300df51805eeca5a07c3f83e7e7670fc7c090b281a6bdd",
+    "packages/shared/src/battle-character-compiler.ts": "514a313317345ba71de24caac0cd8850308b9a3e3b86d5ec73a978432b5cc08a",
+    "packages/shared/src/battle-consequence-validation.ts": "aa2f43e781d73739b3bde74232000d78114a8701fc57eeafb07e360fef939aac",
+    "packages/shared/src/battle-contract-types.test.ts": "dc43725bc7d71b580c488b82dfcc47e61a5ee8cd842959c0f8981c7c075f403a",
+    "packages/shared/src/battle-effects.test.ts": "8da7c6add1f5d158bd18b7ddc88bb933745b0463b044a64f091069e809773bdb",
+    "packages/shared/src/battle-effects.ts": "da972f848699331de1a1537900ed4ae44f76d289308742b1d8263e7654f31b94",
+    "packages/shared/src/battle-effort-perception.ts": "66073ea326d7047ec51902502df5dde9af1360ebaeb8614e9ddce9a3f58c126b",
+    "packages/shared/src/battle-engine-absence.test.ts": "23705444acb536920cc922ee4c9f24e39ff9cab681ad48262a91be64b7b1c9f2",
+    "packages/shared/src/battle-engine-test-helper.ts": "a6ae8e377e870a49152e9a10374ef997c114585c14ed20f9bd2f0999185917c0",
+    "packages/shared/src/battle-engine.test.ts": "83eb413439b931be19965079e73178027f495ccaba12b1047e8acc8f2564c2a6",
+    "packages/shared/src/battle-engine.ts": "61b8a37a3bf2235397cc5186633b7bbbc2b85326934342090291a6c65a1725ec",
+    "packages/shared/src/battle-pacing-observe.ts": "6d32777b6804c188804eeef8108bab8c3377f98587be909279d3162827bec8b9",
+    "packages/shared/src/battle-pacing.test.ts": "5b519c93b9ef326c4fd7bb06d2de8c81b393b50074c076a6183f205d1b979d4b",
+    "packages/shared/src/battle-pacing.ts": "2950f0d51844f4996b614d6a5c3c00f963960cedf5d3b4b47d738f95727b80fb",
+    "packages/shared/src/battle-policy.test.ts": "89b428b76e219df6f39f23c4a626b55b156006ade3f0ea226864a27e0633b797",
+    "packages/shared/src/battle-receipt-zero-net.test.ts": "93471eacf6c43cb720ff190b08505ba4742db32504adc16de20d24d44c456683",
+    "packages/shared/src/battle-social.test.ts": "7764d288f8a943baf84320355f9231e6c07361367143614f7ccaf33956966560",
+    "packages/shared/src/battle-social.ts": "65c24fddb1de10b595f1a6514a68112f3cc5e42a3acb42e707e44fc4d0255bd5",
+    "packages/shared/src/battle-state-validation.ts": "0b770ee19c8aa4105ddb4c96d076ab7452753583386cf9af7a7a78a4aa54dc04",
+    "packages/shared/src/battle-stream.test.ts": "5e74f82170786194101a9567f136489c38f098a8924d865c2f00e6cdb6cd9b7c",
+    "packages/shared/src/battle-stream.ts": "8d84348561dc57c7abcc87e97ff261bb19cb62dc0e39cde5cdfa305c50191c64",
+    "packages/shared/src/battle-temporal-rules.test.ts": "1c3fd991ea638b97db63d5f89c422e22b62c3ec385562a85369790d0df62f16f",
+    "packages/shared/src/battle-temporal-rules.ts": "e91b70002a31377e99476b5e0d76e67205423c0e3d905b46cf87923f56a6c38b",
+    "packages/shared/src/battle-turn-causal-receipt.test.ts": "2d58a6ac4e605bcdf2a900811af561db3416234a50395f3ff1c1131336871d98",
+    "packages/shared/src/battle-turn-causal-receipt.ts": "0dfdc552e4f0967e9f4bf5b9ad117babd2294a89c310d2aeab7e862188626dc0",
+    "packages/shared/src/battle-world.test.ts": "b5dcc440a63713b1eb1dd9e5d0db347ed04d41b6ddccae75b9619e0aeea24d9d",
+    "packages/shared/src/battle-world.ts": "bc85795bdeab266c5e8489b51c56c80e84c605b521e95c25a2482f248ab6249d",
+    "packages/shared/src/battle.ts": "8108fafd0d9ca04e740826b37cf13fc304f5dafa7e169bf4c704dd15ee599462",
+    "packages/shared/src/battlefield-creation.ts": "ae8f07535d5404068145d75207d0d0b6cf7e8c6361b0b0397481b6b9822ff9a9",
+    "packages/shared/src/battlefield-definition-check.test.ts": "251617d96d514e5d506bef37f872839bd2dd5c39566326e7273c2abeb0720e78",
+    "packages/shared/src/battlefield-definition-check.ts": "15170bdc806f762c595aec02b7719e3a9b298ee780896dbf73f46da2ff358ba8",
+    "packages/shared/src/battlefield.ts": "13d20841ee041f60e17b393cdd255b562383e6419778dc0a81bcca77711c632a",
+    "packages/shared/src/character-battle-compiler-v4.test.ts": "a19c28b6e8e2c85862a95c558a07914187c1a1263e41631da31a2f32911a3178",
+    "packages/shared/src/character-definition-check.test.ts": "d1e000a7622d35ac68516f2d0ebc592ed05728576b6f604323ecc8cdbfe7cf63",
+    "packages/shared/src/character-definition-check.ts": "b98e79dd80c096b5194625943133d7ccc4784667332105875fe4331baa0c936f",
+    "packages/shared/src/character-definition-rules.test.ts": "c8c3099b821e394a5c6f9de4a719c16d1ec8e00b8f99923bb92614896a4bc8c1",
+    "packages/shared/src/character-definition-rules.ts": "617df09b099755e6c086c8bfbbe8bd3e8864ee14b6336c9c397c5fad602774d2",
+    "packages/shared/src/character-definition-v3.test.ts": "1c48fd73bb534847b624da663c26761cabdad4db7ebf6d6bdce9ed5b0193328d",
+    "packages/shared/src/character-definition-v3.ts": "aa6fd84424cf938c8d87bb8048e706d251cb8a5d576b7b1b23b6058d448daacf",
+    "packages/shared/src/character-focus-policy.fixtures.ts": "9f19218e1c999fe2801b5d6db29b7135e89fe7a481cac506af1858a41fd349b2",
+    "packages/shared/src/character-focus-policy.test.ts": "ad331f49ed62a056ebed25d3f1ac5fcebe839de89b84bc7916b9a0d0158e6372",
+    "packages/shared/src/character-focus-policy.ts": "7f121ab175e5c908da1f40be4f265e634bb059e27b32b55edd5b0b894e0f9d17",
+    "packages/shared/src/character-image-v3.ts": "dccf57f22298b41c76d078091bc457eb0b2e51f3cd65ac9402c93c9f10cf642e",
+    "packages/shared/src/character-improvement.test.ts": "567903c965e84a91891aa58df063db140edfde4339af04e3338e101f44aa7d40",
+    "packages/shared/src/character-improvement.ts": "0f1dccf28b1db67ecdf0cade51c6b290187d2b404ee552f97337225df8bcfde4",
+    "packages/shared/src/character-manifestation.test.ts": "6fd22f2478176d4890b7b9afb9d11098ed476758daae69b3c541875a3e59c6ca",
+    "packages/shared/src/character-manifestation.ts": "c2d8bdbe5b9ed78f87e8b04ee1d287e0590e905e871a4156237c6c7218234bab",
+    "packages/shared/src/character-norm-clause-v2.ts": "2005398c8dcac71108101aeb7f559cba5d402db70f6d2f124751a07fd2c90d7b",
+    "packages/shared/src/character-profile-v3.ts": "7669ded1796e242d5574d8e0276d8a7650238b50be23ca9d5e522a0a0bfeaf5b",
+    "packages/shared/src/character-semantic-authoring.test.ts": "9adcf3f338043773019a137517952e94d35baa1656fe5a461492846fc24098ae",
+    "packages/shared/src/character-semantic-authoring.ts": "0cfb956c351c00186764f3a1e66f8b7698c6ca117e56f780d9c2581ce7f00d9a",
+    "packages/shared/src/character-semantic-change-set.test.ts": "ebbed6b96fe979aec00bf8eca3f181a2884ba832979447a029f193ab4f58d1e2",
+    "packages/shared/src/character-semantic-change-set.ts": "76d521a6f7a6ce9e0bfbae873d37a3e87aec567bbacf600527f421b0534bcee6",
+    "packages/shared/src/character-semantic-migration.ts": "bb7d5e54d81de47b55e4408d881e879e01137007aaa5c58bb746a62d704b237c",
+    "packages/shared/src/character.test.ts": "f9aa19089a7637382fe1a880de27ccfa6f56eb435375a8cac2d2e191396a4e2d",
+    "packages/shared/src/character.ts": "1889d77a61c2d781ce42c71e1bbadab8b4d1013dfbb69e024701eac355744c50",
+    "packages/shared/src/compact-psyche-decode.test.ts": "e3052385f665a3b2bd557bbce710c607186ba7c7442907683d8a64124b8fb7e3",
+    "packages/shared/src/compact-psyche-decode.ts": "a382c675bb1ffb799ce91773a0c3990f9c99224157a24bd5d462f16ea82deb0d",
+    "packages/shared/src/compiler-phase-contract.test.ts": "e84cfb6e54192806c0f76dd9ea935de6578b5a2f0d69c99998b43ecee1cff0c8",
+    "packages/shared/src/conscious-agency.test.ts": "bebc80fc9fdf90f71628cfc99b1e29e07768cf6ee5f4d523271e68a08c054776",
+    "packages/shared/src/conscious-agency.ts": "6dff7d4af9f07460536001771168d3115ed1fa6e38630d630f8f143ee0b2c870",
+    "packages/shared/src/conscious-dynamic.test.ts": "e35fb9cf68c433b0240a5cb0df97e983ab007eb6c286b66d83f69f42a66ad123",
+    "packages/shared/src/conscious-dynamic.ts": "441f9dc3be94d3fc1a2d9b25f734d32bf6cd505f5859eff9c934c5fa4a213261",
+    "packages/shared/src/dialogue-context.test.ts": "ab4e64fe538e9163e1068211c17d69b5f14fdc790c1c3b5e83fedb215c88489c",
+    "packages/shared/src/dialogue-context.ts": "80de2212888716098c38b78e3a30ab66bfba43ec053254b62cbcaf6dfdbff56d",
+    "packages/shared/src/dialogue-pipeline.ts": "80dd1db0e25a9f2359325c6b76b5f8a53e6e67ebbda2a4bdf9484a1edff66f88",
+    "packages/shared/src/drama.test.ts": "0612308966ab982f8f5937a5fb90161d997cab03250d9d4b62a4fb2e84942fdb",
+    "packages/shared/src/drama.ts": "af9bb95300c749757255fdb01fe1ed1eb29a8dd07f3dc5e1afa0adf881fa01ec",
+    "packages/shared/src/free-action.ts": "fc0673ed025f383aec540be4946b3d2322a44c28d5153d3f7b683f98114fa98b",
+    "packages/shared/src/index.ts": "480967a958788d08393c6a4a61101c3afd8e0305cd4ff30b0212c41ec089a36e",
+    "packages/shared/src/media.ts": "90f935fa30bcafa52a6d9eb2675af19bcb5cd8108ccc6564fe69535bdcb80d26",
+    "packages/shared/src/narration-composer.test.ts": "8bee8d81b2c47a2d8fc7af79214ce4c6fe798635c065a31d134fcfbe0a308ea1",
+    "packages/shared/src/narration-composer.ts": "4aeef8061c04e35df573ed7304fc82cf3f78a724c3e704dee6eff22e805877c0",
+    "packages/shared/src/narration-perception.test.ts": "990362f27e4f1e9f3830cafdd02c95f9595b0abb23d949c6102edced8fc2f198",
+    "packages/shared/src/narration-perception.ts": "bd7743b435aeb47cd539a8bd2478de7f4142539736458e83d78aac8eb67000c3",
+    "packages/shared/src/narration-perspective.test.ts": "431112fdecfedb5b4a267835a7d551696eff407064e674c2c794e9e4be687122",
+    "packages/shared/src/narration-perspective.ts": "e6a9f4d6ef637a71950d44d20d102e6d9f90ee87021d24d4909bc932e9affa0f",
+    "packages/shared/src/narration-style.ts": "3070bc64e492c21967de92a1bdb3fc4e460029ad0cbed4b9a6d633bf40483158",
+    "packages/shared/src/narrative.test.ts": "050922eeeabe4d5015c961683103452c3742111994bb0fbce1c4bbcf4dc85e9e",
+    "packages/shared/src/narrative.ts": "7b88255c817402174376ef593212865c65a0dce73b690ccd0b8257d248ae0dde",
+    "packages/shared/src/perception-projection.test.ts": "7aae7fa9a4a72499ab226c14a4e02fe616bd9c8aab65fb0378391ac5b5094913",
+    "packages/shared/src/perception-projection.ts": "08aa6d8cb6d44d5d6d8a801c839a49aecd338a234e11e7375358f55804e17c01",
+    "packages/shared/src/perception-quantization.test.ts": "d4c62678e20050d0737c273cf0c3290082a130e0c30aefa06c7a0f524ebd34db",
+    "packages/shared/src/perception-quantization.ts": "baa8db6a0068b79146b336070eeb94e3961e47b7e2c1b25323b8cfdab931ac59",
+    "packages/shared/src/perception.test.ts": "85c1a2113610b43a173cf840e34f1a41e95767ce1fe885c61b743f3510bd6981",
+    "packages/shared/src/perception.ts": "b2d35566b8a8eeca56a1d0f4656f3ebd1a298a87bafc3e7dd1c3635ddb6303e2",
+    "packages/shared/src/profile-grounding.test.ts": "3628449044a578782777d80f05cd91dfd98b447316645b5bd708ec45eb8ea8c0",
+    "packages/shared/src/profile-grounding.ts": "bd43652fde82d114b192131260e582991dbe1817336a6ad9404ef8e8a3b0f153",
+    "packages/shared/src/provider-route.ts": "dc4802cf1fceaf0c0306d449b5d51014ce52c5f0900434fd6380ff9a8ae599f0",
+    "packages/shared/src/psyche-reaction-policy.test.ts": "77a00a923c285b73f68c9d9a72ecf8fcc1303d9087a347722749e19fa8221d0c",
+    "packages/shared/src/psyche-reaction-policy.ts": "dcf0b43512037974cc8e2c25c49f9307f16ec03e74ca727d588558ff70f6a9c6",
+    "packages/shared/src/rating.test.ts": "ea560c3b3641f3a3e156ab8568acbbdf75704cfb2b742ee3a118c302fa0e6f1f",
+    "packages/shared/src/rating.ts": "bd2cedc5f6f7f57fcd344ffae96d6b5f9b5664935757f073f4106cedf2aa281e",
+    "packages/shared/src/reposition-transition.test.ts": "743037421c61079b321c08e473d1bafcfc92244d220aea5c75d2f8de76f764b7",
+    "packages/shared/src/reposition-transition.ts": "0f33f0e62363e7097478f3981e0db2d471424c039c3baf79754cd4bcfe7f3f17",
+    "packages/shared/src/scene-beat.test.ts": "d9d31cdcc745f2b035622f8062ebb5243ac721dfbf929c8b54c57776ea718a2f",
+    "packages/shared/src/scene-beat.ts": "8a8174801e1a7060cae88044a051fa5ab9f878ca7aad796e495c3e2ec38492f3",
+    "packages/shared/src/semantic-authoring-public.ts": "a2e8f0716481a75ed52d223c806c3dc045071af5b93e66ccf8a59578efff96f5",
+    "packages/shared/src/semantic-authoring.test.ts": "33216c5bc6b2aeef30a7cf8d2288c38fd36a75b13ef10ac36e0081dcd8a97683",
+    "packages/shared/src/semantic-authoring.ts": "2071026700dd927f17f7d81d055db6e29a040e8e9cbbdc4a938dc50cc4000bc1",
+    "packages/shared/src/semantic-state.test.ts": "ea2b7be949f1d72fe348d047e25200da0f698670f4486e0cc03e6edf63128f68",
+    "packages/shared/src/semantic-state.ts": "f3677adab517fb27a5552b4c792dd7b2319a165ffbdc20aaa1fb7057b4d9f968",
+    "packages/shared/src/skill-cooldown.test.ts": "056d7e77c7104e7db5167c625b0669361b5604883df333267de8350078a428eb",
+    "packages/shared/src/skill-cooldown.ts": "1d73da1e70a1b66f399dfd09770f08c63388d8853e5deabd6e1789dd0ead18bb",
+    "packages/shared/src/structured-assets.test.ts": "b386c61e8998c3a5273e548d08cbeaa2ae23b5cfe221f70a0c3db080870b6e28",
+    "packages/shared/src/structured-assets.ts": "088c275e0d54a26be21451a23d5a6376ca7bf342e664d4b4370443e51643883c",
+    "packages/shared/src/structured-battlefield.test.ts": "e1b23d50e9704e11c228da1f79aa65d880baee51326d622004b3d7ebcb2faec3",
+    "packages/shared/src/structured-battlefield.ts": "d8fb37c1c5ef9957267e2b66673d8810be88f01fd9da5bc9fefab47ad0524b6e",
+    "packages/shared/src/structured-character.test.ts": "3d808ffb317e460a6c009fc508b304f8967e1506b62d879f8efac5adbff505c6",
+    "packages/shared/src/structured-character.ts": "b505129a97ad24c44285f6779e0be2736433a8560e66a312a4ddbc62f874aa42",
+    "packages/shared/src/structured-narration.test.ts": "8df3a0c2d4d8b1e2aa2a5eafa3598ef6e35ea0f7575c26b1382f3f1b74dbcae1",
+    "packages/shared/src/structured-narration.ts": "5ece3ceb469b7ce84e1c77908f4a685e5ca678b939ff5fd8877349506b7afd90",
+    "packages/shared/src/supervisor.test.ts": "b473765c2b3863ac5656e2a7eea96323a126f911f68b4d93af6468e90219aacb",
+    "packages/shared/src/supervisor.ts": "5fa44dd7e2982c0f489f311ce0fc1366c5bd30779258755517797377f11b80bc",
+    "packages/shared/src/turn-event-contract.test.ts": "cc0f8f2c6bf55b5e02fe6a2461c81ed31ea9b706d1b932c658307cef58a2824d",
+    "packages/shared/src/utterance-perception.test.ts": "2f13536d6083ca8e5bb065e4d184fce33c2dc182957579b2c1ca4c75b6c7a400",
+    "packages/shared/src/utterance-perception.ts": "a13a8bcfda93fbfe2892d607539d6d2524fe57692d3f12a1003d238c54e2996b",
+    "scripts/adr-historical-exceptions.mjs": "b41c8054e0360758024f0f6a9aedcfcf53bb2ee0c78d60ae7b19752eea6dfb31",
+    "scripts/adr-historical-exceptions.test.mjs": "2b49360fdd6744fcc92be4fc51bd547fb17fac911531fb0f9d4ec7191f28bb98",
+    "scripts/branch-preflight.mjs": "1cd4d41e7b37cc13c58b86f1d0d39c5ed81df1d84014e1d2c467e4165c0aa7dc",
+    "scripts/check-adrs.mjs": "bd959cc59d245e609904f6e6d75fcd340d1cbf0b3a63b20e2eb57a56a8691b6f",
+    "scripts/check-npm-audit.mjs": "6ede3c50b34876fe36ddfa142c26474d97b53939b889e6c180ef8306bcb8c665",
+    "scripts/e2e-gui-session.ts": "2097447d54a1102c08050223a05b9bd8fc91018ffbc32f51bcd19d94551aa514",
+    "scripts/measure-battle-pacing.ts": "1a0288752907fe0fb4dc96420ff8336e6c257795800974d26ab104d3ff5713b5",
+    "scripts/observe-character-focus-shadow.ts": "dce550192caab5bf42ea9216f12537bc6c4f8b8df98d58031694c56333886091",
+    "scripts/prepare-test-authority-runtime.mjs": "bc8393e12a776578ad92855cde6ae2388735925888dddf2ae1ddf6338d7aa5a4",
+    "scripts/r2-smoke-startup.test.mjs": "fb249f61d05e4711f7e8d1656eb66e9503f7eaae9a214b03794878ab2887da49",
+    "scripts/sealgraph-runtime-dirs.mjs": "787baa8a4bc14356dd532891da7a8e72c8e789d05aa969e1529479036af79e7a",
+    "scripts/sealgraph-runtime-dirs.test.mjs": "87012df79f51840e8a2852e72a1c2db40244544e7bca9e00fdfd30f3f99caf6d",
+    "scripts/select-release-rollback-target.mjs": "6c19d8dec4cf2bd95da2f2f6d19bd8fc508a2ee7f04ddc9f74190e475729c6c4",
+    "scripts/select-release-rollback-target.test.mjs": "b5e04f515a579f9523f5ad048de93700ef9c11147313516271d3833037826b9b",
+    "scripts/smoke-deployment.mjs": "4cbc34fd8b8b13a911b58d8058fef7ccdd5f1d5ac29992f2b607242587c4a910",
+    "scripts/smoke-deployment.test.mjs": "f2efcd89aa39ff8affc91a8718e4f015117c8b17ad569c0bba9aa560a79163fb",
+    "scripts/test-authority-empty.test.mjs": "1c61ac3d490672ccca276be9d7c77b172a9181c602669f507ac48126c516c5af",
+    "scripts/test-authority.mjs": "969b5c17ca8467378cbc90c95f8baf0784f013ba73791bb204c57752a7f70e8e",
+    "scripts/test-authority.test.mjs": "1dd5102a8c3b342925798ff2b0a7fdf9a37a4ac85774e3ee683c94f81fb0a52a",
+    "scripts/verify-frontend-auth-build.mjs": "4d1fdaf2a49b3540e3b94c20c04e082d40a98f2f849b1599392aa68e28d1b4e3",
+    "scripts/verify-release.mjs": "3c3df6d4b2eec22827baaad7da5938c723dde7b7f94e7a0808aa2de470c9d712",
+    "scripts/verify-required-checks.mjs": "f1a97b0b4b14166f12460c26948604cf74ec6c44b8a27dc258ca20a56bf1f005",
+    "scripts/verify-v3-trial-evidence.mjs": "3d6392a5f92eb9b71e630d11fe8fa41d932494ab297b49f538fc5c148697833c",
+    "scripts/verify-v3-trial-evidence.test.mjs": "23c2f2265915db4edf6ed7d9c8b86deb0de878b6bce4091483e8976ed4fbeea7"
+  },
+  "changedSourcePaths": [
+    "backend/src/services/awareness-context.test.ts",
+    "backend/src/services/awareness-expression-commit.ts"
+  ],
+  "originalDeclarationsRetained": true,
+  "provider": "mock",
+  "paidCalls": 0,
+  "privatePostgres": "/tmp/kshiai-stage-effort-pg-20261009",
+  "unit": {
+    "args": [
+      "npm",
+      "test"
+    ],
+    "exitCode": 0,
+    "seconds": 213.1,
+    "log": "docs/evidence/formal-stage-effort-repair-2026-10-09/unit.log"
+  },
+  "postgresStop": {
+    "args": [
+      "/tmp/kshiai-stage-effort-pg-20261009/runtime/usr/lib/postgresql/16/bin/pg_ctl",
+      "-D",
+      "/tmp/kshiai-stage-effort-pg-20261009/data",
+      "stop",
+      "-m",
+      "fast"
+    ],
+    "exitCode": 0,
+    "seconds": 0.603,
+    "log": "docs/evidence/formal-stage-effort-repair-2026-10-09/postgres-stop.log"
+  },
+  "unitSelection": {
+    "active": 247,
+    "provisional": 0,
+    "disabled": 0
+  },
+  "unitCounts": {
+    "tests": 1469,
+    "pass": 1469,
+    "fail": 0,
+    "skipped": 0
+  },
+  "e2e": {
+    "args": [
+      "xvfb-run",
+      "-a",
+      "npm",
+      "run",
+      "test:e2e-gui"
+    ],
+    "exitCode": 0,
+    "seconds": 335.387,
+    "log": "docs/evidence/formal-stage-effort-repair-2026-10-09/e2e.log"
+  },
+  "e2eSelection": {
+    "active": 4,
+    "provisional": 0,
+    "disabled": 0
+  },
+  "e2ePassed10": true,
+  "sourceCohortUnchanged": true,
+  "headsUnchanged": true,
+  "inventoryUnchanged": true,
+  "finishedAt": "2026-10-09T08:42:36.028311+00:00",
+  "complete": true
+}

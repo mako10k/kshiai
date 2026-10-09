@@ -1,6 +1,6 @@
 # 全原試験・CI・配備の完了監査基準
 
-対象は所有者の継続goal全文。部分的な診断、計画、SealGraph構造検査を全体完了へ置き換えない。現在は封印途中であり、下表は完了宣言ではない。
+対象は所有者の継続goal全文。部分的な診断、計画、SealGraph構造検査を全体完了へ置き換えない。最新状態は末尾「main CI合格と配備候補」を参照する。下表は開始時の監査基準であり、後続の履歴を含めて照合する。全体の配備完了宣言ではない。
 
 |要求|完了を証明する現物|現在の証拠・残条件|
 |---|---|---|
@@ -62,3 +62,27 @@ R3処理は387/392件で実際にexit1となり、現行へ改訂済みのcharac
 実行証跡`formal-all-tests-2026-10-09/execution-receipt.json`をnon-rootでSeal `4335ddd900d57976bf554c7b799d776f22b0c020aac4be00734737b6efcc7f1f`に公開。253 Causesはregistry、実行driver、全251現在testheads。改訂test130件のprevious metadataを独立レビューで補正し、旧testをcurrent Causeへ戻していない。旧test130 SIDは現在251から到達する988 Causes中に0、全251現在HEAD/statusがactive/clean/source一致とreadbackした。原試験の削除・skip・無効化はない。CIと配備は未達。
 
 約207MBの終端status原本はローカルに保持し、約3MBのgzipと復元SHA一致証明をGit対象にする。gcloud独立照合は実際に再認証エラーとなり、所有者へWSL再認証を依頼済み。GitHubルートはsecdat secret GH_TOKEN dry-run成功・PR172現状readback済みで継続可能。これからexact stage snapshotのTrivy secret scan、commit/push、同一SHA4 CI checksを実施する。
+
+### main CI合格と配備候補
+
+2026-10-09、PR172の最新branch commit `fc54a385aca20dc96487478cac328e8a5c08b4df` はCI run37895501276のvalidate/security/backend-image/workerがすべてsuccess。標準squash mergeでmain `1eb97c18c4af580cac2922fd64844128b281bd79` に統合され、両者のGit tree `3c6bba83c4a055fd45d6085c3d8d9e44bf458310` は一致した。main自身のCI run37896554555も4項目すべてsuccess。生ログから単体1468件pass/fail0/skip0/cancelled0を独立集計した。意識パイプライン契約検査と生成物差分検査も合格。記録は `docs/evidence/all-tests-main-ci-2026-10-09.json` と同名のlossless log.gz（復元SHA一致）。正式E2E4ファイル/10ケースの証拠は引き続きformal execution receiptを用い、CIがE2Eを実行したとは主張しない。
+
+製品リリース候補 `v0.23.0-rc.18` のannotated tag objectは `c360cdeda44ee1708a891b822540f69d6ba751ae`、対象commitは上記main SHA。secdat経由push後のremote readbackで両方を確認した。Stage/Promoteは未実行。正本PERTのciはdone、deployはタグ準備からactive。開始・終了は検証JSON保存とGit tag ref書込みの実際の日時を用い、秒精度tagger値による前後の曖昧さはcommit前に正規CLIで訂正した。
+
+作業単位をソース固定→全試験→1回のpush→同一SHA4 checks→標準merge→main SHA再照合へまとめた。branch CI全体507秒、validate506秒を観測。経過時間を投入工数へ変換していない。PERTでは4完了taskの観測値が得られたが、異なる配備工程へ外挿しない。観測JSONを `docs/evidence/all-tests-ci-work-unit-observation-2026-10-09.json` と `all-tests-velocity-after-ci-2026-10-09.json` に保存した。
+
+残条件は、Stageに含まれる有料試合1件/物理LLM最大200回/advance最大38回/追加キャラ生成なしの承認、Stage成功、保護されたproduction承認と同じartifactの昇格、独立のimage/revision/traffic/Worker/health照合。現在のobserved accountingには0.50USD等の金額停止ガードがなく、料金未確定のため総費用は未確定。失敗・不明時の有料再実行は未承認。正本PERTが有料試行を含めていないため、所有者へ候補を示して確認待ち。標準169回指定は200回予約を満たさず、試合作成前に拒否される。
+
+公開healthの更新前readbackはok=true、revision `kshiai-api-00183-wey`。gcloudの独立照合は再認証待ち。これらを更新後配備の証拠に流用しない。配備完了・goal completeは未達。
+
+## Stage失敗と現在ソースの継続修正 — 17:38 JST時点
+
+上記のStage未実行・認証待ちは07:15 UTC時点の履歴。所有者の一回の有料Stage許可により、製品リリース候補v0.23.0-rc.18のStage run37901860044を一度だけ実行し、試合進行でfailure。保存状態はincomplete、理由AWARENESS_EFFORT_PERCEPTION_REQUIRED。LLM台帳6回completed、総トークン31214、outstanding0。金額未確定。有料再試行は未実施・未許可。
+
+発声確定で知覚を再生成するawareness-expression-commitがactionEffortを渡していなかった。原awareness-contextの7ケースを保持し、発声→両側の知覚→実意識contextの回帰を追加。修正前は同じエラー1件、修正後はcontext8＋expression5合格。CLI因果監査fatal/error/warning0、hint2（原因説明と修正方針の共通根拠・意味近接）。現在状態から再投影する修正と型で必須の受け渡しを加えた。全体型・build・静的・ADR検査も成功。詳細はstage-effort-transfer-repair-2026-10-09.md。
+
+変更実装1件、原表現テスト1件、回帰を含むcontextテスト1件の計3REFだけ個別確認して封印。全Cause/previous/messages/source一致と他HEAD保持、fsck okを確認。公開作業121.065秒。旧392ノードの一括再公開を省いたが、作業内容が異なるため121秒から旧作業全体の短縮率は推定しない。原674ソースの変更は実装1＋テスト1だけ。新しいsource cohortで全247ユニット/4E2Eの正式検証は成功。ユニット1469件（原1468＋回帰1）、E2E10件、fail/skip0。正式ユニット213.100秒、E2E335.387秒。実行中のsource/HEAD/inventory不変とprivate PostgreSQL停止も確認。新しい実行証跡の251試験＋登録表＋実ドライバへの253Causeを公開・全previous/messagesまでreadback済み。封印9489aee70c43f8ab677ab54189553124685103816b0f22b8cdbcb712ac542dfa、公開978.662秒。旧正式実行REFを保持し、新fsckもok。以前の正式実行・CIの成功は修正前SHAの証拠であり、新修正のCI成功とは扱わない。
+
+失敗後の独立readbackで公開Cloud Runはkshiai-api-00183-wey 100％、Workerは4a34e357-c390-4ec1-9429-5b0452ce2fbc 100％。新stage revision185とWorker dcbe1267は公開へ昇格していない。Stageのforward-only migration実行と候補作成は行われたため、全外部状態不変とは主張しない。公開配信先のみ従来維持。
+
+修正候補は製品リリース候補v0.23.0-rc.19。タグは未作成。正式原全試験→同一SHA CI→次の有料Stageの具体的承認→標準公開配備と独立runtime照合が未達。正本deploy taskをこの経路へ具体化してCLIでcheck/schedule/nextを再検査済み。共有終了予定20:00は維持、stop/endなし。

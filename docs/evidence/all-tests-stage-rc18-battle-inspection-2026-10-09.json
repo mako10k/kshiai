@@ -1,0 +1,253 @@
+{
+  "schema": "kshiai/readonly-stage-failure-inspection/v1",
+  "observedAt": "2026-10-09T08:18:32.993Z",
+  "battleId": "btl_111779337b677728cd3a14aede6a84f5",
+  "readOnlyTransaction": true,
+  "databaseReferenceMatched": true,
+  "state": [
+    {
+      "id": "btl_111779337b677728cd3a14aede6a84f5",
+      "status": "incomplete",
+      "incomplete_reason": "AWARENESS_EFFORT_PERCEPTION_REQUIRED",
+      "combat_tick": null,
+      "effort_a": null,
+      "effort_b": null,
+      "effort_policy_a": {
+        "skillCooldown": "none",
+        "contractVersion": "battle-action-effort-v1",
+        "freeActionPenalty": {
+          "extraStamina": {
+            "light": 2,
+            "extreme": 8,
+            "substantial": 4
+          },
+          "defenseLifetime": "next_incoming_attack",
+          "defenseReduction": {
+            "light": 0.1,
+            "extreme": 0.3,
+            "substantial": 0.2
+          }
+        },
+        "repeatedActionStamina": {
+          "fourthAndLater": 4,
+          "secondAndThird": 2
+        }
+      },
+      "effort_policy_b": {
+        "skillCooldown": "none",
+        "contractVersion": "battle-action-effort-v1",
+        "freeActionPenalty": {
+          "extraStamina": {
+            "light": 2,
+            "extreme": 8,
+            "substantial": 4
+          },
+          "defenseLifetime": "next_incoming_attack",
+          "defenseReduction": {
+            "light": 0.1,
+            "extreme": 0.3,
+            "substantial": 0.2
+          }
+        },
+        "repeatedActionStamina": {
+          "fourthAndLater": 4,
+          "secondAndThird": 2
+        }
+      },
+      "prologue_pending": "false",
+      "aftermath_pending": "false",
+      "recordedTurns": [
+        {
+          "turn": 0,
+          "eventTypes": [
+            "situation",
+            "utterance"
+          ],
+          "utteranceCount": 1
+        }
+      ]
+    }
+  ],
+  "runtime": [
+    {
+      "status": "incomplete",
+      "incomplete_reason": "AWARENESS_EFFORT_PERCEPTION_REQUIRED",
+      "tick": "0",
+      "budget": {
+        "settledUsd": 0,
+        "reservedUsd": 0,
+        "reservations": [
+          {
+            "id": "encounter:attempt_e93a3a60e1200c18982db280",
+            "role": "adjudication",
+            "status": "unknown",
+            "actualUsd": null,
+            "maximumUsd": null,
+            "physicalOutstanding": false
+          },
+          {
+            "id": "btl_111779337b677728cd3a14aede6a84f5:thought:a:1:0",
+            "role": "conscious",
+            "status": "unknown",
+            "actualUsd": null,
+            "maximumUsd": null,
+            "physicalOutstanding": false
+          },
+          {
+            "id": "btl_111779337b677728cd3a14aede6a84f5:thought:b:1:0",
+            "role": "conscious",
+            "status": "unknown",
+            "actualUsd": null,
+            "maximumUsd": null,
+            "physicalOutstanding": false
+          },
+          {
+            "id": "btl_111779337b677728cd3a14aede6a84f5:latent:b:0",
+            "role": "subconscious",
+            "status": "unknown",
+            "actualUsd": null,
+            "maximumUsd": null,
+            "physicalOutstanding": false
+          },
+          {
+            "id": "btl_111779337b677728cd3a14aede6a84f5:latent:a:0",
+            "role": "subconscious",
+            "status": "unknown",
+            "actualUsd": null,
+            "maximumUsd": null,
+            "physicalOutstanding": false
+          },
+          {
+            "id": "awareness_narration_5c71c5c862440d5de57e6fa2",
+            "role": "narration",
+            "status": "unknown",
+            "actualUsd": null,
+            "maximumUsd": null,
+            "physicalOutstanding": false
+          }
+        ],
+        "physicalAttempts": 6,
+        "unknownAttemptIds": [
+          "encounter:attempt_e93a3a60e1200c18982db280",
+          "btl_111779337b677728cd3a14aede6a84f5:thought:a:1:0",
+          "btl_111779337b677728cd3a14aede6a84f5:thought:b:1:0",
+          "btl_111779337b677728cd3a14aede6a84f5:latent:b:0",
+          "btl_111779337b677728cd3a14aede6a84f5:latent:a:0",
+          "awareness_narration_5c71c5c862440d5de57e6fa2"
+        ],
+        "physicalOutstanding": 0
+      }
+    }
+  ],
+  "attempts": [
+    {
+      "id": "provider_call_e8f6e997bae8994d9df54e51:1",
+      "role": "creation",
+      "provider": "xai",
+      "requestedModel": "grok-4.5",
+      "responseModel": "grok-4.5",
+      "status": "completed",
+      "promptTokens": 1393,
+      "completionTokens": 157,
+      "totalTokens": 2615,
+      "elapsedMs": 28659.32407600002,
+      "responseDiagnostics": {
+        "contentEmpty": false,
+        "finishReason": "stop",
+        "contentLength": 376
+      }
+    },
+    {
+      "id": "provider_call_0c167549ff8c8b160fd939d3:1",
+      "role": "conscious",
+      "provider": "xai",
+      "requestedModel": "grok-4.5",
+      "responseModel": "grok-4.5",
+      "status": "completed",
+      "promptTokens": 4606,
+      "completionTokens": 392,
+      "totalTokens": 6313,
+      "elapsedMs": 36987.38499000002,
+      "responseDiagnostics": {
+        "contentEmpty": false,
+        "finishReason": "stop",
+        "contentLength": 872
+      }
+    },
+    {
+      "id": "provider_call_719c6c70e00177b91026eb18:1",
+      "role": "subconscious",
+      "provider": "openai",
+      "requestedModel": "gpt-6-luna",
+      "responseModel": "gpt-6-luna",
+      "status": "completed",
+      "promptTokens": 5156,
+      "completionTokens": 274,
+      "totalTokens": 5430,
+      "elapsedMs": 4436.275406000001,
+      "responseDiagnostics": {
+        "contentEmpty": false,
+        "finishReason": "stop",
+        "contentLength": 706
+      }
+    },
+    {
+      "id": "provider_call_69abc8c293367f6b5932db8f:1",
+      "role": "conscious",
+      "provider": "xai",
+      "requestedModel": "grok-4.5",
+      "responseModel": "grok-4.5",
+      "status": "completed",
+      "promptTokens": 4318,
+      "completionTokens": 385,
+      "totalTokens": 5511,
+      "elapsedMs": 30788.84255500001,
+      "responseDiagnostics": {
+        "contentEmpty": false,
+        "finishReason": "stop",
+        "contentLength": 890
+      }
+    },
+    {
+      "id": "provider_call_2712e432c0a29543d2c10c9c:1",
+      "role": "subconscious",
+      "provider": "openai",
+      "requestedModel": "gpt-6-luna",
+      "responseModel": "gpt-6-luna",
+      "status": "completed",
+      "promptTokens": 5460,
+      "completionTokens": 201,
+      "totalTokens": 5661,
+      "elapsedMs": 4015.9089019999956,
+      "responseDiagnostics": {
+        "contentEmpty": false,
+        "finishReason": "stop",
+        "contentLength": 530
+      }
+    },
+    {
+      "id": "provider_call_6410b5c40bf9f66582ee6190:1",
+      "role": "narration",
+      "provider": "xai",
+      "requestedModel": "grok-4.3",
+      "responseModel": "grok-4.3",
+      "status": "completed",
+      "promptTokens": 5280,
+      "completionTokens": 404,
+      "totalTokens": 5684,
+      "elapsedMs": 6209.8853800000215,
+      "responseDiagnostics": {
+        "contentEmpty": false,
+        "finishReason": "stop",
+        "contentLength": 834
+      }
+    }
+  ],
+  "reportedTokens": {
+    "prompt": 26213,
+    "completion": 1813,
+    "total": 31214,
+    "unknownAttempts": 0
+  },
+  "privateUtteranceTextExcluded": true
+}

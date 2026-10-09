@@ -1,0 +1,30 @@
+{
+  "schema": "kshiai/stage-effort-repair-work-units/v1",
+  "observedAt": "2026-10-09T09:05:03.533056+00:00",
+  "units": [
+    {
+      "name": "individually-reviewed-delta-source-seals",
+      "nodes": 3,
+      "seconds": 121.065,
+      "comparisonScope": "Different workload from old392-node closure; no percentage speedup claim."
+    },
+    {
+      "name": "formal-original247-unit-files-plus-one-regression",
+      "cases": 1469,
+      "seconds": 213.1
+    },
+    {
+      "name": "formal-original4-e2e-files",
+      "cases": 10,
+      "seconds": 335.387
+    },
+    {
+      "name": "formal-receipt-all251-test-links-plus-registry-driver",
+      "causes": 253,
+      "seconds": 978.662
+    }
+  ],
+  "sourceFilesChanged": 2,
+  "previousPointVelocityApplicable": false,
+  "reason": "Mixed completed project tasks and current deployment include external waiting; phase elapsed times are not effort or point velocity."
+}

@@ -1,0 +1,17 @@
+{
+  "schema": "kshiai/stage-owner-authorization/v1",
+  "recordedAt": "2026-10-09T07:55:15.415698+00:00",
+  "ownerStatement": "Stage の有料実行は許可します。",
+  "reviewedCandidate": "Stage candidate in this thread: one battle, max 200 physical calls, 38 advances, no character-create smoke, no monetary hard guard, no paid retry.",
+  "releaseCommit": "1eb97c18c4af580cac2922fd64844128b281bd79",
+  "releaseTag": "v0.23.0-rc.18",
+  "battles": 1,
+  "maximumPhysicalCalls": 200,
+  "maximumAdvances": 38,
+  "characterCreateSmoke": false,
+  "monetaryHardGuard": false,
+  "monetaryCost": "unknown_without_verified_prices",
+  "retryOnFailureOrUnknown": false,
+  "baselineGcloudReadSucceeded": true,
+  "baselineRevision": "kshiai-api-00183-wey"
+}

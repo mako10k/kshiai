@@ -1,0 +1,46 @@
+domain StageRc18EffortLoss:
+  description "Failed paid Stage trial and bounded perception transfer analysis"
+problem P1:
+  "Stage rc18 must finish without losing required action-effort self perception."
+evidence E1:
+  |
+    Run37901860044 failed at exact staged revision battle execution. Its job emitted
+    BATTLE_FINISHED. Read-only DB inspection of btl_111779337b677728cd3a14aede6a84f5
+    shows canonical and runtime incomplete, reason AWARENESS_EFFORT_PERCEPTION_REQUIRED,
+    both sides with battle-action-effort-v1 policy, both frames without actionEffort.
+    Its recorded turn0 includes a physical utterance. All six ledger attempts completed;
+    reported total31214 tokens, outstanding0. No paid retry was executed.
+evidence E2:
+  |
+    battle-service prologue invokes commitAwarenessExpressions. That function rebuilds
+    both perception frames when a physical utterance exists, calls projectObserverPerception
+    without actionEffort. perception-projection constructs a new frame and includes
+    actionEffort only from its explicit input, without fallback to previousFrame.
+    awareness-context rejects a policy-bearing combatant whose frame omits actionEffort
+    with the exact persisted reason. These are observations of unchanged rc18 source.
+evidence E3:
+  |
+    advanceTurnWithLease catches a required boundary failure and persists incomplete.
+    Core advance rejects any nonactive state as BATTLE_FINISHED. The E2E loop continues
+    while public status differs from finished. Thus its next advance obscures the saved
+    failure reason. This error does not prove normal completion.
+evidence E4:
+  |
+    Provider responses completed and the durable explicit reason identifies a missing
+    observer field rather than a timeout or token ceiling. Exact historical introduction,
+    full regression reproduction, and whether other frame-rebuild paths also lose fields
+    remain unverified. Existing expression tests assert speech delivery, not effort retention.
+decision D1 based_on P1, E1, E2, E3, E4:
+  |
+    The current changeable producing condition is the utterance frame rebuild omitting
+    explicit action-effort projection: it constructs replacement observer frames without
+    the mandatory self information. A physical utterance triggers this path; subsequent
+    context validation stops the battle. BATTLE_FINISHED is a diagnostic masking condition,
+    not its original producing cause. Source and durable record support this bounded chain;
+    dynamic isolated reproduction remains required before declaring correction.
+decision D2 based_on D1, E4:
+  |
+    Prepare a typed projection repair with a regression that sends the resulting frame
+    into awareness context for both sides. Separately improve incomplete-state diagnostics.
+    Do not weaken required information checks, accept incomplete as finished, rerun paid
+    Stage under the exhausted one-run authorization, or promote the failed candidate.

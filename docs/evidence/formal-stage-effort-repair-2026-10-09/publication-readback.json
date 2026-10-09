@@ -1,0 +1,12 @@
+{
+  "schema": "kshiai/formal-execution-seal-readback/v1",
+  "ref": "all-tests-20261009/stage-effort-repair/formal-original-251-result",
+  "sealId": "9489aee70c43f8ab677ab54189553124685103816b0f22b8cdbcb712ac542dfa",
+  "driverSealId": "b78b43863ebfc92672cc00132cd6d1edb3d26c248dc3ff80da48f4f2ece77027",
+  "causeCount": 253,
+  "exactCausesPreviousAndMessagesMatched": true,
+  "sourceMatched": true,
+  "nonDraft": true,
+  "historicalReceiptRefPreserved": true,
+  "seconds": 978.662
+}

@@ -1,0 +1,68 @@
+{
+  "schema": "kshiai/lossless-evidence-log-archive/v1",
+  "files": [
+    {
+      "path": "docs/evidence/formal-stage-effort-repair-2026-10-09/unit.log",
+      "sha256": "c46b00db4e833253e6f4976178760a35f212c2b318d7da64f5c84515561ed607",
+      "bytes": 396140,
+      "gzipPath": "docs/evidence/formal-stage-effort-repair-2026-10-09/unit.log.gz",
+      "gzipSha256": "4d16d01afd9788a7e883123256b9793a9407082694da59205361d960dd7cace3",
+      "losslessRoundTrip": true
+    },
+    {
+      "path": "docs/evidence/formal-stage-effort-repair-2026-10-09/postgres-stop.log",
+      "sha256": "ca19178a35ab4153b75b494963b66ce8243e1b94c173107c87b44d09db23652d",
+      "bytes": 56,
+      "gzipPath": "docs/evidence/formal-stage-effort-repair-2026-10-09/postgres-stop.log.gz",
+      "gzipSha256": "63d8895b19d71a7fa97fc710564d178ce1aabd70d5f18136bad6a2e87e0a0787",
+      "losslessRoundTrip": true
+    },
+    {
+      "path": "docs/evidence/formal-stage-effort-repair-2026-10-09/e2e.log",
+      "sha256": "45efc441d89102614fb6889da9552c2aff3aee857e054208303fdd3e07ac7206",
+      "bytes": 13784,
+      "gzipPath": "docs/evidence/formal-stage-effort-repair-2026-10-09/e2e.log.gz",
+      "gzipSha256": "2de6f941601725751d9b9b0e768747c6c92b5243a1c8408c9affbfba5d1e70de",
+      "losslessRoundTrip": true
+    },
+    {
+      "path": "docs/evidence/stage-effort-transfer-build-2026-10-09.log",
+      "sha256": "ccb15007c945821e8bcd557ac46d2631b405ee1afb45d79412f5f225349e7662",
+      "bytes": 642,
+      "gzipPath": "docs/evidence/stage-effort-transfer-build-2026-10-09.log.gz",
+      "gzipSha256": "b3892e34db91fac8e6826b568e13563b71094a9b1752e4527498772b1b476a38",
+      "losslessRoundTrip": true
+    },
+    {
+      "path": "docs/evidence/stage-effort-transfer-static-2026-10-09.log",
+      "sha256": "8dcdbae9d005e2ee5566d42cd5c39d88e4c678b4ebc19d3f4bb9a555a1dcc344",
+      "bytes": 533,
+      "gzipPath": "docs/evidence/stage-effort-transfer-static-2026-10-09.log.gz",
+      "gzipSha256": "2f309e4fb8deb4deb4d566bf603b8ef7fb50dcb82446e675ae559848e6923ca9",
+      "losslessRoundTrip": true
+    },
+    {
+      "path": "docs/evidence/stage-effort-transfer-adr-2026-10-09.log",
+      "sha256": "3019a236d7b51a0b1c76e0195f1966eed51057bade84f3b3cbe463990510ae4a",
+      "bytes": 5749,
+      "gzipPath": "docs/evidence/stage-effort-transfer-adr-2026-10-09.log.gz",
+      "gzipSha256": "7e97a9c0ebb3875289ea4fa1b7b8921690ce64a41ec2b0830c8fed7d3cfb7213",
+      "losslessRoundTrip": true
+    },
+    {
+      "path": "docs/evidence/stage-effort-transfer-typecheck-2026-10-09.log",
+      "sha256": "9bedf2a72b0d4375015a723a4bf27c1cc239197c55d866bf852d8052766e4523",
+      "bytes": 385,
+      "gzipPath": "docs/evidence/stage-effort-transfer-typecheck-2026-10-09.log.gz",
+      "gzipSha256": "01621cdecf64e2eedc257fa0c53f6c93864dfb7c8422164db6a5c1b7dc6d73b8",
+      "losslessRoundTrip": true
+    },
+    {
+      "path": "docs/evidence/formal-stage-effort-repair-2026-10-09/publication.log",
+      "sha256": "6febbfe5385315b413a36c7e3fe1493570e4a42508dc8eb6eb292039b8b55bd1",
+      "gzipPath": "docs/evidence/formal-stage-effort-repair-2026-10-09/publication.log.gz",
+      "gzipSha256": "c8257eb820e7f7313407f743a1aa050c78e8cd11b7c69b41c127bbaa68dff748",
+      "losslessRoundTrip": true
+    }
+  ]
+}

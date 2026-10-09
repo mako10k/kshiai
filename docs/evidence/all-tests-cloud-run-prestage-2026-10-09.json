@@ -1,0 +1,119 @@
+{
+  "status": {
+    "latestReadyRevisionName": "kshiai-api-00183-wey",
+    "traffic": [
+      {
+        "revisionName": "kshiai-api-00168-zud",
+        "tag": "stage-37311012189-1",
+        "url": "https://stage-37311012189-1---kshiai-api-crpgn6evfa-an.a.run.app"
+      },
+      {
+        "revisionName": "kshiai-api-00169-juz",
+        "tag": "stage-37313815167-1",
+        "url": "https://stage-37313815167-1---kshiai-api-crpgn6evfa-an.a.run.app"
+      },
+      {
+        "revisionName": "kshiai-api-00170-dek",
+        "tag": "stage-37317011221-1",
+        "url": "https://stage-37317011221-1---kshiai-api-crpgn6evfa-an.a.run.app"
+      },
+      {
+        "revisionName": "kshiai-api-00171-nuw",
+        "tag": "stage-37397433691-1",
+        "url": "https://stage-37397433691-1---kshiai-api-crpgn6evfa-an.a.run.app"
+      },
+      {
+        "revisionName": "kshiai-api-00172-qag",
+        "tag": "stage-37400614046-1",
+        "url": "https://stage-37400614046-1---kshiai-api-crpgn6evfa-an.a.run.app"
+      },
+      {
+        "revisionName": "kshiai-api-00173-vuk",
+        "tag": "stage-37402978782-1",
+        "url": "https://stage-37402978782-1---kshiai-api-crpgn6evfa-an.a.run.app"
+      },
+      {
+        "revisionName": "kshiai-api-00174-fes",
+        "tag": "stage-37405299375-1",
+        "url": "https://stage-37405299375-1---kshiai-api-crpgn6evfa-an.a.run.app"
+      },
+      {
+        "revisionName": "kshiai-api-00175-did",
+        "tag": "stage-37411570366-1",
+        "url": "https://stage-37411570366-1---kshiai-api-crpgn6evfa-an.a.run.app"
+      },
+      {
+        "revisionName": "kshiai-api-00176-jag",
+        "tag": "stage-37414189824-1",
+        "url": "https://stage-37414189824-1---kshiai-api-crpgn6evfa-an.a.run.app"
+      },
+      {
+        "revisionName": "kshiai-api-00177-vah",
+        "tag": "stage-37416162174-1",
+        "url": "https://stage-37416162174-1---kshiai-api-crpgn6evfa-an.a.run.app"
+      },
+      {
+        "revisionName": "kshiai-api-00178-bep",
+        "tag": "stage-37418838781-1",
+        "url": "https://stage-37418838781-1---kshiai-api-crpgn6evfa-an.a.run.app"
+      },
+      {
+        "revisionName": "kshiai-api-00179-jun",
+        "tag": "stage-37421048966-1",
+        "url": "https://stage-37421048966-1---kshiai-api-crpgn6evfa-an.a.run.app"
+      },
+      {
+        "revisionName": "kshiai-api-00180-sav",
+        "tag": "stage-37423808342-1",
+        "url": "https://stage-37423808342-1---kshiai-api-crpgn6evfa-an.a.run.app"
+      },
+      {
+        "revisionName": "kshiai-api-00181-wuw",
+        "tag": "stage-37427930873-1",
+        "url": "https://stage-37427930873-1---kshiai-api-crpgn6evfa-an.a.run.app"
+      },
+      {
+        "percent": 100,
+        "revisionName": "kshiai-api-00183-wey",
+        "tag": "stage-37437242681-1",
+        "url": "https://stage-37437242681-1---kshiai-api-crpgn6evfa-an.a.run.app"
+      },
+      {
+        "revisionName": "kshiai-api-contract-98f4c4f",
+        "tag": "contract-98f4c4f",
+        "url": "https://contract-98f4c4f---kshiai-api-crpgn6evfa-an.a.run.app"
+      },
+      {
+        "revisionName": "kshiai-api-dynamic-702f9ac",
+        "tag": "dynamic-702f9ac",
+        "url": "https://dynamic-702f9ac---kshiai-api-crpgn6evfa-an.a.run.app"
+      },
+      {
+        "revisionName": "kshiai-api-profile-c341bfd",
+        "tag": "profile-c341bfd",
+        "url": "https://profile-c341bfd---kshiai-api-crpgn6evfa-an.a.run.app"
+      },
+      {
+        "revisionName": "kshiai-api-recovery-5726fc4",
+        "tag": "recovery-5726fc4",
+        "url": "https://recovery-5726fc4---kshiai-api-crpgn6evfa-an.a.run.app"
+      },
+      {
+        "revisionName": "kshiai-api-speech-9ce565d",
+        "tag": "speech-9ce565d",
+        "url": "https://speech-9ce565d---kshiai-api-crpgn6evfa-an.a.run.app"
+      },
+      {
+        "revisionName": "kshiai-api-v2-retired-fce86a5",
+        "tag": "v2-retire-458af76",
+        "url": "https://v2-retire-458af76---kshiai-api-crpgn6evfa-an.a.run.app"
+      },
+      {
+        "revisionName": "kshiai-api-v2-retired-fce86a5",
+        "tag": "v3-trial-36954429062-1",
+        "url": "https://v3-trial-36954429062-1---kshiai-api-crpgn6evfa-an.a.run.app"
+      }
+    ],
+    "url": "https://kshiai-api-crpgn6evfa-an.a.run.app"
+  }
+}

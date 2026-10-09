@@ -1,0 +1,12 @@
+{
+  "schema": "kshiai/lossless-ci-log-archive/v1",
+  "rawLog": "all-tests-main-ci-2026-10-09.log",
+  "rawBytes": 1661293,
+  "rawSha256": "e8defa0682c42868bec429f6e05a0c73592cd7b5c07b6ead55d85371e6e7d853",
+  "archive": "all-tests-main-ci-2026-10-09.log.gz",
+  "archiveBytes": 217696,
+  "archiveSha256": "5807e734a6cf023820df240990e448223b39a0493530c05cb5811c2dae191e9c",
+  "roundtripIdentical": true,
+  "rawPreservedLocally": true,
+  "reason": "Preserve exact GitHub log bytes including whitespace while keeping textual diffs clean."
+}
