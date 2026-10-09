@@ -1,0 +1,12 @@
+{
+  "schema": "kshiai/formal-execution-seal-readback/v1",
+  "ref": "adjudication-repair-20261009/formal-original-251-result",
+  "sealId": "0cb76b3b0d228fc3ec8e7c1e987a9c45c69e2b1dddb422bd96db4b9a5b4c281a",
+  "driverSealId": "19ddf517a55d61b6c0bed1ec174eda72a1f3b778d15c77791414ce24149bdbbf",
+  "causeCount": 253,
+  "exactCausesPreviousAndMessagesMatched": true,
+  "sourceMatched": true,
+  "nonDraft": true,
+  "historicalReceiptRefPreserved": true,
+  "seconds": 945.502
+}

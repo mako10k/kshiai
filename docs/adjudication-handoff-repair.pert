@@ -28,11 +28,11 @@ task seal IMPLEMENTED -> SEALED:
 task verify SEALED -> VERIFIED:
   title "元試験と型検査・同一SHA CIを確認"
   duration 1p
-  status active
+  status done
 task deploy VERIFIED -> DEPLOYED:
   title "Stageから本番配備し独立照合"
   duration 1p
-  status planned
+  status active
 
 work_event WE-a9372b6b1287711d944cdb3306e297187f83ae06fbe0552a69249f6e79118b1a:
   model 1
@@ -65,4 +65,17 @@ work_event WE-60a3108aba3cf403a73653d4e9de679854bad8c0c76e545fbbca6f3c78024159:
   task verify
   kind start
   occurred_at 2026-10-09T11:55:58.909639+00:00
+  planned_value 1p
+
+work_event WE-2af27d70c2b51b3459cd5e62e6d13684223d52fade4b27ece4725b58d5de1ff5:
+  model 1
+  task verify
+  kind finish
+  occurred_at 2026-10-09T12:27:22+00:00
+
+work_event WE-35039f1d3be7f78343971c02cd5b9b8aea640acd5a33d8315c7b36a6deb5fa80:
+  model 1
+  task deploy
+  kind start
+  occurred_at 2026-10-09T12:28:15+00:00
   planned_value 1p
