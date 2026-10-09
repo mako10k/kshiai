@@ -1,3 +1,4 @@
+import { FreeActionPenaltyProposalV1Schema, AppliedFreeActionPenaltyV1Schema } from "./action-effort-policy.js";
 import { z } from "zod";
 import {
   WorldCausalEnvelopeSchema,
@@ -157,6 +158,8 @@ export const FreeActionAdjudicationProposalSchema = z.object({
     causalEnvelope: WorldCausalEnvelopeSchema.default({}),
   }).strict().optional(),
   changes: z.array(FreeActionStateChangeSchema).max(8).default([]),
+  /** Required by the bound effort policy; omitted only on historical responses. */
+  penalty: FreeActionPenaltyProposalV1Schema.nullable().optional(),
   successSummary: z.string().min(1).max(400),
   failureSummary: z.string().min(1).max(400),
 }).strict();
@@ -198,7 +201,8 @@ export type FreeActionAdjudicationFailure = z.infer<
   typeof FreeActionAdjudicationFailureSchema
 >;
 
-export const FreeActionResolutionReceiptSchema = z.object({
+const freeActionResolutionReceiptSchema = z.object({
+  penalty: AppliedFreeActionPenaltyV1Schema.optional(),
   actionId: z.string().min(1).max(120),
   actorSide: z.enum(["a", "b"]),
   intentText: z.string().min(1).max(600),
@@ -236,6 +240,9 @@ export const FreeActionResolutionReceiptSchema = z.object({
     });
   }
 });
-export type FreeActionResolutionReceipt = z.infer<
-  typeof FreeActionResolutionReceiptSchema
->;
+export type FreeActionResolutionReceipt = z.output<typeof freeActionResolutionReceiptSchema>;
+export const FreeActionResolutionReceiptSchema: z.ZodType<
+  FreeActionResolutionReceipt,
+  z.ZodTypeDef,
+  z.input<typeof freeActionResolutionReceiptSchema>
+> = freeActionResolutionReceiptSchema;

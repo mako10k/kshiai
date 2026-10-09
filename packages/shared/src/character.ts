@@ -144,6 +144,11 @@ export const EquipmentSchema = z.object({
   magBonus: z.number().default(0),
   /** Battle-start temporary changes. Positive effects require a tradeoff. */
   effects: z.array(ParameterDeltaSchema).max(4).optional(),
+  /** Server balancing only; preserve all four authored effects. */
+  balanceTradeoff: z.object({
+    parameter: z.literal("stamina"),
+    delta: z.number().int().min(-12).max(-2),
+  }).strict().optional(),
 });
 export type Equipment = z.infer<typeof EquipmentSchema>;
 

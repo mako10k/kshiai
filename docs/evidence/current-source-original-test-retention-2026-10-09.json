@@ -1,0 +1,74 @@
+{
+  "schema": "kshiai/original-test-declarations-retention/v1",
+  "baseline": "HEAD c9f0861",
+  "method": "TypeScript AST static it/test/describe names for changed original files; does not prove unchanged assertion semantics",
+  "files": [
+    {
+      "path": "backend/src/services/awareness-context.test.ts",
+      "originalDeclarations": 7,
+      "currentDeclarations": 8,
+      "missing": [],
+      "added": [
+        "it:requires the current bodily effort projection for a newly bound policy"
+      ]
+    },
+    {
+      "path": "backend/src/services/awareness-execution.test.ts",
+      "originalDeclarations": 17,
+      "currentDeclarations": 18,
+      "missing": [],
+      "added": [
+        "it:delivers current bodily effort and the actual penalty result to both awareness roles"
+      ]
+    },
+    {
+      "path": "backend/src/services/free-action-service.test.ts",
+      "originalDeclarations": 10,
+      "currentDeclarations": 14,
+      "missing": [],
+      "added": [
+        "describe:bound free action effort",
+        "it:commits only the selected bodily change and leaves the attempted grab unapplied",
+        "it:records the unpaid effort and preserves historical actors",
+        "it:allows only the adjudicated subset and rejects stale or unbound partial changes"
+      ]
+    },
+    {
+      "path": "packages/shared/src/awareness-pipeline.test.ts",
+      "originalDeclarations": 7,
+      "currentDeclarations": 7,
+      "missing": [],
+      "added": []
+    },
+    {
+      "path": "packages/shared/src/balance.test.ts",
+      "originalDeclarations": 5,
+      "currentDeclarations": 6,
+      "missing": [],
+      "added": [
+        "it:preserves four authored effects and adds a bounded idempotent server tradeoff"
+      ]
+    },
+    {
+      "path": "packages/shared/src/battle-engine.test.ts",
+      "originalDeclarations": 47,
+      "currentDeclarations": 50,
+      "missing": [],
+      "added": [
+        "it:applies all four equipment effects and the separate server stamina burden",
+        "it:records requested, paid, and unpaid repeat stamina in the actual turn result",
+        "it:consumes defense exposure on one incoming attack without changing the defense parameter"
+      ]
+    },
+    {
+      "path": "packages/shared/src/skill-cooldown.test.ts",
+      "originalDeclarations": 4,
+      "currentDeclarations": 5,
+      "missing": [],
+      "added": [
+        "it:uses bounded repeat effort instead of cooldown only for newly bound battles"
+      ]
+    }
+  ],
+  "missing": []
+}

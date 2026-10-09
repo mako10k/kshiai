@@ -1,0 +1,351 @@
+{
+  "schema": "kshiai/current-source-change-cohort/v1",
+  "observedAt": "2026-10-09T01:45:57.850371+00:00",
+  "priorLogicalNodes": 244,
+  "priorLatestPublished": 178,
+  "changedLogicalNodes": 38,
+  "changedPaths": 11,
+  "changedNodes": [
+    {
+      "key": "old:0021883e808ae8bf7d59ead2180519d677c39d02b46ee485c358bb7fd19c27da",
+      "path": "backend/src/services/battle-service.ts",
+      "plannedHash": "b1cb72011a0b1c40872b4d56da313d4a01504a8e2a860dd96b087b2e7b712af1",
+      "currentHash": "b8d5a8f51767374734181093a4077f448177438589a9a836dafa75ba32c710b3",
+      "published": true,
+      "publishedSealId": "19465e34757d8ad42d8ed1cb9c817fe8d7092392181f3c47ac886358c7f885f0"
+    },
+    {
+      "key": "old:02b6d59807b18e91e8cd3dc336900072e54507b2a4390bb5a4da0e2808cb536f",
+      "path": "backend/src/llm/openai-compatible.ts",
+      "plannedHash": "75fdc50d0ff5550712fc50e967f7880950aad035fbab87fa40f2b5d9d0d6daaa",
+      "currentHash": "260824cdb5253361d056324a4d8eaf5dd7eb2597e1300231400c16e83d1e8eba",
+      "published": true,
+      "publishedSealId": "f94336163083b2ba8e9faf1b5819ea51cfcc72fec86a708f6e488cd312bd594b"
+    },
+    {
+      "key": "old:07bfb1eb0ecc8da49c09cb11dac8514426124a47ed01e070bb4590d2654c425b",
+      "path": "backend/src/llm/mock.ts",
+      "plannedHash": "df9fa66abdcd601351516c3903a09030690717b493454e8b5d141f0506cf385c",
+      "currentHash": "a002cbc35aceaab54d49455c7d3b2ed115e3e7a5c7a31feb94e2e4f27be8f7a4",
+      "published": true,
+      "publishedSealId": "5bd7913b61f41b028bb64e16eb39ff1ad95424cd1976b862d3bb525ee863bb28"
+    },
+    {
+      "key": "old:11ad190b10415f87aaf38a9598ec3ac3e05031fd2c03800aac12da69ae178d91",
+      "path": "backend/src/llm/openai-compatible.ts",
+      "plannedHash": "75fdc50d0ff5550712fc50e967f7880950aad035fbab87fa40f2b5d9d0d6daaa",
+      "currentHash": "260824cdb5253361d056324a4d8eaf5dd7eb2597e1300231400c16e83d1e8eba",
+      "published": true,
+      "publishedSealId": "645edd45396d6adfa94cbdc369cd999ebadf30fb6f22108e8e91dd9387c6503b"
+    },
+    {
+      "key": "old:17a20f68e997b1e7842132b754c02a8847d1234f319de677f7dd24fa6569fdff",
+      "path": "backend/src/services/awareness-execution.test.ts",
+      "plannedHash": "8d5123e514cd605b4fdc933212c2eba0b5d42a3d50b8a1363a476bdf6c5009b6",
+      "currentHash": "a80c75b5009316b82becad53391bc2df1c8d6b239f5b21d177bd24409d24748a",
+      "published": true,
+      "publishedSealId": "4698a6c7c59b78f295ed4546ab8c26b9ae41f46235c76a137379392e5bae9a57"
+    },
+    {
+      "key": "old:18a1252ed2bfa2773aa446b80e9779cab123dd9f7ea1088ead63714d92e3aa1c",
+      "path": "backend/src/services/character-focused-authoring.ts",
+      "plannedHash": "d97aa8c0f89bb6664567c775178ee56d3b20318d116b3328c7c772796c55e7e0",
+      "currentHash": "43baff7a324561676708b5d715576cd4789f7f0d9c53b48ee36115dda4dd57a0",
+      "published": true,
+      "publishedSealId": "d367a6d9a6429c1e09a6405bc5442cdacf51bb6325919da7ef9d950474157518"
+    },
+    {
+      "key": "old:20c050a7fb0b19ccae7df3d80e3740fb5f235b4f5dd500cf706fbd8093392b91",
+      "path": "packages/shared/src/battlefield-creation.ts",
+      "plannedHash": "156c5ff5bf9aacbfc0b3a652eff2f161bebd5537ddfd3df833b76fc59f81c7dc",
+      "currentHash": "ae8f07535d5404068145d75207d0d0b6cf7e8c6361b0b0397481b6b9822ff9a9",
+      "published": true,
+      "publishedSealId": "9972c0fc948d4865b9992bcc97a55f05cebcd209299fa8fe0f3a6cd1bd474776"
+    },
+    {
+      "key": "old:2eae8cc721eb57bccdb6600c1bcdf5c9c9cf72d1d2dc4feb7fb0f0d1b715b3bb",
+      "path": "backend/src/services/battle-service.ts",
+      "plannedHash": "b1cb72011a0b1c40872b4d56da313d4a01504a8e2a860dd96b087b2e7b712af1",
+      "currentHash": "b8d5a8f51767374734181093a4077f448177438589a9a836dafa75ba32c710b3",
+      "published": true,
+      "publishedSealId": "ca9393a01bb9151dfd4a0544782bd33cad186196f459d4562e21299fb5ff4add"
+    },
+    {
+      "key": "old:3c919c7c047bddd5eeabad3f7c74e5416c147c4df4817b89c945178a90567a20",
+      "path": "backend/src/llm/openai-compatible.ts",
+      "plannedHash": "75fdc50d0ff5550712fc50e967f7880950aad035fbab87fa40f2b5d9d0d6daaa",
+      "currentHash": "260824cdb5253361d056324a4d8eaf5dd7eb2597e1300231400c16e83d1e8eba",
+      "published": true,
+      "publishedSealId": "1c8e5668b78de1f5340a3380224e6540af3c1448e14435dd189f89e80b390bae"
+    },
+    {
+      "key": "old:3f3dd4c5984778043e1a692b58d89c536c9af360c6a2b4881b76deb10c9e19a2",
+      "path": "backend/src/llm/openai-compatible.ts",
+      "plannedHash": "75fdc50d0ff5550712fc50e967f7880950aad035fbab87fa40f2b5d9d0d6daaa",
+      "currentHash": "260824cdb5253361d056324a4d8eaf5dd7eb2597e1300231400c16e83d1e8eba",
+      "published": true,
+      "publishedSealId": "ba5fb9843c5fdd1bd37539f05885dd39fc2089e0b89d3333f166b77d6fbab302"
+    },
+    {
+      "key": "old:42b6ff80a71caa184ae9ccec1a087e025eb5e831d7e900d23bb08860ef918df4",
+      "path": "backend/src/llm/openai-compatible.ts",
+      "plannedHash": "75fdc50d0ff5550712fc50e967f7880950aad035fbab87fa40f2b5d9d0d6daaa",
+      "currentHash": "260824cdb5253361d056324a4d8eaf5dd7eb2597e1300231400c16e83d1e8eba",
+      "published": true,
+      "publishedSealId": "c9ae0b269aac0eed9d35b1db4e95104a10c0a3b198bbb06651471e2269afa027"
+    },
+    {
+      "key": "old:5452852d0f1bf38ed89dca0b72e4eebb2db5b47bda137a1983f2e45e0bd14cc9",
+      "path": "backend/src/llm/openai-compatible.ts",
+      "plannedHash": "75fdc50d0ff5550712fc50e967f7880950aad035fbab87fa40f2b5d9d0d6daaa",
+      "currentHash": "260824cdb5253361d056324a4d8eaf5dd7eb2597e1300231400c16e83d1e8eba",
+      "published": true,
+      "publishedSealId": "e3f0f7ff78e567dd89b8113f6ea7f88aa86d7472a55a7e83be71f676644fa7d3"
+    },
+    {
+      "key": "old:5b34d18fd701cf1ff6e739950e129ca0cf43a883d71a88795245a73ad34c1b5b",
+      "path": "backend/src/llm/openai-compatible.ts",
+      "plannedHash": "75fdc50d0ff5550712fc50e967f7880950aad035fbab87fa40f2b5d9d0d6daaa",
+      "currentHash": "260824cdb5253361d056324a4d8eaf5dd7eb2597e1300231400c16e83d1e8eba",
+      "published": true,
+      "publishedSealId": "0ae968b2b88aea8dbf1584c933c4796d5d2ed8cda9fb510aebb6e8441b01d30d"
+    },
+    {
+      "key": "old:5c06dcccd164d1e51610184f474296ee948c8fef2a4469c62453df2b33e244d2",
+      "path": "backend/src/llm/openai-compatible.ts",
+      "plannedHash": "75fdc50d0ff5550712fc50e967f7880950aad035fbab87fa40f2b5d9d0d6daaa",
+      "currentHash": "260824cdb5253361d056324a4d8eaf5dd7eb2597e1300231400c16e83d1e8eba",
+      "published": true,
+      "publishedSealId": "b92f965e5afa4c9e8898b1ff44166e98a3025e91f7dc3e70cd23707101c4151c"
+    },
+    {
+      "key": "old:6fc9de4333a04acce3cde69962c8e70cff20999112df9ef4959ad23d19164b2f",
+      "path": "backend/src/repositories/character-assets-v2.ts",
+      "plannedHash": "4dc5580a4eefcbfd5ebba9b373f0e16aa960300d9f1de4293820dbb433aac318",
+      "currentHash": "3efd14caf7b057d6539987f77b97b0b4461c0c7736ceede41bf7c2ff4959bd04",
+      "published": true,
+      "publishedSealId": "0a1024bb57cd92ac85dbb20ce8641252ab5fe2669c41ce969a49c456c427d635"
+    },
+    {
+      "key": "old:71a3806f51ddb38886b2de44719b17f973c4d263a4257613274dfa1862a50ef4",
+      "path": "backend/src/repositories/character-assets-v2.ts",
+      "plannedHash": "4dc5580a4eefcbfd5ebba9b373f0e16aa960300d9f1de4293820dbb433aac318",
+      "currentHash": "3efd14caf7b057d6539987f77b97b0b4461c0c7736ceede41bf7c2ff4959bd04",
+      "published": true,
+      "publishedSealId": "5d5fc3c7e628b857a6e1b5624603a3457750a09c8545ffb5b64f7c4dce2410e5"
+    },
+    {
+      "key": "old:7872163ad23ff4c6f179f120b45857d18c80cea88160afe880b8d733729d77aa",
+      "path": "backend/src/services/battle-service.ts",
+      "plannedHash": "b1cb72011a0b1c40872b4d56da313d4a01504a8e2a860dd96b087b2e7b712af1",
+      "currentHash": "b8d5a8f51767374734181093a4077f448177438589a9a836dafa75ba32c710b3",
+      "published": true,
+      "publishedSealId": "cc94e665ec0d2eea32b65787d9056977dda2b46a95cf82471db38c4b8302718d"
+    },
+    {
+      "key": "old:7c3693e3b4211157a5b340153f8317d853971ef27e080aa4f84332a20c3fd8a5",
+      "path": "backend/src/llm/openai-compatible.ts",
+      "plannedHash": "75fdc50d0ff5550712fc50e967f7880950aad035fbab87fa40f2b5d9d0d6daaa",
+      "currentHash": "260824cdb5253361d056324a4d8eaf5dd7eb2597e1300231400c16e83d1e8eba",
+      "published": false,
+      "publishedSealId": null
+    },
+    {
+      "key": "old:7fafa0e59a17475925224cbda6d3d97f05930a271c05d81a2026404546024fb7",
+      "path": "backend/src/llm/openai-compatible.ts",
+      "plannedHash": "75fdc50d0ff5550712fc50e967f7880950aad035fbab87fa40f2b5d9d0d6daaa",
+      "currentHash": "260824cdb5253361d056324a4d8eaf5dd7eb2597e1300231400c16e83d1e8eba",
+      "published": true,
+      "publishedSealId": "03d4100d9196fec3e6229ae272c209bf381be0090ae31b6ba792f4e6a31bc23d"
+    },
+    {
+      "key": "old:871b4b46e531e367409a529704c6b64bb1d041a22d3643fb0f6da4705473c1dc",
+      "path": "backend/src/llm/openai-compatible.ts",
+      "plannedHash": "75fdc50d0ff5550712fc50e967f7880950aad035fbab87fa40f2b5d9d0d6daaa",
+      "currentHash": "260824cdb5253361d056324a4d8eaf5dd7eb2597e1300231400c16e83d1e8eba",
+      "published": true,
+      "publishedSealId": "0eb0fd17b84821fe7a099d9c49001e726bc1e8f1d2ca931f56b43b9389826a5f"
+    },
+    {
+      "key": "old:8d6bf70266a8a48bc0227bb6c69995a951948a704c1fee95f6e1fdd08d188075",
+      "path": "backend/src/repositories/character-assets-v2.ts",
+      "plannedHash": "4dc5580a4eefcbfd5ebba9b373f0e16aa960300d9f1de4293820dbb433aac318",
+      "currentHash": "3efd14caf7b057d6539987f77b97b0b4461c0c7736ceede41bf7c2ff4959bd04",
+      "published": false,
+      "publishedSealId": null
+    },
+    {
+      "key": "old:991a0bed1f9217e6978039cb39b7b217e3122a147cd91f22786df658d1917be7",
+      "path": "backend/src/repositories/character-assets-v2.ts",
+      "plannedHash": "4dc5580a4eefcbfd5ebba9b373f0e16aa960300d9f1de4293820dbb433aac318",
+      "currentHash": "3efd14caf7b057d6539987f77b97b0b4461c0c7736ceede41bf7c2ff4959bd04",
+      "published": true,
+      "publishedSealId": "2d36069cccd882502a0db0eb23920155bf456cc37c987436ec471683a626392e"
+    },
+    {
+      "key": "old:99daa2bed6e0d01bde12df6dffd1ce3478049c4602e6231b668ea98d165e8a10",
+      "path": "backend/src/services/battle-service.ts",
+      "plannedHash": "b1cb72011a0b1c40872b4d56da313d4a01504a8e2a860dd96b087b2e7b712af1",
+      "currentHash": "b8d5a8f51767374734181093a4077f448177438589a9a836dafa75ba32c710b3",
+      "published": true,
+      "publishedSealId": "7c0c8331fb7744bd72419497d6b8d5f50a18e6f035de1eed978f1ca78ab5ef3c"
+    },
+    {
+      "key": "old:9d37bcc598eff9e88cdfb50cd42a812bbfedb4db318d6473ed39f0f8c42b3c68",
+      "path": "backend/src/services/battle-service.ts",
+      "plannedHash": "b1cb72011a0b1c40872b4d56da313d4a01504a8e2a860dd96b087b2e7b712af1",
+      "currentHash": "b8d5a8f51767374734181093a4077f448177438589a9a836dafa75ba32c710b3",
+      "published": true,
+      "publishedSealId": "85d0d16fd2af782b5a9d628a3a74db6dce2bf883bbc9f02e0b192fd4891cfabf"
+    },
+    {
+      "key": "old:aa08f46a5ae70bccacc4b43e1621aaf341a26c873111dd15b6ee091836cdf3a2",
+      "path": "backend/src/llm/openai-compatible.ts",
+      "plannedHash": "75fdc50d0ff5550712fc50e967f7880950aad035fbab87fa40f2b5d9d0d6daaa",
+      "currentHash": "260824cdb5253361d056324a4d8eaf5dd7eb2597e1300231400c16e83d1e8eba",
+      "published": true,
+      "publishedSealId": "58a7d6c20b9045b8db37a79dd619b1999664b6024d443be21f75bf4dda60ceb0"
+    },
+    {
+      "key": "old:aab43121b4eedb246691f7ea5f6071496074e760649ea9330dc550494a6830f1",
+      "path": "packages/shared/src/perception-projection.ts",
+      "plannedHash": "0362190298b04f66ecd3cb2851705222c9f58998a15acfa6fe495c1e8f63a383",
+      "currentHash": "08aa6d8cb6d44d5d6d8a801c839a49aecd338a234e11e7375358f55804e17c01",
+      "published": true,
+      "publishedSealId": "a7aa7c8d7b55a90f4fade5f441f0b7a59ecc7bd7019b42c565c1435fc74113c7"
+    },
+    {
+      "key": "old:ab889a4617f6f343aecbb1b47e503db56c41c7b4f19ca0cc32b4d60d1c0b3b93",
+      "path": "backend/src/llm/openai-compatible.ts",
+      "plannedHash": "75fdc50d0ff5550712fc50e967f7880950aad035fbab87fa40f2b5d9d0d6daaa",
+      "currentHash": "260824cdb5253361d056324a4d8eaf5dd7eb2597e1300231400c16e83d1e8eba",
+      "published": true,
+      "publishedSealId": "1d792f09e71d8b2412a1e73d132d5a3a9fd85d02194ccddfd4ad2195724b60a1"
+    },
+    {
+      "key": "old:b976cf61e0af34ee39d63f4bf5e274f29e08db10220b5c564fd6314e3f9db9f9",
+      "path": "backend/src/llm/openai-compatible.ts",
+      "plannedHash": "75fdc50d0ff5550712fc50e967f7880950aad035fbab87fa40f2b5d9d0d6daaa",
+      "currentHash": "260824cdb5253361d056324a4d8eaf5dd7eb2597e1300231400c16e83d1e8eba",
+      "published": true,
+      "publishedSealId": "2f3b356042c417e9878635fe632778d07c35c303b2af31fa140d0d8111f33bd3"
+    },
+    {
+      "key": "old:bbac9d8f7324c9cc82705e42235739a129b0d0bd3d6b017b757e9ffffaa14508",
+      "path": "packages/shared/src/battle-engine.ts",
+      "plannedHash": "5d838d68b5a7832ef051670770ce117b5aec53d3eb650233a9b8ad0c0971f0ae",
+      "currentHash": "61b8a37a3bf2235397cc5186633b7bbbc2b85326934342090291a6c65a1725ec",
+      "published": true,
+      "publishedSealId": "02d3c712bda7158178b2a1a113fe6ec32112c8a7fa207c488c2ab40a1fe3f927"
+    },
+    {
+      "key": "old:bc4e17992fc99bebd82c0723ae94bbd5e55c07fbbb7ec0aeae83e0796a6267b5",
+      "path": "backend/src/llm/openai-compatible.ts",
+      "plannedHash": "75fdc50d0ff5550712fc50e967f7880950aad035fbab87fa40f2b5d9d0d6daaa",
+      "currentHash": "260824cdb5253361d056324a4d8eaf5dd7eb2597e1300231400c16e83d1e8eba",
+      "published": false,
+      "publishedSealId": null
+    },
+    {
+      "key": "old:be6c5fd8e04b304d51b2023d34486a7e4028e69512cd6c6a9d54ae3fef337a3c",
+      "path": "backend/src/llm/openai-compatible.ts",
+      "plannedHash": "75fdc50d0ff5550712fc50e967f7880950aad035fbab87fa40f2b5d9d0d6daaa",
+      "currentHash": "260824cdb5253361d056324a4d8eaf5dd7eb2597e1300231400c16e83d1e8eba",
+      "published": true,
+      "publishedSealId": "5e91281713ff81b1ce2591f9c2d1b70ec0bf0ec75eaacdbe35f5c1778562a9ce"
+    },
+    {
+      "key": "old:c778f88206f59e2310caf7c95631468f6442f6d4437f122beb6319c4c8597ae1",
+      "path": "backend/src/services/battle-service.ts",
+      "plannedHash": "b1cb72011a0b1c40872b4d56da313d4a01504a8e2a860dd96b087b2e7b712af1",
+      "currentHash": "b8d5a8f51767374734181093a4077f448177438589a9a836dafa75ba32c710b3",
+      "published": true,
+      "publishedSealId": "fe888aac5248515435105da53954fab7e26ee75824c678bd3486795e97ce1ae5"
+    },
+    {
+      "key": "old:ca44acedaa6634d8a56c49e3aad978d32cbe6e76704b5daa602c851614d05690",
+      "path": "backend/src/llm/openai-compatible.ts",
+      "plannedHash": "75fdc50d0ff5550712fc50e967f7880950aad035fbab87fa40f2b5d9d0d6daaa",
+      "currentHash": "260824cdb5253361d056324a4d8eaf5dd7eb2597e1300231400c16e83d1e8eba",
+      "published": false,
+      "publishedSealId": null
+    },
+    {
+      "key": "old:e82f2436ea3107d7e9ea91589511117998ec8cf02078c043d1a172eb94e5f4b3",
+      "path": "backend/src/services/battle-service.ts",
+      "plannedHash": "b1cb72011a0b1c40872b4d56da313d4a01504a8e2a860dd96b087b2e7b712af1",
+      "currentHash": "b8d5a8f51767374734181093a4077f448177438589a9a836dafa75ba32c710b3",
+      "published": true,
+      "publishedSealId": "0418ee86e56d7dda1caf1a7b9957c4c0b5f1800e2731ca5dc66bc674f5cfeafa"
+    },
+    {
+      "key": "old:f6cd3f76e5e1fd9e559e33dc09754baadd630a8bfb8de5387ba73f6aa8f7276c",
+      "path": "packages/shared/src/perception-projection.ts",
+      "plannedHash": "0362190298b04f66ecd3cb2851705222c9f58998a15acfa6fe495c1e8f63a383",
+      "currentHash": "08aa6d8cb6d44d5d6d8a801c839a49aecd338a234e11e7375358f55804e17c01",
+      "published": true,
+      "publishedSealId": "0bdac62e7b0fe13e7a3fa5c78268242aede0de8fc853882e6c2b1552eddc1b10"
+    },
+    {
+      "key": "old:fd9582a733bd7a3698b053fb0db428f7d6ea59ce3f545ecc1429ce9ee0127c1d",
+      "path": "backend/src/llm/openai-compatible.ts",
+      "plannedHash": "75fdc50d0ff5550712fc50e967f7880950aad035fbab87fa40f2b5d9d0d6daaa",
+      "currentHash": "260824cdb5253361d056324a4d8eaf5dd7eb2597e1300231400c16e83d1e8eba",
+      "published": true,
+      "publishedSealId": "8d25b7b469874f9df0894650a5bdadc5a1ba595a7a8ca7eeaf77d4ecbe0a81b3"
+    },
+    {
+      "key": "new:complete-adapter",
+      "path": "backend/src/services/semantic-authoring/adapters/character-complete.ts",
+      "plannedHash": "c53611da3400887c439b3dc4d032b6bc520b2016bdcc49784bb9b7dd036d35e2",
+      "currentHash": "6b6fd26056125a9faca17d4e0bd07375acea0f2fa8709f104e1dab4293c14bd9",
+      "published": true,
+      "publishedSealId": "22c4ff2fe41d0f471a7209714ced52f054f5d366197b65a21d8f9ac4528934d5"
+    },
+    {
+      "key": "new:candidate-repository",
+      "path": "backend/src/repositories/character-focused-candidate.ts",
+      "plannedHash": "b34a819f680e19b32cecb7351b5154d2f57a7dac73a936709c5dca827b79304a",
+      "currentHash": "a04fd748974ddf8bc9c804e00d5624f32adddb345afea204b2889626e45879e9",
+      "published": true,
+      "publishedSealId": "911161c0cfda1614e3cf7f2dab13417a37c2b4e37657c8bb5b2161f92113bfeb"
+    }
+  ],
+  "newRequiredProducers": [
+    {
+      "path": "docs/adr/0062-action-fatigue-and-adjudicated-free-action-penalties.md",
+      "sha256": "2483ad01b2525a30d0015a0a1bae6b787574d148f1636ef5bf0b633a67020ccd"
+    },
+    {
+      "path": "docs/adr/0063-preserve-equipment-effects-with-server-balance-tradeoff.md",
+      "sha256": "c0b5b65aa50df1c00bb6f9711940f53b7674babcc9b5153da3a76f98c027def4"
+    },
+    {
+      "path": "packages/shared/src/action-effort-policy.ts",
+      "sha256": "dabb6d35f829374b587a7d2be4fd812d6a3a44ed417b28d084b15e5f98a23a24"
+    },
+    {
+      "path": "packages/shared/src/battle-effort-perception.ts",
+      "sha256": "66073ea326d7047ec51902502df5dde9af1360ebaeb8614e9ddce9a3f58c126b"
+    },
+    {
+      "path": "backend/src/services/free-action-penalties.ts",
+      "sha256": "1ea394a61635357a3fe91ae3b343c10ff5ba1c8553ad458c5380700aaab14606"
+    }
+  ],
+  "originalScope": {
+    "unitFiles": 247,
+    "e2eFiles": 4,
+    "wholeFiles": 251
+  },
+  "methodChange": "freeze one source cohort, validate full original tests once, publish topologically with cached head readback; reuse exact source-and-Cause-matching immutable nodes only",
+  "previousMeasurement": {
+    "verified": 134,
+    "newOrRepaired": 19,
+    "seconds": 443.337,
+    "scope": "2026-10-08 R2 first run; not current velocity"
+  },
+  "newMeasurementSeconds": 0.019,
+  "status": "observed_drift_and_new_contract_producers_not_published",
+  "next": "complete current full diagnostic evidence, construct and review updated Cause closure including three formerly unsealed shared tests; do not run expired R2 publisher"
+}

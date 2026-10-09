@@ -1,3 +1,5 @@
+import { projectBattleActionEffort } from "./battle-effort-perception.js";
+import { ActionEffortPolicyV1Schema, repeatedActionStaminaCost, type ActionEffortPolicyV1 } from "./action-effort-policy.js";
 import {
   prepareLegacyBattlefieldWorldLayout,
   type BattlefieldCreation,
@@ -124,9 +126,18 @@ function cloneCombatant(c: CombatantState): CombatantState {
   };
 }
 
-function mergeSkillLastUsedTurn(
+type CommittedCombatantActionFacts = {
+  skillLastUsedTurn: CombatantState["skillLastUsedTurn"];
+  pendingDefenseExposure: CombatantState["pendingDefenseExposure"];
+};
+
+function committedCombatantActionFacts(combatant: CombatantState): CommittedCombatantActionFacts {
+  return { skillLastUsedTurn: combatant.skillLastUsedTurn, pendingDefenseExposure: combatant.pendingDefenseExposure };
+}
+
+function mergeCommittedCombatantActionFacts(
   base: CombatantState,
-  proposals: readonly CombatantState[],
+  proposals: readonly CommittedCombatantActionFacts[],
 ): void {
   let merged = base.skillLastUsedTurn
     ? { ...base.skillLastUsedTurn }
@@ -136,6 +147,9 @@ function mergeSkillLastUsedTurn(
     merged = { ...(merged ?? {}), ...proposal.skillLastUsedTurn };
   }
   if (merged) base.skillLastUsedTurn = merged;
+  if (base.pendingDefenseExposure && proposals.some((proposal) => !proposal.pendingDefenseExposure)) {
+    delete base.pendingDefenseExposure;
+  }
 }
 
 export function perceivedCondition(combatant: CombatantState) {
@@ -665,9 +679,10 @@ export function buildCharacterAgentStateChange(
   };
 }
 
-export function combatantFromSheet(sheet: CharacterSheet): CombatantState {
+export function combatantFromSheet(sheet: CharacterSheet, actionEffortPolicy?: ActionEffortPolicyV1): CombatantState {
   const combatant: CombatantState = {
     characterId: sheet.id,
+    ...(actionEffortPolicy ? { actionEffortPolicy: ActionEffortPolicyV1Schema.parse(actionEffortPolicy) } : {}),
     displayName: sheet.displayName,
     imageUrl: sheet.appearance?.imageUrl ?? null,
     parameters: { ...sheet.parameters },
@@ -693,6 +708,7 @@ function applyEquipmentStart(
     { parameter: "def", delta: safeEquipment.defBonus },
     { parameter: "mag", delta: safeEquipment.magBonus },
     ...(safeEquipment.effects ?? []),
+    ...(safeEquipment.balanceTradeoff ? [safeEquipment.balanceTradeoff] : []),
   ];
   for (const delta of deltas) applyParameterDelta(combatant, delta);
 }
@@ -703,6 +719,7 @@ export function createBattleState(input: {
   sideB: CharacterSheet;
   turnLimit: number;
   pacingPolicy?: BattlePacingPolicy;
+  actionEffortPolicy?: ActionEffortPolicyV1;
   scene?: string;
   battlefield?: BattlefieldCreation;
   stanceA?: BattleStance;
@@ -764,8 +781,8 @@ export function createBattleState(input: {
         : undefined,
     },
   });
-  const sideA = combatantFromSheet(input.sideA);
-  const sideB = combatantFromSheet(input.sideB);
+  const sideA = combatantFromSheet(input.sideA, input.actionEffortPolicy);
+  const sideB = combatantFromSheet(input.sideB, input.actionEffortPolicy);
   const encounterContext = input.encounterContext ?? buildBattleEncounterContext({
     sideA: input.sideA,
     sideB: input.sideB,
@@ -789,6 +806,7 @@ export function createBattleState(input: {
   };
   const initialProjection = (observerSide: "a" | "b") =>
     buildInitialObserverPerception({
+      actionEffort: projectBattleActionEffort({ sideA, sideB }, observerSide),
       observerSide,
       turn: 0,
       semanticState,
@@ -996,6 +1014,7 @@ export function ensureBattlePerceptionState(state: BattleState): BattleState {
   const seedSide = (observerSide: "a" | "b") => {
     const combatant = observerSide === "a" ? state.sideA : state.sideB;
     return buildMinimalObserverPerception({
+      actionEffort: projectBattleActionEffort(state, observerSide),
       observerSide,
       turn: state.turn,
       semanticState,
@@ -1416,6 +1435,7 @@ function usableSkills(
         power: s.power,
         currentTurn: turn,
         lastUsedTurnBySkill: self.skillLastUsedTurn,
+        policy: self.actionEffortPolicy,
       }),
   );
 }
@@ -2983,10 +3003,9 @@ export function resolveTurn(input: ResolveTurnInput): {
       sideA.defending = defends("a");
       sideB.defending = defends("b");
       applyAtomicMechanicalAttempts(sideA, sideB, proposals.flatMap((item) => item.attempts));
-      // Cooldown stamps live on combatants, not parameter attempts — merge from
-      // each simultaneous proposal after the shared mechanical apply.
-      mergeSkillLastUsedTurn(sideA, proposals.map((item) => item.sideA));
-      mergeSkillLastUsedTurn(sideB, proposals.map((item) => item.sideB));
+      // Action facts live outside parameter deltas and must survive proposal merging.
+      mergeCommittedCombatantActionFacts(sideA, proposals.map((item) => committedCombatantActionFacts(item.sideA)));
+      mergeCommittedCombatantActionFacts(sideB, proposals.map((item) => committedCombatantActionFacts(item.sideB)));
       for (const proposal of proposals) {
         const eventStart = events.length;
         events.push(...proposal.events);
@@ -3658,6 +3677,30 @@ function repetitionEffectMultiplier(input: {
   );
 }
 
+function applyRepeatedActionEffort(actor: CombatantState, kind: string, repeatCount: number,
+  events: TurnEvent[], recordMechanicalAttempt: MechanicalAttemptRecorder): void {
+  const effort = repeatedActionStaminaCost({ kind, repeatCount, policy: actor.actionEffortPolicy });
+  if (effort > 0) {
+    const fatigue = Math.min(Math.max(0, actor.parameters.stamina ?? 0), effort);
+    if (fatigue > 0) {
+      applyTrackedParameterDelta(
+        actor,
+        { parameter: "stamina", delta: -fatigue },
+        recordMechanicalAttempt,
+      );
+    }
+    events.push({
+      type: "status",
+      ...(actor.actionEffortPolicy ? { repeatEffort: { contractVersion: actor.actionEffortPolicy.contractVersion,
+        requestedStamina: effort === 4 ? 4 as const : 2 as const, paidStamina: fatigue, unpaidStamina: effort - fatigue } } : {}),
+      actorName: actor.displayName,
+      summary: repeatCount >= 3
+        ? `${actor.displayName} の動きは読まれ、同じ手の勢いが鈍る。`
+        : `${actor.displayName} は同じ手を重ね、わずかに息が乱れる。`,
+    });
+  }
+}
+
 function applyAction(
   actor: CombatantState,
   target: CombatantState,
@@ -3671,26 +3714,7 @@ function applyAction(
   finisher?: FinisherState,
   repeatCount = 1,
 ): boolean {
-  if (
-    repeatCount >= 2 &&
-    ["basic_attack", "skill", "free_action", "reflect"].includes(action.kind)
-  ) {
-    const fatigue = Math.min(actor.parameters.stamina ?? 0, repeatCount >= 4 ? 4 : 2);
-    if (fatigue > 0) {
-      applyTrackedParameterDelta(
-        actor,
-        { parameter: "stamina", delta: -fatigue },
-        recordMechanicalAttempt,
-      );
-    }
-    events.push({
-      type: "status",
-      actorName: actor.displayName,
-      summary: repeatCount >= 3
-        ? `${actor.displayName} の動きは読まれ、同じ手の勢いが鈍る。`
-        : `${actor.displayName} は同じ手を重ね、わずかに息が乱れる。`,
-    });
-  }
+  applyRepeatedActionEffort(actor, action.kind, repeatCount, events, recordMechanicalAttempt);
   if (action.kind === "free_action") {
     events.push({
       type: "free_action",
@@ -3822,6 +3846,7 @@ function applyAction(
       power: skill.power,
       currentTurn: decisive.turn,
       lastUsedTurnBySkill: actor.skillLastUsedTurn,
+      policy: actor.actionEffortPolicy,
     })
   ) {
     const cd = skillCooldownTurns(skill.power);
@@ -3935,7 +3960,7 @@ function applyBasicAttack(
   decisive: DecisiveContext,
 ): void {
   const attackStat = actor.parameters[profile.scalingParameter] ?? 10;
-  const resistanceStat = target.parameters[profile.resistanceParameter] ?? 10;
+  const resistanceStat = consumeIncomingDefenseExposure(target, target.parameters[profile.resistanceParameter] ?? 10);
   const rawGap = attackStat - resistanceStat * 0.55;
   const softGap = Math.sign(rawGap) * Math.pow(Math.abs(rawGap), 0.82);
   const power = Math.min(1, Math.max(0.55, profile.power));
@@ -4056,8 +4081,8 @@ function applyAttackSkill(
 ): void {
   const atkStat =
     skill.kind === "magic" ? (actor.parameters.mag ?? 10) : (actor.parameters.atk ?? 10);
-  const defStat =
-    skill.kind === "magic" ? (target.parameters.res ?? 10) : (target.parameters.def ?? 10);
+  const defStat = consumeIncomingDefenseExposure(target,
+    skill.kind === "magic" ? (target.parameters.res ?? 10) : (target.parameters.def ?? 10));
   // Soft gap: absolute stat edges don't delete the underdog
   const rawGap = atkStat - defStat * 0.55;
   const softGap =
@@ -4109,4 +4134,11 @@ function applyAttackSkill(
       finishing,
     }),
   });
+}
+
+function consumeIncomingDefenseExposure(target: CombatantState, resistance: number): number {
+  const exposure = target.pendingDefenseExposure;
+  if (!exposure || !target.actionEffortPolicy) return resistance;
+  delete target.pendingDefenseExposure;
+  return resistance * (1 - exposure.reduction);
 }

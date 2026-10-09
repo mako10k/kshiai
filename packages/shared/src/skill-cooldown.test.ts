@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
+import { CurrentActionEffortPolicyV1, repeatedActionStaminaCost } from "./action-effort-policy.js";
 import {
   isSkillOnCooldown,
   markSkillUsed,
@@ -8,6 +9,19 @@ import {
 } from "./skill-cooldown.js";
 
 describe("skill cooldown", () => {
+  it("uses bounded repeat effort instead of cooldown only for newly bound battles", () => {
+    const policy = CurrentActionEffortPolicyV1;
+    const input = { skillId: "slash", power: 2, currentTurn: 6, lastUsedTurnBySkill: { slash: 5 } };
+    assert.equal(isSkillOnCooldown(input), true);
+    assert.equal(isSkillOnCooldown({ ...input, policy }), false);
+    assert.equal(skillCooldownRemaining({ ...input, policy }), 0);
+    assert.equal(skillCooldownTurns(2, policy), 0);
+    assert.deepEqual([1, 2, 3, 4, 5].map((repeatCount) => repeatedActionStaminaCost({
+      kind: "skill", repeatCount, policy,
+    })), [0, 2, 2, 4, 4]);
+    assert.equal(repeatedActionStaminaCost({ kind: "free_action", repeatCount: 5, policy }), 0);
+    assert.equal(repeatedActionStaminaCost({ kind: "free_action", repeatCount: 5, policy: undefined }), 4);
+  });
   it("maps power into 1–9 turns monotonically", () => {
     const weak = skillCooldownTurns(0.5);
     const mid = skillCooldownTurns(1);

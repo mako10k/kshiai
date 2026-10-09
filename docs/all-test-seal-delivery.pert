@@ -37,19 +37,19 @@ task seal-closure SOURCE_COHORT -> CAUSE_SEALED:
   title "現在因果閉包の封印とreadback・fsck"
   description "User goal 2026-10-09. Original 251 files and cases retained. Diagnostic checks do not replace formal acceptance. Points are provisional difficulty, not observed hours."
   duration 3p
-  status active
+  status done
 
 task formal-tests CAUSE_SEALED -> FORMAL_PASSED:
   title "全原単体247とE2E4ファイルの正式合格"
   description "User goal 2026-10-09. Original 251 files and cases retained. Diagnostic checks do not replace formal acceptance. Points are provisional difficulty, not observed hours."
   duration 2p
-  status planned
+  status done
 
 task ci FORMAL_PASSED -> CI_PASSED:
   title "承認済みbranch同期と同一SHAの全CI確認"
   description "User goal 2026-10-09. Original 251 files and cases retained. Diagnostic checks do not replace formal acceptance. Points are provisional difficulty, not observed hours."
   duration 1p
-  status planned
+  status active
 
 task deploy CI_PASSED -> DEPLOYED:
   title "既存公開環境へ配備しrevisionとhealth照合"
@@ -76,3 +76,29 @@ work_event WE-563993c359a725c334f069703267cd1941c087c319bcecf219e5e9f8316e1251:
   kind start
   occurred_at 2026-10-09T11:16:50+09:00
   planned_value 3p
+
+work_event WE-5e76fa2f0fc2fcb59a120b3a40c3c166859a6e4ff14bf88487f898ea1aa9b8d8:
+  model 1
+  task seal-closure
+  kind finish
+  occurred_at 2026-10-09T14:48:51.749849+09:00
+
+work_event WE-dfb97cb32a9131fe19a7b8bd8cac50f0a11d4c8c5c6a248c8bc5d917d33054b6:
+  model 1
+  task formal-tests
+  kind start
+  occurred_at 2026-10-09T05:49:15.403431+00:00
+  planned_value 2p
+
+work_event WE-9ed4d899df690bf07733b9c836da3428add4463bacb0bb4710f25a443c3ad770:
+  model 1
+  task formal-tests
+  kind finish
+  occurred_at 2026-10-09T06:25:55.953089+00:00
+
+work_event WE-1ab9c2e620876c385259c9177b9c0f99a5af0188ab10a8920f8f267652099c1b:
+  model 1
+  task ci
+  kind start
+  occurred_at 2026-10-09T06:41:15.136783+00:00
+  planned_value 1p

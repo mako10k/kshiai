@@ -1,0 +1,12 @@
+{
+  "schema": "kshiai/formal-test-revision-metadata-review/v1",
+  "reviewer": "battle_helper_contract_review",
+  "result": "PASS with correction before Seal",
+  "previousTestTargets": 130,
+  "noPreviousTestTargets": 121,
+  "oldTestSealsInCurrent251ReachableCauses": 0,
+  "candidateCauseCountAtPause": 173,
+  "previousWriterExitCode": 143,
+  "reason": "Explicit stop after verified metadata omission; no timeout restart. Existing Candidate retained.",
+  "scope": "Correct old-to-current target revision observations. No case/source/inventory change; no CI or deploy acceptance."
+}

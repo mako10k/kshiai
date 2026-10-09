@@ -1,3 +1,4 @@
+import type { SelfActionEffortPerceptionV1 } from "@kshiai/shared";
 import { applyAwarenessTickBoundary, assertAwarenessTickLimit, hasAwarenessExpiry, shouldStartAwarenessThought } from "./awareness-execution-boundary.js";
 import { verifyAwarenessExecutionProof as verifyProof } from "./awareness-execution-admission.js";
 // R: Orchestrate durable subjective tick preparation through bounded storage and model ports.
@@ -17,6 +18,8 @@ import type { BattleLeaseFence } from "./distributed-guard.js";
 
 export type AwarenessExecutionContext = Pick<AwarenessLatentInput,
   "character" | "characteristics" | "training" | "availableActions" | "facts" | "perception"> & {
+  /** Required current seam; null identifies an explicitly historical effort contract. */
+  actionEffort: SelfActionEffortPerceptionV1 | null;
   stimuli: AwarenessLatentInput["stimuli"];
   consciousCharacteristics: string[];
   consciousGuidance: AwarenessConsciousGuidance;
@@ -128,11 +131,11 @@ export function createAwarenessExecution(ports: Ports): { prepareTick(input: Awa
   }
 
   function privateContext(context: AwarenessExecutionContext, conscious = false): Pick<AwarenessConsciousInput,
-    "character" | "characteristics" | "training" | "availableActions" | "facts" | "perception"> {
+    "character" | "characteristics" | "training" | "availableActions" | "facts" | "perception" | "actionEffort"> {
     return { character: context.character,
       characteristics: conscious ? appendAwarenessConsciousGuidance(context.consciousCharacteristics, context.consciousGuidance) : context.characteristics,
       training: conscious ? context.consciousTraining : context.training,
-      availableActions: context.availableActions, facts: context.facts, perception: context.perception };
+      availableActions: context.availableActions, facts: context.facts, perception: context.perception, actionEffort: context.actionEffort };
   }
 
   async function reserve(input: AwarenessPrepareTickInput, id: string, role: "subconscious" | "conscious", proof: AwarenessDispatchProof) {

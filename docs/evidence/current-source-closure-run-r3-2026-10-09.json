@@ -1,0 +1,13 @@
+{
+  "schema": "kshiai/repaired-source-closure-run/v1",
+  "reused": 387,
+  "newOrRepaired": 5,
+  "verifiedLogicalNodes": 392,
+  "plannedNodes": 392,
+  "publishedHistoryEvents": 557,
+  "priorHeadsUnchanged": true,
+  "seconds": 307.767,
+  "complete": true,
+  "inventorySwitched": false,
+  "verificationScope": "Exact official readback of remaining5; final full CLI verifier required for all392 and251 original tests."
+}

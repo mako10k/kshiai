@@ -122,3 +122,7 @@ current check.
 - [ADR-0060: 所有者判断によるテスト契約回復](0060-owner-test-contract-recovery.md) — Accepted; 未決STA量/penalty種類は別検討。
 
 - [ADR-0061: 改善分析の利用条件](0061-manual-improvement-analysis-eligibility.md) — Accepted; 初回5終了試合、以後成功分析snapshot+10。
+
+- [ADR-0062: 反復疲労と自由行動の裁定ペナルティ](0062-action-fatigue-and-adjudicated-free-action-penalties.md) — Accepted; 新規STA反復2/4、旧snapshot保持、裁定の有界な負担と身体自覚。
+
+- [ADR-0063: 装備効果を保持するサーバー補正専用STA負担](0063-preserve-equipment-effects-with-server-balance-tradeoff.md) — Accepted; 元4効果と追加STA負担を両立。

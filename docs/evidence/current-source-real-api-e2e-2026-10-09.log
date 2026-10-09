@@ -1,0 +1,131 @@
+
+Running 1 test using 1 worker
+
+(node:268011) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:268011) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+10:49:41 AM [vite] (client) Re-optimizing dependencies because lockfile has changed
+vt103: review vt103-neva
+vt103: review vt103-rio
+vt103: select/create
+vt103: edit both current generations
+[battles] advance start btl_007b2dfa65b3615abff1b6cf280ba0c0
+[battles] advance ok btl_007b2dfa65b3615abff1b6cf280ba0c0 turn=0 142ms aft=0
+[battles] advance stream start btl_007b2dfa65b3615abff1b6cf280ba0c0
+[battles] advance stream ok btl_007b2dfa65b3615abff1b6cf280ba0c0 turn=1 885ms aft=0
+vt103: complete battle
+[battles] advance start btl_007b2dfa65b3615abff1b6cf280ba0c0
+[battles] advance ok btl_007b2dfa65b3615abff1b6cf280ba0c0 turn=1 964ms aft=0
+[battles] advance start btl_007b2dfa65b3615abff1b6cf280ba0c0
+[battles] advance ok btl_007b2dfa65b3615abff1b6cf280ba0c0 turn=2 957ms aft=0
+[battles] advance start btl_007b2dfa65b3615abff1b6cf280ba0c0
+[battles] advance ok btl_007b2dfa65b3615abff1b6cf280ba0c0 turn=2 988ms aft=0
+[battles] advance start btl_007b2dfa65b3615abff1b6cf280ba0c0
+[battles] advance ok btl_007b2dfa65b3615abff1b6cf280ba0c0 turn=2 1043ms aft=0
+[battles] advance start btl_007b2dfa65b3615abff1b6cf280ba0c0
+[battles] advance ok btl_007b2dfa65b3615abff1b6cf280ba0c0 turn=3 988ms aft=0
+[battles] advance start btl_007b2dfa65b3615abff1b6cf280ba0c0
+[battles] advance ok btl_007b2dfa65b3615abff1b6cf280ba0c0 turn=3 947ms aft=0
+[battles] advance start btl_007b2dfa65b3615abff1b6cf280ba0c0
+[battles] advance ok btl_007b2dfa65b3615abff1b6cf280ba0c0 turn=3 1001ms aft=0
+[battles] advance start btl_007b2dfa65b3615abff1b6cf280ba0c0
+[battles] advance ok btl_007b2dfa65b3615abff1b6cf280ba0c0 turn=4 957ms aft=0
+[battles] advance start btl_007b2dfa65b3615abff1b6cf280ba0c0
+[battles] advance ok btl_007b2dfa65b3615abff1b6cf280ba0c0 turn=4 977ms aft=0
+[battles] advance start btl_007b2dfa65b3615abff1b6cf280ba0c0
+[battles] advance ok btl_007b2dfa65b3615abff1b6cf280ba0c0 turn=4 1033ms aft=0
+[battles] advance start btl_007b2dfa65b3615abff1b6cf280ba0c0
+[battles] advance ok btl_007b2dfa65b3615abff1b6cf280ba0c0 turn=5 892ms aft=0
+[battles] advance start btl_007b2dfa65b3615abff1b6cf280ba0c0
+[battles] advance ok btl_007b2dfa65b3615abff1b6cf280ba0c0 turn=5 966ms aft=0
+[battles] advance start btl_007b2dfa65b3615abff1b6cf280ba0c0
+[battles] advance ok btl_007b2dfa65b3615abff1b6cf280ba0c0 turn=5 1006ms aft=0
+[battles] advance start btl_007b2dfa65b3615abff1b6cf280ba0c0
+[battles] advance ok btl_007b2dfa65b3615abff1b6cf280ba0c0 turn=6 934ms aft=0
+[battles] advance start btl_007b2dfa65b3615abff1b6cf280ba0c0
+[battles] advance ok btl_007b2dfa65b3615abff1b6cf280ba0c0 turn=6 959ms aft=0
+[battles] advance start btl_007b2dfa65b3615abff1b6cf280ba0c0
+[battles] advance ok btl_007b2dfa65b3615abff1b6cf280ba0c0 turn=6 944ms aft=0
+[battles] advance start btl_007b2dfa65b3615abff1b6cf280ba0c0
+[battles] advance ok btl_007b2dfa65b3615abff1b6cf280ba0c0 turn=7 925ms aft=0
+[battles] advance start btl_007b2dfa65b3615abff1b6cf280ba0c0
+[battles] advance ok btl_007b2dfa65b3615abff1b6cf280ba0c0 turn=7 989ms aft=0
+[battles] advance start btl_007b2dfa65b3615abff1b6cf280ba0c0
+[battles] advance ok btl_007b2dfa65b3615abff1b6cf280ba0c0 turn=7 1090ms aft=0
+[battles] advance start btl_007b2dfa65b3615abff1b6cf280ba0c0
+[battles] advance ok btl_007b2dfa65b3615abff1b6cf280ba0c0 turn=8 865ms aft=0
+[battles] advance start btl_007b2dfa65b3615abff1b6cf280ba0c0
+[battles] advance ok btl_007b2dfa65b3615abff1b6cf280ba0c0 turn=8 932ms aft=0
+[battles] advance start btl_007b2dfa65b3615abff1b6cf280ba0c0
+[battles] advance ok btl_007b2dfa65b3615abff1b6cf280ba0c0 turn=8 1023ms aft=0
+[battles] advance start btl_007b2dfa65b3615abff1b6cf280ba0c0
+[battles] advance ok btl_007b2dfa65b3615abff1b6cf280ba0c0 turn=9 990ms aft=0
+[battles] advance start btl_007b2dfa65b3615abff1b6cf280ba0c0
+[battles] advance ok btl_007b2dfa65b3615abff1b6cf280ba0c0 turn=9 922ms aft=0
+[battles] advance start btl_007b2dfa65b3615abff1b6cf280ba0c0
+[battles] advance ok btl_007b2dfa65b3615abff1b6cf280ba0c0 turn=9 997ms aft=0
+[battles] advance start btl_007b2dfa65b3615abff1b6cf280ba0c0
+[battles] advance ok btl_007b2dfa65b3615abff1b6cf280ba0c0 turn=10 913ms aft=0
+[battles] advance start btl_007b2dfa65b3615abff1b6cf280ba0c0
+[battles] advance ok btl_007b2dfa65b3615abff1b6cf280ba0c0 turn=10 1006ms aft=0
+[battles] advance start btl_007b2dfa65b3615abff1b6cf280ba0c0
+[battles] advance ok btl_007b2dfa65b3615abff1b6cf280ba0c0 turn=10 1017ms aft=0
+[battles] advance start btl_007b2dfa65b3615abff1b6cf280ba0c0
+[battles] advance ok btl_007b2dfa65b3615abff1b6cf280ba0c0 turn=11 859ms aft=0
+[battles] advance start btl_007b2dfa65b3615abff1b6cf280ba0c0
+[battles] advance ok btl_007b2dfa65b3615abff1b6cf280ba0c0 turn=11 1001ms aft=0
+[battles] advance start btl_007b2dfa65b3615abff1b6cf280ba0c0
+[battles] advance ok btl_007b2dfa65b3615abff1b6cf280ba0c0 turn=11 968ms aft=0
+[battles] advance start btl_007b2dfa65b3615abff1b6cf280ba0c0
+[battles] advance ok btl_007b2dfa65b3615abff1b6cf280ba0c0 turn=12 922ms aft=0
+[battles] advance start btl_007b2dfa65b3615abff1b6cf280ba0c0
+[battles] advance ok btl_007b2dfa65b3615abff1b6cf280ba0c0 turn=12 1079ms aft=0
+[battles] advance start btl_007b2dfa65b3615abff1b6cf280ba0c0
+[balance] battle ok btl_007b2dfa65b3615abff1b6cf280ba0c0 turns=36 maxHit=0% earlyKo=0 oneShot=0 winner=a
+[battles] advance ok btl_007b2dfa65b3615abff1b6cf280ba0c0 turn=12 936ms aft=0
+vt103: drain narration [33m12[39m
+vt103: finished visible; cutover readback
+[battles] startBattle failed MY_CHARACTER_V3_CAPABILITY_BLOCKED Error: MY_CHARACTER_V3_CAPABILITY_BLOCKED
+    at resolveBattleParticipants [90m(file:///home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/[39mbackend/src/services/battle-service.ts:606:49[90m)[39m
+[90m    at processTicksAndRejections (node:internal/process/task_queues:103:5)[39m
+    at startBattle [90m(file:///home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/[39mbackend/src/services/battle-service.ts:635:7[90m)[39m
+    at [90mfile:///home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/[39mbackend/src/routes.ts:2637:11
+    at dispatch [90m(file:///home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/[39mnode_modules/[4mhono[24m/dist/compose.js:22:17[90m)[39m
+    at requireUser [90m(file:///home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/[39mbackend/src/auth.ts:233:3[90m)[39m
+    at dispatch [90m(file:///home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/[39mnode_modules/[4mhono[24m/dist/compose.js:22:17[90m)[39m
+    at dispatch [90m(file:///home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/[39mnode_modules/[4mhono[24m/dist/compose.js:22:17[90m)[39m
+    at [90mfile:///home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/[39mnode_modules/[4mhono[24m/dist/hono-base.js:308:25
+    at responseViaResponseObject [90m(/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/[39mnode_modules/[4m@hono/node-server[24m/dist/index.js:526:13[90m)[39m
+    at Server.<anonymous> [90m(/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/[39mnode_modules/[4m@hono/node-server[24m/dist/index.js:669:14[90m)[39m
+[battles] startBattle failed OPPONENT_CHARACTER_V3_CAPABILITY_BLOCKED Error: OPPONENT_CHARACTER_V3_CAPABILITY_BLOCKED
+    at resolveBattleParticipants [90m(file:///home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/[39mbackend/src/services/battle-service.ts:607:53[90m)[39m
+[90m    at processTicksAndRejections (node:internal/process/task_queues:103:5)[39m
+    at startBattle [90m(file:///home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/[39mbackend/src/services/battle-service.ts:635:7[90m)[39m
+    at [90mfile:///home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/[39mbackend/src/routes.ts:2637:11
+    at dispatch [90m(file:///home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/[39mnode_modules/[4mhono[24m/dist/compose.js:22:17[90m)[39m
+    at requireUser [90m(file:///home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/[39mbackend/src/auth.ts:233:3[90m)[39m
+    at dispatch [90m(file:///home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/[39mnode_modules/[4mhono[24m/dist/compose.js:22:17[90m)[39m
+    at dispatch [90m(file:///home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/[39mnode_modules/[4mhono[24m/dist/compose.js:22:17[90m)[39m
+    at [90mfile:///home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/[39mnode_modules/[4mhono[24m/dist/hono-base.js:308:25
+    at responseViaResponseObject [90m(/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/[39mnode_modules/[4m@hono/node-server[24m/dist/index.js:526:13[90m)[39m
+    at Server.<anonymous> [90m(/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/[39mnode_modules/[4m@hono/node-server[24m/dist/index.js:669:14[90m)[39m
+[battles] startBattle failed MY_CHARACTER_V3_CAPABILITY_BLOCKED Error: MY_CHARACTER_V3_CAPABILITY_BLOCKED
+    at resolveBattleParticipants [90m(file:///home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/[39mbackend/src/services/battle-service.ts:606:49[90m)[39m
+[90m    at processTicksAndRejections (node:internal/process/task_queues:103:5)[39m
+    at startBattle [90m(file:///home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/[39mbackend/src/services/battle-service.ts:635:7[90m)[39m
+    at [90mfile:///home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/[39mbackend/src/routes.ts:2637:11
+    at dispatch [90m(file:///home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/[39mnode_modules/[4mhono[24m/dist/compose.js:22:17[90m)[39m
+    at requireUser [90m(file:///home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/[39mbackend/src/auth.ts:233:3[90m)[39m
+    at dispatch [90m(file:///home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/[39mnode_modules/[4mhono[24m/dist/compose.js:22:17[90m)[39m
+    at dispatch [90m(file:///home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/[39mnode_modules/[4mhono[24m/dist/compose.js:22:17[90m)[39m
+    at [90mfile:///home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/[39mnode_modules/[4mhono[24m/dist/hono-base.js:308:25
+    at responseViaResponseObject [90m(/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/[39mnode_modules/[4m@hono/node-server[24m/dist/index.js:526:13[90m)[39m
+    at Server.<anonymous> [90m(/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai/[39mnode_modules/[4m@hono/node-server[24m/dist/index.js:669:14[90m)[39m
+[battles] advance start btl_303298486d3a3dbf7169a09cc0176901
+[battles] advance ok btl_303298486d3a3dbf7169a09cc0176901 turn=0 98ms aft=0
+[battles] advance stream start btl_303298486d3a3dbf7169a09cc0176901
+[battles] advance stream ok btl_303298486d3a3dbf7169a09cc0176901 turn=1 1027ms aft=0
+  ✓  1 e2e/v3-local-integration.spec.ts:12:5 › formal Neva/Rio remain immutable through browser review, completion, replay and cutover (1.0m)
+
+  1 passed (1.0m)

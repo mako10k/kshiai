@@ -1,0 +1,42 @@
+
+> kshiai@0.23.0 lint
+> npm run typecheck && npm run static
+
+
+> kshiai@0.23.0 typecheck
+> npm run typecheck --workspaces --if-present && npm run typecheck:deployment
+
+
+> @kshiai/shared@0.23.0 typecheck
+> tsc -p tsconfig.json --noEmit
+
+
+> @kshiai/backend@0.23.0 typecheck
+> tsc -p tsconfig.json --noEmit
+
+
+> @kshiai/frontend@0.23.0 typecheck
+> tsc -b --noEmit
+
+
+> kshiai@0.23.0 typecheck:deployment
+> tsc -p infra/cloudflare-worker/tsconfig.json
+
+
+> kshiai@0.23.0 static
+> npm run static:jscpd && npm run static:lizard
+
+
+> kshiai@0.23.0 static:jscpd
+> jscpd --config .jscpd.json backend/src frontend/src packages/shared/src infra/cloudflare-worker/src scripts
+
+Using config from .jscpd.json
+time: 180.976ms
+
+> kshiai@0.23.0 static:lizard
+> python3 scripts/check-lizard.py
+
+Lizard 1.23.0: 384 files, 5066 functions
+  cyclomaticComplexity > 15: count 121/121, max 80/92, excess 1363/1369
+  functionLength > 100: count 65/67, max 585/733, excess 6016/7390
+  parameterCount > 6: count 5/5, max 11/11, excess 10/10

@@ -1,0 +1,28 @@
+[2m[WebServer] [22m(node:270448) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[2m[WebServer] [22m(Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 9 tests using 1 worker
+
+(node:270485) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:270485) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 e2e/battle-screen.spec.ts:41:7 › battle screen › renders all arrived speech immediately without fade or delayed reveal (2.8s)
+  ✓  2 e2e/battle-screen.spec.ts:94:7 › battle screen › keeps the latest log above the bottom nav and hides save plus extra object facts (791ms)
+  ✓  3 e2e/battle-screen.spec.ts:124:7 › battle screen › follows new story lines inside the log container (1.6s)
+(node:270620) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:270620) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  4 e2e/character-focused-review.spec.ts:24:5 › shows the stored structured difference without presenting incomplete work as acceptable (794ms)
+  ✓  5 e2e/character-focused-review.spec.ts:39:5 › keeps the same owner command after an ambiguous response and opens the new attempt (756ms)
+  ✓  6 e2e/character-focused-review.spec.ts:68:5 › confirms a fixed V3 candidate with the exact reviewed digest and exposes its complete review (930ms)
+  ✓  7 e2e/character-focused-review.spec.ts:100:5 › restricts closed owner review to confirmation and stays on the exact review after saving (727ms)
+  ✓  8 e2e/character-focused-review.spec.ts:139:5 › keeps an owned V2 profile readable without advertising unavailable migration or ordinary editors (675ms)
+(node:271051) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:271051) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  9 e2e/history-character-navigation.spec.ts:17:5 › opens the immutable profile through visible character names despite absent portraits and a degraded battle (870ms)
+
+  9 passed (2.4m)

@@ -751,7 +751,7 @@ function parseGeneratedSkill(raw: unknown) {
 
 function parseGeneratedEquipment(raw: unknown) {
   if (raw === null) return null;
-  const parsed = EquipmentSchema.safeParse(raw);
+  const parsed = EquipmentSchema.omit({ balanceTradeoff: true }).safeParse(raw);
   return parsed.success ? parsed.data : undefined;
 }
 
@@ -1099,7 +1099,8 @@ Rules:
 - Use /placement held by character.<side> for a successful pickup. A failed reach has no success change.
 - Free actions never change HP, MP, parameters, canFight, identity, consciousness, agency, history, or winner.
 - causalEnvelope is qualitative planning input, not damage authority; improvised objects may be at most moderate.
-- Return exactly one proposal for each supplied intent and do not expose canonical facts in successSummary when the actor would not perceive them.`,
+- Return exactly one proposal for each supplied intent and do not expose canonical facts in successSummary when the actor would not perceive them.
+${freeActionPenaltyInstructions(input.penaltyContext)}`,
         JSON.stringify(input),
         {
           tier: "fast",
@@ -1118,6 +1119,11 @@ Rules:
         if (new Set(actual).size !== actual.length || expected.length !== actual.length ||
             expected.some((side, index) => side !== actual[index])) {
           throw new Error("AWARENESS_FREE_ACTION_PROPOSAL_COVERAGE");
+        }
+      }
+      for (const proposal of parsed.data.proposals) {
+        if (input.penaltyContext?.policyBySide[proposal.actorSide] && proposal.penalty === undefined) {
+          throw new Error("FREE_ACTION_PENALTY_CONTRACT_MISSING");
         }
       }
       return parsed.data;
@@ -4078,4 +4084,12 @@ Default perspective external unless the user clearly wants subjective/omniscient
       }));
     }
   }
+}
+
+function freeActionPenaltyInstructions(context: Parameters<LlmProvider["adjudicateFreeActions"]>[0]["penaltyContext"]) {
+  if (!context) return "Historical action policy: do not propose an effort penalty.";
+  return `For a side with policyBySide=battle-action-effort-v1, penalty is required: null for ordinary effort, or one object.
+Choose kind extra_stamina for bodily effort (light/substantial/extreme maps to STA2/4/8), defense_exposure for an exposed posture (10/20/30 percent for the next incoming attack only), or execution_limit for physically overloaded action.
+Every object needs level, reason, an exact actionQuote from that side's intent.description, and baseWorldRevision=${context.baseWorldRevision}. execution_limit also needs execution=partial|not_executed, executedDescription (nonempty for partial), and appliedChangeIndexes. For partial, list the full intended changes and select a strict subset of their zero-based indexes; only selected changes are applied. For not_executed, outcome must be impossible, without subject or changes, and executedDescription and appliedChangeIndexes must be empty.
+Select at most one primary consequence; never charge thought or ordinary speech. Do not repeat a stamina charge as an exposure penalty for the same cause. Use actor conditions and canonical facts; invented capabilities or private thought are not evidence. Never patch parameters directly. For historical sides use penalty=null.`;
 }

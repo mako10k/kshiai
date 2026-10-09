@@ -1,3 +1,4 @@
+import type { SelfActionEffortPerceptionV1 } from "./action-effort-policy.js";
 import type { TurnEvent } from "./battle.js";
 import type {
   BattleSemanticEntity,
@@ -59,6 +60,7 @@ type SourceGroup = {
 };
 
 export type ObserverPerceptionProjectionInput = {
+  actionEffort?: SelfActionEffortPerceptionV1 | null;
   observerSide: BattleSide;
   turn: number;
   semanticState: BattleSemanticState;
@@ -357,6 +359,7 @@ export function projectObserverPerception(
     boundedSlots,
   );
   const frame = frameSchema(input.observerSide).parse({
+    ...(input.actionEffort ? { actionEffort: input.actionEffort } : {}),
     schemaVersion: 1,
     observer: { side: input.observerSide, self: "self" },
     turn: input.turn,
@@ -437,6 +440,7 @@ export function buildMinimalObserverPerception(
     ambientObservations: [],
   });
   const frame = frameSchema(input.observerSide).parse({
+    ...(input.actionEffort ? { actionEffort: input.actionEffort } : {}),
     schemaVersion: 1,
     observer: { side: input.observerSide, self: "self" },
     turn: input.turn,

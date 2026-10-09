@@ -302,6 +302,7 @@ export function assessCharacterActionFeasibility(input: {
         power: skill.power,
         currentTurn: input.turn,
         lastUsedTurnBySkill: input.actor.skillLastUsedTurn,
+        policy: input.actor.actionEffortPolicy,
       })
     ) {
       return { feasible: false, reason: "skill_on_cooldown" };
@@ -396,12 +397,13 @@ function observerSafeActionCandidates(input: {
         costMp: skill.costMp,
         costStamina: skill.costStamina,
         finisherCandidate: skill.id === input.finisher?.skillId,
-        cooldownTurns: skillCooldownTurns(skill.power),
+        cooldownTurns: skillCooldownTurns(skill.power, input.actor.actionEffortPolicy),
         cooldownRemaining: skillCooldownRemaining({
           skillId: skill.id,
           power: skill.power,
           currentTurn: input.turn,
           lastUsedTurnBySkill: input.actor.skillLastUsedTurn,
+        policy: input.actor.actionEffortPolicy,
         }),
       },
     })),

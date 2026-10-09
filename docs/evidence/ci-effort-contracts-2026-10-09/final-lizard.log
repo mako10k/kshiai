@@ -1,0 +1,8 @@
+
+> kshiai@0.23.0 static:lizard
+> python3 scripts/check-lizard.py
+
+Lizard 1.23.0: 384 files, 5066 functions
+  cyclomaticComplexity > 15: count 121/121, max 80/92, excess 1363/1369
+  functionLength > 100: count 65/67, max 585/733, excess 6016/7390
+  parameterCount > 6: count 5/5, max 11/11, excess 10/10

@@ -60,14 +60,7 @@ export function prepareLegacyBattlefieldWorldLayout(
 ): BattleWorldInitialLayout | undefined {
   assertLegacyBattlefieldCreation(instance);
   if (!instance.areas?.length) return undefined;
-  const areas: Record<string, BattleWorldArea> = {};
-  const idsByLabel = new Map<string, string[]>();
-  for (const entry of instance.areas) {
-    SemanticIdSchema.parse(entry.id);
-    if (Object.hasOwn(areas, entry.id)) throw new Error("BATTLEFIELD_INITIAL_AREA_ID_DUPLICATE");
-    areas[entry.id] = area(entry.name);
-    idsByLabel.set(entry.name, [...(idsByLabel.get(entry.name) ?? []), entry.id]);
-  }
+  const { areas, idsByLabel } = prepareLegacyAreaLookup(instance.areas);
   const sceneAreaIds: Record<string, string> = {};
   let nextGeneratedId = 1;
   for (const [entityId, entity] of Object.entries(semanticState.entities)) {
@@ -90,4 +83,16 @@ export function prepareLegacyBattlefieldWorldLayout(
     sceneAreaIds[entityId] = areaId;
   }
   return { areas, sceneAreaIds };
+}
+
+function prepareLegacyAreaLookup(entries: NonNullable<BattlefieldInstance["areas"]>) {
+  const areas: Record<string, BattleWorldArea> = {};
+  const idsByLabel = new Map<string, string[]>();
+  for (const entry of entries) {
+    SemanticIdSchema.parse(entry.id);
+    if (Object.hasOwn(areas, entry.id)) throw new Error("BATTLEFIELD_INITIAL_AREA_ID_DUPLICATE");
+    areas[entry.id] = area(entry.name);
+    idsByLabel.set(entry.name, [...(idsByLabel.get(entry.name) ?? []), entry.id]);
+  }
+  return { areas, idsByLabel };
 }

@@ -44,7 +44,7 @@ function context(side: "a" | "b"): AwarenessExecutionContext {
       tags: [], appearanceSummary: "", traits: [], narrativeBlurb: "", basicAction: { name: "防御", description: "構える" },
       skills: [], equipment: { weapon: null, armor: null } },
     characteristics: [], training: [], consciousCharacteristics: [], consciousGuidance: { kind: "none" }, consciousTraining: [], availableActions: [], facts: [], stimuli: [],
-    receivedSpeech: false, intentCompleted: false, intentInvalid: false,
+    receivedSpeech: false, intentCompleted: false, intentInvalid: false, actionEffort: null,
     perception: { schemaVersion: 1, observer: { side, self: "self" }, turn: 0, revision: 0,
       self: { subject: { kind: "self" }, currentAccess: "clear", identityKnowledge: "identified", perceivedAs: "自分", percepts: [] },
       counterpart: { subject: { kind: "counterpart" }, currentAccess: "none", identityKnowledge: "unknown", perceivedAs: "見えない", percepts: [] },
@@ -101,6 +101,23 @@ async function drainCompletion() {
 }
 
 describe("awareness execution", () => {
+  it("delivers current bodily effort and the actual penalty result to both awareness roles", async () => {
+    const run = await fixture("execution-effort-delivery");
+    const input = run.input(0);
+    const effort = { contractVersion: "battle-action-effort-v1", fatigue: "息が重い",
+      repeatingEffort: "同じ動きを続けると息が乱れそう", freeActionRisk: "無理をすると隙が出そう",
+      latestPenalty: "STA1消耗、必要量8、不足7。重い物を無理に持ち上げた" } as const;
+    input.sides.a.actionEffort = effort;
+    input.sides.a.perception.actionEffort = effort;
+    assert.equal((await run.execution.prepareTick(input)).canCommitWorld, true);
+    const conscious = run.thoughtInputs.find((frame) => frame.side === "a");
+    const latent = run.latentInputs.find((frame) => frame.side === "a");
+    assert.ok(conscious); assert.ok(latent);
+    assert.deepEqual(conscious.actionEffort, effort);
+    assert.deepEqual(latent.actionEffort, effort);
+    assert.ok(prepareAwarenessRequest({ role: "conscious", input: conscious }).user.includes(effort.latestPenalty));
+    assert.ok(prepareAwarenessRequest({ role: "subconscious", input: latent }).user.includes(effort.fatigue));
+  });
   it("launches frozen A jobs before latent work, advances three ticks, and merges only at a later boundary", async () => {
     const run = await fixture("execution-delay");
     const atA = await run.execution.prepareTick(run.input(0));

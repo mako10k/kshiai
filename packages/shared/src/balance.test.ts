@@ -10,6 +10,16 @@ import {
 import { defaultBasicAttack, defaultParameters } from "./character.js";
 
 describe("balance", () => {
+  it("preserves four authored effects and adds a bounded idempotent server tradeoff", () => {
+    const effects = (["atk", "def", "mag", "res"] as const).map((parameter) => ({
+      parameter, delta: 2,
+    }));
+    const equipment = balanceEquipment({ name: "四効果", description: "元の効果", atkBonus: 4,
+      defBonus: 0, magBonus: 0, effects });
+    assert.deepEqual(equipment?.effects, effects);
+    assert.deepEqual(equipment?.balanceTradeoff, { parameter: "stamina", delta: -4 });
+    assert.deepEqual(balanceEquipment(equipment), equipment);
+  });
   it("soft-caps extreme parameters", () => {
     const p = balanceParameters({
       ...defaultParameters(),

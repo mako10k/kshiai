@@ -316,30 +316,19 @@ async function resolvePendingExecutionSource(input: { pending: UnresolvedCharact
   return resolved;
 }
 
-async function loadFocusedExecutionSource(input: { runId: string; existing: StoredFocusedRun;
+type FocusedExecutionSourceInput = { runId: string; existing: StoredFocusedRun;
   run: ClaimedFocusedRun; provider: FocusedProviderTransportV1;
   persistence: SemanticAuthoringExecutionPersistenceV1<CharacterDefinitionV3
-    | CharacterMigrationReviewCandidateV1 | FocusedCharacterCompleteReviewV1, string>; fail: FailFocusedBeforeDispatch }) {
-  const stored = await query<{ source_json: unknown; resolved_source_json: unknown | null }>(
-    `SELECT source_json, resolved_source_json FROM character_focused_authoring_payloads WHERE run_id = $1`,
-    [input.runId]);
-  const raw = stored.rows[0]?.source_json;
-  let source: unknown;
-  try { source = typeof raw === "string" ? JSON.parse(raw) : raw; }
-  catch { return { accepted: false as const, result: await input.fail("source_decode", "trusted_state_corrupt") }; }
-  const current = await getCurrentAssetGeneration("character", input.existing.sourceIdentity.assetId);
-  if ((current?.generationId ?? null) !== input.existing.expectedCurrentGenerationId) {
-    return { accepted: false as const, result: await input.fail("pointer_drift", "trusted_state_corrupt") };
-  }
-  const correction = decodeCharacterReviewCorrectionSourceV1(source);
-  if (correction) {
+    | CharacterMigrationReviewCandidateV1 | FocusedCharacterCompleteReviewV1, string>; fail: FailFocusedBeforeDispatch };
+async function resolveCorrectionExecutionSource(input: FocusedExecutionSourceInput,
+  correction: NonNullable<ReturnType<typeof decodeCharacterReviewCorrectionSourceV1>>, storedResolution: unknown | null) {
     if (assetContentDigest(correction) !== input.existing.sourceIdentity.contentDigest
       || correction.requestedCluster !== null) {
       return { accepted: false as const, result: await input.fail("source_drift", "trusted_state_corrupt") };
     }
     const resolved = await resolvePendingRevisionSource({
       pending: { kind: "revise_pending_scope", definition: correctionPredecessorDefinition(correction.predecessorCandidate),
-        naturalText: correction.naturalText }, storedResolution: stored.rows[0]?.resolved_source_json ?? null,
+        naturalText: correction.naturalText }, storedResolution: storedResolution,
       run: input.run, provider: input.provider, persistence: input.persistence, fail: input.fail,
     });
     if (!resolved.accepted) return resolved;
@@ -349,7 +338,26 @@ async function loadFocusedExecutionSource(input: { runId: string; existing: Stor
     }
     return { accepted: true as const, adapter: createCharacterSemanticAuthoringAdapterV3(),
       source: { ...correction, requestedCluster: resolved.source.requestedCluster } };
+}
+
+async function loadFocusedExecutionSource(input: { runId: string; existing: StoredFocusedRun;
+  run: ClaimedFocusedRun; provider: FocusedProviderTransportV1;
+  persistence: SemanticAuthoringExecutionPersistenceV1<CharacterDefinitionV3
+    | CharacterMigrationReviewCandidateV1 | FocusedCharacterCompleteReviewV1, string>; fail: FailFocusedBeforeDispatch }) {
+  const stored = await query<{ source_json: unknown; resolved_source_json: unknown | null }>(
+    `SELECT source_json, resolved_source_json FROM character_focused_authoring_payloads WHERE run_id = $1`,
+    [input.runId]);
+  const raw = stored.rows[0]?.source_json;
+  let source: unknown;
+  try { source = decodeFocusedStoredValue(raw); }
+  catch { return { accepted: false as const, result: await input.fail("source_decode", "trusted_state_corrupt") }; }
+  const current = await getCurrentAssetGeneration("character", input.existing.sourceIdentity.assetId);
+  if ((current?.generationId ?? null) !== input.existing.expectedCurrentGenerationId) {
+    return { accepted: false as const, result: await input.fail("pointer_drift", "trusted_state_corrupt") };
   }
+  const correction = decodeCharacterReviewCorrectionSourceV1(source);
+  if (correction) return resolveCorrectionExecutionSource(input, correction, stored.rows[0]?.resolved_source_json ?? null);
+
   const pendingScope = decodeUnresolvedCharacterRevisionSourceV1(source);
   if (pendingScope) {
     const resolved = await resolvePendingExecutionSource({ pending: pendingScope,
@@ -358,13 +366,29 @@ async function loadFocusedExecutionSource(input: { runId: string; existing: Stor
     if (!resolved.accepted) return resolved;
     source = resolved.source;
   }
+  return decodeFocusedStructuralExecution(source, Boolean(pendingScope), input);
+}
+
+async function decodeFocusedStructuralExecution(source: unknown, resolvedScope: boolean, input: FocusedExecutionSourceInput) {
   const adapter = createCharacterSemanticAuthoringAdapterV3();
   const decoded = adapter.decodeFrozenSource(source);
-  if (!decoded.accepted || (!pendingScope
+  if (!decoded.accepted || (!resolvedScope
     && assetContentDigest(decoded.value) !== input.existing.sourceIdentity.contentDigest)) {
     return { accepted: false as const, result: await input.fail("source_drift", "trusted_state_corrupt") };
   }
   return { accepted: true as const, adapter, source: decoded.value };
+}
+
+async function readCompleteAdapterPreviousGeneration(run: ClaimedFocusedRun, source: CompleteCharacterSourceV1) {
+  const generation = source.kind === "revise" && run.sourceIdentity.generationId
+    ? await getAssetGeneration(run.sourceIdentity.generationId) : null;
+  const previous = generation ? CharacterGenerationEnvelopeV3Schema.parse(generation.content) : null;
+  if (source.kind === "revise" && (!generation || !previous
+    || generation.assetType !== "character" || generation.assetId !== run.sourceIdentity.assetId
+    || assetContentDigest(previous.definition) !== assetContentDigest(source.definition))) {
+    throw new Error("FOCUSED_CHARACTER_SOURCE_GENERATION_MISMATCH");
+  }
+  return previous;
 }
 
 async function completeExecutionAdapter(run: ClaimedFocusedRun, source: CompleteCharacterSourceV1,
@@ -394,14 +418,7 @@ async function completeExecutionAdapter(run: ClaimedFocusedRun, source: Complete
       revisionDisclosurePolicy: correctionPredecessorDisclosure(source.predecessorCandidate),
       compilerCompatibility: correctionPredecessorCompatibility(source.predecessorCandidate) });
   }
-  const generation = source.kind === "revise" && run.sourceIdentity.generationId
-    ? await getAssetGeneration(run.sourceIdentity.generationId) : null;
-  const previous = generation ? CharacterGenerationEnvelopeV3Schema.parse(generation.content) : null;
-  if (source.kind === "revise" && (!generation || !previous
-    || generation.assetType !== "character" || generation.assetId !== run.sourceIdentity.assetId
-    || assetContentDigest(previous.definition) !== assetContentDigest(source.definition))) {
-    throw new Error("FOCUSED_CHARACTER_SOURCE_GENERATION_MISMATCH");
-  }
+  const previous = await readCompleteAdapterPreviousGeneration(run, source);
   return createCompleteCharacterAdapterV1({ attemptId: run.attemptId,
     sourceDigest: attempt.source_digest, revisionDisclosurePolicy: previous?.disclosurePolicy ?? null,
     compilerCompatibility: CHARACTER_BATTLE_MECHANICS_CAPABILITY_SET_V3.required });
@@ -456,6 +473,17 @@ export async function runCharacterFocusedAuthoringJobV3(input: {
     try { completeAdapter = await completeExecutionAdapter(run, loaded.source, input.executionFence); }
     catch { return fail("complete_source_binding", "trusted_state_corrupt"); }
   }
+  return executeLoadedFocusedCharacterRun({ input, runId, run, loaded, completeAdapter, policy, provider, persistence });
+}
+
+async function executeLoadedFocusedCharacterRun(context: {
+  input: Parameters<typeof runCharacterFocusedAuthoringJobV3>[0]; runId: string; run: ClaimedFocusedRun;
+  loaded: Extract<Awaited<ReturnType<typeof loadFocusedExecutionSource>>, { accepted: true }>;
+  completeAdapter: Awaited<ReturnType<typeof completeExecutionAdapter>> | null;
+  policy: SemanticAuthoringPolicyV1; provider: FocusedProviderTransportV1;
+  persistence: ReturnType<typeof createFocusedPersistence>;
+}): Promise<"completed" | "failed"> {
+  const { input, runId, run, loaded, completeAdapter, policy, provider, persistence } = context;
   const accountedRun = await runs.getSemanticAuthoringRunV1(runId);
   if (!accountedRun || accountedRun.status !== "claimed") return "failed";
   // Project the actual running phase under the family fence; reads only observe it.
@@ -508,7 +536,7 @@ const focusedReadyReviewSchema = z.object({ kind: z.literal("ready_for_review"),
 });
 
 function decodeFocusedReviewSource(row: { source_json: unknown; resolved_source_json: unknown | null }) {
-  const raw = typeof row.source_json === "string" ? JSON.parse(row.source_json) : row.source_json;
+  const raw = decodeFocusedStoredValue(row.source_json);
   const pending = decodeUnresolvedCharacterRevisionSourceV1(raw);
   const resolution = pending && row.resolved_source_json !== null
     ? CharacterRevisionScopeResolutionV1Schema.safeParse(typeof row.resolved_source_json === "string"
@@ -640,7 +668,7 @@ export async function readCharacterFocusedMigrationActivationV3(
     throw new Error("FOCUSED_CHARACTER_MIGRATION_NOT_READY");
   }
   const ready = focusedReadyReviewSchema.parse(
-    typeof row.result_json === "string" ? JSON.parse(row.result_json) : row.result_json,
+    decodeFocusedStoredValue(row.result_json),
   );
   if (!row.expected_current_generation_id
     || ready.expectedCurrentGenerationId !== row.expected_current_generation_id) {
@@ -684,14 +712,23 @@ function reviewSourceFields(source: CharacterAuthoringSourceV1) {
   return new Map(Object.entries(source.definition));
 }
 
+function decodeFocusedStoredValue(value: unknown): unknown {
+  return typeof value === "string" ? JSON.parse(value) : value;
+}
+
+type FocusedOwnerReviewRow = { attempt_status: string; mode: string; status: string; source_generation_id: string | null; source_json: unknown;
+    resolved_source_json: unknown | null; result_json: unknown };
+type FocusedOwnerReviewReady = z.infer<typeof focusedReadyReviewSchema>;
+type FocusedOwnerReview = NonNullable<Awaited<ReturnType<typeof readCharacterFocusedAuthoringReviewV3>>>;
+type FocusedOwnerCorrectionSource = FocusedOwnerReview["correctionSource"];
+
 /** Owner-only inspection of the stored terminal payload; never grants activation. */
 export async function readCharacterFocusedAuthoringReviewV3(attemptId: string, ownerUserId: string): Promise<{
   sourceRetryAvailable: boolean;
   correctionSource: { kind: "complete" | "legacy_structural"; candidateDigest: string } | null;
   semanticCandidateReview: CharacterAuthoringReview["semanticCandidateReview"];
 } | null> {
-  const found = await query<{ attempt_status: string; mode: string; status: string; source_generation_id: string | null; source_json: unknown;
-    resolved_source_json: unknown | null; result_json: unknown }>(
+  const found = await query<FocusedOwnerReviewRow>(
     `SELECT a.status AS attempt_status, r.mode, r.status, r.source_generation_id, p.source_json, p.resolved_source_json, p.result_json FROM semantic_authoring_runs r
       JOIN character_focused_authoring_payloads p ON p.run_id = r.run_id
       JOIN character_authoring_attempts a ON a.attempt_id = r.attempt_id AND a.owner_user_id = r.owner_user_id
@@ -699,7 +736,7 @@ export async function readCharacterFocusedAuthoringReviewV3(attemptId: string, o
   const row = found.rows[0];
   if (!row) return null;
   const ready = focusedReadyReviewSchema.safeParse(
-    typeof row.result_json === "string" ? JSON.parse(row.result_json) : row.result_json);
+    decodeFocusedStoredValue(row.result_json));
   if (!ready.success) return { sourceRetryAvailable: row.status === "failed", semanticCandidateReview: null, correctionSource: null };
   const correctionSource = row.status === "ready_for_review" && row.attempt_status === "awaiting_owner_acceptance"
     && row.mode !== "migrate" ? await withTransaction(async connection => {
@@ -708,40 +745,52 @@ export async function readCharacterFocusedAuthoringReviewV3(attemptId: string, o
         candidateDigest: frozen.complete.candidateDigest };
     }) : null;
   const complete = FocusedCharacterCompleteReviewV1Schema.safeParse(ready.data.finalCandidate);
-  if (complete.success) {
-    if (ready.data.finalCandidateDigest !== complete.data.candidateDigest
-      || complete.data.envelope.provenance.attemptId !== attemptId) {
-      throw new Error("FOCUSED_CHARACTER_COMPLETE_REVIEW_BINDING_MISMATCH");
-    }
-    const correction = decodeCharacterReviewCorrectionSourceV1(
-      typeof row.source_json === "string" ? JSON.parse(row.source_json) : row.source_json);
-    if (correction) {
-      if (correction.predecessorCandidate.mode !== complete.data.mode) throw new Error("FOCUSED_CHARACTER_SOURCE_INVALID");
-      const review = fixedCandidateOwnerReview(complete.data.envelope, correction.naturalText,
+  if (complete.success) return completeFocusedOwnerReview(row, ready.data, complete.data, attemptId, correctionSource);
+  return structuralFocusedOwnerReview(row, ready.data, correctionSource);
+}
+
+function correctionFocusedOwnerReview(
+  correction: NonNullable<ReturnType<typeof decodeCharacterReviewCorrectionSourceV1>>,
+  complete: FocusedCharacterCompleteReviewV1, correctionSource: FocusedOwnerCorrectionSource) {
+      if (correction.predecessorCandidate.mode !== complete.mode) throw new Error("FOCUSED_CHARACTER_SOURCE_INVALID");
+      const review = fixedCandidateOwnerReview(complete.envelope, correction.naturalText,
         { kind: "revision", currentCandidate: correction.predecessorCandidate.kind === "character_complete_review_v1"
           ? correction.predecessorCandidate.envelope : correction.predecessorCandidate.definition });
       return { sourceRetryAvailable: false, correctionSource, semanticCandidateReview: review.semanticCandidateReview ?? null };
+}
+
+async function completeFocusedOwnerReview(row: FocusedOwnerReviewRow, ready: FocusedOwnerReviewReady,
+  complete: FocusedCharacterCompleteReviewV1, attemptId: string, correctionSource: FocusedOwnerCorrectionSource) {
+    if (ready.finalCandidateDigest !== complete.candidateDigest
+      || complete.envelope.provenance.attemptId !== attemptId) {
+      throw new Error("FOCUSED_CHARACTER_COMPLETE_REVIEW_BINDING_MISMATCH");
     }
+    const correction = decodeCharacterReviewCorrectionSourceV1(
+      decodeFocusedStoredValue(row.source_json));
+    if (correction) return correctionFocusedOwnerReview(correction, complete, correctionSource);
     const source = createCharacterSemanticAuthoringAdapterV3().decodeFrozenSource(decodeFocusedReviewSource(row));
-    if (!source.accepted || source.value.kind === "migrate" || source.value.kind !== complete.data.mode) {
+    if (!source.accepted || source.value.kind === "migrate" || source.value.kind !== complete.mode) {
       throw new Error("FOCUSED_CHARACTER_SOURCE_INVALID");
     }
-    const previous = row.source_generation_id ? await getAssetGeneration(row.source_generation_id) : null;
-    const review = fixedCandidateOwnerReview(complete.data.envelope, source.value.naturalText ?? null,
-      { kind: complete.data.mode === "create" ? "create" : "revision", currentCandidate: previous?.content ?? null });
+    const previousContent = await readOwnerReviewPreviousContent(row.source_generation_id);
+    const review = fixedCandidateOwnerReview(complete.envelope, source.value.naturalText ?? null,
+      { kind: complete.mode === "create" ? "create" : "revision", currentCandidate: previousContent });
     return { sourceRetryAvailable: false, correctionSource, semanticCandidateReview: review.semanticCandidateReview ?? null };
-  }
-  const parsedMigrationCandidate = migrationReviewCandidateSchema.safeParse(ready.data.finalCandidate);
+}
+
+function structuralFocusedOwnerReview(row: FocusedOwnerReviewRow, ready: FocusedOwnerReviewReady,
+  correctionSource: FocusedOwnerCorrectionSource): FocusedOwnerReview {
+  const parsedMigrationCandidate = migrationReviewCandidateSchema.safeParse(ready.finalCandidate);
   const migrationCandidate = parsedMigrationCandidate.success ? parsedMigrationCandidate.data : null;
   const definition = CharacterDefinitionV3Schema.parse(
-    migrationCandidate?.definition ?? ready.data.finalCandidate);
+    migrationCandidate?.definition ?? ready.finalCandidate);
   const sourceInput = decodeFocusedReviewSource(row);
   const decoded = createCharacterSemanticAuthoringAdapterV3().decodeFrozenSource(sourceInput);
   if (!decoded.accepted) throw new Error("FOCUSED_CHARACTER_SOURCE_INVALID");
   const sourceFields = reviewSourceFields(decoded.value);
   const { dispositions: sourceDispositions, pendingCopyVerified } = migrationReviewDetails({
     decoded: decoded.value, definition, migrationCandidate,
-    sourceDispositions: ready.data.sourceLedger?.sourceDispositions ?? [],
+    sourceDispositions: ready.sourceLedger?.sourceDispositions ?? [],
   });
   const labels: Record<string, string> = { schemaVersion: "定義版", identity: "人物設定",
     profileBackground: "背景", psycheDisposition: "心理傾向", capabilities: "能力・行動",
@@ -774,4 +823,10 @@ export async function readCharacterFocusedAuthoringReviewV3(attemptId: string, o
       ? "旧構造候補はプロフィールとclaim検証が未完了です。明示的な調整で新しい試行を開始できます。現在の世代は変更していません。"
       : "構造化候補を保存しました。意味・公開範囲の検証と最終採用の接続は未完了です。現在の世代は変更していません。",
   } };
+}
+
+async function readOwnerReviewPreviousContent(generationId: string | null): Promise<unknown | null> {
+  if (!generationId) return null;
+  const generation = await getAssetGeneration(generationId);
+  return generation?.content ?? null;
 }

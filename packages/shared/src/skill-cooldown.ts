@@ -1,3 +1,4 @@
+import type { ActionEffortPolicyV1 } from "./action-effort-policy.js";
 /**
  * Skill cooldown from relative power.
  * Stronger skills rest longer (1–9 turns of lockout after use).
@@ -8,7 +9,8 @@
  */
 
 /** Map skill.power into cooldown turns in [1, 9]. */
-export function skillCooldownTurns(power: number): number {
+export function skillCooldownTurns(power: number, policy?: ActionEffortPolicyV1): number {
+  if (policy) return 0;
   const p = Number.isFinite(power) ? power : 1;
   // Observed skill powers cluster roughly in 0.55–1.85; clamp wider for safety.
   const minP = 0.5;
@@ -24,7 +26,9 @@ export function isSkillOnCooldown(input: {
   power: number;
   currentTurn: number;
   lastUsedTurnBySkill?: Record<string, number> | null;
+  policy?: ActionEffortPolicyV1;
 }): boolean {
+  if (input.policy) return false;
   const last = input.lastUsedTurnBySkill?.[input.skillId];
   if (last == null || !Number.isFinite(last)) return false;
   const cd = skillCooldownTurns(input.power);
@@ -37,7 +41,9 @@ export function skillCooldownRemaining(input: {
   power: number;
   currentTurn: number;
   lastUsedTurnBySkill?: Record<string, number> | null;
+  policy?: ActionEffortPolicyV1;
 }): number {
+  if (input.policy) return 0;
   const last = input.lastUsedTurnBySkill?.[input.skillId];
   if (last == null || !Number.isFinite(last)) return 0;
   const readyTurn = last + skillCooldownTurns(input.power) + 1;

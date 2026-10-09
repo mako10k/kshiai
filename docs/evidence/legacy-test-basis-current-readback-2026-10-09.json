@@ -1,0 +1,237 @@
+{
+  "schema": "kshiai/legacy-test-basis-current-readback/v1",
+  "seconds": 4.216,
+  "rows": [
+    {
+      "ref": "all-tests-20261008/authority-owner-contract-recovery",
+      "sealId": "214dad6f51c26770d5acc145acfc01f9d69bf15eeab57ccefdb7fa080ad4a6e4",
+      "draft": false,
+      "sourceCompare": {
+        "schema": "sealgraph/source-compare/v1",
+        "ref": "all-tests-20261008/authority-owner-contract-recovery",
+        "path": "docs/adr/0060-owner-test-contract-recovery.think",
+        "baseline": "HEAD",
+        "baseline_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "a66b876e01b0232781efccce8ae4b457952a6ca24a913c9396d3338327728a58"
+        },
+        "workfile_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "a66b876e01b0232781efccce8ae4b457952a6ca24a913c9396d3338327728a58",
+          "bytes": 996
+        },
+        "relation": "WORKFILE_MATCHES_HEAD"
+      }
+    },
+    {
+      "ref": "all-tests-20261007/authority-semantic-observation-requirements",
+      "sealId": "203e66fc4e30772adab026012c67f1b1ac4ca86ad2ada11b501c639a27a19eac",
+      "draft": false,
+      "sourceCompare": {
+        "schema": "sealgraph/source-compare/v1",
+        "ref": "all-tests-20261007/authority-semantic-observation-requirements",
+        "path": "docs/requirements.md",
+        "baseline": "HEAD",
+        "baseline_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "453ef5cfe9cbcc6eb8260f1ba62a2e90b97bf9036813cfb79524117a703c437c"
+        },
+        "workfile_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "453ef5cfe9cbcc6eb8260f1ba62a2e90b97bf9036813cfb79524117a703c437c",
+          "bytes": 67701
+        },
+        "relation": "WORKFILE_MATCHES_HEAD"
+      }
+    },
+    {
+      "ref": "all-tests-20261007/authority-temporal-order",
+      "sealId": "a47ee884ec95e1a9af74ef53818561b9d101791ad982c26f456bd5ffc17c4270",
+      "draft": false,
+      "sourceCompare": {
+        "schema": "sealgraph/source-compare/v1",
+        "ref": "all-tests-20261007/authority-temporal-order",
+        "path": "docs/adr/0001-turn-initiative-and-simultaneous-resolution.md",
+        "baseline": "HEAD",
+        "baseline_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "affa4404373089687f97cb05a0a89e1ef297a0fd4225b0fd00f563553085d13c"
+        },
+        "workfile_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "affa4404373089687f97cb05a0a89e1ef297a0fd4225b0fd00f563553085d13c",
+          "bytes": 6044
+        },
+        "relation": "WORKFILE_MATCHES_HEAD"
+      }
+    },
+    {
+      "ref": "all-tests-20261007/authority-closed-contract",
+      "sealId": "2c84ef3d0dd122e76543935595e774cfd33957cb01713505644e50f9ec5678ba",
+      "draft": false,
+      "sourceCompare": {
+        "schema": "sealgraph/source-compare/v1",
+        "ref": "all-tests-20261007/authority-closed-contract",
+        "path": "docs/adr/0021-engine-live-continuation-and-type-escapes.md",
+        "baseline": "HEAD",
+        "baseline_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "a9ad8a387aaa58689de1780d37878ca6fd06c2dd0f0b2dfa5087d6238cc04e4d"
+        },
+        "workfile_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "a9ad8a387aaa58689de1780d37878ca6fd06c2dd0f0b2dfa5087d6238cc04e4d",
+          "bytes": 5908
+        },
+        "relation": "WORKFILE_MATCHES_HEAD"
+      }
+    },
+    {
+      "ref": "all-tests-20261007/authority-closed-contract-adoption",
+      "sealId": "a6d2f9035488ef209feefde301d449518f7d5681c50cc30075d66f4f2134947c",
+      "draft": false,
+      "sourceCompare": {
+        "schema": "sealgraph/source-compare/v1",
+        "ref": "all-tests-20261007/authority-closed-contract-adoption",
+        "path": "docs/adr/0021-engine-live-continuation-and-type-escapes.think",
+        "baseline": "HEAD",
+        "baseline_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "a97f7e81f9e36e0a78fc52d5379983963cf00276ec1c2ca1118acf2e351b3ed0"
+        },
+        "workfile_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "a97f7e81f9e36e0a78fc52d5379983963cf00276ec1c2ca1118acf2e351b3ed0",
+          "bytes": 5298
+        },
+        "relation": "WORKFILE_MATCHES_HEAD"
+      }
+    },
+    {
+      "ref": "all-tests-20261007/authority-canonical-placement-separation",
+      "sealId": "bbdf88f6e4a55ed11c978c75df29f590ddd1d99c7383eac1a9b26d54609c9031",
+      "draft": false,
+      "sourceCompare": {
+        "schema": "sealgraph/source-compare/v1",
+        "ref": "all-tests-20261007/authority-canonical-placement-separation",
+        "path": "docs/adr/0022-canonical-world-and-observer-cognition.think",
+        "baseline": "HEAD",
+        "baseline_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "76fc6d50ec796f4d13b970bfec27e66aa6bfe312419e3b46346c4bd08fe92fde"
+        },
+        "workfile_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "76fc6d50ec796f4d13b970bfec27e66aa6bfe312419e3b46346c4bd08fe92fde",
+          "bytes": 5408
+        },
+        "relation": "WORKFILE_MATCHES_HEAD"
+      }
+    },
+    {
+      "ref": "all-tests-20261007/design-world-profile-observer-boundary",
+      "sealId": "75f897826d1b70f498a72cf58487f5fef17c791201ca5eee7515f80f7e495111",
+      "draft": false,
+      "sourceCompare": {
+        "schema": "sealgraph/source-compare/v1",
+        "ref": "all-tests-20261007/design-world-profile-observer-boundary",
+        "path": "docs/battle-world-model.md",
+        "baseline": "HEAD",
+        "baseline_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "f47f5895786ec7c772bdf7bd5da7461fe94adee66b6044511ce1731a80e192d3"
+        },
+        "workfile_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "f47f5895786ec7c772bdf7bd5da7461fe94adee66b6044511ce1731a80e192d3",
+          "bytes": 11843
+        },
+        "relation": "WORKFILE_MATCHES_HEAD"
+      }
+    },
+    {
+      "ref": "all-tests-20261008/design-battle-effects-bounded",
+      "sealId": "7e27f84722d82bba38319694ee9e19b14d7bc619eae2f0235059af786e63f569",
+      "draft": false,
+      "sourceCompare": {
+        "schema": "sealgraph/source-compare/v1",
+        "ref": "all-tests-20261008/design-battle-effects-bounded",
+        "path": "docs/shared-causal-effects-test-contract-review-2026-10-08.md",
+        "baseline": "HEAD",
+        "baseline_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "d404d376e9a7c6340b9327ea569ba8cd7e762db3cd351cc42c7a3a0afa97fccf"
+        },
+        "workfile_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "d404d376e9a7c6340b9327ea569ba8cd7e762db3cd351cc42c7a3a0afa97fccf",
+          "bytes": 1492
+        },
+        "relation": "WORKFILE_MATCHES_HEAD"
+      }
+    },
+    {
+      "ref": "all-tests-20261008/implementation-battle-effects-bounded",
+      "sealId": "8ab8a6dd338783f7f04477fa1e4b138af0095a3339e5144e99fa2332840ed2d2",
+      "draft": false,
+      "sourceCompare": {
+        "schema": "sealgraph/source-compare/v1",
+        "ref": "all-tests-20261008/implementation-battle-effects-bounded",
+        "path": "packages/shared/src/battle-effects.ts",
+        "baseline": "HEAD",
+        "baseline_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "0014321e86ef49847f654ed23c00cae0585960ba49f8791f513155e863b2d38e"
+        },
+        "workfile_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "0014321e86ef49847f654ed23c00cae0585960ba49f8791f513155e863b2d38e",
+          "bytes": 2607
+        },
+        "relation": "WORKFILE_MATCHES_HEAD"
+      }
+    },
+    {
+      "ref": "all-tests-20261007/implementation-retained-temporal-plans",
+      "sealId": "7a3ffe34641dad7287bf3c4d6831f9515680b618b96778a4398107a31847a8fa",
+      "draft": false,
+      "sourceCompare": {
+        "schema": "sealgraph/source-compare/v1",
+        "ref": "all-tests-20261007/implementation-retained-temporal-plans",
+        "path": "packages/shared/src/battle-temporal-rules.ts",
+        "baseline": "HEAD",
+        "baseline_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "7a798f663fe2b76d565cd00c7410c85920b75848717b8c87210b62e310da6b12"
+        },
+        "workfile_content": {
+          "store": "native",
+          "type": "blob",
+          "object_id": "7a798f663fe2b76d565cd00c7410c85920b75848717b8c87210b62e310da6b12",
+          "bytes": 10104
+        },
+        "relation": "WORKFILE_MATCHES_HEAD"
+      }
+    }
+  ],
+  "scope": "Exact selected legacy authority/design/producer current source and non-draft check; final active-leaf/full closure verification still required."
+}

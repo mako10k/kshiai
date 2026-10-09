@@ -1,0 +1,30 @@
+
+> kshiai@0.23.0 build
+> npm run build --workspace=@kshiai/shared && npm run build --workspace=backend && npm run build --workspace=frontend
+
+
+> @kshiai/shared@0.23.0 build
+> tsc -p tsconfig.json
+
+
+> @kshiai/backend@0.23.0 build
+> tsc -p tsconfig.json
+
+
+> @kshiai/frontend@0.23.0 build
+> tsc -b && vite build
+
+vite v6.4.3 building for production...
+transforming...
+✓ 219 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                   0.72 kB │ gzip:   0.43 kB
+dist/assets/index-CxeaN6lG.css   29.74 kB │ gzip:   6.41 kB
+dist/assets/index-BnQvZmpE.js   833.00 kB │ gzip: 228.41 kB
+
+(!) Some chunks are larger than 500 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+✓ built in 4.71s

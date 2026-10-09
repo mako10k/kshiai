@@ -43,6 +43,6 @@ describe("awareness-v5 authoritative contracts", () => {
   });
   it("has no event or utterance history contract in latent model input", () => {
     assert.equal(AwarenessLatentInputSchema.safeParse({ history: [] }).success, false);
-    assert.equal(Object.hasOwn(AwarenessLatentInputSchema.innerType().shape, "history"), false);
+    assert.equal(Object.hasOwn(AwarenessLatentInputSchema.innerType().innerType().shape, "history"), false);
   });
 });

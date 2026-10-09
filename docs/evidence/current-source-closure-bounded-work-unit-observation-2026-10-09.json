@@ -1,0 +1,12 @@
+{
+  "schema": "kshiai/bounded-publication-work-unit-observation/v1",
+  "logicalNodes": 5,
+  "officialPublicationAndIndividualReadbackSeconds": 71.689,
+  "wholeWorkUnitSeconds": 307.767,
+  "postPublicationReadbackSeconds": 236.078,
+  "retainedPublishedNodes": 387,
+  "avoidedDuplicateOfficialPreflight": true,
+  "postReadbackInefficiency": "Repeated full HEAD traversal inside every predicate, unchanged scope; next producer reads final HEAD map once.",
+  "fullClosureVerifierRequired": true,
+  "scope": "Elapsed wall time only, not active effort or general throughput. No CI/deploy completion estimate extrapolated."
+}

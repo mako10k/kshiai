@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import {
   AwarenessLatentInputSchema, CharacterGenerationEnvelopeV3Schema,
+  CurrentActionEffortPolicyV1, projectBattleActionEffort,
   CharacterDefinitionV3Schema, compileCharacterBattleCompilerInputsV4,
   type CharacterSheet,
 } from "@kshiai/shared";
@@ -48,6 +49,19 @@ function project(input: ReturnType<typeof fixture>) {
 }
 
 describe("awareness immutable context projection", () => {
+  it("requires the current bodily effort projection for a newly bound policy", () => {
+    const input = fixture();
+    input.state.sideA.actionEffortPolicy = CurrentActionEffortPolicyV1;
+    assert.throws(() => project(input), /AWARENESS_EFFORT_PERCEPTION_REQUIRED/);
+    const frame = input.state.perceptionFrameA;
+    assert.ok(frame);
+    const effort = projectBattleActionEffort(input.state, "a");
+    assert.ok(effort);
+    frame.actionEffort = effort;
+    const context = project(input);
+    assert.deepEqual(context.actionEffort, effort);
+    assert.deepEqual(context.perception.actionEffort, effort);
+  });
   it("includes hidden latent traits and background while conscious context uses only its aware compiler", () => {
     const context = project(fixture());
     assert.equal(context.characteristics.includes("本人に知られていない過去の理由"), true);

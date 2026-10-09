@@ -24,6 +24,7 @@ import {
   finalizeBattleTurnExecution,
 } from "./battle-engine-test-helper.js";
 import { defaultParameters, type CharacterSheet } from "./character.js";
+import { CurrentActionEffortPolicyV1 } from "./action-effort-policy.js";
 import {
   BattleStateSchema,
   BattleTurnRecordSchema,
@@ -1361,6 +1362,58 @@ describe("battle engine", () => {
     });
     assert.equal(second.state.sideA.parameters.atk, 13);
     assert.equal(second.state.sideA.parameters.stamina, 46);
+  });
+
+  it("applies all four equipment effects and the separate server stamina burden", () => {
+    const a = sheet("a", "A");
+    a.weapon = { name: "四効果", description: "元の効果", atkBonus: 0, defBonus: 0, magBonus: 0,
+      effects: [{ parameter: "atk", delta: 2 }, { parameter: "def", delta: 2 },
+        { parameter: "mag", delta: 2 }, { parameter: "res", delta: 2 }] };
+    const state = createBattleState({ id: "equipment-four", sideA: a, sideB: sheet("b", "B"),
+      turnLimit: 20, prologuePending: false });
+    for (const parameter of ["atk", "def", "mag", "res"] as const) {
+      assert.equal(state.sideA.parameters[parameter], (state.sideA.baseParameters?.[parameter] ?? 0) + 2);
+    }
+    assert.equal(state.sideA.parameters.stamina, (state.sideA.baseParameters?.stamina ?? 0) - 3);
+  });
+
+  it("records requested, paid, and unpaid repeat stamina in the actual turn result", () => {
+    const state = createBattleState({ id: "repeat-shortfall", sideA: sheet("a", "A"), sideB: sheet("b", "B"),
+      turnLimit: 20, prologuePending: false, actionEffortPolicy: CurrentActionEffortPolicyV1 });
+    assert.ok(state.dramaState);
+    state.dramaState.lastActionSignatureA = "basic_attack:-:1";
+    state.dramaState.repeatedActionA = 1;
+    state.sideA.parameters.stamina = 1;
+    state.plannedActionA = { kind: "basic_attack" };
+    state.plannedActionB = { kind: "wait" };
+    const result = resolveTurn({ state, sideASkills: [], sideBSkills: [] });
+    assert.deepEqual(result.events.find((event) => event.actorName === "A" && event.repeatEffort)?.repeatEffort, {
+      contractVersion: "battle-action-effort-v1", requestedStamina: 2, paidStamina: 1, unpaidStamina: 1,
+    });
+  });
+
+  it("consumes defense exposure on one incoming attack without changing the defense parameter", () => {
+    const state = createBattleState({ id: "exposure-once", sideA: sheet("a", "A", 300), sideB: sheet("b", "B"),
+      turnLimit: 20, prologuePending: false, actionEffortPolicy: CurrentActionEffortPolicyV1 });
+    state.sideA.parameters.def = 15;
+    assert.ok(state.sideA.baseParameters);
+    state.sideA.baseParameters.def = 15;
+    state.sideB.parameters.atk = 30;
+    state.sideA.pendingDefenseExposure = { actionId: "previous-effort", reduction: 0.3, reason: "踏み込みすぎた" };
+    state.plannedActionA = { kind: "wait" };
+    state.plannedActionB = { kind: "basic_attack" };
+    const baseline = structuredClone(state);
+    delete baseline.sideA.pendingDefenseExposure;
+    const first = resolveTurn({ state, sideASkills: [], sideBSkills: [] });
+    const ordinary = resolveTurn({ state: baseline, sideASkills: [], sideBSkills: [] });
+    assert.equal(first.state.sideA.pendingDefenseExposure, undefined);
+    assert.equal(first.state.sideA.parameters.def, 15);
+    assert.ok((first.state.sideA.parameters.hp ?? 0) < (ordinary.state.sideA.parameters.hp ?? 0));
+    first.state.plannedActionA = { kind: "wait" };
+    first.state.plannedActionB = { kind: "basic_attack" };
+    const second = resolveTurn({ state: first.state, sideASkills: [], sideBSkills: [] });
+    assert.equal(second.state.sideA.pendingDefenseExposure, undefined);
+    assert.equal(second.state.sideA.parameters.def, 15);
   });
 
   it("initializes selected new battles with identified counterpart identity", () => {

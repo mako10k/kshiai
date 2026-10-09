@@ -159,17 +159,7 @@ export function createCompleteCharacterAdapterV1(binding: {
       }
     },
     reconcileAffected(input) { return { findings: input.findings }; },
-    observeProgress(input) {
-      const resolved = [...input.obligations.values()].filter((item) => item.required && item.resolved).length;
-      const digest = assetContentDigest(input.candidate);
-      const keys = [...input.findings.keys()];
-      return { phase: input.phase, resolvedRequiredObligationCount: resolved,
-        coveredMaterialClaimCount: resolved, unresolvedMaterialFindingKeys: keys,
-        relevantStateDigest: digest, activeSemanticClusterKey: input.phase,
-        materialProgress: input.previous ? resolved > input.previous.resolvedRequiredObligationCount
-          || keys.length < input.previous.unresolvedMaterialFindingKeys.length
-          || digest !== input.previous.relevantStateDigest : false };
-    },
+    observeProgress: observeCompleteCharacterProgress,
     assessQuestion() { return { ask: false }; },
     applyAnswer(source, question, answer) { return structure.applyAnswer(correctionStructuralSource(source), question, answer); },
     finalize(view) {
@@ -221,4 +211,19 @@ export function projectCompleteCharacterWorkV1(state: CompleteCharacterStateV1,
         proposalSchemaIdentity: session.proposalSchemaIdentity },
       responseContract: schemaNotation(createSemanticProposalV1Schema(proposalIdentity(work), payloadSchema)),
       obligationId: work.kind }) };
+}
+
+function observeCompleteCharacterProgress(
+  input: Parameters<ReturnType<typeof createCompleteCharacterAdapterV1>["observeProgress"]>[0],
+) {
+      const resolved = [...input.obligations.values()].filter((item) => item.required && item.resolved).length;
+      const digest = assetContentDigest(input.candidate);
+      const keys = [...input.findings.keys()];
+      return { phase: input.phase, resolvedRequiredObligationCount: resolved,
+        coveredMaterialClaimCount: resolved, unresolvedMaterialFindingKeys: keys,
+        relevantStateDigest: digest, activeSemanticClusterKey: input.phase,
+        materialProgress: input.previous ? resolved > input.previous.resolvedRequiredObligationCount
+          || keys.length < input.previous.unresolvedMaterialFindingKeys.length
+          || digest !== input.previous.relevantStateDigest : false };
+
 }

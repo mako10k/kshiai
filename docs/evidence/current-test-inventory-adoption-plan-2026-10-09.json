@@ -1,0 +1,78 @@
+{
+  "schema": "kshiai/current-test-inventory-adoption-plan/v1",
+  "preparedAt": "2026-10-09T04:14:54.253690+00:00",
+  "status": "prepared-not-executed",
+  "scope": "Local source-bound provenance and adoption of the original 251 test mappings. No owner-rule change, generic runner/synthetic test reseal, formal-pass, CI or deployment claim.",
+  "prerequisites": [
+    "publisher R3 terminates successfully with complete392; prior1360 HEADs retained",
+    "independently reviewed verifier exact SHA; frozen674 sources unchanged",
+    "prepare two readback producer Seals; run verifier after all writer activity stops",
+    "verifier exact251 output and readback must succeed before receipt Seal or inventory replacement"
+  ],
+  "producerNodes": [
+    {
+      "ref": "all-tests-20261009/readback/reviewed-source-closure-plan-r3",
+      "path": "docs/evidence/current-source-closure-plan-r3-draft-2026-10-09.json",
+      "sourceSha256": "d00d95d149ac0cdda4177d7b4cd30422731f98bfb5f011cc965ea63cf07f65fa",
+      "root": false,
+      "parents": [
+        "cbd69b1da11de1854532c6f3e38b8f7496e79b6e6afb3efb6f4ca40bd3505223",
+        "214dad6f51c26770d5acc145acfc01f9d69bf15eeab57ccefdb7fa080ad4a6e4",
+        "dbbeca8b373693d7c2e6a5d3e829d0c39c37b335ef1082eec22703f062516915",
+        "482a422f2b14004e75fed8c5503875f83fbce05528dd43d869f6cb0a48933f93"
+      ],
+      "scope": "Reviewed expected current-source closure. Implements existing test authority and adopted owner contracts; certifies neither publication nor test execution.",
+      "authorityParentRefs": {
+        "all-tests-20261009/action-effort/effort-authority-record": "dbbeca8b373693d7c2e6a5d3e829d0c39c37b335ef1082eec22703f062516915",
+        "all-tests-20261009/action-effort/equipment-authority-record": "482a422f2b14004e75fed8c5503875f83fbce05528dd43d869f6cb0a48933f93"
+      }
+    },
+    {
+      "ref": "all-tests-20261009/readback/verifier-source-r3",
+      "path": "docs/evidence/current-source-closure-verify-r3-2026-10-09.py",
+      "sourceSha256": "00c20ba0e252949a5ed562326a96243a0c2f49294b4837094819ed8993db58ae",
+      "root": false,
+      "parentRefs": [
+        "all-tests-20261009/readback/reviewed-source-closure-plan-r3"
+      ],
+      "scope": "Independently reviewed read-only verification producer for this closure; checks exact reviewed inputs and current local facts without making owner or formal execution claims."
+    }
+  ],
+  "postReadbackNodes": [
+    {
+      "ref": "all-tests-20261009/readback/current-source-closure-result-r3",
+      "path": "docs/evidence/current-source-closure-readback-r3-2026-10-09.json",
+      "root": false,
+      "parentRefs": [
+        "all-tests-20261009/readback/reviewed-source-closure-plan-r3",
+        "all-tests-20261009/readback/verifier-source-r3"
+      ],
+      "scope": "Machine readback of the local R3 snapshot under the exact reviewed plan and executed verifier. Not owner authority or formal test execution."
+    },
+    {
+      "ref": "all-tests-20261009/registration/current-test-inventory",
+      "path": "scripts/test-authority-inventory.json",
+      "root": false,
+      "parents": [
+        "cbd69b1da11de1854532c6f3e38b8f7496e79b6e6afb3efb6f4ca40bd3505223"
+      ],
+      "parentRefs": [
+        "all-tests-20261009/readback/current-source-closure-result-r3"
+      ],
+      "scope": "Adopted bootstrap registry: exact251 original paths map to current source-matched non-draft test Seals. Each test remains governed by its own Causes."
+    }
+  ],
+  "adoptionGuards": [
+    "official inventory SHA equals verifier officialInventorySha256 before replacement",
+    "candidate bytes SHA equals verifier proposedInventorySha256",
+    "candidate251 unique path/ref mappings match mappedTestHeads and frozen original paths",
+    "copy candidate bytes exactly; source-bind current successor inventory ref; confirm ACTIVE_LEAF/NO_CANDIDATE/non-draft/source-match",
+    "preserve all previous HEADs and bindings; treat old inventory binding as historical only"
+  ],
+  "historicalInventorySeal": "8903c34cd976b58afc723ba9f12dbdaab921930293c71ecfb72a8c00841de1e5",
+  "finalExecutionReceipt": [
+    "requires adopted current inventory Seal and all251 current test heads",
+    "assert old-to-current registry revision on receipt Cause to current inventory using exact historicalInventorySeal as --previous",
+    "attach actual formal unit/E2E counts, skip/fail counts, command exits and source/HEAD/inventory identity checks; no pre-execution completion claim"
+  ]
+}

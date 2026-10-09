@@ -1,3 +1,5 @@
+import { projectBattleActionEffort } from "@kshiai/shared";
+import { CurrentActionEffortPolicyV1 } from "@kshiai/shared";
 import { CurrentAwarenessPromptRevision, evaluatedAwarenessConsciousGuidance } from "@kshiai/shared";
 // R: Coordinate battle creation and turn execution using bound assets and committed state.
 import { awarenessNarrationUrgent } from "./awareness-narration-urgency.js";
@@ -708,6 +710,7 @@ export async function startBattle(input: StartBattleInput): Promise<BattlePublic
     sideB: opp,
     turnLimit: 12,
     pacingPolicy: LOCAL_TWELVE_TURN_PACING_CANDIDATE,
+    actionEffortPolicy: CurrentActionEffortPolicyV1,
     battlefield: resolvedBattlefield.creation,
     stanceA: input.stance,
     policiesA,
@@ -2989,6 +2992,7 @@ export async function advanceCharacterAgents(input: {
       };
       const projectedA = projectObserverPerception({
         ...projectionBase,
+        actionEffort: projectBattleActionEffort(stateAfterUtterances, "a"),
         observerSide: "a",
         reserveEvidence: buildServerOnlyReserveCues({
           side: "a",
@@ -3002,6 +3006,7 @@ export async function advanceCharacterAgents(input: {
       });
       const projectedB = projectObserverPerception({
         ...projectionBase,
+        actionEffort: projectBattleActionEffort(stateAfterUtterances, "b"),
         observerSide: "b",
         reserveEvidence: buildServerOnlyReserveCues({
           side: "b",
@@ -3902,6 +3907,7 @@ export async function reconcileSemanticState(input: {
     try {
       const projectedA = projectObserverPerception({
         ...projectionBase,
+        actionEffort: projectBattleActionEffort(state, "a"),
         observerSide: "a",
         events: [...committedEvents, ...previousUtteranceEvents],
         reserveEvidence: reserveEvidenceA,
@@ -3913,6 +3919,7 @@ export async function reconcileSemanticState(input: {
       });
       const projectedB = projectObserverPerception({
         ...projectionBase,
+        actionEffort: projectBattleActionEffort(state, "b"),
         observerSide: "b",
         events: [...committedEvents, ...previousUtteranceEvents],
         reserveEvidence: reserveEvidenceB,
@@ -5143,6 +5150,7 @@ async function advanceTurnCoreWithLease(input: {
       });
       if (boundaryState.semanticState) {
         const projected = projectObserverPerception({
+          actionEffort: projectBattleActionEffort(boundaryState, laterSide),
           observerSide: laterSide,
           turn: boundaryState.turn,
           semanticState: boundaryState.semanticState,

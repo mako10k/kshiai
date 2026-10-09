@@ -1,0 +1,30 @@
+{
+  "schema": "kshiai/seal-publication-work-observation/v1",
+  "observedAt": "2026-10-09T03:05:51.925916+00:00",
+  "processSession": 82044,
+  "journalEvents": 310,
+  "currentInvocationNewEvents": 113,
+  "currentInvocationElapsedAtLastEventSeconds": 2041.04,
+  "intervalSamples": 112,
+  "medianEventIntervalSeconds": 14.733,
+  "meanEventIntervalSeconds": 18.18,
+  "lastTwentyMeanSeconds": 21.802,
+  "basis": "197-event recovery baseline; completed official publications only",
+  "limitations": [
+    "Intervals include source comparison and official publication/readback; they are elapsed time, not active effort.",
+    "Reused entries need no new event; progress position and remaining write count differ.",
+    "Not adopted as PERT velocity or a CI/deployment estimate."
+  ],
+  "followupObservations": [
+    {
+      "observedAt": "2026-10-09T04:18:22.136157+00:00",
+      "journalEvents": 420,
+      "currentInvocationNewEvents": 223,
+      "currentInvocationElapsedAtLastEventSeconds": 4635.015,
+      "intervalSamples": 222,
+      "medianEventIntervalSeconds": 17.465,
+      "meanEventIntervalSeconds": 20.857,
+      "lastTwentyMeanSeconds": 22.598
+    }
+  ]
+}

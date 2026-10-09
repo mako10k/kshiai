@@ -363,11 +363,7 @@ async function registerInsertedAuthoringAttempt(
   return attempt;
 }
 
-async function insertNewAuthoringAttempt(
-  connection: DatabaseConnection,
-  input: NewCharacterAuthoringInput,
-): Promise<CharacterAuthoringAttempt> {
-  const characterId = input.characterId ?? newId("chr");
+async function readNewAuthoringTarget(connection: DatabaseConnection, characterId: string) {
   const character = await connection.query<{ owner_user_id: string }>(
     `SELECT owner_user_id FROM characters WHERE id = $1`,
     [characterId],
@@ -384,6 +380,15 @@ async function insertNewAuthoringAttempt(
     [characterId],
   );
   const expected = current.rows[0] ?? null;
+  return { existingCharacter, expected };
+}
+
+async function insertNewAuthoringAttempt(
+  connection: DatabaseConnection,
+  input: NewCharacterAuthoringInput,
+): Promise<CharacterAuthoringAttempt> {
+  const characterId = input.characterId ?? newId("chr");
+  const { existingCharacter, expected } = await readNewAuthoringTarget(connection, characterId);
   assertNewAuthoringTarget(input, existingCharacter, expected);
   await rejectBusyCharacterAuthoring(
     connection,
@@ -1158,6 +1163,14 @@ async function readActivationCurrentSheet(
   return currentSheet;
 }
 
+function assertOwnerActivationReview(attempt: CharacterAuthoringAttempt, input: CharacterActivationInput) {
+    if (attempt.candidate) assertCharacterV3WriteCandidate(attempt.candidate);
+    if (attempt.candidate && CharacterGenerationEnvelopeV3Schema.safeParse(attempt.candidate).success
+      && (!input.candidateDigest || input.candidateDigest !== attempt.candidateDigest)) {
+      throw new Error("AUTHORING_REVIEW_DIGEST_MISMATCH");
+    }
+}
+
 export async function activateCharacterAuthoringAttempt(input: CharacterActivationInput): Promise<{ sheet: CharacterSheet; generation: AssetGeneration }> {
   const result = await withTransaction(async (connection) => {
     // Serialize duplicate confirmations before reading the candidate or appending a generation.
@@ -1166,11 +1179,7 @@ export async function activateCharacterAuthoringAttempt(input: CharacterActivati
       [input.attemptId, input.ownerUserId]);
     const attempt = await selectAttempt(connection, input.attemptId, input.ownerUserId);
     if (!attempt) throw new Error("AUTHORING_ATTEMPT_NOT_FOUND");
-    if (attempt.candidate) assertCharacterV3WriteCandidate(attempt.candidate);
-    if (attempt.candidate && CharacterGenerationEnvelopeV3Schema.safeParse(attempt.candidate).success
-      && (!input.candidateDigest || input.candidateDigest !== attempt.candidateDigest)) {
-      throw new Error("AUTHORING_REVIEW_DIGEST_MISMATCH");
-    }
+    assertOwnerActivationReview(attempt, input);
     if (attempt.status === "succeeded" && attempt.resultGenerationId) {
       return readActivatedAuthoringResult(connection, attempt, input.ownerUserId);
     }
