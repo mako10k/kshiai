@@ -1,0 +1,41 @@
+{
+  "schema": "kshiai/adjudication-repair-local-review/v1",
+  "reviewType": "author review, not independent review",
+  "reviewedAt": "2026-10-09T10:55:11.608418+00:00",
+  "acceptedAuthority": [
+    "docs/adr/0064-permissive-attempts-and-explicit-adjudication-failures.md",
+    "docs/adr/0065-explicit-free-action-handoff-and-compact-facts.md"
+  ],
+  "changes": [
+    "Required readonly executed action input replaces consumed planned action reads",
+    "Reject missing or duplicate proposal coverage regardless of provider implementation",
+    "Carry physical action IDs into guarded provider usage scope and structured fallback/result logs",
+    "Permit supported reduced bodily attempts without inventing contact or mechanical damage",
+    "Omit presentation-only fields and named neutral empty containers while retaining canonical facts, zero, false and unknown states"
+  ],
+  "localEvidence": {
+    "diagnosticTests": 27,
+    "diagnosticFailures": 0,
+    "typecheck": "pass",
+    "build": "pass before pure helper extraction",
+    "static": "pass after extraction; baseline unchanged",
+    "adrCheck": "pass",
+    "inputCharacterSavingsPercent": [
+      4.92,
+      3.19
+    ]
+  },
+  "limitations": [
+    "No live token reduction measurement",
+    "Author diagnostics are not formal sealed acceptance",
+    "Current public deployment remains rc19 until later verified promotion",
+    "New paid Stage run requires candidate-specific owner approval"
+  ],
+  "formalTestFiles": 251,
+  "originalDeclarationsRetained": true,
+  "sealPublicationNotes": [
+    "SRP helper extraction invalidated the first five-entry partial source cohort; original plan and exact readback events retained separately",
+    "Unchanged candidates are reused only after exact content and Cause comparison, then candidate discarded through public CLI",
+    "Synthetic previous==current target entries are omitted when the target revision was unchanged; actual prior Cause history is preserved"
+  ]
+}

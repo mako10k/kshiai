@@ -1,0 +1,3168 @@
+{
+  "schemaVersion": 1,
+  "runId": "stage-37912860756-1",
+  "observedAt": "2026-10-09T09:53:19.048Z",
+  "target": {
+    "apiOrigin": "https://3c4e3d68-kshiai-web.mako10k.workers.dev",
+    "revision": "kshiai-api-00186-zop",
+    "dialogueProjection": "compact",
+    "dialogueActivationSource": "persisted_setting"
+  },
+  "accounts": {
+    "observer": {
+      "email": "codex-e2e-observer@example.test",
+      "accountKind": "e2e"
+    },
+    "opponent": {
+      "email": "codex-e2e-opponent@example.test",
+      "accountKind": "test"
+    },
+    "crossAccount": true
+  },
+  "fixtures": {
+    "ids": {
+      "observerCharacter": "chr_e2e_dialogue_nagi",
+      "opponentCharacter": "chr_e2e_dialogue_gaku",
+      "battlefield": "bfp_e2e_dialogue_rainy_alley",
+      "narrationStyle": "nst_e2e_dialogue_contrast"
+    },
+    "disposition": {
+      "observerCharacter": "reused",
+      "opponentCharacter": "reused",
+      "battlefield": "reused",
+      "narrationStyle": "reused"
+    }
+  },
+  "visibility": {
+    "testRealmSharing": "passed",
+    "generalCharacterLeakage": "not_observed"
+  },
+  "internalObservability": {
+    "battleDetail": "passed",
+    "awareness": {
+      "engine": "awareness-v5",
+      "policyRevision": "awareness-v5-usage-v2",
+      "recordedPromptRevision": "awareness-prompt-v4",
+      "effectivePromptRevision": "awareness-prompt-v4",
+      "completedTicks": 30,
+      "physicalAttemptLimit": 200,
+      "physicalAttempts": 123,
+      "physicalOutstanding": 0,
+      "narrationPhysicalAttempts": 32,
+      "reportedTokens": {
+        "prompt": 813735,
+        "completion": 33387,
+        "total": 875033,
+        "unknownAttempts": 0
+      },
+      "monetaryCost": "unknown_without_verified_prices",
+      "attempts": [
+        {
+          "id": "provider_call_2687dc260893bd5f630520f0:1",
+          "role": "creation",
+          "provider": "xai",
+          "requestedModel": "grok-4.5",
+          "responseModel": "grok-4.5",
+          "status": "completed",
+          "promptTokens": 1393,
+          "completionTokens": 157,
+          "totalTokens": 1991,
+          "elapsedMs": 10346.65544100001,
+          "responseDiagnostics": {
+            "finishReason": "stop",
+            "contentLength": 376,
+            "contentEmpty": false
+          }
+        },
+        {
+          "id": "provider_call_c8a65f8401c46684d4a057a5:1",
+          "role": "conscious",
+          "provider": "xai",
+          "requestedModel": "grok-4.5",
+          "responseModel": "grok-4.5",
+          "status": "completed",
+          "promptTokens": 4606,
+          "completionTokens": 266,
+          "totalTokens": 6068,
+          "elapsedMs": 29290.984399999987,
+          "responseDiagnostics": {
+            "finishReason": "stop",
+            "contentLength": 565,
+            "contentEmpty": false
+          }
+        },
+        {
+          "id": "provider_call_4e8b04b276744c1d79a4cfd9:1",
+          "role": "conscious",
+          "provider": "xai",
+          "requestedModel": "grok-4.5",
+          "responseModel": "grok-4.5",
+          "status": "completed",
+          "promptTokens": 4318,
+          "completionTokens": 292,
+          "totalTokens": 5861,
+          "elapsedMs": 26195.333075000002,
+          "responseDiagnostics": {
+            "finishReason": "stop",
+            "contentLength": 679,
+            "contentEmpty": false
+          }
+        },
+        {
+          "id": "provider_call_88a6aae2cc0d21503086868d:1",
+          "role": "subconscious",
+          "provider": "openai",
+          "requestedModel": "gpt-6-luna",
+          "responseModel": "gpt-6-luna",
+          "status": "completed",
+          "promptTokens": 5460,
+          "completionTokens": 229,
+          "totalTokens": 5689,
+          "elapsedMs": 2820.7540040000167,
+          "responseDiagnostics": {
+            "finishReason": "stop",
+            "contentLength": 616,
+            "contentEmpty": false
+          }
+        },
+        {
+          "id": "provider_call_9392d78027670c9dc0fd2984:1",
+          "role": "subconscious",
+          "provider": "openai",
+          "requestedModel": "gpt-6-luna",
+          "responseModel": "gpt-6-luna",
+          "status": "completed",
+          "promptTokens": 5156,
+          "completionTokens": 103,
+          "totalTokens": 5259,
+          "elapsedMs": 2196.8366610000085,
+          "responseDiagnostics": {
+            "finishReason": "stop",
+            "contentLength": 303,
+            "contentEmpty": false
+          }
+        },
+        {
+          "id": "provider_call_638cb400190498f4061eeb6d:1",
+          "role": "narration",
+          "provider": "xai",
+          "requestedModel": "grok-4.3",
+          "responseModel": "grok-4.3",
+          "status": "completed",
+          "promptTokens": 5444,
+          "completionTokens": 310,
+          "totalTokens": 5754,
+          "elapsedMs": 2796.3994280000043,
+          "responseDiagnostics": {
+            "finishReason": "stop",
+            "contentLength": 753,
+            "contentEmpty": false
+          }
+        },
+        {
+          "id": "provider_call_77882c2bdf5dbb1d8549eed4:1",
+          "role": "subconscious",
+          "provider": "openai",
+          "requestedModel": "gpt-6-luna",
+          "responseModel": "gpt-6-luna",
+          "status": "completed",
+          "promptTokens": 5599,
+          "completionTokens": 185,
+          "totalTokens": 5784,
+          "elapsedMs": 2211.552951999998,
+          "responseDiagnostics": {
+            "finishReason": "stop",
+            "contentLength": 473,
+            "contentEmpty": false
+          }
+        },
+        {
+          "id": "provider_call_d2fd7aae8185b758cdf20fa3:1",
+          "role": "subconscious",
+          "provider": "openai",
+          "requestedModel": "gpt-6-luna",
+          "responseModel": "gpt-6-luna",
+          "status": "completed",
+          "promptTokens": 6046,
+          "completionTokens": 262,
+          "totalTokens": 6308,
+          "elapsedMs": 4911.58110000001,
+          "responseDiagnostics": {
+            "finishReason": "stop",
+            "contentLength": 622,
+            "contentEmpty": false
+          }
+        },
+        {
+          "id": "provider_call_22843121c711cbb2f48579fc:1",
+          "role": "adjudication",
+          "provider": "xai",
+          "requestedModel": "grok-4.5",
+          "responseModel": "grok-4.5",
+          "status": "completed",
+          "promptTokens": 7450,
+          "completionTokens": 30,
+          "totalTokens": 8049,
+          "elapsedMs": 13283.517044999986,
+          "responseDiagnostics": {
+            "finishReason": "stop",
+            "contentLength": 97,
+            "contentEmpty": false
+          }
+        },
+        {
+          "id": "provider_call_aac58e7a85dd42ead3a17768:1",
+          "role": "narration",
+          "provider": "xai",
+          "requestedModel": "grok-4.3",
+          "responseModel": "grok-4.3",
+          "status": "completed",
+          "promptTokens": 7514,
+          "completionTokens": 232,
+          "totalTokens": 7746,
+          "elapsedMs": 2727.4375539999746,
+          "responseDiagnostics": {
+            "finishReason": "stop",
+            "contentLength": 479,
+            "contentEmpty": false
+          }
+        },
+        {
+          "id": "provider_call_b67bc5f373a4508788eaa341:1",
+          "role": "subconscious",
+          "provider": "openai",
+          "requestedModel": "gpt-6-luna",
+          "responseModel": "gpt-6-luna",
+          "status": "completed",
+          "promptTokens": 5882,
+          "completionTokens": 232,
+          "totalTokens": 6114,
+          "elapsedMs": 4524.814504000009,
+          "responseDiagnostics": {
+            "finishReason": "stop",
+            "contentLength": 609,
+            "contentEmpty": false
+          }
+        },
+        {
+          "id": "provider_call_5f3008bdb18da503be9ffcb9:1",
+          "role": "subconscious",
+          "provider": "openai",
+          "requestedModel": "gpt-6-luna",
+          "responseModel": "gpt-6-luna",
+          "status": "completed",
+          "promptTokens": 6496,
+          "completionTokens": 354,
+          "totalTokens": 6850,
+          "elapsedMs": 5137.283834000002,
+          "responseDiagnostics": {
+            "finishReason": "stop",
+            "contentLength": 844,
+            "contentEmpty": false
+          }
+        },
+        {
+          "id": "provider_call_8eedbaae8016626bd9d54e3e:1",
+          "role": "narration",
+          "provider": "xai",
+          "requestedModel": "grok-4.3",
+          "responseModel": "grok-4.3",
+          "status": "completed",
+          "promptTokens": 8001,
+          "completionTokens": 234,
+          "totalTokens": 8235,
+          "elapsedMs": 2699.2437610000197,
+          "responseDiagnostics": {
+            "finishReason": "stop",
+            "contentLength": 474,
+            "contentEmpty": false
+          }
+        },
+        {
+          "id": "provider_call_6e3f149dfc5360f0d2e4eb12:1",
+          "role": "conscious",
+          "provider": "xai",
+          "requestedModel": "grok-4.5",
+          "responseModel": "grok-4.5",
+          "status": "completed",
+          "promptTokens": 5135,
+          "completionTokens": 293,
+          "totalTokens": 7072,
+          "elapsedMs": 35476.37456900001,
+          "responseDiagnostics": {
+            "finishReason": "stop",
+            "contentLength": 594,
+            "contentEmpty": false
+          }
+        },
+        {
+          "id": "provider_call_e7c173ddc61216c792bf7a3e:1",
+          "role": "subconscious",
+          "provider": "openai",
+          "requestedModel": "gpt-6-luna",
+          "responseModel": "gpt-6-luna",
+          "status": "completed",
+          "promptTokens": 6015,
+          "completionTokens": 313,
+          "totalTokens": 6328,
+          "elapsedMs": 2729.6235519999755,
+          "responseDiagnostics": {
+            "finishReason": "stop",
+            "contentLength": 772,
+            "contentEmpty": false
+          }
+        },
+        {
+          "id": "provider_call_bb345253a051e9160723f2f7:1",
+          "role": "conscious",
+          "provider": "xai",
+          "requestedModel": "grok-4.5",
+          "responseModel": "grok-4.5",
+          "status": "completed",
+          "promptTokens": 4801,
+          "completionTokens": 401,
+          "totalTokens": 6737,
+          "elapsedMs": 33092.153051,
+          "responseDiagnostics": {
+            "finishReason": "stop",
+            "contentLength": 954,
+            "contentEmpty": false
+          }
+        },
+        {
+          "id": "provider_call_a225411fba40785f66cb8c4b:1",
+          "role": "subconscious",
+          "provider": "openai",
+          "requestedModel": "gpt-6-luna",
+          "responseModel": "gpt-6-luna",
+          "status": "completed",
+          "promptTokens": 6531,
+          "completionTokens": 392,
+          "totalTokens": 6923,
+          "elapsedMs": 9980.942374000006,
+          "responseDiagnostics": {
+            "finishReason": "stop",
+            "contentLength": 968,
+            "contentEmpty": false
+          }
+        },
+        {
+          "id": "provider_call_b8fad76e4d8a1ac8e5b63cdb:1",
+          "role": "narration",
+          "provider": "xai",
+          "requestedModel": "grok-4.3",
+          "responseModel": "grok-4.3",
+          "status": "completed",
+          "promptTokens": 8437,
+          "completionTokens": 261,
+          "totalTokens": 8698,
+          "elapsedMs": 2756.6100250000018,
+          "responseDiagnostics": {
+            "finishReason": "stop",
+            "contentLength": 518,
+            "contentEmpty": false
+          }
+        },
+        {
+          "id": "provider_call_d22ffae4de196fe4a3be814d:1",
+          "role": "subconscious",
+          "provider": "openai",
+          "requestedModel": "gpt-6-luna",
+          "responseModel": "gpt-6-luna",
+          "status": "completed",
+          "promptTokens": 5940,
+          "completionTokens": 300,
+          "totalTokens": 6240,
+          "elapsedMs": 2867.4092119999987,
+          "responseDiagnostics": {
+            "finishReason": "stop",
+            "contentLength": 758,
+            "contentEmpty": false
+          }
+        },
+        {
+          "id": "provider_call_246a718501446b539bc303c2:1",
+          "role": "subconscious",
+          "provider": "openai",
+          "requestedModel": "gpt-6-luna",
+          "responseModel": "gpt-6-luna",
+          "status": "completed",
+          "promptTokens": 6400,
+          "completionTokens": 297,
+          "totalTokens": 6697,
+          "elapsedMs": 2940.9310680000053,
+          "responseDiagnostics": {
+            "finishReason": "stop",
+            "contentLength": 676,
+            "contentEmpty": false
+          }
+        },
+        {
+          "id": "provider_call_8a3b294be0db81b5abc7f530:1",
+          "role": "adjudication",
+          "provider": "xai",
+          "requestedModel": "grok-4.5",
+          "responseModel": "grok-4.5",
+          "status": "completed",
+          "promptTokens": 8147,
+          "completionTokens": 18,
+          "totalTokens": 8537,
+          "elapsedMs": 6676.915828999976,
+          "responseDiagnostics": {
+            "finishReason": "stop",
+            "contentLength": 75,
+            "contentEmpty": false
+          }
+        },
+        {
+          "id": "provider_call_3c73901f7253a70427feba42:1",
+          "role": "narration",
+          "provider": "xai",
+          "requestedModel": "grok-4.3",
+          "responseModel": "grok-4.3",
+          "status": "completed",
+          "promptTokens": 9092,
+          "completionTokens": 271,
+          "totalTokens": 9363,
+          "elapsedMs": 2511.997443,
+          "responseDiagnostics": {
+            "finishReason": "stop",
+            "contentLength": 527,
+            "contentEmpty": false
+          }
+        },
+        {
+          "id": "provider_call_d9eaf74dd9fa232c808e50ad:1",
+          "role": "subconscious",
+          "provider": "openai",
+          "requestedModel": "gpt-6-luna",
+          "responseModel": "gpt-6-luna",
+          "status": "completed",
+          "promptTokens": 5885,
+          "completionTokens": 249,
+          "totalTokens": 6134,
+          "elapsedMs": 2829.8888040000165,
+          "responseDiagnostics": {
+            "finishReason": "stop",
+            "contentLength": 656,
+            "contentEmpty": false
+          }
+        },
+        {
+          "id": "provider_call_7a1e0d07d1e55141025c6f32:1",
+          "role": "subconscious",
+          "provider": "openai",
+          "requestedModel": "gpt-6-luna",
+          "responseModel": "gpt-6-luna",
+          "status": "completed",
+          "promptTokens": 6599,
+          "completionTokens": 376,
+          "totalTokens": 6975,
+          "elapsedMs": 4025.189108999999,
+          "responseDiagnostics": {
+            "finishReason": "stop",
+            "contentLength": 893,
+            "contentEmpty": false
+          }
+        },
+        {
+          "id": "provider_call_40a07a803633c9d92fd6c067:1",
+          "role": "adjudication",
+          "provider": "xai",
+          "requestedModel": "grok-4.5",
+          "responseModel": "grok-4.5",
+          "status": "completed",
+          "promptTokens": 7362,
+          "completionTokens": 18,
+          "totalTokens": 8136,
+          "elapsedMs": 12280.686337000021,
+          "responseDiagnostics": {
+            "finishReason": "stop",
+            "contentLength": 75,
+            "contentEmpty": false
+          }
+        },
+        {
+          "id": "provider_call_9d3d5287dcf17e27d7db1897:1",
+          "role": "narration",
+          "provider": "xai",
+          "requestedModel": "grok-4.3",
+          "responseModel": "grok-4.3",
+          "status": "completed",
+          "promptTokens": 8707,
+          "completionTokens": 234,
+          "totalTokens": 8941,
+          "elapsedMs": 2164.2906509999884,
+          "responseDiagnostics": {
+            "finishReason": "stop",
+            "contentLength": 481,
+            "contentEmpty": false
+          }
+        },
+        {
+          "id": "provider_call_a4b066b92dfaa650aebad915:1",
+          "role": "conscious",
+          "provider": "xai",
+          "requestedModel": "grok-4.5",
+          "responseModel": "grok-4.5",
+          "status": "completed",
+          "promptTokens": 5334,
+          "completionTokens": 396,
+          "totalTokens": 6930,
+          "elapsedMs": 24431.78784600002,
+          "responseDiagnostics": {
+            "finishReason": "stop",
+            "contentLength": 879,
+            "contentEmpty": false
+          }
+        },
+        {
+          "id": "provider_call_a736ce0b047ba0ac9234f03b:1",
+          "role": "conscious",
+          "provider": "xai",
+          "requestedModel": "grok-4.5",
+          "responseModel": "grok-4.5",
+          "status": "completed",
+          "promptTokens": 4833,
+          "completionTokens": 271,
+          "totalTokens": 7424,
+          "elapsedMs": 59372.52003799999,
+          "responseDiagnostics": {
+            "finishReason": "stop",
+            "contentLength": 642,
+            "contentEmpty": false
+          }
+        },
+        {
+          "id": "provider_call_3d3155d8414363fd9cddc37d:1",
+          "role": "subconscious",
+          "provider": "openai",
+          "requestedModel": "gpt-6-luna",
+          "responseModel": "gpt-6-luna",
+          "status": "completed",
+          "promptTokens": 5956,
+          "completionTokens": 278,
+          "totalTokens": 6234,
+          "elapsedMs": 2673.4930319999985,
+          "responseDiagnostics": {
+            "finishReason": "stop",
+            "contentLength": 733,
+            "contentEmpty": false
+          }
+        },
+        {
+          "id": "provider_call_4e350b8f2aa50ba217f8ea06:1",
+          "role": "subconscious",
+          "provider": "openai",
+          "requestedModel": "gpt-6-luna",
+          "responseModel": "gpt-6-luna",
+          "status": "completed",
+          "promptTokens": 6632,
+          "completionTokens": 357,
+          "totalTokens": 6989,
+          "elapsedMs": 2789.6646449999826,
+          "responseDiagnostics": {
+            "finishReason": "stop",
+            "contentLength": 846,
+            "contentEmpty": false
+          }
+        },
+        {
+          "id": "provider_call_f095703cb118cfeef6a07ec7:1",
+          "role": "narration",
+          "provider": "xai",
+          "requestedModel": "grok-4.3",
+          "responseModel": "grok-4.3",
+          "status": "completed",
+          "promptTokens": 8902,
+          "completionTokens": 286,
+          "totalTokens": 9188,
+          "elapsedMs": 2887.0560089999926,
+          "responseDiagnostics": {
+            "finishReason": "stop",
+            "contentLength": 546,
+            "contentEmpty": false
+          }
+        },
+        {
+          "id": "provider_call_6e23433567bc4e8aae84f4de:1",
+          "role": "subconscious",
+          "provider": "openai",
+          "requestedModel": "gpt-6-luna",
+          "responseModel": "gpt-6-luna",
+          "status": "completed",
+          "promptTokens": 6018,
+          "completionTokens": 345,
+          "totalTokens": 6363,
+          "elapsedMs": 3516.930372999981,
+          "responseDiagnostics": {
+            "finishReason": "stop",
+            "contentLength": 848,
+            "contentEmpty": false
+          }
+        },
+        {
+          "id": "provider_call_1cb42808e5f08d3fcf23e734:1",
+          "role": "subconscious",
+          "provider": "openai",
+          "requestedModel": "gpt-6-luna",
+          "responseModel": "gpt-6-luna",
+          "status": "completed",
+          "promptTokens": 6342,
+          "completionTokens": 360,
+          "totalTokens": 6702,
+          "elapsedMs": 3085.526549000002,
+          "responseDiagnostics": {
+            "finishReason": "stop",
+            "contentLength": 857,
+            "contentEmpty": false
+          }
+        },
+        {
+          "id": "provider_call_90a22cdb4c87078e3cdad58b:1",
+          "role": "narration",
+          "provider": "xai",
+          "requestedModel": "grok-4.3",
+          "responseModel": "grok-4.3",
+          "status": "completed",
+          "promptTokens": 8987,
+          "completionTokens": 286,
+          "totalTokens": 9273,
+          "elapsedMs": 2411.6395649999904,
+          "responseDiagnostics": {
+            "finishReason": "stop",
+            "contentLength": 546,
+            "contentEmpty": false
+          }
+        },
+        {
+          "id": "provider_call_d1a5ea473ba6885013cafdb9:1",
+          "role": "subconscious",
+          "provider": "openai",
+          "requestedModel": "gpt-6-luna",
+          "responseModel": "gpt-6-luna",
+          "status": "completed",
+          "promptTokens": 5956,
+          "completionTokens": 267,
+          "totalTokens": 6223,
+          "elapsedMs": 2430.485037000006,
+          "responseDiagnostics": {
+            "finishReason": "stop",
+            "contentLength": 701,
+            "contentEmpty": false
+          }
+        },
+        {
+          "id": "provider_call_9b077de985cc43bda3bf2280:1",
+          "role": "subconscious",
+          "provider": "openai",
+          "requestedModel": "gpt-6-luna",
+          "responseModel": "gpt-6-luna",
+          "status": "completed",
+          "promptTokens": 6136,
+          "completionTokens": 363,
+          "totalTokens": 6499,
+          "elapsedMs": 3009.5887129999755,
+          "responseDiagnostics": {
+            "finishReason": "stop",
+            "contentLength": 866,
+            "contentEmpty": false
+          }
+        },
+        {
+          "id": "provider_call_6718a16f56ab4b0d556570a9:1",
+          "role": "adjudication",
+          "provider": "xai",
+          "requestedModel": "grok-4.5",
+          "responseModel": "grok-4.5",
+          "status": "completed",
+          "promptTokens": 7151,
+          "completionTokens": 18,
+          "totalTokens": 7542,
+          "elapsedMs": 20690.418869999994,
+          "responseDiagnostics": {
+            "finishReason": "stop",
+            "contentLength": 75,
+            "contentEmpty": false
+          }
+        },
+        {
+          "id": "provider_call_6bf4baf3fe2b3810056b2306:1",
+          "role": "narration",
+          "provider": "xai",
+          "requestedModel": "grok-4.3",
+          "responseModel": "grok-4.3",
+          "status": "completed",
+          "promptTokens": 8979,
+          "completionTokens": 223,
+          "totalTokens": 9202,
+          "elapsedMs": 2244.76271499999,
+          "responseDiagnostics": {
+            "finishReason": "stop",
+            "contentLength": 473,
+            "contentEmpty": false
+          }
+        },
+        {
+          "id": "provider_call_4accbd0f597186eb75841991:1",
+          "role": "conscious",
+          "provider": "xai",
+          "requestedModel": "grok-4.5",
+          "responseModel": "grok-4.5",
+          "status": "completed",
+          "promptTokens": 4848,
+          "completionTokens": 454,
+          "totalTokens": 6462,
+          "elapsedMs": 30798.410742000036,
+          "responseDiagnostics": {
+            "finishReason": "stop",
+            "contentLength": 1015,
+            "contentEmpty": false
+          }
+        },
+        {
+          "id": "provider_call_035f0576245c0a16ddf528d7:1",
+          "role": "subconscious",
+          "provider": "openai",
+          "requestedModel": "gpt-6-luna",
+          "responseModel": "gpt-6-luna",
+          "status": "completed",
+          "promptTokens": 6073,
+          "completionTokens": 361,
+          "totalTokens": 6434,
+          "elapsedMs": 5786.776318000018,
+          "responseDiagnostics": {
+            "finishReason": "stop",
+            "contentLength": 868,
+            "contentEmpty": false
+          }
+        },
+        {
+          "id": "provider_call_f266206b06e93b13cb5d5ed6:1",
+          "role": "subconscious",
+          "provider": "openai",
+          "requestedModel": "gpt-6-luna",
+          "responseModel": "gpt-6-luna",
+          "status": "completed",
+          "promptTokens": 5890,
+          "completionTokens": 268,
+          "totalTokens": 6158,
+          "elapsedMs": 2712.4297589999915,
+          "responseDiagnostics": {
+            "finishReason": "stop",
+            "contentLength": 703,
+            "contentEmpty": false
+          }
+        },
+        {
+          "id": "provider_call_9db757926ce4c0bbe7fb8d1e:1",
+          "role": "narration",
+          "provider": "xai",
+          "requestedModel": "grok-4.3",
+          "responseModel": "grok-4.3",
+          "status": "completed",
+          "promptTokens": 8595,
+          "completionTokens": 258,
+          "totalTokens": 8853,
+          "elapsedMs": 2620.0664710000274,
+          "responseDiagnostics": {
+            "finishReason": "stop",
+            "contentLength": 516,
+            "contentEmpty": false
+          }
+        },
+        {
+          "id": "provider_call_071a01d2c6b22f9f046e4c98:1",
+          "role": "subconscious",
+          "provider": "openai",
+          "requestedModel": "gpt-6-luna",
+          "responseModel": "gpt-6-luna",
+          "status": "completed",
+          "promptTokens": 6211,
+          "completionTokens": 358,
+          "totalTokens": 6569,
+          "elapsedMs": 3306.9115440000314,
+          "responseDiagnostics": {
+            "finishReason": "stop",
+            "contentLength": 880,
+            "contentEmpty": false
+          }
+        },
+        {
+          "id": "provider_call_bc0df7413bc702de00dfbf40:1",
+          "role": "subconscious",
+          "provider": "openai",
+          "requestedModel": "gpt-6-luna",
+          "responseModel": "gpt-6-luna",
+          "status": "completed",
+          "promptTokens": 5905,
+          "completionTokens": 227,
+          "totalTokens": 6132,
+          "elapsedMs": 2203.0213600000134,
+          "responseDiagnostics": {
+            "finishReason": "stop",
+            "contentLength": 570,
+            "contentEmpty": false
+          }
+        },
+        {
+          "id": "provider_call_346f6b83c4076c0de6b1e61b:1",
+          "role": "narration",
+          "provider": "xai",
+          "requestedModel": "grok-4.3",
+          "responseModel": "grok-4.3",
+          "status": "completed",
+          "promptTokens": 8609,
+          "completionTokens": 261,
+          "totalTokens": 8870,
+          "elapsedMs": 2326.9236209999654,
+          "responseDiagnostics": {
+            "finishReason": "stop",
+            "contentLength": 517,
+            "contentEmpty": false
+          }
+        },
+        {
+          "id": "provider_call_12279c4ea960aa36a57f2685:1",
+          "role": "subconscious",
+          "provider": "openai",
+          "requestedModel": "gpt-6-luna",
+          "responseModel": "gpt-6-luna",
+          "status": "completed",
+          "promptTokens": 5900,
+          "completionTokens": 222,
+          "totalTokens": 6122,
+          "elapsedMs": 2256.4467290000175,
+          "responseDiagnostics": {
+            "finishReason": "stop",
+            "contentLength": 566,
+            "contentEmpty": false
+          }
+        },
+        {
+          "id": "provider_call_2dbfe45101286cb8ea8e8988:1",
+          "role": "subconscious",
+          "provider": "openai",
+          "requestedModel": "gpt-6-luna",
+          "responseModel": "gpt-6-luna",
+          "status": "completed",
+          "promptTokens": 6085,
+          "completionTokens": 355,
+          "totalTokens": 6440,
+          "elapsedMs": 3458.728046000004,
+          "responseDiagnostics": {
+            "finishReason": "stop",
+            "contentLength": 872,
+            "contentEmpty": false
+          }
+        },
+        {
+          "id": "provider_call_11ee7a16c847e06118306936:1",
+          "role": "adjudication",
+          "provider": "xai",
+          "requestedModel": "grok-4.5",
+          "responseModel": "grok-4.5",
+          "status": "completed",
+          "promptTokens": 7150,
+          "completionTokens": 30,
+          "totalTokens": 7482,
+          "elapsedMs": 5960.796782999998,
+          "responseDiagnostics": {
+            "finishReason": "stop",
+            "contentLength": 97,
+            "contentEmpty": false
+          }
+        },
+        {
+          "id": "provider_call_3c8931af54d8387fdef64a96:1",
+          "role": "narration",
+          "provider": "xai",
+          "requestedModel": "grok-4.3",
+          "responseModel": "grok-4.3",
+          "status": "completed",
+          "promptTokens": 8634,
+          "completionTokens": 228,
+          "totalTokens": 8862,
+          "elapsedMs": 2671.029341000016,
+          "responseDiagnostics": {
+            "finishReason": "stop",
+            "contentLength": 471,
+            "contentEmpty": false
+          }
+        },
+        {
+          "id": "provider_call_5ad2e26429d3b9ea99c786ad:1",
+          "role": "subconscious",
+          "provider": "openai",
+          "requestedModel": "gpt-6-luna",
+          "responseModel": "gpt-6-luna",
+          "status": "completed",
+          "promptTokens": 6046,
+          "completionTokens": 355,
+          "totalTokens": 6401,
+          "elapsedMs": 3091.4419190000044,
+          "responseDiagnostics": {
+            "finishReason": "stop",
+            "contentLength": 875,
+            "contentEmpty": false
+          }
+        },
+        {
+          "id": "provider_call_869e1b9fae1dfbbf36303d08:1",
+          "role": "subconscious",
+          "provider": "openai",
+          "requestedModel": "gpt-6-luna",
+          "responseModel": "gpt-6-luna",
+          "status": "completed",
+          "promptTokens": 5861,
+          "completionTokens": 309,
+          "totalTokens": 6170,
+          "elapsedMs": 3359.3131730000023,
+          "responseDiagnostics": {
+            "finishReason": "stop",
+            "contentLength": 806,
+            "contentEmpty": false
+          }
+        },
+        {
+          "id": "provider_call_2e48faacb7d7ae40edca4fbe:1",
+          "role": "narration",
+          "provider": "xai",
+          "requestedModel": "grok-4.3",
+          "responseModel": "grok-4.3",
+          "status": "completed",
+          "promptTokens": 8718,
+          "completionTokens": 219,
+          "totalTokens": 8937,
+          "elapsedMs": 2131.0986459999694,
+          "responseDiagnostics": {
+            "finishReason": "stop",
+            "contentLength": 469,
+            "contentEmpty": false
+          }
+        },
+        {
+          "id": "provider_call_37fcc171a51d4818dc84d728:1",
+          "role": "conscious",
+          "provider": "xai",
+          "requestedModel": "grok-4.5",
+          "responseModel": "grok-4.5",
+          "status": "completed",
+          "promptTokens": 4718,
+          "completionTokens": 364,
+          "totalTokens": 6603,
+          "elapsedMs": 29644.880059999996,
+          "responseDiagnostics": {
+            "finishReason": "stop",
+            "contentLength": 893,
+            "contentEmpty": false
+          }
+        },
+        {
+          "id": "provider_call_8284dd3439cb0636543a4812:1",
+          "role": "subconscious",
+          "provider": "openai",
+          "requestedModel": "gpt-6-luna",
+          "responseModel": "gpt-6-luna",
+          "status": "completed",
+          "promptTokens": 5922,
+          "completionTokens": 269,
+          "totalTokens": 6191,
+          "elapsedMs": 2891.2813159999787,
+          "responseDiagnostics": {
+            "finishReason": "stop",
+            "contentLength": 710,
+            "contentEmpty": false
+          }
+        },
+        {
+          "id": "provider_call_8ad67b5c2510ce6076ad000d:1",
+          "role": "subconscious",
+          "provider": "openai",
+          "requestedModel": "gpt-6-luna",
+          "responseModel": "gpt-6-luna",
+          "status": "completed",
+          "promptTokens": 6053,
+          "completionTokens": 313,
+          "totalTokens": 6366,
+          "elapsedMs": 3049.752543999988,
+          "responseDiagnostics": {
+            "finishReason": "stop",
+            "contentLength": 739,
+            "contentEmpty": false
+          }
+        },
+        {
+          "id": "provider_call_88c629b1c4b67daeb2346919:1",
+          "role": "narration",
+          "provider": "xai",
+          "requestedModel": "grok-4.3",
+          "responseModel": "grok-4.3",
+          "status": "completed",
+          "promptTokens": 8746,
+          "completionTokens": 294,
+          "totalTokens": 9040,
+          "elapsedMs": 2927.0317279999726,
+          "responseDiagnostics": {
+            "finishReason": "stop",
+            "contentLength": 725,
+            "contentEmpty": false
+          }
+        },
+        {
+          "id": "provider_call_8123d64fddf02aa01e882cdc:1",
+          "role": "conscious",
+          "provider": "xai",
+          "requestedModel": "grok-4.5",
+          "responseModel": "grok-4.5",
+          "status": "completed",
+          "promptTokens": 4844,
+          "completionTokens": 449,
+          "totalTokens": 6282,
+          "elapsedMs": 24136.87694799999,
+          "responseDiagnostics": {
+            "finishReason": "stop",
+            "contentLength": 995,
+            "contentEmpty": false
+          }
+        },
+        {
+          "id": "provider_call_3716e22e870eab863b32d4fa:1",
+          "role": "subconscious",
+          "provider": "openai",
+          "requestedModel": "gpt-6-luna",
+          "responseModel": "gpt-6-luna",
+          "status": "completed",
+          "promptTokens": 6084,
+          "completionTokens": 353,
+          "totalTokens": 6437,
+          "elapsedMs": 3026.7118129999726,
+          "responseDiagnostics": {
+            "finishReason": "stop",
+            "contentLength": 873,
+            "contentEmpty": false
+          }
+        },
+        {
+          "id": "provider_call_ad99d0422bc954abc0c16f47:1",
+          "role": "subconscious",
+          "provider": "openai",
+          "requestedModel": "gpt-6-luna",
+          "responseModel": "gpt-6-luna",
+          "status": "completed",
+          "promptTokens": 5905,
+          "completionTokens": 266,
+          "totalTokens": 6171,
+          "elapsedMs": 2481.631181999983,
+          "responseDiagnostics": {
+            "finishReason": "stop",
+            "contentLength": 707,
+            "contentEmpty": false
+          }
+        },
+        {
+          "id": "provider_call_d78e36859bf1b47dc7583ca4:1",
+          "role": "adjudication",
+          "provider": "xai",
+          "requestedModel": "grok-4.5",
+          "responseModel": "grok-4.5",
+          "status": "completed",
+          "promptTokens": 7151,
+          "completionTokens": 30,
+          "totalTokens": 7515,
+          "elapsedMs": 5927.839875000005,
+          "responseDiagnostics": {
+            "finishReason": "stop",
+            "contentLength": 97,
+            "contentEmpty": false
+          }
+        },
+        {
+          "id": "provider_call_c6c485dab94915b3d34120a8:1",
+          "role": "narration",
+          "provider": "xai",
+          "requestedModel": "grok-4.3",
+          "responseModel": "grok-4.3",
+          "status": "completed",
+          "promptTokens": 8791,
+          "completionTokens": 249,
+          "totalTokens": 9040,
+          "elapsedMs": 3301.457766000007,
+          "responseDiagnostics": {
+            "finishReason": "stop",
+            "contentLength": 509,
+            "contentEmpty": false
+          }
+        },
+        {
+          "id": "provider_call_b6cdb789b8efedc725215773:1",
+          "role": "subconscious",
+          "provider": "openai",
+          "requestedModel": "gpt-6-luna",
+          "responseModel": "gpt-6-luna",
+          "status": "completed",
+          "promptTokens": 5887,
+          "completionTokens": 269,
+          "totalTokens": 6156,
+          "elapsedMs": 2174.15386999998,
+          "responseDiagnostics": {
+            "finishReason": "stop",
+            "contentLength": 712,
+            "contentEmpty": false
+          }
+        },
+        {
+          "id": "provider_call_3a33e7bded10690cf57b6cf6:1",
+          "role": "subconscious",
+          "provider": "openai",
+          "requestedModel": "gpt-6-luna",
+          "responseModel": "gpt-6-luna",
+          "status": "completed",
+          "promptTokens": 6066,
+          "completionTokens": 384,
+          "totalTokens": 6450,
+          "elapsedMs": 3204.1483450000524,
+          "responseDiagnostics": {
+            "finishReason": "stop",
+            "contentLength": 986,
+            "contentEmpty": false
+          }
+        },
+        {
+          "id": "provider_call_ccc139c355cb0e678348f34c:1",
+          "role": "narration",
+          "provider": "xai",
+          "requestedModel": "grok-4.3",
+          "responseModel": "grok-4.3",
+          "status": "completed",
+          "promptTokens": 8544,
+          "completionTokens": 224,
+          "totalTokens": 8768,
+          "elapsedMs": 2020.058740999957,
+          "responseDiagnostics": {
+            "finishReason": "stop",
+            "contentLength": 474,
+            "contentEmpty": false
+          }
+        },
+        {
+          "id": "provider_call_b71fd6ee94b2d75556ece092:1",
+          "role": "subconscious",
+          "provider": "openai",
+          "requestedModel": "gpt-6-luna",
+          "responseModel": "gpt-6-luna",
+          "status": "completed",
+          "promptTokens": 6076,
+          "completionTokens": 355,
+          "totalTokens": 6431,
+          "elapsedMs": 3029.294663000037,
+          "responseDiagnostics": {
+            "finishReason": "stop",
+            "contentLength": 870,
+            "contentEmpty": false
+          }
+        },
+        {
+          "id": "provider_call_b3c979ada9ef8042f62dad06:1",
+          "role": "subconscious",
+          "provider": "openai",
+          "requestedModel": "gpt-6-luna",
+          "responseModel": "gpt-6-luna",
+          "status": "completed",
+          "promptTokens": 5892,
+          "completionTokens": 311,
+          "totalTokens": 6203,
+          "elapsedMs": 2749.5733870000113,
+          "responseDiagnostics": {
+            "finishReason": "stop",
+            "contentLength": 807,
+            "contentEmpty": false
+          }
+        },
+        {
+          "id": "provider_call_6906eb6fae34339ef60c287e:1",
+          "role": "narration",
+          "provider": "xai",
+          "requestedModel": "grok-4.3",
+          "responseModel": "grok-4.3",
+          "status": "completed",
+          "promptTokens": 8651,
+          "completionTokens": 208,
+          "totalTokens": 8859,
+          "elapsedMs": 2366.7475199999753,
+          "responseDiagnostics": {
+            "finishReason": "stop",
+            "contentLength": 461,
+            "contentEmpty": false
+          }
+        },
+        {
+          "id": "provider_call_584164265722048280611033:1",
+          "role": "subconscious",
+          "provider": "openai",
+          "requestedModel": "gpt-6-luna",
+          "responseModel": "gpt-6-luna",
+          "status": "completed",
+          "promptTokens": 5880,
+          "completionTokens": 267,
+          "totalTokens": 6147,
+          "elapsedMs": 2546.036255999992,
+          "responseDiagnostics": {
+            "finishReason": "stop",
+            "contentLength": 708,
+            "contentEmpty": false
+          }
+        },
+        {
+          "id": "provider_call_0de7153c8474cc645b3b5537:1",
+          "role": "subconscious",
+          "provider": "openai",
+          "requestedModel": "gpt-6-luna",
+          "responseModel": "gpt-6-luna",
+          "status": "completed",
+          "promptTokens": 6071,
+          "completionTokens": 347,
+          "totalTokens": 6418,
+          "elapsedMs": 3070.7844960000366,
+          "responseDiagnostics": {
+            "finishReason": "stop",
+            "contentLength": 859,
+            "contentEmpty": false
+          }
+        },
+        {
+          "id": "provider_call_ca82406b7349c24ec5a419d1:1",
+          "role": "adjudication",
+          "provider": "xai",
+          "requestedModel": "grok-4.5",
+          "responseModel": "grok-4.5",
+          "status": "completed",
+          "promptTokens": 7652,
+          "completionTokens": 30,
+          "totalTokens": 8053,
+          "elapsedMs": 6298.8707050000085,
+          "responseDiagnostics": {
+            "finishReason": "stop",
+            "contentLength": 97,
+            "contentEmpty": false
+          }
+        },
+        {
+          "id": "provider_call_1b86ec774c7da60784a851ae:1",
+          "role": "narration",
+          "provider": "xai",
+          "requestedModel": "grok-4.3",
+          "responseModel": "grok-4.3",
+          "status": "completed",
+          "promptTokens": 8828,
+          "completionTokens": 233,
+          "totalTokens": 9061,
+          "elapsedMs": 2331.869068,
+          "responseDiagnostics": {
+            "finishReason": "stop",
+            "contentLength": 496,
+            "contentEmpty": false
+          }
+        },
+        {
+          "id": "provider_call_5e6b2a2e41e467e9a5289114:1",
+          "role": "conscious",
+          "provider": "xai",
+          "requestedModel": "grok-4.5",
+          "responseModel": "grok-4.5",
+          "status": "completed",
+          "promptTokens": 4824,
+          "completionTokens": 422,
+          "totalTokens": 6718,
+          "elapsedMs": 32351.066220999986,
+          "responseDiagnostics": {
+            "finishReason": "stop",
+            "contentLength": 949,
+            "contentEmpty": false
+          }
+        },
+        {
+          "id": "provider_call_c5273544d9dd4d61702a239c:1",
+          "role": "conscious",
+          "provider": "xai",
+          "requestedModel": "grok-4.5",
+          "responseModel": "grok-4.5",
+          "status": "completed",
+          "promptTokens": 4730,
+          "completionTokens": 368,
+          "totalTokens": 6347,
+          "elapsedMs": 26468.248533000005,
+          "responseDiagnostics": {
+            "finishReason": "stop",
+            "contentLength": 928,
+            "contentEmpty": false
+          }
+        },
+        {
+          "id": "provider_call_618a78e050aa9f7e6c565456:1",
+          "role": "subconscious",
+          "provider": "openai",
+          "requestedModel": "gpt-6-luna",
+          "responseModel": "gpt-6-luna",
+          "status": "completed",
+          "promptTokens": 5883,
+          "completionTokens": 223,
+          "totalTokens": 6106,
+          "elapsedMs": 2599.4167869999656,
+          "responseDiagnostics": {
+            "finishReason": "stop",
+            "contentLength": 566,
+            "contentEmpty": false
+          }
+        },
+        {
+          "id": "provider_call_6dbd85a4388d4c2820b36969:1",
+          "role": "subconscious",
+          "provider": "openai",
+          "requestedModel": "gpt-6-luna",
+          "responseModel": "gpt-6-luna",
+          "status": "completed",
+          "promptTokens": 6058,
+          "completionTokens": 358,
+          "totalTokens": 6416,
+          "elapsedMs": 2891.197889999952,
+          "responseDiagnostics": {
+            "finishReason": "stop",
+            "contentLength": 871,
+            "contentEmpty": false
+          }
+        },
+        {
+          "id": "provider_call_08b515746c2e2e52cb1d6bac:1",
+          "role": "narration",
+          "provider": "xai",
+          "requestedModel": "grok-4.3",
+          "responseModel": "grok-4.3",
+          "status": "completed",
+          "promptTokens": 8758,
+          "completionTokens": 275,
+          "totalTokens": 9033,
+          "elapsedMs": 2432.02257500001,
+          "responseDiagnostics": {
+            "finishReason": "stop",
+            "contentLength": 549,
+            "contentEmpty": false
+          }
+        },
+        {
+          "id": "provider_call_98efd3325934e1ccf41a586a:1",
+          "role": "subconscious",
+          "provider": "openai",
+          "requestedModel": "gpt-6-luna",
+          "responseModel": "gpt-6-luna",
+          "status": "completed",
+          "promptTokens": 5987,
+          "completionTokens": 283,
+          "totalTokens": 6270,
+          "elapsedMs": 3045.2109130000463,
+          "responseDiagnostics": {
+            "finishReason": "stop",
+            "contentLength": 682,
+            "contentEmpty": false
+          }
+        },
+        {
+          "id": "provider_call_b7eeb05a798cd6cb75821d7b:1",
+          "role": "subconscious",
+          "provider": "openai",
+          "requestedModel": "gpt-6-luna",
+          "responseModel": "gpt-6-luna",
+          "status": "completed",
+          "promptTokens": 6174,
+          "completionTokens": 357,
+          "totalTokens": 6531,
+          "elapsedMs": 3166.695340999984,
+          "responseDiagnostics": {
+            "finishReason": "stop",
+            "contentLength": 879,
+            "contentEmpty": false
+          }
+        },
+        {
+          "id": "provider_call_df745c85d0a06e28c82652d4:1",
+          "role": "narration",
+          "provider": "xai",
+          "requestedModel": "grok-4.3",
+          "responseModel": "grok-4.3",
+          "status": "completed",
+          "promptTokens": 8805,
+          "completionTokens": 275,
+          "totalTokens": 9080,
+          "elapsedMs": 2395.762921000016,
+          "responseDiagnostics": {
+            "finishReason": "stop",
+            "contentLength": 549,
+            "contentEmpty": false
+          }
+        },
+        {
+          "id": "provider_call_56947309aa9c86c263982a41:1",
+          "role": "subconscious",
+          "provider": "openai",
+          "requestedModel": "gpt-6-luna",
+          "responseModel": "gpt-6-luna",
+          "status": "completed",
+          "promptTokens": 6036,
+          "completionTokens": 281,
+          "totalTokens": 6317,
+          "elapsedMs": 2755.9260270000086,
+          "responseDiagnostics": {
+            "finishReason": "stop",
+            "contentLength": 681,
+            "contentEmpty": false
+          }
+        },
+        {
+          "id": "provider_call_f384a9347df19bd96dfc08ec:1",
+          "role": "subconscious",
+          "provider": "openai",
+          "requestedModel": "gpt-6-luna",
+          "responseModel": "gpt-6-luna",
+          "status": "completed",
+          "promptTokens": 6109,
+          "completionTokens": 350,
+          "totalTokens": 6459,
+          "elapsedMs": 2976.4058540000115,
+          "responseDiagnostics": {
+            "finishReason": "stop",
+            "contentLength": 866,
+            "contentEmpty": false
+          }
+        },
+        {
+          "id": "provider_call_55b6954a25f1dae5633bab04:1",
+          "role": "adjudication",
+          "provider": "xai",
+          "requestedModel": "grok-4.5",
+          "responseModel": "grok-4.5",
+          "status": "completed",
+          "promptTokens": 7782,
+          "completionTokens": 18,
+          "totalTokens": 8216,
+          "elapsedMs": 7482.7330920000095,
+          "responseDiagnostics": {
+            "finishReason": "stop",
+            "contentLength": 75,
+            "contentEmpty": false
+          }
+        },
+        {
+          "id": "provider_call_3f9ab674fbc7437743e67910:1",
+          "role": "narration",
+          "provider": "xai",
+          "requestedModel": "grok-4.3",
+          "responseModel": "grok-4.3",
+          "status": "completed",
+          "promptTokens": 9001,
+          "completionTokens": 228,
+          "totalTokens": 9229,
+          "elapsedMs": 2163.017017999955,
+          "responseDiagnostics": {
+            "finishReason": "stop",
+            "contentLength": 476,
+            "contentEmpty": false
+          }
+        },
+        {
+          "id": "provider_call_d72134737014c30e00f2563e:1",
+          "role": "subconscious",
+          "provider": "openai",
+          "requestedModel": "gpt-6-luna",
+          "responseModel": "gpt-6-luna",
+          "status": "completed",
+          "promptTokens": 6011,
+          "completionTokens": 278,
+          "totalTokens": 6289,
+          "elapsedMs": 2971.772049000021,
+          "responseDiagnostics": {
+            "finishReason": "stop",
+            "contentLength": 679,
+            "contentEmpty": false
+          }
+        },
+        {
+          "id": "provider_call_b63e010f6c4367aa92121f72:1",
+          "role": "subconscious",
+          "provider": "openai",
+          "requestedModel": "gpt-6-luna",
+          "responseModel": "gpt-6-luna",
+          "status": "completed",
+          "promptTokens": 6084,
+          "completionTokens": 359,
+          "totalTokens": 6443,
+          "elapsedMs": 3550.620788,
+          "responseDiagnostics": {
+            "finishReason": "stop",
+            "contentLength": 885,
+            "contentEmpty": false
+          }
+        },
+        {
+          "id": "provider_call_a008ee3c6a31a1ff7d62b1e7:1",
+          "role": "adjudication",
+          "provider": "xai",
+          "requestedModel": "grok-4.5",
+          "responseModel": "grok-4.5",
+          "status": "completed",
+          "promptTokens": 7328,
+          "completionTokens": 30,
+          "totalTokens": 7930,
+          "elapsedMs": 10246.55381199997,
+          "responseDiagnostics": {
+            "finishReason": "stop",
+            "contentLength": 97,
+            "contentEmpty": false
+          }
+        },
+        {
+          "id": "provider_call_d2fb333b0b73e7afb476ce62:1",
+          "role": "narration",
+          "provider": "xai",
+          "requestedModel": "grok-4.3",
+          "responseModel": "grok-4.3",
+          "status": "completed",
+          "promptTokens": 8684,
+          "completionTokens": 204,
+          "totalTokens": 8888,
+          "elapsedMs": 2149.6784580000094,
+          "responseDiagnostics": {
+            "finishReason": "stop",
+            "contentLength": 441,
+            "contentEmpty": false
+          }
+        },
+        {
+          "id": "provider_call_1edd3a1b7feeb678e358b2cb:1",
+          "role": "conscious",
+          "provider": "xai",
+          "requestedModel": "grok-4.5",
+          "responseModel": "grok-4.5",
+          "status": "completed",
+          "promptTokens": 4977,
+          "completionTokens": 418,
+          "totalTokens": 6889,
+          "elapsedMs": 34953.585372,
+          "responseDiagnostics": {
+            "finishReason": "stop",
+            "contentLength": 949,
+            "contentEmpty": false
+          }
+        },
+        {
+          "id": "provider_call_907dff7d0f5bb82ae169b9fd:1",
+          "role": "subconscious",
+          "provider": "openai",
+          "requestedModel": "gpt-6-luna",
+          "responseModel": "gpt-6-luna",
+          "status": "completed",
+          "promptTokens": 6077,
+          "completionTokens": 319,
+          "totalTokens": 6396,
+          "elapsedMs": 2583.8265189999947,
+          "responseDiagnostics": {
+            "finishReason": "stop",
+            "contentLength": 818,
+            "contentEmpty": false
+          }
+        },
+        {
+          "id": "provider_call_2d0e972b53a8a5da70e62958:1",
+          "role": "conscious",
+          "provider": "xai",
+          "requestedModel": "grok-4.5",
+          "responseModel": "grok-4.5",
+          "status": "completed",
+          "promptTokens": 4813,
+          "completionTokens": 278,
+          "totalTokens": 6725,
+          "elapsedMs": 34332.86743099999,
+          "responseDiagnostics": {
+            "finishReason": "stop",
+            "contentLength": 652,
+            "contentEmpty": false
+          }
+        },
+        {
+          "id": "provider_call_f50a05c4acba6ff5b6cae078:1",
+          "role": "subconscious",
+          "provider": "openai",
+          "requestedModel": "gpt-6-luna",
+          "responseModel": "gpt-6-luna",
+          "status": "completed",
+          "promptTokens": 6238,
+          "completionTokens": 305,
+          "totalTokens": 6543,
+          "elapsedMs": 2837.8449339999934,
+          "responseDiagnostics": {
+            "finishReason": "stop",
+            "contentLength": 730,
+            "contentEmpty": false
+          }
+        },
+        {
+          "id": "provider_call_ce335aa96c609663ff2e8329:1",
+          "role": "narration",
+          "provider": "xai",
+          "requestedModel": "grok-4.3",
+          "responseModel": "grok-4.3",
+          "status": "completed",
+          "promptTokens": 8687,
+          "completionTokens": 277,
+          "totalTokens": 8964,
+          "elapsedMs": 2683.43487300002,
+          "responseDiagnostics": {
+            "finishReason": "stop",
+            "contentLength": 545,
+            "contentEmpty": false
+          }
+        },
+        {
+          "id": "provider_call_bf91796feab2df0c8f355532:1",
+          "role": "subconscious",
+          "provider": "openai",
+          "requestedModel": "gpt-6-luna",
+          "responseModel": "gpt-6-luna",
+          "status": "completed",
+          "promptTokens": 6013,
+          "completionTokens": 274,
+          "totalTokens": 6287,
+          "elapsedMs": 4239.568798999942,
+          "responseDiagnostics": {
+            "finishReason": "stop",
+            "contentLength": 674,
+            "contentEmpty": false
+          }
+        },
+        {
+          "id": "provider_call_18f174c0b61ff3c665bfc56d:1",
+          "role": "subconscious",
+          "provider": "openai",
+          "requestedModel": "gpt-6-luna",
+          "responseModel": "gpt-6-luna",
+          "status": "completed",
+          "promptTokens": 6166,
+          "completionTokens": 345,
+          "totalTokens": 6511,
+          "elapsedMs": 2786.628520999977,
+          "responseDiagnostics": {
+            "finishReason": "stop",
+            "contentLength": 862,
+            "contentEmpty": false
+          }
+        },
+        {
+          "id": "provider_call_5da9cc2aa6e336b11afab3e8:1",
+          "role": "narration",
+          "provider": "xai",
+          "requestedModel": "grok-4.3",
+          "responseModel": "grok-4.3",
+          "status": "completed",
+          "promptTokens": 8678,
+          "completionTokens": 274,
+          "totalTokens": 8952,
+          "elapsedMs": 2242.2885280000046,
+          "responseDiagnostics": {
+            "finishReason": "stop",
+            "contentLength": 543,
+            "contentEmpty": false
+          }
+        },
+        {
+          "id": "provider_call_1289876a64285c0dbf3967aa:1",
+          "role": "subconscious",
+          "provider": "openai",
+          "requestedModel": "gpt-6-luna",
+          "responseModel": "gpt-6-luna",
+          "status": "completed",
+          "promptTokens": 6097,
+          "completionTokens": 372,
+          "totalTokens": 6469,
+          "elapsedMs": 3065.2871109999833,
+          "responseDiagnostics": {
+            "finishReason": "stop",
+            "contentLength": 913,
+            "contentEmpty": false
+          }
+        },
+        {
+          "id": "provider_call_915486a159e1c9d216ba71cb:1",
+          "role": "subconscious",
+          "provider": "openai",
+          "requestedModel": "gpt-6-luna",
+          "responseModel": "gpt-6-luna",
+          "status": "completed",
+          "promptTokens": 6012,
+          "completionTokens": 322,
+          "totalTokens": 6334,
+          "elapsedMs": 2737.4965719999745,
+          "responseDiagnostics": {
+            "finishReason": "stop",
+            "contentLength": 820,
+            "contentEmpty": false
+          }
+        },
+        {
+          "id": "provider_call_23bbd4d609d94652b0028c81:1",
+          "role": "adjudication",
+          "provider": "xai",
+          "requestedModel": "grok-4.5",
+          "responseModel": "grok-4.5",
+          "status": "completed",
+          "promptTokens": 7760,
+          "completionTokens": 30,
+          "totalTokens": 8123,
+          "elapsedMs": 6341.723284000007,
+          "responseDiagnostics": {
+            "finishReason": "stop",
+            "contentLength": 97,
+            "contentEmpty": false
+          }
+        },
+        {
+          "id": "provider_call_efe7d91d8fb185b051150dcb:1",
+          "role": "narration",
+          "provider": "xai",
+          "requestedModel": "grok-4.3",
+          "responseModel": "grok-4.3",
+          "status": "completed",
+          "promptTokens": 8871,
+          "completionTokens": 226,
+          "totalTokens": 9097,
+          "elapsedMs": 9232.762457000033,
+          "responseDiagnostics": {
+            "finishReason": "stop",
+            "contentLength": 470,
+            "contentEmpty": false
+          }
+        },
+        {
+          "id": "provider_call_819f7fca0bf7c5bb5857f265:1",
+          "role": "subconscious",
+          "provider": "openai",
+          "requestedModel": "gpt-6-luna",
+          "responseModel": "gpt-6-luna",
+          "status": "completed",
+          "promptTokens": 6003,
+          "completionTokens": 278,
+          "totalTokens": 6281,
+          "elapsedMs": 2682.4791689999984,
+          "responseDiagnostics": {
+            "finishReason": "stop",
+            "contentLength": 676,
+            "contentEmpty": false
+          }
+        },
+        {
+          "id": "provider_call_ddf109991c2495b7c0fb4742:1",
+          "role": "subconscious",
+          "provider": "openai",
+          "requestedModel": "gpt-6-luna",
+          "responseModel": "gpt-6-luna",
+          "status": "completed",
+          "promptTokens": 6136,
+          "completionTokens": 340,
+          "totalTokens": 6476,
+          "elapsedMs": 9490.334663999965,
+          "responseDiagnostics": {
+            "finishReason": "stop",
+            "contentLength": 786,
+            "contentEmpty": false
+          }
+        },
+        {
+          "id": "provider_call_2362655d5e25ff8fa98cd788:1",
+          "role": "narration",
+          "provider": "xai",
+          "requestedModel": "grok-4.3",
+          "responseModel": "grok-4.3",
+          "status": "completed",
+          "promptTokens": 8658,
+          "completionTokens": 200,
+          "totalTokens": 8858,
+          "elapsedMs": 2538.586973000027,
+          "responseDiagnostics": {
+            "finishReason": "stop",
+            "contentLength": 432,
+            "contentEmpty": false
+          }
+        },
+        {
+          "id": "provider_call_1de2517e304e74f2b53cd8bc:1",
+          "role": "subconscious",
+          "provider": "openai",
+          "requestedModel": "gpt-6-luna",
+          "responseModel": "gpt-6-luna",
+          "status": "completed",
+          "promptTokens": 6007,
+          "completionTokens": 276,
+          "totalTokens": 6283,
+          "elapsedMs": 2334.0221419999725,
+          "responseDiagnostics": {
+            "finishReason": "stop",
+            "contentLength": 674,
+            "contentEmpty": false
+          }
+        },
+        {
+          "id": "provider_call_9c8800ff23bc62d01f549af2:1",
+          "role": "subconscious",
+          "provider": "openai",
+          "requestedModel": "gpt-6-luna",
+          "responseModel": "gpt-6-luna",
+          "status": "completed",
+          "promptTokens": 6138,
+          "completionTokens": 376,
+          "totalTokens": 6514,
+          "elapsedMs": 3183.22990700003,
+          "responseDiagnostics": {
+            "finishReason": "stop",
+            "contentLength": 914,
+            "contentEmpty": false
+          }
+        },
+        {
+          "id": "provider_call_70bcade4975d22fb146590f1:1",
+          "role": "narration",
+          "provider": "xai",
+          "requestedModel": "grok-4.3",
+          "responseModel": "grok-4.3",
+          "status": "completed",
+          "promptTokens": 8822,
+          "completionTokens": 244,
+          "totalTokens": 9066,
+          "elapsedMs": 2255.6619050000445,
+          "responseDiagnostics": {
+            "finishReason": "stop",
+            "contentLength": 488,
+            "contentEmpty": false
+          }
+        },
+        {
+          "id": "provider_call_11f076f690f2a2c184382dc8:1",
+          "role": "conscious",
+          "provider": "xai",
+          "requestedModel": "grok-4.5",
+          "responseModel": "grok-4.5",
+          "status": "completed",
+          "promptTokens": 4834,
+          "completionTokens": 451,
+          "totalTokens": 7195,
+          "elapsedMs": 35271.18154199998,
+          "responseDiagnostics": {
+            "finishReason": "stop",
+            "contentLength": 1028,
+            "contentEmpty": false
+          }
+        },
+        {
+          "id": "provider_call_070b2a5e4a06286313438a5e:1",
+          "role": "conscious",
+          "provider": "xai",
+          "requestedModel": "grok-4.5",
+          "responseModel": "grok-4.5",
+          "status": "completed",
+          "promptTokens": 4739,
+          "completionTokens": 285,
+          "totalTokens": 6566,
+          "elapsedMs": 30824.41114500002,
+          "responseDiagnostics": {
+            "finishReason": "stop",
+            "contentLength": 670,
+            "contentEmpty": false
+          }
+        },
+        {
+          "id": "provider_call_39a2ff0ef69248eac0cf6775:1",
+          "role": "subconscious",
+          "provider": "openai",
+          "requestedModel": "gpt-6-luna",
+          "responseModel": "gpt-6-luna",
+          "status": "completed",
+          "promptTokens": 6052,
+          "completionTokens": 360,
+          "totalTokens": 6412,
+          "elapsedMs": 3054.303751999978,
+          "responseDiagnostics": {
+            "finishReason": "stop",
+            "contentLength": 910,
+            "contentEmpty": false
+          }
+        },
+        {
+          "id": "provider_call_3c25bc50f90ca35715300adf:1",
+          "role": "subconscious",
+          "provider": "openai",
+          "requestedModel": "gpt-6-luna",
+          "responseModel": "gpt-6-luna",
+          "status": "completed",
+          "promptTokens": 6197,
+          "completionTokens": 377,
+          "totalTokens": 6574,
+          "elapsedMs": 3728.7699610000127,
+          "responseDiagnostics": {
+            "finishReason": "stop",
+            "contentLength": 916,
+            "contentEmpty": false
+          }
+        },
+        {
+          "id": "provider_call_a26406468d6edb668605ed7c:1",
+          "role": "adjudication",
+          "provider": "xai",
+          "requestedModel": "grok-4.5",
+          "responseModel": "grok-4.5",
+          "status": "completed",
+          "promptTokens": 8141,
+          "completionTokens": 30,
+          "totalTokens": 8450,
+          "elapsedMs": 4835.887595999986,
+          "responseDiagnostics": {
+            "finishReason": "stop",
+            "contentLength": 97,
+            "contentEmpty": false
+          }
+        },
+        {
+          "id": "provider_call_fe82b58ce4828cfb385dc96a:1",
+          "role": "narration",
+          "provider": "xai",
+          "requestedModel": "grok-4.3",
+          "responseModel": "grok-4.3",
+          "status": "completed",
+          "promptTokens": 8948,
+          "completionTokens": 248,
+          "totalTokens": 9196,
+          "elapsedMs": 2646.763640000019,
+          "responseDiagnostics": {
+            "finishReason": "stop",
+            "contentLength": 491,
+            "contentEmpty": false
+          }
+        },
+        {
+          "id": "provider_call_7d377df93bcf76acd6d72087:1",
+          "role": "subconscious",
+          "provider": "openai",
+          "requestedModel": "gpt-6-luna",
+          "responseModel": "gpt-6-luna",
+          "status": "completed",
+          "promptTokens": 6001,
+          "completionTokens": 318,
+          "totalTokens": 6319,
+          "elapsedMs": 2679.554369999969,
+          "responseDiagnostics": {
+            "finishReason": "stop",
+            "contentLength": 811,
+            "contentEmpty": false
+          }
+        },
+        {
+          "id": "provider_call_bc205a7b9c09a9362196025d:1",
+          "role": "subconscious",
+          "provider": "openai",
+          "requestedModel": "gpt-6-luna",
+          "responseModel": "gpt-6-luna",
+          "status": "completed",
+          "promptTokens": 6133,
+          "completionTokens": 336,
+          "totalTokens": 6469,
+          "elapsedMs": 2941.9779470000067,
+          "responseDiagnostics": {
+            "finishReason": "stop",
+            "contentLength": 785,
+            "contentEmpty": false
+          }
+        },
+        {
+          "id": "provider_call_70ee4d7223c40e11bad27176:1",
+          "role": "narration",
+          "provider": "xai",
+          "requestedModel": "grok-4.3",
+          "responseModel": "grok-4.3",
+          "status": "completed",
+          "promptTokens": 8674,
+          "completionTokens": 301,
+          "totalTokens": 8975,
+          "elapsedMs": 3298.072157000017,
+          "responseDiagnostics": {
+            "finishReason": "stop",
+            "contentLength": 720,
+            "contentEmpty": false
+          }
+        },
+        {
+          "id": "provider_call_530deab5dad24af157d6e96e:1",
+          "role": "subconscious",
+          "provider": "openai",
+          "requestedModel": "gpt-6-luna",
+          "responseModel": "gpt-6-luna",
+          "status": "completed",
+          "promptTokens": 5986,
+          "completionTokens": 273,
+          "totalTokens": 6259,
+          "elapsedMs": 2661.6744959999924,
+          "responseDiagnostics": {
+            "finishReason": "stop",
+            "contentLength": 676,
+            "contentEmpty": false
+          }
+        },
+        {
+          "id": "provider_call_f48d52f5eb256b9db701e5b9:1",
+          "role": "subconscious",
+          "provider": "openai",
+          "requestedModel": "gpt-6-luna",
+          "responseModel": "gpt-6-luna",
+          "status": "completed",
+          "promptTokens": 6118,
+          "completionTokens": 344,
+          "totalTokens": 6462,
+          "elapsedMs": 3241.0331850000075,
+          "responseDiagnostics": {
+            "finishReason": "stop",
+            "contentLength": 795,
+            "contentEmpty": false
+          }
+        },
+        {
+          "id": "provider_call_5bb689b7863ef267559b0d47:1",
+          "role": "narration",
+          "provider": "xai",
+          "requestedModel": "grok-4.3",
+          "responseModel": "grok-4.3",
+          "status": "completed",
+          "promptTokens": 8450,
+          "completionTokens": 283,
+          "totalTokens": 8733,
+          "elapsedMs": 3357.669860999973,
+          "responseDiagnostics": {
+            "finishReason": "stop",
+            "contentLength": 528,
+            "contentEmpty": false
+          }
+        },
+        {
+          "id": "provider_call_16236631706823ce4b2d5dfd:1",
+          "role": "subconscious",
+          "provider": "openai",
+          "requestedModel": "gpt-6-luna",
+          "responseModel": "gpt-6-luna",
+          "status": "completed",
+          "promptTokens": 6127,
+          "completionTokens": 377,
+          "totalTokens": 6504,
+          "elapsedMs": 3152.9885440000216,
+          "responseDiagnostics": {
+            "finishReason": "stop",
+            "contentLength": 919,
+            "contentEmpty": false
+          }
+        },
+        {
+          "id": "provider_call_c094ee98009c8b1d4d3771c6:1",
+          "role": "subconscious",
+          "provider": "openai",
+          "requestedModel": "gpt-6-luna",
+          "responseModel": "gpt-6-luna",
+          "status": "completed",
+          "promptTokens": 5997,
+          "completionTokens": 320,
+          "totalTokens": 6317,
+          "elapsedMs": 2868.336607000034,
+          "responseDiagnostics": {
+            "finishReason": "stop",
+            "contentLength": 815,
+            "contentEmpty": false
+          }
+        },
+        {
+          "id": "provider_call_6edaff14bbde86061452e81e:1",
+          "role": "adjudication",
+          "provider": "xai",
+          "requestedModel": "grok-4.5",
+          "responseModel": "grok-4.5",
+          "status": "completed",
+          "promptTokens": 7479,
+          "completionTokens": 30,
+          "totalTokens": 7768,
+          "elapsedMs": 5055.591216999979,
+          "responseDiagnostics": {
+            "finishReason": "stop",
+            "contentLength": 97,
+            "contentEmpty": false
+          }
+        },
+        {
+          "id": "provider_call_03948a2409c312b0a12f2c7f:1",
+          "role": "adjudication",
+          "provider": "xai",
+          "requestedModel": "grok-4.5",
+          "responseModel": "grok-4.5",
+          "status": "completed",
+          "promptTokens": 5108,
+          "completionTokens": 376,
+          "totalTokens": 5901,
+          "elapsedMs": 14301.519922000007,
+          "responseDiagnostics": {
+            "finishReason": "stop",
+            "contentLength": 979,
+            "contentEmpty": false
+          }
+        },
+        {
+          "id": "provider_call_eaa4c50469e09f3db72959b1:1",
+          "role": "narration",
+          "provider": "xai",
+          "requestedModel": "grok-4.3",
+          "responseModel": "grok-4.3",
+          "status": "completed",
+          "promptTokens": 8883,
+          "completionTokens": 259,
+          "totalTokens": 9142,
+          "elapsedMs": 2825.3513499999535,
+          "responseDiagnostics": {
+            "finishReason": "stop",
+            "contentLength": 501,
+            "contentEmpty": false
+          }
+        },
+        {
+          "id": "provider_call_ae398a97df3df1e590c7e41b:1",
+          "role": "narration",
+          "provider": "xai",
+          "requestedModel": "grok-4.3",
+          "responseModel": "grok-4.3",
+          "status": "completed",
+          "promptTokens": 3533,
+          "completionTokens": 77,
+          "totalTokens": 3610,
+          "elapsedMs": 1293.3505149999983,
+          "responseDiagnostics": {
+            "finishReason": "stop",
+            "contentLength": 182,
+            "contentEmpty": false
+          }
+        }
+      ]
+    },
+    "manifestSchemaVersion": 5,
+    "turnRecordCount": 31,
+    "canonicalTransitionCount": 30,
+    "narrationProviderOperations": 32,
+    "dialogueProjection": "compact",
+    "dialogueActivationSource": "persisted_setting"
+  },
+  "providerOperations": {
+    "approvedCeiling": 200,
+    "projected": {
+      "policyRevision": "awareness-v5-usage-v2",
+      "maximumPhysicalAttempts": 200,
+      "total": 200
+    },
+    "actualMeasured": {
+      "taxonomyRevision": "battle-provider-operations-v3",
+      "battleId": "btl_06c3a5ddc4235bcee96b42b4e11d88ec",
+      "byLayer": {
+        "encounter": 1,
+        "characterExpression": 15,
+        "deepPsyche": 62,
+        "environment": 12,
+        "narration": 32,
+        "referee": 1
+      },
+      "total": 123,
+      "tokenCount": 875033,
+      "estimatedCostUsd": null,
+      "scope": "durable physical provider HTTP attempts by layer"
+    }
+  },
+  "narrationConvergence": {
+    "terminalReceiptCount": 32,
+    "orderedProjection": "passed",
+    "liveGenerations": 0,
+    "oneTerminalSnapshotPerReceipt": "passed",
+    "claimCountSemantics": "positive integer durable claims; no-send deferrals may increase the count"
+  },
+  "historyVisibility": "passed",
+  "battle": {
+    "id": "btl_06c3a5ddc4235bcee96b42b4e11d88ec",
+    "status": "finished",
+    "turn": 12,
+    "turnLimit": 12,
+    "winnerSide": "a",
+    "finishReason": "turn_limit",
+    "battlefieldName": "霧雨と赤いワゴンの路地",
+    "narrationStyleName": "対照会話の因果ナレーター",
+    "advances": [
+      {
+        "sequence": 1,
+        "turn": 0,
+        "status": "active",
+        "elapsedMs": 4195,
+        "prologuePending": false,
+        "aftermathPending": false
+      },
+      {
+        "sequence": 2,
+        "turn": 1,
+        "status": "active",
+        "elapsedMs": 19836,
+        "prologuePending": false,
+        "aftermathPending": false
+      },
+      {
+        "sequence": 3,
+        "turn": 2,
+        "status": "active",
+        "elapsedMs": 6530,
+        "prologuePending": false,
+        "aftermathPending": false
+      },
+      {
+        "sequence": 4,
+        "turn": 2,
+        "status": "active",
+        "elapsedMs": 11719,
+        "prologuePending": false,
+        "aftermathPending": false
+      },
+      {
+        "sequence": 5,
+        "turn": 2,
+        "status": "active",
+        "elapsedMs": 11276,
+        "prologuePending": false,
+        "aftermathPending": false
+      },
+      {
+        "sequence": 6,
+        "turn": 3,
+        "status": "active",
+        "elapsedMs": 17891,
+        "prologuePending": false,
+        "aftermathPending": false
+      },
+      {
+        "sequence": 7,
+        "turn": 4,
+        "status": "active",
+        "elapsedMs": 4239,
+        "prologuePending": false,
+        "aftermathPending": false
+      },
+      {
+        "sequence": 8,
+        "turn": 4,
+        "status": "active",
+        "elapsedMs": 4896,
+        "prologuePending": false,
+        "aftermathPending": false
+      },
+      {
+        "sequence": 9,
+        "turn": 4,
+        "status": "active",
+        "elapsedMs": 25686,
+        "prologuePending": false,
+        "aftermathPending": false
+      },
+      {
+        "sequence": 10,
+        "turn": 5,
+        "status": "active",
+        "elapsedMs": 8020,
+        "prologuePending": false,
+        "aftermathPending": false
+      },
+      {
+        "sequence": 11,
+        "turn": 5,
+        "status": "active",
+        "elapsedMs": 4612,
+        "prologuePending": false,
+        "aftermathPending": false
+      },
+      {
+        "sequence": 12,
+        "turn": 5,
+        "status": "active",
+        "elapsedMs": 11128,
+        "prologuePending": false,
+        "aftermathPending": false
+      },
+      {
+        "sequence": 13,
+        "turn": 6,
+        "status": "active",
+        "elapsedMs": 4762,
+        "prologuePending": false,
+        "aftermathPending": false
+      },
+      {
+        "sequence": 14,
+        "turn": 6,
+        "status": "active",
+        "elapsedMs": 5098,
+        "prologuePending": false,
+        "aftermathPending": false
+      },
+      {
+        "sequence": 15,
+        "turn": 6,
+        "status": "active",
+        "elapsedMs": 10551,
+        "prologuePending": false,
+        "aftermathPending": false
+      },
+      {
+        "sequence": 16,
+        "turn": 7,
+        "status": "active",
+        "elapsedMs": 4927,
+        "prologuePending": false,
+        "aftermathPending": false
+      },
+      {
+        "sequence": 17,
+        "turn": 7,
+        "status": "active",
+        "elapsedMs": 4286,
+        "prologuePending": false,
+        "aftermathPending": false
+      },
+      {
+        "sequence": 18,
+        "turn": 7,
+        "status": "active",
+        "elapsedMs": 10913,
+        "prologuePending": false,
+        "aftermathPending": false
+      },
+      {
+        "sequence": 19,
+        "turn": 8,
+        "status": "active",
+        "elapsedMs": 4865,
+        "prologuePending": false,
+        "aftermathPending": false
+      },
+      {
+        "sequence": 20,
+        "turn": 8,
+        "status": "active",
+        "elapsedMs": 4784,
+        "prologuePending": false,
+        "aftermathPending": false
+      },
+      {
+        "sequence": 21,
+        "turn": 8,
+        "status": "active",
+        "elapsedMs": 12325,
+        "prologuePending": false,
+        "aftermathPending": false
+      },
+      {
+        "sequence": 22,
+        "turn": 9,
+        "status": "active",
+        "elapsedMs": 15704,
+        "prologuePending": false,
+        "aftermathPending": false
+      },
+      {
+        "sequence": 23,
+        "turn": 10,
+        "status": "active",
+        "elapsedMs": 4614,
+        "prologuePending": false,
+        "aftermathPending": false
+      },
+      {
+        "sequence": 24,
+        "turn": 10,
+        "status": "active",
+        "elapsedMs": 5913,
+        "prologuePending": false,
+        "aftermathPending": false
+      },
+      {
+        "sequence": 25,
+        "turn": 10,
+        "status": "active",
+        "elapsedMs": 11037,
+        "prologuePending": false,
+        "aftermathPending": false
+      },
+      {
+        "sequence": 26,
+        "turn": 11,
+        "status": "active",
+        "elapsedMs": 11029,
+        "prologuePending": false,
+        "aftermathPending": false
+      },
+      {
+        "sequence": 27,
+        "turn": 11,
+        "status": "active",
+        "elapsedMs": 4952,
+        "prologuePending": false,
+        "aftermathPending": false
+      },
+      {
+        "sequence": 28,
+        "turn": 11,
+        "status": "active",
+        "elapsedMs": 10496,
+        "prologuePending": false,
+        "aftermathPending": false
+      },
+      {
+        "sequence": 29,
+        "turn": 12,
+        "status": "active",
+        "elapsedMs": 4641,
+        "prologuePending": false,
+        "aftermathPending": false
+      },
+      {
+        "sequence": 30,
+        "turn": 12,
+        "status": "active",
+        "elapsedMs": 5108,
+        "prologuePending": false,
+        "aftermathPending": false
+      },
+      {
+        "sequence": 31,
+        "turn": 12,
+        "status": "finished",
+        "elapsedMs": 24852,
+        "prologuePending": false,
+        "aftermathPending": false
+      }
+    ],
+    "log": [
+      {
+        "turn": 0,
+        "narrator": [
+          "霧雨が路地の端から端へゆっくりと流れ落ちる。",
+          "錆びた赤い軽ワゴンは相変わらずの位置で雨を弾いている。",
+          "観測士ナギと破城士ガクが、霧雨に濡れたアスファルトの路地で再び向き合う。",
+          "前回の因縁が、濡れた街灯の明かりとともに二人の間に残っている。"
+        ],
+        "speeches": [
+          {
+            "speaker": "観測士ナギ",
+            "text": "その大剣、どう振るう？",
+            "sourceSide": "a",
+            "afterNarratorLine": 2
+          },
+          {
+            "speaker": "破城士ガク",
+            "text": "来い。正面から受けて立つ。",
+            "sourceSide": "b",
+            "afterNarratorLine": 3
+          }
+        ]
+      },
+      {
+        "turn": 1,
+        "narrator": [
+          "観測士ナギがネオンの反射へ視線を誘う。",
+          "破城士ガクの踏み込みの方向がわずかにずれる。",
+          "霧雨で滑りやすいアスファルトが、足場の微かな揺らぎを残す。",
+          "両者は路地の中央で、視線と呼吸の間合いを測り直す。"
+        ],
+        "speeches": [
+          {
+            "speaker": "観測士ナギ",
+            "text": "では、その大剣の軌跡を見せてもらおう",
+            "sourceSide": "a",
+            "afterNarratorLine": 0
+          },
+          {
+            "speaker": "破城士ガク",
+            "text": "叩き込む。それだけだ。",
+            "sourceSide": "b",
+            "afterNarratorLine": 2
+          }
+        ]
+      },
+      {
+        "turn": 2,
+        "narrator": [
+          "観測士ナギが足場と呼吸を整える。",
+          "破城士ガクが間合いを詰める。",
+          "観測士ナギの観測姿勢が集中を支える。",
+          "霧雨が路地の足元を潤している。"
+        ],
+        "speeches": [
+          {
+            "speaker": "観測士ナギ",
+            "text": "破城士、霧雨の路地で大剣とは……滑りやすい足場を、どう読むつもりだ？",
+            "sourceSide": "a",
+            "afterNarratorLine": 0
+          },
+          {
+            "speaker": "破城士ガク",
+            "text": "観測士ナギ、記録は後だ。俺の大剣が先に来る。",
+            "sourceSide": "b",
+            "afterNarratorLine": 1
+          }
+        ]
+      },
+      {
+        "turn": 2,
+        "narrator": [
+          "観測士ナギは足場と呼吸を整え、次の変化を捉えやすくする。",
+          "破城士ガクは間合いを変えようとしたが、動ける場所がなかった。",
+          "観測士ナギは観測姿勢で身を守り、集中を支える。",
+          "霧雨が路地の足元を潤し、滑りやすい状態が続いている。"
+        ],
+        "speeches": [
+          {
+            "speaker": "観測士ナギ",
+            "text": "破城士、霧雨の路地で大剣とは……滑りやすい足場を、どう読むつもりだ？",
+            "sourceSide": "a",
+            "afterNarratorLine": 0
+          },
+          {
+            "speaker": "破城士ガク",
+            "text": "観測士ナギ、記録は後だ。俺の大剣が先に来る。",
+            "sourceSide": "b",
+            "afterNarratorLine": 1
+          }
+        ]
+      },
+      {
+        "turn": 2,
+        "narrator": [
+          "観測士ナギが足場と呼吸を整え、次の変化を捉えやすくする。",
+          "破城士ガクは大剣を低く構え、濡れた足場を踏みしめて相手へ圧をかける動作を試みた。",
+          "観測士ナギの観測姿勢が集中を支え、動きを読まれた破城士ガクの手の勢いが鈍る。",
+          "霧雨で滑りやすい路地で、両者の位置関係は変わらずに保たれている。"
+        ],
+        "speeches": [
+          {
+            "speaker": "観測士ナギ",
+            "text": "先に来るなら、軌跡を見せてもらおう。",
+            "sourceSide": "a",
+            "afterNarratorLine": 0
+          },
+          {
+            "speaker": "破城士ガク",
+            "text": "足場ごと踏み砕く。正面から来い。",
+            "sourceSide": "b",
+            "afterNarratorLine": 1
+          }
+        ]
+      },
+      {
+        "turn": 3,
+        "narrator": [
+          "観測士ナギがネオンの反射へ視線を誘う。",
+          "破城士ガクの踏み込みの方向がわずかにずれる。",
+          "霧雨で滑りやすいアスファルトが足場の微かな揺らぎを残す。",
+          "両者は路地の中央で視線と呼吸の間合いを測り直す。"
+        ],
+        "speeches": [
+          {
+            "speaker": "観測士ナギ",
+            "text": "先に来るなら、軌跡を見せてもらおう。",
+            "sourceSide": "a",
+            "afterNarratorLine": 0
+          },
+          {
+            "speaker": "破城士ガク",
+            "text": "見せるまでもない。受けてみろ。",
+            "sourceSide": "b",
+            "afterNarratorLine": 0
+          }
+        ]
+      },
+      {
+        "turn": 4,
+        "narrator": [
+          "観測士ナギが足場と呼吸を整え、次の変化を捉えやすくする。",
+          "破城士ガクは観測用大剣の重さを乗せ、濡れた路地を踏みしめて低い軌道から観測士ナギへ斬り上げの圧力をかける試みを行った。",
+          "観測士ナギの観測姿勢が身を守り、集中を高めた。",
+          "破城士ガクの自由行動は現実判定を確定できなかった。"
+        ],
+        "speeches": [
+          {
+            "speaker": "観測士ナギ",
+            "text": "大剣が先、か。ではその初動——滑る足場を、どう踏む？",
+            "sourceSide": "a",
+            "afterNarratorLine": 0
+          },
+          {
+            "speaker": "破城士ガク",
+            "text": "滑る足場など踏みしめればいい。読むより先に、俺の大剣が来る。",
+            "sourceSide": "b",
+            "afterNarratorLine": 1
+          }
+        ]
+      },
+      {
+        "turn": 4,
+        "narrator": [
+          "観測士ナギは足場と呼吸を整え、次の変化を捉えやすくする。",
+          "破城士ガクは観測用大剣の重さを乗せ、濡れた路地を踏みしめて低い軌道から観測士ナギへ斬り上げの圧力をかける試みを行った。",
+          "観測士ナギは観測姿勢で身を守り、集中を高めた。",
+          "破城士ガクの自由行動は現実判定を確定できなかった。"
+        ],
+        "speeches": [
+          {
+            "speaker": "観測士ナギ",
+            "text": "大剣が先、か。ではその初動——滑る足場を、どう踏む？",
+            "sourceSide": "a",
+            "afterNarratorLine": 0
+          },
+          {
+            "speaker": "破城士ガク",
+            "text": "滑る足場など踏みしめればいい。読むより先に、俺の大剣が来る。",
+            "sourceSide": "b",
+            "afterNarratorLine": 1
+          }
+        ]
+      },
+      {
+        "turn": 4,
+        "narrator": [
+          "観測士ナギは足場と呼吸を整え、次の変化を捉えやすくする。",
+          "破城士ガクは行動を試みる。",
+          "観測士ナギは足場と呼吸を整え、次の変化を捉えやすくする。",
+          "観測士ナギは態勢を整える。"
+        ],
+        "speeches": [
+          {
+            "speaker": "観測士ナギ",
+            "text": "なるほど。では、その一歩目を見せてくれるか。",
+            "sourceSide": "a",
+            "afterNarratorLine": 0
+          },
+          {
+            "speaker": "破城士ガク",
+            "text": "踏みしめて斬る。それだけだ。",
+            "sourceSide": "b",
+            "afterNarratorLine": 1
+          }
+        ]
+      },
+      {
+        "turn": 5,
+        "narrator": [
+          "観測士ナギが視線と呼吸を保ちながら相手の動きに備える。",
+          "破城士ガクは踏み込む気配を残し、赤い上着の袖をわずかに揺らす。",
+          "霧雨で滑りやすいアスファルトが、両者の位置関係を微かに保ったまま存在する。",
+          "視線が交差するだけで、路地の空気は次の動きを待つ。"
+        ],
+        "speeches": [
+          {
+            "speaker": "観測士ナギ",
+            "text": "受けてみろ、か。では、その大剣の初動はどこから来る？",
+            "sourceSide": "a",
+            "afterNarratorLine": 0
+          },
+          {
+            "speaker": "破城士ガク",
+            "text": "見せるまでもない。踏み込め！",
+            "sourceSide": "b",
+            "afterNarratorLine": 1
+          }
+        ]
+      },
+      {
+        "turn": 5,
+        "narrator": [
+          "観測士ナギが視線と呼吸を保ちながら相手の動きに備える。",
+          "破城士ガクは踏み込む気配を残し、赤い上着の袖をわずかに揺らす。",
+          "霧雨で滑りやすいアスファルトが、両者の位置関係を微かに保ったまま存在する。",
+          "視線が交差するだけで、路地の空気は次の動きを待つ。"
+        ],
+        "speeches": [
+          {
+            "speaker": "観測士ナギ",
+            "text": "受けてみろ、か。では、その大剣の初動はどこから来る？",
+            "sourceSide": "a",
+            "afterNarratorLine": 0
+          },
+          {
+            "speaker": "破城士ガク",
+            "text": "初動は俺が決める。受けてみろ！",
+            "sourceSide": "b",
+            "afterNarratorLine": 0
+          }
+        ]
+      },
+      {
+        "turn": 5,
+        "narrator": [
+          "観測士ナギは機をうかがった。",
+          "破城士ガクが霧雨で滑りやすい足場を確かめる。",
+          "観測士ナギは姿勢を保ったまま次の動きを待つ。",
+          "霧雨と赤いワゴンの路地は変わらず、双方の距離は微かに保たれた。"
+        ],
+        "speeches": [
+          {
+            "speaker": "観測士ナギ",
+            "text": "では、初動を見せてもらおう。",
+            "sourceSide": "a",
+            "afterNarratorLine": 0
+          },
+          {
+            "speaker": "破城士ガク",
+            "text": "足腰からだ。見切れるか？",
+            "sourceSide": "b",
+            "afterNarratorLine": 0
+          }
+        ]
+      },
+      {
+        "turn": 6,
+        "narrator": [
+          "観測士ナギは様子をうかがった。",
+          "破城士ガクは濡れたアスファルトを踏みしめ、観測用大剣の重さを乗せて観測士ナギへ正面から斬りかかろうとする。",
+          "自由行動の現実判定を確定できなかった。"
+        ],
+        "speeches": [
+          {
+            "speaker": "観測士ナギ",
+            "text": "足腰、ですか。どこから動きます？",
+            "sourceSide": "a",
+            "afterNarratorLine": 0
+          },
+          {
+            "speaker": "破城士ガク",
+            "text": "見切れるなら見切ってみろ。",
+            "sourceSide": "b",
+            "afterNarratorLine": 0
+          }
+        ]
+      },
+      {
+        "turn": 6,
+        "narrator": [
+          "観測士ナギは様子をうかがった。",
+          "破城士ガクは濡れたアスファルトを踏みしめ、観測用大剣の重さを乗せて観測士ナギへ正面から斬りかかろうとする。",
+          "自由行動の現実判定を確定できなかった。"
+        ],
+        "speeches": [
+          {
+            "speaker": "観測士ナギ",
+            "text": "挑発は受け取りました。では、どこから動く？",
+            "sourceSide": "a",
+            "afterNarratorLine": 0
+          },
+          {
+            "speaker": "破城士ガク",
+            "text": "足腰からだ。大剣の一撃で押し切る。",
+            "sourceSide": "b",
+            "afterNarratorLine": 1
+          }
+        ]
+      },
+      {
+        "turn": 6,
+        "narrator": [
+          "観測士ナギが足腰の動きに着目して踏み込みの起点を待つ。",
+          "破城士ガクは正面から大剣を押し出す体勢を整える。",
+          "路地の霧雨に濡れたアスファルトは滑りやすく、両者の距離と足場はそのまま保たれる。",
+          "観測士ナギの態勢は整い、次の動きに備えた位置を維持する。"
+        ],
+        "speeches": [
+          {
+            "speaker": "観測士ナギ",
+            "text": "足腰、ですか。踏み込みを見せてください。",
+            "sourceSide": "a",
+            "afterNarratorLine": 0
+          },
+          {
+            "speaker": "破城士ガク",
+            "text": "正面からだ。大剣で押し切る。",
+            "sourceSide": "b",
+            "afterNarratorLine": 1
+          }
+        ]
+      },
+      {
+        "turn": 7,
+        "narrator": [
+          "観測士ナギは機をうかがった。",
+          "破城士ガクは濡れたアスファルトに足を固定し、大剣の重心を前に寄せる体勢を整えた。",
+          "霧雨の路地は変わらず、両者の距離と足場はそのまま保たれている。"
+        ],
+        "speeches": [
+          {
+            "speaker": "観測士ナギ",
+            "text": "足腰、ですか。踏み込みを見せてください。",
+            "sourceSide": "a",
+            "afterNarratorLine": 0
+          },
+          {
+            "speaker": "破城士ガク",
+            "text": "見せてやる。踏み込みで押し切る。",
+            "sourceSide": "b",
+            "afterNarratorLine": 0
+          }
+        ]
+      },
+      {
+        "turn": 7,
+        "narrator": [
+          "観測士ナギは機をうかがった。",
+          "破城士ガクは「大剣を構え、踏み込みで相手へ圧力をかける試み」を実行しようとした。",
+          "自由行動の現実判定を確定できなかった。"
+        ],
+        "speeches": [
+          {
+            "speaker": "観測士ナギ",
+            "text": "では、踏み込みを見せてもらいましょう。",
+            "sourceSide": "a",
+            "afterNarratorLine": 0
+          },
+          {
+            "speaker": "破城士ガク",
+            "text": "見せてやる。踏み込みで押し切る。",
+            "sourceSide": "b",
+            "afterNarratorLine": 1
+          }
+        ]
+      },
+      {
+        "turn": 7,
+        "narrator": [
+          "観測士ナギは踏み込みの契機をうかがった。",
+          "破城士ガクは大剣を構え、踏み込みで相手へ圧力をかける試みに移った。",
+          "路地の霧雨と足場は変わらず、両者の位置関係はそのまま保たれている。",
+          "自由行動の現実判定を確定できなかった。"
+        ],
+        "speeches": [
+          {
+            "speaker": "観測士ナギ",
+            "text": "では、踏み込みを見せてもらいましょう。",
+            "sourceSide": "a",
+            "afterNarratorLine": 0
+          },
+          {
+            "speaker": "破城士ガク",
+            "text": "見せてやる。踏み込みで押し切る。",
+            "sourceSide": "b",
+            "afterNarratorLine": 1
+          }
+        ]
+      },
+      {
+        "turn": 8,
+        "narrator": [
+          "観測士ナギは足裏の感触をアスファルトに合わせ、呼吸を浅く整えて破城士ガクの下半身の初動を捉えやすくする。",
+          "破城士ガクは濡れたアスファルトを足で踏みしめ、観測用大剣の重さを乗せてナギの構えへ正面から押し込む斬撃を試みる。",
+          "自由行動の現実判定を確定できなかった。",
+          "自由行動の現実判定を確定できなかった。"
+        ],
+        "speeches": [
+          {
+            "speaker": "観測士ナギ",
+            "text": "足腰から、と。この濡れた路地で、その踏み込みは滑らないのか？",
+            "sourceSide": "a",
+            "afterNarratorLine": 0
+          },
+          {
+            "speaker": "破城士ガク",
+            "text": "足元からだ。止められるなら止めろ。",
+            "sourceSide": "b",
+            "afterNarratorLine": 1
+          }
+        ]
+      },
+      {
+        "turn": 8,
+        "narrator": [
+          "観測士ナギは足裏の感触をアスファルトに合わせ、呼吸を浅く整えて破城士ガクの下半身の初動を捉えやすくする。",
+          "破城士ガクは濡れたアスファルトを足で踏みしめ、観測用大剣の重さを乗せてナギの構えへ正面から押し込む斬撃を試みる。",
+          "自由行動の現実判定を確定できなかった。",
+          "自由行動の現実判定を確定できなかった。"
+        ],
+        "speeches": [
+          {
+            "speaker": "観測士ナギ",
+            "text": "足腰から、と。この濡れた路地で、その踏み込みは滑らないのか？",
+            "sourceSide": "a",
+            "afterNarratorLine": 0
+          },
+          {
+            "speaker": "破城士ガク",
+            "text": "足元からだ。止められるなら止めろ。",
+            "sourceSide": "b",
+            "afterNarratorLine": 1
+          }
+        ]
+      },
+      {
+        "turn": 8,
+        "narrator": [
+          "観測士ナギは様子をうかがった。",
+          "破城士ガクは濡れたアスファルトを足で踏みしめ、観測用大剣の重さを乗せてナギの構えへ正面から押し込む斬撃を試みた。",
+          "自由行動の現実判定を確定できなかった。"
+        ],
+        "speeches": [
+          {
+            "speaker": "観測士ナギ",
+            "text": "止めろ、ね。足場を見せてもらおうか。",
+            "sourceSide": "a",
+            "afterNarratorLine": 0
+          },
+          {
+            "speaker": "破城士ガク",
+            "text": "滑るかどうか、踏んで確かめろ。",
+            "sourceSide": "b",
+            "afterNarratorLine": 0
+          }
+        ]
+      },
+      {
+        "turn": 9,
+        "narrator": [
+          "観測士ナギは直前の動きで生じた隙を見定め、短い一撃で体勢を崩す軌跡打ちを放つ。",
+          "破城士ガクはその一撃に応答を迫られる。"
+        ],
+        "speeches": [
+          {
+            "speaker": "観測士ナギ",
+            "text": "止めろ、ね。足場を見せてもらおうか。",
+            "sourceSide": "a",
+            "afterNarratorLine": 0
+          },
+          {
+            "speaker": "破城士ガク",
+            "text": "止められるもんなら止めてみろ。",
+            "sourceSide": "b",
+            "afterNarratorLine": 1
+          }
+        ]
+      },
+      {
+        "turn": 10,
+        "narrator": [
+          "観測士ナギは足裏の感触をアスファルトに合わせ、呼吸を浅く整えて破城士ガクの下半身の初動を捉えやすくする。",
+          "破城士ガクは濡れたアスファルトを足で踏みしめ、観測用大剣の重さを乗せてナギの構えへ正面から押し込む斬撃を試みる。",
+          "自由行動の現実判定を確定できなかった。",
+          "自由行動の現実判定を確定できなかった。"
+        ],
+        "speeches": [
+          {
+            "speaker": "観測士ナギ",
+            "text": "押し切る、か。その接地は、滑るアスファルトにどう乗る？",
+            "sourceSide": "a",
+            "afterNarratorLine": 0
+          },
+          {
+            "speaker": "破城士ガク",
+            "text": "足場ごと押し切る。止めてみろ。",
+            "sourceSide": "b",
+            "afterNarratorLine": 0
+          }
+        ]
+      },
+      {
+        "turn": 10,
+        "narrator": [
+          "観測士ナギは足裏の感触をアスファルトに合わせ、呼吸を浅く整えて破城士ガクの下半身の初動を捉えやすくする。",
+          "破城士ガクは濡れたアスファルトを足で踏みしめ、観測用大剣の重さを乗せてナギの構えへ正面から押し込む斬撃を試みる。",
+          "自由行動の現実判定を確定できなかった。",
+          "自由行動の現実判定を確定できなかった。"
+        ],
+        "speeches": [
+          {
+            "speaker": "観測士ナギ",
+            "text": "押し切る、か。その接地は、滑るアスファルトにどう乗る？",
+            "sourceSide": "a",
+            "afterNarratorLine": 0
+          },
+          {
+            "speaker": "破城士ガク",
+            "text": "滑るなら踏み固めるだけだ。",
+            "sourceSide": "b",
+            "afterNarratorLine": 1
+          }
+        ]
+      },
+      {
+        "turn": 10,
+        "narrator": [
+          "観測士ナギは足元を確かめ、相手の重心移動を捉えやすい位置に体を寄せる。",
+          "破城士ガクは踏み固めた足場に乗って構えを維持し、滑りを抑えて正面から押し込む準備を整える。"
+        ],
+        "speeches": [
+          {
+            "speaker": "観測士ナギ",
+            "text": "踏み固める、ね。どこに重心を置く？",
+            "sourceSide": "a",
+            "afterNarratorLine": 0
+          },
+          {
+            "speaker": "破城士ガク",
+            "text": "踏み固めて乗る。滑るなら、なおさら押し切る。",
+            "sourceSide": "b",
+            "afterNarratorLine": 0
+          }
+        ]
+      },
+      {
+        "turn": 11,
+        "narrator": [
+          "観測士ナギは自分の態勢を整えた。",
+          "霧雨と赤いワゴンの路地で、雨音が足場の滑りを静かに告げている。"
+        ],
+        "speeches": [
+          {
+            "speaker": "観測士ナギ",
+            "text": "押し切る、か。滑る足場でどこまで保つ？",
+            "sourceSide": "a",
+            "afterNarratorLine": 0
+          },
+          {
+            "speaker": "破城士ガク",
+            "text": "重心は前だ。滑る前に押し切る。",
+            "sourceSide": "b",
+            "afterNarratorLine": 1
+          }
+        ]
+      },
+      {
+        "turn": 11,
+        "narrator": [
+          "観測士ナギは濡れたアスファルトの感触を足裏で確かめ、相手の踏み込みの初動を捉えやすい位置に体を寄せた。",
+          "破城士ガクは霧雨で滑りやすい足場を踏み固め、大剣の重さを乗せて正面から圧力をかける構えを維持する。"
+        ],
+        "speeches": [
+          {
+            "speaker": "観測士ナギ",
+            "text": "押し切るなら、その一踏みを見せてもらおうか。",
+            "sourceSide": "a",
+            "afterNarratorLine": 0
+          },
+          {
+            "speaker": "破城士ガク",
+            "text": "足場なら、踏みしめりゃ足りる。",
+            "sourceSide": "b",
+            "afterNarratorLine": 1
+          }
+        ]
+      },
+      {
+        "turn": 11,
+        "narrator": [
+          "観測士ナギは濡れたアスファルトの感触を足裏で確かめ、破城士ガクの踏み込みの初動を捉えやすい位置に体を寄せた。",
+          "破城士ガクは霧雨で滑りやすい足場を踏み固め、大剣の重さを乗せて正面から圧力をかける構えを維持する。"
+        ],
+        "speeches": [
+          {
+            "speaker": "観測士ナギ",
+            "text": "押し切るなら、その一踏みを見せてもらおうか。",
+            "sourceSide": "a",
+            "afterNarratorLine": 0
+          },
+          {
+            "speaker": "破城士ガク",
+            "text": "足場なら、踏みしめりゃ足りる。",
+            "sourceSide": "b",
+            "afterNarratorLine": 1
+          }
+        ]
+      },
+      {
+        "turn": 12,
+        "narrator": [
+          "観測士ナギは濡れたアスファルトの感触を足裏で確かめ、破城士ガクの踏み込みの初動を捉えやすい位置に体を寄せる。",
+          "破城士ガクは自分の態勢を整える。",
+          "霧雨に濡れた足場を両者が確かめ合う。"
+        ],
+        "speeches": [
+          {
+            "speaker": "観測士ナギ",
+            "text": "その踏みしめ、滑らないといいが。",
+            "sourceSide": "a",
+            "afterNarratorLine": 0
+          },
+          {
+            "speaker": "破城士ガク",
+            "text": "足場なら、踏みしめりゃ足りる。",
+            "sourceSide": "b",
+            "afterNarratorLine": 1
+          }
+        ]
+      },
+      {
+        "turn": 12,
+        "narrator": [
+          "観測士ナギは霧雨で濡れた足場を確認し、相手の踏み込みを捉えやすい位置に体を寄せた。",
+          "破城士ガクは赤い上着を翻し、幅広の大剣を構えたまま霧雨に濡れたアスファルトを踏み固める。",
+          "両者の足元で水音が小さく弾け、赤い軽ワゴンの影が街灯の点滅に揺れる。",
+          "霧雨と赤いワゴンの路地に静かな間が落ちる。"
+        ],
+        "speeches": [
+          {
+            "speaker": "観測士ナギ",
+            "text": "その踏みしめ、滑らないといいが。",
+            "sourceSide": "a",
+            "afterNarratorLine": 0
+          },
+          {
+            "speaker": "破城士ガク",
+            "text": "足場なら、踏みしめりゃ足りる。",
+            "sourceSide": "b",
+            "afterNarratorLine": 1
+          }
+        ]
+      }
+    ]
+  },
+  "dialogueQuality": {
+    "schemaVersion": 2,
+    "totalLines": 62,
+    "reactionLines": 0,
+    "uniqueLines": 43,
+    "exactDuplicateLines": 19,
+    "exactUniqueRate": 0.6935483870967742,
+    "worstSpeakerExactUniqueRate": 0.6451612903225806,
+    "longestExactRepeatRun": 4,
+    "speakerMetrics": [
+      {
+        "speaker": "観測士ナギ",
+        "totalLines": 31,
+        "reactionLines": 0,
+        "uniqueLines": 20,
+        "exactDuplicateLines": 11,
+        "exactUniqueRate": 0.6451612903225806,
+        "longestExactRepeatRun": 2,
+        "wordCount": 355,
+        "uniqueWordCount": 88,
+        "lexicalDiversity": 0.24788732394366197,
+        "counterpartUtteranceContexts": 30,
+        "nonReactionLinesAfterCounterpartUtterance": 30
+      },
+      {
+        "speaker": "破城士ガク",
+        "totalLines": 31,
+        "reactionLines": 0,
+        "uniqueLines": 23,
+        "exactDuplicateLines": 8,
+        "exactUniqueRate": 0.7419354838709677,
+        "longestExactRepeatRun": 4,
+        "wordCount": 263,
+        "uniqueWordCount": 83,
+        "lexicalDiversity": 0.3155893536121673,
+        "counterpartUtteranceContexts": 31,
+        "nonReactionLinesAfterCounterpartUtterance": 31
+      }
+    ]
+  }
+}

@@ -1,0 +1,170 @@
+{
+  "conclusion": "success",
+  "headSha": "64d33efd9e64650491a6df2f9165fa1807811c85",
+  "jobs": [
+    {
+      "completedAt": "2026-10-09T09:58:59Z",
+      "conclusion": "success",
+      "databaseId": 113766939721,
+      "name": "promote-release",
+      "startedAt": "2026-10-09T09:57:36Z",
+      "status": "completed",
+      "steps": [
+        {
+          "completedAt": "2026-10-09T09:57:39Z",
+          "conclusion": "success",
+          "name": "Set up job",
+          "number": 1,
+          "startedAt": "2026-10-09T09:57:37Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-09T09:57:39Z",
+          "conclusion": "success",
+          "name": "Validate owner approval",
+          "number": 2,
+          "startedAt": "2026-10-09T09:57:39Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-09T09:57:42Z",
+          "conclusion": "success",
+          "name": "Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+          "number": 3,
+          "startedAt": "2026-10-09T09:57:39Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-09T09:57:44Z",
+          "conclusion": "success",
+          "name": "Run actions/setup-node@820762786026740c76f36085b0efc47a31fe5020",
+          "number": 4,
+          "startedAt": "2026-10-09T09:57:42Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-09T09:57:52Z",
+          "conclusion": "success",
+          "name": "Run npm ci",
+          "number": 5,
+          "startedAt": "2026-10-09T09:57:44Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-09T09:57:52Z",
+          "conclusion": "success",
+          "name": "Revalidate release evidence",
+          "number": 6,
+          "startedAt": "2026-10-09T09:57:52Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-09T09:57:53Z",
+          "conclusion": "success",
+          "name": "Run google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093",
+          "number": 7,
+          "startedAt": "2026-10-09T09:57:52Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-09T09:57:59Z",
+          "conclusion": "success",
+          "name": "Run google-github-actions/setup-gcloud@aa5489c8933f4cc7a4f7d45035b3b1440c9c10db",
+          "number": 8,
+          "startedAt": "2026-10-09T09:57:53Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-09T09:58:07Z",
+          "conclusion": "success",
+          "name": "Verify staged immutable artifacts",
+          "number": 9,
+          "startedAt": "2026-10-09T09:57:59Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-09T09:58:10Z",
+          "conclusion": "success",
+          "name": "Record rollback targets",
+          "number": 10,
+          "startedAt": "2026-10-09T09:58:07Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-09T09:58:16Z",
+          "conclusion": "success",
+          "name": "Promote backend revision",
+          "number": 11,
+          "startedAt": "2026-10-09T09:58:10Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-09T09:58:18Z",
+          "conclusion": "success",
+          "name": "Promote Worker version",
+          "number": 12,
+          "startedAt": "2026-10-09T09:58:16Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-09T09:58:51Z",
+          "conclusion": "success",
+          "name": "Smoke production",
+          "number": 13,
+          "startedAt": "2026-10-09T09:58:18Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-09T09:58:51Z",
+          "conclusion": "skipped",
+          "name": "Roll back failed promotion",
+          "number": 14,
+          "startedAt": "2026-10-09T09:58:51Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-09T09:58:54Z",
+          "conclusion": "success",
+          "name": "Publish release and evidence",
+          "number": 15,
+          "startedAt": "2026-10-09T09:58:51Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-09T09:58:54Z",
+          "conclusion": "success",
+          "name": "Post Run google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093",
+          "number": 28,
+          "startedAt": "2026-10-09T09:58:54Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-09T09:58:54Z",
+          "conclusion": "success",
+          "name": "Post Run actions/setup-node@820762786026740c76f36085b0efc47a31fe5020",
+          "number": 29,
+          "startedAt": "2026-10-09T09:58:54Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-09T09:58:54Z",
+          "conclusion": "success",
+          "name": "Post Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+          "number": 30,
+          "startedAt": "2026-10-09T09:58:54Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-09T09:58:54Z",
+          "conclusion": "success",
+          "name": "Complete job",
+          "number": 31,
+          "startedAt": "2026-10-09T09:58:54Z",
+          "status": "completed"
+        }
+      ],
+      "url": "https://github.com/mako10k/kshiai/actions/runs/37914395177/job/113766939721"
+    }
+  ],
+  "status": "completed"
+}

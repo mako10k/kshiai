@@ -126,3 +126,7 @@ current check.
 - [ADR-0062: 反復疲労と自由行動の裁定ペナルティ](0062-action-fatigue-and-adjudicated-free-action-penalties.md) — Accepted; 新規STA反復2/4、旧snapshot保持、裁定の有界な負担と身体自覚。
 
 - [ADR-0063: 装備効果を保持するサーバー補正専用STA負担](0063-preserve-equipment-effects-with-server-balance-tradeoff.md) — Accepted; 元4効果と追加STA負担を両立。
+
+- [ADR-0064: 実行可能な試みを優先する裁定と処理失敗の可観測性](0064-permissive-attempts-and-explicit-adjudication-failures.md) — Accepted; 明らかな不可能以外は変形・部分実行を許可、処理失敗とフォールバックを構造化ログで識別。実装は未完了。
+
+- [ADR-0065: 実行行動からの裁定受渡しと中立な空項目の省略](0065-explicit-free-action-handoff-and-compact-facts.md) — Accepted; 実行actions必須、結果coverageと相関ログ、意味を保持した空項目省略。

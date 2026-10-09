@@ -133,3 +133,14 @@ it("observed adjudication retains an unpriced reservation and scoped role withou
   }),"accepted");
   const saved=await budget("adj-observed");assert.equal(saved.physicalOutstanding,0);assert.equal(saved.reservations[0]?.actualUsd,null);
 });
+
+it("preserves executed action correlation through physical adjudication dispatch", async () => {
+  const { currentLlmUsageScope, withLlmUsageScope } = await import("../llm/llm-usage-context.js");
+  const { guard } = await fixture("adj-action-correlation", [], undefined, true);
+  await withLlmUsageScope({ battleId: "wrong-parent", receiptIds: ["turn-2-action-b"] }, () =>
+    guard.run(request, async () => {
+      assert.equal(currentLlmUsageScope()?.battleId, "adj-action-correlation");
+      assert.deepEqual(currentLlmUsageScope()?.receiptIds, ["turn-2-action-b"]);
+      return { result: "accepted", usage: null };
+    }));
+});

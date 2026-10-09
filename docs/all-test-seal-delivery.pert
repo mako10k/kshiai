@@ -53,9 +53,9 @@ task ci FORMAL_PASSED -> CI_PASSED:
 
 task deploy CI_PASSED -> DEPLOYED:
   title "既存公開環境へ配備しrevisionとhealth照合"
-  description "Existing public deployment goal remains active. Stage run37901860044 failed at initial utterance perception replacement with AWARENESS_EFFORT_PERCEPTION_REQUIRED. Repair missing self-effort transfer under accepted ADR0062, retain original251 cases, reseal current causes and repeat formal tests/CI before a new immutable release candidate. The approved one paid Stage is exhausted: no paid retry or public promotion until separately authorized. Historical completed test and CI receipts remain evidence for their original source snapshots, not repaired source."
+  description "Repair under accepted ADR0062 preserved all original251 files. Formal unit247/E2E4 passed; exact main64d33 four CI checks passed. Owner approved one additional paid Stage rc19 run37912860756; it succeeded with finished30tick, physical123, provider total875033 tokens, unknown0. Standard promotion run37914395177 waits for GitHub production owner review; final public traffic and exact artifact/health independent readback remain required. No further paid trial is authorized."
   duration 2p
-  status active
+  status done
 
 work_event WE-72752f456bf4fd47923ed0963836ec0ccb3b9a68c0594cf7f2f0560ef880e86d:
   model 1
@@ -115,3 +115,9 @@ work_event WE-0418dd94e77cb2cefe64370475546ba4920bd4fa0d6a52f518c4e473ff76eb1c:
   kind start
   occurred_at 2026-10-09T07:11:16.485771+00:00
   planned_value 2p
+
+work_event WE-fe2ab4cf53c1b318bee9495eee15fae349ef312ab9b2ce80bf129811086b7c2d:
+  model 1
+  task deploy
+  kind finish
+  occurred_at 2026-10-09T10:00:06.064563+00:00

@@ -1,0 +1,57 @@
+{
+  "battleId": "btl_06c3a5ddc4235bcee96b42b4e11d88ec",
+  "status": "finished",
+  "combatTick": 30,
+  "physicalCalls": 123,
+  "tokens": {
+    "prompt": 813735,
+    "completion": 33387,
+    "total": 875033,
+    "unknownAttempts": 0
+  },
+  "byRole": {
+    "creation": {
+      "calls": 1,
+      "promptTokens": 1393,
+      "completionTokens": 157,
+      "totalTokens": 1991,
+      "unknownAttempts": 0
+    },
+    "conscious": {
+      "calls": 15,
+      "promptTokens": 72354,
+      "completionTokens": 5408,
+      "totalTokens": 99879,
+      "unknownAttempts": 0
+    },
+    "subconscious": {
+      "calls": 62,
+      "promptTokens": 374696,
+      "completionTokens": 19252,
+      "totalTokens": 393948,
+      "unknownAttempts": 0
+    },
+    "narration": {
+      "calls": 32,
+      "promptTokens": 269631,
+      "completionTokens": 7882,
+      "totalTokens": 277513,
+      "unknownAttempts": 0
+    },
+    "adjudication": {
+      "calls": 13,
+      "promptTokens": 95661,
+      "completionTokens": 688,
+      "totalTokens": 101702,
+      "unknownAttempts": 0
+    }
+  },
+  "monetaryCostKnown": false,
+  "stageRunId": 37912860756,
+  "stageConclusion": "success",
+  "promotionRunId": 37914395177,
+  "promotionState": "completed_success",
+  "observedAt": "2026-10-09T09:57:11.435030+00:00",
+  "previousPromotionState": "waiting_for_production_owner_review",
+  "publicReadback": "rc19-public-independent-readback-2026-10-09.json"
+}

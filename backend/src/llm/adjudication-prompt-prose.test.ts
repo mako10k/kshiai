@@ -15,7 +15,7 @@ describe("compact adjudication facts", () => {
     assert.ok(text.includes('"turn": 3'));
     assert.ok(text.includes('"possible": false'));
     assert.ok(text.includes('"force": 0.25'));
-    for (const field of ['"unknown": null', '"emptyText": ""', '"emptyList": []', '"emptyObject": {}']) {
+    for (const field of ['"unknown": null', '"emptyText": ""', '"emptyList": 空の一覧', '"emptyObject": 項目']) {
       assert.ok(text.includes(field), field);
     }
     assert.ok(text.indexOf('"actorSide": "b"') < text.indexOf('"actorSide": "a"'));
@@ -35,6 +35,17 @@ describe("compact adjudication facts", () => {
     for (const word of ["濡れた広場", "capabilityEvidence", "character.b", "canonicalAccessByActor", "near", "contact", "Bの手首をつかもうとする"]) {
       assert.ok(compact.includes(word), word);
     }
+  });
+
+  it("omits presentation metadata and neutral empties but keeps uncertainty and negative facts", () => {
+    const text = renderAdjudicationPrompt({ battlefield: { imageUrl: "unused" }, actions: [{ selection: { sourceLayer: "trace" } }],
+      topology: [], appearance_changes: {}, environmentProposal: null, active: false,
+      count: 0, facts: { selection: "chosen", topology: [], imageUrl: "canonical-image-fact" }, visible_conditions: { injured: false }, skippedReason: "cannot_move" });
+    assert.ok(!text.includes('"unused"'));
+    assert.ok(!text.includes('"sourceLayer"'));
+    assert.equal((text.match(/"topology":/g) ?? []).length, 1);
+    assert.ok(!text.includes('"appearance_changes":'));
+    for (const fact of ['"environmentProposal": null', '"active": false', '"count": 0', '"injured": false', '"cannot_move"', '"selection": "chosen"', '"topology": 空の一覧', '"imageUrl": "canonical-image-fact"']) assert.ok(text.includes(fact));
   });
 
   it("rejects cycles, unsupported values and excessive nesting instead of silently dropping facts", () => {

@@ -1,0 +1,172 @@
+[
+  {
+    "ref": "all-tests-20261007/implementation-adjudication-prose",
+    "path": "backend/src/llm/adjudication-prompt-prose.ts",
+    "sealId": "9da478133d58a46f4ae41b1aae41ddd6fd8179f5c10897f30a7f9d265248bd01",
+    "previousHead": "471266c8f0c5f2461e79fb2f8375f9bb852e53d796282cc6c7bbd6ecb35c2323",
+    "sourceSha256": "8409994cac44c14521860d754eae7db4a83f268e248cb960a13c66b55a422e34",
+    "exactCausesReadBack": true,
+    "causeLinks": [
+      {
+        "target_seal": "8f528dfadc361be3000c99460b394d20d38d8430edee67283465cec1f211d20b",
+        "previous_revision_seal_of_target_seal": [],
+        "messages": [
+          "Owner accepted ADR0064/0065 factual compression and result handoff; no live outcome."
+        ]
+      },
+      {
+        "target_seal": "b55b82f4a4db793526000b9f44cc2d859a077bf01b318c73b5a58e0b04899149",
+        "previous_revision_seal_of_target_seal": [],
+        "messages": [
+          "Pure typed outline preserves complete JSON-compatible data, index/order/types/null/empty values and escaped strings; rejects cycles, unsupported and oversized data. No actual token savings or model interpretation claim."
+        ]
+      }
+    ],
+    "elapsedSeconds": 11.206
+  },
+  {
+    "ref": "all-tests-20261008/current-source-closure/all-tests-20261007/implementation-canonical-narration-adjudication-guard",
+    "path": "backend/src/services/awareness-adjudication-guard.ts",
+    "sealId": "9ff36ed0237439756bf209b367d846326a9b54c1f0f34dff1ad5e44187647073",
+    "previousHead": "369dfc4c6283bb9780a38aa9713b09149e1e02fef8c2717699f9f644eb205d53",
+    "sourceSha256": "ddedd114812f636fa6e5218018b6de64afb4e2158637e0750b6619ff34d2c156",
+    "exactCausesReadBack": true,
+    "causeLinks": [
+      {
+        "target_seal": "2df81637fc82ea1211c49f45f6715b3252bc91a88593377cc607d4e6d169bcf4",
+        "previous_revision_seal_of_target_seal": [
+          "43edff8f437e6d157401ff80f278b8a729ac24be91fcbc16b30dca311e0ea324",
+          "8c03873ba349ed1531f1dc6adf2d11b86b8e525c3cf6e501e38ff6ff2bf25cef",
+          "cf31a12bbe4fc3ebc5fd1689aeb7a5098fce0f606c98de4f80ea8851b4948cab"
+        ],
+        "messages": [
+          "Current-source closure 2026-10-08: original scoped observations/limits are retained as history; current source and all affected original cases are revalidated. This link does not adopt production pacing, new STA numbers, live/deploy or paid work.",
+          "Exact synthetic proof/observed no-quote policy, persisted-before-send and sticky failure/unknown physical-cost settlement; no actual network or pricing authority.",
+          "Receipt revalidation 2026-10-07: only the already accepted ADR0039 formal ACCEPTANCE receipt changed. Original normative rules, source body and scope remain unchanged. Original messages about the formerly missing receipt are retained as historical review observations; the receipt gap is now repaired. No new action/trial/cloud/data/provider authority or test pass is inferred."
+        ]
+      },
+      {
+        "target_seal": "82a05d36a1ced02c2466b9a25dfb306d23d3a63436fc5ed35f2f66eb29016e2c",
+        "previous_revision_seal_of_target_seal": [
+          "8abba1a9c8979c938c12dd7bfb72af72c43496dbb487ff827477c7ff5951482f"
+        ],
+        "messages": [
+          "Current-source closure 2026-10-08: original scoped observations/limits are retained as history; current source and all affected original cases are revalidated. This link does not adopt production pacing, new STA numbers, live/deploy or paid work.",
+          "Exact synthetic proof/observed no-quote policy, persisted-before-send and sticky failure/unknown physical-cost settlement; no actual network or pricing authority."
+        ]
+      },
+      {
+        "target_seal": "8f528dfadc361be3000c99460b394d20d38d8430edee67283465cec1f211d20b",
+        "previous_revision_seal_of_target_seal": [],
+        "messages": [
+          "Owner-accepted ADR0064/0065 governs executed-action input, failure observability and bounded factual prompt compression; no paid or production result."
+        ]
+      },
+      {
+        "target_seal": "a716bc3b8e2473ca01d2cf7408bdc93dc769f8556428f493d9ee803dd7859619",
+        "previous_revision_seal_of_target_seal": [],
+        "messages": [
+          "Current-source closure 2026-10-08: original scoped observations/limits are retained as history; current source and all affected original cases are revalidated. This link does not adopt production pacing, new STA numbers, live/deploy or paid work.",
+          "Exact synthetic proof/observed no-quote policy, persisted-before-send and sticky failure/unknown physical-cost settlement; no actual network or pricing authority."
+        ]
+      },
+      {
+        "target_seal": "f32a6e8815e72a3186332393e8182c1fe1f096b30fc5cf3e9715593fafebaaba",
+        "previous_revision_seal_of_target_seal": [],
+        "messages": [
+          "Current-source closure 2026-10-08: original scoped observations/limits are retained as history; current source and all affected original cases are revalidated. This link does not adopt production pacing, new STA numbers, live/deploy or paid work.",
+          "Exact synthetic proof/observed no-quote policy, persisted-before-send and sticky failure/unknown physical-cost settlement; no actual network or pricing authority."
+        ]
+      }
+    ],
+    "elapsedSeconds": 36.972
+  },
+  {
+    "ref": "all-tests-20261008/current-source-closure/all-tests-20261008/authority-retained-adr-checker-policy",
+    "path": "docs/adr/README.md",
+    "sealId": "66067ec29b19a58274aaa84678a927f041c83a82eed8e48fe29a2be23452e87a",
+    "previousHead": "8ef1445097578cea5218a1ad53ea3d8075a9aa3bb65af9076ac81ceb710e5cf8",
+    "sourceSha256": "1b172fb9cd7018ffe35e0f9201f6d2ea9d3ceecd72ee7cfd0dd6c86b781a7216",
+    "exactCausesReadBack": true,
+    "causeLinks": [
+      {
+        "target_seal": "8f528dfadc361be3000c99460b394d20d38d8430edee67283465cec1f211d20b",
+        "previous_revision_seal_of_target_seal": [],
+        "messages": [
+          "Owner-accepted ADR0064/0065 governs executed-action input, failure observability and bounded factual prompt compression; no paid or production result."
+        ]
+      }
+    ],
+    "elapsedSeconds": 46.54
+  },
+  {
+    "ref": "all-tests-20261009/action-effort/free-action-service",
+    "path": "backend/src/services/free-action-service.ts",
+    "sealId": "f616e194233ee95899c734160335b8263e8accaf432b18ac11d84581f70ef39f",
+    "previousHead": "41dda240a0e69299eb7d556a16b7868b0cc507979f46924c6125de4d4dddb64a",
+    "sourceSha256": "2ff0415ca3f7447103e20a96c6cf6406b54ccd174c62103d3ad1856783853261",
+    "exactCausesReadBack": true,
+    "causeLinks": [
+      {
+        "target_seal": "25b32b74d414894b536a1cd786f290a99194058ba38bda3e1f3ec4220d28402f",
+        "previous_revision_seal_of_target_seal": [
+          "f6885770ad47de87d1bb1cedcdd695d1d494291e517d0988b4e5e5bfa798a42e"
+        ],
+        "messages": [
+          "ADR0062 owner-adopted bounded changes in backend/src/services/free-action-service.ts only. Preserve historical policy. Producer/consumer evidence; this node certifies no formal test pass, CI or deployment result."
+        ]
+      },
+      {
+        "target_seal": "8f528dfadc361be3000c99460b394d20d38d8430edee67283465cec1f211d20b",
+        "previous_revision_seal_of_target_seal": [],
+        "messages": [
+          "Owner-accepted ADR0064/0065 governs executed-action input, failure observability and bounded factual prompt compression; no paid or production result."
+        ]
+      },
+      {
+        "target_seal": "c3a5133126929adeb098750f9dfec6d17eebce1bf9b917f29f7392ce9714ff37",
+        "previous_revision_seal_of_target_seal": [
+          "11752a49d8fd1d7df23c6505c0c27b7de6c73290923e90cf21553f9e79c8cc38"
+        ],
+        "messages": [
+          "ADR0062 owner-adopted bounded changes in backend/src/services/free-action-service.ts only. Preserve historical policy. Producer/consumer evidence; this node certifies no formal test pass, CI or deployment result."
+        ]
+      },
+      {
+        "target_seal": "d97bf48b51a79d477d19a4455bfabf9f92e365c0034d788d6f61a2623e801676",
+        "previous_revision_seal_of_target_seal": [],
+        "messages": [
+          "ADR0062 owner-adopted bounded changes in backend/src/services/free-action-service.ts only. Preserve historical policy. Producer/consumer evidence; this node certifies no formal test pass, CI or deployment result."
+        ]
+      }
+    ],
+    "elapsedSeconds": 69.613
+  },
+  {
+    "ref": "all-tests-20261009/action-effort/llm-penalty-decoder",
+    "path": "backend/src/llm/openai-compatible.ts",
+    "sealId": "73b57c67fbc7893df5477aafec39cf75e8f17a941c4834153b16281e0f322083",
+    "previousHead": "4cd4e3ef3f90e273ef870bc0569af0ed8d4c786198ac6812abe74b4b126b8346",
+    "sourceSha256": "be1d1d750b7e88d150cdf7baedf588a48ee208884abadec886b6d06519cceeb3",
+    "exactCausesReadBack": true,
+    "causeLinks": [
+      {
+        "target_seal": "25b32b74d414894b536a1cd786f290a99194058ba38bda3e1f3ec4220d28402f",
+        "previous_revision_seal_of_target_seal": [
+          "f6885770ad47de87d1bb1cedcdd695d1d494291e517d0988b4e5e5bfa798a42e"
+        ],
+        "messages": [
+          "ADR0062 adjudication policy/revision input and required null-or-bounded penalty output only. Preserve historical absent policy input. Decoder schema rejection and mock result follow this wire contract; no model quality or live execution certified."
+        ]
+      },
+      {
+        "target_seal": "8f528dfadc361be3000c99460b394d20d38d8430edee67283465cec1f211d20b",
+        "previous_revision_seal_of_target_seal": [],
+        "messages": [
+          "Owner-accepted ADR0064/0065 governs executed-action input, failure observability and bounded factual prompt compression; no paid or production result."
+        ]
+      }
+    ],
+    "elapsedSeconds": 82.032
+  }
+]
