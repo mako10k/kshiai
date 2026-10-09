@@ -1,0 +1,22 @@
+{
+  "schema": "kshiai/ci-release-candidate-readback/v1",
+  "observedAt": "2026-10-09T07:15:08.443496+00:00",
+  "pr": 172,
+  "branchHead": "fc54a385aca20dc96487478cac328e8a5c08b4df",
+  "branchCiRun": 37895501276,
+  "branchFourChecksPassed": true,
+  "mergedCommit": "1eb97c18c4af580cac2922fd64844128b281bd79",
+  "mergedTree": "3c6bba83c4a055fd45d6085c3d8d9e44bf458310",
+  "branchTree": "3c6bba83c4a055fd45d6085c3d8d9e44bf458310",
+  "formalExecutionReceiptSeal": "4335ddd900d57976bf554c7b799d776f22b0c020aac4be00734737b6efcc7f1f",
+  "releaseTagCandidate": "v0.23.0-rc.18",
+  "mainCiPassed": true,
+  "stageDispatched": false,
+  "paidStageAuthorization": "pending",
+  "gcloudIndependentReadback": "reauthentication_required",
+  "mainCiRun": 37896554555,
+  "releaseTag": "v0.23.0-rc.18",
+  "releaseTagObject": "c360cdeda44ee1708a891b822540f69d6ba751ae",
+  "tagRemoteReadback": true,
+  "publicPromoted": false
+}

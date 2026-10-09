@@ -49,13 +49,13 @@ task ci FORMAL_PASSED -> CI_PASSED:
   title "承認済みbranch同期と同一SHAの全CI確認"
   description "User goal 2026-10-09. Original 251 files and cases retained. Diagnostic checks do not replace formal acceptance. Points are provisional difficulty, not observed hours."
   duration 1p
-  status active
+  status done
 
 task deploy CI_PASSED -> DEPLOYED:
   title "既存公開環境へ配備しrevisionとhealth照合"
   description "User goal 2026-10-09. Original 251 files and cases retained. Diagnostic checks do not replace formal acceptance. Points are provisional difficulty, not observed hours."
   duration 2p
-  status planned
+  status active
 
 work_event WE-72752f456bf4fd47923ed0963836ec0ccb3b9a68c0594cf7f2f0560ef880e86d:
   model 1
@@ -102,3 +102,16 @@ work_event WE-1ab9c2e620876c385259c9177b9c0f99a5af0188ab10a8920f8f267652099c1b:
   kind start
   occurred_at 2026-10-09T06:41:15.136783+00:00
   planned_value 1p
+
+work_event WE-a93b802931088203d3afffa4ff5e2d522c246bb0b9958e1d9303269e8f2ed2cd:
+  model 1
+  task ci
+  kind finish
+  occurred_at 2026-10-09T07:11:16.475971+00:00
+
+work_event WE-0418dd94e77cb2cefe64370475546ba4920bd4fa0d6a52f518c4e473ff76eb1c:
+  model 1
+  task deploy
+  kind start
+  occurred_at 2026-10-09T07:11:16.485771+00:00
+  planned_value 2p
