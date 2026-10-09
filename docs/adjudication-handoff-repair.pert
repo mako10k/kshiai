@@ -26,11 +26,13 @@ task seal IMPLEMENTED -> SEALED:
   duration 1p
   status done
 task verify SEALED -> VERIFIED:
-  title "元試験と型検査・同一SHA CIを確認"
+  title "配備候補rc.20の元試験・型検査・同一SHA CIを確認"
+  description "Completed only for rc.20 source 44f2bd287e9cb68d071620ddb3a63d72e4f56545. Unit1473/E2E10; CI37929073817 all4 success. Later ADR0066 recovery is not verified by this historical completion."
   duration 1p
   status done
 task deploy VERIFIED -> DEPLOYED:
   title "Stageから本番配備し独立照合"
+  description "Stage37930237321 failed at a60s free-action provider timeout; production unchanged. Owner accepted ADR0066 new-battle180s and exact penalty failure logs. Recovery source written; current108 Cause reseal, full original251 tests, exactSHA CI, a newly approved candidate-specific paid Stage, GitHub production review and independent public readback remain before completion. Historical failed paid run is not reusable authority."
   duration 1p
   status active
 

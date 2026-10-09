@@ -130,3 +130,5 @@ current check.
 - [ADR-0064: 実行可能な試みを優先する裁定と処理失敗の可観測性](0064-permissive-attempts-and-explicit-adjudication-failures.md) — Accepted; 明らかな不可能以外は変形・部分実行を許可、処理失敗とフォールバックを構造化ログで識別。実装は未完了。
 
 - [ADR-0065: 実行行動からの裁定受渡しと中立な空項目の省略](0065-explicit-free-action-handoff-and-compact-facts.md) — Accepted; 実行actions必須、結果coverageと相関ログ、意味を保持した空項目省略。
+
+- [ADR-0066: 新規試合の裁定待機を180秒にする](0066-longer-new-battle-adjudication-deadline.md) — Accepted; 運用ポリシーusage-v3、新規束縛のみ、負担検査の理由ログ。

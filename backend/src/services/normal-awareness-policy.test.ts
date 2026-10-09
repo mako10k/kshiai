@@ -58,5 +58,5 @@ it("persists usage-v2 for default creation and overrides a legacy provider's sho
   assert.equal(stored.runtime.status, "active");
   assert.equal(seen.filter((item) => item.role === "subconscious").length, 2);
   assert.equal(seen.filter((item) => item.role === "conscious").length, 2);
-  assert.ok(seen.every((item) => item.policy?.revision === "awareness-v5-usage-v2"));
+  assert.ok(seen.every((item) => item.policy?.revision === "awareness-v5-usage-v3"));
 });

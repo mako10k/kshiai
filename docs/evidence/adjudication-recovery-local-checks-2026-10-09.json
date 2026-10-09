@@ -1,0 +1,19 @@
+{
+  "schema": "kshiai/adjudication-recovery-local-checks/v1",
+  "sourceSha256": {
+    "backend/src/services/free-action-penalties.ts": "0fef98befc8d77eb7a1cf5af8fac4ce40d44b212080cab1654c71fe2d026e791",
+    "backend/src/services/free-action-service.ts": "80c4f2f9ef1c92bb4622ddfd74f116889ec7f05909cc0f2850fa048980509514",
+    "backend/src/services/free-action-service.test.ts": "5611c0e092b61d10acd8bb1c48b0c7a06bdda5198c8e55f9d5aee4f748e886d9",
+    "backend/src/services/normal-awareness-policy.test.ts": "78149c16dafae6006aaad654bc65096755625640dd7b325a907b2fdb31be47f7",
+    "packages/shared/src/awareness-policy.ts": "e9edd9989c2be5eb8b0b106bf779ff8d5cac5762b512fbe12fd90e205a93d6d8",
+    "packages/shared/src/awareness-policy.test.ts": "6c1e922c8124941d178807c9eb5a28f4bc4d145ce0c4bfdbc521a56f374946b9"
+  },
+  "typecheck": "passed",
+  "static": "passed",
+  "adrCheck": "passed",
+  "formalTests": "pending_reseal",
+  "paidCalls": 0,
+  "historicalStageRunId": 37930237321,
+  "historicalStageConclusion": "failure",
+  "authorReview": "root self-review; no independent agent review claimed"
+}

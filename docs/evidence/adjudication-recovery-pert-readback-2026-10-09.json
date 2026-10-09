@@ -1,0 +1,14 @@
+[
+  {
+    "task": "verify",
+    "operation": "task.set",
+    "written": true,
+    "updatedDigest": "sha256:36aaa07db1bd7f52084a79498bd74f4be6118ef52a094603303d0d3eb5b19102"
+  },
+  {
+    "task": "deploy",
+    "operation": "task.set",
+    "written": true,
+    "updatedDigest": "sha256:310c54895d42096cd72e092a037e8705b0c0d4f7335c773d1c695d215bec8b01"
+  }
+]

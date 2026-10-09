@@ -1,8 +1,18 @@
 # 裁定失敗と実行結果の追跡
 
-ADR0064・0065の修正候補用手順。実環境での確認結果はリリース証跡に記録する。
+ADR0064・0065・0066の修正候補用手順。実環境での確認結果はリリース証跡に記録する。
 
 `free_action_adjudication_failed` は裁定の呼出し・復号・返答検証の失敗を表す。`failureStage` と `reasonCode` で区別し、`fallbackKind=unavailable_receipt` は未確定の裁定を成功扱いしていないことを表す。
+
+`failureStage=application_validation` は、受領済み提案の行動負担がサーバーの適用契約に合わないことを表す。この場合は `fallbackKind=rejected_receipt` で、正準状態へ適用していない。理由は次のとおり。
+
+| reasonCode | 検査で止まった条件 |
+| --- | --- |
+| historical_penalty_not_allowed | 行動負担ポリシーを持たない既存キャラへ負担が提案された |
+| penalty_missing | 必須のpenaltyが欠落した。nullは通常負担として有効 |
+| penalty_world_revision_mismatch | 提案の基準revisionと適用前の世界revisionが異なる |
+| penalty_action_quote_mismatch | 原文引用が実際の行動文に含まれない |
+| penalty_execution_limit_invalid | 部分実行・不成立の操作選択契約が一致しない |
 
 `free_action_resolution` はサーバーが確定した行動結果を表す。`outcome`・`reasonCode`・`failureSubtype`・`operationKinds` を確認する。`applied=true` は正準状態への操作が適用されたことを表し、行動意図の達成やダメージ発生を保証しない。物理的な不可能判定は通信・返答検証の失敗と区別する。
 

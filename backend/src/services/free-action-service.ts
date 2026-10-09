@@ -1,6 +1,6 @@
 // R: Prepare explicit executed free-action adjudications and commit validated world consequences.
-import { validateFreeActionPenalty, applyFreeActionPenalty, executableFreeActionChanges, isPartialFreeAction,
-  partialSubjectIsBound, freeActionReceiptOutcome, freeActionResultSummary } from "./free-action-penalties.js";
+import { freeActionPenaltyValidationFailure, applyFreeActionPenalty, executableFreeActionChanges, isPartialFreeAction,
+  partialSubjectIsBound, freeActionReceiptOutcome, freeActionResultSummary, type FreeActionPenaltyValidationFailure } from "./free-action-penalties.js";
 import {
   BattleWorldEntitySchema,
   FreeActionAdjudicationBatchSchema,
@@ -935,6 +935,13 @@ function logFreeActionResolutions(state: BattleState, receipts: readonly FreeAct
   }
 }
 
+function logFreeActionPenaltyFailure(state: BattleState, actionId: string, reasonCode: FreeActionPenaltyValidationFailure): void {
+  console.warn(JSON.stringify({ event: "free_action_adjudication_failed", battleId: state.id,
+    turn: state.turn, tick: state.combatTick ?? state.turn, actionIds: [actionId],
+    failureStage: "application_validation", reasonCode, fallbackKind: "rejected_receipt", applied: false,
+    requestId: null, requestIdLookup: "llm_usage_attempts.receiptIds includes actionIds" }));
+}
+
 export function commitFreeActionAdjudications(input: {
   beforeState: BattleState;
   resolvedState: BattleState;
@@ -990,7 +997,9 @@ export function commitFreeActionAdjudications(input: {
       }));
       continue;
     }
-    if (!validateFreeActionPenalty(input.beforeState, side, intentText, proposal)) {
+    const penaltyFailure = freeActionPenaltyValidationFailure(input.beforeState, side, intentText, proposal);
+    if (penaltyFailure) {
+      logFreeActionPenaltyFailure(input.beforeState, action.id, penaltyFailure);
       updateActionFailure(actions, side, "free_action_rejected");
       receipts.push(receipt({ actionId: action.id, actorSide: side, intentText, outcome: "failed",
         reason: "invalid_proposal", subjectRef: null, canonicalEntityId: null, promotion: "rejected",

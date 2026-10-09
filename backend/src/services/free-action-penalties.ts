@@ -20,17 +20,25 @@ export function freeActionResultSummary(proposal: FreeActionAdjudicationProposal
   return proposal.outcome === "possible" ? proposal.successSummary : proposal.failureSummary;
 }
 
-export function validateFreeActionPenalty(state: BattleState, side: "a" | "b", intentText: string,
-  adjudication: FreeActionAdjudicationProposal): boolean {
+export type FreeActionPenaltyValidationFailure = "historical_penalty_not_allowed" | "penalty_missing" |
+  "penalty_world_revision_mismatch" | "penalty_action_quote_mismatch" | "penalty_execution_limit_invalid";
+
+export function freeActionPenaltyValidationFailure(state: BattleState, side: "a" | "b", intentText: string,
+  adjudication: FreeActionAdjudicationProposal): FreeActionPenaltyValidationFailure | null {
   const proposal = adjudication.penalty;
   const actor = side === "a" ? state.sideA : state.sideB;
-  if (!actor.actionEffortPolicy) return proposal == null;
-  if (proposal === undefined) return false;
-  if (proposal === null) return true;
-  if (proposal.baseWorldRevision !== (state.worldState?.revision ?? 0)) return false;
-  if (!intentText.includes(proposal.actionQuote)) return false;
-  if (proposal.kind === "execution_limit") return validateExecutionLimit(adjudication, proposal);
-  return true;
+  if (!actor.actionEffortPolicy) return proposal == null ? null : "historical_penalty_not_allowed";
+  if (proposal === undefined) return "penalty_missing";
+  if (proposal === null) return null;
+  if (proposal.baseWorldRevision !== (state.worldState?.revision ?? 0)) return "penalty_world_revision_mismatch";
+  if (!intentText.includes(proposal.actionQuote)) return "penalty_action_quote_mismatch";
+  if (proposal.kind === "execution_limit" && !validateExecutionLimit(adjudication, proposal)) return "penalty_execution_limit_invalid";
+  return null;
+}
+
+export function validateFreeActionPenalty(state: BattleState, side: "a" | "b", intentText: string,
+  adjudication: FreeActionAdjudicationProposal): boolean {
+  return freeActionPenaltyValidationFailure(state, side, intentText, adjudication) === null;
 }
 
 export function applyFreeActionPenalty(state: BattleState, side: "a" | "b", actionId: string,
