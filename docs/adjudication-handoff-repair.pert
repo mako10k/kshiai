@@ -1,0 +1,68 @@
+project ADJUDICATION_HANDOFF_REPAIR:
+  version 5
+  title "裁定受渡し・失敗ログ・入力圧縮と本番配備"
+  description "Owner goal 2026-10-09. Repair consumed-plan handoff using explicit executed-action contracts; structured failure/fallback logs; prune irrelevant adjudication input without losing negative facts; seal and verify then exact-source CI, Stage and production readback. Accepted ADR0064 governs attempted action semantics and observability. No unsealed formal tests; paid Stage approval must bind concrete candidate and ceilings."
+  duration_unit point
+  finish DEPLOYED
+  goal_owner user
+  dag_owner agent
+milestone ACCEPTED:
+  title "ACCEPTED"
+  state reached
+milestone IMPLEMENTED:
+  title "IMPLEMENTED"
+milestone SEALED:
+  title "SEALED"
+milestone VERIFIED:
+  title "VERIFIED"
+milestone DEPLOYED:
+  title "DEPLOYED"
+task implement ACCEPTED -> IMPLEMENTED:
+  title "裁定受渡し・失敗ログ・不要入力を修正"
+  duration 2p
+  status done
+task seal IMPLEMENTED -> SEALED:
+  title "変更した因果契約を確認して封印"
+  duration 1p
+  status done
+task verify SEALED -> VERIFIED:
+  title "元試験と型検査・同一SHA CIを確認"
+  duration 1p
+  status active
+task deploy VERIFIED -> DEPLOYED:
+  title "Stageから本番配備し独立照合"
+  duration 1p
+  status planned
+
+work_event WE-a9372b6b1287711d944cdb3306e297187f83ae06fbe0552a69249f6e79118b1a:
+  model 1
+  task implement
+  kind start
+  occurred_at 2026-10-09T10:28:56.074982+00:00
+  planned_value 2p
+
+work_event WE-69eccdb39204cab5b9a93e2f48b47db827e939d457dbf5fc70ec1c2c9ce8b248:
+  model 1
+  task implement
+  kind finish
+  occurred_at 2026-10-09T10:48:49.670373+00:00
+
+work_event WE-1e9d6744abf0da7de16859c109f7616ca916bdbd48601f4979c7e7c64563ad89:
+  model 1
+  task seal
+  kind start
+  occurred_at 2026-10-09T10:48:50.607208+00:00
+  planned_value 1p
+
+work_event WE-f8c91dfb409216e67d22017e1fb51545fd3d771b9cb030053f75af73be3d471d:
+  model 1
+  task seal
+  kind finish
+  occurred_at 2026-10-09T11:55:58.257191+00:00
+
+work_event WE-60a3108aba3cf403a73653d4e9de679854bad8c0c76e545fbbca6f3c78024159:
+  model 1
+  task verify
+  kind start
+  occurred_at 2026-10-09T11:55:58.909639+00:00
+  planned_value 1p

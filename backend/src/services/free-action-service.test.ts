@@ -81,6 +81,10 @@ function resolveFreeTurn(
   return { before, resolved };
 }
 
+function executedActions(state: BattleState, mine: CharacterSheet, opp: CharacterSheet) {
+  return resolveTurn({ state, sideASkills: mine.skills, sideBSkills: opp.skills }).actions;
+}
+
 function affordance(
   root: FreeActionCanonicalRoot,
   perceivedAs: string,
@@ -124,7 +128,7 @@ describe("bound free action effort", () => {
       subjectRefs: ["actor:a:counterpart"] };
     state.plannedActionB = { kind: "wait" };
     const before = structuredClone(state);
-    const preparation = await prepareFreeActionsForTurn({ llm: new MockLlmProvider(), state, mine, opp });
+    const preparation = await prepareFreeActionsForTurn({ actions: executedActions(state, mine, opp), llm: new MockLlmProvider(), state, mine, opp });
     const proposal = preparation.adjudication?.proposals[0];
     assert.ok(proposal?.subject);
     proposal.changes = [{ target: "actor", path: "/actorState/posture", value: "crouched" },
@@ -182,6 +186,47 @@ describe("bound free action effort", () => {
 });
 
 describe("free action promotion and adjudication", () => {
+  it("adjudicates executed free actions after the engine consumes planned intentions", async () => {
+    const { state, mine, opp } = battle();
+    state.plannedActionA = { kind: "free_action", description: "相手の腕へ手を伸ばす", subjectRefs: ["actor:a:counterpart"] };
+    state.plannedActionB = { kind: "wait" };
+    const resolved = resolveTurn({ state, sideASkills: mine.skills, sideBSkills: opp.skills });
+    assert.equal(resolved.state.plannedActionA, undefined);
+    const provider = new MockLlmProvider();
+    const adjudicate = provider.adjudicateFreeActions.bind(provider);
+    let calls = 0;
+    provider.adjudicateFreeActions = async (input) => {
+      calls += 1;
+      assert.equal(input.intents[0]?.intent.description, "相手の腕へ手を伸ばす");
+      return adjudicate(input);
+    };
+    const preparation = await prepareFreeActionsForTurn({ llm: provider, state: resolved.state,
+      mine, opp, actions: resolved.actions });
+    assert.equal(calls, 1);
+    assert.equal(preparation.adjudicationFailure, null);
+    assert.equal(preparation.adjudication?.proposals.length, 1);
+    const result = commit({ before: state, resolved, preparation });
+    assert.notEqual(result.state.latestFreeActionReceipts?.[0]?.reason, "adjudication_unavailable");
+  });
+
+  it("logs missing executed-action coverage as validation failure rather than impossible judgment", async (t) => {
+    const { state, mine, opp } = battle();
+    state.plannedActionA = { kind: "free_action", description: "手を伸ばす", subjectRefs: ["actor:a:counterpart"] };
+    const actions = executedActions(state, mine, opp);
+    const provider = new MockLlmProvider();
+    provider.adjudicateFreeActions = async () => ({ proposals: [] });
+    const logs: string[] = [];
+    t.mock.method(console, "warn", (text: string) => { logs.push(text); });
+    const preparation = await prepareFreeActionsForTurn({ llm: provider, state, mine, opp, actions });
+    assert.equal(preparation.adjudication, null);
+    const log = JSON.parse(logs[0] ?? "{}");
+    assert.equal(log.battleId, state.id);
+    assert.equal(log.failureStage, "result_validation");
+    assert.equal(log.reasonCode, "FREE_ACTION_PROPOSAL_COVERAGE");
+    assert.deepEqual(log.actionIds, actions.filter((action) => action.executed && action.kind === "free_action").map((action) => action.id));
+    assert.equal(log.fallbackKind, "unavailable_receipt");
+  });
+
   it("classifies a malformed adjudication as an application schema failure", () => {
     assert.deepEqual(parseFreeActionAdjudication({ proposals: "invalid" }), {
       adjudication: null,
@@ -205,7 +250,7 @@ describe("free action promotion and adjudication", () => {
     provider.adjudicateFreeActions = async () => {
       throw new Error("timeout:adjudicateFreeActions:1000ms");
     };
-    const preparation = await prepareFreeActionsForTurn({
+    const preparation = await prepareFreeActionsForTurn({ actions: executedActions(state, mine, opp),
       llm: provider,
       state,
       mine,
@@ -241,7 +286,7 @@ describe("free action promotion and adjudication", () => {
 
     state.plannedActionA = { kind: "basic_attack" };
     state.plannedActionB = { kind: "wait" };
-    await prepareFreeActionsForTurn({ llm: provider, state, mine, opp });
+    await prepareFreeActionsForTurn({ actions: executedActions(state, mine, opp), llm: provider, state, mine, opp });
     assert.equal(calls, 0);
 
     state.plannedActionA = {
@@ -254,7 +299,7 @@ describe("free action promotion and adjudication", () => {
       description: "身を低くする",
       subjectRefs: ["actor:b:self"],
     };
-    const prepared = await prepareFreeActionsForTurn({
+    const prepared = await prepareFreeActionsForTurn({ actions: executedActions(state, mine, opp),
       llm: provider,
       state,
       mine,
@@ -273,7 +318,7 @@ describe("free action promotion and adjudication", () => {
     };
     state.plannedActionB = { kind: "wait" };
     const before = structuredClone(state);
-    const preparation = await prepareFreeActionsForTurn({
+    const preparation = await prepareFreeActionsForTurn({ actions: executedActions(state, mine, opp),
       llm: new MockLlmProvider(),
       state,
       mine,
@@ -303,7 +348,7 @@ describe("free action promotion and adjudication", () => {
     };
     state.plannedActionB = { kind: "wait" };
     const before = structuredClone(state);
-    const preparation = await prepareFreeActionsForTurn({
+    const preparation = await prepareFreeActionsForTurn({ actions: executedActions(state, mine, opp),
       llm: new MockLlmProvider(),
       state,
       mine,

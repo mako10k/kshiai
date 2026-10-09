@@ -5346,6 +5346,7 @@ async function advanceTurnCoreWithLease(input: {
     state,
     mine,
     opp,
+    actions: engineResolved.actions,
   });
   if (state.assetManifest?.schemaVersion === 5 && freeActionPreparation.adjudicationFailure) {
     throw new Error("AWARENESS_REQUIRED_FREE_ACTION_JUDGMENT_FAILED");

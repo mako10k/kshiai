@@ -1088,12 +1088,13 @@ Return JSON only:
 }
 Rules:
 - Character intent is observer belief and may be mistaken. Canonical roots are the only world facts.
-- actors.capabilityEvidence is the only special-capability authority. Ordinary bodily actions remain possible, but reject superhuman reach, force, speed, transformation, or equipment use that it does not support.
+- Permit an attempt unless it is clearly physically impossible. Intent, performed movement, and resulting effect need not match. Reshape or reduce an overambitious attempt to supported ordinary movement; possible means the performed attempt is feasible, not that the desired result is achieved. Describe what actually happens in interpretation and successSummary, including misses, slips or limited effects without inventing mechanical damage.
+- actors.capabilityEvidence is the only special-capability authority. Do not grant unsupported superhuman reach, force, speed, transformation, or equipment use; prefer an ordinary feasible version of the attempt when one exists.
 - Bind by physical target continuity, not by trusting the noun in intent.description.
 - If the perceived stone is canonically a ball, bind to that root and preserve its canonicalLabel.
-- If no canonical root supports the subject, return impossible with no subject and no changes. Never create an object from the claim alone.
+- If the desired subject is absent, never create it from the claim. A feasible bodily attempt may bind an existing actor self root and describe reaching or preparing without achieving the desired contact. Return impossible only when no feasible performed attempt can be grounded.
 - rootKind=character anchors an existing person, never an object promotion. For a plausible grab, use /actorState/restraint with partially_restrained; do not put a character in held/worn placement.
-- canonicalAccessByActor is server-only distance. Contact manipulation may use contact or near when one ordinary step is plausible; far, separate_area, and out_of_scene attempts are impossible unless capabilityEvidence explicitly supports that reach.
+- canonicalAccessByActor is server-only distance. Contact manipulation requires contact or near when one ordinary step is plausible. Far, separate_area and out_of_scene do not permit contact without supported reach; reshape to actor preparation or another feasible movement without falsely committing contact.
 - canonicalLabel must exactly copy a non-null root canonicalLabel. For a null profile-appearance root, infer only an ordinary item directly supported by its description; otherwise keep null.
 - Allowed generic paths are /placement, /actorState/restraint, /actorState/posture, /exposure, and /objectState/cover. Use existing world enum-shaped values.
 - Use /placement held by character.<side> for a successful pickup. A failed reach has no success change.
@@ -1101,7 +1102,7 @@ Rules:
 - causalEnvelope is qualitative planning input, not damage authority; improvised objects may be at most moderate.
 - Return exactly one proposal for each supplied intent and do not expose canonical facts in successSummary when the actor would not perceive them.
 ${freeActionPenaltyInstructions(input.penaltyContext)}`,
-        JSON.stringify(input),
+        renderAdjudicationPrompt(input),
         {
           tier: "fast",
           label: "adjudicateFreeActions",
@@ -1111,19 +1112,19 @@ ${freeActionPenaltyInstructions(input.penaltyContext)}`,
       );
       const parsed = FreeActionAdjudicationBatchSchema.safeParse(data);
       if (!parsed.success) {
-        throw new Error("Free-action adjudicator returned an invalid batch");
+        throw new LlmApplicationResultError("schema_invalid", "FREE_ACTION_BATCH_SCHEMA");
       }
       if (currentAwarenessDispatchContext()) {
         const expected = input.intents.map((intent) => intent.actorSide).sort();
         const actual = parsed.data.proposals.map((proposal) => proposal.actorSide).sort();
         if (new Set(actual).size !== actual.length || expected.length !== actual.length ||
             expected.some((side, index) => side !== actual[index])) {
-          throw new Error("AWARENESS_FREE_ACTION_PROPOSAL_COVERAGE");
+          throw new LlmApplicationResultError("consistency_invalid", "AWARENESS_FREE_ACTION_PROPOSAL_COVERAGE");
         }
       }
       for (const proposal of parsed.data.proposals) {
         if (input.penaltyContext?.policyBySide[proposal.actorSide] && proposal.penalty === undefined) {
-          throw new Error("FREE_ACTION_PENALTY_CONTRACT_MISSING");
+          throw new LlmApplicationResultError("consistency_invalid", "FREE_ACTION_PENALTY_CONTRACT_MISSING");
         }
       }
       return parsed.data;
@@ -4089,7 +4090,7 @@ Default perspective external unless the user clearly wants subjective/omniscient
 function freeActionPenaltyInstructions(context: Parameters<LlmProvider["adjudicateFreeActions"]>[0]["penaltyContext"]) {
   if (!context) return "Historical action policy: do not propose an effort penalty.";
   return `For a side with policyBySide=battle-action-effort-v1, penalty is required: null for ordinary effort, or one object.
-Choose kind extra_stamina for bodily effort (light/substantial/extreme maps to STA2/4/8), defense_exposure for an exposed posture (10/20/30 percent for the next incoming attack only), or execution_limit for physically overloaded action.
+Choose kind extra_stamina for bodily effort (light/substantial/extreme maps to STA2/4/8), defense_exposure for an exposed posture (10/20/30 percent for the next incoming attack only), or execution_limit for physically overloaded action. Prefer a feasible reduced execution; not_executed is only for a clearly impossible attempt with no grounded feasible version.
 Every object needs level, reason, an exact actionQuote from that side's intent.description, and baseWorldRevision=${context.baseWorldRevision}. execution_limit also needs execution=partial|not_executed, executedDescription (nonempty for partial), and appliedChangeIndexes. For partial, list the full intended changes and select a strict subset of their zero-based indexes; only selected changes are applied. For not_executed, outcome must be impossible, without subject or changes, and executedDescription and appliedChangeIndexes must be empty.
 Select at most one primary consequence; never charge thought or ordinary speech. Do not repeat a stamina charge as an exposure penalty for the same cause. Use actor conditions and canonical facts; invented capabilities or private thought are not evidence. Never patch parameters directly. For historical sides use penalty=null.`;
 }

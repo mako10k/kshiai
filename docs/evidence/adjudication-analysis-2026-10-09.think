@@ -1,0 +1,26 @@
+domain Rc19FreeAction:
+  description "Read-only adjudication omission analysis"
+problem P1:
+  "Explain failed free actions in successful Stage rc19 without treating presentation as cause."
+evidence E1:
+  "Durable battle btl_06c3a5ddc4235bcee96b42b4e11d88ec has 20 freeActionReceipts, all reason adjudication_unavailable and outcome failed. None has failureSubtype. This is a saved read-only snapshot from the exact trial."
+evidence E2:
+  "battle-service binds selected actions to plannedActionA/B, resolves engine buckets and replaces state with engineResolved.state via bindEngineLiveCheckpoint before calling prepareFreeActionsForTurn. Shared battle-engine final state explicitly clears plannedActionA/B. bindEngineLiveCheckpoint does not restore them."
+evidence E3:
+  "prepareFreeActionsForTurn discovers intents only from state.plannedActionA/B. If empty it returns adjudication null and failure null without calling the provider. commitFreeActionAdjudications instead consumes engineResolved.actions; an executed free_action without a matching proposal becomes adjudication_unavailable, omitting failureSubtype when null. The strict awareness failure guard checks only adjudicationFailure, not missing coverage against executed actions."
+evidence E4:
+  "Existing free-action service tests populate plannedAction manually. Existing strict provider coverage test verifies responses for supplied intents, not engine-final-state-to-preparation coverage. Stage accepts finished plus accounting and narration; these observations do not establish action quality."
+evidence E5:
+  "Prompt forbids HP and parameters and permits only placement/restraint/posture/exposure/cover changes. This constrains direct free-action attack expression. Actual raw adjudication output was not recovered. App logs query capped3000 covers about0.1second due line-expanded validation records, so no absence-of-error conclusion follows. All123 HTTP attempts completed does not prove valid applied results."
+decision D1 based_on P1, E1, E2, E3:
+  "The confirmed current producing condition is a mismatched handoff: preparation reads consumed planned intentions whereas commit reads executed actions. This allows missing adjudication for actual free actions without a technical failure classification. Saved receipts match this path; per-tick provider input trace remains unavailable. No evidence supports claiming that20 actions were denied as physically impossible."
+decision D2 based_on D1, E4, E5:
+  "Detection gaps are coverage measured only inside provider calls and tests starting from manually populated plans. Fix coverage between actual execution candidates and adjudication preparation using typed explicit input, not permissive treatment of malformed model output. Separately implement owner-approved permissive attempt semantics; prompt and result schema alignment is needed. Do not infer raw model decisions, historic introduction, or complete correction from this read-only analysis."
+evidence E6:
+  "Owner supplied xAI request logs for IDs899c07b6 and deab023b. Both system prompts say reconcile already-resolved confrontation and never change committed mechanics. Both outputs are empty operations with null nextSituation and environmentDecision. ID899c07b6 user input already contains failed free-action summary. These calls are downstream semantic reconciliation, not free-action adjudication."
+evidence E7:
+  "Actual user inputs contain439/351 lines,7/5 null-valued leaves and17/18 empty containers. renderAdjudicationPrompt recursively preserves all null and empty structures and skips only undefined. Its tests explicitly require null and empty retention. Thus implemented compression reduces structural prose verbosity without pruning empty facts. Literal '(null)' does not occur in these two inputs."
+decision D3 based_on E6, D1:
+  "The supplied raw requests confirm those two HTTP calls cannot decide the missing free-action result: the system forbids changing committed mechanics and a failure is already in input. Empty semantic patches alone do not prove overly strict physical judgment."
+decision D4 based_on E7:
+  "Residual empty items are a renderer contract/design limitation, not evidence of an old undeployed renderer. It is a compact complete outline rather than selected natural-language facts. Pruning must preserve unknown versus explicit absence and negative facts. No claim is made that removing null alone substantially reduces total tokens."

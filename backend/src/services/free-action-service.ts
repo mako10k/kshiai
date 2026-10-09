@@ -1,3 +1,4 @@
+// R: Prepare explicit executed free-action adjudications and commit validated world consequences.
 import { validateFreeActionPenalty, applyFreeActionPenalty, executableFreeActionChanges, isPartialFreeAction,
   partialSubjectIsBound, freeActionReceiptOutcome, freeActionResultSummary } from "./free-action-penalties.js";
 import {
@@ -34,7 +35,8 @@ import {
 } from "@kshiai/shared";
 import type { LlmProvider } from "../llm/types.js";
 import { isProviderOperationAccountingError } from "../llm/provider-accounting.js";
-import { classifyLlmProviderError } from "../llm/provider-errors.js";
+import { withLlmUsageScope, currentLlmUsageScope } from "../llm/llm-usage-context.js";
+import { LlmApplicationResultError, isLlmApplicationResultError, classifyLlmProviderError } from "../llm/provider-errors.js";
 
 type BattleSide = "a" | "b";
 
@@ -638,30 +640,56 @@ function capabilityEvidence(sheet: CharacterSheet): string[] {
   ].filter((value): value is string => Boolean(value)).slice(0, 16);
 }
 
+function validatePreparedAdjudication(result: unknown, actorSides: readonly BattleSide[]) {
+  const parsed = parseFreeActionAdjudication(result);
+  if (parsed.adjudicationFailure) throw new LlmApplicationResultError("schema_invalid", "FREE_ACTION_BATCH_SCHEMA");
+  const expected = [...actorSides].sort();
+  const actual = parsed.adjudication?.proposals.map((proposal) => proposal.actorSide).sort() ?? [];
+  if (new Set(actual).size !== actual.length || expected.length !== actual.length ||
+    expected.some((side, index) => side !== actual[index])) {
+    throw new LlmApplicationResultError("consistency_invalid", "FREE_ACTION_PROPOSAL_COVERAGE");
+  }
+  return parsed;
+}
+
+function logFreeActionPreparationFailure(state: BattleState, actions: readonly ResolvedBattleAction[], error: unknown): void {
+  console.warn(JSON.stringify({ event: "free_action_adjudication_failed", battleId: state.id,
+    turn: state.turn, tick: state.combatTick ?? null,
+    actionIds: actions.filter((action) => action.executed && action.kind === "free_action").map((action) => action.id),
+    failureStage: isLlmApplicationResultError(error) ? "result_validation" : error instanceof SyntaxError ? "decode" :
+    classifyLlmProviderError(error) === "other" ? "unknown" : "provider",
+    reasonCode: isLlmApplicationResultError(error) ? error.detail : classifyLlmProviderError(error),
+    fallbackKind: "unavailable_receipt", applied: false,
+    requestId: null, requestIdLookup: "llm_usage_attempts.receiptIds includes actionIds",
+  }));
+}
+
 export async function prepareFreeActionsForTurn(input: {
   llm: LlmProvider;
   state: BattleState;
   mine: CharacterSheet;
   opp: CharacterSheet;
+  actions: readonly ResolvedBattleAction[];
 }): Promise<FreeActionTurnPreparation> {
   const roots = buildFreeActionCanonicalRoots(input);
   const affordances = {
     a: buildLatentAffordances({ ...input, side: "a", roots }),
     b: buildLatentAffordances({ ...input, side: "b", roots }),
   };
-  const intents = ([
-    ["a", input.state.plannedActionA],
-    ["b", input.state.plannedActionB],
-  ] as const).flatMap(([actorSide, intent]) =>
-    intent?.kind === "free_action"
-      ? [{ actorSide, intent, perceivedAffordances: affordances[actorSide] }]
-      : []
-  );
+  const intents = input.actions.flatMap((action) => {
+    if (!action.executed || action.kind !== "free_action") return [];
+    const intent = projectCharacterActionIntent(action);
+    if (intent.kind !== "free_action") throw new Error("FREE_ACTION_INTENT_PROJECTION_INVALID");
+    return [{ actorSide: action.actorSide, intent, perceivedAffordances: affordances[action.actorSide] }];
+  });
   if (intents.length === 0) {
     return { roots, affordances, adjudication: null, adjudicationFailure: null };
   }
   try {
-    const result = await input.llm.adjudicateFreeActions({
+    const result = await withLlmUsageScope({ ...currentLlmUsageScope(), battleId: input.state.id,
+      role: "adjudication", tick: input.state.combatTick ?? input.state.turn,
+      receiptIds: input.actions.filter((action) => action.executed && action.kind === "free_action").map((action) => action.id),
+    }, () => input.llm.adjudicateFreeActions({
       penaltyContext: { baseWorldRevision: input.state.worldState?.revision ?? 0,
         policyBySide: { a: input.state.sideA.actionEffortPolicy?.contractVersion ?? null,
           b: input.state.sideB.actionEffortPolicy?.contractVersion ?? null } },
@@ -679,25 +707,24 @@ export async function prepareFreeActionsForTurn(input: {
       },
       intents,
       canonicalRoots: roots,
-    });
+    }));
+    const parsed = validatePreparedAdjudication(result, intents.map((intent) => intent.actorSide));
     return {
       roots,
       affordances,
-      ...parseFreeActionAdjudication(result),
+      ...parsed,
     };
   } catch (error) {
     if (isProviderOperationAccountingError(error)) throw error;
-    console.warn(
-      "[battle] free-action adjudication unavailable",
-      error instanceof Error ? error.message : error,
-    );
+    logFreeActionPreparationFailure(input.state, input.actions, error);
     return {
       roots,
       affordances,
       adjudication: null,
       adjudicationFailure: {
-        category: "provider",
-        reason: classifyLlmProviderError(error),
+        ...(isLlmApplicationResultError(error)
+          ? { category: "application" as const, reason: "schema_invalid" as const }
+          : { category: "provider" as const, reason: classifyLlmProviderError(error) }),
       },
     };
   }
@@ -893,6 +920,19 @@ function unavailableAdjudicationReceipt(input: {
     operationKinds: [],
     summary: "自由行動の現実判定を確定できなかった。",
   });
+}
+
+function logFreeActionResolutions(state: BattleState, receipts: readonly FreeActionResolutionReceipt[]): void {
+  for (const result of receipts) {
+    const data = { event: "free_action_resolution", battleId: state.id, turn: state.turn,
+      tick: state.combatTick ?? null, actionId: result.actionId, actorSide: result.actorSide,
+      outcome: result.outcome, reasonCode: result.reason, failureSubtype: result.failureSubtype ?? null,
+      fallbackKind: result.reason === "adjudication_unavailable" ? "unavailable_receipt" : null,
+      applied: result.operationKinds.length > 0, operationKinds: result.operationKinds,
+      requestId: null, requestIdLookup: "llm_usage_attempts.receiptIds includes actionId" };
+    if (result.reason === "adjudication_unavailable" || result.reason === "invalid_proposal" || result.reason === "operation_rejected") console.warn(JSON.stringify(data));
+    else console.info(JSON.stringify(data));
+  }
 }
 
 export function commitFreeActionAdjudications(input: {
@@ -1262,6 +1302,7 @@ export function commitFreeActionAdjudications(input: {
     if (existingIndex >= 0) events[existingIndex] = finalEvent;
     else events.push(finalEvent);
   }
+  logFreeActionResolutions(state, receipts);
   state.latestFreeActionReceipts = receipts;
   return { state, actions, events };
 }

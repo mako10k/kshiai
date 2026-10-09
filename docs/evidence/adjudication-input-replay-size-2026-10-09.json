@@ -1,0 +1,17 @@
+{
+  "scope": "User-message characters only, no paid token measurement",
+  "requests": [
+    {
+      "requestId": "899c07b6-374e-907d-bbc1-08fb31b06c62",
+      "beforeCharacters": 13709,
+      "afterCharacters": 13035,
+      "savedPercent": 4.92
+    },
+    {
+      "requestId": "deab023b-4b40-9861-b293-a39c6e6a6ee7",
+      "beforeCharacters": 10919,
+      "afterCharacters": 10571,
+      "savedPercent": 3.19
+    }
+  ]
+}

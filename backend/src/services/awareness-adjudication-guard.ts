@@ -1,5 +1,5 @@
 // R: Reserve and retain adjudication costs around exact, verified physical model dispatches.
-import { withLlmUsageScope } from "../llm/llm-usage-context.js";
+import { currentLlmUsageScope, withLlmUsageScope } from "../llm/llm-usage-context.js";
 import { AwarenessDefaultPolicy } from "@kshiai/shared";
 import { newId } from "../id.js";
 import type { AwarenessDispatchContext } from "../llm/awareness-dispatch-context.js";
@@ -63,7 +63,7 @@ export async function createAwarenessAdjudicationGuard(input: {
         await reserveAttempt(id, proof.maximumChargeUsd);
         reserved = true;
         assertDeadline(initial.runtime.deadlineAt);
-        const receipt = await withLlmUsageScope({ battleId: input.battleId, role: "adjudication", tick: initial.runtime.tick }, send);
+        const receipt = await withLlmUsageScope({ ...currentLlmUsageScope(), battleId: input.battleId, role: "adjudication", tick: initial.runtime.tick }, send);
         physicallyClosed = true;
         // The provider receipt proves completion. It does not establish the actual dollar charge.
         await settleAwarenessAttempt({ battleId: input.battleId, id, outcome: "unknown",
