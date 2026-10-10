@@ -55,5 +55,11 @@
     "static baseline unchanged",
     "sealgraph fsck ok",
     "PERT check/both schedules/next"
-  ]
+  ],
+  "planningValidationCorrection2026-10-11": {
+    "retractedClaim": "PERT check/both schedules/next in checks was not successful. Earlier shell sequencing hid nonzero parser exits.",
+    "observed": "Existing goal_owner/dag_owner/work_event/version metadata is not supported by installed perttool0.11.1 or current upstream0.12.0.",
+    "runtimeEvidence": "Build/typecheck/static, governed1516passes and source reviews are unaffected.",
+    "replacement": "Forward-plan projection checks documented in unified-free-action-authority-review-2026-10-11.json; these are not full-document validation."
+  }
 }
