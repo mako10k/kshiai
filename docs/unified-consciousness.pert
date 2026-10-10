@@ -45,8 +45,9 @@ task verify IMPLEMENTED -> VERIFIED:
 
 task fullVerification VERIFIED -> CURRENTLY_VERIFIED:
   title "根拠不備を解消した公式全体検証"
-  description "2026-10-10 owner correction and Accepted ADR0068 revision1 retract earlier whole-suite completion. Preserve previous scoped results. After selector correction in docs/test-authority-fail-closed.pert, review stale test authority individually and run official full suite with no disabled authority. Do not bulk reseal or delete tests. Completion requires actual official exit0, typecheck and updated evidence. Estimate provisional. This task remains pending during the selector repair."
-  duration 3p
+  description "2026-10-10 owner correction and Accepted ADR0068 revision1 retract earlier whole-suite completion. Preserve previous scoped results. After selector correction in docs/test-authority-fail-closed.pert, review stale test authority individually and run official full suite with no disabled authority. Do not bulk reseal or delete tests. Completion requires actual official exit0, typecheck and updated evidence. Owner explicitly authorized 2026-10-10: checkpoint commit first, then individually review/fix all 28 blocked files, preserve historical evidence, reseal each against reviewed current contracts and record per-file findings. First official recovery run detected 3 newly stale dependents (awareness-execution, battle-speech-wiring, character-agency-inventory) through the reviewed battle-service effort revision; individually confirm and reseal those necessary downstream scopes too, preserving tests and original failure evidence. Selector repair is complete at 8a144c37. Completion requires zero invalid unit authority and actual official full-suite exit0 plus typecheck. Estimate provisional for individual review and recovery."
+  duration 5p
+  status done
 
 work_event WE-22fc1f43fb25e57ba288410e84cc4e98f1b6e647f91c8a7e99892e1cb6e2b423:
   model 1
@@ -99,3 +100,16 @@ work_event WE-ef30d4aa080fe30253cac1c65250644a391db6195cb35cc629a6a7cbf81c73e3:
   task verify
   kind finish
   occurred_at 2026-10-10T14:16:55+09:00
+
+work_event WE-8b3aaaa0c3beca0f89c9ed069d2c23d936bc2da1b630c90519f71acd158ab6be:
+  model 1
+  task fullVerification
+  kind start
+  occurred_at 2026-10-10T14:31:38+09:00
+  planned_value 5p
+
+work_event WE-a0fae34833ef7492b04a11129e7d2e5628b062aa3ea70edb4496d0de42cf9048:
+  model 1
+  task fullVerification
+  kind finish
+  occurred_at 2026-10-10T15:18:19+09:00

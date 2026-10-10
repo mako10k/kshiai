@@ -1,0 +1,2334 @@
+{
+  "schema": "kshiai/test-authority-recovery-review/v1",
+  "date": "2026-10-10",
+  "checkpointCommit": "8a144c37de055a79f9cb9188a39ae1e8c8437ef3",
+  "authority": [
+    "Owner instruction: commit first then individually fix or confirm and reseal 28",
+    "Accepted ADR0068 revision1",
+    "Accepted ADR0067 revision2 C7",
+    "Accepted ADR0066"
+  ],
+  "canonicalTask": "docs/unified-consciousness.pert/fullVerification",
+  "boundary": "Individual reviewed plan; no automatic discovery/reseal of other downstream references. Historical failed/scoped evidence preserved. Per-file diagnostic before authority recovery is not full-suite acceptance.",
+  "diagnostic": {
+    "files": 28,
+    "tests": 156,
+    "passed": 152,
+    "failed": 0,
+    "skipped": 4,
+    "nativePostgresAfterFixtureFix": {
+      "tests": 4,
+      "passed": 4,
+      "failed": 0,
+      "skipped": 0
+    }
+  },
+  "reviews": [
+    {
+      "oldSeal": "9300bba5dfdd28f2c89c1d4837b0868e49f11084611a6a9c1c1551b09c38b086",
+      "ref": "test-recovery-v1/basis/9300bba5dfdd28f2",
+      "path": "backend/src/llm/openai-compatible.ts",
+      "test": false,
+      "updates": {
+        "18615b042fb44a5a2e1de6560cc29be0e544c11a501bd909f9a080b248097434": {
+          "existing": "7a26884d4f1fa8ea0be0c709673cbcfca6b7b4341daffe8430e19eb4d8e1f6ce",
+          "ref": "all-tests-20261007/implementation-awareness-dispatch-context"
+        },
+        "82a05d36a1ced02c2466b9a25dfb306d23d3a63436fc5ed35f2f66eb29016e2c": {
+          "existing": "67ec3f1869ecdd512e1b6c46a3d62eadbe9335275525b1b679111ac9f84306b9",
+          "ref": "all-tests-20261009/current-source-closure/all-tests-20261007/implementation-awareness-dispatch-admission"
+        },
+        "b3e0e4ce62fe56c728925a943bf1f3fc1b0b98b72fdfa4de35c888d3a6f463ee": {
+          "existing": "cbf3ffb2ce9aaaf084d58c4589de059107ac54c50f8484d55eff7ca591096696",
+          "ref": "all-tests-20261008/current-source-closure/all-tests-20261007/implementation-sdk-model-options"
+        },
+        "c064db895ea9f010d2f6fb28360b243285cbe93156c19f8286e161ec2d0d731a": {
+          "existing": "c979d5b48b413e7c93bd040eddddad6b741448599fc19677c3db2d67578edfe0",
+          "ref": "all-tests-20261007/implementation-awareness-policy"
+        }
+      },
+      "review": "Unchanged SDK bytes; reviewed exact request guard, physical accounting, strict adjudication result and legacy routing scopes. Retain original bounded Cause messages; inherit current policy/context/admission/model-option dependencies only.",
+      "reviewedSha256": "be1d1d750b7e88d150cdf7baedf588a48ee208884abadec886b6d06519cceeb3",
+      "decision": "confirm preserved contract"
+    },
+    {
+      "oldSeal": "ebcf7ce03ec331c7a1729463ebb760272d23b29405d65c8b6e5a0c2f9d9804e7",
+      "ref": "test-recovery-v1/basis/ebcf7ce03ec331c7",
+      "path": "backend/src/llm/openai-compatible.ts",
+      "test": false,
+      "updates": {
+        "9300bba5dfdd28f2c89c1d4837b0868e49f11084611a6a9c1c1551b09c38b086": {
+          "planned": "9300bba5dfdd28f2c89c1d4837b0868e49f11084611a6a9c1c1551b09c38b086"
+        }
+      },
+      "review": "Unchanged SDK bytes; reviewed exact request guard, physical accounting, strict adjudication result and legacy routing scopes. Retain original bounded Cause messages; inherit current policy/context/admission/model-option dependencies only.",
+      "reviewedSha256": "be1d1d750b7e88d150cdf7baedf588a48ee208884abadec886b6d06519cceeb3",
+      "decision": "confirm preserved contract"
+    },
+    {
+      "oldSeal": "0ebbe9ea8fda89585eb56783fed6cf5014c62c0b5ecbae72f20bad01fb484c78",
+      "ref": "all-tests-20261008/current-source-closure/verification/awareness-adjudication-result-20261007",
+      "path": "backend/src/llm/awareness-adjudication-result.test.ts",
+      "test": true,
+      "updates": {
+        "ebcf7ce03ec331c7a1729463ebb760272d23b29405d65c8b6e5a0c2f9d9804e7": {
+          "planned": "ebcf7ce03ec331c7a1729463ebb760272d23b29405d65c8b6e5a0c2f9d9804e7"
+        }
+      },
+      "review": "ADR0051/0056/0065: preserve invalid winner/reason and malformed semantic/evidence rejection, server-owned references, single physical send and no synthetic free action. SDK bytes unchanged; current dispatch/admission/model-options and policy v3 basis reviewed. Guard completion mock is not durable ledger or world-application proof.",
+      "reviewedSha256": "c8b7b4f7ad6589ec1c73a2d3162009639ab999744f88582beb9a85b833db2de2",
+      "decision": "confirm preserved contract"
+    },
+    {
+      "oldSeal": "bdae2ca6065c13de1567d7ffda94713b86f25c55a8cafd3e82bc22b4f1de962c",
+      "ref": "all-tests-20261009/current-source-closure/verification/awareness-dispatch-admission-20261007",
+      "path": "backend/src/llm/awareness-dispatch-admission.test.ts",
+      "test": true,
+      "updates": {
+        "82a05d36a1ced02c2466b9a25dfb306d23d3a63436fc5ed35f2f66eb29016e2c": {
+          "existing": "67ec3f1869ecdd512e1b6c46a3d62eadbe9335275525b1b679111ac9f84306b9",
+          "ref": "all-tests-20261009/current-source-closure/all-tests-20261007/implementation-awareness-dispatch-admission"
+        }
+      },
+      "review": "ADR0051/0066: exact rendered request hash, provider/model/cap, malformed quote and error rejection, duplicate contract refusal, observed policy without quotes or invented cost, prompt revisions and time/token bounds. Ordinary policy v3 does not change historical certified/observed test inputs.",
+      "reviewedSha256": "702c77c494da1d79e4c5203f4d593791a581713d24a33182712bfb9d07033691",
+      "decision": "confirm preserved contract"
+    },
+    {
+      "oldSeal": "308f7c817f5faee04b21c2e8e18065943214cf9b19287b4245f258eca0217b05",
+      "ref": "all-tests-20261008/current-source-closure/verification/awareness-dispatch-context-20261007",
+      "path": "backend/src/llm/awareness-dispatch-context.test.ts",
+      "test": true,
+      "updates": {
+        "18615b042fb44a5a2e1de6560cc29be0e544c11a501bd909f9a080b248097434": {
+          "existing": "7a26884d4f1fa8ea0be0c709673cbcfca6b7b4341daffe8430e19eb4d8e1f6ce",
+          "ref": "all-tests-20261007/implementation-awareness-dispatch-context"
+        },
+        "3ce85102892804dcfeb7df194b5e93d477ab783cef102356d02ed300e993ea69": {
+          "existing": "ee4b693485b3caa77a55bddeac761b710b0ce1b5a6b3f0077d60a877cdbe548b",
+          "ref": "all-tests-20261007/implementation-frozen-narration-dispatch"
+        },
+        "82a05d36a1ced02c2466b9a25dfb306d23d3a63436fc5ed35f2f66eb29016e2c": {
+          "existing": "67ec3f1869ecdd512e1b6c46a3d62eadbe9335275525b1b679111ac9f84306b9",
+          "ref": "all-tests-20261009/current-source-closure/all-tests-20261007/implementation-awareness-dispatch-admission"
+        },
+        "9300bba5dfdd28f2c89c1d4837b0868e49f11084611a6a9c1c1551b09c38b086": {
+          "planned": "9300bba5dfdd28f2c89c1d4837b0868e49f11084611a6a9c1c1551b09c38b086"
+        }
+      },
+      "review": "ADR0051/0056/0065/0066: physical wire equals admitted prose/schema/cap, bound absolute deadline, no streaming/tools/wrong route/retry on refusal, strict frozen narration schema. Historical limits remain explicit; current context and SDK bytes unchanged.",
+      "reviewedSha256": "c07e444968c6952867c4ad0d0c14e7d0c29b3cee65f9540091a541926ddf1370",
+      "decision": "confirm preserved contract"
+    },
+    {
+      "oldSeal": "6b96d59704d7145911761177293c65f5ddf85141def9485d353b0b68a0628b74",
+      "ref": "test-recovery-v1/basis/6b96d59704d71459",
+      "path": "backend/src/llm/awareness-provider-factory.ts",
+      "test": false,
+      "updates": {
+        "55cd6ea44ebccfb4f9f0e3012c1edd96fcafa0f412c8eaeafeac922832b9a100": {
+          "existing": "462b1364dc26c5e423eb24df3a599a9c53726eefbb8416e929f201f642ee80c6",
+          "ref": "all-tests-20261007/contract-awareness-request-options"
+        },
+        "5813ba59d82e96ead103f43fa08e7bdac8ee4ffbe0e9e57c3bb6d683b086a349": {
+          "existing": "c7dd1c48d9801999a79ac066d1b33a500edfb9dd3621abf2c9b8d56fe89731ad",
+          "ref": "all-tests-20261009/current-source-closure/all-tests-20261007/implementation-awareness-role-provider"
+        },
+        "b3e0e4ce62fe56c728925a943bf1f3fc1b0b98b72fdfa4de35c888d3a6f463ee": {
+          "existing": "cbf3ffb2ce9aaaf084d58c4589de059107ac54c50f8484d55eff7ca591096696",
+          "ref": "all-tests-20261008/current-source-closure/all-tests-20261007/implementation-sdk-model-options"
+        },
+        "d777c0ab40b128c53df1a5ff0eb971ae7a797445e581c130c9efea400cc4f383": {
+          "existing": "0b90dcf2eff7f2dce9ca38ccfd7ae273af6fb25507ad48c68aa9affa293a42d9",
+          "ref": "all-tests-20261008/current-source-closure/all-tests-20261007/implementation-narration-role-transport"
+        }
+      },
+      "review": "Only optional consciousness transport plus reuse of the existing latent adapter added for ADR0067 C6; legacy roles and two-adapter creation remain unchanged. Retain original configured-role contract and no-retry boundaries.",
+      "reviewedSha256": "f23c441b1289da17ed2fbc4fbca4c0174a51d0efbde3175fa8f57ed7c3cfa4cc",
+      "decision": "confirm preserved contract"
+    },
+    {
+      "oldSeal": "f01113bf7400ead67001c2b96dc5d084115280fef8ffdd75af7097f0caa7fb22",
+      "ref": "all-tests-20261008/current-source-closure/verification/awareness-provider-factory-20261007",
+      "path": "backend/src/llm/awareness-provider-factory.test.ts",
+      "test": true,
+      "updates": {
+        "3ce85102892804dcfeb7df194b5e93d477ab783cef102356d02ed300e993ea69": {
+          "existing": "ee4b693485b3caa77a55bddeac761b710b0ce1b5a6b3f0077d60a877cdbe548b",
+          "ref": "all-tests-20261007/implementation-frozen-narration-dispatch"
+        },
+        "5813ba59d82e96ead103f43fa08e7bdac8ee4ffbe0e9e57c3bb6d683b086a349": {
+          "existing": "c7dd1c48d9801999a79ac066d1b33a500edfb9dd3621abf2c9b8d56fe89731ad",
+          "ref": "all-tests-20261009/current-source-closure/all-tests-20261007/implementation-awareness-role-provider"
+        },
+        "6b96d59704d7145911761177293c65f5ddf85141def9485d353b0b68a0628b74": {
+          "planned": "6b96d59704d7145911761177293c65f5ddf85141def9485d353b0b68a0628b74"
+        },
+        "b3e0e4ce62fe56c728925a943bf1f3fc1b0b98b72fdfa4de35c888d3a6f463ee": {
+          "existing": "cbf3ffb2ce9aaaf084d58c4589de059107ac54c50f8484d55eff7ca591096696",
+          "ref": "all-tests-20261008/current-source-closure/all-tests-20261007/implementation-sdk-model-options"
+        },
+        "d777c0ab40b128c53df1a5ff0eb971ae7a797445e581c130c9efea400cc4f383": {
+          "existing": "0b90dcf2eff7f2dce9ca38ccfd7ae273af6fb25507ad48c68aa9affa293a42d9",
+          "ref": "all-tests-20261008/current-source-closure/all-tests-20261007/implementation-narration-role-transport"
+        }
+      },
+      "review": "ADR0051/0052/0054/0067: keep two adapters, Luna/Grok role identities, no fallback/retry, bound narration timing, credential/URL/model refusal. Added optional consciousness transport reuses latent adapter and does not replace historical models; no extra adapter or call is required.",
+      "reviewedSha256": "8f81ea03ce3aac3bf277d368477c193b4a9f418ff2e146b4806e7e3645ba0b2f",
+      "decision": "confirm preserved contract"
+    },
+    {
+      "oldSeal": "722e0b834e70ef88b0f4eb431311e89eb056a595a42709a466907e9e1dd4ba40",
+      "ref": "all-tests-20261009/current-source-closure/verification/awareness-role-provider-20261007",
+      "path": "backend/src/llm/awareness-provider.test.ts",
+      "test": true,
+      "updates": {
+        "55cd6ea44ebccfb4f9f0e3012c1edd96fcafa0f412c8eaeafeac922832b9a100": {
+          "existing": "462b1364dc26c5e423eb24df3a599a9c53726eefbb8416e929f201f642ee80c6",
+          "ref": "all-tests-20261007/contract-awareness-request-options"
+        },
+        "5813ba59d82e96ead103f43fa08e7bdac8ee4ffbe0e9e57c3bb6d683b086a349": {
+          "existing": "c7dd1c48d9801999a79ac066d1b33a500edfb9dd3621abf2c9b8d56fe89731ad",
+          "ref": "all-tests-20261009/current-source-closure/all-tests-20261007/implementation-awareness-role-provider"
+        },
+        "871f782e1be4698f4e30f16af051e3ee53940f63694194a24090315c896aab2c": {
+          "existing": "cab5613bd79f2e4596e4a472fce4c42766878a947ea1679efd352422fbbe4a25",
+          "ref": "all-tests-20261009/current-source-closure/all-tests-20261007/implementation-awareness-request"
+        },
+        "c064db895ea9f010d2f6fb28360b243285cbe93156c19f8286e161ec2d0d731a": {
+          "existing": "c979d5b48b413e7c93bd040eddddad6b741448599fc19677c3db2d67578edfe0",
+          "ref": "all-tests-20261007/implementation-awareness-policy"
+        }
+      },
+      "review": "ADR0051/0052/0054/0066: preserve historical role routing, felt projection privacy, source tick, strict output and immutable prompt/policy selection. Policy v3 only extends adjudication deadline, not latent/conscious caps; these explicit historical-policy expectations remain valid.",
+      "reviewedSha256": "a2140ee8c1a224edbb39a2d8c1fdf56fa9e0c145e8deac538a76a2ee551c66b3",
+      "decision": "confirm preserved contract"
+    },
+    {
+      "oldSeal": "2f80c008d1f208360b9102994990e9975c419cda96eb1d68c91aed70f73d06a4",
+      "ref": "test-recovery-v1/basis/2f80c008d1f20836",
+      "path": "backend/src/llm/openai-compatible.ts",
+      "test": false,
+      "updates": {
+        "871be2be8ffe62441d423143a4433334fe7a4026000f033122d5396c949cc95a": {
+          "existing": "10b9c6f7a9ffc084ff80596ff6384cfe367a426dde2439d0b7e8e45724771c6e",
+          "ref": "all-tests-20261008/current-source-closure/all-tests-20261008/design-routing-typed-seam"
+        }
+      },
+      "review": "Unchanged SDK bytes; reviewed exact request guard, physical accounting, strict adjudication result and legacy routing scopes. Retain original bounded Cause messages; inherit current policy/context/admission/model-option dependencies only.",
+      "reviewedSha256": "be1d1d750b7e88d150cdf7baedf588a48ee208884abadec886b6d06519cceeb3",
+      "decision": "confirm preserved contract"
+    },
+    {
+      "oldSeal": "e03b0dc08bf995a2fa71d86539a6c7e4d8305464edb4ec654df89069c8087ff4",
+      "ref": "all-tests-20261008/current-source-closure/verification/routing-typed-seam-bounded-20261008",
+      "path": "backend/src/llm/openai-compatible-routing.test.ts",
+      "test": true,
+      "updates": {
+        "2f80c008d1f208360b9102994990e9975c419cda96eb1d68c91aed70f73d06a4": {
+          "planned": "2f80c008d1f208360b9102994990e9975c419cda96eb1d68c91aed70f73d06a4"
+        }
+      },
+      "review": "ADR0022/0051: six typed SDK seam cases retain direct Grok reasoning none, non-xAI options, referee fast tier, legacy retry and timeout behavior. Awareness guard retry-none is separately tested; this legacy routing regression does not impose retries on unified consciousness v1.",
+      "reviewedSha256": "eeb519cdbacdfdab3f995c001825293896dcb7f31b5397a2ac8ffe9c8336caf8",
+      "decision": "confirm preserved contract"
+    },
+    {
+      "oldSeal": "0725ece43a7079bfe5d41d80f9c4b0e539679011a4b24d4b4295137509bf6a76",
+      "ref": "test-recovery-v1/basis/0725ece43a7079bf",
+      "path": "backend/src/repositories/battle-awareness-narration-reservation.ts",
+      "test": false,
+      "updates": {},
+      "review": "Current source selects common operational runtime, locks runtime before narrator lease/batch/entries, validates identical capability/budget and writes unified budget or full historical schema fallback. Native PG fixture plus SQLite worker regressions preserve fence/oversubscription/rollback; no full v6 PG acceptance.",
+      "reviewedSha256": "126f3cc5c7f889403d08dea1d89a096e60dee92ad4e519698568aa90476e9000",
+      "decision": "confirm preserved contract"
+    },
+    {
+      "oldSeal": "2cf9e71939aef7ddfffebe626b6b1d8bf1cfce768277de50c3c5b0154e4abe02",
+      "ref": "test-recovery-v1/basis/2cf9e71939aef7dd",
+      "path": "docs/evidence/test-authority-recovery-postgres-2026-10-10.json",
+      "test": false,
+      "updates": {
+        "652096d8480a7f0620eecd0f1574ed889d67627069f1405a9fa6d1e3ee1e78ef": {
+          "planned": "0725ece43a7079bfe5d41d80f9c4b0e539679011a4b24d4b4295137509bf6a76"
+        }
+      },
+      "review": "New dedicated local PostgreSQL16 run receipt: original four cases, observed one 42P01 fixture failure then corrected four passes/no skips, stopped private cluster. Preserve old native receipt as previous scoped evidence; do not rewrite historical result.",
+      "reviewedSha256": "727b88b0fe8002170790dca101dd9d5845d710af89591f9429787f8a72686d17",
+      "decision": "confirm preserved contract"
+    },
+    {
+      "oldSeal": "6e1419fee34ab5c6dcc09637586bde9778e527495424af69323ae0d859da8874",
+      "ref": "all-tests-20261008/current-source-closure/verification/battle-awareness-narration-events-postgres-bounded-native-pg-20261007",
+      "path": "backend/src/repositories/battle-awareness-narration-events-postgres.test.ts",
+      "test": true,
+      "updates": {
+        "2cf9e71939aef7ddfffebe626b6b1d8bf1cfce768277de50c3c5b0154e4abe02": {
+          "planned": "2cf9e71939aef7ddfffebe626b6b1d8bf1cfce768277de50c3c5b0154e4abe02"
+        }
+      },
+      "review": "ADR0006/0051: native PostgreSQL advisory-lock waiting, per-battle independence, unique collision control, rollback and retention sequence floor. Actual event appender exercised; current four-case local PG receipt replaces historical execution receipt, no production/PG17 claim.",
+      "reviewedSha256": "1e4e39135aaa66e395818cb02c2d7132c17f667d60dc61860bdfcab8e69f5cdf",
+      "decision": "confirm preserved contract"
+    },
+    {
+      "oldSeal": "04d56ceb000e6fa7df80d248647dd95c84fddb6806ef0362ec702d3ac2766af6",
+      "ref": "all-tests-20261008/current-source-closure/verification/battle-awareness-narration-reservation-postgres-bounded-native-pg-20261007",
+      "path": "backend/src/repositories/battle-awareness-narration-reservation-postgres.test.ts",
+      "test": true,
+      "updates": {
+        "2cf9e71939aef7ddfffebe626b6b1d8bf1cfce768277de50c3c5b0154e4abe02": {
+          "planned": "2cf9e71939aef7ddfffebe626b6b1d8bf1cfce768277de50c3c5b0154e4abe02"
+        },
+        "652096d8480a7f0620eecd0f1574ed889d67627069f1405a9fa6d1e3ee1e78ef": {
+          "planned": "0725ece43a7079bfe5d41d80f9c4b0e539679011a4b24d4b4295137509bf6a76"
+        }
+      },
+      "review": "ADR0006/0051/0067: actual native PostgreSQL reservation keeps world fence, serializes concurrent budget admission, rejects stale narrator fence and rolls back batch mutation. FIX: minimal fixture omitted battle_unified_consciousness table now probed by shared runtime selector; add empty table so historical awareness-v5 fallback executes. Preserve every original concurrency and CAS assertion. Initial native run failed 42P01; corrected run passes.",
+      "reviewedSha256": "8d3d782554e4c1de51685b106376bb3398de5e94551e8ed3c64760ddfd9be694",
+      "decision": "fix fixture"
+    },
+    {
+      "oldSeal": "b3f247d89388136a4b644bf2c067a7df834f5856c2d7f77734a3920f85c157a6",
+      "ref": "all-tests-20261008/current-source-closure/verification/battle-awareness-postgres-bounded-native-pg-20261007",
+      "path": "backend/src/repositories/battle-awareness-postgres.test.ts",
+      "test": true,
+      "updates": {
+        "2cf9e71939aef7ddfffebe626b6b1d8bf1cfce768277de50c3c5b0154e4abe02": {
+          "planned": "2cf9e71939aef7ddfffebe626b6b1d8bf1cfce768277de50c3c5b0154e4abe02"
+        }
+      },
+      "review": "ADR0006/0051: two actual native PG initialization cases preserve owner/fence/expiry checks and conflict immutability. Opaque runtime JSON tests SQL only; four-case current execution receipt is scoped PG16 evidence, not full schema or runtime validity.",
+      "reviewedSha256": "315fb6c0727d81631a5e9502984fcc1c12654b6324b83eeb7788bd498a0302d4",
+      "decision": "confirm preserved contract"
+    },
+    {
+      "oldSeal": "0e5e6c7cf01a162e0c87e52e251660698879721174cf925a2ebefe13fc34d50d",
+      "ref": "test-recovery-v1/basis/0e5e6c7cf01a162e",
+      "path": "backend/src/services/battle-service.ts",
+      "test": false,
+      "updates": {},
+      "review": "Reviewed opt-in consciousnessPolicy parse/binding/adoption and schema6 advance/commit branches against ADR0067 C1-C7. Default v5 remains AwarenessNormalPolicy v3 under ADR0066; retained v3/v4 helpers, public DTO/auto-match, scene clock, replay and failure behavior tested by identified 28-file cohort. Preserve original narrow projection causes, no full battle-service correctness claim.",
+      "reviewedSha256": "157a15455ffe1f5c6636aa1d01a9d81717f69daea654262cdced43f989fc735f",
+      "decision": "confirm preserved contract"
+    },
+    {
+      "oldSeal": "a3adc469058d306b4d0349187ae7c24e3ac20402143e347a87b717594cd0b083",
+      "ref": "test-recovery-v1/basis/a3adc469058d306b",
+      "path": "backend/src/services/battle-service.ts",
+      "test": false,
+      "updates": {
+        "fa1f39e4193e70a58070712db08ab252b041274b45d0327c5bd7275ab062f3c4": {
+          "planned": "0e5e6c7cf01a162e0c87e52e251660698879721174cf925a2ebefe13fc34d50d"
+        }
+      },
+      "review": "Reviewed opt-in consciousnessPolicy parse/binding/adoption and schema6 advance/commit branches against ADR0067 C1-C7. Default v5 remains AwarenessNormalPolicy v3 under ADR0066; retained v3/v4 helpers, public DTO/auto-match, scene clock, replay and failure behavior tested by identified 28-file cohort. Preserve original narrow projection causes, no full battle-service correctness claim.",
+      "reviewedSha256": "157a15455ffe1f5c6636aa1d01a9d81717f69daea654262cdced43f989fc735f",
+      "decision": "confirm preserved contract"
+    },
+    {
+      "oldSeal": "30b110e70226300c187425f886a11060662bab57d92a1a9adb3dcd79ebba49ad",
+      "ref": "all-tests-20261008/current-source-closure/verification/owner-characters-rating-20261008",
+      "path": "backend/src/repositories/characters.test.ts",
+      "test": true,
+      "updates": {
+        "a3adc469058d306b4d0349187ae7c24e3ac20402143e347a87b717594cd0b083": {
+          "planned": "a3adc469058d306b4d0349187ae7c24e3ac20402143e347a87b717594cd0b083"
+        }
+      },
+      "review": "ADR0060/0039: six cases keep owner-only references/reserved names, persisted opponent memories, nearest eligible opponent, centered population/deletion and realm isolation. Auto-match helper behavior unchanged by opt-in v6 branch; opponent memories are historical character storage, not unified consciousness memory state.",
+      "reviewedSha256": "3bace9c3766a651f31db306bb72eacc00a70b788817812f7c368c8f87664da0c",
+      "decision": "confirm preserved contract"
+    },
+    {
+      "oldSeal": "5d646414a88f23e739ad8b7afa34d6c86208b7916da11f6029cbcce4c13a5c03",
+      "ref": "test-recovery-v1/basis/5d646414a88f23e7",
+      "path": "backend/src/services/battle-service.ts",
+      "test": false,
+      "updates": {
+        "0e5e6c7cf01a162e0c87e52e251660698879721174cf925a2ebefe13fc34d50d": {
+          "planned": "0e5e6c7cf01a162e0c87e52e251660698879721174cf925a2ebefe13fc34d50d"
+        }
+      },
+      "review": "Reviewed opt-in consciousnessPolicy parse/binding/adoption and schema6 advance/commit branches against ADR0067 C1-C7. Default v5 remains AwarenessNormalPolicy v3 under ADR0066; retained v3/v4 helpers, public DTO/auto-match, scene clock, replay and failure behavior tested by identified 28-file cohort. Preserve original narrow projection causes, no full battle-service correctness claim.",
+      "reviewedSha256": "157a15455ffe1f5c6636aa1d01a9d81717f69daea654262cdced43f989fc735f",
+      "decision": "confirm preserved contract"
+    },
+    {
+      "oldSeal": "f5dc300a66cf665d74655d7dd7cd5b5e4ada3127ce7993655c92553e2bcabd1c",
+      "ref": "all-tests-20261008/current-source-closure/verification/structured-asset-integration-bounded-20261008",
+      "path": "backend/src/routes-structured-asset-integration.test.ts",
+      "test": true,
+      "updates": {
+        "2187c99e947971551d78e0af4fd0d41cc3a77b91520edfffb7a15e004f24d621": {
+          "planned": "5d646414a88f23e739ad8b7afa34d6c86208b7916da11f6029cbcce4c13a5c03"
+        }
+      },
+      "review": "ADR0010/0011/0012/0013/0018/0039/0043/0051/0067: two HTTP/SQLite cases preserve immutable generation binding, current asset update/delete versus old battle snapshots, DTO privacy, setting/style freeze and replay; legacy v2 mutation blocked. Public creation still v5; v6 internal option does not change these expectations.",
+      "reviewedSha256": "4278c5e9881d4568f7ae31f9e40826498ec9d2e5de6b96dc69ea69e2126edd7f",
+      "decision": "confirm preserved contract"
+    },
+    {
+      "oldSeal": "0159fc2ab1c5fb85a0bcb7e962092189a91006eed78b178d819eb036e970e742",
+      "ref": "test-recovery-v1/basis/0159fc2ab1c5fb85",
+      "path": "backend/src/services/battle-service.ts",
+      "test": false,
+      "updates": {
+        "0e5e6c7cf01a162e0c87e52e251660698879721174cf925a2ebefe13fc34d50d": {
+          "planned": "0e5e6c7cf01a162e0c87e52e251660698879721174cf925a2ebefe13fc34d50d"
+        }
+      },
+      "review": "Reviewed opt-in consciousnessPolicy parse/binding/adoption and schema6 advance/commit branches against ADR0067 C1-C7. Default v5 remains AwarenessNormalPolicy v3 under ADR0066; retained v3/v4 helpers, public DTO/auto-match, scene clock, replay and failure behavior tested by identified 28-file cohort. Preserve original narrow projection causes, no full battle-service correctness claim.",
+      "reviewedSha256": "157a15455ffe1f5c6636aa1d01a9d81717f69daea654262cdced43f989fc735f",
+      "decision": "confirm preserved contract"
+    },
+    {
+      "oldSeal": "a07dd2c8f0ac65c27b40a164bf44fc63b62580c737a46343a9ac271539dae208",
+      "ref": "test-recovery-v1/basis/a07dd2c8f0ac65c2",
+      "path": "backend/src/routes.ts",
+      "test": false,
+      "updates": {
+        "ebaa10aee787ee5ca9e4357130de717739b17c431bca249217ce2156c63341aa": {
+          "planned": "0159fc2ab1c5fb85a0bcb7e962092189a91006eed78b178d819eb036e970e742"
+        }
+      },
+      "review": "Source bytes unchanged; ready-asset binding observer inherits reviewed battle service with default v5 and internal v6 opt-in. Public request schema does not add consciousnessPolicy.",
+      "reviewedSha256": "ec2500cac883a552bc4527b1878c16029cfab3160b2402b34a4e10219fbeee71",
+      "decision": "confirm preserved contract"
+    },
+    {
+      "oldSeal": "192f32e3b092a874981833bcdeb2cf233a4512b1837300066be4c1569d60645d",
+      "ref": "all-tests-20261008/current-source-closure/verification/stable-area-battlefield-http-acceptance-20261007",
+      "path": "backend/src/routes-structured-battlefield-acceptance.test.ts",
+      "test": true,
+      "updates": {
+        "a07dd2c8f0ac65c27b40a164bf44fc63b62580c737a46343a9ac271539dae208": {
+          "planned": "a07dd2c8f0ac65c27b40a164bf44fc63b62580c737a46343a9ac271539dae208"
+        },
+        "ebaa10aee787ee5ca9e4357130de717739b17c431bca249217ce2156c63341aa": {
+          "planned": "0159fc2ab1c5fb85a0bcb7e962092189a91006eed78b178d819eb036e970e742"
+        }
+      },
+      "review": "ADR0012/0039/0051/0067: retain ready structured battlefield candidate/validation/activation, historical snapshots and creation binding assertions through actual HTTP fixture. Routes bytes unchanged; battle service opt-in v6 preserves default v5 and stable-area layout. No authoring provider quality claim.",
+      "reviewedSha256": "c5ed65efc024fe12051ba4e52bbbacd07b857eee4215a3931b46c26967587558",
+      "decision": "confirm preserved contract"
+    },
+    {
+      "oldSeal": "f04884e9ca44bbddbede7668c8e748d1b771fbba58fc7cc04fd59a39e1cf9a0e",
+      "ref": "all-tests-20261008/current-source-closure/verification/stable-area-narration-http-acceptance-20261007",
+      "path": "backend/src/routes-structured-narration-acceptance.test.ts",
+      "test": true,
+      "updates": {
+        "a07dd2c8f0ac65c27b40a164bf44fc63b62580c737a46343a9ac271539dae208": {
+          "planned": "a07dd2c8f0ac65c27b40a164bf44fc63b62580c737a46343a9ac271539dae208"
+        },
+        "ebaa10aee787ee5ca9e4357130de717739b17c431bca249217ce2156c63341aa": {
+          "planned": "0159fc2ab1c5fb85a0bcb7e962092189a91006eed78b178d819eb036e970e742"
+        }
+      },
+      "review": "ADR0013/0039/0051/0056/0067: retain narration candidate/validation/activation and frozen style/battle generation behavior through HTTP fixture. Updated ready-binding source adds opt-in v6 only; default v5 and latest narration output contract remain valid.",
+      "reviewedSha256": "6f29961ea9996842bf7b28421491c8b002efb56b40d44242c7316ff43707d385",
+      "decision": "confirm preserved contract"
+    },
+    {
+      "oldSeal": "9ff36ed0237439756bf209b367d846326a9b54c1f0f34dff1ad5e44187647073",
+      "ref": "test-recovery-v1/basis/9ff36ed023743975",
+      "path": "backend/src/services/awareness-adjudication-guard.ts",
+      "test": false,
+      "updates": {
+        "82a05d36a1ced02c2466b9a25dfb306d23d3a63436fc5ed35f2f66eb29016e2c": {
+          "existing": "67ec3f1869ecdd512e1b6c46a3d62eadbe9335275525b1b679111ac9f84306b9",
+          "ref": "all-tests-20261009/current-source-closure/all-tests-20261007/implementation-awareness-dispatch-admission"
+        }
+      },
+      "review": "Source bytes unchanged; admission now inherits policy v3 while exact certified/observed, sticky failure, deadlines and action-correlation contracts remain unchanged.",
+      "reviewedSha256": "ddedd114812f636fa6e5218018b6de64afb4e2158637e0750b6619ff34d2c156",
+      "decision": "confirm preserved contract"
+    },
+    {
+      "oldSeal": "7fed5db402b14c3ce46ccf08d59315abe861be5c80bea6db20ebf3d03baa3193",
+      "ref": "all-tests-20261008/current-source-closure/verification/awareness-adjudication-guard-bounded-current-20261007",
+      "path": "backend/src/services/awareness-adjudication-guard.test.ts",
+      "test": true,
+      "updates": {
+        "9ff36ed0237439756bf209b367d846326a9b54c1f0f34dff1ad5e44187647073": {
+          "planned": "9ff36ed0237439756bf209b367d846326a9b54c1f0f34dff1ad5e44187647073"
+        }
+      },
+      "review": "ADR0051/0065/0066: nine cases keep persist-before-send, certified refusal/no reservation, unknown physical occupancy, completed unknown cost, quote/result deadlines, sticky failure, observed role scope and executed-action correlation. Current admission inherits policy v3 while explicit fixture policy remains historical.",
+      "reviewedSha256": "db11b93a155e0cd803640b23c2e498b663ee06390ed3ea68f593cb2612788098",
+      "decision": "confirm preserved contract"
+    },
+    {
+      "oldSeal": "593a3039c2b05e7e3011f1e7e25553cd71f57471e968209941e184a3c977f4c2",
+      "ref": "test-recovery-v1/basis/593a3039c2b05e7e",
+      "path": "backend/src/llm/index.ts",
+      "test": false,
+      "updates": {
+        "6b96d59704d7145911761177293c65f5ddf85141def9485d353b0b68a0628b74": {
+          "planned": "6b96d59704d7145911761177293c65f5ddf85141def9485d353b0b68a0628b74"
+        },
+        "9300bba5dfdd28f2c89c1d4837b0868e49f11084611a6a9c1c1551b09c38b086": {
+          "planned": "9300bba5dfdd28f2c89c1d4837b0868e49f11084611a6a9c1c1551b09c38b086"
+        }
+      },
+      "review": "Source bytes unchanged; role factory adds optional shared consciousness transport without replacing legacy default roles or introducing a retry/fallback.",
+      "reviewedSha256": "f478870163f6c295f643c27c18d498780a1e55221020544bb79509cc11e50855",
+      "decision": "confirm preserved contract"
+    },
+    {
+      "oldSeal": "34425734c3d76e44f6e7821c6a693a3941800fa85b5ef141e7e64c4b035f12f7",
+      "ref": "test-recovery-v1/basis/34425734c3d76e44",
+      "path": "backend/src/services/awareness-creation-encounter.ts",
+      "test": false,
+      "updates": {
+        "82a05d36a1ced02c2466b9a25dfb306d23d3a63436fc5ed35f2f66eb29016e2c": {
+          "existing": "67ec3f1869ecdd512e1b6c46a3d62eadbe9335275525b1b679111ac9f84306b9",
+          "ref": "all-tests-20261009/current-source-closure/all-tests-20261007/implementation-awareness-dispatch-admission"
+        }
+      },
+      "review": "Source bytes unchanged; review current policy/admission and guarded SDK dependencies. Durable prepare/reserve/ready/adopt, certified versus observed and no-resend scope retained.",
+      "reviewedSha256": "84dd49b45795edf215bac5baf3114a847f421724a4f16b1b1c35c76d0dc399a0",
+      "decision": "confirm preserved contract"
+    },
+    {
+      "oldSeal": "80c714d278e554d3f7326a29aee3f6412f1013bdd2284003ce4bd25193554b97",
+      "ref": "test-recovery-v1/basis/80c714d278e554d3",
+      "path": "backend/src/services/awareness-creation-encounter.ts",
+      "test": false,
+      "updates": {
+        "34425734c3d76e44f6e7821c6a693a3941800fa85b5ef141e7e64c4b035f12f7": {
+          "planned": "34425734c3d76e44f6e7821c6a693a3941800fa85b5ef141e7e64c4b035f12f7"
+        },
+        "82a05d36a1ced02c2466b9a25dfb306d23d3a63436fc5ed35f2f66eb29016e2c": {
+          "existing": "67ec3f1869ecdd512e1b6c46a3d62eadbe9335275525b1b679111ac9f84306b9",
+          "ref": "all-tests-20261009/current-source-closure/all-tests-20261007/implementation-awareness-dispatch-admission"
+        },
+        "9300bba5dfdd28f2c89c1d4837b0868e49f11084611a6a9c1c1551b09c38b086": {
+          "planned": "9300bba5dfdd28f2c89c1d4837b0868e49f11084611a6a9c1c1551b09c38b086"
+        }
+      },
+      "review": "Source bytes unchanged; review current policy/admission and guarded SDK dependencies. Durable prepare/reserve/ready/adopt, certified versus observed and no-resend scope retained.",
+      "reviewedSha256": "84dd49b45795edf215bac5baf3114a847f421724a4f16b1b1c35c76d0dc399a0",
+      "decision": "confirm preserved contract"
+    },
+    {
+      "oldSeal": "c5c8997e9f5f67cba26e5b3ba5ca70916f5ecf6d3263496534bf48d6ee58b717",
+      "ref": "test-recovery-v1/basis/c5c8997e9f5f67cb",
+      "path": "backend/src/services/battle-service.ts",
+      "test": false,
+      "updates": {
+        "34425734c3d76e44f6e7821c6a693a3941800fa85b5ef141e7e64c4b035f12f7": {
+          "planned": "34425734c3d76e44f6e7821c6a693a3941800fa85b5ef141e7e64c4b035f12f7"
+        },
+        "fa1f39e4193e70a58070712db08ab252b041274b45d0327c5bd7275ab062f3c4": {
+          "planned": "0e5e6c7cf01a162e0c87e52e251660698879721174cf925a2ebefe13fc34d50d"
+        }
+      },
+      "review": "Reviewed opt-in consciousnessPolicy parse/binding/adoption and schema6 advance/commit branches against ADR0067 C1-C7. Default v5 remains AwarenessNormalPolicy v3 under ADR0066; retained v3/v4 helpers, public DTO/auto-match, scene clock, replay and failure behavior tested by identified 28-file cohort. Preserve original narrow projection causes, no full battle-service correctness claim.",
+      "reviewedSha256": "157a15455ffe1f5c6636aa1d01a9d81717f69daea654262cdced43f989fc735f",
+      "decision": "confirm preserved contract"
+    },
+    {
+      "oldSeal": "59df7291e9c3734215a619b575da5e8a6abe559ef08d5e0032cefcf25be6e9e1",
+      "ref": "test-recovery-v1/basis/59df7291e9c37342",
+      "path": "backend/src/services/battle-service.ts",
+      "test": false,
+      "updates": {
+        "80c714d278e554d3f7326a29aee3f6412f1013bdd2284003ce4bd25193554b97": {
+          "planned": "80c714d278e554d3f7326a29aee3f6412f1013bdd2284003ce4bd25193554b97"
+        },
+        "c5c8997e9f5f67cba26e5b3ba5ca70916f5ecf6d3263496534bf48d6ee58b717": {
+          "planned": "c5c8997e9f5f67cba26e5b3ba5ca70916f5ecf6d3263496534bf48d6ee58b717"
+        },
+        "fa1f39e4193e70a58070712db08ab252b041274b45d0327c5bd7275ab062f3c4": {
+          "planned": "0e5e6c7cf01a162e0c87e52e251660698879721174cf925a2ebefe13fc34d50d"
+        }
+      },
+      "review": "Reviewed opt-in consciousnessPolicy parse/binding/adoption and schema6 advance/commit branches against ADR0067 C1-C7. Default v5 remains AwarenessNormalPolicy v3 under ADR0066; retained v3/v4 helpers, public DTO/auto-match, scene clock, replay and failure behavior tested by identified 28-file cohort. Preserve original narrow projection causes, no full battle-service correctness claim.",
+      "reviewedSha256": "157a15455ffe1f5c6636aa1d01a9d81717f69daea654262cdced43f989fc735f",
+      "decision": "confirm preserved contract"
+    },
+    {
+      "oldSeal": "071f598408dad78bcb2b143e327c726eb4fdf13a7bd45bba10de54eb91208c78",
+      "ref": "all-tests-20261008/current-source-closure/verification/awareness-battle-creation-bounded-awareness-creation-20261007",
+      "path": "backend/src/services/awareness-battle-creation.test.ts",
+      "test": true,
+      "updates": {
+        "593a3039c2b05e7e3011f1e7e25553cd71f57471e968209941e184a3c977f4c2": {
+          "planned": "593a3039c2b05e7e3011f1e7e25553cd71f57471e968209941e184a3c977f4c2"
+        },
+        "59df7291e9c3734215a619b575da5e8a6abe559ef08d5e0032cefcf25be6e9e1": {
+          "planned": "59df7291e9c3734215a619b575da5e8a6abe559ef08d5e0032cefcf25be6e9e1"
+        },
+        "9300bba5dfdd28f2c89c1d4837b0868e49f11084611a6a9c1c1551b09c38b086": {
+          "planned": "9300bba5dfdd28f2c89c1d4837b0868e49f11084611a6a9c1c1551b09c38b086"
+        }
+      },
+      "review": "ADR0039/0051/0054/0056/0066/0067: actual startBattle/advance freezes v5 V3 generations, default policy v3 and prompt v4, adopts creation runtime, replays without duplicate sends and scopes usage. Existing observed provider without billing proof remains admissible. New consciousnessPolicy is explicit opt-in; this case does not supply it.",
+      "reviewedSha256": "cbf4526395d59be0d4883808e2a77a3b74a5cf156c76a43601a000e1095bc564",
+      "decision": "confirm preserved contract"
+    },
+    {
+      "oldSeal": "4bed0739622c55b920c0b41e656e7ff2c901fbb79d2e9912b1e766cea729336b",
+      "ref": "all-tests-20261008/current-source-closure/verification/awareness-battle-service-bounded-awareness-creation-20261007",
+      "path": "backend/src/services/awareness-battle-service.test.ts",
+      "test": true,
+      "updates": {
+        "59df7291e9c3734215a619b575da5e8a6abe559ef08d5e0032cefcf25be6e9e1": {
+          "planned": "59df7291e9c3734215a619b575da5e8a6abe559ef08d5e0032cefcf25be6e9e1"
+        }
+      },
+      "review": "ADR0006/0051/0067: five cases keep certified fixture missing route/proof incomplete, canonical world preservation, absent-body no synthetic action, KO atomic terminal receipts and no post-KO thoughts, semantic-failure no partial commit. Fixture is v5; v6 branch cannot reinterpret certified fixture or route it to unified transport.",
+      "reviewedSha256": "c7e61249546b9538e40c64cb49cd79feaaec87df0c31ef50cc60cf45d8176d45",
+      "decision": "confirm preserved contract"
+    },
+    {
+      "oldSeal": "e67a875ebfb6ab2e7aaf56d198bde16e1d3bce4790f800afe39ef502b2aed2ed",
+      "ref": "all-tests-20261008/current-source-closure/verification/awareness-creation-encounter-bounded-awareness-creation-20261007",
+      "path": "backend/src/services/awareness-creation-encounter.test.ts",
+      "test": true,
+      "updates": {
+        "80c714d278e554d3f7326a29aee3f6412f1013bdd2284003ce4bd25193554b97": {
+          "planned": "80c714d278e554d3f7326a29aee3f6412f1013bdd2284003ce4bd25193554b97"
+        },
+        "82a05d36a1ced02c2466b9a25dfb306d23d3a63436fc5ed35f2f66eb29016e2c": {
+          "existing": "67ec3f1869ecdd512e1b6c46a3d62eadbe9335275525b1b679111ac9f84306b9",
+          "ref": "all-tests-20261009/current-source-closure/all-tests-20261007/implementation-awareness-dispatch-admission"
+        }
+      },
+      "review": "ADR0051/0066/0067: six cases retain compatibility state without synthetic agents, exact SDK cap/quote, durable ready replay, certified zero-send refusal, invalid proposal sticky failure, atomic adoption and explicit observed unpriced call. Creation helper bytes unchanged; policy revision inheritance reviewed.",
+      "reviewedSha256": "e800433ecfeaaba35bf6e500e1cd46a72559fc9a467417b706397c4cf91531bf",
+      "decision": "confirm preserved contract"
+    },
+    {
+      "oldSeal": "387482a8c005ec8729e50f5036a7773e0272deba439ef9bff2a9b23d5a5fe69e",
+      "ref": "test-recovery-v1/basis/387482a8c005ec87",
+      "path": "backend/src/services/awareness-narration-worker-material.ts",
+      "test": false,
+      "updates": {
+        "3ce85102892804dcfeb7df194b5e93d477ab783cef102356d02ed300e993ea69": {
+          "existing": "ee4b693485b3caa77a55bddeac761b710b0ce1b5a6b3f0077d60a877cdbe548b",
+          "ref": "all-tests-20261007/implementation-frozen-narration-dispatch"
+        }
+      },
+      "review": "Source bytes unchanged; frozen identity, phase and result validation unchanged. Inherit current frozen dispatch only.",
+      "reviewedSha256": "496a5ff5faba0f0dbbf7143108cde2e062ed6c3845cfc89f8ca2b7d6ae287af2",
+      "decision": "confirm preserved contract"
+    },
+    {
+      "oldSeal": "65f6aa8b0736413811aa72ec3def9dc9703ce5360210c8b5ee39a4e7797144c5",
+      "ref": "test-recovery-v1/basis/65f6aa8b07364138",
+      "path": "backend/src/services/awareness-narration-worker-lifecycle.ts",
+      "test": false,
+      "updates": {
+        "3db8b41d039b680da268969a9275e9675c07d8ed263229bde6bd9158380eca06": {
+          "existing": "84e9341550762089f082df2a02eeceb6907a058fc414774280fbb8cf25b8ff3d",
+          "ref": "all-tests-20261008/current-source-closure/all-tests-20261007/implementation-canonical-narration-worker-contract"
+        }
+      },
+      "review": "Current source uses shared operational runtime/settlement port, preserving legacy runtime fallback, failure fence and unknown late physical accounting; reviewed 20 worker cases.",
+      "reviewedSha256": "1cd0013cda6b4dfd15f036055cb8922445a9ca70dfc55c5685d601a7a0d35e9c",
+      "decision": "confirm preserved contract"
+    },
+    {
+      "oldSeal": "8b25aa886c43cba9bee703423404635239bfbab610c941a7e2c32135287fbeab",
+      "ref": "test-recovery-v1/basis/8b25aa886c43cba9",
+      "path": "backend/src/services/awareness-narration-worker-dispatch.ts",
+      "test": false,
+      "updates": {
+        "387482a8c005ec8729e50f5036a7773e0272deba439ef9bff2a9b23d5a5fe69e": {
+          "planned": "387482a8c005ec8729e50f5036a7773e0272deba439ef9bff2a9b23d5a5fe69e"
+        },
+        "3ce85102892804dcfeb7df194b5e93d477ab783cef102356d02ed300e993ea69": {
+          "existing": "ee4b693485b3caa77a55bddeac761b710b0ce1b5a6b3f0077d60a877cdbe548b",
+          "ref": "all-tests-20261007/implementation-frozen-narration-dispatch"
+        },
+        "4ffab87d2c25c65f74ec3973d90b5891c43a9037b7a61f49f92470b7650ac645": {
+          "existing": "3e1d07a97da2b413ba15b19ec1658453be5a0d20bd4faafe99f6f38f503e7861",
+          "ref": "all-tests-20261008/current-source-closure/all-tests-20261007/implementation-narration-storage-reservation"
+        },
+        "65f6aa8b0736413811aa72ec3def9dc9703ce5360210c8b5ee39a4e7797144c5": {
+          "planned": "65f6aa8b0736413811aa72ec3def9dc9703ce5360210c8b5ee39a4e7797144c5"
+        },
+        "82a05d36a1ced02c2466b9a25dfb306d23d3a63436fc5ed35f2f66eb29016e2c": {
+          "existing": "67ec3f1869ecdd512e1b6c46a3d62eadbe9335275525b1b679111ac9f84306b9",
+          "ref": "all-tests-20261009/current-source-closure/all-tests-20261007/implementation-awareness-dispatch-admission"
+        }
+      },
+      "review": "Source bytes unchanged; exact current request/dispatch dependencies and conservative completion scope retained.",
+      "reviewedSha256": "4c90158f18ad0e2c790677d22c0d088e018ad81f2ad3973acf77b0074cffd184",
+      "decision": "confirm preserved contract"
+    },
+    {
+      "oldSeal": "cfc05bf8504710dfec7f9df91c8edbf66fddd7c21a06e6a1d6658239d5cc5575",
+      "ref": "test-recovery-v1/basis/cfc05bf8504710df",
+      "path": "backend/src/services/awareness-narration-worker-publication.ts",
+      "test": false,
+      "updates": {
+        "65f6aa8b0736413811aa72ec3def9dc9703ce5360210c8b5ee39a4e7797144c5": {
+          "planned": "65f6aa8b0736413811aa72ec3def9dc9703ce5360210c8b5ee39a4e7797144c5"
+        },
+        "8b25aa886c43cba9bee703423404635239bfbab610c941a7e2c32135287fbeab": {
+          "planned": "8b25aa886c43cba9bee703423404635239bfbab610c941a7e2c32135287fbeab"
+        }
+      },
+      "review": "Current source reads operational runtime for publication deadline/status and preserves atomic presentations/recognition, entry/fence/wake semantics; no private unified memory passed to narrator.",
+      "reviewedSha256": "59cea26f68281d117b1af4b9ac1e46d7ba198bcdeb1d682d365feb1852d7d5d3",
+      "decision": "confirm preserved contract"
+    },
+    {
+      "oldSeal": "e2f8650923675c236870d9896ff1f9de01f7f82d78944a255b57a129289eb94f",
+      "ref": "test-recovery-v1/basis/e2f8650923675c23",
+      "path": "backend/src/services/awareness-narration-worker-claim.ts",
+      "test": false,
+      "updates": {
+        "387482a8c005ec8729e50f5036a7773e0272deba439ef9bff2a9b23d5a5fe69e": {
+          "planned": "387482a8c005ec8729e50f5036a7773e0272deba439ef9bff2a9b23d5a5fe69e"
+        },
+        "44cb0e5bd493d6fad7909158b30a73d652b61cdb046827eb868aba25aa7fe535": {
+          "existing": "7634f1b98a50b79dd3232862f19c47b5439496aa9409d8a381e7518f186f2273",
+          "ref": "all-tests-20261007/implementation-canonical-narration-queue"
+        },
+        "65f6aa8b0736413811aa72ec3def9dc9703ce5360210c8b5ee39a4e7797144c5": {
+          "planned": "65f6aa8b0736413811aa72ec3def9dc9703ce5360210c8b5ee39a4e7797144c5"
+        }
+      },
+      "review": "Current source uses operational runtime Pick type and shared settlement with existing ordered-prefix capture, outstanding no-resend and lease behavior; no authoritative snapshot type escape.",
+      "reviewedSha256": "9874e00f8b82592bbb949335cb532e2644c22950792d4ad49ea55be908b49567",
+      "decision": "confirm preserved contract"
+    },
+    {
+      "oldSeal": "289569cc98d9335070d9d7fd5a0f5aa31ff3e3290d410566099063492f0f6077",
+      "ref": "test-recovery-v1/basis/289569cc98d93350",
+      "path": "backend/src/services/awareness-narration-worker.ts",
+      "test": false,
+      "updates": {
+        "8b25aa886c43cba9bee703423404635239bfbab610c941a7e2c32135287fbeab": {
+          "planned": "8b25aa886c43cba9bee703423404635239bfbab610c941a7e2c32135287fbeab"
+        },
+        "cfc05bf8504710dfec7f9df91c8edbf66fddd7c21a06e6a1d6658239d5cc5575": {
+          "planned": "cfc05bf8504710dfec7f9df91c8edbf66fddd7c21a06e6a1d6658239d5cc5575"
+        },
+        "e2f8650923675c236870d9896ff1f9de01f7f82d78944a255b57a129289eb94f": {
+          "planned": "e2f8650923675c236870d9896ff1f9de01f7f82d78944a255b57a129289eb94f"
+        }
+      },
+      "review": "Current source accepts saved manifest5 or6 and selects shared operational runtime; existing lease acquisition/claim/dispatch/publication stays intact and v5 worker/continuation regressions pass.",
+      "reviewedSha256": "49464158c9a945e81ef42c8b809cf16f0de91762958ff86f93a482e2c82529d3",
+      "decision": "confirm preserved contract"
+    },
+    {
+      "oldSeal": "73effe445735205f4a655ec66222ca69a7cdeaccb0ec5eee16e839f1733d8318",
+      "ref": "test-recovery-v1/basis/73effe445735205f",
+      "path": "backend/src/services/narration-worker.ts",
+      "test": false,
+      "updates": {
+        "0c4348cef5ad7b65ce5ac75ae5408a5428cd6133ee752eaf168432e19c315f8b": {
+          "existing": "4af1dc3156d05a4c0752cd049d3c2672cdee532a412f06348535dd65ea616bd8",
+          "ref": "all-tests-20261007/implementation-awareness-request-digest"
+        },
+        "289569cc98d9335070d9d7fd5a0f5aa31ff3e3290d410566099063492f0f6077": {
+          "planned": "289569cc98d9335070d9d7fd5a0f5aa31ff3e3290d410566099063492f0f6077"
+        }
+      },
+      "review": "Only manifest routing condition expands5 to5-or6; legacy narration continues; v5 current receipt transport and frozen style/digest cases pass.",
+      "reviewedSha256": "17038fa8e363ede779a7e492fee4292ad0021ac1fe0151b98e3f3c8f36c6ea0f",
+      "decision": "confirm preserved contract"
+    },
+    {
+      "oldSeal": "ef21c742ab7d185f0282299098719ee9b2cc530d51986081c01bf1094f4fc157",
+      "ref": "all-tests-20261008/current-source-closure/verification/awareness-narration-continuation-bounded-current-20261007",
+      "path": "backend/src/services/awareness-narration-continuation.test.ts",
+      "test": true,
+      "updates": {
+        "73effe445735205f4a655ec66222ca69a7cdeaccb0ec5eee16e839f1733d8318": {
+          "planned": "73effe445735205f4a655ec66222ca69a7cdeaccb0ec5eee16e839f1733d8318"
+        },
+        "d777c0ab40b128c53df1a5ff0eb971ae7a797445e581c130c9efea400cc4f383": {
+          "existing": "0b90dcf2eff7f2dce9ca38ccfd7ae273af6fb25507ad48c68aa9affa293a42d9",
+          "ref": "all-tests-20261008/current-source-closure/all-tests-20261007/implementation-narration-role-transport"
+        }
+      },
+      "review": "ADR0006/0051/0056/0067: one outer case tests 4 phases x 3 historical prompt identities with current transport/publication while frozen input bytes/digest/style/observer boundary persist. New manifest v6 routing enters same narrator; saved v5 remains v5 and historical receipt contents stay unchanged.",
+      "reviewedSha256": "15d760b34cb85f9562bbfb931ad1c267e6fdef200eb7876e767a51d801edabb3",
+      "decision": "confirm preserved contract"
+    },
+    {
+      "oldSeal": "f0dd40e8af96ff9cb58727e873421f81b9629447c5534afebd8e17f0f384bf1c",
+      "ref": "all-tests-20261008/current-source-closure/verification/awareness-narration-worker-bounded-current-20261007",
+      "path": "backend/src/services/awareness-narration-worker.test.ts",
+      "test": true,
+      "updates": {
+        "73effe445735205f4a655ec66222ca69a7cdeaccb0ec5eee16e839f1733d8318": {
+          "planned": "73effe445735205f4a655ec66222ca69a7cdeaccb0ec5eee16e839f1733d8318"
+        }
+      },
+      "review": "ADR0006/0051/0054/0056/0067: twenty cases retain independent narrator lease, ordered atomic batches, wake generations, malformed/partial rejection, timeout/late accounting, unknown no-resend, recognition history/privacy and observed unpriced transport. Runtime port now chooses unified store first then historical fallback; current SQLite suite includes empty unified store and preserves v5 behavior.",
+      "reviewedSha256": "49357c9c606e188b12e9bb93d079afd8895107568ff040a8395d18107158a426",
+      "decision": "confirm preserved contract"
+    },
+    {
+      "oldSeal": "5926bdfb21614b7538457afc3feed75f1c508352bae3b38b855f857749105db8",
+      "ref": "all-tests-20261008/current-source-closure/verification/battle-causal-narration-bounded-current-20261007",
+      "path": "backend/src/services/battle-causal-narration.test.ts",
+      "test": true,
+      "updates": {
+        "c5c8997e9f5f67cba26e5b3ba5ca70916f5ecf6d3263496534bf48d6ee58b717": {
+          "planned": "c5c8997e9f5f67cba26e5b3ba5ca70916f5ecf6d3263496534bf48d6ee58b717"
+        }
+      },
+      "review": "ADR0022/0051/0067: three cases keep off-mode no mutation, guarded factual consequence/scene projection and rejected-evidence omission. Helper behavior and explicit legacy fixture unchanged; current service additions only enable internal v6 at orchestration boundary.",
+      "reviewedSha256": "de513b805a8c5be525e4e44aa8d16a22a7bd4b6debba99d9986eebb4bbc49985",
+      "decision": "confirm preserved contract"
+    },
+    {
+      "oldSeal": "eecfd647d2df556658e3f20bcef1904853bc85b1a8c534fdb9a489f8058503ed",
+      "ref": "all-tests-20261008/current-source-closure/verification/battle-consumer-wiring-bounded-current-20261007",
+      "path": "backend/src/services/battle-consumer-wiring.test.ts",
+      "test": true,
+      "updates": {
+        "c5c8997e9f5f67cba26e5b3ba5ca70916f5ecf6d3263496534bf48d6ee58b717": {
+          "planned": "c5c8997e9f5f67cba26e5b3ba5ca70916f5ecf6d3263496534bf48d6ee58b717"
+        }
+      },
+      "review": "ADR0011/0022/0051/0067: eight cases keep bound action norms and hidden receipts, side-specific frozen frames/profile, narrator focus/committed manifestations, semantic placement and counterpart knowledge limits. Historical v2 helper fixture is retained compatibility evidence, not new authoring or all v6 privacy coverage.",
+      "reviewedSha256": "879473f6c4379c113c48e8694247f9908a10a65f5f0f7983b13a15ae843beba1",
+      "decision": "confirm preserved contract"
+    },
+    {
+      "oldSeal": "43b9c48b460b952fa31e2dc17b9e2a9e1c43d232a93d19ee86bc0d2380333cb0",
+      "ref": "all-tests-20261008/current-source-closure/verification/battle-create-idempotency-bounded-awareness-creation-20261007",
+      "path": "backend/src/services/battle-create-idempotency.test.ts",
+      "test": true,
+      "updates": {
+        "59df7291e9c3734215a619b575da5e8a6abe559ef08d5e0032cefcf25be6e9e1": {
+          "planned": "59df7291e9c3734215a619b575da5e8a6abe559ef08d5e0032cefcf25be6e9e1"
+        }
+      },
+      "review": "ADR0006/0018/0039/0051/0067: one outer SQLite case retains same-ID encounter once, frozen V3/compiler/dialogue/field generations, new-only setting changes and sticky creation failure with no fallback. Explicit v6 option absent; v5 default and durable creation paths unchanged.",
+      "reviewedSha256": "77256250fdd27414968c91b923bbec81c8355de6b128cff1b8d32f9a6fac7855",
+      "decision": "confirm preserved contract"
+    },
+    {
+      "oldSeal": "229007c2e77e6e96906d62eff0a69f38979a966d1f4a9b6f04d1281ce123ec9f",
+      "ref": "all-tests-20261009/current-source-closure/verification/owner-battle-public-20261008",
+      "path": "backend/src/services/battle-public.test.ts",
+      "test": true,
+      "updates": {
+        "a3adc469058d306b4d0349187ae7c24e3ac20402143e347a87b717594cd0b083": {
+          "planned": "a3adc469058d306b4d0349187ae7c24e3ac20402143e347a87b717594cd0b083"
+        }
+      },
+      "review": "ADR0022/0051/0060/0065/0067: fifteen cases keep pending-effect privacy, public semantics/no private agent data, contemporaneous rating snapshots, valid/invalid/failed semantic and environment operations, authored affordances, per-side perception/source registry and latest transition. Existing helper branches remain unchanged under v6 addition; no broad privacy proof.",
+      "reviewedSha256": "2395441fbd8f6b1cd879eb6a132eab77b28cab569e1d99d6ae6514c5a976621a",
+      "decision": "confirm preserved contract"
+    },
+    {
+      "oldSeal": "c1a76bfb7cb2eba3d28b48faeceb9288c5e46a5b7a663de6865f4131f3b2776b",
+      "ref": "test-recovery-v1/basis/c1a76bfb7cb2eba3",
+      "path": "backend/src/services/battle-service.ts",
+      "test": false,
+      "updates": {
+        "fa1f39e4193e70a58070712db08ab252b041274b45d0327c5bd7275ab062f3c4": {
+          "planned": "0e5e6c7cf01a162e0c87e52e251660698879721174cf925a2ebefe13fc34d50d"
+        }
+      },
+      "review": "Reviewed opt-in consciousnessPolicy parse/binding/adoption and schema6 advance/commit branches against ADR0067 C1-C7. Default v5 remains AwarenessNormalPolicy v3 under ADR0066; retained v3/v4 helpers, public DTO/auto-match, scene clock, replay and failure behavior tested by identified 28-file cohort. Preserve original narrow projection causes, no full battle-service correctness claim.",
+      "reviewedSha256": "157a15455ffe1f5c6636aa1d01a9d81717f69daea654262cdced43f989fc735f",
+      "decision": "confirm preserved contract"
+    },
+    {
+      "oldSeal": "65a143ed4ba8db2ab08dffeda0825bf02a477f6593199ccfe52fcdf1b747e65d",
+      "ref": "all-tests-20261008/current-source-closure/verification/retained-agency-v3-persistence-current-20261007",
+      "path": "backend/src/services/conscious-agency-persistence.test.ts",
+      "test": true,
+      "updates": {
+        "c1a76bfb7cb2eba3d28b48faeceb9288c5e46a5b7a663de6865f4131f3b2776b": {
+          "planned": "c1a76bfb7cb2eba3d28b48faeceb9288c5e46a5b7a663de6865f4131f3b2776b"
+        }
+      },
+      "review": "ADR0018/0039/0047/0051/0067: three cases keep retired character rejection, historical V3 agency SQLite reload/CAS and private goals/decisions absent from DTO. Unified consciousness v1 removes these fields only in new v6 runtime; does not delete or reinterpret saved V3 state.",
+      "reviewedSha256": "2ca92b44d0b2abedd6c521f4319f4242abfc917021546a7b61ded1299fcf0ec6",
+      "decision": "confirm preserved contract"
+    },
+    {
+      "oldSeal": "d3c375ecbef703d998c4cd29954cbf3613e351aa82776e8c61964b55de447838",
+      "ref": "all-tests-20261008/current-source-closure/verification/retained-agency-v3-runtime-current-20261007",
+      "path": "backend/src/services/conscious-agency-runtime.test.ts",
+      "test": true,
+      "updates": {
+        "c1a76bfb7cb2eba3d28b48faeceb9288c5e46a5b7a663de6865f4131f3b2776b": {
+          "planned": "c1a76bfb7cb2eba3d28b48faeceb9288c5e46a5b7a663de6865f4131f3b2776b"
+        }
+      },
+      "review": "ADR0018/0047/0051/0067: nine historical V3 cases retain one conscious/zero psyche call for each phase, prior-decision and repeated-speech acceptance, independent valid speech, tuple/override rejection, missing-observation hold and later no-tick behavior. Retention is required by C7, not adoption of split consciousness for new v6.",
+      "reviewedSha256": "5e67fe87518c6699ded7dd5f4f799f4ca8a1c4ab8dbb7dccb64a5b6c23f93198",
+      "decision": "confirm preserved contract"
+    },
+    {
+      "oldSeal": "0daf69bbc0052f26baba75dd2cd2be0102a76358579847137251b12709e5c0a0",
+      "ref": "test-recovery-v1/basis/0daf69bbc0052f26",
+      "path": "backend/src/testing/awareness-trial-http-fixture.ts",
+      "test": false,
+      "updates": {
+        "9300bba5dfdd28f2c89c1d4837b0868e49f11084611a6a9c1c1551b09c38b086": {
+          "planned": "9300bba5dfdd28f2c89c1d4837b0868e49f11084611a6a9c1c1551b09c38b086"
+        }
+      },
+      "review": "Unchanged offline HTTP fixture; current SDK/admission inherited. Test-only synthetic response routing is not authority to repeat paid historical trial.",
+      "reviewedSha256": "088fc7ab1a38dc5f22da317e2dd7af97804e8790360aa88c2a1f4367c4fafc91",
+      "decision": "confirm preserved contract"
+    },
+    {
+      "oldSeal": "c7186a92bb3a97c05f35ce92c92af6ec37261138e9fe495c5dec1552ebec237d",
+      "ref": "all-tests-20261008/current-source-closure/verification/normal-awareness-policy-bounded-current-20261007",
+      "path": "backend/src/services/normal-awareness-policy.test.ts",
+      "test": true,
+      "updates": {
+        "0daf69bbc0052f26baba75dd2cd2be0102a76358579847137251b12709e5c0a0": {
+          "planned": "0daf69bbc0052f26baba75dd2cd2be0102a76358579847137251b12709e5c0a0"
+        },
+        "593a3039c2b05e7e3011f1e7e25553cd71f57471e968209941e184a3c977f4c2": {
+          "planned": "593a3039c2b05e7e3011f1e7e25553cd71f57471e968209941e184a3c977f4c2"
+        },
+        "c5c8997e9f5f67cba26e5b3ba5ca70916f5ecf6d3263496534bf48d6ee58b717": {
+          "planned": "c5c8997e9f5f67cba26e5b3ba5ca70916f5ecf6d3263496534bf48d6ee58b717"
+        }
+      },
+      "review": "ADR0054/0066/0067: fix stale test description usage-v2 to awareness-v5-usage-v3; existing schema assertion correction already checkpointed. Actual startBattle/advance must persist default v3/prompt v4, 600-second runtime and deliver the bound policy to both legacy roles twice. Explicit v6 option remains absent; historical policy timing stays unchanged.",
+      "reviewedSha256": "baa54198b9199ac48d36e0a003851133f70623682a9426a232b40e46440126b8",
+      "decision": "fix stale version label and confirm policy v3"
+    },
+    {
+      "oldSeal": "2117768a763c8354873828cd7252431350870bd10211a42c15b0331eb70d795c",
+      "ref": "all-tests-20261008/current-source-closure/verification/scene-beat-wiring-bounded-20261008",
+      "path": "backend/src/services/scene-beat-wiring.test.ts",
+      "test": true,
+      "updates": {
+        "2187c99e947971551d78e0af4fd0d41cc3a77b91520edfffb7a15e004f24d621": {
+          "planned": "5d646414a88f23e739ad8b7afa34d6c86208b7916da11f6029cbcce4c13a5c03"
+        }
+      },
+      "review": "ADR0016/0017/0021/0051/0067: seven cases preserve K3 clock/batching, advancing past fifth turn, deferred narration, held public turn, historical later rejection/deterministic choice, beat-close skip persistence and orphaned advance adoption. New v6 option does not modify legacy schema2 fixture expectations or default v5 beat behavior.",
+      "reviewedSha256": "76e81f3717ecb271da902e629e6cc44cb21454f154b5599ca712dcf998616490",
+      "decision": "confirm preserved contract"
+    },
+    {
+      "oldSeal": "b7a37ca1b5837bbc949aae8876c39b11ea92b4cbe7e9ba5109cb514e473b2423",
+      "ref": "all-tests-20261008/current-source-closure/verification/v3-battle-creation-recovery-bounded-20261008",
+      "path": "backend/src/services/v3-battle-creation.test.ts",
+      "test": true,
+      "updates": {
+        "2187c99e947971551d78e0af4fd0d41cc3a77b91520edfffb7a15e004f24d621": {
+          "planned": "5d646414a88f23e739ad8b7afa34d6c86208b7916da11f6029cbcce4c13a5c03"
+        }
+      },
+      "review": "ADR0006/0039/0047/0051/0067: four cases retain historical v4 continuation and generation freeze across pointer updates/reload, default v5 creation with current V3 assets, free-action-only v4 continuation and durable repair reservation without partial state/reset. Current v6 opt-in branch preserves existing orchestration and these immutable identities. No retired cutover acceptance or live completion claim.",
+      "reviewedSha256": "5f6254f5f888c785a836feb3fcfcdcb635b0bb04ca9cbed28c05f9fc520a3e6c",
+      "decision": "confirm preserved contract"
+    },
+    {
+      "oldSeal": "65bd5e628346546f24648b7a50531942d674fdb411b62f6fce80491aa4cec15b",
+      "ref": "test-recovery-v1/basis/65bd5e628346546f",
+      "path": "backend/src/services/battle-service.ts",
+      "test": false,
+      "updates": {
+        "0e5e6c7cf01a162e0c87e52e251660698879721174cf925a2ebefe13fc34d50d": {
+          "planned": "0e5e6c7cf01a162e0c87e52e251660698879721174cf925a2ebefe13fc34d50d"
+        }
+      },
+      "review": "Preserve the frozen awareness-v5 battle-frame/guidance contract; current battle-service bytes add explicit binding format v6 but retained v5 frame helper and action-effort projection remain unchanged. Inherit the already reviewed effort source and original guidance/detail/boundary clauses, not a new pipeline decision.",
+      "reviewedSha256": "157a15455ffe1f5c6636aa1d01a9d81717f69daea654262cdced43f989fc735f",
+      "decision": "confirm newly stale dependent; preserve every assertion"
+    },
+    {
+      "oldSeal": "66f2a8fef889d81457bccca209276ddad0b95cc32bdcecc81db217cecf81e6bc",
+      "ref": "all-tests-20261008/current-source-closure/awareness-guidance-20261007/verification-execution",
+      "path": "backend/src/services/awareness-execution.test.ts",
+      "test": true,
+      "updates": {
+        "65bd5e628346546f24648b7a50531942d674fdb411b62f6fce80491aa4cec15b": {
+          "planned": "65bd5e628346546f24648b7a50531942d674fdb411b62f6fce80491aa4cec15b"
+        }
+      },
+      "review": "ADR0051/0056/0065/0067 C7: retain 17 awareness-v5 execution cases: frozen conscious jobs before latent work, deferred merge and restart without resend, required failure preserves world, exact certified versus observed admission, private counterpart isolation, guidance delivery, tick36 cap and unknown physical occupancy. Only battle-frame source inherits the reviewed current battle service; split-role behavior is historical compatibility, not unified consciousness v1 behavior. All assertions and source bytes unchanged.",
+      "reviewedSha256": "a80c75b5009316b82becad53391bc2df1c8d6b239f5b21d177bd24409d24748a",
+      "decision": "confirm newly stale dependent; preserve every assertion"
+    },
+    {
+      "oldSeal": "7f955857e7960fd3cfe68a6f27e3c1667aca5a6410e5be49b882f2e95417b334",
+      "ref": "all-tests-20261008/current-source-closure/verification/battle-speech-wiring-bounded-20261008",
+      "path": "backend/src/services/battle-speech-wiring.test.ts",
+      "test": true,
+      "updates": {
+        "5d646414a88f23e739ad8b7afa34d6c86208b7916da11f6029cbcce4c13a5c03": {
+          "planned": "5d646414a88f23e739ad8b7afa34d6c86208b7916da11f6029cbcce4c13a5c03"
+        }
+      },
+      "review": "ADR0011/0022/0023/0025/0051/0056/0067 C7: retain all37 speech/manifestation cases, internal receipts absent from provider, own-side input, compact private/utterance separation, independently accepted valid speech, blocked speech not public, atomic invalid-expression refusal, narrator placement/third-party labels, canonical judgment and immutable aftermath. Current battle source is reviewed; old fixture binding contracts remain unchanged. All assertions and source bytes unchanged.",
+      "reviewedSha256": "9546f063aaceec17aa7cd528bde0ad91431a3e0d803f65bf96b850656314ff48",
+      "decision": "confirm newly stale dependent; preserve every assertion"
+    },
+    {
+      "oldSeal": "18b9b5dcd683f54958fdfb34ec6465e97dddc356a252e4010b4b6ace171d3302",
+      "ref": "test-recovery-v1/basis/18b9b5dcd683f549",
+      "path": "backend/src/services/battle-service.ts",
+      "test": false,
+      "updates": {
+        "0e5e6c7cf01a162e0c87e52e251660698879721174cf925a2ebefe13fc34d50d": {
+          "planned": "0e5e6c7cf01a162e0c87e52e251660698879721174cf925a2ebefe13fc34d50d"
+        }
+      },
+      "review": "Preserve historical conscious-agency inventory helper source and its original historical fixture plus ADR0065 basis. Current battle-service bytes retain those helper/public-projection branches while internal binding format v6 opts into a new runtime. No reinstatement of split consciousness for new v6 battles.",
+      "reviewedSha256": "157a15455ffe1f5c6636aa1d01a9d81717f69daea654262cdced43f989fc735f",
+      "decision": "confirm newly stale dependent; preserve every assertion"
+    },
+    {
+      "oldSeal": "b5c79a19b899238c63f3ff802b7613c23a50cf9d3d5df7737fbbe3cfbed9554e",
+      "ref": "all-tests-20261008/current-source-closure/verification/historical-agency-inventory-bounded-20261008",
+      "path": "backend/src/services/character-agency-inventory.test.ts",
+      "test": true,
+      "updates": {
+        "18b9b5dcd683f54958fdfb34ec6465e97dddc356a252e4010b4b6ace171d3302": {
+          "planned": "18b9b5dcd683f54958fdfb34ec6465e97dddc356a252e4010b4b6ace171d3302"
+        }
+      },
+      "review": "ADR0018/0047/0051/0067 C7: retain16 historical agency inventory cases including3 modes x3 phases, known relationship/personality, action availability, goal persistence/CAS without disclosure, later adapter and repeated speech/private projection. Historical helper behavior is not the adopted new consciousness design or model quality evidence. Current battle service retains these helpers; all assertions and source bytes unchanged.",
+      "reviewedSha256": "5526bd5b27046ddc7f47539542ec7e5811bbdae632dffc3c9c4ddee6029a7262",
+      "decision": "confirm newly stale dependent; preserve every assertion"
+    }
+  ],
+  "execution": [
+    {
+      "index": 1,
+      "path": "backend/src/llm/openai-compatible.ts",
+      "ref": "test-recovery-v1/basis/9300bba5dfdd28f2",
+      "oldSeal": "9300bba5dfdd28f2c89c1d4837b0868e49f11084611a6a9c1c1551b09c38b086",
+      "newSeal": "1e4f843a0c2fc69ff0dc3891944b2f252236db2f9967087007a64db5711dd94c",
+      "sourceReadback": "WORKFILE_MATCHES_HEAD",
+      "review": "Unchanged SDK bytes; reviewed exact request guard, physical accounting, strict adjudication result and legacy routing scopes. Retain original bounded Cause messages; inherit current policy/context/admission/model-option dependencies only.",
+      "replacements": {
+        "18615b042fb44a5a2e1de6560cc29be0e544c11a501bd909f9a080b248097434": {
+          "existing": "7a26884d4f1fa8ea0be0c709673cbcfca6b7b4341daffe8430e19eb4d8e1f6ce",
+          "ref": "all-tests-20261007/implementation-awareness-dispatch-context"
+        },
+        "82a05d36a1ced02c2466b9a25dfb306d23d3a63436fc5ed35f2f66eb29016e2c": {
+          "existing": "67ec3f1869ecdd512e1b6c46a3d62eadbe9335275525b1b679111ac9f84306b9",
+          "ref": "all-tests-20261009/current-source-closure/all-tests-20261007/implementation-awareness-dispatch-admission"
+        },
+        "b3e0e4ce62fe56c728925a943bf1f3fc1b0b98b72fdfa4de35c888d3a6f463ee": {
+          "existing": "cbf3ffb2ce9aaaf084d58c4589de059107ac54c50f8484d55eff7ca591096696",
+          "ref": "all-tests-20261008/current-source-closure/all-tests-20261007/implementation-sdk-model-options"
+        },
+        "c064db895ea9f010d2f6fb28360b243285cbe93156c19f8286e161ec2d0d731a": {
+          "existing": "c979d5b48b413e7c93bd040eddddad6b741448599fc19677c3db2d67578edfe0",
+          "ref": "all-tests-20261007/implementation-awareness-policy"
+        }
+      }
+    },
+    {
+      "index": 2,
+      "path": "backend/src/llm/openai-compatible.ts",
+      "ref": "test-recovery-v1/basis/ebcf7ce03ec331c7",
+      "oldSeal": "ebcf7ce03ec331c7a1729463ebb760272d23b29405d65c8b6e5a0c2f9d9804e7",
+      "newSeal": "3415fa3bdf88cd709ec95d1f5ae98631ac34822fd6b8bbb816ccf193e7e845e6",
+      "sourceReadback": "WORKFILE_MATCHES_HEAD",
+      "review": "Unchanged SDK bytes; reviewed exact request guard, physical accounting, strict adjudication result and legacy routing scopes. Retain original bounded Cause messages; inherit current policy/context/admission/model-option dependencies only.",
+      "replacements": {
+        "9300bba5dfdd28f2c89c1d4837b0868e49f11084611a6a9c1c1551b09c38b086": {
+          "planned": "9300bba5dfdd28f2c89c1d4837b0868e49f11084611a6a9c1c1551b09c38b086"
+        }
+      }
+    },
+    {
+      "index": 3,
+      "path": "backend/src/llm/awareness-adjudication-result.test.ts",
+      "ref": "all-tests-20261008/current-source-closure/verification/awareness-adjudication-result-20261007",
+      "oldSeal": "0ebbe9ea8fda89585eb56783fed6cf5014c62c0b5ecbae72f20bad01fb484c78",
+      "newSeal": "ebb479b0eb3c0efeed30e352217f850863b401d0ac18c81dd6b50d8b2ca4e53c",
+      "sourceReadback": "WORKFILE_MATCHES_HEAD",
+      "review": "ADR0051/0056/0065: preserve invalid winner/reason and malformed semantic/evidence rejection, server-owned references, single physical send and no synthetic free action. SDK bytes unchanged; current dispatch/admission/model-options and policy v3 basis reviewed. Guard completion mock is not durable ledger or world-application proof.",
+      "replacements": {
+        "ebcf7ce03ec331c7a1729463ebb760272d23b29405d65c8b6e5a0c2f9d9804e7": {
+          "planned": "ebcf7ce03ec331c7a1729463ebb760272d23b29405d65c8b6e5a0c2f9d9804e7"
+        }
+      }
+    },
+    {
+      "index": 4,
+      "path": "backend/src/llm/awareness-dispatch-admission.test.ts",
+      "ref": "all-tests-20261009/current-source-closure/verification/awareness-dispatch-admission-20261007",
+      "oldSeal": "bdae2ca6065c13de1567d7ffda94713b86f25c55a8cafd3e82bc22b4f1de962c",
+      "newSeal": "d793ee21a8e6a117e0c3c2990639629cb0f91910a53051cd13bb367659a0d5f3",
+      "sourceReadback": "WORKFILE_MATCHES_HEAD",
+      "review": "ADR0051/0066: exact rendered request hash, provider/model/cap, malformed quote and error rejection, duplicate contract refusal, observed policy without quotes or invented cost, prompt revisions and time/token bounds. Ordinary policy v3 does not change historical certified/observed test inputs.",
+      "replacements": {
+        "82a05d36a1ced02c2466b9a25dfb306d23d3a63436fc5ed35f2f66eb29016e2c": {
+          "existing": "67ec3f1869ecdd512e1b6c46a3d62eadbe9335275525b1b679111ac9f84306b9",
+          "ref": "all-tests-20261009/current-source-closure/all-tests-20261007/implementation-awareness-dispatch-admission"
+        }
+      }
+    },
+    {
+      "index": 5,
+      "path": "backend/src/llm/awareness-dispatch-context.test.ts",
+      "ref": "all-tests-20261008/current-source-closure/verification/awareness-dispatch-context-20261007",
+      "oldSeal": "308f7c817f5faee04b21c2e8e18065943214cf9b19287b4245f258eca0217b05",
+      "newSeal": "59b157a5efb4ce2c92db59e279d12b821956dbb8a856b3aba67b77ba7e1f0bd4",
+      "sourceReadback": "WORKFILE_MATCHES_HEAD",
+      "review": "ADR0051/0056/0065/0066: physical wire equals admitted prose/schema/cap, bound absolute deadline, no streaming/tools/wrong route/retry on refusal, strict frozen narration schema. Historical limits remain explicit; current context and SDK bytes unchanged.",
+      "replacements": {
+        "18615b042fb44a5a2e1de6560cc29be0e544c11a501bd909f9a080b248097434": {
+          "existing": "7a26884d4f1fa8ea0be0c709673cbcfca6b7b4341daffe8430e19eb4d8e1f6ce",
+          "ref": "all-tests-20261007/implementation-awareness-dispatch-context"
+        },
+        "3ce85102892804dcfeb7df194b5e93d477ab783cef102356d02ed300e993ea69": {
+          "existing": "ee4b693485b3caa77a55bddeac761b710b0ce1b5a6b3f0077d60a877cdbe548b",
+          "ref": "all-tests-20261007/implementation-frozen-narration-dispatch"
+        },
+        "82a05d36a1ced02c2466b9a25dfb306d23d3a63436fc5ed35f2f66eb29016e2c": {
+          "existing": "67ec3f1869ecdd512e1b6c46a3d62eadbe9335275525b1b679111ac9f84306b9",
+          "ref": "all-tests-20261009/current-source-closure/all-tests-20261007/implementation-awareness-dispatch-admission"
+        },
+        "9300bba5dfdd28f2c89c1d4837b0868e49f11084611a6a9c1c1551b09c38b086": {
+          "planned": "9300bba5dfdd28f2c89c1d4837b0868e49f11084611a6a9c1c1551b09c38b086"
+        }
+      }
+    },
+    {
+      "index": 6,
+      "path": "backend/src/llm/awareness-provider-factory.ts",
+      "ref": "test-recovery-v1/basis/6b96d59704d71459",
+      "oldSeal": "6b96d59704d7145911761177293c65f5ddf85141def9485d353b0b68a0628b74",
+      "newSeal": "8ebe2a07ba04bbe9bfe8f5ae3aee922ba61c0a5b7936857b0e8bc114933eadde",
+      "sourceReadback": "WORKFILE_MATCHES_HEAD",
+      "review": "Only optional consciousness transport plus reuse of the existing latent adapter added for ADR0067 C6; legacy roles and two-adapter creation remain unchanged. Retain original configured-role contract and no-retry boundaries.",
+      "replacements": {
+        "55cd6ea44ebccfb4f9f0e3012c1edd96fcafa0f412c8eaeafeac922832b9a100": {
+          "existing": "462b1364dc26c5e423eb24df3a599a9c53726eefbb8416e929f201f642ee80c6",
+          "ref": "all-tests-20261007/contract-awareness-request-options"
+        },
+        "5813ba59d82e96ead103f43fa08e7bdac8ee4ffbe0e9e57c3bb6d683b086a349": {
+          "existing": "c7dd1c48d9801999a79ac066d1b33a500edfb9dd3621abf2c9b8d56fe89731ad",
+          "ref": "all-tests-20261009/current-source-closure/all-tests-20261007/implementation-awareness-role-provider"
+        },
+        "b3e0e4ce62fe56c728925a943bf1f3fc1b0b98b72fdfa4de35c888d3a6f463ee": {
+          "existing": "cbf3ffb2ce9aaaf084d58c4589de059107ac54c50f8484d55eff7ca591096696",
+          "ref": "all-tests-20261008/current-source-closure/all-tests-20261007/implementation-sdk-model-options"
+        },
+        "d777c0ab40b128c53df1a5ff0eb971ae7a797445e581c130c9efea400cc4f383": {
+          "existing": "0b90dcf2eff7f2dce9ca38ccfd7ae273af6fb25507ad48c68aa9affa293a42d9",
+          "ref": "all-tests-20261008/current-source-closure/all-tests-20261007/implementation-narration-role-transport"
+        }
+      }
+    },
+    {
+      "index": 7,
+      "path": "backend/src/llm/awareness-provider-factory.test.ts",
+      "ref": "all-tests-20261008/current-source-closure/verification/awareness-provider-factory-20261007",
+      "oldSeal": "f01113bf7400ead67001c2b96dc5d084115280fef8ffdd75af7097f0caa7fb22",
+      "newSeal": "e33ea0aed47f3949017837f1a008e0132188e44d6f9f1e7aa9784fe2c3ebf8ca",
+      "sourceReadback": "WORKFILE_MATCHES_HEAD",
+      "review": "ADR0051/0052/0054/0067: keep two adapters, Luna/Grok role identities, no fallback/retry, bound narration timing, credential/URL/model refusal. Added optional consciousness transport reuses latent adapter and does not replace historical models; no extra adapter or call is required.",
+      "replacements": {
+        "3ce85102892804dcfeb7df194b5e93d477ab783cef102356d02ed300e993ea69": {
+          "existing": "ee4b693485b3caa77a55bddeac761b710b0ce1b5a6b3f0077d60a877cdbe548b",
+          "ref": "all-tests-20261007/implementation-frozen-narration-dispatch"
+        },
+        "5813ba59d82e96ead103f43fa08e7bdac8ee4ffbe0e9e57c3bb6d683b086a349": {
+          "existing": "c7dd1c48d9801999a79ac066d1b33a500edfb9dd3621abf2c9b8d56fe89731ad",
+          "ref": "all-tests-20261009/current-source-closure/all-tests-20261007/implementation-awareness-role-provider"
+        },
+        "6b96d59704d7145911761177293c65f5ddf85141def9485d353b0b68a0628b74": {
+          "planned": "6b96d59704d7145911761177293c65f5ddf85141def9485d353b0b68a0628b74"
+        },
+        "b3e0e4ce62fe56c728925a943bf1f3fc1b0b98b72fdfa4de35c888d3a6f463ee": {
+          "existing": "cbf3ffb2ce9aaaf084d58c4589de059107ac54c50f8484d55eff7ca591096696",
+          "ref": "all-tests-20261008/current-source-closure/all-tests-20261007/implementation-sdk-model-options"
+        },
+        "d777c0ab40b128c53df1a5ff0eb971ae7a797445e581c130c9efea400cc4f383": {
+          "existing": "0b90dcf2eff7f2dce9ca38ccfd7ae273af6fb25507ad48c68aa9affa293a42d9",
+          "ref": "all-tests-20261008/current-source-closure/all-tests-20261007/implementation-narration-role-transport"
+        }
+      }
+    },
+    {
+      "index": 8,
+      "path": "backend/src/llm/awareness-provider.test.ts",
+      "ref": "all-tests-20261009/current-source-closure/verification/awareness-role-provider-20261007",
+      "oldSeal": "722e0b834e70ef88b0f4eb431311e89eb056a595a42709a466907e9e1dd4ba40",
+      "newSeal": "07fd1507c300b8d19776d5c7ea563b44ab314ddb109f033a45c3b1300ec566b9",
+      "sourceReadback": "WORKFILE_MATCHES_HEAD",
+      "review": "ADR0051/0052/0054/0066: preserve historical role routing, felt projection privacy, source tick, strict output and immutable prompt/policy selection. Policy v3 only extends adjudication deadline, not latent/conscious caps; these explicit historical-policy expectations remain valid.",
+      "replacements": {
+        "55cd6ea44ebccfb4f9f0e3012c1edd96fcafa0f412c8eaeafeac922832b9a100": {
+          "existing": "462b1364dc26c5e423eb24df3a599a9c53726eefbb8416e929f201f642ee80c6",
+          "ref": "all-tests-20261007/contract-awareness-request-options"
+        },
+        "5813ba59d82e96ead103f43fa08e7bdac8ee4ffbe0e9e57c3bb6d683b086a349": {
+          "existing": "c7dd1c48d9801999a79ac066d1b33a500edfb9dd3621abf2c9b8d56fe89731ad",
+          "ref": "all-tests-20261009/current-source-closure/all-tests-20261007/implementation-awareness-role-provider"
+        },
+        "871f782e1be4698f4e30f16af051e3ee53940f63694194a24090315c896aab2c": {
+          "existing": "cab5613bd79f2e4596e4a472fce4c42766878a947ea1679efd352422fbbe4a25",
+          "ref": "all-tests-20261009/current-source-closure/all-tests-20261007/implementation-awareness-request"
+        },
+        "c064db895ea9f010d2f6fb28360b243285cbe93156c19f8286e161ec2d0d731a": {
+          "existing": "c979d5b48b413e7c93bd040eddddad6b741448599fc19677c3db2d67578edfe0",
+          "ref": "all-tests-20261007/implementation-awareness-policy"
+        }
+      }
+    },
+    {
+      "index": 9,
+      "path": "backend/src/llm/openai-compatible.ts",
+      "ref": "test-recovery-v1/basis/2f80c008d1f20836",
+      "oldSeal": "2f80c008d1f208360b9102994990e9975c419cda96eb1d68c91aed70f73d06a4",
+      "newSeal": "0aa61f846dbeea36be9337ac2882767ac439b58c38fafffa1ca136d6e74f864e",
+      "sourceReadback": "WORKFILE_MATCHES_HEAD",
+      "review": "Unchanged SDK bytes; reviewed exact request guard, physical accounting, strict adjudication result and legacy routing scopes. Retain original bounded Cause messages; inherit current policy/context/admission/model-option dependencies only.",
+      "replacements": {
+        "871be2be8ffe62441d423143a4433334fe7a4026000f033122d5396c949cc95a": {
+          "existing": "10b9c6f7a9ffc084ff80596ff6384cfe367a426dde2439d0b7e8e45724771c6e",
+          "ref": "all-tests-20261008/current-source-closure/all-tests-20261008/design-routing-typed-seam"
+        }
+      }
+    },
+    {
+      "index": 10,
+      "path": "backend/src/llm/openai-compatible-routing.test.ts",
+      "ref": "all-tests-20261008/current-source-closure/verification/routing-typed-seam-bounded-20261008",
+      "oldSeal": "e03b0dc08bf995a2fa71d86539a6c7e4d8305464edb4ec654df89069c8087ff4",
+      "newSeal": "8ed63681b2b32e2e8b0d0c71979fa273deb2033fc9dcac147fd56489d0f43171",
+      "sourceReadback": "WORKFILE_MATCHES_HEAD",
+      "review": "ADR0022/0051: six typed SDK seam cases retain direct Grok reasoning none, non-xAI options, referee fast tier, legacy retry and timeout behavior. Awareness guard retry-none is separately tested; this legacy routing regression does not impose retries on unified consciousness v1.",
+      "replacements": {
+        "2f80c008d1f208360b9102994990e9975c419cda96eb1d68c91aed70f73d06a4": {
+          "planned": "2f80c008d1f208360b9102994990e9975c419cda96eb1d68c91aed70f73d06a4"
+        }
+      }
+    },
+    {
+      "index": 11,
+      "path": "backend/src/repositories/battle-awareness-narration-reservation.ts",
+      "ref": "test-recovery-v1/basis/0725ece43a7079bf",
+      "oldSeal": "0725ece43a7079bfe5d41d80f9c4b0e539679011a4b24d4b4295137509bf6a76",
+      "newSeal": "a2ce5cba32bf29476e3dbeae746f332d666631cc1dd33aab2896c34b94d036c1",
+      "sourceReadback": "WORKFILE_MATCHES_HEAD",
+      "review": "Current source selects common operational runtime, locks runtime before narrator lease/batch/entries, validates identical capability/budget and writes unified budget or full historical schema fallback. Native PG fixture plus SQLite worker regressions preserve fence/oversubscription/rollback; no full v6 PG acceptance.",
+      "replacements": {}
+    },
+    {
+      "index": 12,
+      "path": "docs/evidence/test-authority-recovery-postgres-2026-10-10.json",
+      "ref": "test-recovery-v1/basis/2cf9e71939aef7dd",
+      "oldSeal": "2cf9e71939aef7ddfffebe626b6b1d8bf1cfce768277de50c3c5b0154e4abe02",
+      "newSeal": "becfcd5bfcf6a993c4f87849a6066bfc676aec780330fda0e6ef92f4bb08ee4e",
+      "sourceReadback": "WORKFILE_MATCHES_HEAD",
+      "review": "New dedicated local PostgreSQL16 run receipt: original four cases, observed one 42P01 fixture failure then corrected four passes/no skips, stopped private cluster. Preserve old native receipt as previous scoped evidence; do not rewrite historical result.",
+      "replacements": {
+        "652096d8480a7f0620eecd0f1574ed889d67627069f1405a9fa6d1e3ee1e78ef": {
+          "planned": "0725ece43a7079bfe5d41d80f9c4b0e539679011a4b24d4b4295137509bf6a76"
+        }
+      }
+    },
+    {
+      "index": 13,
+      "path": "backend/src/repositories/battle-awareness-narration-events-postgres.test.ts",
+      "ref": "all-tests-20261008/current-source-closure/verification/battle-awareness-narration-events-postgres-bounded-native-pg-20261007",
+      "oldSeal": "6e1419fee34ab5c6dcc09637586bde9778e527495424af69323ae0d859da8874",
+      "newSeal": "3657470ad7723d93e7969361e838cd8de1cb9658b8b10459b995c84ff824071e",
+      "sourceReadback": "WORKFILE_MATCHES_HEAD",
+      "review": "ADR0006/0051: native PostgreSQL advisory-lock waiting, per-battle independence, unique collision control, rollback and retention sequence floor. Actual event appender exercised; current four-case local PG receipt replaces historical execution receipt, no production/PG17 claim.",
+      "replacements": {
+        "2cf9e71939aef7ddfffebe626b6b1d8bf1cfce768277de50c3c5b0154e4abe02": {
+          "planned": "2cf9e71939aef7ddfffebe626b6b1d8bf1cfce768277de50c3c5b0154e4abe02"
+        }
+      }
+    },
+    {
+      "index": 14,
+      "path": "backend/src/repositories/battle-awareness-narration-reservation-postgres.test.ts",
+      "ref": "all-tests-20261008/current-source-closure/verification/battle-awareness-narration-reservation-postgres-bounded-native-pg-20261007",
+      "oldSeal": "04d56ceb000e6fa7df80d248647dd95c84fddb6806ef0362ec702d3ac2766af6",
+      "newSeal": "555f40dfef704c9d27e1823b6ba9e7d5288109392d3696000c992a7ae3ab16cb",
+      "sourceReadback": "WORKFILE_MATCHES_HEAD",
+      "review": "ADR0006/0051/0067: actual native PostgreSQL reservation keeps world fence, serializes concurrent budget admission, rejects stale narrator fence and rolls back batch mutation. FIX: minimal fixture omitted battle_unified_consciousness table now probed by shared runtime selector; add empty table so historical awareness-v5 fallback executes. Preserve every original concurrency and CAS assertion. Initial native run failed 42P01; corrected run passes.",
+      "replacements": {
+        "2cf9e71939aef7ddfffebe626b6b1d8bf1cfce768277de50c3c5b0154e4abe02": {
+          "planned": "2cf9e71939aef7ddfffebe626b6b1d8bf1cfce768277de50c3c5b0154e4abe02"
+        },
+        "652096d8480a7f0620eecd0f1574ed889d67627069f1405a9fa6d1e3ee1e78ef": {
+          "planned": "0725ece43a7079bfe5d41d80f9c4b0e539679011a4b24d4b4295137509bf6a76"
+        }
+      }
+    },
+    {
+      "index": 15,
+      "path": "backend/src/repositories/battle-awareness-postgres.test.ts",
+      "ref": "all-tests-20261008/current-source-closure/verification/battle-awareness-postgres-bounded-native-pg-20261007",
+      "oldSeal": "b3f247d89388136a4b644bf2c067a7df834f5856c2d7f77734a3920f85c157a6",
+      "newSeal": "158d267b3732f6648d1f34de506ce26cd08394b3b72aa30643ee61a6d9cb4cc3",
+      "sourceReadback": "WORKFILE_MATCHES_HEAD",
+      "review": "ADR0006/0051: two actual native PG initialization cases preserve owner/fence/expiry checks and conflict immutability. Opaque runtime JSON tests SQL only; four-case current execution receipt is scoped PG16 evidence, not full schema or runtime validity.",
+      "replacements": {
+        "2cf9e71939aef7ddfffebe626b6b1d8bf1cfce768277de50c3c5b0154e4abe02": {
+          "planned": "2cf9e71939aef7ddfffebe626b6b1d8bf1cfce768277de50c3c5b0154e4abe02"
+        }
+      }
+    },
+    {
+      "index": 16,
+      "path": "backend/src/services/battle-service.ts",
+      "ref": "test-recovery-v1/basis/0e5e6c7cf01a162e",
+      "oldSeal": "0e5e6c7cf01a162e0c87e52e251660698879721174cf925a2ebefe13fc34d50d",
+      "newSeal": "1915b027cd6664e8806b78cb0fa9249db5d61e5dedc53c61f89169711c5b01de",
+      "sourceReadback": "WORKFILE_MATCHES_HEAD",
+      "review": "Reviewed opt-in consciousnessPolicy parse/binding/adoption and schema6 advance/commit branches against ADR0067 C1-C7. Default v5 remains AwarenessNormalPolicy v3 under ADR0066; retained v3/v4 helpers, public DTO/auto-match, scene clock, replay and failure behavior tested by identified 28-file cohort. Preserve original narrow projection causes, no full battle-service correctness claim.",
+      "replacements": {}
+    },
+    {
+      "index": 17,
+      "path": "backend/src/services/battle-service.ts",
+      "ref": "test-recovery-v1/basis/a3adc469058d306b",
+      "oldSeal": "a3adc469058d306b4d0349187ae7c24e3ac20402143e347a87b717594cd0b083",
+      "newSeal": "c8d058010a31e8c09554dbfb238f9e3ad9b9ba8d32f1150044f87e91eeba8567",
+      "sourceReadback": "WORKFILE_MATCHES_HEAD",
+      "review": "Reviewed opt-in consciousnessPolicy parse/binding/adoption and schema6 advance/commit branches against ADR0067 C1-C7. Default v5 remains AwarenessNormalPolicy v3 under ADR0066; retained v3/v4 helpers, public DTO/auto-match, scene clock, replay and failure behavior tested by identified 28-file cohort. Preserve original narrow projection causes, no full battle-service correctness claim.",
+      "replacements": {
+        "fa1f39e4193e70a58070712db08ab252b041274b45d0327c5bd7275ab062f3c4": {
+          "planned": "0e5e6c7cf01a162e0c87e52e251660698879721174cf925a2ebefe13fc34d50d"
+        }
+      }
+    },
+    {
+      "index": 18,
+      "path": "backend/src/repositories/characters.test.ts",
+      "ref": "all-tests-20261008/current-source-closure/verification/owner-characters-rating-20261008",
+      "oldSeal": "30b110e70226300c187425f886a11060662bab57d92a1a9adb3dcd79ebba49ad",
+      "newSeal": "ccaad823b1d46c3368617cb5b1489c50c2968cdd157f3cea92937a367a4c4330",
+      "sourceReadback": "WORKFILE_MATCHES_HEAD",
+      "review": "ADR0060/0039: six cases keep owner-only references/reserved names, persisted opponent memories, nearest eligible opponent, centered population/deletion and realm isolation. Auto-match helper behavior unchanged by opt-in v6 branch; opponent memories are historical character storage, not unified consciousness memory state.",
+      "replacements": {
+        "a3adc469058d306b4d0349187ae7c24e3ac20402143e347a87b717594cd0b083": {
+          "planned": "a3adc469058d306b4d0349187ae7c24e3ac20402143e347a87b717594cd0b083"
+        }
+      }
+    },
+    {
+      "index": 19,
+      "path": "backend/src/services/battle-service.ts",
+      "ref": "test-recovery-v1/basis/5d646414a88f23e7",
+      "oldSeal": "5d646414a88f23e739ad8b7afa34d6c86208b7916da11f6029cbcce4c13a5c03",
+      "newSeal": "b5889b58cb903f9fc8ea2d0b2666123a9ffc47e5ebcad4769cdf1f32186bd08c",
+      "sourceReadback": "WORKFILE_MATCHES_HEAD",
+      "review": "Reviewed opt-in consciousnessPolicy parse/binding/adoption and schema6 advance/commit branches against ADR0067 C1-C7. Default v5 remains AwarenessNormalPolicy v3 under ADR0066; retained v3/v4 helpers, public DTO/auto-match, scene clock, replay and failure behavior tested by identified 28-file cohort. Preserve original narrow projection causes, no full battle-service correctness claim.",
+      "replacements": {
+        "0e5e6c7cf01a162e0c87e52e251660698879721174cf925a2ebefe13fc34d50d": {
+          "planned": "0e5e6c7cf01a162e0c87e52e251660698879721174cf925a2ebefe13fc34d50d"
+        }
+      }
+    },
+    {
+      "index": 20,
+      "path": "backend/src/routes-structured-asset-integration.test.ts",
+      "ref": "all-tests-20261008/current-source-closure/verification/structured-asset-integration-bounded-20261008",
+      "oldSeal": "f5dc300a66cf665d74655d7dd7cd5b5e4ada3127ce7993655c92553e2bcabd1c",
+      "newSeal": "d3e19d2f3027be5385a1eb4a2333b60c5b3c25bc2c83ecccf56222f2030c4827",
+      "sourceReadback": "WORKFILE_MATCHES_HEAD",
+      "review": "ADR0010/0011/0012/0013/0018/0039/0043/0051/0067: two HTTP/SQLite cases preserve immutable generation binding, current asset update/delete versus old battle snapshots, DTO privacy, setting/style freeze and replay; legacy v2 mutation blocked. Public creation still v5; v6 internal option does not change these expectations.",
+      "replacements": {
+        "2187c99e947971551d78e0af4fd0d41cc3a77b91520edfffb7a15e004f24d621": {
+          "planned": "5d646414a88f23e739ad8b7afa34d6c86208b7916da11f6029cbcce4c13a5c03"
+        }
+      }
+    },
+    {
+      "index": 21,
+      "path": "backend/src/services/battle-service.ts",
+      "ref": "test-recovery-v1/basis/0159fc2ab1c5fb85",
+      "oldSeal": "0159fc2ab1c5fb85a0bcb7e962092189a91006eed78b178d819eb036e970e742",
+      "newSeal": "669dc0dd3cfb34e676e36b7ef31117da60456834b8e827871f9655a02ffcd7dc",
+      "sourceReadback": "WORKFILE_MATCHES_HEAD",
+      "review": "Reviewed opt-in consciousnessPolicy parse/binding/adoption and schema6 advance/commit branches against ADR0067 C1-C7. Default v5 remains AwarenessNormalPolicy v3 under ADR0066; retained v3/v4 helpers, public DTO/auto-match, scene clock, replay and failure behavior tested by identified 28-file cohort. Preserve original narrow projection causes, no full battle-service correctness claim.",
+      "replacements": {
+        "0e5e6c7cf01a162e0c87e52e251660698879721174cf925a2ebefe13fc34d50d": {
+          "planned": "0e5e6c7cf01a162e0c87e52e251660698879721174cf925a2ebefe13fc34d50d"
+        }
+      }
+    },
+    {
+      "index": 22,
+      "path": "backend/src/routes.ts",
+      "ref": "test-recovery-v1/basis/a07dd2c8f0ac65c2",
+      "oldSeal": "a07dd2c8f0ac65c27b40a164bf44fc63b62580c737a46343a9ac271539dae208",
+      "newSeal": "4ae7c2254094538d8aa18e6a74005a14782e70b3f57f98eef516635187892936",
+      "sourceReadback": "WORKFILE_MATCHES_HEAD",
+      "review": "Source bytes unchanged; ready-asset binding observer inherits reviewed battle service with default v5 and internal v6 opt-in. Public request schema does not add consciousnessPolicy.",
+      "replacements": {
+        "ebaa10aee787ee5ca9e4357130de717739b17c431bca249217ce2156c63341aa": {
+          "planned": "0159fc2ab1c5fb85a0bcb7e962092189a91006eed78b178d819eb036e970e742"
+        }
+      }
+    },
+    {
+      "index": 23,
+      "path": "backend/src/routes-structured-battlefield-acceptance.test.ts",
+      "ref": "all-tests-20261008/current-source-closure/verification/stable-area-battlefield-http-acceptance-20261007",
+      "oldSeal": "192f32e3b092a874981833bcdeb2cf233a4512b1837300066be4c1569d60645d",
+      "newSeal": "719d77b669e0c0002f52a3ae25cfdcc456ce98045e109775c5dcf243f8f619bc",
+      "sourceReadback": "WORKFILE_MATCHES_HEAD",
+      "review": "ADR0012/0039/0051/0067: retain ready structured battlefield candidate/validation/activation, historical snapshots and creation binding assertions through actual HTTP fixture. Routes bytes unchanged; battle service opt-in v6 preserves default v5 and stable-area layout. No authoring provider quality claim.",
+      "replacements": {
+        "a07dd2c8f0ac65c27b40a164bf44fc63b62580c737a46343a9ac271539dae208": {
+          "planned": "a07dd2c8f0ac65c27b40a164bf44fc63b62580c737a46343a9ac271539dae208"
+        },
+        "ebaa10aee787ee5ca9e4357130de717739b17c431bca249217ce2156c63341aa": {
+          "planned": "0159fc2ab1c5fb85a0bcb7e962092189a91006eed78b178d819eb036e970e742"
+        }
+      }
+    },
+    {
+      "index": 24,
+      "path": "backend/src/routes-structured-narration-acceptance.test.ts",
+      "ref": "all-tests-20261008/current-source-closure/verification/stable-area-narration-http-acceptance-20261007",
+      "oldSeal": "f04884e9ca44bbddbede7668c8e748d1b771fbba58fc7cc04fd59a39e1cf9a0e",
+      "newSeal": "078bfa57c709d35d0dbc766722bd32b5ea93d6d143bf0b6a7683db520db43348",
+      "sourceReadback": "WORKFILE_MATCHES_HEAD",
+      "review": "ADR0013/0039/0051/0056/0067: retain narration candidate/validation/activation and frozen style/battle generation behavior through HTTP fixture. Updated ready-binding source adds opt-in v6 only; default v5 and latest narration output contract remain valid.",
+      "replacements": {
+        "a07dd2c8f0ac65c27b40a164bf44fc63b62580c737a46343a9ac271539dae208": {
+          "planned": "a07dd2c8f0ac65c27b40a164bf44fc63b62580c737a46343a9ac271539dae208"
+        },
+        "ebaa10aee787ee5ca9e4357130de717739b17c431bca249217ce2156c63341aa": {
+          "planned": "0159fc2ab1c5fb85a0bcb7e962092189a91006eed78b178d819eb036e970e742"
+        }
+      }
+    },
+    {
+      "index": 25,
+      "path": "backend/src/services/awareness-adjudication-guard.ts",
+      "ref": "test-recovery-v1/basis/9ff36ed023743975",
+      "oldSeal": "9ff36ed0237439756bf209b367d846326a9b54c1f0f34dff1ad5e44187647073",
+      "newSeal": "5c56f0fcd6c412154e6ad1c5df43e52747d69e15929e719939bee0f96f785dd8",
+      "sourceReadback": "WORKFILE_MATCHES_HEAD",
+      "review": "Source bytes unchanged; admission now inherits policy v3 while exact certified/observed, sticky failure, deadlines and action-correlation contracts remain unchanged.",
+      "replacements": {
+        "82a05d36a1ced02c2466b9a25dfb306d23d3a63436fc5ed35f2f66eb29016e2c": {
+          "existing": "67ec3f1869ecdd512e1b6c46a3d62eadbe9335275525b1b679111ac9f84306b9",
+          "ref": "all-tests-20261009/current-source-closure/all-tests-20261007/implementation-awareness-dispatch-admission"
+        }
+      }
+    },
+    {
+      "index": 26,
+      "path": "backend/src/services/awareness-adjudication-guard.test.ts",
+      "ref": "all-tests-20261008/current-source-closure/verification/awareness-adjudication-guard-bounded-current-20261007",
+      "oldSeal": "7fed5db402b14c3ce46ccf08d59315abe861be5c80bea6db20ebf3d03baa3193",
+      "newSeal": "7da2e74fe43d7329f011e350ba97838401be6919d82f9bb430fffedce6d8fda1",
+      "sourceReadback": "WORKFILE_MATCHES_HEAD",
+      "review": "ADR0051/0065/0066: nine cases keep persist-before-send, certified refusal/no reservation, unknown physical occupancy, completed unknown cost, quote/result deadlines, sticky failure, observed role scope and executed-action correlation. Current admission inherits policy v3 while explicit fixture policy remains historical.",
+      "replacements": {
+        "9ff36ed0237439756bf209b367d846326a9b54c1f0f34dff1ad5e44187647073": {
+          "planned": "9ff36ed0237439756bf209b367d846326a9b54c1f0f34dff1ad5e44187647073"
+        }
+      }
+    },
+    {
+      "index": 27,
+      "path": "backend/src/llm/index.ts",
+      "ref": "test-recovery-v1/basis/593a3039c2b05e7e",
+      "oldSeal": "593a3039c2b05e7e3011f1e7e25553cd71f57471e968209941e184a3c977f4c2",
+      "newSeal": "e77f4d9d0c4b408a9cffb899b9c1b2e7f3148378583c51b9bc71c4a5ec3e2b0d",
+      "sourceReadback": "WORKFILE_MATCHES_HEAD",
+      "review": "Source bytes unchanged; role factory adds optional shared consciousness transport without replacing legacy default roles or introducing a retry/fallback.",
+      "replacements": {
+        "6b96d59704d7145911761177293c65f5ddf85141def9485d353b0b68a0628b74": {
+          "planned": "6b96d59704d7145911761177293c65f5ddf85141def9485d353b0b68a0628b74"
+        },
+        "9300bba5dfdd28f2c89c1d4837b0868e49f11084611a6a9c1c1551b09c38b086": {
+          "planned": "9300bba5dfdd28f2c89c1d4837b0868e49f11084611a6a9c1c1551b09c38b086"
+        }
+      }
+    },
+    {
+      "index": 28,
+      "path": "backend/src/services/awareness-creation-encounter.ts",
+      "ref": "test-recovery-v1/basis/34425734c3d76e44",
+      "oldSeal": "34425734c3d76e44f6e7821c6a693a3941800fa85b5ef141e7e64c4b035f12f7",
+      "newSeal": "bc3af1ea8814061fdd7f70fc70190f06ac5fe12b699df38e0047b318b0d3f846",
+      "sourceReadback": "WORKFILE_MATCHES_HEAD",
+      "review": "Source bytes unchanged; review current policy/admission and guarded SDK dependencies. Durable prepare/reserve/ready/adopt, certified versus observed and no-resend scope retained.",
+      "replacements": {
+        "82a05d36a1ced02c2466b9a25dfb306d23d3a63436fc5ed35f2f66eb29016e2c": {
+          "existing": "67ec3f1869ecdd512e1b6c46a3d62eadbe9335275525b1b679111ac9f84306b9",
+          "ref": "all-tests-20261009/current-source-closure/all-tests-20261007/implementation-awareness-dispatch-admission"
+        }
+      }
+    },
+    {
+      "index": 29,
+      "path": "backend/src/services/awareness-creation-encounter.ts",
+      "ref": "test-recovery-v1/basis/80c714d278e554d3",
+      "oldSeal": "80c714d278e554d3f7326a29aee3f6412f1013bdd2284003ce4bd25193554b97",
+      "newSeal": "9e97d82bd438991d5b5d27ef2e6761504bd611685f5bc48e53d711e33a38f726",
+      "sourceReadback": "WORKFILE_MATCHES_HEAD",
+      "review": "Source bytes unchanged; review current policy/admission and guarded SDK dependencies. Durable prepare/reserve/ready/adopt, certified versus observed and no-resend scope retained.",
+      "replacements": {
+        "34425734c3d76e44f6e7821c6a693a3941800fa85b5ef141e7e64c4b035f12f7": {
+          "planned": "34425734c3d76e44f6e7821c6a693a3941800fa85b5ef141e7e64c4b035f12f7"
+        },
+        "82a05d36a1ced02c2466b9a25dfb306d23d3a63436fc5ed35f2f66eb29016e2c": {
+          "existing": "67ec3f1869ecdd512e1b6c46a3d62eadbe9335275525b1b679111ac9f84306b9",
+          "ref": "all-tests-20261009/current-source-closure/all-tests-20261007/implementation-awareness-dispatch-admission"
+        },
+        "9300bba5dfdd28f2c89c1d4837b0868e49f11084611a6a9c1c1551b09c38b086": {
+          "planned": "9300bba5dfdd28f2c89c1d4837b0868e49f11084611a6a9c1c1551b09c38b086"
+        }
+      }
+    },
+    {
+      "index": 30,
+      "path": "backend/src/services/battle-service.ts",
+      "ref": "test-recovery-v1/basis/c5c8997e9f5f67cb",
+      "oldSeal": "c5c8997e9f5f67cba26e5b3ba5ca70916f5ecf6d3263496534bf48d6ee58b717",
+      "newSeal": "1d29dd9feb41f1b7bdd6727996a4042e28e983030aee472e337fcf9e5d5b3487",
+      "sourceReadback": "WORKFILE_MATCHES_HEAD",
+      "review": "Reviewed opt-in consciousnessPolicy parse/binding/adoption and schema6 advance/commit branches against ADR0067 C1-C7. Default v5 remains AwarenessNormalPolicy v3 under ADR0066; retained v3/v4 helpers, public DTO/auto-match, scene clock, replay and failure behavior tested by identified 28-file cohort. Preserve original narrow projection causes, no full battle-service correctness claim.",
+      "replacements": {
+        "34425734c3d76e44f6e7821c6a693a3941800fa85b5ef141e7e64c4b035f12f7": {
+          "planned": "34425734c3d76e44f6e7821c6a693a3941800fa85b5ef141e7e64c4b035f12f7"
+        },
+        "fa1f39e4193e70a58070712db08ab252b041274b45d0327c5bd7275ab062f3c4": {
+          "planned": "0e5e6c7cf01a162e0c87e52e251660698879721174cf925a2ebefe13fc34d50d"
+        }
+      }
+    },
+    {
+      "index": 31,
+      "path": "backend/src/services/battle-service.ts",
+      "ref": "test-recovery-v1/basis/59df7291e9c37342",
+      "oldSeal": "59df7291e9c3734215a619b575da5e8a6abe559ef08d5e0032cefcf25be6e9e1",
+      "newSeal": "3a8adedb44c3123709f84b80c0c7206b08c2afd4ea449a72af59ff633104fcd0",
+      "sourceReadback": "WORKFILE_MATCHES_HEAD",
+      "review": "Reviewed opt-in consciousnessPolicy parse/binding/adoption and schema6 advance/commit branches against ADR0067 C1-C7. Default v5 remains AwarenessNormalPolicy v3 under ADR0066; retained v3/v4 helpers, public DTO/auto-match, scene clock, replay and failure behavior tested by identified 28-file cohort. Preserve original narrow projection causes, no full battle-service correctness claim.",
+      "replacements": {
+        "80c714d278e554d3f7326a29aee3f6412f1013bdd2284003ce4bd25193554b97": {
+          "planned": "80c714d278e554d3f7326a29aee3f6412f1013bdd2284003ce4bd25193554b97"
+        },
+        "c5c8997e9f5f67cba26e5b3ba5ca70916f5ecf6d3263496534bf48d6ee58b717": {
+          "planned": "c5c8997e9f5f67cba26e5b3ba5ca70916f5ecf6d3263496534bf48d6ee58b717"
+        },
+        "fa1f39e4193e70a58070712db08ab252b041274b45d0327c5bd7275ab062f3c4": {
+          "planned": "0e5e6c7cf01a162e0c87e52e251660698879721174cf925a2ebefe13fc34d50d"
+        }
+      }
+    },
+    {
+      "index": 32,
+      "path": "backend/src/services/awareness-battle-creation.test.ts",
+      "ref": "all-tests-20261008/current-source-closure/verification/awareness-battle-creation-bounded-awareness-creation-20261007",
+      "oldSeal": "071f598408dad78bcb2b143e327c726eb4fdf13a7bd45bba10de54eb91208c78",
+      "newSeal": "ec1c3214cd227670396c20ac67b418b70ff6da259e716b58f45e9685cae33e82",
+      "sourceReadback": "WORKFILE_MATCHES_HEAD",
+      "review": "ADR0039/0051/0054/0056/0066/0067: actual startBattle/advance freezes v5 V3 generations, default policy v3 and prompt v4, adopts creation runtime, replays without duplicate sends and scopes usage. Existing observed provider without billing proof remains admissible. New consciousnessPolicy is explicit opt-in; this case does not supply it.",
+      "replacements": {
+        "593a3039c2b05e7e3011f1e7e25553cd71f57471e968209941e184a3c977f4c2": {
+          "planned": "593a3039c2b05e7e3011f1e7e25553cd71f57471e968209941e184a3c977f4c2"
+        },
+        "59df7291e9c3734215a619b575da5e8a6abe559ef08d5e0032cefcf25be6e9e1": {
+          "planned": "59df7291e9c3734215a619b575da5e8a6abe559ef08d5e0032cefcf25be6e9e1"
+        },
+        "9300bba5dfdd28f2c89c1d4837b0868e49f11084611a6a9c1c1551b09c38b086": {
+          "planned": "9300bba5dfdd28f2c89c1d4837b0868e49f11084611a6a9c1c1551b09c38b086"
+        }
+      }
+    },
+    {
+      "index": 33,
+      "path": "backend/src/services/awareness-battle-service.test.ts",
+      "ref": "all-tests-20261008/current-source-closure/verification/awareness-battle-service-bounded-awareness-creation-20261007",
+      "oldSeal": "4bed0739622c55b920c0b41e656e7ff2c901fbb79d2e9912b1e766cea729336b",
+      "newSeal": "333630b829976211dd4f15f56efcc4adb4a3bc5f14e5e6769204113d71e8ce02",
+      "sourceReadback": "WORKFILE_MATCHES_HEAD",
+      "review": "ADR0006/0051/0067: five cases keep certified fixture missing route/proof incomplete, canonical world preservation, absent-body no synthetic action, KO atomic terminal receipts and no post-KO thoughts, semantic-failure no partial commit. Fixture is v5; v6 branch cannot reinterpret certified fixture or route it to unified transport.",
+      "replacements": {
+        "59df7291e9c3734215a619b575da5e8a6abe559ef08d5e0032cefcf25be6e9e1": {
+          "planned": "59df7291e9c3734215a619b575da5e8a6abe559ef08d5e0032cefcf25be6e9e1"
+        }
+      }
+    },
+    {
+      "index": 34,
+      "path": "backend/src/services/awareness-creation-encounter.test.ts",
+      "ref": "all-tests-20261008/current-source-closure/verification/awareness-creation-encounter-bounded-awareness-creation-20261007",
+      "oldSeal": "e67a875ebfb6ab2e7aaf56d198bde16e1d3bce4790f800afe39ef502b2aed2ed",
+      "newSeal": "8d50f2f964cfd0771a6db4d1bcdfc71f049e4e65f0f838ba61291b488f388668",
+      "sourceReadback": "WORKFILE_MATCHES_HEAD",
+      "review": "ADR0051/0066/0067: six cases retain compatibility state without synthetic agents, exact SDK cap/quote, durable ready replay, certified zero-send refusal, invalid proposal sticky failure, atomic adoption and explicit observed unpriced call. Creation helper bytes unchanged; policy revision inheritance reviewed.",
+      "replacements": {
+        "80c714d278e554d3f7326a29aee3f6412f1013bdd2284003ce4bd25193554b97": {
+          "planned": "80c714d278e554d3f7326a29aee3f6412f1013bdd2284003ce4bd25193554b97"
+        },
+        "82a05d36a1ced02c2466b9a25dfb306d23d3a63436fc5ed35f2f66eb29016e2c": {
+          "existing": "67ec3f1869ecdd512e1b6c46a3d62eadbe9335275525b1b679111ac9f84306b9",
+          "ref": "all-tests-20261009/current-source-closure/all-tests-20261007/implementation-awareness-dispatch-admission"
+        }
+      }
+    },
+    {
+      "index": 35,
+      "path": "backend/src/services/awareness-narration-worker-material.ts",
+      "ref": "test-recovery-v1/basis/387482a8c005ec87",
+      "oldSeal": "387482a8c005ec8729e50f5036a7773e0272deba439ef9bff2a9b23d5a5fe69e",
+      "newSeal": "1755797c521f02a9666de9e9bce4f6172058f512e4d1ad85cf56e6c743ba34bd",
+      "sourceReadback": "WORKFILE_MATCHES_HEAD",
+      "review": "Source bytes unchanged; frozen identity, phase and result validation unchanged. Inherit current frozen dispatch only.",
+      "replacements": {
+        "3ce85102892804dcfeb7df194b5e93d477ab783cef102356d02ed300e993ea69": {
+          "existing": "ee4b693485b3caa77a55bddeac761b710b0ce1b5a6b3f0077d60a877cdbe548b",
+          "ref": "all-tests-20261007/implementation-frozen-narration-dispatch"
+        }
+      }
+    },
+    {
+      "index": 36,
+      "path": "backend/src/services/awareness-narration-worker-lifecycle.ts",
+      "ref": "test-recovery-v1/basis/65f6aa8b07364138",
+      "oldSeal": "65f6aa8b0736413811aa72ec3def9dc9703ce5360210c8b5ee39a4e7797144c5",
+      "newSeal": "26f9d04684fb564848162b454fd370dbdc8220cd8578eb708fd4b27c7ad4ed59",
+      "sourceReadback": "WORKFILE_MATCHES_HEAD",
+      "review": "Current source uses shared operational runtime/settlement port, preserving legacy runtime fallback, failure fence and unknown late physical accounting; reviewed 20 worker cases.",
+      "replacements": {
+        "3db8b41d039b680da268969a9275e9675c07d8ed263229bde6bd9158380eca06": {
+          "existing": "84e9341550762089f082df2a02eeceb6907a058fc414774280fbb8cf25b8ff3d",
+          "ref": "all-tests-20261008/current-source-closure/all-tests-20261007/implementation-canonical-narration-worker-contract"
+        }
+      }
+    },
+    {
+      "index": 37,
+      "path": "backend/src/services/awareness-narration-worker-dispatch.ts",
+      "ref": "test-recovery-v1/basis/8b25aa886c43cba9",
+      "oldSeal": "8b25aa886c43cba9bee703423404635239bfbab610c941a7e2c32135287fbeab",
+      "newSeal": "5ec7385a46dc3811129b33b93aa0d1e02aae5f8b52456e6412cdaf35afbe39d1",
+      "sourceReadback": "WORKFILE_MATCHES_HEAD",
+      "review": "Source bytes unchanged; exact current request/dispatch dependencies and conservative completion scope retained.",
+      "replacements": {
+        "387482a8c005ec8729e50f5036a7773e0272deba439ef9bff2a9b23d5a5fe69e": {
+          "planned": "387482a8c005ec8729e50f5036a7773e0272deba439ef9bff2a9b23d5a5fe69e"
+        },
+        "3ce85102892804dcfeb7df194b5e93d477ab783cef102356d02ed300e993ea69": {
+          "existing": "ee4b693485b3caa77a55bddeac761b710b0ce1b5a6b3f0077d60a877cdbe548b",
+          "ref": "all-tests-20261007/implementation-frozen-narration-dispatch"
+        },
+        "4ffab87d2c25c65f74ec3973d90b5891c43a9037b7a61f49f92470b7650ac645": {
+          "existing": "3e1d07a97da2b413ba15b19ec1658453be5a0d20bd4faafe99f6f38f503e7861",
+          "ref": "all-tests-20261008/current-source-closure/all-tests-20261007/implementation-narration-storage-reservation"
+        },
+        "65f6aa8b0736413811aa72ec3def9dc9703ce5360210c8b5ee39a4e7797144c5": {
+          "planned": "65f6aa8b0736413811aa72ec3def9dc9703ce5360210c8b5ee39a4e7797144c5"
+        },
+        "82a05d36a1ced02c2466b9a25dfb306d23d3a63436fc5ed35f2f66eb29016e2c": {
+          "existing": "67ec3f1869ecdd512e1b6c46a3d62eadbe9335275525b1b679111ac9f84306b9",
+          "ref": "all-tests-20261009/current-source-closure/all-tests-20261007/implementation-awareness-dispatch-admission"
+        }
+      }
+    },
+    {
+      "index": 38,
+      "path": "backend/src/services/awareness-narration-worker-publication.ts",
+      "ref": "test-recovery-v1/basis/cfc05bf8504710df",
+      "oldSeal": "cfc05bf8504710dfec7f9df91c8edbf66fddd7c21a06e6a1d6658239d5cc5575",
+      "newSeal": "3ee2b145d5178260773921da667593778de1e3ca0e6036436494645ce3d70223",
+      "sourceReadback": "WORKFILE_MATCHES_HEAD",
+      "review": "Current source reads operational runtime for publication deadline/status and preserves atomic presentations/recognition, entry/fence/wake semantics; no private unified memory passed to narrator.",
+      "replacements": {
+        "65f6aa8b0736413811aa72ec3def9dc9703ce5360210c8b5ee39a4e7797144c5": {
+          "planned": "65f6aa8b0736413811aa72ec3def9dc9703ce5360210c8b5ee39a4e7797144c5"
+        },
+        "8b25aa886c43cba9bee703423404635239bfbab610c941a7e2c32135287fbeab": {
+          "planned": "8b25aa886c43cba9bee703423404635239bfbab610c941a7e2c32135287fbeab"
+        }
+      }
+    },
+    {
+      "index": 39,
+      "path": "backend/src/services/awareness-narration-worker-claim.ts",
+      "ref": "test-recovery-v1/basis/e2f8650923675c23",
+      "oldSeal": "e2f8650923675c236870d9896ff1f9de01f7f82d78944a255b57a129289eb94f",
+      "newSeal": "fcb37ed9dd0e02fd70070909a342081b7703bdcce8fb117260ff81da2521e8f9",
+      "sourceReadback": "WORKFILE_MATCHES_HEAD",
+      "review": "Current source uses operational runtime Pick type and shared settlement with existing ordered-prefix capture, outstanding no-resend and lease behavior; no authoritative snapshot type escape.",
+      "replacements": {
+        "387482a8c005ec8729e50f5036a7773e0272deba439ef9bff2a9b23d5a5fe69e": {
+          "planned": "387482a8c005ec8729e50f5036a7773e0272deba439ef9bff2a9b23d5a5fe69e"
+        },
+        "44cb0e5bd493d6fad7909158b30a73d652b61cdb046827eb868aba25aa7fe535": {
+          "existing": "7634f1b98a50b79dd3232862f19c47b5439496aa9409d8a381e7518f186f2273",
+          "ref": "all-tests-20261007/implementation-canonical-narration-queue"
+        },
+        "65f6aa8b0736413811aa72ec3def9dc9703ce5360210c8b5ee39a4e7797144c5": {
+          "planned": "65f6aa8b0736413811aa72ec3def9dc9703ce5360210c8b5ee39a4e7797144c5"
+        }
+      }
+    },
+    {
+      "index": 40,
+      "path": "backend/src/services/awareness-narration-worker.ts",
+      "ref": "test-recovery-v1/basis/289569cc98d93350",
+      "oldSeal": "289569cc98d9335070d9d7fd5a0f5aa31ff3e3290d410566099063492f0f6077",
+      "newSeal": "c5c79906ecba173fec268db07a788eb19aa67b9bf90137520b431b3564f6b3ac",
+      "sourceReadback": "WORKFILE_MATCHES_HEAD",
+      "review": "Current source accepts saved manifest5 or6 and selects shared operational runtime; existing lease acquisition/claim/dispatch/publication stays intact and v5 worker/continuation regressions pass.",
+      "replacements": {
+        "8b25aa886c43cba9bee703423404635239bfbab610c941a7e2c32135287fbeab": {
+          "planned": "8b25aa886c43cba9bee703423404635239bfbab610c941a7e2c32135287fbeab"
+        },
+        "cfc05bf8504710dfec7f9df91c8edbf66fddd7c21a06e6a1d6658239d5cc5575": {
+          "planned": "cfc05bf8504710dfec7f9df91c8edbf66fddd7c21a06e6a1d6658239d5cc5575"
+        },
+        "e2f8650923675c236870d9896ff1f9de01f7f82d78944a255b57a129289eb94f": {
+          "planned": "e2f8650923675c236870d9896ff1f9de01f7f82d78944a255b57a129289eb94f"
+        }
+      }
+    },
+    {
+      "index": 41,
+      "path": "backend/src/services/narration-worker.ts",
+      "ref": "test-recovery-v1/basis/73effe445735205f",
+      "oldSeal": "73effe445735205f4a655ec66222ca69a7cdeaccb0ec5eee16e839f1733d8318",
+      "newSeal": "f8540b16d6fd1a6a8111e3a6369078ff527d9edeb9b6f8c70e5881155156cad3",
+      "sourceReadback": "WORKFILE_MATCHES_HEAD",
+      "review": "Only manifest routing condition expands5 to5-or6; legacy narration continues; v5 current receipt transport and frozen style/digest cases pass.",
+      "replacements": {
+        "0c4348cef5ad7b65ce5ac75ae5408a5428cd6133ee752eaf168432e19c315f8b": {
+          "existing": "4af1dc3156d05a4c0752cd049d3c2672cdee532a412f06348535dd65ea616bd8",
+          "ref": "all-tests-20261007/implementation-awareness-request-digest"
+        },
+        "289569cc98d9335070d9d7fd5a0f5aa31ff3e3290d410566099063492f0f6077": {
+          "planned": "289569cc98d9335070d9d7fd5a0f5aa31ff3e3290d410566099063492f0f6077"
+        }
+      }
+    },
+    {
+      "index": 42,
+      "path": "backend/src/services/awareness-narration-continuation.test.ts",
+      "ref": "all-tests-20261008/current-source-closure/verification/awareness-narration-continuation-bounded-current-20261007",
+      "oldSeal": "ef21c742ab7d185f0282299098719ee9b2cc530d51986081c01bf1094f4fc157",
+      "newSeal": "e13fecaa160d0049925d288de378c1bf2d2a9034cebb937f7aab447f6cf5857f",
+      "sourceReadback": "WORKFILE_MATCHES_HEAD",
+      "review": "ADR0006/0051/0056/0067: one outer case tests 4 phases x 3 historical prompt identities with current transport/publication while frozen input bytes/digest/style/observer boundary persist. New manifest v6 routing enters same narrator; saved v5 remains v5 and historical receipt contents stay unchanged.",
+      "replacements": {
+        "73effe445735205f4a655ec66222ca69a7cdeaccb0ec5eee16e839f1733d8318": {
+          "planned": "73effe445735205f4a655ec66222ca69a7cdeaccb0ec5eee16e839f1733d8318"
+        },
+        "d777c0ab40b128c53df1a5ff0eb971ae7a797445e581c130c9efea400cc4f383": {
+          "existing": "0b90dcf2eff7f2dce9ca38ccfd7ae273af6fb25507ad48c68aa9affa293a42d9",
+          "ref": "all-tests-20261008/current-source-closure/all-tests-20261007/implementation-narration-role-transport"
+        }
+      }
+    },
+    {
+      "index": 43,
+      "path": "backend/src/services/awareness-narration-worker.test.ts",
+      "ref": "all-tests-20261008/current-source-closure/verification/awareness-narration-worker-bounded-current-20261007",
+      "oldSeal": "f0dd40e8af96ff9cb58727e873421f81b9629447c5534afebd8e17f0f384bf1c",
+      "newSeal": "9a05302fe37686351799536d5f5b8557ea752a179df5d1ff292a393b05b7487f",
+      "sourceReadback": "WORKFILE_MATCHES_HEAD",
+      "review": "ADR0006/0051/0054/0056/0067: twenty cases retain independent narrator lease, ordered atomic batches, wake generations, malformed/partial rejection, timeout/late accounting, unknown no-resend, recognition history/privacy and observed unpriced transport. Runtime port now chooses unified store first then historical fallback; current SQLite suite includes empty unified store and preserves v5 behavior.",
+      "replacements": {
+        "73effe445735205f4a655ec66222ca69a7cdeaccb0ec5eee16e839f1733d8318": {
+          "planned": "73effe445735205f4a655ec66222ca69a7cdeaccb0ec5eee16e839f1733d8318"
+        }
+      }
+    },
+    {
+      "index": 44,
+      "path": "backend/src/services/battle-causal-narration.test.ts",
+      "ref": "all-tests-20261008/current-source-closure/verification/battle-causal-narration-bounded-current-20261007",
+      "oldSeal": "5926bdfb21614b7538457afc3feed75f1c508352bae3b38b855f857749105db8",
+      "newSeal": "7e89ef1eabae7dabaf6553d64b52f73b680182bcee8cbfa9ba138ab2ff1691d2",
+      "sourceReadback": "WORKFILE_MATCHES_HEAD",
+      "review": "ADR0022/0051/0067: three cases keep off-mode no mutation, guarded factual consequence/scene projection and rejected-evidence omission. Helper behavior and explicit legacy fixture unchanged; current service additions only enable internal v6 at orchestration boundary.",
+      "replacements": {
+        "c5c8997e9f5f67cba26e5b3ba5ca70916f5ecf6d3263496534bf48d6ee58b717": {
+          "planned": "c5c8997e9f5f67cba26e5b3ba5ca70916f5ecf6d3263496534bf48d6ee58b717"
+        }
+      }
+    },
+    {
+      "index": 45,
+      "path": "backend/src/services/battle-consumer-wiring.test.ts",
+      "ref": "all-tests-20261008/current-source-closure/verification/battle-consumer-wiring-bounded-current-20261007",
+      "oldSeal": "eecfd647d2df556658e3f20bcef1904853bc85b1a8c534fdb9a489f8058503ed",
+      "newSeal": "6ff00c233f5887c184b55c68296e0e38ffecd103ce612885fb781daf3e03e208",
+      "sourceReadback": "WORKFILE_MATCHES_HEAD",
+      "review": "ADR0011/0022/0051/0067: eight cases keep bound action norms and hidden receipts, side-specific frozen frames/profile, narrator focus/committed manifestations, semantic placement and counterpart knowledge limits. Historical v2 helper fixture is retained compatibility evidence, not new authoring or all v6 privacy coverage.",
+      "replacements": {
+        "c5c8997e9f5f67cba26e5b3ba5ca70916f5ecf6d3263496534bf48d6ee58b717": {
+          "planned": "c5c8997e9f5f67cba26e5b3ba5ca70916f5ecf6d3263496534bf48d6ee58b717"
+        }
+      }
+    },
+    {
+      "index": 46,
+      "path": "backend/src/services/battle-create-idempotency.test.ts",
+      "ref": "all-tests-20261008/current-source-closure/verification/battle-create-idempotency-bounded-awareness-creation-20261007",
+      "oldSeal": "43b9c48b460b952fa31e2dc17b9e2a9e1c43d232a93d19ee86bc0d2380333cb0",
+      "newSeal": "58601182adbf7f4d60262ee496f650b06d5770d5bead2f6744ecf5ff2fca8660",
+      "sourceReadback": "WORKFILE_MATCHES_HEAD",
+      "review": "ADR0006/0018/0039/0051/0067: one outer SQLite case retains same-ID encounter once, frozen V3/compiler/dialogue/field generations, new-only setting changes and sticky creation failure with no fallback. Explicit v6 option absent; v5 default and durable creation paths unchanged.",
+      "replacements": {
+        "59df7291e9c3734215a619b575da5e8a6abe559ef08d5e0032cefcf25be6e9e1": {
+          "planned": "59df7291e9c3734215a619b575da5e8a6abe559ef08d5e0032cefcf25be6e9e1"
+        }
+      }
+    },
+    {
+      "index": 47,
+      "path": "backend/src/services/battle-public.test.ts",
+      "ref": "all-tests-20261009/current-source-closure/verification/owner-battle-public-20261008",
+      "oldSeal": "229007c2e77e6e96906d62eff0a69f38979a966d1f4a9b6f04d1281ce123ec9f",
+      "newSeal": "bf9f24c4442f773d5c1db40f19c3677cd3f850f60d328a20d5d68c324105870b",
+      "sourceReadback": "WORKFILE_MATCHES_HEAD",
+      "review": "ADR0022/0051/0060/0065/0067: fifteen cases keep pending-effect privacy, public semantics/no private agent data, contemporaneous rating snapshots, valid/invalid/failed semantic and environment operations, authored affordances, per-side perception/source registry and latest transition. Existing helper branches remain unchanged under v6 addition; no broad privacy proof.",
+      "replacements": {
+        "a3adc469058d306b4d0349187ae7c24e3ac20402143e347a87b717594cd0b083": {
+          "planned": "a3adc469058d306b4d0349187ae7c24e3ac20402143e347a87b717594cd0b083"
+        }
+      }
+    },
+    {
+      "index": 48,
+      "path": "backend/src/services/battle-service.ts",
+      "ref": "test-recovery-v1/basis/c1a76bfb7cb2eba3",
+      "oldSeal": "c1a76bfb7cb2eba3d28b48faeceb9288c5e46a5b7a663de6865f4131f3b2776b",
+      "newSeal": "44752b7d5d1af86a8d1d878e225ca143f7fdef7ab9c339e6cb75e8fc6c34eb31",
+      "sourceReadback": "WORKFILE_MATCHES_HEAD",
+      "review": "Reviewed opt-in consciousnessPolicy parse/binding/adoption and schema6 advance/commit branches against ADR0067 C1-C7. Default v5 remains AwarenessNormalPolicy v3 under ADR0066; retained v3/v4 helpers, public DTO/auto-match, scene clock, replay and failure behavior tested by identified 28-file cohort. Preserve original narrow projection causes, no full battle-service correctness claim.",
+      "replacements": {
+        "fa1f39e4193e70a58070712db08ab252b041274b45d0327c5bd7275ab062f3c4": {
+          "planned": "0e5e6c7cf01a162e0c87e52e251660698879721174cf925a2ebefe13fc34d50d"
+        }
+      }
+    },
+    {
+      "index": 49,
+      "path": "backend/src/services/conscious-agency-persistence.test.ts",
+      "ref": "all-tests-20261008/current-source-closure/verification/retained-agency-v3-persistence-current-20261007",
+      "oldSeal": "65a143ed4ba8db2ab08dffeda0825bf02a477f6593199ccfe52fcdf1b747e65d",
+      "newSeal": "57bbc384339cb6d06afd409b79ecfe0103a0c83be230508072fc8001e1e40fd8",
+      "sourceReadback": "WORKFILE_MATCHES_HEAD",
+      "review": "ADR0018/0039/0047/0051/0067: three cases keep retired character rejection, historical V3 agency SQLite reload/CAS and private goals/decisions absent from DTO. Unified consciousness v1 removes these fields only in new v6 runtime; does not delete or reinterpret saved V3 state.",
+      "replacements": {
+        "c1a76bfb7cb2eba3d28b48faeceb9288c5e46a5b7a663de6865f4131f3b2776b": {
+          "planned": "c1a76bfb7cb2eba3d28b48faeceb9288c5e46a5b7a663de6865f4131f3b2776b"
+        }
+      }
+    },
+    {
+      "index": 50,
+      "path": "backend/src/services/conscious-agency-runtime.test.ts",
+      "ref": "all-tests-20261008/current-source-closure/verification/retained-agency-v3-runtime-current-20261007",
+      "oldSeal": "d3c375ecbef703d998c4cd29954cbf3613e351aa82776e8c61964b55de447838",
+      "newSeal": "bd5b0d2c5097e9179b7a86ef9ec2b6300decdfaf5b99d53a9ba33be5770e7065",
+      "sourceReadback": "WORKFILE_MATCHES_HEAD",
+      "review": "ADR0018/0047/0051/0067: nine historical V3 cases retain one conscious/zero psyche call for each phase, prior-decision and repeated-speech acceptance, independent valid speech, tuple/override rejection, missing-observation hold and later no-tick behavior. Retention is required by C7, not adoption of split consciousness for new v6.",
+      "replacements": {
+        "c1a76bfb7cb2eba3d28b48faeceb9288c5e46a5b7a663de6865f4131f3b2776b": {
+          "planned": "c1a76bfb7cb2eba3d28b48faeceb9288c5e46a5b7a663de6865f4131f3b2776b"
+        }
+      }
+    },
+    {
+      "index": 51,
+      "path": "backend/src/testing/awareness-trial-http-fixture.ts",
+      "ref": "test-recovery-v1/basis/0daf69bbc0052f26",
+      "oldSeal": "0daf69bbc0052f26baba75dd2cd2be0102a76358579847137251b12709e5c0a0",
+      "newSeal": "d20c00c7102cef22aff6a2e9e36704c1b555475ce3567ce51ecda8aec588f5be",
+      "sourceReadback": "WORKFILE_MATCHES_HEAD",
+      "review": "Unchanged offline HTTP fixture; current SDK/admission inherited. Test-only synthetic response routing is not authority to repeat paid historical trial.",
+      "replacements": {
+        "9300bba5dfdd28f2c89c1d4837b0868e49f11084611a6a9c1c1551b09c38b086": {
+          "planned": "9300bba5dfdd28f2c89c1d4837b0868e49f11084611a6a9c1c1551b09c38b086"
+        }
+      }
+    },
+    {
+      "index": 52,
+      "path": "backend/src/services/normal-awareness-policy.test.ts",
+      "ref": "all-tests-20261008/current-source-closure/verification/normal-awareness-policy-bounded-current-20261007",
+      "oldSeal": "c7186a92bb3a97c05f35ce92c92af6ec37261138e9fe495c5dec1552ebec237d",
+      "newSeal": "fb6d6dda3a4d7fb306a03725729e8898d646656f63b4e9aceb08e96b30c25775",
+      "sourceReadback": "WORKFILE_MATCHES_HEAD",
+      "review": "ADR0054/0066/0067: fix stale test description usage-v2 to awareness-v5-usage-v3; existing schema assertion correction already checkpointed. Actual startBattle/advance must persist default v3/prompt v4, 600-second runtime and deliver the bound policy to both legacy roles twice. Explicit v6 option remains absent; historical policy timing stays unchanged.",
+      "replacements": {
+        "0daf69bbc0052f26baba75dd2cd2be0102a76358579847137251b12709e5c0a0": {
+          "planned": "0daf69bbc0052f26baba75dd2cd2be0102a76358579847137251b12709e5c0a0"
+        },
+        "593a3039c2b05e7e3011f1e7e25553cd71f57471e968209941e184a3c977f4c2": {
+          "planned": "593a3039c2b05e7e3011f1e7e25553cd71f57471e968209941e184a3c977f4c2"
+        },
+        "c5c8997e9f5f67cba26e5b3ba5ca70916f5ecf6d3263496534bf48d6ee58b717": {
+          "planned": "c5c8997e9f5f67cba26e5b3ba5ca70916f5ecf6d3263496534bf48d6ee58b717"
+        }
+      }
+    },
+    {
+      "index": 53,
+      "path": "backend/src/services/scene-beat-wiring.test.ts",
+      "ref": "all-tests-20261008/current-source-closure/verification/scene-beat-wiring-bounded-20261008",
+      "oldSeal": "2117768a763c8354873828cd7252431350870bd10211a42c15b0331eb70d795c",
+      "newSeal": "e69c513183cd288faf2e98ac92609763bef68c6c8f73b014535a48a14c00687a",
+      "sourceReadback": "WORKFILE_MATCHES_HEAD",
+      "review": "ADR0016/0017/0021/0051/0067: seven cases preserve K3 clock/batching, advancing past fifth turn, deferred narration, held public turn, historical later rejection/deterministic choice, beat-close skip persistence and orphaned advance adoption. New v6 option does not modify legacy schema2 fixture expectations or default v5 beat behavior.",
+      "replacements": {
+        "2187c99e947971551d78e0af4fd0d41cc3a77b91520edfffb7a15e004f24d621": {
+          "planned": "5d646414a88f23e739ad8b7afa34d6c86208b7916da11f6029cbcce4c13a5c03"
+        }
+      }
+    },
+    {
+      "index": 54,
+      "path": "backend/src/services/v3-battle-creation.test.ts",
+      "ref": "all-tests-20261008/current-source-closure/verification/v3-battle-creation-recovery-bounded-20261008",
+      "oldSeal": "b7a37ca1b5837bbc949aae8876c39b11ea92b4cbe7e9ba5109cb514e473b2423",
+      "newSeal": "d82e3b9b3a57af190f42eac09d6e8c09f4c19f2ab8d41cf1f2515165620d785f",
+      "sourceReadback": "WORKFILE_MATCHES_HEAD",
+      "review": "ADR0006/0039/0047/0051/0067: four cases retain historical v4 continuation and generation freeze across pointer updates/reload, default v5 creation with current V3 assets, free-action-only v4 continuation and durable repair reservation without partial state/reset. Current v6 opt-in branch preserves existing orchestration and these immutable identities. No retired cutover acceptance or live completion claim.",
+      "replacements": {
+        "2187c99e947971551d78e0af4fd0d41cc3a77b91520edfffb7a15e004f24d621": {
+          "planned": "5d646414a88f23e739ad8b7afa34d6c86208b7916da11f6029cbcce4c13a5c03"
+        }
+      }
+    },
+    {
+      "index": 55,
+      "path": "backend/src/services/battle-service.ts",
+      "ref": "test-recovery-v1/basis/65bd5e628346546f",
+      "oldSeal": "65bd5e628346546f24648b7a50531942d674fdb411b62f6fce80491aa4cec15b",
+      "newSeal": "6d2e2a516b0799f8fe3c6b19583f78c812554acd6d299395c28d97a0a9878a88",
+      "sourceReadback": "WORKFILE_MATCHES_HEAD",
+      "review": "Preserve the frozen awareness-v5 battle-frame/guidance contract; current battle-service bytes add explicit binding format v6 but retained v5 frame helper and action-effort projection remain unchanged. Inherit the already reviewed effort source and original guidance/detail/boundary clauses, not a new pipeline decision.",
+      "replacements": {
+        "0e5e6c7cf01a162e0c87e52e251660698879721174cf925a2ebefe13fc34d50d": {
+          "planned": "0e5e6c7cf01a162e0c87e52e251660698879721174cf925a2ebefe13fc34d50d"
+        }
+      }
+    },
+    {
+      "index": 56,
+      "path": "backend/src/services/awareness-execution.test.ts",
+      "ref": "all-tests-20261008/current-source-closure/awareness-guidance-20261007/verification-execution",
+      "oldSeal": "66f2a8fef889d81457bccca209276ddad0b95cc32bdcecc81db217cecf81e6bc",
+      "newSeal": "f3fbad69ce3fa452aa4a6d923b4b1ba5b7e9780f78f2e5c0013d361f4a8d699d",
+      "sourceReadback": "WORKFILE_MATCHES_HEAD",
+      "review": "ADR0051/0056/0065/0067 C7: retain 17 awareness-v5 execution cases: frozen conscious jobs before latent work, deferred merge and restart without resend, required failure preserves world, exact certified versus observed admission, private counterpart isolation, guidance delivery, tick36 cap and unknown physical occupancy. Only battle-frame source inherits the reviewed current battle service; split-role behavior is historical compatibility, not unified consciousness v1 behavior. All assertions and source bytes unchanged.",
+      "replacements": {
+        "65bd5e628346546f24648b7a50531942d674fdb411b62f6fce80491aa4cec15b": {
+          "planned": "65bd5e628346546f24648b7a50531942d674fdb411b62f6fce80491aa4cec15b"
+        }
+      }
+    },
+    {
+      "index": 57,
+      "path": "backend/src/services/battle-speech-wiring.test.ts",
+      "ref": "all-tests-20261008/current-source-closure/verification/battle-speech-wiring-bounded-20261008",
+      "oldSeal": "7f955857e7960fd3cfe68a6f27e3c1667aca5a6410e5be49b882f2e95417b334",
+      "newSeal": "e4e6e96853ab6fd2b5fb42ef2f9e67d5efaec09a998589e066cb310ac660bced",
+      "sourceReadback": "WORKFILE_MATCHES_HEAD",
+      "review": "ADR0011/0022/0023/0025/0051/0056/0067 C7: retain all37 speech/manifestation cases, internal receipts absent from provider, own-side input, compact private/utterance separation, independently accepted valid speech, blocked speech not public, atomic invalid-expression refusal, narrator placement/third-party labels, canonical judgment and immutable aftermath. Current battle source is reviewed; old fixture binding contracts remain unchanged. All assertions and source bytes unchanged.",
+      "replacements": {
+        "5d646414a88f23e739ad8b7afa34d6c86208b7916da11f6029cbcce4c13a5c03": {
+          "planned": "5d646414a88f23e739ad8b7afa34d6c86208b7916da11f6029cbcce4c13a5c03"
+        }
+      }
+    },
+    {
+      "index": 58,
+      "path": "backend/src/services/battle-service.ts",
+      "ref": "test-recovery-v1/basis/18b9b5dcd683f549",
+      "oldSeal": "18b9b5dcd683f54958fdfb34ec6465e97dddc356a252e4010b4b6ace171d3302",
+      "newSeal": "4fb8a67494176f45888196f44ec51f2b2047b05b481c75cb09f1dc5386533579",
+      "sourceReadback": "WORKFILE_MATCHES_HEAD",
+      "review": "Preserve historical conscious-agency inventory helper source and its original historical fixture plus ADR0065 basis. Current battle-service bytes retain those helper/public-projection branches while internal binding format v6 opts into a new runtime. No reinstatement of split consciousness for new v6 battles.",
+      "replacements": {
+        "0e5e6c7cf01a162e0c87e52e251660698879721174cf925a2ebefe13fc34d50d": {
+          "planned": "0e5e6c7cf01a162e0c87e52e251660698879721174cf925a2ebefe13fc34d50d"
+        }
+      }
+    },
+    {
+      "index": 59,
+      "path": "backend/src/services/character-agency-inventory.test.ts",
+      "ref": "all-tests-20261008/current-source-closure/verification/historical-agency-inventory-bounded-20261008",
+      "oldSeal": "b5c79a19b899238c63f3ff802b7613c23a50cf9d3d5df7737fbbe3cfbed9554e",
+      "newSeal": "ea1af84a1a039513c33d5c98d9cfaa6150c44adb498944b86fccabc4e8b844c1",
+      "sourceReadback": "WORKFILE_MATCHES_HEAD",
+      "review": "ADR0018/0047/0051/0067 C7: retain16 historical agency inventory cases including3 modes x3 phases, known relationship/personality, action availability, goal persistence/CAS without disclosure, later adapter and repeated speech/private projection. Historical helper behavior is not the adopted new consciousness design or model quality evidence. Current battle service retains these helpers; all assertions and source bytes unchanged.",
+      "replacements": {
+        "18b9b5dcd683f54958fdfb34ec6465e97dddc356a252e4010b4b6ace171d3302": {
+          "planned": "18b9b5dcd683f54958fdfb34ec6465e97dddc356a252e4010b4b6ace171d3302"
+        }
+      }
+    }
+  ],
+  "official": {
+    "command": "AWARENESS_POSTGRES_TEST_URL=<dedicated local PostgreSQL16 fixture> npm test",
+    "exitCode": 0,
+    "activeFiles": 250,
+    "provisionalFiles": 0,
+    "disabledFiles": 0,
+    "tests": 1500,
+    "passed": 1500,
+    "failed": 0,
+    "skipped": 0,
+    "groups": [
+      {
+        "tests": 981,
+        "passed": 981,
+        "failed": 0,
+        "skipped": 0
+      },
+      {
+        "tests": 20,
+        "passed": 20,
+        "failed": 0,
+        "skipped": 0
+      },
+      {
+        "tests": 436,
+        "passed": 436,
+        "failed": 0,
+        "skipped": 0
+      },
+      {
+        "tests": 3,
+        "passed": 3,
+        "failed": 0,
+        "skipped": 0
+      },
+      {
+        "tests": 60,
+        "passed": 60,
+        "failed": 0,
+        "skipped": 0
+      }
+    ],
+    "dedicatedPostgresStopped": true,
+    "summaryPath": "docs/evidence/test-authority-recovery-official-summary-2026-10-10.txt",
+    "logSha256": "f87d6ecf8eac9481c6a031d09f20dce0baf730cc5811d95142b2f94d244c9a9c"
+  },
+  "firstOfficialRecoveryAttempt": {
+    "exitCode": 1,
+    "activeFiles": 247,
+    "disabledFiles": 3,
+    "testsLaunched": false,
+    "cause": "Reviewed battle-service effort revision made three dependent scopes stale; individually reviewed and resealed after70 unchanged diagnostic cases passed",
+    "files": [
+      "backend/src/services/awareness-execution.test.ts",
+      "backend/src/services/battle-speech-wiring.test.ts",
+      "backend/src/services/character-agency-inventory.test.ts"
+    ],
+    "logPath": "docs/evidence/test-authority-recovery-first-official-2026-10-10.log"
+  },
+  "additionalDependentRecovery": {
+    "files": 3,
+    "tests": 70,
+    "passed": 70,
+    "failed": 0,
+    "skipped": 0,
+    "testCodeChanged": false
+  },
+  "assertionPreservation": [
+    {
+      "path": "backend/src/llm/awareness-adjudication-result.test.ts",
+      "originalAssertions": 16,
+      "currentAssertions": 16,
+      "unchanged": true,
+      "removed": [],
+      "added": []
+    },
+    {
+      "path": "backend/src/llm/awareness-dispatch-admission.test.ts",
+      "originalAssertions": 22,
+      "currentAssertions": 22,
+      "unchanged": true,
+      "removed": [],
+      "added": []
+    },
+    {
+      "path": "backend/src/llm/awareness-dispatch-context.test.ts",
+      "originalAssertions": 36,
+      "currentAssertions": 36,
+      "unchanged": true,
+      "removed": [],
+      "added": []
+    },
+    {
+      "path": "backend/src/llm/awareness-provider-factory.test.ts",
+      "originalAssertions": 23,
+      "currentAssertions": 23,
+      "unchanged": true,
+      "removed": [],
+      "added": []
+    },
+    {
+      "path": "backend/src/llm/awareness-provider.test.ts",
+      "originalAssertions": 38,
+      "currentAssertions": 38,
+      "unchanged": true,
+      "removed": [],
+      "added": []
+    },
+    {
+      "path": "backend/src/llm/openai-compatible-routing.test.ts",
+      "originalAssertions": 13,
+      "currentAssertions": 13,
+      "unchanged": true,
+      "removed": [],
+      "added": []
+    },
+    {
+      "path": "backend/src/repositories/battle-awareness-narration-events-postgres.test.ts",
+      "originalAssertions": 6,
+      "currentAssertions": 6,
+      "unchanged": true,
+      "removed": [],
+      "added": []
+    },
+    {
+      "path": "backend/src/repositories/battle-awareness-narration-reservation-postgres.test.ts",
+      "originalAssertions": 10,
+      "currentAssertions": 10,
+      "unchanged": true,
+      "removed": [],
+      "added": []
+    },
+    {
+      "path": "backend/src/repositories/battle-awareness-postgres.test.ts",
+      "originalAssertions": 11,
+      "currentAssertions": 11,
+      "unchanged": true,
+      "removed": [],
+      "added": []
+    },
+    {
+      "path": "backend/src/repositories/characters.test.ts",
+      "originalAssertions": 26,
+      "currentAssertions": 26,
+      "unchanged": true,
+      "removed": [],
+      "added": []
+    },
+    {
+      "path": "backend/src/routes-structured-asset-integration.test.ts",
+      "originalAssertions": 62,
+      "currentAssertions": 62,
+      "unchanged": true,
+      "removed": [],
+      "added": []
+    },
+    {
+      "path": "backend/src/routes-structured-battlefield-acceptance.test.ts",
+      "originalAssertions": 91,
+      "currentAssertions": 91,
+      "unchanged": true,
+      "removed": [],
+      "added": []
+    },
+    {
+      "path": "backend/src/routes-structured-narration-acceptance.test.ts",
+      "originalAssertions": 57,
+      "currentAssertions": 57,
+      "unchanged": true,
+      "removed": [],
+      "added": []
+    },
+    {
+      "path": "backend/src/services/awareness-adjudication-guard.test.ts",
+      "originalAssertions": 44,
+      "currentAssertions": 44,
+      "unchanged": true,
+      "removed": [],
+      "added": []
+    },
+    {
+      "path": "backend/src/services/awareness-battle-creation.test.ts",
+      "originalAssertions": 40,
+      "currentAssertions": 40,
+      "unchanged": true,
+      "removed": [],
+      "added": []
+    },
+    {
+      "path": "backend/src/services/awareness-battle-service.test.ts",
+      "originalAssertions": 51,
+      "currentAssertions": 51,
+      "unchanged": true,
+      "removed": [],
+      "added": []
+    },
+    {
+      "path": "backend/src/services/awareness-creation-encounter.test.ts",
+      "originalAssertions": 39,
+      "currentAssertions": 39,
+      "unchanged": true,
+      "removed": [],
+      "added": []
+    },
+    {
+      "path": "backend/src/services/awareness-narration-continuation.test.ts",
+      "originalAssertions": 26,
+      "currentAssertions": 26,
+      "unchanged": true,
+      "removed": [],
+      "added": []
+    },
+    {
+      "path": "backend/src/services/awareness-narration-worker.test.ts",
+      "originalAssertions": 111,
+      "currentAssertions": 111,
+      "unchanged": true,
+      "removed": [],
+      "added": []
+    },
+    {
+      "path": "backend/src/services/battle-causal-narration.test.ts",
+      "originalAssertions": 11,
+      "currentAssertions": 11,
+      "unchanged": true,
+      "removed": [],
+      "added": []
+    },
+    {
+      "path": "backend/src/services/battle-consumer-wiring.test.ts",
+      "originalAssertions": 72,
+      "currentAssertions": 72,
+      "unchanged": true,
+      "removed": [],
+      "added": []
+    },
+    {
+      "path": "backend/src/services/battle-create-idempotency.test.ts",
+      "originalAssertions": 40,
+      "currentAssertions": 40,
+      "unchanged": true,
+      "removed": [],
+      "added": []
+    },
+    {
+      "path": "backend/src/services/battle-public.test.ts",
+      "originalAssertions": 127,
+      "currentAssertions": 127,
+      "unchanged": true,
+      "removed": [],
+      "added": []
+    },
+    {
+      "path": "backend/src/services/conscious-agency-persistence.test.ts",
+      "originalAssertions": 20,
+      "currentAssertions": 20,
+      "unchanged": true,
+      "removed": [],
+      "added": []
+    },
+    {
+      "path": "backend/src/services/conscious-agency-runtime.test.ts",
+      "originalAssertions": 32,
+      "currentAssertions": 32,
+      "unchanged": true,
+      "removed": [],
+      "added": []
+    },
+    {
+      "path": "backend/src/services/normal-awareness-policy.test.ts",
+      "originalAssertions": 14,
+      "currentAssertions": 14,
+      "unchanged": false,
+      "removed": [
+        "assert.ok(seen.every((item) => item.policy?.revision === \"awareness-v5-usage-v2\"))"
+      ],
+      "added": [
+        "assert.ok(seen.every((item) => item.policy?.revision === \"awareness-v5-usage-v3\"))"
+      ]
+    },
+    {
+      "path": "backend/src/services/scene-beat-wiring.test.ts",
+      "originalAssertions": 32,
+      "currentAssertions": 32,
+      "unchanged": true,
+      "removed": [],
+      "added": []
+    },
+    {
+      "path": "backend/src/services/v3-battle-creation.test.ts",
+      "originalAssertions": 121,
+      "currentAssertions": 121,
+      "unchanged": true,
+      "removed": [],
+      "added": []
+    },
+    {
+      "path": "backend/src/services/awareness-execution.test.ts",
+      "originalAssertions": 108,
+      "currentAssertions": 108,
+      "unchanged": true,
+      "removed": [],
+      "added": []
+    },
+    {
+      "path": "backend/src/services/battle-speech-wiring.test.ts",
+      "originalAssertions": 250,
+      "currentAssertions": 250,
+      "unchanged": true,
+      "removed": [],
+      "added": []
+    },
+    {
+      "path": "backend/src/services/character-agency-inventory.test.ts",
+      "originalAssertions": 46,
+      "currentAssertions": 46,
+      "unchanged": true,
+      "removed": [],
+      "added": []
+    }
+  ],
+  "checks": {
+    "typecheck": "passed",
+    "static": "passed",
+    "adrCheck": "passed:46 current,4 historical excluded",
+    "sharedBuildBeforeBackendTests": "passed",
+    "sourceReadback": "31/31 WORKFILE_MATCHES_HEAD after individual seal",
+    "fsck": {
+      "schema": "sealgraph/fsck/v2",
+      "result": "ok",
+      "blobs": 8555,
+      "seals": 2972,
+      "materials": 1500,
+      "provenances": 2581,
+      "refs": 1812,
+      "active_seals": 2441
+    },
+    "pertCheck": "passed",
+    "pertBothSchedules": "passed",
+    "pertNext": "passed: no unfinished task in this canonical plan",
+    "exactCurrentHeadAndContentReadback": "59/59 publications, including31 reviewed test files"
+  },
+  "additionalSource": {
+    "ref": "test-recovery-v1/source/battle-operational-runtime",
+    "seal": "94d34c6fa48f46397bfa9bb489217da428aac97b97d4dd009be393c4808e2158",
+    "path": "backend/src/repositories/battle-operational-runtime.ts",
+    "sourceReadback": "WORKFILE_MATCHES_HEAD"
+  },
+  "acceptance": {
+    "individualTestsReviewedAndResealed": 28,
+    "additionalNecessaryDependentsReviewedAndResealed": 3,
+    "officialFullVerification": "complete",
+    "historicalFailedEvidence": "preserved",
+    "untouchedStaleHistoricalRefs": "not repaired or declared current",
+    "paidModelOrDeploymentAcceptance": "not performed"
+  }
+}

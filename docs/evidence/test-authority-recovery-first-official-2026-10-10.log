@@ -1,0 +1,15 @@
+
+> kshiai@0.23.0 test
+> node scripts/test-authority.mjs
+
+TEST_SELECTION suite=unit active=247 provisional=0 disabled=3
+DISABLED backend/src/services/awareness-execution.test.ts ref=all-tests-20261008/current-source-closure/awareness-guidance-20261007/verification-execution reason=stale
+DISABLED backend/src/services/battle-speech-wiring.test.ts ref=all-tests-20261008/current-source-closure/verification/battle-speech-wiring-bounded-20261008 reason=stale
+DISABLED backend/src/services/character-agency-inventory.test.ts ref=all-tests-20261008/current-source-closure/verification/historical-agency-inventory-bounded-20261008 reason=stale
+Error: Invalid unit test authority blocks execution (3); inspect npm run test:inventory:
+backend/src/services/awareness-execution.test.ts ref=all-tests-20261008/current-source-closure/awareness-guidance-20261007/verification-execution (stale)
+backend/src/services/battle-speech-wiring.test.ts ref=all-tests-20261008/current-source-closure/verification/battle-speech-wiring-bounded-20261008 (stale)
+backend/src/services/character-agency-inventory.test.ts ref=all-tests-20261008/current-source-closure/verification/historical-agency-inventory-bounded-20261008 (stale)
+    at requireCurrentTestAuthority (file:///home/mako10k/kshiai/scripts/test-authority.mjs:175:9)
+    at main (file:///home/mako10k/kshiai/scripts/test-authority.mjs:216:3)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)

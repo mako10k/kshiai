@@ -52,6 +52,9 @@ test("PostgreSQL narrator admission preserves world fence and prevents concurren
       await client.query("SET statement_timeout TO '5s'");
     }
     await a.query("CREATE TABLE battle_awareness_runtime(battle_id TEXT PRIMARY KEY,revision INTEGER,fencing_token INTEGER,runtime_json TEXT,updated_at TEXT)");
+    // Unified consciousness v1 probes its private store before selecting the
+    // historical awareness-v5 runtime. Keep this table empty to test that fallback.
+    await a.query("CREATE TABLE battle_unified_consciousness(battle_id TEXT PRIMARY KEY,revision INTEGER,fencing_token INTEGER,snapshot_json TEXT,updated_at TEXT)");
     await a.query("CREATE TABLE battle_narration_leases(battle_id TEXT PRIMARY KEY,owner_id TEXT,fencing_token INTEGER,expires_at TEXT)");
     await a.query("CREATE TABLE battle_awareness_narration_batches(battle_id TEXT,attempt_id TEXT PRIMARY KEY,fencing_token INTEGER,receipt_ids_json TEXT,deadline_at TEXT,status TEXT,reservation_id TEXT,request_digest TEXT,pricing_revision TEXT,maximum_usd REAL,updated_at TEXT)");
     await a.query("CREATE TABLE battle_narration_attempts(battle_id TEXT,attempt_id TEXT,fencing_token INTEGER,status TEXT)");

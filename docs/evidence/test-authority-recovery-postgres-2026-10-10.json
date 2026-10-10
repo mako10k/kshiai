@@ -1,0 +1,35 @@
+{
+  "schema": "kshiai/test-authority-recovery-postgres/v1",
+  "date": "2026-10-10",
+  "scope": "Local dedicated PostgreSQL16 temporary cluster; existing service and databases unchanged; not production PostgreSQL17 acceptance",
+  "identity": "PostgreSQL 16.15 (Ubuntu 16.15-0ubuntu0.24.04.1) on x86_64-pc-linux-gnu, compiled by gcc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0, 64-bit|kshiai_awareness_test|127.0.0.1|15441",
+  "beforeFix": {
+    "tests": 4,
+    "passed": 3,
+    "failed": 1,
+    "skipped": 0,
+    "error": "42P01 missing battle_unified_consciousness in minimal reservation fixture"
+  },
+  "afterFix": {
+    "tests": 4,
+    "passed": 4,
+    "failed": 0,
+    "skipped": 0,
+    "exitCode": 0
+  },
+  "serverStopped": true,
+  "files": [
+    {
+      "path": "backend/src/repositories/battle-awareness-postgres.test.ts",
+      "sha256": "315fb6c0727d81631a5e9502984fcc1c12654b6324b83eeb7788bd498a0302d4"
+    },
+    {
+      "path": "backend/src/repositories/battle-awareness-narration-events-postgres.test.ts",
+      "sha256": "1e4e39135aaa66e395818cb02c2d7132c17f667d60dc61860bdfcab8e69f5cdf"
+    },
+    {
+      "path": "backend/src/repositories/battle-awareness-narration-reservation-postgres.test.ts",
+      "sha256": "8d3d782554e4c1de51685b106376bb3398de5e94551e8ed3c64760ddfd9be694"
+    }
+  ]
+}

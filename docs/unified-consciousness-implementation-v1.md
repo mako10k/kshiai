@@ -1,6 +1,6 @@
 # 統合意識 v1 実装・ローカル検証
 
-現在の公式全体検証は未完了。2026-10-10の所有者指摘により、根拠不備28ファイルを除外した全体検証完了判断を撤回した。下記の成功件数は限定実行の歴史的観測として保持する。末尾の訂正とADR-0068 revision 1を参照。
+現在のローカル公式全体検証は完了。所有者指摘による完了判断の撤回後、28件を個別確認・修正して再Sealし、公式 `npm test` が有効250ファイル・disabled0・1,500件成功・失敗0・skip0で終了した。下記の以前の結果は歴史的観測として保持する。末尾の回復結果を参照。
 
 2026-10-10。ブランチ `codex/unified-consciousness`。根拠はAccepted [ADR-0067 revision 2](adr/0067-unified-consciousness-priority-memory.md)と[統合意識の詳細契約 第1版](unified-consciousness-contract-v1.md) C1–C8。canonicalは[統合意識 PERT](unified-consciousness.pert)。
 
@@ -43,3 +43,11 @@ SQLiteの実transactionで原子性とrollbackを検証した。PostgreSQLのDDL
 [統合意識 PERT](unified-consciousness.pert)のfinishをCURRENTLY_VERIFIEDへ延長し、fullVerificationを未着手として追加した。過去のverify作業とwork eventは履歴として保持する。runner修正は[根拠不備ゲート修正PERT](test-authority-fail-closed.pert)がcanonicalであり、その修正完了は統合意識 v1 の全体検証完了を意味しない。
 
 停止契約修正後の実 `npm test` はactive222・disabled28（stale27、source_diverged1）を検出し、テストを起動せず終了コード1。これは全体テスト合格ではなく、所有者指定の失敗動作の確認である。[停止結果と対象一覧 第1版](evidence/test-authority-fail-closed-2026-10-10.json)を保存した。修正ゲートの限定診断16件は成功し、実selectorのunit/e2e停止、一覧の維持、有効テストのみの起動を確認した。型チェック・静的解析成功。28件の実行資格回復と公式全体合格は引き続き未完了。
+
+## 個別回復後の公式全体検証 2026-10-10
+
+先に `8a144c37` をコミットし、28ファイルの契約・現行ソース・期待値を個別照合した。上流更新で追加3ファイルがstaleになったため、70ケースを変更なしで確認してそれぞれ再Sealした。PostgreSQL実況予約fixtureに欠けていた空の統合意識 v1テーブルを追加し、通常運用policy awareness-v5-usage-v3の期待値と表記を確認した。27ファイルのアサーションは完全同一、残る1ファイルも14個を維持して受入済みpolicy revisionだけを訂正した。過去の失敗証拠と旧Sealは保持する。
+
+専用ローカルPostgreSQL16を指定した公式 `npm test` は有効250ファイル・provisional0・disabled0、1,500件成功・失敗0・skip0、終了コード0。native PGの4ケースも含む。型検査・静的検査・ADR検査・SealGraph fsckとcanonical PERTのcheck/both schedules/nextが成功し、fullVerificationを完了した。[個別確認・旧新Seal・公式結果 第1版](evidence/test-authority-recovery-2026-10-10.md)を参照。
+
+新runtimeのPostgreSQL17受入、実モデル比較、本番migration・配備は未実施。今回のnative PG検証は歴史的runtimeのSQL/競合境界であり、その範囲を拡大しない。対象外の歴史的stale REFは変更しない。

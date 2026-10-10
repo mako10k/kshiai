@@ -1,0 +1,59 @@
+Official test authority recovery v1
+Command: AWARENESS_POSTGRES_TEST_URL=<dedicated local PostgreSQL16 fixture> npm test
+Exit code: 0
+Full local log SHA-256: f87d6ecf8eac9481c6a031d09f20dce0baf730cc5811d95142b2f94d244c9a9c
+Excerpt (selection, native PostgreSQL cases, per-workspace TAP totals):
+
+TEST_SELECTION suite=unit active=250 provisional=0 disabled=0
+# Subtest: PostgreSQL event allocation serializes one battle, preserves others and retains prune floor
+ok 76 - PostgreSQL event allocation serializes one battle, preserves others and retains prune floor
+# Subtest: PostgreSQL narrator admission preserves world fence and prevents concurrent budget oversubscription
+ok 77 - PostgreSQL narrator admission preserves world fence and prevents concurrent budget oversubscription
+# Subtest: PostgreSQL awareness initialization enforces owner, fence, and lease expiry
+ok 82 - PostgreSQL awareness initialization enforces owner, fence, and lease expiry
+# Subtest: PostgreSQL awareness initialization conflict preserves the original snapshot
+ok 83 - PostgreSQL awareness initialization conflict preserves the original snapshot
+# Subtest: PostgreSQL migration discovery
+ok 122 - PostgreSQL migration discovery
+# Subtest: SQLite to PostgreSQL source inspection
+ok 127 - SQLite to PostgreSQL source inspection
+# tests 981
+# suites 165
+# pass 981
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 79288.580399
+# tests 20
+# suites 6
+# pass 20
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 480.952972
+# tests 436
+# suites 74
+# pass 436
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 4814.317262
+# tests 3
+# suites 1
+# pass 3
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 271.564868
+# tests 60
+# suites 6
+# pass 60
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 1812.565239

@@ -43,3 +43,7 @@ ADR0067 revision1のLLMTHINK監査clean、PERT document check・precedence/resou
 ## 全体検証判断の訂正 2026-10-10
 
 所有者の指摘を受け、根拠が古い28ファイルを除外した状態での全体検証完了を撤回した。個別の成功証跡は保持し、公式全体検証は未完了とする。[ADR-0068 revision 1](adr/0068-fail-tests-on-invalid-authority.md)の実行前失敗ゲートへ修正し、canonical PERTのfullVerificationを未着手で追加した。根拠の古いテストを「テスト不要」と扱わない。
+
+## 個別回復後の公式検証 2026-10-10
+
+所有者の「コミットしてから28件を修正もしくは確認してそれぞれ再シール」の指示に従い、`8a144c37` の後で28件を個別確認・修正して再Sealした。専用ローカルPostgreSQL16を指定した公式 `npm test` は有効250ファイル・disabled0、1,500件成功・失敗0・skip0、終了コード0。型検査・静的検査・ADR検査・SealGraph fsck・PERTのcheck/both schedules/nextが成功し、canonical fullVerificationを完了した。[個別回復記録 第1版](evidence/test-authority-recovery-2026-10-10.md)に旧新Sealと確認範囲を保存する。上記の失敗・撤回は当時の履歴として保持する。ローカル契約検証の完了であり、有料比較や公開配備の結果ではない。

@@ -29,7 +29,7 @@ const { getBattle } = await import("../repositories/battles.js");
 const { getAwarenessRuntime } = await import("../repositories/battle-awareness.js");
 after(async () => { await closeDatabase(); rmSync(directory, { recursive: true, force: true }); });
 
-it("persists usage-v2 for default creation and overrides a legacy provider's shorter timing", async (t) => {
+it("persists operating policy awareness-v5-usage-v3 for default creation and overrides a legacy provider's shorter timing", async (t) => {
   const document = readAwarenessTrialCandidate(resolve(import.meta.dirname, "../../../docs/evidence/awareness-real-trial-candidate-2026-10-05.json"));
   const seeded = await seedAwarenessTrial(document.candidate);
   const llm = createLlmProvider({ awarenessPolicy: AwarenessObservedPolicy });
