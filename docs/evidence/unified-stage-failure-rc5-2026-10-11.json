@@ -1,0 +1,75 @@
+{
+  "applicationVersion": "v0.24.0-rc.5",
+  "commit": "21af824f16c8b5daad211276910c1166d54c079b",
+  "mainCi": {
+    "run": 38085515467,
+    "conclusion": "success"
+  },
+  "stage": {
+    "run": 38086092556,
+    "conclusion": "failure",
+    "revision": "kshiai-api-00193-doy",
+    "imageDigest": "sha256:50e7d17f40abb10a972b97c9f88e0eb97ae3973bf37b2134bdca7be9298d0d89",
+    "workerVersion": "9222cab4-0fc7-49a4-bd43-27c5ac9890e4",
+    "execution": "see Stage logs"
+  },
+  "readback": {
+    "battle": {
+      "id": "btl_5c4fb84ea5ab6893d30569e34711fae0",
+      "status": "incomplete",
+      "incompleteReason": "AWARENESS_REQUIRED_FREE_ACTION_JUDGMENT_FAILED",
+      "manifestVersion": 6
+    },
+    "runs": [
+      {
+        "run_id": "stage-38086092556-1",
+        "taxonomy_revision": "battle-provider-operations-v4",
+        "approved_attempt_ceiling": 200,
+        "reserved_attempts": 24,
+        "status": "failed"
+      }
+    ],
+    "attempts": [
+      {
+        "operation": "unified-consciousness-v1",
+        "layer": "characterExpression",
+        "status": "succeeded",
+        "count": "12"
+      },
+      {
+        "operation": "reconcileTurnSemanticState",
+        "layer": "environment",
+        "status": "succeeded",
+        "count": "1"
+      },
+      {
+        "operation": "adjudicateFreeActions",
+        "layer": "environment",
+        "status": "succeeded",
+        "count": "5"
+      },
+      {
+        "operation": "awareness-v5:narration-frozen",
+        "layer": "narration",
+        "status": "succeeded",
+        "count": "5"
+      },
+      {
+        "operation": "prepareBattleEncounter",
+        "layer": "encounter",
+        "status": "succeeded",
+        "count": "1"
+      }
+    ]
+  },
+  "promoted": false,
+  "previousStageActualAttempts": 52,
+  "totalMeasuredAttempts": 76,
+  "price": "unpriced",
+  "diagnosis": {
+    "terminalReason": "AWARENESS_REQUIRED_FREE_ACTION_JUDGMENT_FAILED",
+    "observed": "Final adjudication HTTP completed with finishReason stop, contentLength989 and physical slot closed; not an HTTP429 in this run. Exact application validation detail needs Cloud Logging.",
+    "boundary": "Battle preserved last committed tick4; no invalid result applied. rc.5 completion-observer repair not reached by this failed battle.",
+    "logAccess": "Local gcloud reauthentication expired; owner asked to refresh existing login; no ADC configured."
+  }
+}
