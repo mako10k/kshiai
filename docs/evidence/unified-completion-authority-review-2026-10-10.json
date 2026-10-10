@@ -1,0 +1,59 @@
+{
+  "scope": "application v0.24.0-rc.5 completion acceptance correction",
+  "affectedOfflineTests": {
+    "files": 4,
+    "passed": 34,
+    "failed": 0,
+    "skipped": 0
+  },
+  "readOnlyRealBattleProbe": {
+    "battleStatus": "finished",
+    "engine": "unified-consciousness-v1",
+    "policy": "unified-consciousness-policy-v2",
+    "prompt": "unified-consciousness-prompt-v2",
+    "tick": 9,
+    "physicalAttempts": 42,
+    "physicalOutstanding": 0,
+    "narrationAttempts": 11,
+    "reportedTokens": {
+      "prompt": 263718,
+      "completion": 7624,
+      "total": 290297,
+      "unknownAttempts": 0
+    },
+    "monetaryCost": "unknown_without_verified_prices"
+  },
+  "reviews": [
+    {
+      "ref": "verification/awareness-usage-verifier-bounded-20261008",
+      "review": "ADR0069/ADR0067 completion contract: saved unified runtime/policy/prompt, actual decision plus operational physical totals, closed budget and complete usage roles; historical v5 checks retained.",
+      "previousSeal": "ac60a741618d22d1327f2778d28271e7ca775500378a98a4a3ba49ff8a0364a8",
+      "seal": "b10cb0ec76f58cbd67da2b21dafb7685339d78a149d0e398b001370c5a62805d",
+      "sourceRef": "unified-completion-v1/source/awareness-public-observation"
+    },
+    {
+      "ref": "verification/awareness-narration-convergence-bounded-current-20261007",
+      "review": "Binding format v6 shares successful narration publication and positive durable claim semantics with v5; failed/cancelled/unresolved receipts rejected; historical v4 semantics retained.",
+      "previousSeal": "f59361225f9c06e9a785db582d8732f4aabe7846f05d01f68e9759ce87f9cffb",
+      "seal": "130681853093d9caebd1f7c013133576680bd47b54f60207b3dd4ec4f6945602",
+      "sourceRef": "unified-completion-v1/source/awareness-narration-convergence"
+    }
+  ],
+  "governedSuite": {
+    "files": 250,
+    "active": 250,
+    "provisional": 0,
+    "disabled": 0,
+    "tests": 1516,
+    "pass": 1516,
+    "fail": 0,
+    "skipped": 0
+  },
+  "checks": [
+    "build",
+    "typecheck",
+    "static baseline unchanged",
+    "sealgraph fsck ok",
+    "PERT check/both schedules/next"
+  ]
+}

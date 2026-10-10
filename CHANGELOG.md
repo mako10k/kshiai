@@ -7,6 +7,8 @@ based on Keep a Changelog, and releases follow Semantic Versioning.
 
 ## [0.24.0] - 2026-10-10
 
+- Completion acceptance now verifies saved unified consciousness v1/binding format v6 state, closed accounting and successful narration rather than requiring historical awareness v5. Application v0.24.0-rc.4 completed its battle but failed the outdated observer; preserve that failed evidence. Corrective candidate application v0.24.0-rc.5.
+
 - New consciousness prompt v2 shows complete decision envelopes with only currently available actions/references, preventing bare action examples from being mistaken for the whole response. Existing saved prompt v1 remains bound and supported; malformed outputs remain rejected without rewriting or paid content repair. Application v0.24.0-rc.3 staging failure is retained; corrective candidate application v0.24.0-rc.4.
 
 - New battles bind consciousness operating policy v2: up to two same-provider HTTP429 retries within existing deadlines and physical-attempt ceilings, with separate reservations and usage accounting. Billing errors, unknown sends and invalid content are not retried. Unsupported actions fail without execution and deliver a private reason to the character's next decision; valid speech/memory remain atomic. Historical policy v1 behavior remains unchanged (ADR0069 revision1).
