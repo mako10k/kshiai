@@ -1,9 +1,9 @@
 project UNIFIED_CONSCIOUSNESS:
-  version 5
+  version 6
   title "統合意識と優先順位付き記憶の方向転換"
-  description "Owner direction2026-10-10; requirements docs/unified-consciousness-design-v1.md; Accepted ADR0067 revision2 and docs/unified-consciousness-contract-v1.md C1-C8. Canonical successor planning for new consciousness work. Preserve historical awareness-v5 and unfinished release evidence. Estimates provisional, no measured velocity or paid/deploy authority."
+  description "Owner direction2026-10-10; requirements docs/unified-consciousness-design-v1.md; Accepted ADR0067 revision2 and docs/unified-consciousness-contract-v1.md C1-C8. Canonical successor planning for new consciousness work. Preserve historical awareness-v5 and unfinished release evidence. Estimates provisional. Owner authorized production deployment2026-10-10; separate bounded paid-trial authority is still required."
   duration_unit point
-  finish CURRENTLY_VERIFIED
+  finish DEPLOYED
   goal_owner user
   dag_owner agent
 resource DEV:
@@ -22,6 +22,28 @@ milestone VERIFIED:
   title "Local contract regressions and typechecks verified"
 milestone CURRENTLY_VERIFIED:
   title "Full governed verification succeeds without invalid authority exclusions"
+milestone RELEASE_READY:
+  title "Unified new-battle selector and exact-source release checks pass"
+milestone STAGED:
+  title "Immutable artifacts and migration pass staging acceptance"
+milestone DEPLOYED:
+  title "Exact staged artifacts serve production and independent readback passes"
+task release CURRENTLY_VERIFIED -> RELEASE_READY:
+  title "統合意識の公開作成切替とリリース準備"
+  description "Owner production deployment2026-10-10 authorizes ADR0067 revision2 C7 new public battle selector unified-consciousness-v1/battle binding format v6. Keep historical battle execution. Add HTTP binding/privacy regression; individually review impacted authority, build/typecheck/full governed tests; PR and mandatory exact-source CI under docs/release_process.md. Prepare release candidate v0.24.0-rc.1, preserving failed rc.20 evidence."
+  duration 3p
+  status planned
+task stage RELEASE_READY -> STAGED:
+  title "同一成果物をステージングで検証"
+  description "Stage release uses OIDC and immutable backend digest/Worker version; additive migration0037. Requires exact candidate-specific paid functional battle budget approval before dispatch. Verify PostgreSQL/auth/R2/SSE and retain successful exact-source evidence and rollback targets. No bypass of failed stage."
+  duration 2p
+  status planned
+task promote STAGED -> DEPLOYED:
+  title "同一成果物を本番昇格し読み戻す"
+  description "Owner already authorized production deployment. Dispatch protected Promote release with exact stage identities and typed confirmation; protected environment review may require owner UI action. Read back production revision/Worker version, health/auth/SSE and logs. Completion requires actual serving evidence, not workflow dispatch."
+  duration 1p
+  status planned
+
 task design NOW -> DESIGNED:
   title "統合意識の詳細契約と影響を具体化"
   description "ADR0067 revision2 D1-D8 and detailed contract C1-C8: memory insert/remove limits, event3tick admission, synchronous parallel A/B judgment, continuation, late/crash/failure semantics, private persistence, new binding6 and historical compatibility, finite policy and comparable fixtures. Completion requires reviewable exact contract and successful ADR/document/both-schedule/next checks, not runtime cutover."
