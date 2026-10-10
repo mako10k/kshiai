@@ -27,13 +27,13 @@ annotated candidate tag, Stage release, protected Promote release, independent
 production readback. Keep backend digest and Worker version identical between
 Stage and production; use OIDC workflows. Do not bypass protection or failed CI.
 
-Stage paid execution request (pending separate owner approval): one persistent
+Stage paid execution (owner separately approved2026-10-10): one persistent
 E2E fixture battle, max38 advances, provider attempt ceiling200 (the normal
 policy projects200 and rejects the workflow default169), no automatic retry,
 character-create smoke false. Model routes: consciousness openai/gpt-6-luna,
 world adjudication/narration existing xai routes; read their exact staged model
 identities before dispatch. This is functional acceptance, not a comparative
-quality or savings trial. A dollar estimate is unavailable from the unpriced
+quality or savings trial. Owner approved200 provider attempts for one battle in the explicit request for PR175/candidate v0.24.0-rc.1. A dollar estimate is unavailable from the unpriced
 local ledger; do not claim an attempt ceiling is a monetary cap. No paid stage
 has been dispatched. Stage includes additive migration, auth/R2 and SSE checks;
 production traffic remains unchanged until successful acceptance.

@@ -117,6 +117,11 @@ describe("ADR-0039 V3 character battle binding", () => {
     });
 
     const llm = createOfflineAwarenessProvider();
+    assert.ok(llm.awareness);
+    llm.awareness.consciousness = {
+      identity: { provider: "openai", engineModel: "gpt-6-luna", fastModel: "gpt-6-luna" },
+      requestJson: async () => ({}),
+    };
     llm.advanceCharacterPsyche = async () => { throw new Error("Unexpected V4 psyche call"); };
     let consciousCalls = 0;
     const originalAgent = llm.advanceCharacterAgent.bind(llm);
