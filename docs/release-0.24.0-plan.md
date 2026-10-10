@@ -60,9 +60,12 @@ The original one-battle paid authority is consumed. A new rc.2 fixture battle
 requires a fresh concrete approval; no paid retry or production promotion has
 been performed. Prepare corrected PR/CI/candidate first, retaining rc.1 failure.
 
-
 ## Corrective candidate application v0.24.0-rc.3
 
 Application v0.24.0-rc.2 main4885bc60 passed CI38042423619; Stage38042991400 failed with CONSCIOUSNESS_ACTION_UNKNOWN after six physical attempts. Four consciousness requests were properly accounted in taxonomy v4. Independently, one xAI grok-4.3 narration request returned HTTP429 model at capacity. Production remained application v0.23.0-rc.19, revision kshiai-api-00186-zop at100%. Preserve rc.2 and its evidence.
 
 Owner now authorizes correction, tests, deployment and Stage. Accepted ADR0069 revision1 binds new public battles to consciousness operating policy v2, bounded known429 adapter retry and private failed-action feedback, keeping historical policy v1 unchanged. One additional Stage battle is authorized within the previously presented38advances/200physical-attempt bound, no character-create smoke or automatic new battle retry, charge unpriced. The existing seven measured attempts are historical. Exact-source PR/main CI and successful Stage remain mandatory before protected Promote and independent readback.
+
+## Corrective candidate application v0.24.0-rc.4
+
+Application v0.24.0-rc.3 passed exact-source mainCI38048891072, but Stage38049445564 stopped after3 physical attempts with action fields kind/skillId/useFinisher outside the top-level output envelope. No429 occurred in those three attempts. Correct the examples in new immutable consciousness prompt v2: complete response envelopes only, examples limited to the supplied legal action/ref set, no normalization or paid content retry. Historical prompt v1 remains byte-compatible and selected by saved manifests. Policy v2 still provides the independently tested bounded429 retry and failed-action feedback contracts. Retain all failed Stage runs and the cumulative10 measured attempts before the next bounded Stage.

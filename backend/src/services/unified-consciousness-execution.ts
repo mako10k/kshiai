@@ -1,6 +1,6 @@
 // R: Prepare one synchronous A/B decision barrier with durable no-resend identities.
 import { UnifiedConsciousnessInputSchema, UnifiedConsciousnessRuntimeSchema, shouldRunUnifiedConsciousness, validateUnifiedDecision, unifiedActionFailure,
-  type UnifiedConsciousnessInput, type UnifiedConsciousnessRuntime, type UnifiedConsciousnessDecision } from "@kshiai/shared";
+  type UnifiedConsciousnessInput, type UnifiedConsciousnessRuntime, type UnifiedConsciousnessDecision, type BattleAssetManifestV6 } from "@kshiai/shared";
 import { prepareUnifiedConsciousnessRequest } from "../llm/unified-consciousness.js";
 import type { AwarenessJsonTransport } from "../llm/awareness-provider-contract.js";
 import { withLlmUsageScope } from "../llm/llm-usage-context.js";
@@ -23,6 +23,7 @@ export async function prepareUnifiedBoundary(input: {
   battleId: string; tick: number; worldRevision: number; port: UnifiedExecutionPort;
   frames: { a: UnifiedConsciousnessInput; b: UnifiedConsciousnessInput };
   transport: AwarenessJsonTransport; now?: () => number;
+  promptRevision?: BattleAssetManifestV6["consciousnessPromptRevision"];
 }): Promise<UnifiedPreparedBoundary> {
   const now = input.now ?? Date.now;
   const initial = await input.port.read();
@@ -41,7 +42,7 @@ export async function prepareUnifiedBoundary(input: {
     if (!shouldRunUnifiedConsciousness(before.sides[side], input.tick, before.policy)) return null;
     const frame = UnifiedConsciousnessInputSchema.parse({ ...input.frames[side], side, tick: input.tick, memory: before.sides[side].memory,
       events: before.sides[side].pendingEvents });
-    const request = prepareUnifiedConsciousnessRequest(frame, before.policy);
+    const request = prepareUnifiedConsciousnessRequest(frame, before.policy, input.promptRevision);
     const deadlineAt = Math.min(now() + before.policy.deadlineMs, before.deadlineAt);
     const digest = requestDigest({ provider: before.policy.model.provider, model: before.policy.model.model, ...request });
     await input.port.update((runtime) => {

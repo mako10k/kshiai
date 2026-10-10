@@ -1,0 +1,63 @@
+{
+  "applicationVersion": "v0.24.0-rc.3",
+  "commit": "a8235fb50ed81ecb3ec6e97df1dc29a813fac11b",
+  "mainCi": {
+    "run": 38048891072,
+    "conclusion": "success"
+  },
+  "stage": {
+    "run": 38049445564,
+    "conclusion": "failure",
+    "revision": "kshiai-api-00191-jus",
+    "imageDigest": "sha256:3f89dfdb9a7709feaef8a85e72bc417f960a45afcb7dbd1dcc82f3ed469c37a6",
+    "workerVersion": "5cb96f1d-e6a2-4281-b0c6-5c6e8591fe03",
+    "execution": "kshiai-persistent-e2e-8tj5p"
+  },
+  "readback": {
+    "battle": {
+      "id": "btl_4bb9de057a8e95706fb183dec381f00a",
+      "status": "incomplete",
+      "incompleteReason": "[\n  {\n    \"code\": \"unrecognized_keys\",\n    \"keys\": [\n      \"kind\",\n      \"skillId\",\n      \"useFinisher\"\n    ],\n    \"path\": [],\n    \"message\": \"Unrecognized key(s) in object: 'kind', 'skillId', 'useFin",
+      "manifestVersion": 6
+    },
+    "runs": [
+      {
+        "run_id": "stage-38049445564-1",
+        "taxonomy_revision": "battle-provider-operations-v4",
+        "approved_attempt_ceiling": 200,
+        "reserved_attempts": 3,
+        "status": "failed"
+      }
+    ],
+    "attempts": [
+      {
+        "operation": "unified-consciousness-v1",
+        "layer": "characterExpression",
+        "status": "succeeded",
+        "count": "2"
+      },
+      {
+        "operation": "prepareBattleEncounter",
+        "layer": "encounter",
+        "status": "succeeded",
+        "count": "1"
+      }
+    ]
+  },
+  "productionTraffic": [
+    {
+      "revision": "kshiai-api-00186-zop",
+      "percent": 100
+    }
+  ],
+  "promoted": false,
+  "previousStageActualAttempts": 7,
+  "totalMeasuredAttempts": 10,
+  "price": "unpriced",
+  "retryDispatched": false,
+  "diagnosis": {
+    "terminalReason": "Top-level kind/skillId/useFinisher rejected by strict decision envelope; exact invalid raw output was not retained.",
+    "providerResponses": "Encounter and two consciousness HTTP responses received; no HTTP429 in this run, so live rate-limit retry remains unverified.",
+    "acceptance": "Health/auth/SSE/Cloud Tasks passed before battle; battle failed, later R2 gate not reached; failure cannot promote."
+  }
+}

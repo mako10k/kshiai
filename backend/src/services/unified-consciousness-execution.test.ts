@@ -1,12 +1,13 @@
 // R: Verify parallel barriers, durable no-resend and fenced acceptance without paid providers.
 import assert from "node:assert/strict";
+import { createHash } from "node:crypto";
 import { after, describe, it } from "node:test";
 import { mkdtempSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { AwarenessNormalPolicy, BattleAssetManifestV6Schema, BattleStateSchema, UnifiedConsciousnessPolicyV1, UnifiedConsciousnessPolicyV2,
   initializeUnifiedConsciousness, applyUnifiedConsciousnessBoundary, defaultCharacterIdentity,
-  type UnifiedConsciousnessRuntime, type UnifiedConsciousnessInput } from "@kshiai/shared";
+  validateUnifiedDecision, type UnifiedConsciousnessRuntime, type UnifiedConsciousnessInput } from "@kshiai/shared";
 import type { AwarenessJsonTransport } from "../llm/awareness-provider-contract.js";
 import { validAwarenessBattleFixture } from "./awareness-test-fixture.js";
 
@@ -18,7 +19,7 @@ const { getDb, withTransaction } = await import("../db.js");
 const { config } = await import("../config.js");
 assert.equal(config.databasePath, join(directory, "test.db"));
 const { prepareUnifiedBoundary } = await import("./unified-consciousness-execution.js");
-const { prepareUnifiedConsciousnessRequest } = await import("../llm/unified-consciousness.js");
+const { prepareUnifiedConsciousnessRequest, unifiedDecisionExamples } = await import("../llm/unified-consciousness.js");
 const repo = await import("../repositories/unified-consciousness.js");
 const battles = await import("../repositories/battles.js");
 const { commitUnifiedWorld } = await import("./unified-consciousness-world.js");
@@ -61,6 +62,39 @@ describe("unified consciousness policies v1/v2 execution", () => {
     assert.match(request.user, /まず観察する/);
     assert.equal(request.options.maxCompletionTokens, 1000);
     assert.doesNotMatch(request.system, /各意欲は|reflexDesires/);
+  });
+  it("renders prompt v2 as complete legal decision envelopes and preserves prompt v1", () => {
+    const legacy = prepareUnifiedConsciousnessRequest(frames.a, UnifiedConsciousnessPolicyV1);
+    assert.deepEqual(legacy, prepareUnifiedConsciousnessRequest(frames.a, UnifiedConsciousnessPolicyV1, "unified-consciousness-prompt-v1"));
+    assert.doesNotMatch(legacy.system, /返答全体は/);
+    assert.equal(createHash("sha256").update(legacy.system).digest("hex"), "b87617cf3f364799e8cdbf253cc1321046eb0e72d3cd4d01a48078d197ae6674");
+    const request = prepareUnifiedConsciousnessRequest(frames.a, UnifiedConsciousnessPolicyV2, "unified-consciousness-prompt-v2");
+    assert.match(request.system, /トップ階層へ出さない/);
+    assert.doesNotMatch(request.system, /actionの基本例：/);
+    const examples = unifiedDecisionExamples(frames.a);
+    assert.ok(examples.some((example) => example.action?.kind === "wait"));
+    for (const example of examples) {
+      assert.deepEqual(validateUnifiedDecision(frames.a, example, "example"), example);
+      assert.ok(Object.keys(example).every((key) => ["action", "speech", "memoryOperations"].includes(key)));
+      assert.notEqual(example.action?.kind, "basic_attack");
+    }
+    assert.throws(() => validateUnifiedDecision(frames.a, { kind: "wait" }, "bare-action"), /unrecognized_keys/);
+    assert.equal(request.options.responseFormat.type, "json_object");
+    const grounded: UnifiedConsciousnessInput = { ...frames.a, availableActions: [
+      ...frames.a.availableActions,
+      { kind: "skill", skillId: "actual-skill", name: "技", target: { kind: "counterpart", perceivedAs: "相手" } },
+      { kind: "free_action", name: "試み", target: { kind: "self", perceivedAs: "自分" } },
+    ], facts: [{ ref: "visible-fact", content: "見えるもの" }] };
+    const groundedExamples = unifiedDecisionExamples(grounded);
+    assert.ok(groundedExamples.some((example) => example.action?.kind === "skill" && example.action.skillId === "actual-skill"));
+    assert.ok(groundedExamples.some((example) => example.action?.kind === "free_action" && example.action.subjectRefs?.includes("visible-fact")));
+    for (const example of groundedExamples) assert.deepEqual(validateUnifiedDecision(grounded, example, "grounded-example"), example);
+  });
+  it("binds the selected prompt revision through the prepared execution request", async () => {
+    const f = fixture(UnifiedConsciousnessPolicyV2); let calls = 0;
+    await prepareUnifiedBoundary({ battleId: "prompt-v2", tick: 0, worldRevision: 0, port: f.port, frames, promptRevision: "unified-consciousness-prompt-v2",
+      transport: transport(async (system) => { assert.match(system, /返答全体は/); calls++; return {}; }), now: () => now });
+    assert.equal(calls, 2);
   });
   it("fails an unsupported action privately, preserves speech/memory and delivers feedback once", async () => {
     const f = fixture(UnifiedConsciousnessPolicyV2);
