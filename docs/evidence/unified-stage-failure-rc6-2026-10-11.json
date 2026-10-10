@@ -1,0 +1,412 @@
+{
+  "applicationVersion": "v0.24.0-rc.6",
+  "sourceCommit": "3b157e8bdd02dcd97f97aa36141707909c83396c",
+  "pullRequest": 180,
+  "prCi": {
+    "run": 38088266489,
+    "conclusion": "success"
+  },
+  "mainCommit": "8943942b9c510bb0189d1cfbe5423b6b2a87d5b0",
+  "mainCi": {
+    "run": 38088818017,
+    "conclusion": "success"
+  },
+  "ownerAuthority": "2026-10-11 repaired-run retry plus earlier correction/test/deploy/Stage authorization",
+  "bounds": {
+    "battles": 1,
+    "advances": 38,
+    "physicalProviderAttempts": 200,
+    "characterCreateSmoke": false,
+    "automaticNewBattleRetry": false
+  },
+  "previousMeasuredAttempts": 76,
+  "price": "unpriced",
+  "rollback": {
+    "applicationVersion": "v0.23.0-rc.19",
+    "revision": "kshiai-api-00186-zop",
+    "workerVersion": "3c4e3d68-c7ed-4c8b-88eb-f22f108eaf24",
+    "schema": "additive0037alreadyapplied; no DB rollback; old backend cannot continue new binding6 battles"
+  },
+  "tag": "v0.24.0-rc.6",
+  "stage": {
+    "run": 38089444746,
+    "conclusion": "failure",
+    "revision": "kshiai-api-00194-cez",
+    "imageDigest": "sha256:504be0fc68c988114734f2740c67d3073c60088e042ea1120bb3c631dc9f94e0",
+    "execution": "kshiai-persistent-e2e-6th8p"
+  },
+  "battleReadback": {
+    "battle": {
+      "id": "btl_16914b3ffde07511a4dca3a915b2a68b",
+      "status": "finished",
+      "manifestVersion": 6
+    },
+    "runs": [
+      {
+        "run_id": "stage-38089444746-1",
+        "taxonomy_revision": "battle-provider-operations-v4",
+        "approved_attempt_ceiling": 200,
+        "reserved_attempts": 86,
+        "status": "failed"
+      }
+    ],
+    "attempts": [
+      {
+        "operation": "unified-consciousness-v1",
+        "layer": "characterExpression",
+        "status": "succeeded",
+        "count": "48"
+      },
+      {
+        "operation": "reconcileTurnSemanticState",
+        "layer": "environment",
+        "status": "succeeded",
+        "count": "9"
+      },
+      {
+        "operation": "adjudicateFreeActions",
+        "layer": "environment",
+        "status": "succeeded",
+        "count": "4"
+      },
+      {
+        "operation": "awareness-v5:narration-frozen",
+        "layer": "narration",
+        "status": "succeeded",
+        "count": "24"
+      },
+      {
+        "operation": "prepareBattleEncounter",
+        "layer": "encounter",
+        "status": "succeeded",
+        "count": "1"
+      }
+    ]
+  },
+  "readOnlyObserver": {
+    "battleStatus": "finished",
+    "engine": "unified-consciousness-v1",
+    "policy": "unified-consciousness-policy-v2",
+    "prompt": "unified-consciousness-prompt-v2",
+    "tick": 23,
+    "physicalAttempts": 86,
+    "physicalOutstanding": 0,
+    "narrationAttempts": 24,
+    "reportedTokens": {
+      "prompt": 556875,
+      "completion": 10654,
+      "total": 580732,
+      "unknownAttempts": 0
+    },
+    "monetaryCost": "unknown_without_verified_prices"
+  },
+  "narrationReadback": {
+    "entries": [
+      {
+        "sequence": "1",
+        "status": "completed",
+        "attempt_count": 1,
+        "fallback_reason": null
+      },
+      {
+        "sequence": "2",
+        "status": "completed",
+        "attempt_count": 1,
+        "fallback_reason": null
+      },
+      {
+        "sequence": "3",
+        "status": "completed",
+        "attempt_count": 1,
+        "fallback_reason": null
+      },
+      {
+        "sequence": "4",
+        "status": "completed",
+        "attempt_count": 1,
+        "fallback_reason": null
+      },
+      {
+        "sequence": "5",
+        "status": "completed",
+        "attempt_count": 1,
+        "fallback_reason": null
+      },
+      {
+        "sequence": "6",
+        "status": "completed",
+        "attempt_count": 1,
+        "fallback_reason": null
+      },
+      {
+        "sequence": "7",
+        "status": "completed",
+        "attempt_count": 1,
+        "fallback_reason": null
+      },
+      {
+        "sequence": "8",
+        "status": "completed",
+        "attempt_count": 1,
+        "fallback_reason": null
+      },
+      {
+        "sequence": "9",
+        "status": "completed",
+        "attempt_count": 1,
+        "fallback_reason": null
+      },
+      {
+        "sequence": "10",
+        "status": "completed",
+        "attempt_count": 1,
+        "fallback_reason": null
+      },
+      {
+        "sequence": "11",
+        "status": "completed",
+        "attempt_count": 1,
+        "fallback_reason": null
+      },
+      {
+        "sequence": "12",
+        "status": "completed",
+        "attempt_count": 1,
+        "fallback_reason": null
+      },
+      {
+        "sequence": "13",
+        "status": "completed",
+        "attempt_count": 1,
+        "fallback_reason": null
+      },
+      {
+        "sequence": "14",
+        "status": "completed",
+        "attempt_count": 1,
+        "fallback_reason": null
+      },
+      {
+        "sequence": "15",
+        "status": "completed",
+        "attempt_count": 1,
+        "fallback_reason": null
+      },
+      {
+        "sequence": "16",
+        "status": "completed",
+        "attempt_count": 1,
+        "fallback_reason": null
+      },
+      {
+        "sequence": "17",
+        "status": "completed",
+        "attempt_count": 1,
+        "fallback_reason": null
+      },
+      {
+        "sequence": "18",
+        "status": "completed",
+        "attempt_count": 1,
+        "fallback_reason": null
+      },
+      {
+        "sequence": "19",
+        "status": "completed",
+        "attempt_count": 1,
+        "fallback_reason": null
+      },
+      {
+        "sequence": "20",
+        "status": "completed",
+        "attempt_count": 1,
+        "fallback_reason": null
+      },
+      {
+        "sequence": "21",
+        "status": "completed",
+        "attempt_count": 1,
+        "fallback_reason": null
+      },
+      {
+        "sequence": "22",
+        "status": "completed",
+        "attempt_count": 1,
+        "fallback_reason": null
+      },
+      {
+        "sequence": "23",
+        "status": "completed",
+        "attempt_count": 1,
+        "fallback_reason": null
+      },
+      {
+        "sequence": "24",
+        "status": "failed",
+        "attempt_count": 1,
+        "fallback_reason": "AWARENESS_NARRATION_SPEECH_SOURCE_MISMATCH"
+      },
+      {
+        "sequence": "25",
+        "status": "failed",
+        "attempt_count": 0,
+        "fallback_reason": "awareness_narration_incomplete"
+      }
+    ],
+    "attempts": [
+      {
+        "status": "completed",
+        "http_attempts": 1,
+        "error_class": null,
+        "fallback_reason": null
+      },
+      {
+        "status": "completed",
+        "http_attempts": 1,
+        "error_class": null,
+        "fallback_reason": null
+      },
+      {
+        "status": "completed",
+        "http_attempts": 1,
+        "error_class": null,
+        "fallback_reason": null
+      },
+      {
+        "status": "completed",
+        "http_attempts": 1,
+        "error_class": null,
+        "fallback_reason": null
+      },
+      {
+        "status": "completed",
+        "http_attempts": 1,
+        "error_class": null,
+        "fallback_reason": null
+      },
+      {
+        "status": "completed",
+        "http_attempts": 1,
+        "error_class": null,
+        "fallback_reason": null
+      },
+      {
+        "status": "completed",
+        "http_attempts": 1,
+        "error_class": null,
+        "fallback_reason": null
+      },
+      {
+        "status": "completed",
+        "http_attempts": 1,
+        "error_class": null,
+        "fallback_reason": null
+      },
+      {
+        "status": "completed",
+        "http_attempts": 1,
+        "error_class": null,
+        "fallback_reason": null
+      },
+      {
+        "status": "completed",
+        "http_attempts": 1,
+        "error_class": null,
+        "fallback_reason": null
+      },
+      {
+        "status": "completed",
+        "http_attempts": 1,
+        "error_class": null,
+        "fallback_reason": null
+      },
+      {
+        "status": "completed",
+        "http_attempts": 1,
+        "error_class": null,
+        "fallback_reason": null
+      },
+      {
+        "status": "completed",
+        "http_attempts": 1,
+        "error_class": null,
+        "fallback_reason": null
+      },
+      {
+        "status": "completed",
+        "http_attempts": 1,
+        "error_class": null,
+        "fallback_reason": null
+      },
+      {
+        "status": "completed",
+        "http_attempts": 1,
+        "error_class": null,
+        "fallback_reason": null
+      },
+      {
+        "status": "completed",
+        "http_attempts": 1,
+        "error_class": null,
+        "fallback_reason": null
+      },
+      {
+        "status": "completed",
+        "http_attempts": 1,
+        "error_class": null,
+        "fallback_reason": null
+      },
+      {
+        "status": "completed",
+        "http_attempts": 1,
+        "error_class": null,
+        "fallback_reason": null
+      },
+      {
+        "status": "completed",
+        "http_attempts": 1,
+        "error_class": null,
+        "fallback_reason": null
+      },
+      {
+        "status": "completed",
+        "http_attempts": 1,
+        "error_class": null,
+        "fallback_reason": null
+      },
+      {
+        "status": "completed",
+        "http_attempts": 1,
+        "error_class": null,
+        "fallback_reason": null
+      },
+      {
+        "status": "completed",
+        "http_attempts": 1,
+        "error_class": null,
+        "fallback_reason": null
+      },
+      {
+        "status": "completed",
+        "http_attempts": 1,
+        "error_class": null,
+        "fallback_reason": null
+      },
+      {
+        "status": "failed",
+        "http_attempts": 1,
+        "error_class": "AWARENESS_NARRATION_SPEECH_SOURCE_MISMATCH",
+        "fallback_reason": "AWARENESS_NARRATION_SPEECH_SOURCE_MISMATCH"
+      }
+    ]
+  },
+  "promoted": false,
+  "actualPhysicalAttempts": 86,
+  "cumulativeMeasuredAttempts": 162,
+  "diagnosis": {
+    "code": "AWARENESS_NARRATION_SPEECH_SOURCE_MISMATCH",
+    "sequence": 24,
+    "subsequentSequence25": "awareness_narration_incomplete",
+    "limitation": "Invalid generated text not retained; exact changed character/side unknown. Frozen input speech authority remains exact; no output repair authorized."
+  }
+}
