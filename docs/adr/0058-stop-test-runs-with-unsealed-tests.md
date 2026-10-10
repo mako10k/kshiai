@@ -1,6 +1,6 @@
 # ADR-0058: 未Sealテストがあればテスト実行を停止する
 
-- Status: Accepted
+- Status: Superseded
 - Revision: 1
 - Date: 2026-10-06
 - Decision owner: Repository owner
@@ -52,3 +52,7 @@ A1 implements C1/C3 from E1/E2: `scripts/test-authority.mjs` の実行前gate。
 検証記録: unit selectorはactive36/provisional2/disabled208のうち未Seal191でexit1、TAP開始なし。e2e selector（`node scripts/test-authority.mjs --e2e`）はactive3/disabled1、未Seal1でexit1、Playwright開始なし。一覧モードはexit0。selector分類と実行gateの15件は直実行による診断として成功し、公式のSeal準拠テスト合格とは扱わない。
 
 ADR0058のCLI auditはfatal/error/warning0。全体 `npm run adr:check` は既存ADR0039のAccepted acceptance marker不備でexit1。ADR0039は本変更では編集していないため、全ADR検査合格とは報告しない。
+
+## 後継決定 2026-10-10
+
+[ADR-0068 revision 1](0068-fail-tests-on-invalid-authority.md)が集約実行時の停止範囲を置換する。上記の原判断と当時の検証記録は履歴として保持する。

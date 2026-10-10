@@ -5,7 +5,11 @@ import { test } from "node:test";
 import { Client } from "pg";
 import { AwarenessInitialize, AwarenessObservedPolicy, AwarenessPipelineStateSchema } from "@kshiai/shared";
 import type { DatabaseConnection, DatabaseRow } from "../db.js";
-import { reserveNarrationAttemptInTransaction, type NarrationReservationInput } from "./battle-awareness-narration-reservation.js";
+import type { NarrationReservationInput } from "./battle-awareness-narration-reservation.js";
+// Force the application default to SQLite: the explicit connection dialect must
+// govern PostgreSQL locking even when a local .env supplies another database.
+process.env.DATABASE_URL = "";
+const { reserveNarrationAttemptInTransaction } = await import("./battle-awareness-narration-reservation.js");
 const connectionString = process.env.AWARENESS_POSTGRES_TEST_URL;
 function url() {
   if (!connectionString) {
@@ -31,7 +35,11 @@ function connection(client: Client): DatabaseConnection {
 const now = "2026-10-06T00:00:00.000Z";
 async function waiting(observer: Client, pid: number) {
   for (let i = 0; i < 100; i++) {
-    if ((await observer.query<{ waiting: boolean }>("SELECT wait_event_type='Lock' AS waiting FROM pg_stat_activity WHERE pid=$1", [pid])).rows[0]?.waiting) {
+    const activity = (await observer.query<{ waiting: boolean; query: string }>(
+      "SELECT wait_event_type='Lock' AS waiting,query FROM pg_stat_activity WHERE pid=$1", [pid],
+    )).rows[0];
+    if (activity?.waiting) {
+      assert.match(activity.query, /FROM battle_awareness_runtime[^]*FOR UPDATE/);
       return;
     }
     await new Promise<void>(resolve => setTimeout(resolve, 10));
@@ -52,6 +60,9 @@ test("PostgreSQL narrator admission preserves world fence and prevents concurren
       await client.query("SET statement_timeout TO '5s'");
     }
     await a.query("CREATE TABLE battle_awareness_runtime(battle_id TEXT PRIMARY KEY,revision INTEGER,fencing_token INTEGER,runtime_json TEXT,updated_at TEXT)");
+    // Unified consciousness v1 probes its private store before selecting the
+    // historical awareness-v5 runtime. Keep this table empty to test that fallback.
+    await a.query("CREATE TABLE battle_unified_consciousness(battle_id TEXT PRIMARY KEY,revision INTEGER,fencing_token INTEGER,snapshot_json TEXT,updated_at TEXT)");
     await a.query("CREATE TABLE battle_narration_leases(battle_id TEXT PRIMARY KEY,owner_id TEXT,fencing_token INTEGER,expires_at TEXT)");
     await a.query("CREATE TABLE battle_awareness_narration_batches(battle_id TEXT,attempt_id TEXT PRIMARY KEY,fencing_token INTEGER,receipt_ids_json TEXT,deadline_at TEXT,status TEXT,reservation_id TEXT,request_digest TEXT,pricing_revision TEXT,maximum_usd REAL,updated_at TEXT)");
     await a.query("CREATE TABLE battle_narration_attempts(battle_id TEXT,attempt_id TEXT,fencing_token INTEGER,status TEXT)");

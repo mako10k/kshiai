@@ -20,7 +20,7 @@ import {
   type FreeActionTurnPreparation,
 } from "./free-action-service.js";
 import { MockLlmProvider } from "../llm/mock.js";
-import { applyFreeActionPenalty, executableFreeActionChanges, validateFreeActionPenalty } from "./free-action-penalties.js";
+import { applyFreeActionPenalty, executableFreeActionChanges, validateFreeActionPenalty, freeActionPenaltyValidationFailure } from "./free-action-penalties.js";
 
 function sheet(id: string, displayName: string): CharacterSheet {
   const now = new Date().toISOString();
@@ -171,6 +171,8 @@ describe("bound free action effort", () => {
     assert.equal(validateFreeActionPenalty(state, "a", "相手をつかむ", proposal), true);
     assert.deepEqual(executableFreeActionChanges(proposal), [proposal.changes[0]]);
     assert.equal(validateFreeActionPenalty(state, "a", "待つ", proposal), false);
+    assert.equal(freeActionPenaltyValidationFailure(state, "a", "待つ", proposal), "penalty_action_quote_mismatch");
+    assert.equal(freeActionPenaltyValidationFailure(state, "a", "相手をつかむ", { ...proposal, penalty: undefined }), "penalty_missing");
     assert.equal(validateFreeActionPenalty(state, "a", "相手をつかむ", { ...proposal, penalty: undefined }), false);
     const penalty = proposal.penalty;
     assert.ok(penalty?.kind === "execution_limit");
@@ -178,7 +180,16 @@ describe("bound free action effort", () => {
       assert.equal(validateFreeActionPenalty(state, "a", "相手をつかむ", {
         ...proposal, penalty: { ...penalty, appliedChangeIndexes },
       }), false);
+      assert.equal(freeActionPenaltyValidationFailure(state, "a", "相手をつかむ", {
+        ...proposal, penalty: { ...penalty, appliedChangeIndexes },
+      }), "penalty_execution_limit_invalid");
     }
+    assert.equal(freeActionPenaltyValidationFailure(state, "a", "相手をつかむ", {
+      ...proposal, penalty: { ...penalty, baseWorldRevision: penalty.baseWorldRevision + 1 },
+    }), "penalty_world_revision_mismatch");
+    const historical = structuredClone(state);
+    delete historical.sideA.actionEffortPolicy;
+    assert.equal(freeActionPenaltyValidationFailure(historical, "a", "相手をつかむ", proposal), "historical_penalty_not_allowed");
     assert.equal(validateFreeActionPenalty(state, "a", "相手をつかむ", {
       ...proposal, penalty: { ...penalty, baseWorldRevision: penalty.baseWorldRevision + 1 },
     }), false);
@@ -225,6 +236,27 @@ describe("free action promotion and adjudication", () => {
     assert.equal(log.reasonCode, "FREE_ACTION_PROPOSAL_COVERAGE");
     assert.deepEqual(log.actionIds, actions.filter((action) => action.executed && action.kind === "free_action").map((action) => action.id));
     assert.equal(log.fallbackKind, "unavailable_receipt");
+  });
+
+  it("logs the exact penalty validation failure before retaining an invalid proposal receipt", (t) => {
+    const { state, mine, opp } = battle();
+    state.sideA.actionEffortPolicy = CurrentActionEffortPolicyV1;
+    const { before, resolved } = resolveFreeTurn(state, mine, opp, "相手へ手を伸ばす", ["actor:a:counterpart"]);
+    const logs: string[] = [];
+    t.mock.method(console, "warn", (text: string) => { logs.push(text); });
+    const result = commit({ before, resolved, preparation: { roots: [], affordances: { a: [], b: [] },
+      adjudicationFailure: null, adjudication: { proposals: [{ actorSide: "a", outcome: "possible",
+        interpretation: "手を伸ばす", changes: [], successSummary: "手を伸ばした", failureSummary: "届かない",
+        penalty: { kind: "extra_stamina", level: "light", reason: "身体を伸ばす", actionQuote: "手を伸ばす",
+          baseWorldRevision: (before.worldState?.revision ?? 0) + 1 } }] } } });
+    assert.equal(result.state.latestFreeActionReceipts?.[0]?.reason, "invalid_proposal");
+    const log = JSON.parse(logs[0] ?? "{}");
+    assert.equal(log.event, "free_action_adjudication_failed");
+    assert.equal(log.failureStage, "application_validation");
+    assert.equal(log.reasonCode, "penalty_world_revision_mismatch");
+    assert.deepEqual(log.actionIds, [resolved.actions.find((action) => action.actorSide === "a")?.id]);
+    assert.equal(log.fallbackKind, "rejected_receipt");
+    assert.equal(log.applied, false);
   });
 
   it("classifies a malformed adjudication as an application schema failure", () => {

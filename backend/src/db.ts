@@ -1,3 +1,4 @@
+import { unifiedConsciousnessSchemaSql } from "./repositories/unified-consciousness-schema.js";
 import { llmUsageSchemaSql } from "./repositories/llm-usage-schema.js";
 import { awarenessNarratorStorageSchemaSql } from "./repositories/awareness-narrator-storage-schema.js";
 import { battleAwarenessCreationSchemaSql } from "./repositories/battle-awareness-creation-schema.js";
@@ -753,6 +754,7 @@ function ensureSqliteFamilyAuthoringJobs(database: SqliteDatabase.Database): voi
     ON CONFLICT (scheduler_id) DO NOTHING;
   `);
   database.exec(battleAwarenessSchemaSql);
+  database.exec(unifiedConsciousnessSchemaSql);
   database.exec(battleAwarenessCreationSchemaSql);
   database.exec(awarenessNarrationStorageSchemaSql);
   database.exec(awarenessNarratorStorageSchemaSql);

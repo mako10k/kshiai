@@ -1,0 +1,49 @@
+TAP version 13
+# Subtest: PostgreSQL event allocation serializes one battle, preserves others and retains prune floor
+ok 1 - PostgreSQL event allocation serializes one battle, preserves others and retains prune floor
+  ---
+  duration_ms: 86.06527
+  type: 'test'
+  ...
+# Subtest: PostgreSQL narrator admission preserves world fence and prevents concurrent budget oversubscription
+not ok 2 - PostgreSQL narrator admission preserves world fence and prevents concurrent budget oversubscription
+  ---
+  duration_ms: 61.465684
+  type: 'test'
+  location: '/home/mako10k/kshiai/backend/src/repositories/battle-awareness-narration-reservation-postgres.test.ts:1:1506'
+  failureType: 'testCodeFailure'
+  error: 'relation "battle_unified_consciousness" does not exist'
+  code: '42P01'
+  name: 'error'
+  stack: |-
+    /home/mako10k/kshiai/node_modules/pg/lib/client.js:652:17
+    process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    async Object.query (/home/mako10k/kshiai/backend/src/repositories/battle-awareness-narration-reservation-postgres.test.ts:23:22)
+    async getUnifiedRuntimeInTransaction (/home/mako10k/kshiai/backend/src/repositories/unified-consciousness.ts:13:18)
+    async getBattleOperationalRuntimeInTransaction (/home/mako10k/kshiai/backend/src/repositories/battle-operational-runtime.ts:16:19)
+    async reserveNarrationAttemptInTransaction (/home/mako10k/kshiai/backend/src/repositories/battle-awareness-narration-reservation.ts:31:5)
+    async TestContext.<anonymous> (/home/mako10k/kshiai/backend/src/repositories/battle-awareness-narration-reservation-postgres.test.ts:73:5)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+  ...
+# Subtest: PostgreSQL awareness initialization enforces owner, fence, and lease expiry
+ok 3 - PostgreSQL awareness initialization enforces owner, fence, and lease expiry
+  ---
+  duration_ms: 40.006641
+  type: 'test'
+  ...
+# Subtest: PostgreSQL awareness initialization conflict preserves the original snapshot
+ok 4 - PostgreSQL awareness initialization conflict preserves the original snapshot
+  ---
+  duration_ms: 23.754499
+  type: 'test'
+  ...
+1..4
+# tests 4
+# suites 0
+# pass 3
+# fail 1
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 553.73096

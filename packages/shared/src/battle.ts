@@ -1,3 +1,4 @@
+import { UnifiedConsciousnessPolicySchema, type UnifiedConsciousnessPolicy } from "./unified-consciousness-policy.js";
 import { ActionEffortPolicyV1Schema, AppliedFreeActionPenaltyV1Schema, PendingDefenseExposureV1Schema } from "./action-effort-policy.js";
 import { validateConsequenceParameters } from "./battle-consequence-validation.js";
 import {
@@ -1992,6 +1993,7 @@ export type BattleAssetManifest = BattleAssetManifestFields & (
   | { schemaVersion: 2 | 3; consciousOutputContract?: never }
   | { schemaVersion: 4; consciousOutputContract?: "dynamic-v4" }
   | { schemaVersion: 5; consciousOutputContract: "awareness-v5"; awarenessPolicy: AwarenessPolicyV1; promptRevision: AwarenessPromptRevision; outputRevision: string }
+  | { schemaVersion: 6; consciousOutputContract: "unified-consciousness-v1"; awarenessPolicy: AwarenessPolicyV1; promptRevision: AwarenessPromptRevision; outputRevision: "unified-consciousness-output-v1"; consciousnessPolicy: UnifiedConsciousnessPolicy; consciousnessPromptRevision: "unified-consciousness-prompt-v1" }
 );
 
 export const BattleBasicAttackSourceSchema = z.discriminatedUnion("kind", [
@@ -2206,6 +2208,18 @@ export const BattleAssetManifestV5Schema = BattleAssetManifestV4Schema.extend({
 }).strict();
 export type BattleAssetManifestV5 = z.infer<typeof BattleAssetManifestV5Schema>;
 
+/** V6 reuses immutable world/narration contracts, with a separate unified private runtime. */
+export const BattleAssetManifestV6Schema = BattleAssetManifestV5Schema.extend({
+  schemaVersion: z.literal(6),
+  consciousOutputContract: z.literal("unified-consciousness-v1"),
+  outputRevision: z.literal("unified-consciousness-output-v1"),
+  consciousnessPolicy: UnifiedConsciousnessPolicySchema,
+  consciousnessPromptRevision: z.literal("unified-consciousness-prompt-v1"),
+  rules: BattleAssetManifestV5Schema.shape.rules.extend({ psycheReaction: z.literal("unified-consciousness-v1") }).strict(),
+}).strict();
+export type BattleAssetManifestV6 = z.infer<typeof BattleAssetManifestV6Schema>;
+
+
 export function upgradeLegacyBattleCharacterBindingV1(
   binding: z.infer<typeof LegacyBattleCharacterAssetBindingV1Schema>,
 ): BattleCharacterAssetBinding {
@@ -2226,6 +2240,7 @@ export const BattleAssetManifestSchema: z.ZodType<
   z.ZodTypeDef,
   unknown
 > = z.union([
+  BattleAssetManifestV6Schema,
   BattleAssetManifestV5Schema,
   BattleAssetManifestV4Schema,
   BattleAssetManifestV3Schema,

@@ -2,7 +2,7 @@
 import { AwarenessPipelineStateSchema, type AwarenessReservation } from "@kshiai/shared";
 import { z } from "zod";
 import { databaseKind, withTransaction, type DatabaseConnection } from "../db.js";
-import { getAwarenessRuntimeInTransaction } from "./battle-awareness.js";
+import { getBattleOperationalRuntimeInTransaction, writeUnifiedOperationalBudget } from "./battle-operational-runtime.js";
 import { budgetSnapshot, validateReservationAdmission } from "./awareness-reservation-budget.js";
 export interface NarrationReservationInput {
   battleId: string;
@@ -28,9 +28,14 @@ export async function reserveNarrationAttemptInTransaction(connection: DatabaseC
   }
   // Runtime precedes the narrator lease/batch/entry locks, matching failure accounting.
   if (dialect === "postgres") {
-    await connection.query("SELECT battle_id FROM battle_awareness_runtime WHERE battle_id=$1 FOR UPDATE", [input.battleId]);
+    // Honor this connection's explicit dialect, including isolated PostgreSQL
+    // callers whose application configuration uses SQLite. Lock before reading.
+    const unified = await connection.query("SELECT battle_id FROM battle_unified_consciousness WHERE battle_id=$1 FOR UPDATE", [input.battleId]);
+    if (unified.rowCount === 0) {
+      await connection.query("SELECT battle_id FROM battle_awareness_runtime WHERE battle_id=$1 FOR UPDATE", [input.battleId]);
+    }
   }
-  const current = await getAwarenessRuntimeInTransaction(connection, input.battleId);
+  const current = await getBattleOperationalRuntimeInTransaction(connection, input.battleId);
   if (!current) {
     throw new Error("AWARENESS_RUNTIME_NOT_FOUND");
   }
@@ -64,17 +69,16 @@ export async function reserveNarrationAttemptInTransaction(connection: DatabaseC
     id: input.attemptId, role: "narration", maximumUsd: input.maximumUsd,
   };
   validateReservationAdmission(current.runtime, input, attempt);
-  const runtime = AwarenessPipelineStateSchema.parse({
-    ...current.runtime, budget: budgetSnapshot([
-      ...current.runtime.budget.reservations, {
-        ...attempt, status: "reserved", actualUsd: null, physicalOutstanding: true,
-      },
-    ]),
-  });
-  const updated = await connection.query(`UPDATE battle_awareness_runtime SET revision=revision+1,runtime_json=$3,updated_at=$4
-    WHERE battle_id=$1 AND revision=$2`, [input.battleId, current.revision, JSON.stringify(runtime), input.now]);
-  if (updated.rowCount !== 1) {
-    throw new Error("AWARENESS_REVISION_OR_LEASE_CONFLICT");
+  const reservations: AwarenessReservation[] = [...current.runtime.budget.reservations, {
+    ...attempt, status: "reserved", actualUsd: null, physicalOutstanding: true,
+  }];
+  if (!await writeUnifiedOperationalBudget(connection, input.battleId, current.revision, reservations, input.now)) {
+    // The historical full snapshot is required only for its own storage schema.
+    const historical = await connection.query<{ runtime_json: string }>("SELECT runtime_json FROM battle_awareness_runtime WHERE battle_id=$1", [input.battleId]);
+    const stored = AwarenessPipelineStateSchema.parse(JSON.parse(historical.rows[0]!.runtime_json));
+    const updated = await connection.query(`UPDATE battle_awareness_runtime SET revision=revision+1,runtime_json=$3,updated_at=$4
+      WHERE battle_id=$1 AND revision=$2`, [input.battleId, current.revision, JSON.stringify(AwarenessPipelineStateSchema.parse({ ...stored, budget: budgetSnapshot(reservations) })), input.now]);
+    if (updated.rowCount !== 1) throw new Error("AWARENESS_REVISION_OR_LEASE_CONFLICT");
   }
   const marked = await connection.query(`UPDATE battle_awareness_narration_batches SET reservation_id=$2,request_digest=$3,
     pricing_revision=$4,maximum_usd=$5,status='generating',updated_at=$6 WHERE battle_id=$1 AND attempt_id=$2

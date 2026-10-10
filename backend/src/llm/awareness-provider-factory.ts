@@ -13,6 +13,7 @@ export type AwarenessProviderConfiguration = {
 };
 export type AwarenessProviderRoles = {
   models: AwarenessModelProvider;
+  consciousness?: AwarenessJsonTransport;
   narration: AwarenessNarrationProvider;
   adjudication: AwarenessJsonTransport;
   adjudicationProvider?: LlmProvider;
@@ -63,6 +64,7 @@ export function createAwarenessProviderRoles(
   const grok = transport(grokAdapter);
   return {
     models: new TransportAwarenessProvider(latent, grok, policy),
+    consciousness: latent,
     narration: new TransportAwarenessNarrationProvider(grok, policy),
     adjudication: grok,
     ...(grokAdapter.domainProvider ? { adjudicationProvider: grokAdapter.domainProvider } : {}),

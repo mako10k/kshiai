@@ -1,3 +1,8 @@
+import { BattleAssetManifestV6Schema, UnifiedConsciousnessPolicySchema, initializeUnifiedConsciousness, type UnifiedConsciousnessPolicy } from "@kshiai/shared";
+import { adoptUnifiedCreationInTransaction } from "../repositories/battle-awareness-creation.js";
+import { prepareUnifiedBattleBoundary } from "./unified-consciousness-battle.js";
+import { createUnifiedAdjudicationGuard } from "./unified-consciousness-guard.js";
+import { commitUnifiedWorld } from "./unified-consciousness-world.js";
 import { projectBattleActionEffort } from "@kshiai/shared";
 import { CurrentActionEffortPolicyV1 } from "@kshiai/shared";
 import { CurrentAwarenessPromptRevision, evaluatedAwarenessConsciousGuidance } from "@kshiai/shared";
@@ -534,6 +539,8 @@ type StartBattleInput = {
   llm: LlmProvider;
   /** Internal isolated measurement only; public routes do not expose this field. */
   awarenessPolicy?: AwarenessPolicyV1;
+  /** Internal explicit opt-in; public creation remains unchanged until deployment approval. */
+  consciousnessPolicy?: UnifiedConsciousnessPolicy;
 };
 
 async function replayExistingBattle(
@@ -557,7 +564,7 @@ async function replayExistingBattle(
     throw new Error("BATTLE_CREATE_IDENTITY_CONFLICT");
   }
   if (input.expectedCharacterGenerationIds &&
-      ((existing.assetManifest?.schemaVersion !== 4 && existing.assetManifest?.schemaVersion !== 5) ||
+      ((existing.assetManifest?.schemaVersion !== 4 && (existing.assetManifest?.schemaVersion !== 5 && existing.assetManifest?.schemaVersion !== 6)) ||
        existing.assetManifest.characters.a.generationId !== input.expectedCharacterGenerationIds[0] ||
        existing.assetManifest.characters.b.generationId !== input.expectedCharacterGenerationIds[1])) {
     throw new Error("CUTOVER_TRIAL_GENERATION_MISMATCH");
@@ -624,6 +631,8 @@ async function resolveBattleParticipants(
 
 export async function startBattle(input: StartBattleInput): Promise<BattlePublic> {
   const awarenessPolicy = AwarenessPolicyV1Schema.parse(input.awarenessPolicy ?? AwarenessNormalPolicy);
+  const consciousnessPolicy = input.consciousnessPolicy ? UnifiedConsciousnessPolicySchema.parse(input.consciousnessPolicy) : null;
+  if (consciousnessPolicy && (awarenessPolicy.accountingMode !== "observed" || awarenessPolicy.maxDurationMs !== consciousnessPolicy.durationMs)) throw new Error("CONSCIOUSNESS_OPERATING_POLICY_INCOMPATIBLE");
   const replay = await replayExistingBattle(input);
   if (replay) return replay;
   const {
@@ -861,11 +870,22 @@ export async function startBattle(input: StartBattleInput): Promise<BattlePublic
       log: [],
       updatedAt: new Date().toISOString(),
     };
+    if (consciousnessPolicy) {
+      state = { ...state, assetManifest: BattleAssetManifestV6Schema.parse({ ...state.assetManifest,
+        schemaVersion: 6, consciousOutputContract: "unified-consciousness-v1", outputRevision: "unified-consciousness-output-v1",
+        consciousnessPolicy, consciousnessPromptRevision: "unified-consciousness-prompt-v1",
+        rules: { ...state.assetManifest?.rules, psycheReaction: "unified-consciousness-v1" } }) };
+    }
     const inserted = await battleRepo.insertNewBattle(state, {
       sideAUserId: input.userId,
       sideACharacterId: mine.id,
       sideBCharacterId: opp.id,
     }, async (connection) => {
+      if (consciousnessPolicy) {
+        await adoptUnifiedCreationInTransaction(connection, { battleId: id, requestDigest: preparedEncounter.creation.requestDigest,
+          runtime: initializeUnifiedConsciousness(consciousnessPolicy, preparedEncounter.creation.startedAt, awarenessPolicy), now: Date.now() });
+        return;
+      }
       await adoptAwarenessCreationInTransaction(connection, { battleId: id,
         requestDigest: preparedEncounter.creation.requestDigest,
         runtime: AwarenessInitialize({ policy: awarenessPolicy, startedAt: preparedEncounter.creation.startedAt,
@@ -1638,7 +1658,7 @@ export function buildLaterBucketActionInput(input: {
 }
 
 function buildEngineNormConstraint(input: Parameters<typeof buildCharacterDecisionContext>[0]) {
-  if (input.state.assetManifest?.schemaVersion !== 4 && input.state.assetManifest?.schemaVersion !== 5) return undefined;
+  if (input.state.assetManifest?.schemaVersion !== 4 && (input.state.assetManifest?.schemaVersion !== 5 && input.state.assetManifest?.schemaVersion !== 6)) return undefined;
   const decision = buildCharacterDecisionContext(input);
   if (!decision) throw new Error("BATTLE_CONTRACT_MISMATCH");
   return {
@@ -4296,7 +4316,7 @@ export async function reconcileSemanticState(input: {
       }),
     };
   } catch (error) {
-    if (input.resolvedState.assetManifest?.schemaVersion === 5) throw error;
+    if ((input.resolvedState.assetManifest?.schemaVersion === 5 || input.resolvedState.assetManifest?.schemaVersion === 6)) throw error;
     if (isProviderOperationAccountingError(error)) throw error;
     if (error instanceof ObserverPerceptionProjectionError) throw error;
     console.warn(
@@ -4783,7 +4803,7 @@ export async function buildEnvironmentProcessProposal(input: {
         : {}),
     };
   } catch (e) {
-    if (input.state.assetManifest?.schemaVersion === 5) throw e;
+    if ((input.state.assetManifest?.schemaVersion === 5 || input.state.assetManifest?.schemaVersion === 6)) throw e;
     console.warn("[supervisor] generated field change skipped", e);
     return null;
   }
@@ -4811,6 +4831,7 @@ function bindEngineLiveCheckpoint(input: {
 
 async function advanceTurnWithLease(input: Parameters<typeof advanceTurnCoreWithLease>[0]): Promise<BattlePublic> {
   const baseline = await battleRepo.getBattle(input.battleId);
+  if (baseline?.assetManifest?.schemaVersion === 6) return advanceUnifiedTurnWithLease(input, baseline);
   if (baseline?.assetManifest?.schemaVersion !== 5) return advanceTurnCoreWithLease(input);
   const meta = await battleRepo.getBattleMeta(input.battleId);
   if (!meta || meta.side_a_user_id !== input.userId) throw new Error("FORBIDDEN");
@@ -4860,6 +4881,42 @@ async function advanceTurnWithLease(input: Parameters<typeof advanceTurnCoreWith
     await commitAwarenessWorld({ state: stopped, meta: { sideAUserId: meta.side_a_user_id,
       sideACharacterId: meta.side_a_character_id, sideBCharacterId: meta.side_b_character_id }, fence, tick, committedAt: Date.now() });
     return toBattlePublicForViewer(stopped, baseline.assetManifest.characters.a.snapshot, null, baseline.assetManifest.characters.b.snapshot);
+  }
+}
+
+async function advanceUnifiedTurnWithLease(input: Parameters<typeof advanceTurnCoreWithLease>[0], baseline: BattleState): Promise<BattlePublic> {
+  const manifest = baseline.assetManifest;
+  if (manifest?.schemaVersion !== 6) throw new Error("CONSCIOUSNESS_MANIFEST_REQUIRED");
+  const meta = await battleRepo.getBattleMeta(input.battleId);
+  if (!meta || meta.side_a_user_id !== input.userId) throw new Error("FORBIDDEN");
+  if (baseline.status === "incomplete" || (baseline.advanceOperation?.status === "completed" && baseline.advanceOperation.operationId === input.operationId)) return advanceTurnCoreWithLease(input);
+  const fence = currentBattleLeaseFence();
+  if (!fence || fence.battleId !== baseline.id) throw new Error("CONSCIOUSNESS_LIVE_LEASE_REQUIRED");
+  const tick = baseline.prologuePending ? 0 : (baseline.combatTick ?? 0) + 1;
+  const frame = (side: "a" | "b") => buildAwarenessCharacterActionFrame({ state: baseline, sheet: manifest.characters[side].snapshot,
+    counterpartSheet: manifest.characters[side === "a" ? "b" : "a"].snapshot, side,
+    decisionTurn: nextPublicCombatTurn(baseline), phase: baseline.prologuePending ? "prologue" : "turn" });
+  try {
+    const prepared = baseline.status === "finished"
+      ? { tick, selected: { a: { body: null, voice: null }, b: { body: null, voice: null } } }
+      : await prepareUnifiedBattleBoundary({ state: baseline, llm: input.llm, fence, tick, frames: { a: frame("a"), b: frame("b") } });
+    const roles = input.llm.awareness;
+    if (!roles?.adjudicationProvider) throw new Error("CONSCIOUSNESS_ADJUDICATION_ROUTE_REQUIRED");
+    const guard = await createUnifiedAdjudicationGuard({ battleId: baseline.id, fence,
+      provider: roles.adjudication.identity.provider, model: roles.adjudication.identity.engineModel });
+    const adjudicationProvider = roles.adjudicationProvider;
+    return await withAwarenessAdvanceContext({ prepared, fence, tick, assertUsable: guard.assertUsable }, () =>
+      withAwarenessDispatchContext(guard, () => advanceTurnCoreWithLease({ ...input, llm: adjudicationProvider })));
+  } catch (error) {
+    if (error instanceof Error && /REVISION_OR_LEASE_CONFLICT|FENCE/.test(error.message)) throw error;
+    const saved = await battleRepo.getBattle(input.battleId);
+    if (!saved || saved.status !== "active") throw error;
+    const reason = error instanceof Error ? error.message : "CONSCIOUSNESS_REQUIRED_BOUNDARY_FAILED";
+    const stopped: BattleState = { ...saved, status: "incomplete", incompleteReason: reason.slice(0, 200),
+      prologuePending: false, aftermathPending: false, updatedAt: new Date().toISOString() };
+    await commitUnifiedWorld({ state: stopped, meta: { sideAUserId: meta.side_a_user_id,
+      sideACharacterId: meta.side_a_character_id, sideBCharacterId: meta.side_b_character_id }, fence, tick });
+    return toBattlePublicForViewer(stopped, manifest.characters.a.snapshot, null, manifest.characters.b.snapshot);
   }
 }
 
@@ -5039,7 +5096,7 @@ async function advanceTurnCoreWithLease(input: {
       initiativeOrder: prepared.temporalResolution.initiativeOrder,
     });
     state = { ...state, causalExecution };
-    if (state.assetManifest?.schemaVersion !== 5) await battleRepo.saveBattle(state, {
+    if ((state.assetManifest?.schemaVersion !== 5 && state.assetManifest?.schemaVersion !== 6)) await battleRepo.saveBattle(state, {
       sideAUserId: meta.side_a_user_id,
       sideACharacterId: meta.side_a_character_id,
       sideBCharacterId: meta.side_b_character_id,
@@ -5047,7 +5104,7 @@ async function advanceTurnCoreWithLease(input: {
   }
 
   const awareness = currentAwarenessAdvanceContext();
-  if (state.assetManifest?.schemaVersion === 5) {
+  if ((state.assetManifest?.schemaVersion === 5 || state.assetManifest?.schemaVersion === 6)) {
     if (!awareness) throw new Error("AWARENESS_ADVANCE_CONTEXT_REQUIRED");
     state = { ...state, plannedActionA: awareness.prepared.selected.a.body?.action,
       plannedActionB: awareness.prepared.selected.b.body?.action };
@@ -5104,7 +5161,7 @@ async function advanceTurnCoreWithLease(input: {
         causalLaterDecision: state.causalLaterDecision,
       });
       if (engineResolved.engineContinuation) {
-        if (state.assetManifest?.schemaVersion !== 5) await battleRepo.saveBattle(state, {
+        if ((state.assetManifest?.schemaVersion !== 5 && state.assetManifest?.schemaVersion !== 6)) await battleRepo.saveBattle(state, {
           sideAUserId: meta.side_a_user_id,
           sideACharacterId: meta.side_a_character_id,
           sideBCharacterId: meta.side_b_character_id,
@@ -5129,7 +5186,7 @@ async function advanceTurnCoreWithLease(input: {
       causalLaterDecision: state.causalLaterDecision,
     });
     if (engineResolved.engineContinuation) {
-      if (state.assetManifest?.schemaVersion !== 5) await battleRepo.saveBattle(state, {
+      if ((state.assetManifest?.schemaVersion !== 5 && state.assetManifest?.schemaVersion !== 6)) await battleRepo.saveBattle(state, {
         sideAUserId: meta.side_a_user_id,
         sideACharacterId: meta.side_a_character_id,
         sideBCharacterId: meta.side_b_character_id,
@@ -5143,7 +5200,7 @@ async function advanceTurnCoreWithLease(input: {
     const laterSide = nextBucket.actorSides.length === 1
       ? nextBucket.actorSides[0]
       : undefined;
-    if (laterSide && state.assetManifest?.schemaVersion !== 5) {
+    if (laterSide && (state.assetManifest?.schemaVersion !== 5 && state.assetManifest?.schemaVersion !== 6)) {
       let boundaryState = materializeBattleStateAtBucketBoundary({
         state,
         continuation,
@@ -5306,7 +5363,7 @@ async function advanceTurnCoreWithLease(input: {
                 : {}),
             },
           };
-          if (state.assetManifest?.schemaVersion !== 5) await battleRepo.saveBattle(state, {
+          if ((state.assetManifest?.schemaVersion !== 5 && state.assetManifest?.schemaVersion !== 6)) await battleRepo.saveBattle(state, {
             sideAUserId: meta.side_a_user_id,
             sideACharacterId: meta.side_a_character_id,
             sideBCharacterId: meta.side_b_character_id,
@@ -5334,7 +5391,7 @@ async function advanceTurnCoreWithLease(input: {
       causalLaterDecision: state.causalLaterDecision,
     });
     if (engineResolved.engineContinuation) {
-      if (state.assetManifest?.schemaVersion !== 5) await battleRepo.saveBattle(state, {
+      if ((state.assetManifest?.schemaVersion !== 5 && state.assetManifest?.schemaVersion !== 6)) await battleRepo.saveBattle(state, {
         sideAUserId: meta.side_a_user_id,
         sideACharacterId: meta.side_a_character_id,
         sideBCharacterId: meta.side_b_character_id,
@@ -5348,7 +5405,7 @@ async function advanceTurnCoreWithLease(input: {
     opp,
     actions: engineResolved.actions,
   });
-  if (state.assetManifest?.schemaVersion === 5 && freeActionPreparation.adjudicationFailure) {
+  if ((state.assetManifest?.schemaVersion === 5 || state.assetManifest?.schemaVersion === 6) && freeActionPreparation.adjudicationFailure) {
     throw new Error("AWARENESS_REQUIRED_FREE_ACTION_JUDGMENT_FAILED");
   }
   const committedFreeActions = commitFreeActionAdjudications({
@@ -5423,7 +5480,7 @@ async function advanceTurnCoreWithLease(input: {
     dramaPhase,
     skipProvider: !closeSceneBeat,
   });
-  if (state.assetManifest?.schemaVersion === 5 && semanticTurn.status === "rejected") {
+  if ((state.assetManifest?.schemaVersion === 5 || state.assetManifest?.schemaVersion === 6) && semanticTurn.status === "rejected") {
     throw new Error("AWARENESS_REQUIRED_SEMANTIC_JUDGMENT_FAILED");
   }
   next = semanticTurn.state;
@@ -6098,14 +6155,14 @@ export function completeAdvancePhases(input: {
     const receiptFromRevision = fromRevision + index;
     const override = input.narrationInputs?.[phase];
     const defer = Boolean(input.deferCombatNarration && phase === "combat");
-    const awarenessOverride = input.state.assetManifest?.schemaVersion === 5 && override
+    const awarenessOverride = (input.state.assetManifest?.schemaVersion === 5 || input.state.assetManifest?.schemaVersion === 6) && override
       ? freezeDeferredAwarenessNarration(override, {
           battleId: input.state.id, turnReceiptId: `${input.state.id}:phase:${sequence}`,
           initialNarratorContinuity: input.state.narratorContinuity,
           promptRevision: input.state.assetManifest.promptRevision,
         })
       : null;
-    if (input.state.assetManifest?.schemaVersion === 5 && !defer && !awarenessOverride) {
+    if ((input.state.assetManifest?.schemaVersion === 5 || input.state.assetManifest?.schemaVersion === 6) && !defer && !awarenessOverride) {
       throw new Error("AWARENESS_FROZEN_NARRATION_SOURCE_REQUIRED");
     }
     const frozen = defer

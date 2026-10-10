@@ -167,6 +167,14 @@ export function requireSealedTests(suite, inventory) {
   }
 }
 
+/** Disabled authority is a failed preflight, never a successful exclusion. */
+export function requireCurrentTestAuthority(suite, inventory) {
+  const invalid = inventory.filter((entry) => entry.state === "disabled");
+  if (invalid.length === 0) return;
+  const paths = invalid.map((entry) => `${entry.path} ref=${entry.ref ?? "none"} (${entry.reason})`).join("\n");
+  throw new Error(`Invalid ${suite} test authority blocks execution (${invalid.length}); inspect npm run test:inventory:\n${paths}`);
+}
+
 function run(command, args) {
   const result = spawnSync(command, args, { cwd: repositoryRoot, stdio: "inherit" });
   return result.status ?? 1;
@@ -205,7 +213,7 @@ async function main() {
   for (const entry of provisional) {
     process.stderr.write(`PROVISIONAL ${entry.path} ref=${entry.ref} reason=${entry.reason}\n`);
   }
-  requireSealedTests(suite, inventory);
+  requireCurrentTestAuthority(suite, inventory);
   requireActiveTests(suite, active);
   if (suite === "e2e") {
     process.exitCode = active.length

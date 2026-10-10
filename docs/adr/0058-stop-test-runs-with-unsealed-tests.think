@@ -10,3 +10,8 @@ premise OPTIONS:
   "Warning plus skip permits misleading successful runs. Running unsealed tests as authoritative evidence violates the retained authority rules. Stopping before execution implements the exact owner instruction."
 decision ACCEPTANCE based_on OWNER_ACCEPTANCE, CURRENT, SCOPE, OPTIONS:
   "Accept revision1. The authoritative unit and e2e selectors must fail with exit1 before running tests if a discovered test lacks its inventory mapping or verification Seal. Report blocking paths and reasons. Preserve diagnostic --list and the zero-active-test gate. ADR0058 supersedes ADR0034 aggregate handling while inheriting all other authority conditions."
+
+evidence SUCCESSOR:
+  "2026-10-10 owner explicitly requires stale authority to fail; Accepted ADR0068 revision1 broadens the aggregate stop to all disabled entries while preserving the original decision as history."
+decision SUPERSESSION based_on SUCCESSOR, ACCEPTANCE:
+  "Mark this record Superseded by ADR0068 revision1 for aggregate stop scope; preserve all original rationale and evidence."

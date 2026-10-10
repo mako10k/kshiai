@@ -252,7 +252,7 @@
     },
     {
       "path": "scripts/test-authority-empty.test.mjs",
-      "ref": "verification/test-authority-execution-gate-20261007"
+      "ref": "test-authority-v2/verification/execution-gate"
     },
     {
       "path": "packages/shared/src/awareness-state.test.ts",
@@ -1005,6 +1005,18 @@
     {
       "path": "packages/shared/src/skill-cooldown.test.ts",
       "ref": "all-tests-20261009/original-tests/cooldown-test"
+    },
+    {
+      "path": "packages/shared/src/consciousness-memory.test.ts",
+      "ref": "unified-v1/test/packages-shared-src-consciousness-memory.test"
+    },
+    {
+      "path": "backend/src/services/unified-consciousness-execution.test.ts",
+      "ref": "unified-v1/test/backend-src-services-unified-consciousness-execution.test"
+    },
+    {
+      "path": "backend/src/services/unified-consciousness-integration.test.ts",
+      "ref": "unified-v1/test/backend-src-services-unified-consciousness-integration.test"
     }
   ]
 }

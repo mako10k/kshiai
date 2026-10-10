@@ -199,7 +199,7 @@ function parseBattleStateDetailed(
   if (parsed.success) return { state: ensureSemanticState(parsed.data), repaired: false };
   if (typeof raw === "object" && raw !== null && "assetManifest" in raw &&
       typeof raw.assetManifest === "object" && raw.assetManifest !== null &&
-      "schemaVersion" in raw.assetManifest && raw.assetManifest.schemaVersion === 5) throw parsed.error;
+      "schemaVersion" in raw.assetManifest && (raw.assetManifest.schemaVersion === 5 || raw.assetManifest.schemaVersion === 6)) throw parsed.error;
   console.warn(
     "[battles] schema soft-repair",
     idHint,
@@ -213,7 +213,7 @@ function parseBattleStateDetailed(
 }
 
 function ensureSemanticState(state: BattleState): BattleState {
-  if (state.assetManifest?.schemaVersion === 5) return state;
+  if ((state.assetManifest?.schemaVersion === 5 || state.assetManifest?.schemaVersion === 6)) return state;
   const semanticState = state.semanticState ?? createBattleSemanticState({
     scene: state.situation.scene,
     notes: state.situation.notes,

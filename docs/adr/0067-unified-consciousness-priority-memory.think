@@ -1,0 +1,16 @@
+domain ADR0067:
+  description "Accepted revision2: unified consciousness and five-slot priority memory with detailed C1-C8 contract."
+evidence OWNER_DIRECTION:
+  "2026-10-10 owner requests one consciousness, priority1-5 insertion with displacement, memory always in input and no separate goal/emotion/attention/guidance; authorizes branch and continuing detailed design. Exact detailed revision acceptance is not recorded."
+evidence BOUNDARY:
+  "ADR0003 preserves immutable battle bindings; ADR0051 preserves physical usage accounting. Runtime currently separates subconscious/conscious. Existing route openai/gpt-6-luna/none is a compatibility candidate, not proof of quality or savings."
+evidence DETAIL:
+  "docs/unified-consciousness-contract-v1.md C1-C8 is the normative detailed proposal: five400-codepoint memories, ordered max10 insert/remove operations with server IDs and atomic validation; input always includes memory; output only action/speech/memoryOperations; event or3committed-tick reassessment; necessary A/B calls parallel with synchronous world barrier; prepared results and world/memory/events/outbox commit fenced atomically; unknown sends never auto-retried."
+evidence LIMITS:
+  "C6 proposal:36world ticks plus initial tick0 gives max74 consciousness sends; each output1000tokens/deadline60s; global600s/200attempts/concurrency6; input24000codepoints, event128items/16000codepoints per side; no automatic repair/retry/fallback; USD0.50 observation target not guaranteed cap. New immutable unified-consciousness-v1 and battle binding format6, old saved battles unchanged. C7 requires private persistence and existing public receipt/privacy boundaries; C8 defines offline and separately authorized paid comparisons."
+decision PROPOSAL based_on OWNER_DIRECTION, BOUNDARY, DETAIL, LIMITS:
+  "Propose Markdown D1-D8 and detailed contract C1-C8 together as revision2. LLM-only meaning remains free text; executable operations and authoritative world updates remain typed. Reject every-tick unified calls and asynchronous split-thought reconciliation as the initial successor design. Preserve historical trials, current release work and existing battles."
+evidence OWNER_ACCEPTANCE:
+  "2026-10-10 owner answers OKです。進めて下さい。 to the exact acceptance question for ADR0067 revision2 and detailed contract C1-C8, including numeric limits and synchronous waiting."
+decision ACCEPTANCE based_on OWNER_ACCEPTANCE, PROPOSAL:
+  "Accept revision2 D1-D8 and detailed contract C1-C8 and authorize implementation on codex/unified-consciousness. Paid trials, migrations on live services and deployment require separate authority."

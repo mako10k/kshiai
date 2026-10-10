@@ -1,7 +1,7 @@
 // R: Read worker battle state and close durable narration entries, fences, and budget reservations.
 import { BattleStateSchema } from "@kshiai/shared";
 import { query, withTransaction, type DatabaseConnection } from "../db.js";
-import { getAwarenessRuntimeInTransaction, settleAwarenessAttemptInTransaction } from "../repositories/battle-awareness.js";
+import { getBattleOperationalRuntimeInTransaction, settleBattleOperationalAttemptInTransaction } from "../repositories/battle-operational-runtime.js";
 import type { Entry, AwarenessNarrationWorkerInput, AwarenessNarrationWorkerLeasePort } from "./awareness-narration-worker-contract.js";
 export async function readBattle(battleId: string) {
   const result = await query<{ state_json: unknown }>("SELECT state_json FROM battles WHERE id = $1", [battleId]);
@@ -11,9 +11,9 @@ export async function readBattle(battleId: string) {
 export async function failEntries(connection: DatabaseConnection, input: AwarenessNarrationWorkerInput, entries: readonly Entry[], reason: string, now: string, ports: AwarenessNarrationWorkerLeasePort): Promise<void> {
   const activeIds = new Set(entries.flatMap((entry) => entry.active_attempt_id ? [entry.active_attempt_id] : []));
   if (activeIds.size) {
-    const snapshot = await getAwarenessRuntimeInTransaction(connection, input.battleId, { lock: true });
+    const snapshot = await getBattleOperationalRuntimeInTransaction(connection, input.battleId, { lock: true });
     for (const reservation of snapshot?.runtime.budget.reservations ?? []) {
-      if (activeIds.has(reservation.id) && reservation.status !== "settled") await settleAwarenessAttemptInTransaction(connection, {
+      if (activeIds.has(reservation.id) && reservation.status !== "settled") await settleBattleOperationalAttemptInTransaction(connection, {
         battleId: input.battleId, id: reservation.id, finishedAt: Date.parse(now),
         outcome: "unknown", actualUsd: null, physicalOutstanding: reservation.physicalOutstanding,
       });
@@ -43,11 +43,11 @@ export async function requeueInputOutbox(connection: DatabaseConnection, input: 
 }
 export async function closeReservation(battleId: string, attemptId: string, finishedAt: number, physicalFinished: boolean, sent: boolean): Promise<void> {
   await withTransaction(async (connection) => {
-    const snapshot = await getAwarenessRuntimeInTransaction(connection, battleId, { lock: true });
+    const snapshot = await getBattleOperationalRuntimeInTransaction(connection, battleId, { lock: true });
     if (!snapshot) return;
     const reservation = snapshot.runtime.budget.reservations.find((item) => item.id === attemptId);
     if (!reservation || reservation.status === "settled") return;
-    await settleAwarenessAttemptInTransaction(connection, { battleId, id: attemptId, finishedAt,
+    await settleBattleOperationalAttemptInTransaction(connection, { battleId, id: attemptId, finishedAt,
       outcome: sent ? "unknown" : "settled", actualUsd: sent ? null : 0,
       physicalOutstanding: reservation.physicalOutstanding && !physicalFinished && sent });
   });

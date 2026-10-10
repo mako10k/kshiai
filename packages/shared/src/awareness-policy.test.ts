@@ -7,13 +7,17 @@ import { AwarenessPipelineStateSchema } from "./awareness-pipeline.js";
 
 describe("immutable trial accounting policy", () => {
   it("binds adequate normal timing to usage-v2 without rewriting existing policies", () => {
-    assert.equal(AwarenessNormalPolicy.revision, "awareness-v5-usage-v2");
+    assert.equal(AwarenessNormalPolicy.revision, "awareness-v5-usage-v3");
     assert.ok(AwarenessPolicyV1Schema.safeParse(AwarenessNormalPolicy).success);
     assert.equal(AwarenessPolicyV1Schema.safeParse({ ...AwarenessNormalPolicy, revision: "awareness-v5-usage-v1" }).success, false);
     assert.equal(AwarenessPolicyV1Schema.safeParse({ ...AwarenessNormalPolicy, maxDurationMs: 180000 }).success, false);
     assert.equal(AwarenessNormalPolicy.roles.subconscious.deadlineMs, 60000);
     assert.equal(AwarenessNormalPolicy.roles.conscious.deadlineMs, 90000);
-    assert.equal(AwarenessNormalPolicy.roles.adjudication.deadlineMs, 60000);
+    assert.equal(AwarenessNormalPolicy.roles.adjudication.deadlineMs, 180000);
+    const historical = AwarenessPolicyV1Schema.parse({ ...AwarenessLongMeasurementPolicy, revision: "awareness-v5-usage-v2" });
+    assert.equal(historical.roles.adjudication.deadlineMs, 60000);
+    assert.equal(AwarenessPolicyV1Schema.safeParse({ ...AwarenessNormalPolicy, revision: "awareness-v5-usage-v2" }).success, false);
+    assert.equal(AwarenessNormalPolicy.maxPhysicalAttempts, historical.maxPhysicalAttempts);
     assert.equal(AwarenessNormalPolicy.roles.narration.deadlineMs, 60000);
     assert.equal(AwarenessNormalPolicy.narration.publicationDeadlineMs, 180000);
     assert.equal(AwarenessNormalPolicy.narration.terminalDrainMs, 90000);

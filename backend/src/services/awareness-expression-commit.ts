@@ -8,7 +8,7 @@ import {
 } from "@kshiai/shared";
 import type { CharacterSpeechSource } from "../llm/types.js";
 
-type Voice = Extract<AwarenessDesire, { resource: "voice" }> | null;
+type Voice = Extract<AwarenessDesire, { resource: "voice" }> | { speech: string } | null;
 export function commitAwarenessExpressions(input: {
   before: BattleState;
   after: BattleState;

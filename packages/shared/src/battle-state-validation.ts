@@ -5,7 +5,7 @@ import type { AwarenessFrozenNarration } from "./awareness-narration-source.js";
 
 export function validateBattleAgencyBindings(state: BattleState, ctx: z.RefinementCtx): void {
   const dynamic = state.assetManifest?.schemaVersion === 4 && state.assetManifest.consciousOutputContract === "dynamic-v4";
-  const awareness = state.assetManifest?.schemaVersion === 5;
+  const awareness = (state.assetManifest?.schemaVersion === 5 || state.assetManifest?.schemaVersion === 6);
   for (const side of ["agentStateA", "agentStateB"] as const) {
     const agent = state[side];
     if (!awareness && (dynamic ? !agent?.consciousAgencyV2 || Boolean(agent.consciousAgencyV1) : Boolean(agent?.consciousAgencyV2))) {
@@ -27,7 +27,7 @@ export function validateBattleAgencyBindings(state: BattleState, ctx: z.Refineme
 }
 
 export function validateIncompleteBattleResult(state: BattleState, ctx: z.RefinementCtx): void {
-  const awareness = state.assetManifest?.schemaVersion === 5;
+  const awareness = (state.assetManifest?.schemaVersion === 5 || state.assetManifest?.schemaVersion === 6);
   if (state.status === "incomplete") {
     if (!awareness || !state.incompleteReason?.trim()) {
       ctx.addIssue({ code: z.ZodIssueCode.custom, path: ["incompleteReason"], message: "incomplete requires awareness-v5 and a technical reason" });
@@ -42,7 +42,7 @@ export function validateIncompleteBattleResult(state: BattleState, ctx: z.Refine
 }
 
 export function validateFrozenBattleReceipts(state: BattleState, ctx: z.RefinementCtx): void {
-  const awareness = state.assetManifest?.schemaVersion === 5;
+  const awareness = (state.assetManifest?.schemaVersion === 5 || state.assetManifest?.schemaVersion === 6);
   for (const [index, receipt] of (state.phaseReceipts ?? []).entries()) {
     const source = receipt.narrationInput;
     const frozenAwareness = source && "kind" in source && source.kind === "awareness-v5" ? source : null;
@@ -144,6 +144,6 @@ export function validateBattleObservationRevisions(state: BattleState, ctx: z.Re
 
 
 function matchesFrozenReceipt(state: BattleState, receipt: BattlePhaseReceipt, source: AwarenessFrozenNarration): boolean {
-  return state.assetManifest?.schemaVersion === 5 && source.battleId === state.id && source.turnReceiptId === receipt.id &&
+  return (state.assetManifest?.schemaVersion === 5 || state.assetManifest?.schemaVersion === 6) && source.battleId === state.id && source.turnReceiptId === receipt.id &&
     source.phase === receipt.phase && (receipt.combatTurn === null || source.turn === receipt.combatTurn);
 }

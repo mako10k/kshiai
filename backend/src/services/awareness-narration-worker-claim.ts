@@ -1,7 +1,8 @@
+import type { BattleOperationalRuntime } from "../repositories/battle-operational-runtime.js";
 // R: Claim an ordered immutable narration batch within one lease-fenced transaction.
-import { type AwarenessPolicyV1, type AwarenessPipelineState, type BattleState } from "@kshiai/shared";
+import { type AwarenessPolicyV1, type BattleState } from "@kshiai/shared";
 import { withTransaction, type DatabaseConnection } from "../db.js";
-import { getAwarenessRuntimeInTransaction, settleAwarenessAttemptInTransaction } from "../repositories/battle-awareness.js";
+import { getBattleOperationalRuntimeInTransaction, settleBattleOperationalAttemptInTransaction } from "../repositories/battle-operational-runtime.js";
 import { captureAwarenessNarratorContext } from "../repositories/battle-awareness-narrator.js";
 import { newId } from "../id.js";
 import type { AwarenessFrozenNarration } from "../llm/awareness-frozen-narration.js";
@@ -27,9 +28,9 @@ async function handleOutstandingBatch(connection: DatabaseConnection, input: Awa
     await failEntries(connection, input, entries, "awareness_batch_outstanding", initialAt, ports);
     if (outstanding.active_attempt_id) {
       await connection.query("UPDATE battle_awareness_narration_batches SET status = 'unknown',updated_at = $2 WHERE attempt_id = $1", [outstanding.active_attempt_id, initialAt]);
-      const snapshot = await getAwarenessRuntimeInTransaction(connection, input.battleId, { lock: true });
+      const snapshot = await getBattleOperationalRuntimeInTransaction(connection, input.battleId, { lock: true });
       const reservation = snapshot?.runtime.budget.reservations.find((item) => item.id === outstanding.active_attempt_id);
-      if (reservation && reservation.status !== "settled") await settleAwarenessAttemptInTransaction(connection, {
+      if (reservation && reservation.status !== "settled") await settleBattleOperationalAttemptInTransaction(connection, {
         battleId: input.battleId, id: reservation.id, finishedAt: initialNow,
         outcome: "unknown", actualUsd: null, physicalOutstanding: reservation.physicalOutstanding,
       });
@@ -40,7 +41,7 @@ async function handleOutstandingBatch(connection: DatabaseConnection, input: Awa
   await ports.release(connection, input, fence); return "deferred";
 }
 
-function prepareNarrationQueue(battleId: string, captured: Selected[], runtime: AwarenessPipelineState, fence: number) {
+function prepareNarrationQueue(battleId: string, captured: Selected[], runtime: BattleOperationalRuntime, fence: number) {
   const first = captured[0]!;
   const prefix: Selected[] = [];
   for (const item of captured) {

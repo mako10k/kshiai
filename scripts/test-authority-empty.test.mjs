@@ -1,13 +1,13 @@
 // R: Verify governed test execution rejects missing Seals and an empty eligible set.
 import assert from "node:assert/strict";
 import { spawnSync } from "node:child_process";
-import { copyFileSync, mkdirSync, mkdtempSync, rmSync, writeFileSync, existsSync } from "node:fs";
+import { copyFileSync, mkdirSync, mkdtempSync, rmSync, writeFileSync, existsSync, symlinkSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { describe, it } from "node:test";
-import { repositoryRoot, requireActiveTests, requireSealedTests, summarizeInventory } from "./test-authority.mjs";
+import { repositoryRoot, requireActiveTests, requireSealedTests, requireCurrentTestAuthority, summarizeInventory } from "./test-authority.mjs";
 
-function isolatedSelector(context, suite, mapped) {
+function isolatedSelector(context, suite, mapped, authority = null) {
   const root = mkdtempSync(join(tmpdir(), "kshiai-selector-"));
   context.after(() => rmSync(root, { recursive: true, force: true }));
   for (const directory of ["scripts", "backend/src", "frontend/src", "packages/shared/src", "infra/cloudflare-worker/src", "e2e", "empty-path"]) {
@@ -27,17 +27,37 @@ function isolatedSelector(context, suite, mapped) {
     schema: "kshiai/test-authority-inventory/v2",
     tests: mapped ? [{ path, ref: "verification/example" }] : [],
   }));
+  if (authority) {
+    const activePath = suite === "unit" ? "scripts/active.test.mjs" : "e2e/active.spec.ts";
+    copyFileSync(join(root, path), join(root, activePath));
+    writeFileSync(join(root, "scripts/test-authority-inventory.json"), JSON.stringify({
+      schema: "kshiai/test-authority-inventory/v2",
+      tests: [{ path, ref: "verification/example" }, { path: activePath, ref: "verification/active" }],
+    }));
+    const bin = join(root, "empty-path");
+    symlinkSync(process.execPath, join(bin, "node"));
+    writeFileSync(join(bin, "npx"), `#!${process.execPath}\nimport { writeFileSync } from "node:fs"; writeFileSync("executed", "playwright launched");\n`, { mode: 0o755 });
+    writeFileSync(join(bin, "sealgraph"), `#!${process.execPath}
+const args = process.argv.slice(2);
+const ref = args[1];
+if (args[0] === "stale") console.log(${JSON.stringify(authority === "stale" ? "verification/example" : "")});
+else if (args[0] === "show") console.log(JSON.stringify({ seal: { seal_id: "b".repeat(64), cause_links: [{target_seal:"a".repeat(64)}], draft:false } }));
+else if (args[0] === "source" && args[1] === "compare") console.log(JSON.stringify({ path: args[2] === "verification/example" ? ${JSON.stringify(path)} : ${JSON.stringify(activePath)}, relation: "WORKFILE_MATCHES_HEAD" }));
+`, { mode: 0o755 });
+  }
   return {
     path,
     marker,
     run(listOnly = false) {
+      const environment = { ...process.env, PATH: join(root, "empty-path") };
+      delete environment.NODE_TEST_CONTEXT;
       return spawnSync(process.execPath, [
         join(root, "scripts/test-authority.mjs"),
         ...(suite === "e2e" ? ["--e2e"] : []),
         ...(listOnly ? ["--list"] : []),
       ], {
         cwd: root,
-        env: { ...process.env, PATH: join(root, "empty-path") },
+        env: environment,
         encoding: "utf8",
         timeout: 10_000,
       });
@@ -90,6 +110,58 @@ describe("test authority execution gate", () => {
       { path: "draft.test.ts", state: "provisional", reason: "draft_basis", ref: "verification/draft" },
       { path: "old.test.ts", state: "disabled", reason: "stale", ref: "verification/old" },
     ]));
+  });
+
+  it("rejects stale authority even with active tests present", () => {
+    assert.throws(() => requireCurrentTestAuthority("unit", [
+      { path: "active.test.ts", state: "active", reason: "current", ref: "verification/active" },
+      { path: "old.test.ts", state: "disabled", reason: "stale", ref: "verification/old" },
+    ]), /Invalid unit test authority blocks execution \(1\).*\nold\.test\.ts ref=verification\/old \(stale\)/);
+  });
+
+  it("rejects all invalid authority reasons and reports every path", () => {
+    const reasons = ["stale", "source_diverged", "missing_or_wrong_source_binding", "missing_basis", "unsealed", "missing_ref", "future_invalid_reason"];
+    const inventory = reasons.map((reason) => ({ path: `${reason}.test.ts`, state: "disabled", reason, ref: `verification/${reason}` }));
+    assert.throws(() => requireCurrentTestAuthority("e2e", inventory), (error) => {
+      assert.match(error.message, /blocks execution \(7\)/);
+      for (const entry of inventory) assert.ok(error.message.includes(`${entry.path} ref=${entry.ref} (${entry.reason})`));
+      return true;
+    });
+  });
+
+  it("allows current tests and preserves provisional classification", () => {
+    assert.doesNotThrow(() => requireCurrentTestAuthority("unit", [
+      { path: "active.test.ts", state: "active", reason: "current" },
+      { path: "draft.test.ts", state: "provisional", reason: "draft_basis" },
+    ]));
+  });
+
+  for (const suite of ["unit", "e2e"]) {
+    it(`fails the actual ${suite} selector on mixed active/stale authority without launching tests`, (context) => {
+      const fixture = isolatedSelector(context, suite, true, "stale");
+      const result = fixture.run();
+      assert.equal(result.error, undefined);
+      assert.equal(result.status, 1);
+      assert.match(result.stderr, /active=1 provisional=0 disabled=1/);
+      assert.match(result.stderr, /Invalid .* test authority blocks execution \(1\)/);
+      assert.ok(result.stderr.includes(`${fixture.path} ref=verification/example (stale)`));
+      assert.equal(existsSync(fixture.marker), false);
+      assert.doesNotMatch(result.stdout, /TAP version/);
+      const listed = fixture.run(true);
+      assert.equal(listed.status, 0);
+      const summary = JSON.parse(listed.stdout);
+      assert.equal(summary.active, 1);
+      assert.equal(summary.disabled, 1);
+      assert.equal(existsSync(fixture.marker), false);
+    });
+  }
+
+  it("still launches the actual unit selector when every test has current authority", (context) => {
+    const fixture = isolatedSelector(context, "unit", true, "current");
+    const result = fixture.run();
+    assert.equal(result.status, 0, result.stderr);
+    assert.match(result.stdout, /TAP version/);
+    assert.equal(existsSync(fixture.marker), true);
   });
 
   for (const suite of ["unit", "e2e"]) {

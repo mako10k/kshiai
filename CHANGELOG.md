@@ -5,6 +5,28 @@ based on Keep a Changelog, and releases follow Semantic Versioning.
 
 ## [Unreleased]
 
+## [0.24.0] - 2026-10-10
+
+### Changed
+
+- New public battles bind battle binding format v6 and consciousness pipeline
+  unified-consciousness-v1. One event-driven consciousness uses up to five
+  private priority memories instead of separate conscious/subconscious state.
+  Existing battles retain their immutable historical pipeline and policies.
+- Invalid test authority now fails the official suite before execution. All
+  affected regression tests were individually reviewed and resealed.
+- New battles retain operating policy awareness-v5-usage-v3 with a 180-second
+  adjudication deadline; historical policies retain their recorded deadlines.
+
+### Database and deployment
+
+- Add migration 0037_unified_consciousness.sql and private runtime storage.
+  This additive schema remains compatible with the previous backend. No
+  existing battle is converted; private memories stay outside public DTOs.
+- Promote the exact staged backend digest and Worker version through the
+  protected release workflow. Failed staging evidence for v0.23.0-rc.20 is
+  retained and does not satisfy this release's acceptance.
+
 ## [0.23.0-rc.19] - 2026-10-09
 
 This release candidate uses application package version 0.23.0.

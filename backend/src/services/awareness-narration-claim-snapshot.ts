@@ -1,18 +1,18 @@
 // R: Capture entry provenance before its containing canonical state under statement-level snapshots.
 import { BattleStateSchema, type BattleState } from "@kshiai/shared";
 import type { DatabaseConnection } from "../db.js";
-import { getAwarenessRuntimeInTransaction, type AwarenessRuntimeSnapshot } from "../repositories/battle-awareness.js";
+import { getBattleOperationalRuntimeInTransaction, type BattleOperationalSnapshot } from "../repositories/battle-operational-runtime.js";
 import type { Entry } from "./awareness-narration-worker-contract.js";
 
 export interface AwarenessNarrationClaimReadPort {
   readEntries(): Promise<Entry[]>;
   readBattle(): Promise<BattleState | null>;
-  readRuntime(): Promise<AwarenessRuntimeSnapshot | null>;
+  readRuntime(): Promise<BattleOperationalSnapshot | null>;
 }
 export type AwarenessNarrationClaimSnapshot = {
   entries: Entry[];
   battle: BattleState;
-  runtime: AwarenessRuntimeSnapshot;
+  runtime: BattleOperationalSnapshot;
 };
 
 /** Writers commit each canonical receipt and its entry together. Reading entries first
@@ -44,6 +44,6 @@ export function readAwarenessNarrationClaimSnapshot(connection: DatabaseConnecti
       const raw = result.rows[0]?.state_json;
       return raw === undefined ? null : BattleStateSchema.parse(typeof raw === "string" ? JSON.parse(raw) : raw);
     },
-    readRuntime: () => getAwarenessRuntimeInTransaction(connection, battleId),
+    readRuntime: () => getBattleOperationalRuntimeInTransaction(connection, battleId),
   });
 }

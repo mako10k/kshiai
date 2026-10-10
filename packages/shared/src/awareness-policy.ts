@@ -28,8 +28,14 @@ const MeasurementPolicySchema = StandardPolicySchema.extend({
   }),
   narration: StandardPolicySchema.shape.narration.extend({ publicationDeadlineMs: z.literal(180000), terminalDrainMs: z.literal(90000) }),
 }).strict();
-const NormalPolicySchema = MeasurementPolicySchema.extend({ revision: z.literal("awareness-v5-usage-v2") }).strict();
-export const AwarenessPolicyV1Schema = z.union([StandardPolicySchema, MeasurementPolicySchema, NormalPolicySchema]).superRefine((value, context) => {
+const HistoricalNormalPolicySchema = MeasurementPolicySchema.extend({ revision: z.literal("awareness-v5-usage-v2") }).strict();
+const NormalPolicySchema = HistoricalNormalPolicySchema.extend({
+  revision: z.literal("awareness-v5-usage-v3"),
+  roles: HistoricalNormalPolicySchema.shape.roles.extend({
+    adjudication: HistoricalNormalPolicySchema.shape.roles.shape.adjudication.extend({ deadlineMs: z.literal(180000) }),
+  }),
+}).strict();
+export const AwarenessPolicyV1Schema = z.union([StandardPolicySchema, MeasurementPolicySchema, HistoricalNormalPolicySchema, NormalPolicySchema]).superRefine((value, context) => {
   if ((value.revision !== "awareness-v5-trial-v1") !== (value.accountingMode === "observed")) {
     context.addIssue({ code: "custom", path: ["accountingMode"], message: "Accounting mode must match the immutable policy revision" });
   }
@@ -70,5 +76,7 @@ export const AwarenessLongMeasurementPolicy: AwarenessPolicyV1 = MeasurementPoli
 
 /** Ordinary new battles use the observed long timing; historical policies remain immutable. */
 export const AwarenessNormalPolicy: AwarenessPolicyV1 = NormalPolicySchema.parse({
-  ...AwarenessLongMeasurementPolicy, revision: "awareness-v5-usage-v2",
+  ...AwarenessLongMeasurementPolicy, revision: "awareness-v5-usage-v3",
+  roles: { ...AwarenessLongMeasurementPolicy.roles,
+    adjudication: { ...AwarenessLongMeasurementPolicy.roles.adjudication, deadlineMs: 180000 } },
 });

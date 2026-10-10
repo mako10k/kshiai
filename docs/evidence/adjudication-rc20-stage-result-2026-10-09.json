@@ -1,0 +1,170 @@
+{
+  "schema": "kshiai/adjudication-stage-result/v1",
+  "applicationVersion": "v0.23.0-rc.20",
+  "sourceCommit": "44f2bd287e9cb68d071620ddb3a63d72e4f56545",
+  "stageRunId": 37930237321,
+  "stageConclusion": "failure",
+  "battleId": "btl_652a4d1e91bb2a20ec7f0e01ae5579a7",
+  "battleStatus": "incomplete",
+  "reason": "AWARENESS_REQUIRED_FREE_ACTION_JUDGMENT_FAILED",
+  "physicalAttempts": 58,
+  "physicalOutstanding": 1,
+  "reportedTokens": {
+    "prompt": 362947,
+    "completion": 16091,
+    "total": 401350,
+    "unknownAttempts": 1
+  },
+  "tokensFinal": false,
+  "unreportedAttemptReason": "provider_timeout_no_usage_receipt",
+  "freeActionReceipts": {
+    "count": 2,
+    "outcomes": {
+      "failed": 1,
+      "accepted": 1
+    },
+    "reasons": {
+      "invalid_proposal": 1,
+      "accepted": 1
+    },
+    "operationCount": 0
+  },
+  "correlatedAdjudicationAttempts": [
+    {
+      "id": "provider_call_c126c4f4e1f1dc128c65f130:1",
+      "requestId": "ed84289d-7b53-9830-9571-d63ed7857d7f",
+      "startedAt": 1791549389015,
+      "finishedAt": 1791549438238,
+      "tick": 6,
+      "receiptIds": [
+        "turn-4-action-b"
+      ],
+      "role": "adjudication",
+      "provider": "xai",
+      "requestedModel": "grok-4.5",
+      "responseModel": "grok-4.5",
+      "status": "completed",
+      "promptTokens": 6313,
+      "completionTokens": 392,
+      "totalTokens": 8880,
+      "elapsedMs": 49223.14854600001,
+      "responseDiagnostics": {
+        "contentEmpty": false,
+        "finishReason": "stop",
+        "contentLength": 1112
+      }
+    },
+    {
+      "id": "provider_call_6dd9c8d608878b96cf181b26:1",
+      "requestId": "742324ba-fcbd-97bc-b3b2-0ecf7faaa749",
+      "startedAt": 1791549483394,
+      "finishedAt": 1791549541075,
+      "tick": 11,
+      "receiptIds": [
+        "turn-5-action-b"
+      ],
+      "role": "adjudication",
+      "provider": "xai",
+      "requestedModel": "grok-4.5",
+      "responseModel": "grok-4.5",
+      "status": "completed",
+      "promptTokens": 6356,
+      "completionTokens": 426,
+      "totalTokens": 9723,
+      "elapsedMs": 57680.214061999985,
+      "responseDiagnostics": {
+        "contentEmpty": false,
+        "finishReason": "stop",
+        "contentLength": 1086
+      }
+    },
+    {
+      "id": "provider_call_d11fc48cfc63c6faba782416:1",
+      "requestId": null,
+      "startedAt": 1791549557238,
+      "finishedAt": 1791549617250,
+      "tick": 12,
+      "receiptIds": [
+        "turn-6-action-b"
+      ],
+      "role": "adjudication",
+      "provider": "xai",
+      "requestedModel": "grok-4.5",
+      "responseModel": null,
+      "status": "timeout",
+      "promptTokens": null,
+      "completionTokens": null,
+      "totalTokens": null,
+      "elapsedMs": 60011.28790300002,
+      "responseDiagnostics": null
+    }
+  ],
+  "resolutionLogs": [
+    {
+      "timestamp": "2026-10-09T12:40:17.307605Z",
+      "data": {
+        "actionIds": [
+          "turn-6-action-b"
+        ],
+        "applied": false,
+        "battleId": "btl_652a4d1e91bb2a20ec7f0e01ae5579a7",
+        "event": "free_action_adjudication_failed",
+        "failureStage": "provider",
+        "fallbackKind": "unavailable_receipt",
+        "reasonCode": "timeout",
+        "requestId": null,
+        "requestIdLookup": "llm_usage_attempts.receiptIds includes actionIds",
+        "tick": 12,
+        "turn": 6
+      }
+    },
+    {
+      "timestamp": "2026-10-09T12:39:01.170310Z",
+      "data": {
+        "actionId": "turn-5-action-b",
+        "actorSide": "b",
+        "applied": false,
+        "battleId": "btl_652a4d1e91bb2a20ec7f0e01ae5579a7",
+        "event": "free_action_resolution",
+        "failureSubtype": null,
+        "fallbackKind": null,
+        "operationKinds": [],
+        "outcome": "accepted",
+        "reasonCode": "accepted",
+        "requestId": null,
+        "requestIdLookup": "llm_usage_attempts.receiptIds includes actionId",
+        "tick": 11,
+        "turn": 5
+      }
+    },
+    {
+      "timestamp": "2026-10-09T12:37:18.313472Z",
+      "data": {
+        "actionId": "turn-4-action-b",
+        "actorSide": "b",
+        "applied": false,
+        "battleId": "btl_652a4d1e91bb2a20ec7f0e01ae5579a7",
+        "event": "free_action_resolution",
+        "failureSubtype": null,
+        "fallbackKind": null,
+        "operationKinds": [],
+        "outcome": "failed",
+        "reasonCode": "invalid_proposal",
+        "requestId": null,
+        "requestIdLookup": "llm_usage_attempts.receiptIds includes actionId",
+        "tick": 6,
+        "turn": 4
+      }
+    }
+  ],
+  "ownerProvidedRequestId": "ed84289d-7b53-9830-9571-d63ed7857d7f",
+  "outputReplay": {
+    "schemaValid": true,
+    "quoteMatches": true,
+    "baseWorldRevisionMatchesInput": true,
+    "penaltyValidInReconstructedState": true,
+    "actualRuntimeMismatchCause": "unknown"
+  },
+  "productionPromoted": false,
+  "paidRetryExecuted": false
+}

@@ -1,0 +1,39 @@
+{
+  "schema": "kshiai/adjudication-release-candidate/v1",
+  "applicationVersion": "v0.23.0-rc.20",
+  "sourceCommit": "44f2bd287e9cb68d071620ddb3a63d72e4f56545",
+  "annotatedTagObject": "e81d4a4295fdb9bb96c1f5b8390c75b7ceda1665",
+  "mergedPullRequest": 174,
+  "mainCi": {
+    "runId": 37929073817,
+    "conclusion": "success",
+    "jobs": [
+      "worker",
+      "validate",
+      "backend-image",
+      "security"
+    ]
+  },
+  "formalExecutionReceipt": {
+    "sealId": "0cb76b3b0d228fc3ec8e7c1e987a9c45c69e2b1dddb422bd96db4b9a5b4c281a",
+    "causeCount": 253,
+    "unitPassed": 1473,
+    "e2ePassed": 10
+  },
+  "paidStageAuthority": {
+    "ownerAnswer": "この候補で有料Stage試験1回を許可",
+    "battleCount": 1,
+    "providerOperationCeiling": 200,
+    "maxAdvances": 38,
+    "characterCreateSmoke": false,
+    "automaticPaidRetry": false,
+    "moneyCap": null,
+    "moneyEstimate": "unknown"
+  },
+  "stageRun": {
+    "id": 37930237321,
+    "url": "https://github.com/mako10k/kshiai/actions/runs/37930237321",
+    "stateAtRecord": "queued"
+  },
+  "production": "not yet promoted"
+}

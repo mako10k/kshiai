@@ -1,0 +1,189 @@
+{
+  "schema": "kshiai/test-authority-fail-closed-evidence/v1",
+  "date": "2026-10-10",
+  "decision": "ADR-0068 revision1",
+  "official": {
+    "command": "npm test",
+    "exitCode": 1,
+    "activeFiles": 222,
+    "blockedFiles": 28,
+    "testsLaunched": false,
+    "tapStarted": false,
+    "reason": "Invalid unit test authority blocks execution (28)",
+    "blocked": [
+      {
+        "path": "backend/src/llm/awareness-adjudication-result.test.ts",
+        "ref": "all-tests-20261008/current-source-closure/verification/awareness-adjudication-result-20261007",
+        "reason": "stale"
+      },
+      {
+        "path": "backend/src/llm/awareness-dispatch-admission.test.ts",
+        "ref": "all-tests-20261009/current-source-closure/verification/awareness-dispatch-admission-20261007",
+        "reason": "stale"
+      },
+      {
+        "path": "backend/src/llm/awareness-dispatch-context.test.ts",
+        "ref": "all-tests-20261008/current-source-closure/verification/awareness-dispatch-context-20261007",
+        "reason": "stale"
+      },
+      {
+        "path": "backend/src/llm/awareness-provider-factory.test.ts",
+        "ref": "all-tests-20261008/current-source-closure/verification/awareness-provider-factory-20261007",
+        "reason": "stale"
+      },
+      {
+        "path": "backend/src/llm/awareness-provider.test.ts",
+        "ref": "all-tests-20261009/current-source-closure/verification/awareness-role-provider-20261007",
+        "reason": "stale"
+      },
+      {
+        "path": "backend/src/llm/openai-compatible-routing.test.ts",
+        "ref": "all-tests-20261008/current-source-closure/verification/routing-typed-seam-bounded-20261008",
+        "reason": "stale"
+      },
+      {
+        "path": "backend/src/repositories/battle-awareness-narration-events-postgres.test.ts",
+        "ref": "all-tests-20261008/current-source-closure/verification/battle-awareness-narration-events-postgres-bounded-native-pg-20261007",
+        "reason": "stale"
+      },
+      {
+        "path": "backend/src/repositories/battle-awareness-narration-reservation-postgres.test.ts",
+        "ref": "all-tests-20261008/current-source-closure/verification/battle-awareness-narration-reservation-postgres-bounded-native-pg-20261007",
+        "reason": "stale"
+      },
+      {
+        "path": "backend/src/repositories/battle-awareness-postgres.test.ts",
+        "ref": "all-tests-20261008/current-source-closure/verification/battle-awareness-postgres-bounded-native-pg-20261007",
+        "reason": "stale"
+      },
+      {
+        "path": "backend/src/repositories/characters.test.ts",
+        "ref": "all-tests-20261008/current-source-closure/verification/owner-characters-rating-20261008",
+        "reason": "stale"
+      },
+      {
+        "path": "backend/src/routes-structured-asset-integration.test.ts",
+        "ref": "all-tests-20261008/current-source-closure/verification/structured-asset-integration-bounded-20261008",
+        "reason": "stale"
+      },
+      {
+        "path": "backend/src/routes-structured-battlefield-acceptance.test.ts",
+        "ref": "all-tests-20261008/current-source-closure/verification/stable-area-battlefield-http-acceptance-20261007",
+        "reason": "stale"
+      },
+      {
+        "path": "backend/src/routes-structured-narration-acceptance.test.ts",
+        "ref": "all-tests-20261008/current-source-closure/verification/stable-area-narration-http-acceptance-20261007",
+        "reason": "stale"
+      },
+      {
+        "path": "backend/src/services/awareness-adjudication-guard.test.ts",
+        "ref": "all-tests-20261008/current-source-closure/verification/awareness-adjudication-guard-bounded-current-20261007",
+        "reason": "stale"
+      },
+      {
+        "path": "backend/src/services/awareness-battle-creation.test.ts",
+        "ref": "all-tests-20261008/current-source-closure/verification/awareness-battle-creation-bounded-awareness-creation-20261007",
+        "reason": "stale"
+      },
+      {
+        "path": "backend/src/services/awareness-battle-service.test.ts",
+        "ref": "all-tests-20261008/current-source-closure/verification/awareness-battle-service-bounded-awareness-creation-20261007",
+        "reason": "stale"
+      },
+      {
+        "path": "backend/src/services/awareness-creation-encounter.test.ts",
+        "ref": "all-tests-20261008/current-source-closure/verification/awareness-creation-encounter-bounded-awareness-creation-20261007",
+        "reason": "stale"
+      },
+      {
+        "path": "backend/src/services/awareness-narration-continuation.test.ts",
+        "ref": "all-tests-20261008/current-source-closure/verification/awareness-narration-continuation-bounded-current-20261007",
+        "reason": "stale"
+      },
+      {
+        "path": "backend/src/services/awareness-narration-worker.test.ts",
+        "ref": "all-tests-20261008/current-source-closure/verification/awareness-narration-worker-bounded-current-20261007",
+        "reason": "stale"
+      },
+      {
+        "path": "backend/src/services/battle-causal-narration.test.ts",
+        "ref": "all-tests-20261008/current-source-closure/verification/battle-causal-narration-bounded-current-20261007",
+        "reason": "stale"
+      },
+      {
+        "path": "backend/src/services/battle-consumer-wiring.test.ts",
+        "ref": "all-tests-20261008/current-source-closure/verification/battle-consumer-wiring-bounded-current-20261007",
+        "reason": "stale"
+      },
+      {
+        "path": "backend/src/services/battle-create-idempotency.test.ts",
+        "ref": "all-tests-20261008/current-source-closure/verification/battle-create-idempotency-bounded-awareness-creation-20261007",
+        "reason": "stale"
+      },
+      {
+        "path": "backend/src/services/battle-public.test.ts",
+        "ref": "all-tests-20261009/current-source-closure/verification/owner-battle-public-20261008",
+        "reason": "stale"
+      },
+      {
+        "path": "backend/src/services/conscious-agency-persistence.test.ts",
+        "ref": "all-tests-20261008/current-source-closure/verification/retained-agency-v3-persistence-current-20261007",
+        "reason": "stale"
+      },
+      {
+        "path": "backend/src/services/conscious-agency-runtime.test.ts",
+        "ref": "all-tests-20261008/current-source-closure/verification/retained-agency-v3-runtime-current-20261007",
+        "reason": "stale"
+      },
+      {
+        "path": "backend/src/services/normal-awareness-policy.test.ts",
+        "ref": "all-tests-20261008/current-source-closure/verification/normal-awareness-policy-bounded-current-20261007",
+        "reason": "source_diverged"
+      },
+      {
+        "path": "backend/src/services/scene-beat-wiring.test.ts",
+        "ref": "all-tests-20261008/current-source-closure/verification/scene-beat-wiring-bounded-20261008",
+        "reason": "stale"
+      },
+      {
+        "path": "backend/src/services/v3-battle-creation.test.ts",
+        "ref": "all-tests-20261008/current-source-closure/verification/v3-battle-creation-recovery-bounded-20261008",
+        "reason": "stale"
+      }
+    ]
+  },
+  "scopedRegression": {
+    "command": "node --test scripts/test-authority-empty.test.mjs",
+    "classification": "limited diagnostic; not whole-suite acceptance",
+    "tests": 16,
+    "passed": 16,
+    "failed": 0,
+    "coverage": [
+      "mixed active/stale unit and e2e exit1 before launch",
+      "all disabled reasons and unknown reasons reject",
+      "list mode exit0 with stale entries",
+      "current-only unit launcher executes",
+      "existing unsealed and empty-active guards preserved"
+    ]
+  },
+  "sourceReadback": {
+    "source": "WORKFILE_MATCHES_HEAD",
+    "test": "WORKFILE_MATCHES_HEAD"
+  },
+  "checks": {
+    "typecheck": "passed",
+    "static": "passed",
+    "diffCheck": "passed",
+    "adrCheck": "passed: 46 current, 4 historical excluded",
+    "pertCheck": "passed",
+    "pertAnalysis": "passed",
+    "pertNext": "passed"
+  },
+  "acceptance": {
+    "selectorCorrection": "complete: expected official exit1 without test launch verified; does not imply whole-suite acceptance",
+    "unifiedConsciousnessFullVerification": "unfinished",
+    "historical1338Successes": "scoped evidence only; full acceptance withdrawn",
+    "bulkReseal": false
+  }
+}
