@@ -1,10 +1,21 @@
 // R: Verify completed awareness execution and summarize actual SDK token usage for public acceptance.
 import { isDeepStrictEqual } from "node:util";
-import { AwarenessNormalPolicy, CurrentAwarenessPromptRevision, type BattleAssetManifest } from "@kshiai/shared";
+import { AwarenessNormalPolicy, CurrentAwarenessPromptRevision, UnifiedConsciousnessRuntimeSchema, type BattleAssetManifest, type BattleAssetManifestV6, type UnifiedConsciousnessRuntime } from "@kshiai/shared";
 import { getAwarenessRuntime, type AwarenessRuntimeSnapshot } from "../repositories/battle-awareness.js";
+import { getUnifiedRuntime, type UnifiedRuntimeSnapshot } from "../repositories/unified-consciousness.js";
+import { unifiedOperationalRuntime } from "../repositories/battle-operational-runtime.js";
 import { listLlmUsageAttempts, type LlmUsageAttempt } from "../repositories/llm-usage.js";
 
 export async function inspectAwarenessPublicObservation(battleId: string, manifest: BattleAssetManifest) {
+  if (manifest.schemaVersion === 6) {
+    let saved = await getUnifiedRuntime(battleId);
+    const drainUntil = Date.now() + manifest.awarenessPolicy.narration.terminalDrainMs;
+    while (saved?.runtime.status === "terminal" && unifiedOperationalRuntime(saved.runtime).budget.physicalOutstanding > 0 && Date.now() < drainUntil) {
+      await new Promise((resolve) => setTimeout(resolve, Math.min(1000, drainUntil - Date.now())));
+      saved = await getUnifiedRuntime(battleId);
+    }
+    return verifyUnifiedPublicObservation(battleId, manifest, saved, await listLlmUsageAttempts({ battleId }));
+  }
   if (manifest.schemaVersion !== 5) throw new Error("PUBLIC_COMPLETION_REQUIRES_AWARENESS_V5");
   if (!isDeepStrictEqual(manifest.awarenessPolicy, AwarenessNormalPolicy)) throw new Error("PUBLIC_COMPLETION_POLICY_MISMATCH");
   let saved = await getAwarenessRuntime(battleId);
@@ -26,24 +37,12 @@ export function verifyAwarenessPublicObservation(
   const checked = assertCompletedRuntime(battleId, manifest, saved);
   const budget = checked.runtime.budget;
   assertCompleteUsageLedger(battleId, attempts, budget.physicalAttempts);
-  const tokens = attempts.reduce((summary, attempt) => ({
-    prompt: summary.prompt + (attempt.promptTokens ?? 0),
-    completion: summary.completion + (attempt.completionTokens ?? 0),
-    total: summary.total + (attempt.totalTokens ?? 0),
-    unknownAttempts: summary.unknownAttempts + Number(attempt.promptTokens === null || attempt.completionTokens === null || attempt.totalTokens === null),
-  }), { prompt: 0, completion: 0, total: 0, unknownAttempts: 0 });
-  if (tokens.total <= 0) throw new Error("PUBLIC_COMPLETION_REPORTED_TOKENS_MISSING");
   return {
     engine: "awareness-v5" as const, policyRevision: manifest.awarenessPolicy.revision,
     recordedPromptRevision: manifest.promptRevision, effectivePromptRevision: CurrentAwarenessPromptRevision,
     completedTicks: checked.runtime.tick, physicalAttemptLimit: manifest.awarenessPolicy.maxPhysicalAttempts,
     physicalAttempts: budget.physicalAttempts, physicalOutstanding: budget.physicalOutstanding,
-    narrationPhysicalAttempts: attempts.filter((attempt) => attempt.role === "narration").length,
-    reportedTokens: tokens, monetaryCost: "unknown_without_verified_prices" as const,
-    attempts: attempts.map((attempt) => ({ id: attempt.id, role: attempt.role, provider: attempt.provider,
-      requestedModel: attempt.requestedModel, responseModel: attempt.responseModel, status: attempt.status,
-      promptTokens: attempt.promptTokens, completionTokens: attempt.completionTokens, totalTokens: attempt.totalTokens,
-      elapsedMs: attempt.elapsedMs, responseDiagnostics: attempt.responseDiagnostics ?? null })),
+    ...publicUsageEvidence(attempts),
   };
 }
 
@@ -61,11 +60,64 @@ function assertCompletedRuntime(
   }
   return saved;
 }
-function assertCompleteUsageLedger(battleId: string, attempts: readonly LlmUsageAttempt[], physicalAttempts: number): void {
+function assertCompleteUsageLedger(battleId: string, attempts: readonly LlmUsageAttempt[], physicalAttempts: number, roles: readonly string[] = ["creation", "subconscious", "narration"]): void {
   if (attempts.length === 0 || attempts.some((attempt) => attempt.battleId !== battleId || attempt.status === "started") || attempts.length !== physicalAttempts) {
     throw new Error("PUBLIC_COMPLETION_USAGE_ATTEMPTS_MISMATCH");
   }
-  for (const role of ["creation", "subconscious", "narration"]) {
+  for (const role of roles) {
     if (!attempts.some((attempt) => attempt.role === role)) throw new Error(`PUBLIC_COMPLETION_USAGE_ROLE_MISSING:${role}`);
   }
+}
+
+export function verifyUnifiedPublicObservation(
+  battleId: string,
+  manifest: Pick<BattleAssetManifestV6, "schemaVersion" | "awarenessPolicy" | "consciousnessPolicy" | "consciousnessPromptRevision">,
+  saved: UnifiedRuntimeSnapshot | null,
+  attempts: readonly LlmUsageAttempt[],
+) {
+  if (!isDeepStrictEqual(manifest.awarenessPolicy, AwarenessNormalPolicy)) throw new Error("PUBLIC_COMPLETION_POLICY_MISMATCH");
+  if (!saved || saved.battleId !== battleId) throw new Error("PUBLIC_COMPLETION_RUNTIME_NOT_FINISHED");
+  const runtime = UnifiedConsciousnessRuntimeSchema.parse(saved.runtime);
+  assertUnifiedCompletionBinding(runtime, manifest);
+  const budget = unifiedOperationalRuntime(runtime).budget;
+  if (budget.physicalOutstanding !== 0 || budget.physicalAttempts > runtime.policy.maxPhysicalAttempts ||
+      budget.reservations.some((attempt) => attempt.physicalOutstanding)) throw new Error("PUBLIC_COMPLETION_PHYSICAL_BUDGET_UNRESOLVED");
+  assertCompleteUsageLedger(battleId, attempts, budget.physicalAttempts, ["creation", "consciousness", "narration"]);
+  for (const side of ["a", "b"] as const) {
+    if (!runtime.decisions.some((decision) => decision.side === side) || !attempts.some((attempt) => attempt.role === "consciousness" && attempt.side === side)) {
+      throw new Error("PUBLIC_COMPLETION_CONSCIOUSNESS_SIDE_MISSING");
+    }
+  }
+  return {
+    engine: "unified-consciousness-v1" as const, policyRevision: runtime.policy.revision,
+    recordedPromptRevision: manifest.consciousnessPromptRevision, effectivePromptRevision: manifest.consciousnessPromptRevision,
+    completedTicks: runtime.tick, physicalAttemptLimit: runtime.policy.maxPhysicalAttempts,
+    physicalAttempts: budget.physicalAttempts, physicalOutstanding: budget.physicalOutstanding,
+    ...publicUsageEvidence(attempts),
+  };
+}
+function assertUnifiedCompletionBinding(runtime: UnifiedConsciousnessRuntime,
+  manifest: Pick<BattleAssetManifestV6, "awarenessPolicy" | "consciousnessPolicy">): void {
+  if (!isDeepStrictEqual(runtime.policy, manifest.consciousnessPolicy) || !isDeepStrictEqual(runtime.operatingPolicy, manifest.awarenessPolicy) ||
+      runtime.status !== "terminal" || runtime.terminalAt === null || runtime.incompleteReason !== null || runtime.tick === null ||
+      runtime.decisions.some((decision) => decision.status !== "applied" || decision.failure !== null)) {
+    throw new Error("PUBLIC_COMPLETION_RUNTIME_NOT_FINISHED");
+  }
+}
+function publicUsageEvidence(attempts: readonly LlmUsageAttempt[]) {
+  const tokens = attempts.reduce((summary, attempt) => ({
+    prompt: summary.prompt + (attempt.promptTokens ?? 0),
+    completion: summary.completion + (attempt.completionTokens ?? 0),
+    total: summary.total + (attempt.totalTokens ?? 0),
+    unknownAttempts: summary.unknownAttempts + Number(attempt.promptTokens === null || attempt.completionTokens === null || attempt.totalTokens === null),
+  }), { prompt: 0, completion: 0, total: 0, unknownAttempts: 0 });
+  if (tokens.total <= 0) throw new Error("PUBLIC_COMPLETION_REPORTED_TOKENS_MISSING");
+  return {
+    narrationPhysicalAttempts: attempts.filter((attempt) => attempt.role === "narration").length,
+    reportedTokens: tokens, monetaryCost: "unknown_without_verified_prices" as const,
+    attempts: attempts.map((attempt) => ({ id: attempt.id, role: attempt.role, provider: attempt.provider,
+      requestedModel: attempt.requestedModel, responseModel: attempt.responseModel, status: attempt.status,
+      promptTokens: attempt.promptTokens, completionTokens: attempt.completionTokens, totalTokens: attempt.totalTokens,
+      elapsedMs: attempt.elapsedMs, responseDiagnostics: attempt.responseDiagnostics ?? null })),
+  };
 }

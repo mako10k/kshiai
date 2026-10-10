@@ -42,3 +42,12 @@ test("convergence evidence describes V5 terminal uniqueness without claiming one
   assert.ok("oneAttemptPerReceipt" in v4);
   assert.equal(v4.oneAttemptPerReceipt, "passed");
 });
+
+test("V6 requires successful publication and permits only positive durable claim counts", () => {
+  assert.doesNotThrow(() => assertNarrationConvergence(6, [{ ...complete, attemptCount: 3 }]));
+  for (const status of ["failed", "cancelled", "generating"]) assert.throws(() => assertNarrationConvergence(6, [{ ...complete, status }]));
+  for (const attemptCount of [0, -1, 1.5, undefined]) assert.throws(() => assertNarrationConvergence(6, [{ ...complete, attemptCount }]));
+  assert.throws(() => assertNarrationConvergence(6, [{ ...complete, lease: {} }]));
+  assert.throws(() => assertNarrationConvergence(6, [{ ...complete, outbox: { status: "pending" } }]));
+  assert.deepEqual(narrationConvergenceEvidence(6, 10), narrationConvergenceEvidence(5, 10));
+});

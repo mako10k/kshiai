@@ -1,0 +1,86 @@
+{
+  "applicationVersion": "v0.24.0-rc.4",
+  "commit": "71a77dae87d25cf995fed385786b7a9c3780a39a",
+  "mainCi": {
+    "run": 38051995760,
+    "conclusion": "success"
+  },
+  "stage": {
+    "run": 38052599650,
+    "conclusion": "failure",
+    "revision": "kshiai-api-00192-jiy",
+    "imageDigest": "sha256:5c12fb5da66374548c5a32356dc0d9fe3aca33792fd5342aef9c5390552354f5",
+    "workerVersion": "1da680c2-b896-4708-90c6-dc384a4c591b",
+    "execution": "kshiai-persistent-e2e-8ldrr"
+  },
+  "readback": {
+    "battle": {
+      "id": "btl_e7846c2e650c3ff42c9bd75d9b46feaf",
+      "status": "finished",
+      "manifestVersion": 6
+    },
+    "runs": [
+      {
+        "run_id": "stage-38052599650-1",
+        "taxonomy_revision": "battle-provider-operations-v4",
+        "approved_attempt_ceiling": 200,
+        "reserved_attempts": 42,
+        "status": "failed"
+      }
+    ],
+    "attempts": [
+      {
+        "operation": "unified-consciousness-v1",
+        "layer": "characterExpression",
+        "status": "succeeded",
+        "count": "20"
+      },
+      {
+        "operation": "reconcileTurnSemanticState",
+        "layer": "environment",
+        "status": "succeeded",
+        "count": "4"
+      },
+      {
+        "operation": "adjudicateFreeActions",
+        "layer": "environment",
+        "status": "succeeded",
+        "count": "6"
+      },
+      {
+        "operation": "awareness-v5:narration-frozen",
+        "layer": "narration",
+        "status": "succeeded",
+        "count": "11"
+      },
+      {
+        "operation": "prepareBattleEncounter",
+        "layer": "encounter",
+        "status": "succeeded",
+        "count": "1"
+      }
+    ]
+  },
+  "postFixReadOnlyVerification": {
+    "battleStatus": "finished",
+    "engine": "unified-consciousness-v1",
+    "policy": "unified-consciousness-policy-v2",
+    "prompt": "unified-consciousness-prompt-v2",
+    "tick": 9,
+    "physicalAttempts": 42,
+    "physicalOutstanding": 0,
+    "narrationAttempts": 11,
+    "reportedTokens": {
+      "prompt": 263718,
+      "completion": 7624,
+      "total": 290297,
+      "unknownAttempts": 0
+    },
+    "monetaryCost": "unknown_without_verified_prices"
+  },
+  "promoted": false,
+  "previousStageActualAttempts": 10,
+  "totalMeasuredAttempts": 52,
+  "price": "unpriced",
+  "diagnosis": "Battle and successful narration finished; outdated completion observer required binding format v5 and rejected v6. Post-fix read-only verification is diagnostic evidence, not a replacement successful Stage. No retry of this failed workflow."
+}
