@@ -1,0 +1,280 @@
+{
+  "scope": "application v0.24.0-rc.4 / consciousness prompt v2",
+  "governingAdr": "Accepted ADR0069 revision1; immutable versioned asset contract",
+  "affectedOfflineTests": {
+    "files": 20,
+    "passed": 169,
+    "failed": 0,
+    "skipped": 0
+  },
+  "historicalRequestProbe": {
+    "historicalRequestByteCompatible": true,
+    "systemSha256": "b87617cf3f364799e8cdbf253cc1321046eb0e72d3cd4d01a48078d197ae6674",
+    "exampleCount": 8
+  },
+  "reviews": [
+    {
+      "ref": "unified-v1/source/backend-src-services-unified-consciousness-execution",
+      "path": "backend/src/services/unified-consciousness-execution.ts",
+      "review": "Optional typed prompt revision forwarded to request renderer before digest; default v1 retained for historical callers; same no-resend, deadline, validation and world barrier.",
+      "previousSeal": "d43dbc7ba9b35618a00e8fb0f1298cdb74ba2a29dbcbe583ab223677b015dc5c",
+      "seal": "0030ce037b722c548d268531424c02f5b5daa32b7dafac6bcd56749e39d0776e"
+    },
+    {
+      "ref": "unified-v1/source/backend-src-services-unified-consciousness-battle",
+      "path": "backend/src/services/unified-consciousness-battle.ts",
+      "review": "Forward saved manifest prompt revision to executor; all frozen perception, private events, fences and accounting semantics unchanged.",
+      "previousSeal": "3ac0b959b3385b39e5ba9c2d12028c9e909731626c6af4722572d56c4110281b",
+      "seal": "8d023434703c968c368ea0a9d050af07a67f69d8104c7d9f1994d7a3103df335"
+    },
+    {
+      "ref": "unified-v1/source/backend-src-llm-unified-consciousness",
+      "path": "backend/src/llm/unified-consciousness.ts",
+      "review": "Versioned renderer keeps prompt-v1 exact bytes; prompt-v2 removes bare-action examples and emits schema-validated complete envelopes using actual available actions/refs; no coercion, fallback or paid schema retry.",
+      "previousSeal": "e9b3d0f274a380d6e83bc5299fe5730be97c2f9213607b80225404670ec1ed9d",
+      "seal": "89fda8889a7429115d4f7d7e1b88ad6231ecd389603c504d82a70f7607db8287"
+    },
+    {
+      "ref": "unified-v1/source/backend-src-services-battle-service",
+      "path": "backend/src/services/battle-service.ts",
+      "review": "Only opted-in immutable v6 creation prompt literal changes: policy-v2 chooses prompt-v2, policy-v1 remains prompt-v1; historical v4/v5 creation, encounter/idempotency and world handling untouched.",
+      "previousSeal": "13ffc6888cad0eed1e4bf4c7f850f74351cc38635004a896e50a4abcfd099dc2",
+      "seal": "d859c285fcd2250e9b91149c87551a73526d389a0d9a2af13d6024823d314953"
+    },
+    {
+      "ref": "test-recovery-v1/basis/0e5e6c7cf01a162e",
+      "path": "backend/src/services/battle-service.ts",
+      "review": "Only opted-in immutable v6 creation prompt literal changes: policy-v2 chooses prompt-v2, policy-v1 remains prompt-v1; historical v4/v5 creation, encounter/idempotency and world handling untouched.",
+      "previousSeal": "1915b027cd6664e8806b78cb0fa9249db5d61e5dedc53c61f89169711c5b01de",
+      "seal": "d8919b608870bff9646a8fe62a84f56e604a7910ccd7392952ba444f23f7bda1"
+    },
+    {
+      "ref": "test-recovery-v1/basis/c5c8997e9f5f67cb",
+      "path": "backend/src/services/battle-service.ts",
+      "review": "Only opted-in immutable v6 creation prompt literal changes: policy-v2 chooses prompt-v2, policy-v1 remains prompt-v1; historical v4/v5 creation, encounter/idempotency and world handling untouched.",
+      "previousSeal": "1d29dd9feb41f1b7bdd6727996a4042e28e983030aee472e337fcf9e5d5b3487",
+      "seal": "24192dc1b1855dda03361c44a2e75c973f4fe8aa99f9428cd71d9c9e92824ace"
+    },
+    {
+      "ref": "all-tests-20261008/current-source-closure/verification/battle-consumer-wiring-bounded-current-20261007",
+      "path": "backend/src/services/battle-consumer-wiring.test.ts",
+      "review": "Frozen own profile/perception, knowledge and privacy boundaries unchanged; v6 prompt revision selects only consciousness text.",
+      "previousSeal": "6ff00c233f5887c184b55c68296e0e38ffecd103ce612885fb781daf3e03e208",
+      "seal": "4d3c6a9cadb4986157f2a2d72d575e207eb7f701af9641fba31c849e1f41f2b9"
+    },
+    {
+      "ref": "all-tests-20261008/current-source-closure/verification/normal-awareness-policy-bounded-current-20261007",
+      "path": "backend/src/services/normal-awareness-policy.test.ts",
+      "review": "Historical default awareness-v5-usage-v3, fixed timing and prologue role policy assertions unchanged; only explicit consciousness policy-v2 selects prompt-v2.",
+      "previousSeal": "3aa97a789cb49df8b86add6ea7e7ac459c48025676060df00afd82e77f1ec30d",
+      "seal": "cb808b6fa5e7cf18a2e673c8f7c58bbb46a3e4c0243ed0f793e005645be360ef"
+    },
+    {
+      "ref": "all-tests-20261008/current-source-closure/verification/battle-causal-narration-bounded-current-20261007",
+      "path": "backend/src/services/battle-causal-narration.test.ts",
+      "review": "Off/guarded narrator projection and invalid-evidence fallback assertions unchanged; consciousness prompt revision does not affect narration projection.",
+      "previousSeal": "7e89ef1eabae7dabaf6553d64b52f73b680182bcee8cbfa9ba138ab2ff1691d2",
+      "seal": "c9b11ed8ae7e47f993506aea053683e2c88c031809782792b0e017738aae96fb"
+    },
+    {
+      "ref": "test-recovery-v1/basis/a3adc469058d306b",
+      "path": "backend/src/services/battle-service.ts",
+      "review": "Only opted-in immutable v6 creation prompt literal changes: policy-v2 chooses prompt-v2, policy-v1 remains prompt-v1; historical v4/v5 creation, encounter/idempotency and world handling untouched.",
+      "previousSeal": "c8d058010a31e8c09554dbfb238f9e3ad9b9ba8d32f1150044f87e91eeba8567",
+      "seal": "456001cc920293122c02cc880808cf6addc4b780c6e0729887cfb313a6b7ddd9"
+    },
+    {
+      "ref": "all-tests-20261008/current-source-closure/verification/owner-characters-rating-20261008",
+      "path": "backend/src/repositories/characters.test.ts",
+      "review": "Owner search/isolation, memory and rating population tests unchanged; prompt selection only affects opted-in v6 creation, not character repository state.",
+      "previousSeal": "ccaad823b1d46c3368617cb5b1489c50c2968cdd157f3cea92937a367a4c4330",
+      "seal": "3fc00603f027a8a7043c24cee387ba97d8497f4c9fcabc695dc5b5110e342d08"
+    },
+    {
+      "ref": "test-recovery-v1/basis/59df7291e9c37342",
+      "path": "backend/src/services/battle-service.ts",
+      "review": "Only opted-in immutable v6 creation prompt literal changes: policy-v2 chooses prompt-v2, policy-v1 remains prompt-v1; historical v4/v5 creation, encounter/idempotency and world handling untouched.",
+      "previousSeal": "c8f5c0c636effb654d0644acc6ff0c8e0ecc37a4284aa1c792b124f71f9303bb",
+      "seal": "405201ea9eab835a744e1297705a9a151033d04d4181a361fe7cf29e022ba5bd"
+    },
+    {
+      "ref": "all-tests-20261008/current-source-closure/verification/battle-create-idempotency-bounded-awareness-creation-20261007",
+      "path": "backend/src/services/battle-create-idempotency.test.ts",
+      "review": "Exactly-once deterministic battle encounter work unchanged; immutable prompt revision written only on first opted-in creation, not replay.",
+      "previousSeal": "3759059ba648c7c28ddd11bef51afb74f478952aa59bf7513d4c968645d4b7f1",
+      "seal": "39b472d66e06abf5d4eb762da058676a58f710d25a1d3b0987d5472a8fb8dc61"
+    },
+    {
+      "ref": "test-recovery-v1/basis/5d646414a88f23e7",
+      "path": "backend/src/services/battle-service.ts",
+      "review": "Only opted-in immutable v6 creation prompt literal changes: policy-v2 chooses prompt-v2, policy-v1 remains prompt-v1; historical v4/v5 creation, encounter/idempotency and world handling untouched.",
+      "previousSeal": "b5889b58cb903f9fc8ea2d0b2666123a9ffc47e5ebcad4769cdf1f32186bd08c",
+      "seal": "97490ced97e7aa5ab0807771a76e151741e9c65bae2a74c2ca3426490a719458"
+    },
+    {
+      "ref": "all-tests-20261008/current-source-closure/verification/structured-asset-integration-bounded-20261008",
+      "path": "backend/src/routes-structured-asset-integration.test.ts",
+      "review": "Immutable generations, replay/history/deletion and privacy assertions retained; new exact saved prompt-v2 assertion for public policy-v2 creation passed offline.",
+      "previousSeal": "ae550eb134fb6f873c714f9bbfae07b2fa29654c0d52995296d4ec3c26c9bd6b",
+      "seal": "b2f2b22e9c83b67df242d638cd05a65a3422e44015101803b113c75c111af9cd"
+    },
+    {
+      "ref": "all-tests-20261008/current-source-closure/verification/scene-beat-wiring-bounded-20261008",
+      "path": "backend/src/services/scene-beat-wiring.test.ts",
+      "review": "Historical beat deferral, microturn commit, rejected bucket and orphan advance assertions unchanged; no change to beat scheduling.",
+      "previousSeal": "e69c513183cd288faf2e98ac92609763bef68c6c8f73b014535a48a14c00687a",
+      "seal": "04377b30b818e82bef7ce3ebf5289cd50a43bbb598b54fe474d4d2d695ecf7f6"
+    },
+    {
+      "ref": "test-recovery-v1/basis/65bd5e628346546f",
+      "path": "backend/src/services/battle-service.ts",
+      "review": "Only opted-in immutable v6 creation prompt literal changes: policy-v2 chooses prompt-v2, policy-v1 remains prompt-v1; historical v4/v5 creation, encounter/idempotency and world handling untouched.",
+      "previousSeal": "6d2e2a516b0799f8fe3c6b19583f78c812554acd6d299395c28d97a0a9878a88",
+      "seal": "676edd54d0fbf7ea0c2dce2d98093e78f78b573f5bec41e654ec5fb654f5c426"
+    },
+    {
+      "ref": "all-tests-20261008/current-source-closure/awareness-guidance-20261007/verification-execution",
+      "path": "backend/src/services/awareness-execution.test.ts",
+      "review": "Historical latent/frozen A routing, deadlines, no-resend, proof and physical limits unchanged; unified saved prompt revision does not alter this executor.",
+      "previousSeal": "f3fbad69ce3fa452aa4a6d923b4b1ba5b7e9780f78f2e5c0013d361f4a8d699d",
+      "seal": "bd2628d327d464a8b64d7298618eecd0b7bc21a66087ddf0cf5513cfc7f5f552"
+    },
+    {
+      "ref": "all-tests-20261008/current-source-closure/verification/awareness-battle-service-bounded-awareness-creation-20261007",
+      "path": "backend/src/services/awareness-battle-service.test.ts",
+      "review": "Historical v5 absent intents, KO/aftermath and atomic world preservation on semantic failure unchanged; new prompt renderer is outside saved v5 route.",
+      "previousSeal": "4a6641e00355e8ee4d15870682ac5902976bf7fd0e73aeb583e471633b25870f",
+      "seal": "d74f6b824bf2fcdf9f07dccb667f9fe5e3ad4fd6e868418dad57f8cde43286c6"
+    },
+    {
+      "ref": "unified-v1/source/packages-shared-src-battle",
+      "path": "packages/shared/src/battle.ts",
+      "review": "Authoritative v6 type/schema accept exactly saved prompt-v1 or prompt-v2; v1 records remain parseable; other binding versions and strict extra-key refusal unchanged.",
+      "previousSeal": "5a48181693a1603a0901815ef379059d42e2b7986bc886125eb45e90cb327305",
+      "seal": "e10a497763a7197ae95083f2a30205dbd32ab91a60a8008c766e853aa9a746e5"
+    },
+    {
+      "ref": "unified-v1/test/backend-src-services-unified-consciousness-execution.test",
+      "path": "backend/src/services/unified-consciousness-execution.test.ts",
+      "review": "Prompt-v1 full system SHA and original-request byte probe preserved; prompt-v2 full envelopes validated against actual candidate skill/ref, bare top-level action still rejected. Selected prompt forwarding verified; original no-resend/deadline/fence/action feedback/atomic world/privacy assertions retained.",
+      "previousSeal": "1f106d56d454f79da3a3bb04dbd42ed449bee63370e186dd69cab44b75208b8e",
+      "seal": "f9fba2ef3208b02f3031a135b3a60bb0be929284020dc5d7737082431c820eb9"
+    },
+    {
+      "ref": "all-tests-20261009/current-source-closure/verification/owner-battle-public-20261008",
+      "path": "backend/src/services/battle-public.test.ts",
+      "review": "Public semantic privacy, immutable rating, world patch rejection/commit and sensory registry assertions retained; prompt enum expansion does not expose private state.",
+      "previousSeal": "bf9f24c4442f773d5c1db40f19c3677cd3f850f60d328a20d5d68c324105870b",
+      "seal": "566661782382862081d218dcd33d2dccb13b10c081fc7c82a10987c816106f65"
+    },
+    {
+      "ref": "test-recovery-v1/basis/18b9b5dcd683f549",
+      "path": "backend/src/services/battle-service.ts",
+      "review": "Only opted-in immutable v6 creation prompt literal changes: policy-v2 chooses prompt-v2, policy-v1 remains prompt-v1; historical v4/v5 creation, encounter/idempotency and world handling untouched.",
+      "previousSeal": "4fb8a67494176f45888196f44ec51f2b2047b05b481c75cb09f1dc5386533579",
+      "seal": "27fbc0bf8679d7def3e76172624388a0890cb4cd234ea2045df04df24360024b"
+    },
+    {
+      "ref": "all-tests-20261008/current-source-closure/verification/historical-agency-inventory-bounded-20261008",
+      "path": "backend/src/services/character-agency-inventory.test.ts",
+      "review": "Historical agency inventory remains bounded helper evidence, not model quality; legacy objective/knowledge/goal/privacy assertions unchanged.",
+      "previousSeal": "ea1af84a1a039513c33d5c98d9cfaa6150c44adb498944b86fccabc4e8b844c1",
+      "seal": "e8d316b1fa48cf5f8116649e5063190b1f7a8afb7332ca2435b855ba9f389368"
+    },
+    {
+      "ref": "test-recovery-v1/basis/0159fc2ab1c5fb85",
+      "path": "backend/src/services/battle-service.ts",
+      "review": "Only opted-in immutable v6 creation prompt literal changes: policy-v2 chooses prompt-v2, policy-v1 remains prompt-v1; historical v4/v5 creation, encounter/idempotency and world handling untouched.",
+      "previousSeal": "669dc0dd3cfb34e676e36b7ef31117da60456834b8e827871f9655a02ffcd7dc",
+      "seal": "13ed7f60d597ecee862ea60fb19691fe69765c27487ce5808b84f1dbc9978672"
+    },
+    {
+      "ref": "test-recovery-v1/basis/a07dd2c8f0ac65c2",
+      "path": "backend/src/routes.ts",
+      "review": "Unchanged public policy-v2 selector now creates saved prompt-v2 through battle service; immutable asset, auth and private DTO route assertions retained.",
+      "previousSeal": "717d27389064b5534f86918b0663e5f6ea60a00f44754723f5d037b7305a5aad",
+      "seal": "c58626607079962468ca32735437f4f8dfea16b4c859ba9c4318b08aced41caa"
+    },
+    {
+      "ref": "all-tests-20261008/current-source-closure/verification/stable-area-narration-http-acceptance-20261007",
+      "path": "backend/src/routes-structured-narration-acceptance.test.ts",
+      "review": "Failure, legacy exclusion, confirmation/expiry/corruption and ready generation assertions unchanged; prompt revision does not alter narration asset lifecycle.",
+      "previousSeal": "5c065bb5c9af025eda21135484a25c3ff2c94ec4c55f2434067ee39726c2319b",
+      "seal": "cdc38d766e797495d22feb108e46da969c84ee6c99455d2b2bbd597444db8e75"
+    },
+    {
+      "ref": "all-tests-20261008/current-source-closure/verification/stable-area-battlefield-http-acceptance-20261007",
+      "path": "backend/src/routes-structured-battlefield-acceptance.test.ts",
+      "review": "Failure, legacy exclusion, confirmation/expiry/drift and exact preset binding assertions unchanged; new prompt revision does not alter asset authoring lifecycle.",
+      "previousSeal": "a0319d53e1ca98c0520ae747dbf6cabcd06d87d88e153137cd69df7c66a7758b",
+      "seal": "9d1414ccc298a499e1c6f62de453d71af03efe7be3b4ad1a9255dfd3f506845a"
+    },
+    {
+      "ref": "all-tests-20261008/current-source-closure/verification/awareness-battle-creation-bounded-awareness-creation-20261007",
+      "path": "backend/src/services/awareness-battle-creation.test.ts",
+      "review": "Historical default v5 immutable binding, encounter accounting and idempotent no-duplicate dispatch retained; v6-only prompt selector never applies.",
+      "previousSeal": "9a0a04368fc7954640adc028fd304a830f693f49d14550fd058a1f21c1b1b581",
+      "seal": "55a0ca9f700b4189f78ff4cd5aef126ae6505750458a9fc34b5c4cfa07fbf086"
+    },
+    {
+      "ref": "all-tests-20261008/current-source-closure/verification/battle-speech-wiring-bounded-20261008",
+      "path": "backend/src/services/battle-speech-wiring.test.ts",
+      "review": "Historical speech acceptance/action rejection, causal receipts, committed utterance continuity and narration placement assertions unchanged; new prompt only opted-in v6.",
+      "previousSeal": "e4e6e96853ab6fd2b5fb42ef2f9e67d5efaec09a998589e066cb310ac660bced",
+      "seal": "50fa1b8996196b892700336cbdfc9768942f5cdf5670147ebb857f3d96132996"
+    },
+    {
+      "ref": "unified-v1/test/backend-src-services-unified-consciousness-integration.test",
+      "path": "backend/src/services/unified-consciousness-integration.test.ts",
+      "review": "Existing policy-v1 v6 prologue/combat/private memory/narration integration and default v5 continuation both passed unchanged; saved v1 selector remains v1.",
+      "previousSeal": "ab69747f4982bd30790b72f8e95ad2e46b584864ac6f25e3d5f7b55f999486a3",
+      "seal": "ebc14e3e67f5fabaff14584cca0f1e15248cf907fa77f68fc433b81f7a0c63e8"
+    },
+    {
+      "ref": "test-recovery-v1/basis/c1a76bfb7cb2eba3",
+      "path": "backend/src/services/battle-service.ts",
+      "review": "Only opted-in immutable v6 creation prompt literal changes: policy-v2 chooses prompt-v2, policy-v1 remains prompt-v1; historical v4/v5 creation, encounter/idempotency and world handling untouched.",
+      "previousSeal": "44752b7d5d1af86a8d1d878e225ca143f7fdef7ab9c339e6cb75e8fc6c34eb31",
+      "seal": "b0a578ac331b98885d7911fbdf079ea6eb56cff5a6f698b04818195ff76970d9"
+    },
+    {
+      "ref": "all-tests-20261008/current-source-closure/verification/retained-agency-v3-persistence-current-20261007",
+      "path": "backend/src/services/conscious-agency-persistence.test.ts",
+      "review": "Historical V3/V4 saved agency and SQLite CAS assertions unchanged; new v6 prompt literal does not reinterpret saved historical generation.",
+      "previousSeal": "57bbc384339cb6d06afd409b79ecfe0103a0c83be230508072fc8001e1e40fd8",
+      "seal": "82e8c031b71dfc90c0880e358e1b188cd08837b0d84436a3b1f672b7b7f054c1"
+    },
+    {
+      "ref": "all-tests-20261008/current-source-closure/verification/retained-agency-v3-runtime-current-20261007",
+      "path": "backend/src/services/conscious-agency-runtime.test.ts",
+      "review": "Historical V3 tuple validation, prior decision, independent speech and private goal assertions unchanged; unified prompt text not used.",
+      "previousSeal": "bd5b0d2c5097e9179b7a86ef9ec2b6300decdfaf5b99d53a9ba33be5770e7065",
+      "seal": "baeeb77da3b7490f493390eb1f9e9106687b8c0294ccf6486cd886d0b84373e2"
+    },
+    {
+      "ref": "all-tests-20261008/current-source-closure/verification/v3-battle-creation-recovery-bounded-20261008",
+      "path": "backend/src/services/v3-battle-creation.test.ts",
+      "review": "Historical V4/V5 exact immutable character generations, free-action-only execution and durable repair assertions retained; no new reinterpretation of those bindings.",
+      "previousSeal": "3b9541e75dca3742b2ccf9c86454f13963f43865f6c04fb007c8887e5ed81f10",
+      "seal": "a63959104ec63dd65408cd6d3b7da4811e68101fa2af149a3b85b96d27f1ad6b"
+    }
+  ],
+  "governedSuite": {
+    "files": 250,
+    "active": 250,
+    "provisional": 0,
+    "disabled": 0,
+    "tests": 1513,
+    "pass": 1513,
+    "fail": 0,
+    "skipped": 0
+  },
+  "checks": [
+    "npm run build",
+    "npm run typecheck",
+    "npm run static",
+    "npm run adr:check",
+    "PERT check/both schedules/next",
+    "sealgraph fsck: ok"
+  ]
+}

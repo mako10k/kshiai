@@ -54,7 +54,7 @@ export async function prepareUnifiedBattleBoundary(input: {
   };
   await mutateUnifiedRuntime(input.state.id, input.fence, collectEvents);
   return prepareUnifiedBoundary({ battleId: input.state.id, tick: input.tick, worldRevision: input.state.battleRevision ?? 0,
-    transport, frames: { a, b }, port: {
+    transport, promptRevision: manifest.consciousnessPromptRevision, frames: { a, b }, port: {
       async read() { const latest = await getUnifiedRuntime(input.state.id); if (!latest) throw new Error("CONSCIOUSNESS_RUNTIME_NOT_FOUND"); return latest.runtime; },
       async update(reduce) { await mutateUnifiedRuntime(input.state.id, input.fence, reduce); },
       async account(reduce) { await mutateUnifiedRuntime(input.state.id, undefined, reduce); },
