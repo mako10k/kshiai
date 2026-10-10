@@ -7,6 +7,8 @@ based on Keep a Changelog, and releases follow Semantic Versioning.
 
 ## [0.24.0] - 2026-10-10
 
+- Application v0.24.0-rc.6 clarifies the strict free-action JSON contract for consciousness policy v2 and logs bounded schema codes/known paths without private output values. Historical guarded prompts remain unchanged; invalid results still fail without content repair or fallback. Preserve the failed application v0.24.0-rc.5 Stage evidence.
+
 - Completion acceptance now verifies saved unified consciousness v1/binding format v6 state, closed accounting and successful narration rather than requiring historical awareness v5. Application v0.24.0-rc.4 completed its battle but failed the outdated observer; preserve that failed evidence. Corrective candidate application v0.24.0-rc.5.
 
 - New consciousness prompt v2 shows complete decision envelopes with only currently available actions/references, preventing bare action examples from being mistaken for the whole response. Existing saved prompt v1 remains bound and supported; malformed outputs remain rejected without rewriting or paid content repair. Application v0.24.0-rc.3 staging failure is retained; corrective candidate application v0.24.0-rc.4.

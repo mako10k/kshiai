@@ -1,0 +1,152 @@
+{
+  "scope": "application v0.24.0-rc.6 / strict free-action contract clarification",
+  "governingAdr": "Accepted ADR0067 revision2 as superseded in part by ADR0069 revision1; existing strict result contract unchanged",
+  "affectedOfflineTests": {
+    "files": 8,
+    "passed": 34,
+    "failed": 0,
+    "skipped": 0
+  },
+  "newSourceRef": "unified-free-action-v1/source/output-contract",
+  "reviews": [
+    {
+      "ref": "test-recovery-v1/basis/2f80c008d1f20836",
+      "path": "backend/src/llm/openai-compatible.ts",
+      "review": "Existing strict FreeActionAdjudicationBatchSchema rejection retained. Only rateLimitRetryBattleId capability adds schema clarification; absent capability preserves historical system bytes. Invalid schema emits bounded safe issues and throws unchanged code with no retry/fallback.",
+      "previousSeal": "94af5bd7e1f98a485e957a5bf0e37e05a1a0dd16205283086de55ceb65536dc3",
+      "seal": "18ccecab460d2a2c5c1195461f5be7518fccde41d03ee906f2881c60935f614e"
+    },
+    {
+      "ref": "all-tests-20261008/current-source-closure/verification/routing-typed-seam-bounded-20261008",
+      "path": "backend/src/llm/openai-compatible-routing.test.ts",
+      "review": "Existing model/reasoning routing, referee fast tier, rate-limit/503/timeout retry tests all passed; clarification affects only explicitly v2-scoped free-action request, no generic adapter retry change.",
+      "previousSeal": "0f0846a7f348211262593b842464f844d23a9cc35843e9c4f9d3201d915a080f",
+      "seal": "e61e2d80b82e0a0d22ddb89ae71227ce72a32e3c2b0fd377b10b69dcf27f3a83"
+    },
+    {
+      "ref": "test-recovery-v1/basis/9300bba5dfdd28f2",
+      "path": "backend/src/llm/openai-compatible.ts",
+      "review": "Existing strict FreeActionAdjudicationBatchSchema rejection retained. Only rateLimitRetryBattleId capability adds schema clarification; absent capability preserves historical system bytes. Invalid schema emits bounded safe issues and throws unchanged code with no retry/fallback.",
+      "previousSeal": "85e38f60c2b94ba7e56336d61cbd5018da9a398d7215e73aa63bbd13bf38f4a2",
+      "seal": "2d441bcc84c2310acf3fcbd99da01adb93171f433c9738d144bb1a632a7facdd"
+    },
+    {
+      "ref": "all-tests-20261008/current-source-closure/verification/awareness-dispatch-context-20261007",
+      "path": "backend/src/llm/awareness-dispatch-context.test.ts",
+      "review": "All exact quote/token/deadline, mismatched model refusal, admission/no-send and frozen narration strict format assertions retained and passed; no retry or token-policy change.",
+      "previousSeal": "7677e17004d183c6faa038ec3b29389a1df6e7b59ce090fb75b0d405a30a0701",
+      "seal": "6f24eac63df970789c9d05976570249b23bf001f6259439e83e8fd47ebcabf08"
+    },
+    {
+      "ref": "test-recovery-v1/basis/0daf69bbc0052f26",
+      "path": "backend/src/testing/awareness-trial-http-fixture.ts",
+      "review": "Unchanged offline SDK fixture. Existing strict response shapes and fake transport retained; no live provider calls in reviewed tests.",
+      "previousSeal": "295a4c4c0d4fe65ae289cc0bd74d4caa29c36030481d39fba174a45569686b3a",
+      "seal": "72a7427db58a601c09f6040f2de9cfb3e220bf1f3c0e811f26b8093ff9fffe06"
+    },
+    {
+      "ref": "test-recovery-v1/basis/593a3039c2b05e7e",
+      "path": "backend/src/llm/index.ts",
+      "review": "Unchanged provider factory/model routing source. Updated adapter cause reviewed; no credential or provider selection change.",
+      "previousSeal": "fb692bc134a714e867d76c4676cc67586e6c97a5b88bdcdbbf39903784bd3497",
+      "seal": "e8133175a5565f0eda194fdea6e654d37555f8a8ada90cbddcab71d896f46ba7"
+    },
+    {
+      "ref": "all-tests-20261008/current-source-closure/verification/normal-awareness-policy-bounded-current-20261007",
+      "path": "backend/src/services/normal-awareness-policy.test.ts",
+      "review": "Default historical awareness-v5-usage-v3 and immutable deadline override assertions retained and passed; historical free-action system prompt remains unchanged.",
+      "previousSeal": "cb808b6fa5e7cf18a2e673c8f7c58bbb46a3e4c0243ed0f793e005645be360ef",
+      "seal": "bc8ecb69d2f522a61d622a38ba0af8fffb7414028265cdfd86bd3830069f109c"
+    },
+    {
+      "ref": "test-recovery-v1/basis/80c714d278e554d3",
+      "path": "backend/src/services/awareness-creation-encounter.ts",
+      "review": "Unchanged admitted encounter source. Updated provider adapter cause reviewed; encounter requests and response decoding unaffected.",
+      "previousSeal": "004424331affd05e777879f91412b966579055fda802e99cfe4b8c9837b32f31",
+      "seal": "f3b91851b529c250a90ac13f75a94a6620615c8617147d422c39e7b3fb8811b8"
+    },
+    {
+      "ref": "all-tests-20261008/current-source-closure/verification/awareness-creation-encounter-bounded-awareness-creation-20261007",
+      "path": "backend/src/services/awareness-creation-encounter.test.ts",
+      "review": "All scoped creation SDK, immutable V5 perception, no billing/no-send, no-retry invalid proposal and durable adoption assertions retained and passed. Free-action prompt does not alter encounter generation.",
+      "previousSeal": "7f969a42fe63f8a08e31ced5452fcc7a9cbcc097c6f2b94c7bfdaa34b1e06dac",
+      "seal": "8537d47e3c60553010ac28753d9def3693c63ff40b15cdab371b0506c507f762"
+    },
+    {
+      "ref": "test-recovery-v1/basis/59df7291e9c37342",
+      "path": "backend/src/services/battle-service.ts",
+      "review": "Unchanged immutable battle creation/advance source. Updated provider adapter cause reviewed; judgment failure atomicity and historical V5 tests passed.",
+      "previousSeal": "405201ea9eab835a744e1297705a9a151033d04d4181a361fe7cf29e022ba5bd",
+      "seal": "ea03c00833520d75b5d1ec6f56a97b7db1822ae63c77bd390b64fc2c4dde6882"
+    },
+    {
+      "ref": "all-tests-20261008/current-source-closure/verification/awareness-battle-creation-bounded-awareness-creation-20261007",
+      "path": "backend/src/services/awareness-battle-creation.test.ts",
+      "review": "Historical V5 immutable assets, encounter accounting and no-duplicate creation assertions retained and passed; v2-only free-action clarification does not change V5 binding.",
+      "previousSeal": "55a0ca9f700b4189f78ff4cd5aef126ae6505750458a9fc34b5c4cfa07fbf086",
+      "seal": "974db4b0742226ec5f25c619ec08f4f5d33741a25fcc40982fcc584227c26f25"
+    },
+    {
+      "ref": "all-tests-20261008/current-source-closure/verification/awareness-battle-service-bounded-awareness-creation-20261007",
+      "path": "backend/src/services/awareness-battle-service.test.ts",
+      "review": "All missing-route/billing, absent-intent, KO/aftermath and atomic preservation after required judgment failure assertions retained and passed. Invalid result still fails closed.",
+      "previousSeal": "d74f6b824bf2fcdf9f07dccb667f9fe5e3ad4fd6e868418dad57f8cde43286c6",
+      "seal": "afa984e89bbc04caef42625ceecde919534abcb484f13df41a05db5d6203ac5a"
+    },
+    {
+      "ref": "all-tests-20261008/current-source-closure/verification/battle-create-idempotency-bounded-awareness-creation-20261007",
+      "path": "backend/src/services/battle-create-idempotency.test.ts",
+      "review": "Deterministic public battle creation reads one saved battle without repeated encounter calls; unchanged assertion passed.",
+      "previousSeal": "39b472d66e06abf5d4eb762da058676a58f710d25a1d3b0987d5472a8fb8dc61",
+      "seal": "bc49df8033645cfff3ed6621dad103b4343f00869d9f85d9a4b8062be9a4bccd"
+    },
+    {
+      "ref": "test-recovery-v1/basis/ebcf7ce03ec331c7",
+      "path": "backend/src/llm/openai-compatible.ts",
+      "review": "Existing strict FreeActionAdjudicationBatchSchema rejection retained. Only rateLimitRetryBattleId capability adds schema clarification; absent capability preserves historical system bytes. Invalid schema emits bounded safe issues and throws unchanged code with no retry/fallback.",
+      "previousSeal": "417b88c7d9a8a4aa5553984664a8306754c0c3a80e66c22c689f8ed6a2940507",
+      "seal": "78b3315d12da79a58804173cf49195dd25ca1561587f0a144dc95bf1267082ad"
+    },
+    {
+      "ref": "all-tests-20261008/current-source-closure/verification/awareness-adjudication-result-20261007",
+      "path": "backend/src/llm/awareness-adjudication-result.test.ts",
+      "review": "All five historical invalid/empty-batch/HTTP-success rejection tests retained. Three new regressions verify schema-valid complete envelope instructions, safe bounded diagnostics, v2-only SDK prompt selection, unchanged legacy prompt and exactly one physical send per invalid result. Eight passed offline.",
+      "previousSeal": "7faa0c7d22939a4fd63d2cd36895e81d0a4f65b63212ed0e176e6b2796f43ece",
+      "seal": "5f904efeb58f3d6ea9752e0db2c22e0a34b81f33a58b5604dd89fdcca8658126"
+    }
+  ],
+  "planningValidation": {
+    "fullDocument": "blocked: existing goal_owner/dag_owner/work_event and version metadata unsupported by installed/upstream perttool",
+    "upstreamSource": "mako10k/perttool main159a754adb6085e41352e8baa2b0ba0d9f1b7ef1 (0.12.0), temporary checkout, no global installation change",
+    "projection": "Temporary copy omits goal_owner/dag_owner and historical work_event declarations, maps header version13 to supported grammar6. All goals/tasks/dependencies/statuses/durations retained. Original file and history unchanged.",
+    "projectionChecks": {
+      "documentCheck": "exit0",
+      "precedenceAndResourceSchedules": "exit0",
+      "next": "exit0; release recommended, stage/promote waiting"
+    },
+    "limitation": "Forward-DAG checks only; not full-document metadata/history validation. Prior rc.5 PERT pass claim retracted in its evidence."
+  },
+  "governedSuite": {
+    "files": 250,
+    "active": 250,
+    "provisional": 0,
+    "disabled": 0,
+    "exitCode": 0,
+    "pass": 1519,
+    "fail": 0,
+    "skipped": 0,
+    "cancelled": 0,
+    "database": "isolated PostgreSQL16 loopback15441; stopped after suite"
+  },
+  "checks": [
+    "npm run build exit0",
+    "npm run typecheck exit0",
+    "npm run static exit0; unchanged lizard baseline121/excess1369",
+    "git diff --check exit0"
+  ],
+  "sealgraph": {
+    "fsck": "ok",
+    "seals": 3074,
+    "refs": 1823
+  }
+}

@@ -1,3 +1,5 @@
+import { currentLlmUsageScope } from "./llm-usage-context.js";
+import { freeActionContractClarification, freeActionSchemaDiagnostics } from "./free-action-output-contract.js";
 import { CHARACTER_PROFILE_GENERATION_SYSTEM_V1, CHARACTER_PROFILE_CLAIM_SYSTEM_V1 } from "./character-profile-prompts.js";
 // R: Adapt domain LLM operations to accounted OpenAI-compatible chat requests.
 import { CURRENT_DIRECT_NARRATION_CONTRACT, type NarrationPromptContract } from "./narration-prompt-contract.js";
@@ -1117,7 +1119,7 @@ Rules:
 - Free actions never change HP, MP, parameters, canFight, identity, consciousness, agency, history, or winner.
 - causalEnvelope is qualitative planning input, not damage authority; improvised objects may be at most moderate.
 - Return exactly one proposal for each supplied intent and do not expose canonical facts in successSummary when the actor would not perceive them.
-${freeActionPenaltyInstructions(input.penaltyContext)}`,
+${freeActionPenaltyInstructions(input.penaltyContext)}${currentAwarenessDispatchContext()?.rateLimitRetryBattleId ? "\n" + freeActionContractClarification(input) : ""}`,
         renderAdjudicationPrompt(input),
         {
           tier: "fast",
@@ -1128,6 +1130,7 @@ ${freeActionPenaltyInstructions(input.penaltyContext)}`,
       );
       const parsed = FreeActionAdjudicationBatchSchema.safeParse(data);
       if (!parsed.success) {
+        console.warn(JSON.stringify({ event: "free_action_schema_invalid", battleId: currentLlmUsageScope()?.battleId ?? null, issues: freeActionSchemaDiagnostics(parsed.error) }));
         throw new LlmApplicationResultError("schema_invalid", "FREE_ACTION_BATCH_SCHEMA");
       }
       if (currentAwarenessDispatchContext()) {

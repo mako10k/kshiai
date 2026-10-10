@@ -70,6 +70,20 @@
     "terminalReason": "AWARENESS_REQUIRED_FREE_ACTION_JUDGMENT_FAILED",
     "observed": "Final adjudication HTTP completed with finishReason stop, contentLength989 and physical slot closed; not an HTTP429 in this run. Exact application validation detail needs Cloud Logging.",
     "boundary": "Battle preserved last committed tick4; no invalid result applied. rc.5 completion-observer repair not reached by this failed battle.",
-    "logAccess": "Local gcloud reauthentication expired; owner asked to refresh existing login; no ADC configured."
+    "logAccess": "Local gcloud reauthentication expired; owner asked to refresh existing login; no ADC configured.",
+    "followUp2026-10-11": {
+      "authentication": "Owner refreshed existing gcloud login; bounded Cloud Logging read succeeded.",
+      "event": "free_action_adjudication_failed",
+      "timestamp": "2026-10-10T21:15:25.414327Z",
+      "failureStage": "result_validation",
+      "reasonCode": "FREE_ACTION_BATCH_SCHEMA",
+      "tick": 5,
+      "turn": 2,
+      "actionIds": [
+        "turn-2-action-b"
+      ],
+      "applied": false,
+      "limitation": "Exact invalid output/field was not retained. No claim that subject:null was the actual invalid field."
+    }
   }
 }
