@@ -307,9 +307,10 @@ describe("provider operation accounting", () => {
     );
   });
 
-  it("reserves actual SDK awareness labels in v3 and retains historical operation layers", async (t) => {
+  it("reserves actual SDK consciousness labels in taxonomy v4 and retains historical operation layers", async (t) => {
     const expectedLayers = new Map([
       ["awareness-v5:subconscious", "deepPsyche"], ["awareness-v5:conscious", "characterExpression"],
+      ["unified-consciousness-v1", "characterExpression"],
       ["awareness-v5:narration-frozen", "narration"], ["awareness-v5:narration-batch", "narration"],
       ["advanceCharacterPsycheCompact", "deepPsyche"], ["advanceCharacterAgentCompact", "characterExpression"],
       ["prepareBattleEncounter", "encounter"], ["proposeHappening", "environment"], ["narrateTurn", "narration"], ["referee", "referee"],
@@ -328,7 +329,7 @@ describe("provider operation accounting", () => {
     assert.equal(captured.httpAttempts, expectedLayers.size);
     assert.equal(physicalCalls, expectedLayers.size);
     const summary = await accounting.readProviderOperationRun(context.runId);
-    assert.equal(summary.taxonomyRevision, "battle-provider-operations-v3");
+    assert.equal(summary.taxonomyRevision, "battle-provider-operations-v4");
     assert.equal(summary.taxonomyRevision, PROVIDER_OPERATION_TAXONOMY_REVISION);
     assert.equal(summary.reservedAttempts, expectedLayers.size);
     assert.equal(summary.attempts.length, expectedLayers.size);
@@ -344,17 +345,19 @@ describe("provider operation accounting", () => {
     assert.equal(providerOperationLayer("awareness-v5:not-registered"), null);
   });
 
-  it("reads preserved v2 ledger identity and entries without relabeling history", async () => {
-    const context = await createRun("historical-taxonomy", 1);
-    await accounting.withProviderOperationContext(context, () => accounting.executeProviderOperationAttempt({
-      logicalCallId: "historic-label", attemptOrdinal: 1, operation: "narrateTurn", provider: "fixture", model: "fixture",
-      action: async () => ({ tokens: 13 }), usage: (result) => ({ tokenCount: result.tokens }),
-    }));
-    getDb().prepare("UPDATE provider_operation_runs SET taxonomy_revision = ? WHERE run_id = ?").run("battle-provider-operations-v2", context.runId);
-    const history = await accounting.readProviderOperationRun(context.runId);
-    assert.equal(history.taxonomyRevision, "battle-provider-operations-v2");
-    assert.equal(history.reservedAttempts, 1);
-    assert.deepEqual(history.attempts, [{ layer: "narration", operation: "narrateTurn", status: "succeeded", count: 1, tokenCount: 13, estimatedCostUsd: null }]);
+  it("reads preserved taxonomy v2 and v3 ledger identities without relabeling history", async () => {
+    for (const revision of ["battle-provider-operations-v2", "battle-provider-operations-v3"]) {
+      const context = await createRun(`historical-taxonomy-${revision}`, 1);
+      await accounting.withProviderOperationContext(context, () => accounting.executeProviderOperationAttempt({
+        logicalCallId: "historic-label", attemptOrdinal: 1, operation: "narrateTurn", provider: "fixture", model: "fixture",
+        action: async () => ({ tokens: 13 }), usage: (result) => ({ tokenCount: result.tokens }),
+      }));
+      getDb().prepare("UPDATE provider_operation_runs SET taxonomy_revision = ? WHERE run_id = ?").run(revision, context.runId);
+      const history = await accounting.readProviderOperationRun(context.runId);
+      assert.equal(history.taxonomyRevision, revision);
+      assert.equal(history.reservedAttempts, 1);
+      assert.deepEqual(history.attempts, [{ layer: "narration", operation: "narrateTurn", status: "succeeded", count: 1, tokenCount: 13, estimatedCostUsd: null }]);
+    }
   });
 
   it("records every fake physical retry and preserves unknown usage", async () => {

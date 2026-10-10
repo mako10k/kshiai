@@ -1,6 +1,6 @@
 // R: Classify registered physical provider operations without accepting unknown labels.
 export const PROVIDER_OPERATION_TAXONOMY_REVISION =
-  "battle-provider-operations-v3";
+  "battle-provider-operations-v4";
 
 export const PROVIDER_OPERATION_LAYERS = {
   concretizeBattlefield: "encounter",
@@ -17,6 +17,7 @@ export const PROVIDER_OPERATION_LAYERS = {
   advanceCharacterAgent: "characterExpression",
   decideCharacterAction: "characterExpression",
   "awareness-v5:conscious": "characterExpression",
+  "unified-consciousness-v1": "characterExpression",
   chooseNarrationFocus: "narration",
   narratePrologue: "narration",
   narrateTurn: "narration",

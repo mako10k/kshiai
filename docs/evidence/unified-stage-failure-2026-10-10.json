@@ -1,0 +1,37 @@
+{
+  "battle": {
+    "id": "btl_3831b04c26075bf0be21eaf7e34ee1c1",
+    "status": "incomplete",
+    "incompleteReason": "PROVIDER_OPERATION_UNCLASSIFIED",
+    "manifestVersion": 6
+  },
+  "runs": [
+    {
+      "run_id": "stage-38040672331-1",
+      "taxonomy_revision": "battle-provider-operations-v3",
+      "approved_attempt_ceiling": 200,
+      "reserved_attempts": 1,
+      "status": "failed"
+    }
+  ],
+  "attempts": [
+    {
+      "operation": "prepareBattleEncounter",
+      "layer": "encounter",
+      "status": "succeeded",
+      "count": "1"
+    }
+  ],
+  "schema": "kshiai/unified-stage-failure/v1",
+  "stageRunId": 38040672331,
+  "tag": "v0.24.0-rc.1",
+  "commit": "a0991e6e55d213f423b7266ffdd58c004c1cbfad",
+  "revision": "kshiai-api-00189-leb",
+  "imageDigest": "sha256:21f39b3beefea952ebc2050527cb4f06589493d386a95e84be0494256f36f37b",
+  "failure": "unified-consciousness-v1 operation was absent from closed provider operation taxonomy; both consciousness sends rejected before physical HTTP; battle incomplete, next SSE reports BATTLE_FINISHED",
+  "authority": "Owner approved exactly one battle max200 attempts; consumed by this failed battle; no automatic retry or production promotion",
+  "charges": "One measured encounter provider attempt; monetary charge remains unpriced; no claim of zero cost",
+  "repairContract": "Accepted ADR0067 revision2 C5 physical accounting and ADR0051; register action/speech/memory-producing operation in existing characterExpression layer under new taxonomy v4; preserve old operation layers and stored v2/v3 ledger revision identities; no ledger migration or policy/cap change",
+  "workerPreview": "https://092923c5-kshiai-web.mako10k.workers.dev/",
+  "workerVersion": "092923c5-ae2d-4169-8b14-a7aa07c0e12e"
+}

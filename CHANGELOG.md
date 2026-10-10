@@ -18,6 +18,11 @@ based on Keep a Changelog, and releases follow Semantic Versioning.
 - New battles retain operating policy awareness-v5-usage-v3 with a 180-second
   adjudication deadline; historical policies retain their recorded deadlines.
 
+- Provider operation taxonomy v4 registers unified consciousness in the existing
+  character expression layer so bounded staged battles can dispatch it. Stored
+  taxonomy v2/v3 ledgers retain their identities; unknown operations still fail
+  before HTTP. Candidate v0.24.0-rc.1 failed this admission and is not promoted.
+
 ### Database and deployment
 
 - Add migration 0037_unified_consciousness.sql and private runtime storage.
