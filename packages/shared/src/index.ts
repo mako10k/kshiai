@@ -79,3 +79,7 @@ export * from "./battlefield-creation.js";
 
 export * from "./action-effort-policy.js";
 export * from "./battle-effort-perception.js";
+
+export * from "./consciousness-memory.js";
+export * from "./unified-consciousness-policy.js";
+export * from "./unified-consciousness.js";

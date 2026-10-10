@@ -1,8 +1,9 @@
+import type { BattleOperationalRuntime } from "../repositories/battle-operational-runtime.js";
 // R: Publish all batch presentations and narrator recognition atomically behind the lease fence.
-import type { NarrativeBlock, AwarenessPipelineState } from "@kshiai/shared";
+import type { NarrativeBlock } from "@kshiai/shared";
 import type { AwarenessFrozenNarrationResult } from "../llm/awareness-frozen-narration.js";
 import { withTransaction, type DatabaseConnection } from "../db.js";
-import { getAwarenessRuntimeInTransaction } from "../repositories/battle-awareness.js";
+import { getBattleOperationalRuntimeInTransaction } from "../repositories/battle-operational-runtime.js";
 import { commitAwarenessNarratorRecognition } from "../repositories/battle-awareness-narrator.js";
 import { requireFence, failEntries, requeueInputOutbox } from "./awareness-narration-worker-lifecycle.js";
 import type { NarrationDispatchOutcome } from "./awareness-narration-worker-dispatch.js";
@@ -17,7 +18,7 @@ async function deferClaimedBatch(connection: DatabaseConnection, input: Awarenes
   if (input.outboxId && !selected.entries.some((item)=>item.entry.receipt_id===input.receiptId)) await requeueInputOutbox(connection, input);
   await ports.release(connection,input,selected.fence);
 }
-function narrationPublicationCurrent(selected: Claimed, outcome: NarrationDispatchOutcome, latestRuntime: AwarenessPipelineState): boolean {
+function narrationPublicationCurrent(selected: Claimed, outcome: NarrationDispatchOutcome, latestRuntime: BattleOperationalRuntime): boolean {
   const terminalDeadline = latestRuntime.terminalAt === null ? Infinity : latestRuntime.terminalAt + latestRuntime.policy.narration.terminalDrainMs;
   return outcome.produced !== null && outcome.finishedNow < selected.deadlineAt && selected.entries.every((item) => outcome.finishedNow < Math.min(item.committedAt + latestRuntime.policy.narration.publicationDeadlineMs,latestRuntime.deadlineAt,terminalDeadline));
 }
@@ -60,7 +61,7 @@ export async function publishNarrationBatch(input: AwarenessNarrationWorkerInput
     const exists = await connection.query("SELECT 1 FROM battles WHERE id=$1",[input.battleId]);
     if (!exists.rowCount) return "acknowledged";
     if (!await requireFence(connection,input,fence,finishedAt)) return "acknowledged";
-    const latestSnapshot = await getAwarenessRuntimeInTransaction(connection,input.battleId);
+    const latestSnapshot = await getBattleOperationalRuntimeInTransaction(connection,input.battleId);
     if(!latestSnapshot)throw new Error("AWARENESS_RUNTIME_NOT_FOUND");
     const latestRuntime = latestSnapshot.runtime;
     const valid = narrationPublicationCurrent(selected, outcome, latestRuntime);

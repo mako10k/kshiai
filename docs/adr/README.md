@@ -115,7 +115,7 @@ current check.
 
 - [ADR-0057: Awarenessの公開完走を実利用量で検証する](0057-awareness-public-observation-accounting.md) — Accepted
 
-- [ADR-0058: 未Sealテストがあればテスト実行を停止する](0058-stop-test-runs-with-unsealed-tests.md) — Accepted
+- [ADR-0058: 未Sealテストがあればテスト実行を停止する](0058-stop-test-runs-with-unsealed-tests.md) — Superseded by ADR-0068 revision1
 
 - [ADR-0059: キャラ作成・修正の最終候補を完全に接続する](0059-complete-focused-character-review-payload.md) — Accepted; revision1、公開プロフィールの同一run内完結、create/revise最大10回、採用前の修正は不変な新attempt。
 
@@ -132,3 +132,7 @@ current check.
 - [ADR-0065: 実行行動からの裁定受渡しと中立な空項目の省略](0065-explicit-free-action-handoff-and-compact-facts.md) — Accepted; 実行actions必須、結果coverageと相関ログ、意味を保持した空項目省略。
 
 - [ADR-0066: 新規試合の裁定待機を180秒にする](0066-longer-new-battle-adjudication-deadline.md) — Accepted; 運用ポリシーusage-v3、新規束縛のみ、負担検査の理由ログ。
+
+- [ADR-0067: 統合意識と優先順位付き記憶](0067-unified-consciousness-priority-memory.md) — Accepted revision2; 統合意識と詳細契約案 第1版、同期並列判断と記憶操作。
+
+- [ADR-0068: 根拠不備のテストを除外した成功を禁止する](0068-fail-tests-on-invalid-authority.md) — Accepted revision1; stale等のdisabledがあれば公式unit/e2eを実行前にexit1。ADR0058を置換。

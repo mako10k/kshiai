@@ -1064,7 +1064,7 @@ export function ensureBattleCompatibilityState(state: BattleState): BattleState 
   const withWorld = ensureBattleWorldState(state);
   const withPerception = ensureBattlePerceptionState(withWorld);
   // V5 subjective state belongs to the awareness runtime, not legacy agent migration.
-  if (withPerception.assetManifest?.schemaVersion === 5) return withPerception;
+  if ((withPerception.assetManifest?.schemaVersion === 5 || withPerception.assetManifest?.schemaVersion === 6)) return withPerception;
   if (
     withPerception.pipelineAuthorityVersion === 1 &&
     withPerception.encounterContext &&

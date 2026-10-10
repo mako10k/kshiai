@@ -1,0 +1,12 @@
+domain ADR0068:
+  description "Accepted revision1: fail governed unit/e2e execution before tests whenever disabled authority remains."
+evidence OWNER_ACCEPTANCE:
+  "2026-10-10 owner explicitly requests correction: 根拠が古いのは『失敗』になるように指示したはず; 修正をお願いします."
+evidence CURRENT:
+  "ADR0058 and runner stop unsealed/missing_ref only. Stale and other disabled entries are skipped; active tests can yield exit0. Previous unified consciousness v1 report excluded28 files and claimed completion after1338 successes."
+premise SCOPE:
+  "Preserve classifications, diagnostic --list, zero-active rejection, provisional non-authoritative handling and historical Seals. Reject every disabled authority entry, including stale, source divergence, missing binding/basis/ref and unsealed. No bulk reseal or forced execution."
+premise OPTIONS:
+  "Warning-and-skip violates the current owner instruction. Forced execution bypasses authority. Pre-execution exit1 with all paths/refs/reasons is selected."
+decision ACCEPTANCE based_on OWNER_ACCEPTANCE, CURRENT, SCOPE, OPTIONS:
+  "Accept revision1. Unit and e2e official execution must fail before launching any tests if any discovered entry is disabled, even with active tests present. List mode stays diagnostic. Supersede ADR0058 aggregate stop scope, retaining historical rationale. Withdraw prior unified consciousness whole-suite completion; keep scoped results as historical observations and track full verification as unfinished."

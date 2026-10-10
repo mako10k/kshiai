@@ -1,6 +1,6 @@
 // R: Orchestrate lease acquisition, batch claim, dispatch, and atomic narration publication.
 import { query } from "../db.js";
-import { getAwarenessRuntime } from "../repositories/battle-awareness.js";
+import { getBattleOperationalRuntime } from "../repositories/battle-operational-runtime.js";
 import { createAwarenessClock } from "./awareness-clock.js";
 import { readBattle } from "./awareness-narration-worker-lifecycle.js";
 import { claimNarrationBatch } from "./awareness-narration-worker-claim.js";
@@ -22,8 +22,8 @@ export async function processAwarenessNarrationWorker(input: AwarenessNarrationW
   const initialAt = new Date(initialNow).toISOString();
   const battle = await readBattle(input.battleId);
   if (!battle) return "acknowledged";
-  if (battle.assetManifest?.schemaVersion !== 5) throw new Error("AWARENESS_NARRATION_REQUIRES_V5");
-  const runtime = await getAwarenessRuntime(input.battleId);
+  if (battle.assetManifest?.schemaVersion !== 5 && battle.assetManifest?.schemaVersion !== 6) throw new Error("AWARENESS_NARRATION_REQUIRES_V5");
+  const runtime = await getBattleOperationalRuntime(input.battleId);
   if (!runtime) throw new Error("AWARENESS_RUNTIME_NOT_FOUND");
   if (!await narrationDeliveryCurrent(input)) return "acknowledged";
   const fence = await ports.acquire({ battleId: input.battleId, ownerId: input.ownerId, now: initialAt,

@@ -1,3 +1,4 @@
+import type { BattleOperationalRuntime } from "./battle-operational-runtime.js";
 // R: Apply identical physical-attempt reservation bounds and accounting aggregates across authorized storage paths.
 import type { AwarenessPipelineState, AwarenessReservation, AwarenessRole } from "@kshiai/shared";
 
@@ -17,14 +18,14 @@ function roleGroup(role: AwarenessRole): keyof AwarenessPipelineState["policy"][
   return role === "subconscious" || role === "adjudication" ? "required" : role;
 }
 
-function validateReservationWindow(state: AwarenessPipelineState, input: { now: string }, attempt: { role: AwarenessRole }): void {
+function validateReservationWindow(state: BattleOperationalRuntime, input: { now: string }, attempt: { role: AwarenessRole }): void {
   if (state.status !== "active" && !(state.status === "terminal" && attempt.role === "narration" && state.terminalAt !== null &&
       Date.parse(input.now) < Math.min(state.deadlineAt, state.terminalAt + state.policy.narration.terminalDrainMs))) throw new Error("AWARENESS_RUNTIME_INACTIVE");
   const now = Date.parse(input.now);
   if (now >= state.deadlineAt || now < state.startedAt) throw new Error("AWARENESS_DISPATCH_DEADLINE");
 }
 
-function validateReservationBudget(state: AwarenessPipelineState, attempt: { id: string; role: AwarenessRole; maximumUsd: number | null }): void {
+function validateReservationBudget(state: BattleOperationalRuntime, attempt: { id: string; role: AwarenessRole; maximumUsd: number | null }): void {
   const observed = state.policy.accountingMode === "observed";
   if (!observed && attempt.maximumUsd === null) throw new Error("AWARENESS_VERIFIED_ADMISSION_REQUIRED");
   const reservations = state.budget.reservations;
@@ -33,7 +34,7 @@ function validateReservationBudget(state: AwarenessPipelineState, attempt: { id:
   const roleSpend = reservations.filter((item) => roleGroup(item.role) === group)
     .reduce((sum, item) => sum + (item.status === "settled" ? item.actualUsd ?? 0 : item.maximumUsd ?? 0), 0);
   const outstanding = reservations.filter((item) => item.physicalOutstanding);
-  if (reservations.length >= state.policy.maxPhysicalAttempts || outstanding.length >= state.policy.maxPhysicalConcurrent ||
+  if (state.budget.physicalAttempts >= state.policy.maxPhysicalAttempts || state.budget.physicalOutstanding >= state.policy.maxPhysicalConcurrent ||
       outstanding.filter((item) => item.role === attempt.role).length >= state.policy.roles[attempt.role].concurrent ||
       (!observed && (state.budget.reservedUsd + state.budget.settledUsd + (attempt.maximumUsd ?? 0) > state.policy.maxCostUsd ||
         roleSpend + (attempt.maximumUsd ?? 0) > state.policy.maxCostUsd * state.policy.budgetShares[group]))) {
@@ -41,7 +42,7 @@ function validateReservationBudget(state: AwarenessPipelineState, attempt: { id:
   }
 }
 
-export function validateReservationAdmission(state: AwarenessPipelineState, input: { now: string }, attempt: { id: string; role: AwarenessRole; maximumUsd: number | null }): void {
+export function validateReservationAdmission(state: BattleOperationalRuntime, input: { now: string }, attempt: { id: string; role: AwarenessRole; maximumUsd: number | null }): void {
   validateReservationWindow(state, input, attempt);
   validateReservationBudget(state, attempt);
 }

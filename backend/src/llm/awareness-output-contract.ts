@@ -6,7 +6,7 @@ export const AwarenessActionIntentExamples: readonly CharacterActionIntent[] = [
   { kind: "free_action", description: "対象へ手を伸ばす試み", subjectRefs: ["提示された参照ID"] },
   { kind: "reflect", reflectionAnalysis: "本人の分析", reflectionGuideline: "次の指針" },
 ];
-export function renderAwarenessOutputContract(role: "subconscious" | "conscious"): string {
+export function renderExecutableActionContract(): string {
   const examples = AwarenessActionIntentExamples.map((example) => CharacterActionIntentSchema.parse(example));
   return [
     "返答の構造：body意欲のactionは文字列ではなく、kindを持つJSONオブジェクト。action:『防御する』やaction:『defend』は不可。voice意欲のspeechは文字列。",
@@ -14,6 +14,11 @@ export function renderAwarenessOutputContract(role: "subconscious" | "conscious"
     `actionの基本例：${examples.map((example) => JSON.stringify(example)).join("、")}。`,
     "basic_attack・skill・defendの任意項目はskillId、useFinisher（真偽）、instrumentRef。skillを選ぶときは提示されたskillIdを指定する。rest・waitの任意項目はskillId、useFinisher。repositionにはkind以外の項目を加えない。使わない任意項目は省略する。",
     "free_actionの必須項目はkind、description（1〜600文字）、subjectRefs（提示された参照IDを1〜4件）。任意項目はdesiredOutcome（1〜400文字）、opportunityId。reflectの必須項目はkind、reflectionAnalysis、reflectionGuideline（各1〜400文字）。他のkindに自由行動や内省の項目を加えない。行為の成功を記さず試みを示す。",
+  ].join("\n");
+}
+export function renderAwarenessOutputContract(role: "subconscious" | "conscious"): string {
+  return [
+    renderExecutableActionContract(),
     "各意欲はid、source、strength（数値0〜1）、startTick、validUntilTick、resourceを持つ。bodyにはactionだけ、voiceにはspeechだけを加える。tickは非負整数、validUntilTick-startTickは1〜3。追加の項目は返さない。意欲を出さない一覧は[]。",
     role === "subconscious"
       ? "reflexDesiresのsourceはreflex、affectiveDesiresのsourceはsubconscious。stateの感覚と感情は曖昧なままでよいが、JSONの項目名と型は上記を守る。"

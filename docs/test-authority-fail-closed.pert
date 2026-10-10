@@ -1,0 +1,51 @@
+project TEST_AUTHORITY_FAIL_CLOSED:
+  version 5
+  title "根拠不備を失敗にするテスト実行ゲート修正"
+  description "Owner instruction2026-10-10; Accepted ADR0068 revision1. Canonical task for selector repair; preserve stale tests and historical evidence. No bulk reseal or game/runtime changes."
+  duration_unit point
+  finish FIXED
+  goal_owner user
+  dag_owner agent
+milestone NOW:
+  title "Owner explicitly requests stale authority to fail"
+  state reached
+milestone IMPLEMENTED:
+  title "Fail-closed gate and regressions implemented"
+milestone FIXED:
+  title "Selector failures and corrected completion record verified"
+task implement NOW -> IMPLEMENTED:
+  title "根拠不備の実行前拒否を実装"
+  description "Accepted ADR0068: reject every disabled authority entry before unit/e2e tests; retain list/provisional policies. Add mixed-active/stale and CLI no-launch regressions."
+  duration 1p
+  status done
+task verify IMPLEMENTED -> FIXED:
+  title "実selector停止と完了記録訂正を検証"
+  description "Check scoped current-authority regressions; actual npm test must exit1 on retained stale entries before TAP; diagnostic list remains usable. Typecheck and ADR/PERT checks. Retract unified consciousness whole-suite completion and leave current full verification pending. Existing28 stale recovery is outside this repair scope."
+  duration 1p
+  status done
+
+work_event WE-a776e53434c87dc3f42d735842f00daa25c82b1743307f8fae7839a1e7f442ad:
+  model 1
+  task implement
+  kind start
+  occurred_at 2026-10-10T14:24:23+09:00
+  planned_value 1p
+
+work_event WE-45f53e317d7844d8e149295090ccda30acea268f03e41341937bd7424deb0158:
+  model 1
+  task implement
+  kind finish
+  occurred_at 2026-10-10T14:27:18+09:00
+
+work_event WE-74603e5bd985309fd98e1e95deca3ba5df797695f5977279450ebf29fa248e26:
+  model 1
+  task verify
+  kind start
+  occurred_at 2026-10-10T14:27:18+09:00
+  planned_value 1p
+
+work_event WE-ddad14a5499c015888d6df0e8920a9a4c88016ecb59392cacf81703ac66adbdb:
+  model 1
+  task verify
+  kind finish
+  occurred_at 2026-10-10T14:28:13+09:00

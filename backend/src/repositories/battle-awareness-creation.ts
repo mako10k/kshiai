@@ -1,3 +1,7 @@
+import { type UnifiedConsciousnessRuntime } from "@kshiai/shared";
+import { insertUnifiedRuntime } from "./unified-consciousness.js";
+import { budgetSnapshot } from "./awareness-reservation-budget.js";
+import { settleBattleOperationalAttemptInTransaction } from "./battle-operational-runtime.js";
 // R: Reserve and adopt one immutable encounter dispatch without requiring a battle row.
 import { z } from "zod";
 import { AwarenessDefaultPolicy, AwarenessPolicyV1Schema, AwarenessPipelineStateSchema, AwarenessReservationSchema,
@@ -60,7 +64,7 @@ function readCompletion(current: { snapshot: AwarenessCreationSnapshot } | null,
 
 async function settleAdoptedCreation(connection: DatabaseConnection, snapshot: AwarenessCreationSnapshot, input: Parameters<typeof completeAwarenessCreationAttempt>[0]): Promise<void> {
   if (snapshot.status !== "adopted") return;
-  await settleAwarenessAttemptInTransaction(connection, { battleId: input.battleId, id: input.id,
+  await settleBattleOperationalAttemptInTransaction(connection, { battleId: input.battleId, id: input.id,
     outcome: input.actualUsd === null ? "unknown" : "settled", actualUsd: input.actualUsd,
     physicalOutstanding: input.physicalOutstanding, finishedAt: input.finishedAt });
 }
@@ -86,7 +90,7 @@ function completionFailure(current: AwarenessCreationSnapshot, input: { failure?
   return null;
 }
 
-function validateAdoption(current: AwarenessCreationSnapshot, input: { requestDigest: string; runtime: AwarenessPipelineState; now: number }): void {
+function validateAdoption(current: AwarenessCreationSnapshot, input: { requestDigest: string; runtime: Pick<AwarenessPipelineState, "policy" | "budget">; now: number }): void {
   if (current.requestDigest !== input.requestDigest || current.status !== "ready" || !current.result || !current.reservation || input.now >= current.deadlineAt) {
     throw new Error(current.requestDigest !== input.requestDigest ? "AWARENESS_CREATION_IDENTITY_CONFLICT" : "AWARENESS_CREATION_NOT_ADOPTABLE");
   }
@@ -186,4 +190,19 @@ export async function adoptAwarenessCreationInTransaction(connection: DatabaseCo
     VALUES($1,0,1,$2,$3)`, [input.battleId, JSON.stringify(runtime), new Date(input.now).toISOString()]);
   await write(connection, current.revision, { ...current.snapshot, status: "adopted" }, input.now);
   return runtime;
+}
+
+/** New unified battles adopt creation usage without storing historical psychological state. */
+export async function adoptUnifiedCreationInTransaction(connection: DatabaseConnection, input: {
+  battleId: string; requestDigest: string; runtime: UnifiedConsciousnessRuntime; now: number;
+}): Promise<void> {
+  const current = await read(connection, input.battleId);
+  if (!current) throw new Error("AWARENESS_CREATION_IDENTITY_CONFLICT");
+  validateAdoption(current.snapshot, { ...input, runtime: { policy: input.runtime.operatingPolicy, budget: input.runtime.budget } });
+  const reservation = current.snapshot.reservation;
+  if (!reservation) throw new Error("AWARENESS_CREATION_NOT_ADOPTABLE");
+  await insertUnifiedRuntime(connection, input.battleId, { ...input.runtime,
+    startedAt: current.snapshot.startedAt, deadlineAt: current.snapshot.startedAt + input.runtime.policy.durationMs,
+    budget: budgetSnapshot([reservation]) }, new Date(input.now).toISOString());
+  await write(connection, current.revision, { ...current.snapshot, status: "adopted" }, input.now);
 }

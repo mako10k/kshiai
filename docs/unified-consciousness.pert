@@ -1,0 +1,101 @@
+project UNIFIED_CONSCIOUSNESS:
+  version 5
+  title "統合意識と優先順位付き記憶の方向転換"
+  description "Owner direction2026-10-10; requirements docs/unified-consciousness-design-v1.md; Accepted ADR0067 revision2 and docs/unified-consciousness-contract-v1.md C1-C8. Canonical successor planning for new consciousness work. Preserve historical awareness-v5 and unfinished release evidence. Estimates provisional, no measured velocity or paid/deploy authority."
+  duration_unit point
+  finish CURRENTLY_VERIFIED
+  goal_owner user
+  dag_owner agent
+resource DEV:
+  title "Developer"
+  capacity 1
+milestone NOW:
+  title "Owner direction and branch authorized"
+  state reached
+milestone DESIGNED:
+  title "Detailed memory execution and operating contract reviewable"
+milestone ACCEPTED:
+  title "Exact architecture and operating contract owner accepted"
+milestone IMPLEMENTED:
+  title "New immutable pipeline implemented with historical continuation"
+milestone VERIFIED:
+  title "Local contract regressions and typechecks verified"
+milestone CURRENTLY_VERIFIED:
+  title "Full governed verification succeeds without invalid authority exclusions"
+task design NOW -> DESIGNED:
+  title "統合意識の詳細契約と影響を具体化"
+  description "ADR0067 revision2 D1-D8 and detailed contract C1-C8: memory insert/remove limits, event3tick admission, synchronous parallel A/B judgment, continuation, late/crash/failure semantics, private persistence, new binding6 and historical compatibility, finite policy and comparable fixtures. Completion requires reviewable exact contract and successful ADR/document/both-schedule/next checks, not runtime cutover."
+  duration 2p
+  status done
+task accept DESIGNED -> ACCEPTED:
+  title "所有者が詳細契約を受入"
+  description "Only explicit owner acceptance of exact ADR revision and operating contract closes this milestone. Task selection does not authorize implementation."
+  duration 1p
+  status done
+task implement ACCEPTED -> IMPLEMENTED:
+  title "統合意識と優先順位付き記憶を実装"
+  description "Implement accepted new-battle binding, memory operations, single consciousness input/output and scheduling; preserve existing awareness-v5 continuation. Add behavioral regression coverage. No paid calls or deployment."
+  duration 5p
+  status done
+task verify IMPLEMENTED -> VERIFIED:
+  title "契約と互換性を検証"
+  description "Verify memory ordering/overflow/deletion/atomicity, always-in-input, event retention, late/replay safety, private boundaries and historical continuation. Run shared build then governed tests and typecheck with eligibility checks. Offline results do not prove model quality or savings."
+  duration 2p
+  status done
+
+task fullVerification VERIFIED -> CURRENTLY_VERIFIED:
+  title "根拠不備を解消した公式全体検証"
+  description "2026-10-10 owner correction and Accepted ADR0068 revision1 retract earlier whole-suite completion. Preserve previous scoped results. After selector correction in docs/test-authority-fail-closed.pert, review stale test authority individually and run official full suite with no disabled authority. Do not bulk reseal or delete tests. Completion requires actual official exit0, typecheck and updated evidence. Estimate provisional. This task remains pending during the selector repair."
+  duration 3p
+
+work_event WE-22fc1f43fb25e57ba288410e84cc4e98f1b6e647f91c8a7e99892e1cb6e2b423:
+  model 1
+  task design
+  kind start
+  occurred_at 2026-10-10T13:23:51+09:00
+  planned_value 2p
+
+work_event WE-81a7fdb9a73e44779f2464f83a20c2e6d45ab556a8639f543ac8397b149e2458:
+  model 1
+  task design
+  kind finish
+  occurred_at 2026-10-10T13:26:37+09:00
+
+work_event WE-a072b92d0aecb7e778003e9c3ad71e41de6e5cfae30de53a57db8c11dbe75c7f:
+  model 1
+  task accept
+  kind start
+  occurred_at 2026-10-10T13:38:31+09:00
+  planned_value 1p
+
+work_event WE-b276ee0ecc4548a8f992853cc7605383d2c41ec66a2f921fb65a3a88df23a69f:
+  model 1
+  task accept
+  kind finish
+  occurred_at 2026-10-10T13:38:31+09:00
+
+work_event WE-0b6d7717f0c525954596f9e5c8e460f905d369dd7774ff1761c3912004ff9070:
+  model 1
+  task implement
+  kind start
+  occurred_at 2026-10-10T13:38:33+09:00
+  planned_value 5p
+
+work_event WE-94bbfa558b91e77afcf0c1a33069becc71ef1031c9d62002f950bc6447883e59:
+  model 1
+  task implement
+  kind finish
+  occurred_at 2026-10-10T14:13:41+09:00
+
+work_event WE-ba734e03f1f786586ae195fe86a0794ce717dec1f71f0fb2c4c53f3a94b3133d:
+  model 1
+  task verify
+  kind start
+  occurred_at 2026-10-10T14:14:05+09:00
+  planned_value 2p
+
+work_event WE-ef30d4aa080fe30253cac1c65250644a391db6195cb35cc629a6a7cbf81c73e3:
+  model 1
+  task verify
+  kind finish
+  occurred_at 2026-10-10T14:16:55+09:00

@@ -5,7 +5,7 @@ import {
   projectPsycheReactionV1, type AgencyFactV1, type CharacterAgentState,
   type CharacterBattleCompilerInputsV2, type CharacterBattleCompilerInputsV3,
   type CharacterBattleCompilerInputsV4,
-  BattleAssetManifestV3Schema, BattleAssetManifestV4Schema, BattleAssetManifestV5Schema, snapshotDialoguePipelineSettings,
+  BattleAssetManifestV3Schema, BattleAssetManifestV4Schema, BattleAssetManifestV5Schema, BattleAssetManifestV6Schema, snapshotDialoguePipelineSettings,
   type BattleCharacterAssetBinding, type BattleState, type DialoguePipelineSettings,
 } from "@kshiai/shared";
 import type { CharacterExpressionCompactInputV3, CharacterAgentAdvanceResult, CharacterActionDecisionInput } from "./types.js";
@@ -28,7 +28,7 @@ export function isV4ConsciousCompiler(
 export function privateBattleGoal(state: BattleState, side: "a" | "b"): string {
   const agent = side === "a" ? state.agentStateA : state.agentStateB;
   const schemaVersion = state.assetManifest?.schemaVersion;
-  if (schemaVersion === 5) return "";
+  if (schemaVersion === 5 || schemaVersion === 6) return "";
   if (schemaVersion === 3 || schemaVersion === 4) {
     return agent?.consciousAgencyV2?.upperGoal?.statement ?? agent?.consciousAgencyV1?.upperGoal?.statement ?? "";
   }
@@ -37,13 +37,15 @@ export function privateBattleGoal(state: BattleState, side: "a" | "b"): string {
 
 export function legacyPublicOpeningPlan(state: BattleState, side: "a" | "b"): string | undefined {
   const schemaVersion = state.assetManifest?.schemaVersion;
-  if (schemaVersion === 3 || schemaVersion === 4 || schemaVersion === 5) return undefined;
+  if (schemaVersion === 3 || schemaVersion === 4 || schemaVersion === 5 || schemaVersion === 6) return undefined;
   return (side === "a" ? state.agentStateA : state.agentStateB)?.currentGoal?.slice(0, 1200);
 }
 
 /** Compare typed frozen fields, without a serialization/parse round trip. */
 function parseConsciousManifest(state: BattleState, schemaVersion: number | undefined) {
-  return schemaVersion === 5
+  return schemaVersion === 6
+    ? BattleAssetManifestV6Schema.safeParse(state.assetManifest)
+    : schemaVersion === 5
     ? BattleAssetManifestV5Schema.safeParse(state.assetManifest)
     : schemaVersion === 4
     ? BattleAssetManifestV4Schema.safeParse(state.assetManifest)
@@ -69,7 +71,7 @@ function assertCurrentDialoguePipelineBinding(
 }
 
 function assertConsciousAgencyStateBinding(state: BattleState, schemaVersion: number | undefined): void {
-  if (schemaVersion === 5) {
+  if (schemaVersion === 5 || schemaVersion === 6) {
     for (const agent of [state.agentStateA, state.agentStateB]) {
       if (agent?.consciousAgencyV1 || agent?.consciousAgencyV2 || agent?.reactionStateV1) {
         throw new Error("BATTLE_CONTRACT_MISMATCH");
@@ -87,7 +89,7 @@ function assertConsciousAgencyStateBinding(state: BattleState, schemaVersion: nu
 
 export function assertConsciousBinding(state: BattleState, settings: DialoguePipelineSettings): void {
   const schemaVersion = state.assetManifest?.schemaVersion;
-  if (settings.schemaVersion !== 3 && schemaVersion !== 3 && schemaVersion !== 4 && schemaVersion !== 5) return;
+  if (settings.schemaVersion !== 3 && schemaVersion !== 3 && schemaVersion !== 4 && schemaVersion !== 5 && schemaVersion !== 6) return;
   assertCurrentDialoguePipelineBinding(state, settings, parseConsciousManifest(state, schemaVersion));
   assertConsciousAgencyStateBinding(state, schemaVersion);
 }

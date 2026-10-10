@@ -29,7 +29,7 @@ export function buildAwarenessExecutionContext(input: {
   intentInvalid: boolean;
 }): AwarenessExecutionContext {
   const manifest = input.state.assetManifest;
-  if (manifest?.schemaVersion !== 5) throw new Error("AWARENESS_MANIFEST_REQUIRED");
+  if (manifest?.schemaVersion !== 5 && manifest?.schemaVersion !== 6) throw new Error("AWARENESS_MANIFEST_REQUIRED");
   const binding = manifest.characters[input.side];
   if (input.generation.assetType !== "character" || input.generation.assetId !== binding.assetId ||
       input.generation.generationId !== binding.generationId || input.generation.contentDigest !== binding.contentDigest) {

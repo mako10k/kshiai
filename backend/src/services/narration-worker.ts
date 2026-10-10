@@ -856,7 +856,7 @@ async function processNextNarrationCore(
   try { candidate = typeof stored === "string" ? JSON.parse(stored) : stored; }
   catch { candidate = null; }
   const manifest: unknown = candidate && typeof candidate === "object" ? Reflect.get(candidate, "assetManifest") : null;
-  if (manifest && typeof manifest === "object" && Reflect.get(manifest, "schemaVersion") === 5) {
+  if (manifest && typeof manifest === "object" && [5, 6].includes(Reflect.get(manifest, "schemaVersion"))) {
     return processAwarenessNarrationWorker({ ...input, options: input.generator.awareness ?? {} }, {
       acquire: acquireFencedLease,
       release(connection, scope, fence) {
