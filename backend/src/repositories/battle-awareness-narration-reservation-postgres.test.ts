@@ -5,7 +5,11 @@ import { test } from "node:test";
 import { Client } from "pg";
 import { AwarenessInitialize, AwarenessObservedPolicy, AwarenessPipelineStateSchema } from "@kshiai/shared";
 import type { DatabaseConnection, DatabaseRow } from "../db.js";
-import { reserveNarrationAttemptInTransaction, type NarrationReservationInput } from "./battle-awareness-narration-reservation.js";
+import type { NarrationReservationInput } from "./battle-awareness-narration-reservation.js";
+// Force the application default to SQLite: the explicit connection dialect must
+// govern PostgreSQL locking even when a local .env supplies another database.
+process.env.DATABASE_URL = "";
+const { reserveNarrationAttemptInTransaction } = await import("./battle-awareness-narration-reservation.js");
 const connectionString = process.env.AWARENESS_POSTGRES_TEST_URL;
 function url() {
   if (!connectionString) {
@@ -31,7 +35,11 @@ function connection(client: Client): DatabaseConnection {
 const now = "2026-10-06T00:00:00.000Z";
 async function waiting(observer: Client, pid: number) {
   for (let i = 0; i < 100; i++) {
-    if ((await observer.query<{ waiting: boolean }>("SELECT wait_event_type='Lock' AS waiting FROM pg_stat_activity WHERE pid=$1", [pid])).rows[0]?.waiting) {
+    const activity = (await observer.query<{ waiting: boolean; query: string }>(
+      "SELECT wait_event_type='Lock' AS waiting,query FROM pg_stat_activity WHERE pid=$1", [pid],
+    )).rows[0];
+    if (activity?.waiting) {
+      assert.match(activity.query, /FROM battle_awareness_runtime[^]*FOR UPDATE/);
       return;
     }
     await new Promise<void>(resolve => setTimeout(resolve, 10));

@@ -28,7 +28,12 @@ export async function reserveNarrationAttemptInTransaction(connection: DatabaseC
   }
   // Runtime precedes the narrator lease/batch/entry locks, matching failure accounting.
   if (dialect === "postgres") {
-    await getBattleOperationalRuntimeInTransaction(connection, input.battleId, { lock: true });
+    // Honor this connection's explicit dialect, including isolated PostgreSQL
+    // callers whose application configuration uses SQLite. Lock before reading.
+    const unified = await connection.query("SELECT battle_id FROM battle_unified_consciousness WHERE battle_id=$1 FOR UPDATE", [input.battleId]);
+    if (unified.rowCount === 0) {
+      await connection.query("SELECT battle_id FROM battle_awareness_runtime WHERE battle_id=$1 FOR UPDATE", [input.battleId]);
+    }
   }
   const current = await getBattleOperationalRuntimeInTransaction(connection, input.battleId);
   if (!current) {

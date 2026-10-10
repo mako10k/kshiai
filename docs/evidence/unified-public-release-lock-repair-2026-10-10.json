@@ -1,0 +1,31 @@
+{
+  "schema": "kshiai/unified-public-release-lock-repair/v1",
+  "failedCI": "https://github.com/mako10k/kshiai/actions/runs/38038592908",
+  "failure": "Native PostgreSQL narrator reservation expected BUDGET_ADMISSION_REJECTED but got AWARENESS_REVISION_OR_LEASE_CONFLICT",
+  "cause": "Explicit postgres caller used global application databaseUrl to decide SELECT FOR UPDATE; local dotenv configuration masked omitted lock in CI SQLite-default config. This is a dialect-consistency defect; no production failure is claimed.",
+  "repair": "Narrator reservation explicitly locks unified runtime row, otherwise historical row, using explicit postgres dialect before snapshot read. All existing fences, budget and CAS checks unchanged.",
+  "regression": "Force empty DATABASE_URL before dynamic import, and assert blocked PostgreSQL query is historical runtime FOR UPDATE, not narrator lease. Existing4 native assertions/cases preserved.",
+  "before": {
+    "tests": 4,
+    "pass": 3,
+    "fail": 1,
+    "skip": 0
+  },
+  "after": {
+    "tests": 4,
+    "pass": 4,
+    "fail": 0,
+    "skip": 0
+  },
+  "scope": "Disposable loopback PostgreSQL16; no production writes or paid provider calls",
+  "files": [
+    {
+      "path": "backend/src/repositories/battle-awareness-narration-reservation.ts",
+      "sha256": "fc0d8023dd862dc0700b548249108dcb8bb801cbae5b78c703ae310bedd9f08c"
+    },
+    {
+      "path": "backend/src/repositories/battle-awareness-narration-reservation-postgres.test.ts",
+      "sha256": "f828a30a869c895fca24cf597c1922c7015271247c864c640927339e356c01bb"
+    }
+  ]
+}
