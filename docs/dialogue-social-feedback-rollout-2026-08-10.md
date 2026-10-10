@@ -34,3 +34,32 @@ claim that all repetition is eliminated.
    before changing prompts or schemas.
 4. Preserve the boundary: LLMs author private meaning and public expression;
    deterministic code validates schemas, ownership, persistence, and safety.
+
+## Follow-up RCA — appraisal subject ownership
+
+Post-rollout trace review found a remaining semantic loop in battle
+`btl_9c7e05fae4c9bfb80d3b6229`. On turns 16–19, a character's private
+`observedImpact` described the counterpart repeating a warning. The same turns
+continued to select `fresh_leverage` and `advance`, even though the intended
+social-feedback mechanism is for the speaker to account for whether the
+speaker's own preceding expression has retained attention, credibility, or
+force.
+
+This is not evidence of an action/result A/B swap. The schema records the
+bearer of a social consequence (`self` or `relationship`) but does not bind its
+appraisal subject to the speaker's preceding expression. The model therefore
+can validly use counterpart speech as the subject of the observation while
+still assigning the consequence to `self` or `relationship`. In addition, the
+expression brief permits `counterpart_speech` as a public focus. The intended
+self-appraisal and legitimate response to counterpart speech are consequently
+represented in the same free-form appraisal surface.
+
+The next implementation must make that ownership structural: bind observed
+impact, observed social consequence, and continuity basis to
+`own_previous_expression`; keep counterpart-speech response in a separate
+semantic context that cannot satisfy repetition suppression, social cost, or a
+continuity decision. This retains character-authored deliberate repetition but
+removes the route by which a speaker externalizes its own anti-repetition
+reflection onto the counterpart. It requires schema and pipeline changes, not
+phrase matching, prompt-only bans, cancellation, retries, or additional model
+calls.
