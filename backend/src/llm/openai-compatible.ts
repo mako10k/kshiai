@@ -121,6 +121,8 @@ import type {
 import { newId } from "../id.js";
 import { MockLlmProvider } from "./mock.js";
 import { retryLlmProviderCall } from "./provider-retry.js";
+import { unifiedTransportAdmission } from "./unified-transport-admission.js";
+import { hasLlmProviderResponse } from "./provider-errors.js";
 import { LlmApplicationResultError } from "./provider-errors.js";
 import { parseProviderJson, ProviderJsonSyntaxError } from "./provider-json.js";
 import { assertXaiResponseSchema, ProviderResponseSchemaError } from "./provider-response-schema.js";
@@ -877,9 +879,11 @@ export class OpenAiCompatibleProvider implements LlmProvider {
     label: string,
     operation: () => Promise<T>,
     canRetry?: () => boolean,
+    deadlineAt?: number,
   ): Promise<T> {
     return retryLlmProviderCall(operation, {
       canRetry,
+      ...(deadlineAt === undefined ? {} : { deadlineAt, rateLimitOnly: true }),
       onRetry: ({ reason, retry, delayMs }) => {
         console.warn(
           `[llm] ${this.name}/${label} retry=${retry} reason=${reason} delay=${delayMs}ms same-provider`,
@@ -947,15 +951,18 @@ export class OpenAiCompatibleProvider implements LlmProvider {
     const temperature =
       opts?.temperature ?? (tier === "fast" ? 0.85 : 0.45);
     const label = opts?.label ?? tier;
+    const transportAdmission = await unifiedTransportAdmission(timeoutMs, dispatchContext?.rateLimitRetryBattleId);
     const logicalCallId = newId("provider_call");
     let attemptOrdinal = 0;
     const started = Date.now();
     try {
       const data = await this.retryProviderCall(label, async () => {
+        const requestTimeoutMs = transportAdmission ? Math.min(timeoutMs, transportAdmission.deadlineAt - Date.now()) : timeoutMs;
+        if (requestTimeoutMs <= 0) throw new Error("CONSCIOUSNESS_TRANSPORT_DEADLINE");
         const controller = new AbortController();
-        const timer = setTimeout(() => controller.abort(), timeoutMs);
+        const timer = setTimeout(() => controller.abort(), requestTimeoutMs);
         try {
-          return executeProviderOperationAttempt({
+          return await executeProviderOperationAttempt({
             logicalCallId,
             attemptOrdinal: ++attemptOrdinal,
             operation: label,
@@ -963,22 +970,31 @@ export class OpenAiCompatibleProvider implements LlmProvider {
             model,
             action: async () => {
               const send = async () => {
-                const resp = await observeLlmPhysicalAttempt({ callId: logicalCallId, attemptOrdinal, provider: this.name, requestedModel: model, role: label }, () => this.client!.chat.completions.create({
-                  model,
-                  ...this.requestOptions(model, temperature, opts?.maxCompletionTokens),
-                  messages: [{ role: "system", content: system }, { role: "user", content: user }],
-                  response_format: opts?.responseFormat ?? { type: "json_object" },
-                }, { signal: controller.signal, timeout: timeoutMs }), (response) => {
-                  const content = response.choices[0]?.message?.content;
-                  return { usage: response.usage, responseModel: response.model, requestId: response._request_id,
-                    responseDiagnostics: { finishReason: response.choices[0]?.finish_reason ?? null,
-                      contentLength: typeof content === "string" ? content.length : null,
-                      contentEmpty: typeof content === "string" ? content.length === 0 : null } };
-                });
-                return {
-                  result: { text: resp.choices[0]?.message?.content ?? "{}", tokenCount: resp.usage?.total_tokens ?? null },
-                  usage: resp.usage ? { inputTokens: resp.usage.prompt_tokens, outputTokens: resp.usage.completion_tokens, totalTokens: resp.usage.total_tokens } : null,
-                };
+                const retryReservation = await transportAdmission?.reserve(attemptOrdinal) ?? null;
+                let physicalFinished = false;
+                try {
+                  const receipt = await observeLlmPhysicalAttempt({ callId: logicalCallId, attemptOrdinal, provider: this.name, requestedModel: model, role: label }, () => this.client!.chat.completions.create({
+                    model,
+                    ...this.requestOptions(model, temperature, opts?.maxCompletionTokens),
+                    messages: [{ role: "system", content: system }, { role: "user", content: user }],
+                    response_format: opts?.responseFormat ?? { type: "json_object" },
+                  }, { signal: controller.signal, timeout: requestTimeoutMs }), (response) => {
+                    const content = response.choices[0]?.message?.content;
+                    return { usage: response.usage, responseModel: response.model, requestId: response._request_id,
+                      responseDiagnostics: { finishReason: response.choices[0]?.finish_reason ?? null,
+                        contentLength: typeof content === "string" ? content.length : null,
+                        contentEmpty: typeof content === "string" ? content.length === 0 : null } };
+                  });
+                  physicalFinished = true;
+                  const resp = receipt;
+                  return {
+                    result: { text: resp.choices[0]?.message?.content ?? "{}", tokenCount: resp.usage?.total_tokens ?? null },
+                    usage: resp.usage ? { inputTokens: resp.usage.prompt_tokens, outputTokens: resp.usage.completion_tokens, totalTokens: resp.usage.total_tokens } : null,
+                  };
+                } catch (error) {
+                  physicalFinished = hasLlmProviderResponse(error);
+                  throw error;
+                } finally { await transportAdmission?.close(retryReservation, physicalFinished); }
               };
               if (!dispatchContext) return (await send()).result;
               return dispatchContext.run({ provider: this.name, model, system, user, options: {
@@ -991,7 +1007,7 @@ export class OpenAiCompatibleProvider implements LlmProvider {
         } finally {
           clearTimeout(timer);
         }
-      }, opts?.retry === "none" ? () => false : undefined);
+      }, transportAdmission ? undefined : opts?.retry === "none" ? () => false : undefined, transportAdmission?.deadlineAt);
       // HTTP usage is settled even when content validation fails. Decoding is
       // not a transport retry: domain operations own their bounded repair.
       const parsed = parseProviderJson(data.text);

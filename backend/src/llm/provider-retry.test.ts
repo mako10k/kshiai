@@ -72,3 +72,19 @@ describe("same-provider LLM retry", () => {
     assert.equal(calls, 1);
   });
 });
+
+it("respects full Retry-After and refuses a retry outside the original deadline", async () => {
+  let calls = 0; let sleeps = 0;
+  const failure = Object.assign(new Error("at capacity"), { status: 429, headers: { "retry-after": "60" } });
+  await assert.rejects(retryLlmProviderCall(async () => { calls++; throw failure; }, {
+    deadlineAt: Date.now() + 20000, rateLimitOnly: true, sleep: async () => { sleeps++; },
+  }), /capacity/);
+  assert.equal(calls, 1); assert.equal(sleeps, 0);
+});
+it("requires a known HTTP429 and does not retry service/billing errors in bounded mode", async () => {
+  for (const error of [Object.assign(new Error("unavailable"), { status: 503 }), Object.assign(new Error("insufficient quota"), { status: 429, code: "insufficient_quota" }), new Error("rate limit")]) {
+    let calls = 0;
+    await assert.rejects(retryLlmProviderCall(async () => { calls++; throw error; }, { deadlineAt: Date.now() + 60000, rateLimitOnly: true, sleep: async () => {} }));
+    assert.equal(calls, 1);
+  }
+});

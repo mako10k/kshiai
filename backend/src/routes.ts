@@ -5,7 +5,7 @@ import { readBattleAccess } from "./services/battle-lifecycle-access.js";
 import { candidateToSheet, assertCharacterCandidateReady, fixedCandidateOwnerReview } from "./services/character-authoring-candidate.js";
 import { Hono } from "hono";
 import {
-  UnifiedConsciousnessPolicyV1,
+  UnifiedConsciousnessPolicyV2,
   BattlefieldChatRequestSchema,
   CharacterChatRequestSchema,
   CharacterDraftCorrectionRequestSchema,
@@ -2605,7 +2605,7 @@ export function buildRoutes(options: {
         ? admissionControl.policy.trialBindings?.generationIds
         : undefined;
       const create = () => startBattle({
-        consciousnessPolicy: UnifiedConsciousnessPolicyV1,
+        consciousnessPolicy: UnifiedConsciousnessPolicyV2,
         userId: user.id,
         battleId,
         myCharacterId: body.myCharacterId,

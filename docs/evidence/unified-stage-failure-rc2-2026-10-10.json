@@ -1,0 +1,69 @@
+{
+  "applicationVersion": "v0.24.0-rc.2",
+  "commit": "4885bc6092f05e374945698ae0af60f5fb0b0f9d",
+  "mainCi": {
+    "run": 38042423619,
+    "conclusion": "success"
+  },
+  "stage": {
+    "run": 38042991400,
+    "conclusion": "failure",
+    "revision": "kshiai-api-00190-cub",
+    "workerVersion": "3f8fe281-447d-48b9-951f-b16f47fa161b",
+    "execution": "kshiai-persistent-e2e-2xrlx"
+  },
+  "readback": {
+    "battle": {
+      "id": "btl_48d199567c342b558852207107cadab6",
+      "status": "incomplete",
+      "incompleteReason": "CONSCIOUSNESS_ACTION_UNKNOWN",
+      "manifestVersion": 6
+    },
+    "runs": [
+      {
+        "run_id": "stage-38042991400-1",
+        "taxonomy_revision": "battle-provider-operations-v4",
+        "approved_attempt_ceiling": 200,
+        "reserved_attempts": 6,
+        "status": "failed"
+      }
+    ],
+    "attempts": [
+      {
+        "operation": "unified-consciousness-v1",
+        "layer": "characterExpression",
+        "status": "succeeded",
+        "count": "4"
+      },
+      {
+        "operation": "prepareBattleEncounter",
+        "layer": "encounter",
+        "status": "succeeded",
+        "count": "1"
+      },
+      {
+        "operation": "awareness-v5:narration-frozen",
+        "layer": "narration",
+        "status": "failed",
+        "count": "1"
+      }
+    ]
+  },
+  "productionTraffic": [
+    {
+      "revision": "kshiai-api-00186-zop",
+      "percent": 100
+    }
+  ],
+  "promoted": false,
+  "previousStageActualAttempts": 1,
+  "totalMeasuredAttempts": 7,
+  "price": "unpriced",
+  "retryDispatched": false,
+  "diagnosis": {
+    "terminalReason": "CONSCIOUSNESS_ACTION_UNKNOWN",
+    "validation": "Closed validation rejected an action outside the supplied options; raw invalid model output is not retained, so the exact invalid action is unverified.",
+    "taxonomyRepair": "All four unified-consciousness calls physically sent and accounted as characterExpression under taxonomy v4.",
+    "independentNarrationFailure": "xAI grok-4.3 HTTP429 capacity refusal, one attempt; do not conflate with terminal consciousness failure."
+  }
+}
