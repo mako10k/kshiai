@@ -45,7 +45,14 @@ export function prepareAwarenessFrozenNarrationRequest(materials: readonly Aware
     } }]),
     material.user,
   ].join("\n\n")).join("\n\n");
-  return { system, user, options: { tier: "fast", timeoutMs: deadline, maxCompletionTokens: limits.outputTokens, label: "awareness-v5:narration-frozen", responseFormat: awarenessFrozenNarrationResponseFormat(captured[0]!.phase, captured.length) } };
+  return { system, user, options: { tier: "fast", timeoutMs: deadline, maxCompletionTokens: limits.outputTokens, label: "awareness-v5:narration-frozen", responseFormat: awarenessFrozenNarrationResponseFormat(captured[0]!.phase, captured.length, captured) } };
+}
+
+function warnSpeechSourceMismatch(material: AwarenessFrozenNarration, side: AwarenessFrozenNarration["sourceSpeeches"][number]["side"], text: string, outputCount: number): void {
+  const reason = material.sourceSpeeches.some((source) => source.side === side && source.text === text)
+    ? "duplicate_pair" : material.sourceSpeeches.some((source) => source.text === text) ? "side_mismatch" : "unrecognized_pair";
+  console.warn(JSON.stringify({ event: "awareness_narration_speech_source_invalid", battleId: material.battleId,
+    turnReceiptId: material.turnReceiptId, reason, sourceCount: material.sourceSpeeches.length, outputCount }));
 }
 
 export function validateAwarenessFrozenNarrationResults(materials: readonly AwarenessFrozenNarration[], raw: unknown): AwarenessFrozenNarrationResult[] {
@@ -63,7 +70,10 @@ export function validateAwarenessFrozenNarrationResults(materials: readonly Awar
       if (speech.afterNarratorLine >= lineCount) throw new Error("AWARENESS_NARRATION_SPEECH_PLACEMENT_INVALID");
       if (speech.sourceSide === null) continue;
       const match = expected.findIndex((source) => source.side === speech.sourceSide && source.text === speech.text);
-      if (match < 0) throw new Error("AWARENESS_NARRATION_SPEECH_SOURCE_MISMATCH");
+      if (match < 0) {
+        warnSpeechSourceMismatch(material, speech.sourceSide, speech.text, result.speeches.length);
+        throw new Error("AWARENESS_NARRATION_SPEECH_SOURCE_MISMATCH");
+      }
       expected.splice(match, 1);
     }
     if (expected.length > 0) throw new Error("AWARENESS_NARRATION_SPEECH_SOURCE_MISSING");

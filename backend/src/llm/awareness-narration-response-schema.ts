@@ -22,8 +22,42 @@ export function awarenessFrozenNarrationBatchSchema(phase: AwarenessFrozenNarrat
   if (!Number.isInteger(count) || count < 1 || count > 3 || (phase !== "combat" && count !== 1)) throw new Error("AWARENESS_FROZEN_NARRATION_BATCH_INVALID");
   return z.object({ receipts: z.array(AwarenessFrozenReceiptSchemas[phase]).length(count) }).strict();
 }
-export function awarenessFrozenNarrationResponseFormat(phase: AwarenessFrozenNarration["phase"], count: number) {
-  const format = zodResponseFormat(awarenessFrozenNarrationBatchSchema(phase, count), "awareness_narration_receipts");
+
+function committedSpeechSchema(material: AwarenessFrozenNarration) {
+  const speech = speechShape.speeches.element;
+  const thirdParty = speech.extend({ sourceSide: z.null() }).strict();
+  const sideSchema = (side: "a" | "b") => {
+    const [first, ...rest] = [...new Set(material.sourceSpeeches.filter((item) => item.side === side).map((item) => item.text))];
+    return first === undefined ? null : speech.extend({ sourceSide: z.literal(side), text: z.enum([first, ...rest]) }).strict();
+  };
+  const a = sideSchema("a");
+  const b = sideSchema("b");
+  if (a && b) return z.union([thirdParty, a, b]);
+  if (a) return z.union([thirdParty, a]);
+  if (b) return z.union([thirdParty, b]);
+  return thirdParty;
+}
+
+/** Narrow provider grammar to immutable sources; runtime coverage/placement validation still applies. */
+export function awarenessFrozenNarrationSourceSchema(materials: readonly AwarenessFrozenNarration[]) {
+  const [firstMaterial] = materials;
+  if (!firstMaterial) throw new Error("AWARENESS_FROZEN_NARRATION_BATCH_INVALID");
+  awarenessFrozenNarrationBatchSchema(firstMaterial.phase, materials.length);
+  if (materials.some((item) => item.phase !== firstMaterial.phase || item.battleId !== firstMaterial.battleId) ||
+      new Set(materials.map((item) => item.turnReceiptId)).size !== materials.length) throw new Error("AWARENESS_FROZEN_NARRATION_BATCH_INVALID");
+  const [first, second, third] = materials.map((material) => {
+    const identity = { battleId: z.literal(material.battleId), turnReceiptId: z.literal(material.turnReceiptId), turn: z.literal(material.turn) };
+    if (material.phase === "judgment") return AwarenessFrozenReceiptSchemas.judgment.extend(identity);
+    return AwarenessFrozenReceiptSchemas[material.phase].extend({ ...identity, speeches: z.array(committedSpeechSchema(material)) });
+  });
+  if (!first) throw new Error("AWARENESS_FROZEN_NARRATION_BATCH_INVALID");
+  const receipt = second ? third ? z.union([first, second, third]) : z.union([first, second]) : first;
+  return z.object({ receipts: z.array(receipt).length(materials.length) }).strict();
+}
+
+export function awarenessFrozenNarrationResponseFormat(phase: AwarenessFrozenNarration["phase"], count: number, materials?: readonly AwarenessFrozenNarration[]) {
+  if (materials && (materials.length !== count || materials.some((item) => item.phase !== phase))) throw new Error("AWARENESS_FROZEN_NARRATION_BATCH_INVALID");
+  const format = zodResponseFormat(materials ? awarenessFrozenNarrationSourceSchema(materials) : awarenessFrozenNarrationBatchSchema(phase, count), "awareness_narration_receipts");
   assertXaiResponseSchema(format.json_schema.schema);
   const schema = format.json_schema.schema;
   if (!schema || format.json_schema.strict !== true) throw new Error("AWARENESS_NARRATION_RESPONSE_SCHEMA_INVALID");

@@ -1,0 +1,151 @@
+{
+  "scope": "application v0.24.0-rc.7 / frozen narration source grammar",
+  "governingAdr": "Accepted ADR0056 latest exact-output contract and ADR0067 immutable source/privacy obligations; unchanged logical output/world rules",
+  "regressionAuthority": "rc.6 receipt24 AWARENESS_NARRATION_SPEECH_SOURCE_MISMATCH; invalid raw text unavailable, exact altered character/side unclaimed",
+  "affectedOfflineTests": {
+    "files": 6,
+    "passed": 49,
+    "failed": 0,
+    "skipped": 0
+  },
+  "newSourceRefs": [
+    "unified-narration-v1/source/receipt-source-grammar",
+    "unified-narration-v1/source/frozen-request"
+  ],
+  "reviews": [
+    {
+      "ref": "all-tests-20261008/current-source-closure/verification/awareness-dispatch-context-20261007",
+      "path": "backend/src/llm/awareness-dispatch-context.test.ts",
+      "review": "All exact physical quote, deadline, model/admission and frozen strict-format assertions retained and passed. Actual SDK receives the same source-constrained schema used in dispatch quote/digest, no extra sends.",
+      "previousSeal": "6f24eac63df970789c9d05976570249b23bf001f6259439e83e8fd47ebcabf08",
+      "seal": "3271e73cd08ff377c4a80b9ed39c8f399ef19fa257aa3046f832dc31006b5ead"
+    },
+    {
+      "ref": "all-tests-20261008/current-source-closure/verification/awareness-frozen-narration-20261007",
+      "path": "backend/src/llm/awareness-frozen-narration.test.ts",
+      "review": "Original phase/coverage/policy/freeze/privacy assertions retained. Provider phase limit/count assertions now resolve acyclic shared JSON-schema references and inspect every receipt-specific union branch, preserving all original bounds. All passed offline.",
+      "previousSeal": "74237db574e120f485919350655979eddc3c38bb9495bf71e7b32f27742ca69c",
+      "seal": "5112796c87e43d6bcd24382bf5c9a4e8cccc252523888d1777864464d2de952e"
+    },
+    {
+      "ref": "all-tests-20261008/current-source-closure/verification/awareness-narration-batch-20261007",
+      "path": "backend/src/llm/awareness-narration.test.ts",
+      "review": "All seven capped one-call/order/immutability/no-retry/source mismatch/coverage/recognition tests unchanged and passed; provider grammar is stricter but returned narration and validators unchanged.",
+      "previousSeal": "2009c1bb69d8df573b2500d9c95d9fc8c6f327a4a614d0e8e414f6347094b286",
+      "seal": "99f0b0fe21acd3d04df76e71c9a10e0bf4ffd9251e6b03e0eac8b0a1745db5d1"
+    },
+    {
+      "ref": "all-tests-20261008/current-source-closure/verification/awareness-narration-continuation-bounded-current-20261007",
+      "path": "backend/src/services/awareness-narration-continuation.test.ts",
+      "review": "All phases and saved prompt revisions continue through current transport publication unchanged and passed under ADR0056. Frozen style/world/assets remain unchanged; only existing exact speech authority constrains outgoing grammar.",
+      "previousSeal": "e13fecaa160d0049925d288de378c1bf2d2a9034cebb937f7aab447f6cf5857f",
+      "seal": "4d3814d17f756a501a702496841b273ce2759f58ce37bc2258f5aa4895b76e1c"
+    },
+    {
+      "ref": "all-tests-20261008/current-source-closure/verification/awareness-narration-worker-bounded-current-20261007",
+      "path": "backend/src/services/awareness-narration-worker.test.ts",
+      "review": "All nineteen atomic batch/claim/requeue/deadline/source-integrity/invalid result/late occupancy/recognition/privacy/accounting tests unchanged and passed; grammar changed before dispatch only, no publication fallback.",
+      "previousSeal": "9a05302fe37686351799536d5f5b8557ea752a179df5d1ff292a393b05b7487f",
+      "seal": "c3587eafe4150cbfcd8ccb8339be8bf4a1f34d4c1c254346af52952a1ce7b365"
+    },
+    {
+      "ref": "all-tests-20261008/current-source-closure/verification/narration-prompt-contract-20261007",
+      "path": "backend/src/llm/narration-prompt-contract.test.ts",
+      "review": "Original direct/frozen/legacy registered-upgrade/source rejection tests retained. Three new tests lock exact phase identity and speech pairs, punctuation/whitespace and cross-receipt refusal, and third-party-null/no-fabricated-character behavior. Final request grammar includes exact frozen text. All passed offline.",
+      "previousSeal": "95d8c13d175966ca8568d3bea197414ce7a62dcce3b2a2ebb00fd9c5ac00df13",
+      "seal": "b2b467d7b9ff74184f1624b2dca3d7e9ac84e393d0ec55d604ec6b9268dbfbf7"
+    }
+  ],
+  "planningValidation": {
+    "fullDocument": "not validated: existing owner/history/version syntax unsupported by current tooling",
+    "forwardProjection": "version14 mapped to supported grammar6; owner metadata/historical work_event declarations omitted only in temporary copy; all tasks/dependencies/statuses/durations retained",
+    "checks": "check, both schedules and next exit0; release recommended, stage/promote waiting",
+    "limitation": "forward DAG only, not full-document assurance"
+  },
+  "providerPrimaryDocumentation": "https://docs.x.ai/developers/model-capabilities/text/structured-outputs",
+  "unchanged": "runtime source/coverage/placement validation, DTO, frozen materials, call count, output budget, retry/failure semantics and migration set",
+  "diagnosticFollowUpReviews": [
+    {
+      "ref": "all-tests-20261008/current-source-closure/verification/awareness-dispatch-context-20261007",
+      "review": "All exact physical quote, deadline, model/admission and frozen strict-format assertions retained and passed. Actual SDK receives the same source-constrained schema used in dispatch quote/digest, no extra sends. Follow-up: value-free duplicate/side/unrecognized-pair diagnostics added; original rejection code and coverage unchanged, six files49tests passed after this addition; new duplicate regression checks text is absent from logs.",
+      "previousSeal": "3271e73cd08ff377c4a80b9ed39c8f399ef19fa257aa3046f832dc31006b5ead",
+      "seal": "f77983409cdbf93cb6ce8372c6b9b7c2c275be19a98d8687f3587347d97578aa"
+    },
+    {
+      "ref": "all-tests-20261008/current-source-closure/verification/awareness-frozen-narration-20261007",
+      "review": "Original phase/coverage/policy/freeze/privacy assertions retained. Provider phase limit/count assertions now resolve acyclic shared JSON-schema references and inspect every receipt-specific union branch, preserving all original bounds. All passed offline. Follow-up: value-free duplicate/side/unrecognized-pair diagnostics added; original rejection code and coverage unchanged, six files49tests passed after this addition; new duplicate regression checks text is absent from logs.",
+      "previousSeal": "5112796c87e43d6bcd24382bf5c9a4e8cccc252523888d1777864464d2de952e",
+      "seal": "cb50bd13276e40cbc82ace10102a9cccc39eb2a6cc096e561491f2a3a595b2a2"
+    },
+    {
+      "ref": "all-tests-20261008/current-source-closure/verification/awareness-narration-batch-20261007",
+      "review": "All seven capped one-call/order/immutability/no-retry/source mismatch/coverage/recognition tests unchanged and passed; provider grammar is stricter but returned narration and validators unchanged. Follow-up: value-free duplicate/side/unrecognized-pair diagnostics added; original rejection code and coverage unchanged, six files49tests passed after this addition; new duplicate regression checks text is absent from logs.",
+      "previousSeal": "99f0b0fe21acd3d04df76e71c9a10e0bf4ffd9251e6b03e0eac8b0a1745db5d1",
+      "seal": "62ac81f972fb09245ef022802572fea285d765ceccbe3a1cdacaf496befbecef"
+    },
+    {
+      "ref": "all-tests-20261008/current-source-closure/verification/awareness-narration-continuation-bounded-current-20261007",
+      "review": "All phases and saved prompt revisions continue through current transport publication unchanged and passed under ADR0056. Frozen style/world/assets remain unchanged; only existing exact speech authority constrains outgoing grammar. Follow-up: value-free duplicate/side/unrecognized-pair diagnostics added; original rejection code and coverage unchanged, six files49tests passed after this addition; new duplicate regression checks text is absent from logs.",
+      "previousSeal": "4d3814d17f756a501a702496841b273ce2759f58ce37bc2258f5aa4895b76e1c",
+      "seal": "2fbc33886c3a19eb1e1ce8c99edc88b6580b8b6ca4ce8b48216779d70b742acb"
+    },
+    {
+      "ref": "all-tests-20261008/current-source-closure/verification/awareness-narration-worker-bounded-current-20261007",
+      "review": "All nineteen atomic batch/claim/requeue/deadline/source-integrity/invalid result/late occupancy/recognition/privacy/accounting tests unchanged and passed; grammar changed before dispatch only, no publication fallback. Follow-up: value-free duplicate/side/unrecognized-pair diagnostics added; original rejection code and coverage unchanged, six files49tests passed after this addition; new duplicate regression checks text is absent from logs.",
+      "previousSeal": "c3587eafe4150cbfcd8ccb8339be8bf4a1f34d4c1c254346af52952a1ce7b365",
+      "seal": "eb15d4e2d5626abfe3fd3db0da845da95e62581ddad6edf6780bfdf9a44c87a2"
+    },
+    {
+      "ref": "all-tests-20261008/current-source-closure/verification/narration-prompt-contract-20261007",
+      "review": "Original direct/frozen/legacy registered-upgrade/source rejection tests retained. Three new tests lock exact phase identity and speech pairs, punctuation/whitespace and cross-receipt refusal, and third-party-null/no-fabricated-character behavior. Final request grammar includes exact frozen text. All passed offline. Follow-up: value-free duplicate/side/unrecognized-pair diagnostics added; original rejection code and coverage unchanged, six files49tests passed after this addition; new duplicate regression checks text is absent from logs.",
+      "previousSeal": "b2b467d7b9ff74184f1624b2dca3d7e9ac84e393d0ec55d604ec6b9268dbfbf7",
+      "seal": "9d8a7ebb5ad6554ea5074c351d343f2ca638b77db9e333af0c246bdb66620bc1"
+    }
+  ],
+  "readOnlyFailedReceiptProbe": {
+    "battleId": "btl_16914b3ffde07511a4dca3a915b2a68b",
+    "readOnly": true,
+    "providerCalls": 0,
+    "results": [
+      {
+        "sequence": 24,
+        "phase": "combat",
+        "sourceSpeechCount": 2,
+        "exampleAccepted": true,
+        "materialUnchanged": true,
+        "responseFormat": "json_schema"
+      },
+      {
+        "sequence": 25,
+        "phase": "aftermath",
+        "sourceSpeechCount": 0,
+        "exampleAccepted": true,
+        "materialUnchanged": true,
+        "responseFormat": "json_schema"
+      }
+    ]
+  },
+  "governedSuite": {
+    "files": 250,
+    "active": 250,
+    "provisional": 0,
+    "disabled": 0,
+    "passed": 1523,
+    "failed": 0,
+    "skipped": 0,
+    "cancelled": 0,
+    "exitCode": 0,
+    "database": "isolatedPostgreSQL16 loopback15441, stopped after suite"
+  },
+  "checks": [
+    "npm run build exit0",
+    "npm run typecheck exit0",
+    "npm run static exit0; unchanged lizard121/excess1369",
+    "git diff --check exit0"
+  ],
+  "sealgraph": {
+    "fsck": "ok",
+    "seals": 3089,
+    "refs": 1825
+  }
+}

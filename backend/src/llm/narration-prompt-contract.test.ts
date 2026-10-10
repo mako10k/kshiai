@@ -5,6 +5,7 @@ import type { NarrationTurnView } from "@kshiai/shared";
 import { freezeAwarenessNarration, type AwarenessNarrationPhaseInput } from "./awareness-narration-phase.js";
 import { prepareAwarenessFrozenNarrationRequest, validateAwarenessFrozenNarrationResults } from "./awareness-frozen-narration.js";
 import { narrationReceiptExample } from "./narration-receipt-contract.js";
+import { awarenessFrozenNarrationSourceSchema } from "./awareness-narration-response-schema.js";
 import { prepareAwarenessNarrationRequest } from "./awareness-narration.js";
 import { LEGACY_NARRATION_CONTRACT, CURRENT_DIRECT_NARRATION_CONTRACT, CONTENT_ONLY_NARRATION_CONTRACT, currentNarrationContentRules, type NarrationPromptContract } from "./narration-prompt-contract.js";
 import { buildNarrateTurnPromptMaterial, buildNarrateProloguePromptMaterial, buildNarrateAftermathPromptMaterial, buildNarrateJudgmentPromptMaterial, OpenAiCompatibleProvider } from "./openai-compatible.js";
@@ -38,6 +39,62 @@ const phases: AwarenessNarrationPhaseInput[] = [
   { phase: "judgment", input: { scene: common.scene, sideAName: common.sideAName, sideBName: common.sideBName, turn: 1, winnerSide: "draw", winnerName: null, presentationProjection: { schemaVersion: 1, verdictKind: "draw", winnerLabel: null, basisLines: ["双方が向き合った。"] }, recentPublicNarration: [] } },
 ];
 describe("constructed narration content and receipt contracts", () => {
+  it("still rejects duplicate committed speech and diagnoses it without recording the text", (t) => {
+    const logs: string[] = [];
+    t.mock.method(console, "warn", (text: string) => { logs.push(text); });
+    const material = freezeAwarenessNarration(phases[0]!, { battleId: "battle", turnReceiptId: "r" });
+    const example = narrationReceiptExample([material]);
+    const receipt = example.receipts[0];
+    assert.ok(receipt && "speeches" in receipt && receipt.speeches);
+    receipt.speeches.push({ ...receipt.speeches[0]! });
+    assert.throws(() => validateAwarenessFrozenNarrationResults([material], example), /SPEECH_SOURCE_MISMATCH/);
+    assert.equal(logs.length, 1);
+    assert.match(logs[0]!, /duplicate_pair/);
+    assert.doesNotMatch(logs[0]!, /待て|まだ|text|speaker/);
+  });
+  it("constrains every phase provider grammar to its immutable identity and exact speech pairs", () => {
+    for (const phase of phases) {
+      const material = freezeAwarenessNarration(phase, { battleId: "battle", turnReceiptId: phase.phase });
+      const schema = awarenessFrozenNarrationSourceSchema([material]);
+      const example = narrationReceiptExample([material]);
+      assert.doesNotThrow(() => schema.parse(example));
+      const wrongIdentity = structuredClone(example);
+      wrongIdentity.receipts[0]!.turnReceiptId = "other-receipt";
+      assert.equal(schema.safeParse(wrongIdentity).success, false);
+      if (phase.phase === "judgment") continue;
+      const changed = structuredClone(example);
+      const entry = changed.receipts[0];
+      assert.ok(entry && "speeches" in entry && entry.speeches);
+      entry.speeches[0]!.text = "待て。まだ！";
+      assert.equal(schema.safeParse(changed).success, false);
+      entry.speeches[0]!.text = common.characterSpeeches[0]!.text;
+      entry.speeches[0]!.sourceSide = "b";
+      assert.equal(schema.safeParse(changed).success, false);
+      const prepared = prepareAwarenessFrozenNarrationRequest([material]);
+      assert.match(JSON.stringify(prepared.options.responseFormat), /待て！ …まだ。/);
+    }
+  });
+  it("rejects cross-receipt speech even when it belongs to another valid receipt in the same batch", () => {
+    const materials = [1, 2, 3].map((turn) => freezeAwarenessNarration({ phase: "combat", input: {
+      view: { ...view, turn }, characterSpeeches: [{ side: "a", speaker: "白い姿", text: `発話${turn}「 … 」\n` }],
+    } }, { battleId: "battle", turnReceiptId: `r${turn}` }));
+    const schema = awarenessFrozenNarrationSourceSchema(materials);
+    const example = narrationReceiptExample(materials);
+    assert.doesNotThrow(() => schema.parse(example));
+    const first = example.receipts[0];
+    assert.ok(first && "speeches" in first && first.speeches);
+    first.speeches[0]!.text = materials[1]!.sourceSpeeches[0]!.text;
+    assert.equal(schema.safeParse(example).success, false);
+    assert.throws(() => validateAwarenessFrozenNarrationResults(materials, example), /SPEECH_SOURCE_MISMATCH/);
+  });
+  it("keeps scene-backed third-party speech available without permitting fabricated character sources", () => {
+    const material = freezeAwarenessNarration({ phase: "combat", input: { view, characterSpeeches: [] } }, { battleId: "battle", turnReceiptId: "r" });
+    const schema = awarenessFrozenNarrationSourceSchema([material]);
+    const receipt = { phase: "combat", battleId: "battle", turnReceiptId: "r", turn: 1,
+      narrator: ["雨が降る。", "声が響く。"], speeches: [{ sourceSide: null, speaker: "通行人", text: "雨だ。", afterNarratorLine: 0 }], recognitionUpdates: [] };
+    assert.doesNotThrow(() => schema.parse({ receipts: [receipt] }));
+    assert.equal(schema.safeParse({ receipts: [{ ...receipt, speeches: [{ ...receipt.speeches[0], sourceSide: "a" }] }] }).success, false);
+  });
   it("preserves committed speech in direct runtime APIs when a model rewrites punctuation", async () => {
     const provider = new NarrationContractProvider({ name: "xai", apiKey: "test-only", baseUrl: "https://example.invalid/v1", modelEngine: "grok-test", modelFast: "grok-test" });
     for (const request of phases) {

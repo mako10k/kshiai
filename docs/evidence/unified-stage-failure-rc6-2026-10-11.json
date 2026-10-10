@@ -33,7 +33,8 @@
     "conclusion": "failure",
     "revision": "kshiai-api-00194-cez",
     "imageDigest": "sha256:504be0fc68c988114734f2740c67d3073c60088e042ea1120bb3c631dc9f94e0",
-    "execution": "kshiai-persistent-e2e-6th8p"
+    "execution": "kshiai-persistent-e2e-6th8p",
+    "workerVersion": "04175f1a-6263-41e3-bea4-258040c59d37"
   },
   "battleReadback": {
     "battle": {
