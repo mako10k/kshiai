@@ -59,3 +59,10 @@ recheck stored v2/v3 readback without rewriting historical rows.
 The original one-battle paid authority is consumed. A new rc.2 fixture battle
 requires a fresh concrete approval; no paid retry or production promotion has
 been performed. Prepare corrected PR/CI/candidate first, retaining rc.1 failure.
+
+
+## Corrective candidate application v0.24.0-rc.3
+
+Application v0.24.0-rc.2 main4885bc60 passed CI38042423619; Stage38042991400 failed with CONSCIOUSNESS_ACTION_UNKNOWN after six physical attempts. Four consciousness requests were properly accounted in taxonomy v4. Independently, one xAI grok-4.3 narration request returned HTTP429 model at capacity. Production remained application v0.23.0-rc.19, revision kshiai-api-00186-zop at100%. Preserve rc.2 and its evidence.
+
+Owner now authorizes correction, tests, deployment and Stage. Accepted ADR0069 revision1 binds new public battles to consciousness operating policy v2, bounded known429 adapter retry and private failed-action feedback, keeping historical policy v1 unchanged. One additional Stage battle is authorized within the previously presented38advances/200physical-attempt bound, no character-create smoke or automatic new battle retry, charge unpriced. The existing seven measured attempts are historical. Exact-source PR/main CI and successful Stage remain mandatory before protected Promote and independent readback.

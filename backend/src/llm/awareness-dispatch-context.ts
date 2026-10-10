@@ -9,6 +9,7 @@ export interface AwarenessDispatchContext {
   readonly limits: AwarenessQuoteLimits;
   /** Absolute battle deadline also bounds each physical SDK request. */
   readonly deadlineAt?: number;
+  readonly rateLimitRetryBattleId?: string;
   /** Reservation, verified pricing, and unknown completion handling belong to the caller's guard. */
   run<T>(request: AwarenessPricedRequest, send: () => Promise<{ result: T; usage: AwarenessPhysicalUsage | null }>): Promise<T>;
 }

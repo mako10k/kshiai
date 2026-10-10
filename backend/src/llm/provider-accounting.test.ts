@@ -307,6 +307,112 @@ describe("provider operation accounting", () => {
     );
   });
 
+  it("retries known429 only for bound policy v2 and accounts every physical attempt", async (t) => {
+    const { UnifiedConsciousnessPolicyV1, UnifiedConsciousnessPolicyV2, initializeUnifiedConsciousness } = await import("@kshiai/shared");
+    const { withLlmUsageScope } = await import("./llm-usage-context.js");
+    const { getUnifiedRuntime } = await import("../repositories/unified-consciousness.js");
+    let calls = 0;
+    t.mock.method(globalThis, "fetch", async () => {
+      calls++;
+      return calls % 2 === 1 ? Response.json({ error: { message: "model currently at capacity" } }, { status: 429, headers: { "retry-after-ms": "0" } })
+        : Response.json({ choices: [{ message: { content: "{}" } }], usage: { prompt_tokens: 2, completion_tokens: 1, total_tokens: 3 } });
+    });
+    const provider = new AccountedLabelProvider({ name: "openai", apiKey: "test-only", baseUrl: "https://example.invalid/v1", modelEngine: "gpt-6-luna", modelFast: "gpt-6-luna" });
+    for (const policy of [UnifiedConsciousnessPolicyV1, UnifiedConsciousnessPolicyV2]) {
+      calls = 0;
+      const context = await createRun(`bound-retry-${policy.revision}`, 3);
+      const runtime = initializeUnifiedConsciousness(policy, Date.now());
+      getDb().prepare("INSERT INTO battle_unified_consciousness(battle_id,revision,fencing_token,snapshot_json,updated_at) VALUES(?,0,1,?,?)").run(context.battleId, JSON.stringify(runtime), new Date().toISOString());
+      const request = () => accounting.withBattleProviderOperationContext(context.battleId, () => withLlmUsageScope({ battleId: context.battleId, role: "consciousness" }, () => provider.requestOperation("unified-consciousness-v1")));
+      if (policy.revision === "unified-consciousness-policy-v1") { await assert.rejects(request(), /capacity/); assert.equal(calls, 1); }
+      else {
+        assert.deepEqual(await request(), {}); assert.equal(calls, 2);
+        const saved = await getUnifiedRuntime(context.battleId);
+        assert.equal(saved?.runtime.budget.physicalAttempts, 1);
+        assert.equal(saved?.runtime.budget.physicalOutstanding, 0);
+        assert.equal(saved?.runtime.budget.reservations[0]?.status, "unknown");
+      }
+      const summary = await accounting.readProviderOperationRun(context.runId);
+      assert.equal(summary.reservedAttempts, calls);
+    }
+  });
+  it("reserves all three bounded sends, stops at the budget, and keeps unknown sends unretryable", async (t) => {
+    const { UnifiedConsciousnessPolicyV2, initializeUnifiedConsciousness } = await import("@kshiai/shared");
+    const { withLlmUsageScope } = await import("./llm-usage-context.js");
+    const { getUnifiedRuntime } = await import("../repositories/unified-consciousness.js");
+    const { budgetSnapshot } = await import("../repositories/awareness-reservation-budget.js");
+    for (const scenario of ["exhausted-retries", "attempt-cap", "unknown-send", "unknown-after-retry", "malformed-json", "inactive-battle"] as const) {
+      const context = await createRun(scenario, 200);
+      const runtime = initializeUnifiedConsciousness(UnifiedConsciousnessPolicyV2, Date.now());
+      if (scenario === "inactive-battle") { runtime.status = "incomplete"; runtime.incompleteReason = "owner stopped"; }
+      if (scenario === "attempt-cap") runtime.budget = budgetSnapshot(Array.from({ length: 200 }, (_, index) => ({ id: `existing-${index}`, role: "conscious", maximumUsd: null, status: "unknown", actualUsd: null, physicalOutstanding: false })));
+      getDb().prepare("INSERT INTO battle_unified_consciousness(battle_id,revision,fencing_token,snapshot_json,updated_at) VALUES(?,0,1,?,?)").run(context.battleId, JSON.stringify(runtime), new Date().toISOString());
+      let calls = 0;
+      t.mock.method(globalThis, "fetch", async () => {
+        calls++;
+        if (scenario === "unknown-send" || (scenario === "unknown-after-retry" && calls === 2)) throw new Error("network outcome unknown");
+        if (scenario === "malformed-json") return Response.json({ choices: [{ message: { content: "invalid JSON" } }] });
+        return Response.json({ error: { message: "at capacity" } }, { status: 429, headers: { "retry-after-ms": "0" } });
+      });
+      const provider = new AccountedLabelProvider({ name: "openai", apiKey: "test-only", baseUrl: "https://example.invalid/v1", modelEngine: "gpt-6-luna", modelFast: "gpt-6-luna" });
+      await assert.rejects(accounting.withBattleProviderOperationContext(context.battleId, () => withLlmUsageScope({ battleId: context.battleId, role: "consciousness" }, () => provider.requestOperation("unified-consciousness-v1"))));
+      assert.equal(calls, scenario === "exhausted-retries" ? 3 : scenario === "unknown-after-retry" ? 2 : scenario === "inactive-battle" ? 0 : 1);
+      const saved = await getUnifiedRuntime(context.battleId);
+      assert.equal(saved?.runtime.budget.physicalAttempts, scenario === "attempt-cap" ? 200 : scenario === "exhausted-retries" ? 2 : scenario === "unknown-after-retry" ? 1 : 0);
+      assert.equal(saved?.runtime.budget.physicalOutstanding, scenario === "unknown-after-retry" ? 1 : 0);
+    }
+  });
+  it("retries adjudication429 through its per-send guard without sticking the logical failure", async (t) => {
+    const { UnifiedConsciousnessPolicyV2, initializeUnifiedConsciousness } = await import("@kshiai/shared");
+    const { createUnifiedAdjudicationGuard } = await import("../services/unified-consciousness-guard.js");
+    const { withAwarenessDispatchContext } = await import("./awareness-dispatch-context.js");
+    const { getUnifiedRuntime } = await import("../repositories/unified-consciousness.js");
+    const context = await createRun("adjudication429", 3);
+    const runtime = initializeUnifiedConsciousness(UnifiedConsciousnessPolicyV2, Date.now());
+    const now = new Date().toISOString();
+    getDb().prepare("INSERT INTO battle_unified_consciousness(battle_id,revision,fencing_token,snapshot_json,updated_at) VALUES(?,0,1,?,?)").run(context.battleId, JSON.stringify(runtime), now);
+    getDb().prepare("INSERT INTO battle_leases(battle_id,owner_id,fencing_token,acquired_at,expires_at) VALUES(?, 'owner', 1, ?, ?)").run(context.battleId, now, new Date(Date.now() + 60000).toISOString());
+    const guard = await createUnifiedAdjudicationGuard({ battleId: context.battleId, fence: { battleId: context.battleId, ownerId: "owner", fencingToken: 1 }, provider: "xai", model: "grok-test" });
+    let calls = 0;
+    t.mock.method(globalThis, "fetch", async () => ++calls === 1 ? Response.json({ error: { message: "at capacity" } }, { status: 429, headers: { "retry-after-ms": "0" } })
+      : Response.json({ choices: [{ message: { content: "{}" } }], usage: { prompt_tokens: 2, completion_tokens: 1, total_tokens: 3 } }));
+    const provider = new AccountedLabelProvider({ name: "xai", apiKey: "test-only", baseUrl: "https://example.invalid/v1", modelEngine: "grok-test", modelFast: "grok-test" });
+    assert.deepEqual(await accounting.withBattleProviderOperationContext(context.battleId, () => withAwarenessDispatchContext(guard, () => provider.requestOperation("referee"))), {});
+    guard.assertUsable(); assert.equal(calls, 2);
+    const saved = await getUnifiedRuntime(context.battleId);
+    assert.equal(saved?.runtime.budget.physicalAttempts, 2);
+    assert.equal(saved?.runtime.budget.physicalOutstanding, 0);
+    assert.ok(saved?.runtime.budget.reservations.every((item) => item.role === "adjudication"));
+  });
+  it("retries terminal narration only inside its drain window and settles each additional send", async (t) => {
+    const { UnifiedConsciousnessPolicyV2, initializeUnifiedConsciousness } = await import("@kshiai/shared");
+    const { withLlmUsageScope } = await import("./llm-usage-context.js");
+    const { getUnifiedRuntime } = await import("../repositories/unified-consciousness.js");
+    const { budgetSnapshot } = await import("../repositories/awareness-reservation-budget.js");
+    const { settleBattleOperationalAttempt } = await import("../repositories/battle-operational-runtime.js");
+    for (const expired of [false, true]) {
+      const context = await createRun(`narration-retry-${expired}`, 3);
+      const runtime = initializeUnifiedConsciousness(UnifiedConsciousnessPolicyV2, Date.now() - 300000);
+      runtime.status = "terminal";
+      runtime.terminalAt = Date.now() - (expired ? runtime.operatingPolicy.narration.terminalDrainMs + 1000 : 0);
+      runtime.budget = budgetSnapshot([{ id: "base-narration", role: "narration", maximumUsd: null, status: "reserved", actualUsd: null, physicalOutstanding: true }]);
+      getDb().prepare("INSERT INTO battle_unified_consciousness(battle_id,revision,fencing_token,snapshot_json,updated_at) VALUES(?,0,1,?,?)").run(context.battleId, JSON.stringify(runtime), new Date().toISOString());
+      let calls = 0;
+      t.mock.method(globalThis, "fetch", async () => ++calls === 1 ? Response.json({ error: { message: "at capacity" } }, { status: 429, headers: { "retry-after-ms": "0" } })
+        : Response.json({ choices: [{ message: { content: "{}" } }], usage: { prompt_tokens: 2, completion_tokens: 1, total_tokens: 3 } }));
+      const provider = new AccountedLabelProvider({ name: "xai", apiKey: "test-only", baseUrl: "https://example.invalid/v1", modelEngine: "grok-test", modelFast: "grok-test" });
+      const request = () => accounting.withBattleProviderOperationContext(context.battleId, () => withLlmUsageScope({ battleId: context.battleId, role: "narration" }, () => provider.requestOperation("awareness-v5:narration-frozen")));
+      if (expired) { await assert.rejects(request(), /TRANSPORT_INACTIVE/); assert.equal(calls, 0); }
+      else {
+        assert.deepEqual(await request(), {}); assert.equal(calls, 2);
+        await settleBattleOperationalAttempt({ battleId: context.battleId, id: "base-narration", outcome: "unknown", actualUsd: null, physicalOutstanding: false, finishedAt: Date.now() });
+        const saved = await getUnifiedRuntime(context.battleId);
+        assert.equal(saved?.runtime.budget.physicalAttempts, 2);
+        assert.equal(saved?.runtime.budget.physicalOutstanding, 0);
+        assert.ok(saved?.runtime.budget.reservations.every((item) => item.role === "narration"));
+      }
+    }
+  });
   it("reserves actual SDK consciousness labels in taxonomy v4 and retains historical operation layers", async (t) => {
     const expectedLayers = new Map([
       ["awareness-v5:subconscious", "deepPsyche"], ["awareness-v5:conscious", "characterExpression"],

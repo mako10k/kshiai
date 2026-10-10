@@ -1,7 +1,7 @@
 project UNIFIED_CONSCIOUSNESS:
-  version 7
+  version 8
   title "統合意識と優先順位付き記憶の方向転換"
-  description "Owner direction2026-10-10; requirements docs/unified-consciousness-design-v1.md; Accepted ADR0067 revision2 and docs/unified-consciousness-contract-v1.md C1-C8. Canonical successor planning for new consciousness work. Preserve historical awareness-v5 and unfinished release evidence. Estimates provisional. Owner authorized production deployment2026-10-10; separate bounded paid-trial authority is still required."
+  description "Owner direction2026-10-10; requirements docs/unified-consciousness-design-v1.md; ADR0067 revision2 as superseded in part by Accepted ADR0069 revision1 and docs/unified-consciousness-contract-v1.md C1-C8. Canonical successor planning for new consciousness work. Preserve historical awareness-v5 and unfinished release evidence. Estimates provisional. Owner authorized production deployment2026-10-10; separate bounded paid-trial authority is still required."
   duration_unit point
   finish DEPLOYED
   goal_owner user
@@ -30,12 +30,12 @@ milestone DEPLOYED:
   title "Exact staged artifacts serve production and independent readback passes"
 task release CURRENTLY_VERIFIED -> RELEASE_READY:
   title "統合意識の公開作成切替とリリース準備"
-  description "Owner production deployment2026-10-10 authorizes ADR0067 revision2 C7 new public battle selector unified-consciousness-v1/battle binding format v6. Keep historical battle execution. Add HTTP binding/privacy regression; individually review impacted authority, build/typecheck/full governed tests; PR and mandatory exact-source CI under docs/release_process.md. Release candidate v0.24.0-rc.1 reached main a0991e6e with successful CI38040112770, but Stage38040672331 failed because new consciousness operation was absent from the closed provider taxonomy. Correct under existing ADR0067 C5/ADR0051: provider taxonomy v4 registers unified-consciousness-v1 in existing characterExpression, preserving historical v2/v3 and unknown-label refusal/caps. Individually review/seal two accounting/E2E tests and rerun required checks; correction candidate v0.24.0-rc.2. Preserve failed rc.20 and rc.1 evidence."
-  duration 3p
+  description "Owner production deployment2026-10-10 authorizes ADR0067 revision2 C7 new public battle selector unified-consciousness-v1/battle binding format v6. Keep historical battle execution. Add HTTP binding/privacy regression; individually review impacted authority, build/typecheck/full governed tests; PR and mandatory exact-source CI under docs/release_process.md. Release candidate v0.24.0-rc.1 reached main a0991e6e with successful CI38040112770, but Stage38040672331 failed because new consciousness operation was absent from the closed provider taxonomy. Correct under existing ADR0067 C5/ADR0051: provider taxonomy v4 registers unified-consciousness-v1 in existing characterExpression, preserving historical v2/v3 and unknown-label refusal/caps. Individually review/seal two accounting/E2E tests and rerun required checks; correction candidate v0.24.0-rc.2. Preserve failed rc.20, rc.1 and rc.2 evidence. Current owner authorizes ADR0069 revision1: policy v2 bounded accounted429 adapter retries and private failed-action feedback; correction candidate application v0.24.0-rc.3. Completion requires regression tests, individual authority reviews and all exact-source CI checks."
+  duration 5p
   status planned
 task stage RELEASE_READY -> STAGED:
   title "同一成果物をステージングで検証"
-  description "Stage release uses OIDC and immutable backend digest/Worker version; additive migration0037. Requires exact candidate-specific paid functional battle budget approval before dispatch. Owner approved one rc.1 battle max200 attempts; that run failed after1 measured encounter attempt and cannot authorize an rc.2 retry. Seek a new bounded approval only after concrete correction preparation. Verify PostgreSQL/auth/R2/SSE and retain successful exact-source evidence and rollback targets. No bypass of failed stage."
+  description "Owner2026-10-10 explicitly authorizes corrected Stage execution: one additional battle max38 advances/200physical attempts, no character-create or automatic new battle retry, charge unpriced. Stage application v0.24.0-rc.3 exact immutable artifacts after ADR0069 tests/requiredCI; verify PostgreSQL/auth/R2/SSE and terminal battle plus accounting. Prior rc.1 used1 and rc.2 used6 attempts; both failed and cannot promote. Completion needs new successful Stage and durable readback."
   duration 2p
   status planned
 task promote STAGED -> DEPLOYED:

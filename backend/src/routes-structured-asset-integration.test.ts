@@ -297,6 +297,7 @@ describe("integrated structured asset cutover", () => {
     assert.ok(bound?.assetManifest);
     assert.equal(bound.assetManifest.schemaVersion, 6);
     assert.equal(bound.assetManifest.consciousOutputContract, "unified-consciousness-v1");
+    assert.equal(bound.assetManifest.consciousnessPolicy.revision, "unified-consciousness-policy-v2");
     assert.equal((await query<{ count: number }>("SELECT COUNT(*) AS count FROM battle_unified_consciousness WHERE battle_id=$1", [battleId])).rows[0]?.count, 1);
     assert.equal((await query<{ count: number }>("SELECT COUNT(*) AS count FROM battle_awareness_runtime WHERE battle_id=$1", [battleId])).rows[0]?.count, 0);
     assert.ok(bound.narrationStyle?.compiledPolicyV2);

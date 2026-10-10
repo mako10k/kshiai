@@ -1,5 +1,5 @@
 // R: Prepare one synchronous A/B decision barrier with durable no-resend identities.
-import { UnifiedConsciousnessInputSchema, UnifiedConsciousnessRuntimeSchema, shouldRunUnifiedConsciousness, validateUnifiedDecision,
+import { UnifiedConsciousnessInputSchema, UnifiedConsciousnessRuntimeSchema, shouldRunUnifiedConsciousness, validateUnifiedDecision, unifiedActionFailure,
   type UnifiedConsciousnessInput, type UnifiedConsciousnessRuntime, type UnifiedConsciousnessDecision } from "@kshiai/shared";
 import { prepareUnifiedConsciousnessRequest } from "../llm/unified-consciousness.js";
 import type { AwarenessJsonTransport } from "../llm/awareness-provider-contract.js";
@@ -16,8 +16,8 @@ export type UnifiedPreparedBoundary = {
   selected: { a: { body: { action: NonNullable<UnifiedConsciousnessDecision["action"]> } | null; voice: { speech: string } | null };
     b: { body: { action: NonNullable<UnifiedConsciousnessDecision["action"]> } | null; voice: { speech: string } | null } };
 };
-function selected(output?: UnifiedConsciousnessDecision | null): UnifiedPreparedBoundary["selected"]["a"] {
-  return { body: output?.action ? { action: output.action } : null, voice: output?.speech ? { speech: output.speech } : null };
+function selected(output?: UnifiedConsciousnessDecision | null, actionFailure?: string): UnifiedPreparedBoundary["selected"]["a"] {
+  return { body: output?.action && !actionFailure ? { action: output.action } : null, voice: output?.speech ? { speech: output.speech } : null };
 }
 export async function prepareUnifiedBoundary(input: {
   battleId: string; tick: number; worldRevision: number; port: UnifiedExecutionPort;
@@ -66,13 +66,14 @@ export async function prepareUnifiedBoundary(input: {
       () => input.transport.requestJson(request.system, request.user, { ...request.options, timeoutMs: Math.max(1, deadlineAt - now()) })));
     const processed = requestPromise.then(async (raw) => {
       let output: UnifiedConsciousnessDecision;
-      try { output = validateUnifiedDecision(frame, raw, id); }
+      try { output = validateUnifiedDecision(frame, raw, id, before.policy.revision === "unified-consciousness-policy-v2"); }
       catch (error) { await updateReceipt(true, "CONSCIOUSNESS_OUTPUT_INVALID"); throw error; }
+      const actionFailure = before.policy.revision === "unified-consciousness-policy-v2" ? unifiedActionFailure(frame, output.action) : null;
       // Persist first, then require the current world lease before making it usable.
       await input.port.account((runtime) => ({ ...runtime, decisions: runtime.decisions.map((item) => item.id === id ? { ...item, physicalOutstanding: false } : item) }));
       await input.port.update((runtime) => {
         if (runtime.status !== "active" || now() >= deadlineAt || runtime.decisions.find((item) => item.id === id)?.status !== "reserved") throw new Error("CONSCIOUSNESS_LATE_RESPONSE");
-        return { ...runtime, decisions: runtime.decisions.map((item) => item.id === id ? { ...item, status: "prepared", output } : item) };
+        return { ...runtime, decisions: runtime.decisions.map((item) => item.id === id ? { ...item, status: "prepared", output, ...(actionFailure ? { actionFailure } : {}) } : item) };
       });
       return output;
     }, async (error: unknown) => {
@@ -92,5 +93,7 @@ export async function prepareUnifiedBoundary(input: {
   if (failed) throw failed.reason;
   const a = outcomes[0]; const b = outcomes[1];
   if (!a || !b || a.status !== "fulfilled" || b.status !== "fulfilled") throw new Error("CONSCIOUSNESS_BOUNDARY_NOT_READY");
-  return { tick: input.tick, selected: { a: selected(a.value), b: selected(b.value) } };
+  const prepared = await input.port.read();
+  const failure = (side: "a" | "b") => prepared.decisions.find((item) => item.tick === input.tick && item.side === side)?.actionFailure;
+  return { tick: input.tick, selected: { a: selected(a.value, failure("a")), b: selected(b.value, failure("b")) } };
 }

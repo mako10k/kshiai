@@ -1,0 +1,233 @@
+{
+  "adr": "ADR0069 revision1",
+  "scope": "application v0.24.0-rc.3",
+  "diagnosticAffectedTests": {
+    "passed": 97,
+    "failed": 0
+  },
+  "additionalWorldTransactionTests": {
+    "passed": 16,
+    "failed": 0
+  },
+  "reviews": [
+    {
+      "ref": "test-recovery-v1/basis/2f80c008d1f20836",
+      "path": "backend/src/llm/openai-compatible.ts",
+      "review": "Reviewed ADR0069 delta in backend/src/llm/openai-compatible.ts: immutable policy-v2 opt-in, historical v1 behavior retained, no retry/coercion of invalid contents; affected offline regressions passed.",
+      "previousSeal": "0aa61f846dbeea36be9337ac2882767ac439b58c38fafffa1ca136d6e74f864e",
+      "seal": "94af5bd7e1f98a485e957a5bf0e37e05a1a0dd16205283086de55ceb65536dc3"
+    },
+    {
+      "ref": "test-recovery-v1/basis/9300bba5dfdd28f2",
+      "path": "backend/src/llm/openai-compatible.ts",
+      "review": "Reviewed ADR0069 delta in backend/src/llm/openai-compatible.ts: immutable policy-v2 opt-in, historical v1 behavior retained, no retry/coercion of invalid contents; affected offline regressions passed.",
+      "previousSeal": "1e4f843a0c2fc69ff0dc3891944b2f252236db2f9967087007a64db5711dd94c",
+      "seal": "85e38f60c2b94ba7e56336d61cbd5018da9a398d7215e73aa63bbd13bf38f4a2"
+    },
+    {
+      "ref": "test-recovery-v1/basis/0daf69bbc0052f26",
+      "path": "backend/src/testing/awareness-trial-http-fixture.ts",
+      "review": "Offline HTTP fixture unchanged: deterministic historical awareness responses, test.invalid host and no external sends remain valid with policy-v2 opt-in adapter behavior.",
+      "previousSeal": "d20c00c7102cef22aff6a2e9e36704c1b555475ce3567ce51ecda8aec588f5be",
+      "seal": "295a4c4c0d4fe65ae289cc0bd74d4caa29c36030481d39fba174a45569686b3a"
+    },
+    {
+      "ref": "test-recovery-v1/basis/593a3039c2b05e7e",
+      "path": "backend/src/llm/index.ts",
+      "review": "Provider factory unchanged: role identity/fallback configuration retained; new retry is admitted only from saved unified policy v2, not a global provider switch.",
+      "previousSeal": "e77f4d9d0c4b408a9cffb899b9c1b2e7f3148378583c51b9bc71c4a5ec3e2b0d",
+      "seal": "fb692bc134a714e867d76c4676cc67586e6c97a5b88bdcdbbf39903784bd3497"
+    },
+    {
+      "ref": "test-recovery-v1/basis/80c714d278e554d3",
+      "path": "backend/src/services/awareness-creation-encounter.ts",
+      "review": "Creation encounter unchanged: pricing/observation admission, immutable proposal and no unknown send resend remain; v2 transport retry begins only after saved unified runtime exists.",
+      "previousSeal": "9e97d82bd438991d5b5d27ef2e6761504bd611685f5bc48e53d711e33a38f726",
+      "seal": "004424331affd05e777879f91412b966579055fda802e99cfe4b8c9837b32f31"
+    },
+    {
+      "ref": "test-recovery-v1/basis/59df7291e9c37342",
+      "path": "backend/src/services/battle-service.ts",
+      "review": "Battle service unchanged: saved manifest selects historical/unified routing; initial encounter adoption carries reservation; world fence and rollback remain unchanged.",
+      "previousSeal": "3a8adedb44c3123709f84b80c0c7206b08c2afd4ea449a72af59ff633104fcd0",
+      "seal": "c8f5c0c636effb654d0644acc6ff0c8e0ecc37a4284aa1c792b124f71f9303bb"
+    },
+    {
+      "ref": "test-recovery-v1/basis/a07dd2c8f0ac65c2",
+      "path": "backend/src/routes.ts",
+      "review": "Reviewed ADR0069 delta in backend/src/routes.ts: immutable policy-v2 opt-in, historical v1 behavior retained, no retry/coercion of invalid contents; affected offline regressions passed.",
+      "previousSeal": "4ae7c2254094538d8aa18e6a74005a14782e70b3f57f98eef516635187892936",
+      "seal": "717d27389064b5534f86918b0663e5f6ea60a00f44754723f5d037b7305a5aad"
+    },
+    {
+      "ref": "test-recovery-v1/basis/ebcf7ce03ec331c7",
+      "path": "backend/src/llm/openai-compatible.ts",
+      "review": "Reviewed ADR0069 delta in backend/src/llm/openai-compatible.ts: immutable policy-v2 opt-in, historical v1 behavior retained, no retry/coercion of invalid contents; affected offline regressions passed.",
+      "previousSeal": "3415fa3bdf88cd709ec95d1f5ae98631ac34822fd6b8bbb816ccf193e7e845e6",
+      "seal": "417b88c7d9a8a4aa5553984664a8306754c0c3a80e66c22c689f8ed6a2940507"
+    },
+    {
+      "ref": "unified-release-v1/source/public-battle-selector",
+      "path": "backend/src/routes.ts",
+      "review": "Reviewed ADR0069 delta in backend/src/routes.ts: immutable policy-v2 opt-in, historical v1 behavior retained, no retry/coercion of invalid contents; affected offline regressions passed.",
+      "previousSeal": "8e386beef7ad2a86e0ae7897bcb33f623636ab0f669b0ec1974a075f1e687832",
+      "seal": "dbac961ac1fbc73cf33957e4ec258c870a8ad637a8a2f90fba0c922a40055961"
+    },
+    {
+      "ref": "unified-v1/source/backend-src-services-unified-consciousness-execution",
+      "path": "backend/src/services/unified-consciousness-execution.ts",
+      "review": "Reviewed ADR0069 delta in backend/src/services/unified-consciousness-execution.ts: immutable policy-v2 opt-in, historical v1 behavior retained, no retry/coercion of invalid contents; affected offline regressions passed.",
+      "previousSeal": "c1f795da0974436bbd5b24ac5d075fb2e37a739ae9d4a2524b30eb58182eb913",
+      "seal": "d43dbc7ba9b35618a00e8fb0f1298cdb74ba2a29dbcbe583ab223677b015dc5c"
+    },
+    {
+      "ref": "unified-v1/source/packages-shared-src-unified-consciousness",
+      "path": "packages/shared/src/unified-consciousness.ts",
+      "review": "Reviewed ADR0069 delta in packages/shared/src/unified-consciousness.ts: immutable policy-v2 opt-in, historical v1 behavior retained, no retry/coercion of invalid contents; affected offline regressions passed.",
+      "previousSeal": "cbdb326fce143e4a8cff2298e947b4552594b33de99547a168d81c57efd23dbd",
+      "seal": "a1878902c7050afcf5b86e4ae3bf14662f6400385e85b1474714565491ab5f56"
+    },
+    {
+      "ref": "unified-v1/source/packages-shared-src-unified-consciousness-policy",
+      "path": "packages/shared/src/unified-consciousness-policy.ts",
+      "review": "Reviewed ADR0069 delta in packages/shared/src/unified-consciousness-policy.ts: immutable policy-v2 opt-in, historical v1 behavior retained, no retry/coercion of invalid contents; affected offline regressions passed.",
+      "previousSeal": "40ed470532c8e4617c1a5ad91d566c50ff9f556ebd8404098f27bad858f0d909",
+      "seal": "baefb4f9478853d0e8064c9f7845ed12b9fbff6b8b7f329a83c9552b0a87e33a"
+    },
+    {
+      "ref": "all-tests-20261008/current-source-closure/verification/awareness-adjudication-result-20261007",
+      "path": "backend/src/llm/awareness-adjudication-result.test.ts",
+      "review": "Historical guard lacks v2 capability; strict winners/patch/proposal coverage and invalid-result no-fallback assertions remain unchanged, all scoped tests passed.",
+      "previousSeal": "ebb479b0eb3c0efeed30e352217f850863b401d0ac18c81dd6b50d8b2ca4e53c",
+      "seal": "7faa0c7d22939a4fd63d2cd36895e81d0a4f65b63212ed0e176e6b2796f43ece"
+    },
+    {
+      "ref": "all-tests-20261008/current-source-closure/verification/awareness-dispatch-context-20261007",
+      "path": "backend/src/llm/awareness-dispatch-context.test.ts",
+      "review": "Historical guard keeps exact request schema/1500 cap/deadline/no retry, rejects tools/stream/model mismatch and admission bypass; new optional v2 retry capability absent from these fixtures.",
+      "previousSeal": "59b157a5efb4ce2c92db59e279d12b821956dbb8a856b3aba67b77ba7e1f0bd4",
+      "seal": "7677e17004d183c6faa038ec3b29389a1df6e7b59ce090fb75b0d405a30a0701"
+    },
+    {
+      "ref": "all-tests-20261008/current-source-closure/verification/routing-typed-seam-bounded-20261008",
+      "path": "backend/src/llm/openai-compatible-routing.test.ts",
+      "review": "Existing provider/model/reasoning options and unbound retry behavior unchanged; historical429/503/timeout assertions passed. New saved policy branch is absent in these fixtures.",
+      "previousSeal": "8ed63681b2b32e2e8b0d0c71979fa273deb2033fc9dcac147fd56489d0f43171",
+      "seal": "0f0846a7f348211262593b842464f844d23a9cc35843e9c4f9d3201d915a080f"
+    },
+    {
+      "ref": "all-tests-20261008/current-source-closure/verification/provider-accounting-current-20261007",
+      "path": "backend/src/llm/provider-accounting.test.ts",
+      "review": "Actual fake SDK: v1 one send/v2 retry, all physical attempts in durable ledger, three-send bound, runtime attempt cap and closed extra reservations; unknown network and malformed JSON not retried; adjudication guard recovers only known429. Historical taxonomy assertions retained. Additional actual SDK tests passed: known429 followed by unknown send retains outstanding reservation; inactive battle sends zero; terminal narration retries only within drain window, separately settles additional attempt.",
+      "previousSeal": "74cba3388c9a5e5faaf684711731f5c855ad9783a0f071ee8987f2ac439e220e",
+      "seal": "29cf0f59098148a7e03aa73ddd1f3456e17e22253fe81572e76779abf00564fb",
+      "intermediateSeal": "2357d1de303dd96eaccaeeed86b8f4029c225b0a78f5d1fa97ddd0cf823bed9f"
+    },
+    {
+      "ref": "verification/provider-errors-20261007",
+      "path": "backend/src/llm/provider-errors.test.ts",
+      "review": "Existing DNS/timeout/billing/rate classification and capped legacy Retry-After preserved; new explicit billing429 vs capacity429 assertion.",
+      "previousSeal": "d99ac91be3f7261fa349f25e9b081a6385a30f5216ae5793a3ade7674822d8fa",
+      "seal": "329bcabf193a9d85bd08a576035663d2b57f342a01ca1ceeed82856ee188ed87"
+    },
+    {
+      "ref": "verification/provider-retry-20261007",
+      "path": "backend/src/llm/provider-retry.test.ts",
+      "review": "Existing same-provider429/503 bounds and stream/timeout exclusions preserved; v2 mode requires actual429, rejects billing/503/message-only errors, respects full Retry-After and original deadline.",
+      "previousSeal": "229ed9d2df2ab970f344f2b0e2f8ce5ec224e317f4eb20199920c7267bbf0589",
+      "seal": "0a2d4e4b11566cfedd3b79ca1b4c272ab20768298b71f7de8142c94aa6c596a7"
+    },
+    {
+      "ref": "all-tests-20261008/current-source-closure/verification/structured-asset-integration-bounded-20261008",
+      "path": "backend/src/routes-structured-asset-integration.test.ts",
+      "review": "Original immutable asset snapshot, authorization, replay, narration and privacy assertions retained; public creation explicitly asserts policy v2 and binding format v6; offline consciousness port avoids provider sends.",
+      "previousSeal": "f77ac6bfbf48fa3f758ea62ea0b52e8fba7674abe322841b2a9fd4908b7dab58",
+      "seal": "ae550eb134fb6f873c714f9bbfae07b2fa29654c0d52995296d4ec3c26c9bd6b"
+    },
+    {
+      "ref": "all-tests-20261008/current-source-closure/verification/stable-area-battlefield-http-acceptance-20261007",
+      "path": "backend/src/routes-structured-battlefield-acceptance.test.ts",
+      "review": "Authoring create/upgrade confirmation, expiry, current-pointer drift and immutable preset binding assertions unchanged; public selector delta does not alter battlefield lifecycle.",
+      "previousSeal": "719d77b669e0c0002f52a3ae25cfdcc456ce98045e109775c5dcf243f8f619bc",
+      "seal": "a0319d53e1ca98c0520ae747dbf6cabcd06d87d88e153137cd69df7c66a7758b"
+    },
+    {
+      "ref": "all-tests-20261008/current-source-closure/verification/stable-area-narration-http-acceptance-20261007",
+      "path": "backend/src/routes-structured-narration-acceptance.test.ts",
+      "review": "Authoring confirmation/expiry/replay/corruption and immutable generation assertions unchanged; new battle policy does not alter style authoring lifecycle.",
+      "previousSeal": "078bfa57c709d35d0dbc766722bd32b5ea93d6d143bf0b6a7683db520db43348",
+      "seal": "5c065bb5c9af025eda21135484a25c3ff2c94ec4c55f2434067ee39726c2319b"
+    },
+    {
+      "ref": "all-tests-20261008/current-source-closure/verification/awareness-battle-creation-bounded-awareness-creation-20261007",
+      "path": "backend/src/services/awareness-battle-creation.test.ts",
+      "review": "Internal startBattle remains historical v5 by default; immutable adoption, encounter accounting and idempotent dispatch assertions unchanged and passed.",
+      "previousSeal": "ec1c3214cd227670396c20ac67b418b70ff6da259e716b58f45e9685cae33e82",
+      "seal": "9a0a04368fc7954640adc028fd304a830f693f49d14550fd058a1f21c1b1b581"
+    },
+    {
+      "ref": "all-tests-20261008/current-source-closure/verification/awareness-battle-service-bounded-awareness-creation-20261007",
+      "path": "backend/src/services/awareness-battle-service.test.ts",
+      "review": "Historical v5 missing route/proof termination, absent body intent, terminal aftermath and last-world rollback assertions preserved; unified policy opt-in does not reinterpret saved v5.",
+      "previousSeal": "333630b829976211dd4f15f56efcc4adb4a3bc5f14e5e6769204113d71e8ce02",
+      "seal": "4a6641e00355e8ee4d15870682ac5902976bf7fd0e73aeb583e471633b25870f"
+    },
+    {
+      "ref": "all-tests-20261008/current-source-closure/verification/awareness-creation-encounter-bounded-awareness-creation-20261007",
+      "path": "backend/src/services/awareness-creation-encounter.test.ts",
+      "review": "Pre-runtime creation pricing/observed admission and durable ready proposal unchanged; invalid proposal never retransmitted and atomic canonical adoption assertions retained.",
+      "previousSeal": "8d50f2f964cfd0771a6db4d1bcdfc71f049e4e65f0f838ba61291b488f388668",
+      "seal": "7f969a42fe63f8a08e31ced5452fcc7a9cbcc097c6f2b94c7bfdaa34b1e06dac"
+    },
+    {
+      "ref": "all-tests-20261008/current-source-closure/verification/battle-create-idempotency-bounded-awareness-creation-20261007",
+      "path": "backend/src/services/battle-create-idempotency.test.ts",
+      "review": "Deterministic battle readback and exactly-once encounter work remain unchanged with provider-v2 scoped runtime admission; passed.",
+      "previousSeal": "58601182adbf7f4d60262ee496f650b06d5770d5bead2f6744ecf5ff2fca8660",
+      "seal": "3759059ba648c7c28ddd11bef51afb74f478952aa59bf7513d4c968645d4b7f1"
+    },
+    {
+      "ref": "all-tests-20261008/current-source-closure/verification/normal-awareness-policy-bounded-current-20261007",
+      "path": "backend/src/services/normal-awareness-policy.test.ts",
+      "review": "Internal historical default still awareness-v5-usage-v3 with frozen600s and180s settings, prologue role policy forwarding and two historical A/B calls; exact assertions passed.",
+      "previousSeal": "fb6d6dda3a4d7fb306a03725729e8898d646656f63b4e9aceb08e96b30c25775",
+      "seal": "3aa97a789cb49df8b86add6ea7e7ac459c48025676060df00afd82e77f1ec30d"
+    },
+    {
+      "ref": "unified-v1/test/backend-src-services-unified-consciousness-execution.test",
+      "path": "backend/src/services/unified-consciousness-execution.test.ts",
+      "review": "Parallel synchronous A/B, no resend, timeout/lease and atomic world tests preserved. New v2 invalid action/reference suppressed without changing original attempt; speech/memory retained; self event once, real SQL CAS rollback and saved-world privacy tested. v1 invalid action still stops.",
+      "previousSeal": "b8da5e1630699dc965ab696cf397b6862b6f9869a848742243c8ec6ad6a11105",
+      "seal": "1f106d56d454f79da3a3bb04dbd42ed449bee63370e186dd69cab44b75208b8e"
+    },
+    {
+      "ref": "all-tests-20261008/current-source-closure/verification/v3-battle-creation-recovery-bounded-20261008",
+      "path": "backend/src/services/v3-battle-creation.test.ts",
+      "review": "Saved V4/V5 generation bindings, free-action-only and durable repair assertions unchanged; public-created V6 uses offline consciousness and policy2, no external calls.",
+      "previousSeal": "d104ef5b68c971237bff138d995760b8f20fa665895f22204bb94d3353ec09a2",
+      "seal": "3b9541e75dca3742b2ccf9c86454f13963f43865f6c04fb007c8887e5ed81f10"
+    },
+    {
+      "ref": "unified-v1/test/packages-shared-src-consciousness-memory.test",
+      "path": "packages/shared/src/consciousness-memory.test.ts",
+      "review": "Memory schema/reducer unchanged: five ranks, ordered overflow/removal, Unicode limits, atomic invalid operations, optional semantic output and event/3tick admission; policy-v1 fixture remains valid.",
+      "previousSeal": "72441eda9f04af7b5018445c1a7718384905c17d5b7720523bb8835c48cc3c30",
+      "seal": "40e70bf7d0c37e686a5f75c1f162b7b5fd64d4c76f4a813c1b3126a3959c9730"
+    }
+  ],
+  "finalPhysicalSdkTests": {
+    "passed": 16,
+    "failed": 0,
+    "skipped": 0
+  },
+  "officialVerification": {
+    "command": "npm test",
+    "database": "dedicated local PostgreSQL16 on127.0.0.1:15441",
+    "activeFiles": 250,
+    "provisionalFiles": 0,
+    "disabledFiles": 0,
+    "passed": 1511,
+    "failed": 0,
+    "skipped": 0
+  }
+}

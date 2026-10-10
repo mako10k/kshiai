@@ -54,3 +54,8 @@ describe("LLM provider errors", () => {
     assert.equal(providerRetryAfterMs({ headers: {} }), null);
   });
 });
+
+it("distinguishes billing HTTP429 from temporary provider capacity HTTP429", () => {
+  assert.equal(classifyLlmProviderError(Object.assign(new Error("insufficient quota"), { status: 429, code: "insufficient_quota" })), "billing");
+  assert.equal(classifyLlmProviderError(Object.assign(new Error("model is currently at capacity"), { status: 429 })), "rate_limit");
+});

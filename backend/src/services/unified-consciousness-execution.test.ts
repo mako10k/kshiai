@@ -4,7 +4,7 @@ import { after, describe, it } from "node:test";
 import { mkdtempSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { AwarenessNormalPolicy, BattleAssetManifestV6Schema, BattleStateSchema, UnifiedConsciousnessPolicyV1,
+import { AwarenessNormalPolicy, BattleAssetManifestV6Schema, BattleStateSchema, UnifiedConsciousnessPolicyV1, UnifiedConsciousnessPolicyV2,
   initializeUnifiedConsciousness, applyUnifiedConsciousnessBoundary, defaultCharacterIdentity,
   type UnifiedConsciousnessRuntime, type UnifiedConsciousnessInput } from "@kshiai/shared";
 import type { AwarenessJsonTransport } from "../llm/awareness-provider-contract.js";
@@ -34,8 +34,8 @@ function frame(side: "a" | "b"): UnifiedConsciousnessInput {
       counterpart: { subject: { kind: "counterpart" }, currentAccess: "none", identityKnowledge: "unknown", perceivedAs: "不明", percepts: [] },
       others: [], qualitativeChanges: [], reserveCues: [], latestDiff: { fromRevision: 0, toRevision: 0, addedOrUpdatedPerceptIds: [], removedPerceptIds: [] } } };
 }
-function fixture() {
-  let runtime = initializeUnifiedConsciousness(UnifiedConsciousnessPolicyV1, now);
+function fixture(policy = UnifiedConsciousnessPolicyV1) {
+  let runtime = initializeUnifiedConsciousness(policy, now);
   let fence = true;
   const port = { async read() { return structuredClone(runtime); }, async update(reduce: (value: UnifiedConsciousnessRuntime) => UnifiedConsciousnessRuntime) {
     if (!fence) throw new Error("CONSCIOUSNESS_REVISION_OR_LEASE_CONFLICT"); runtime = reduce(runtime);
@@ -53,7 +53,7 @@ function deferred() {
 const frames = { a: frame("a"), b: frame("b") };
 async function drain() { for (let index = 0; index < 20; index += 1) await new Promise<void>((done) => setImmediate(done)); }
 
-describe("unified consciousness v1 execution", () => {
+describe("unified consciousness policies v1/v2 execution", () => {
   it("always renders private ranked memory, including an empty list", () => {
     const empty = prepareUnifiedConsciousnessRequest(frames.a, UnifiedConsciousnessPolicyV1);
     assert.match(empty.user, /優先順位付き記憶/);
@@ -61,6 +61,45 @@ describe("unified consciousness v1 execution", () => {
     assert.match(request.user, /まず観察する/);
     assert.equal(request.options.maxCompletionTokens, 1000);
     assert.doesNotMatch(request.system, /各意欲は|reflexDesires/);
+  });
+  it("fails an unsupported action privately, preserves speech/memory and delivers feedback once", async () => {
+    const f = fixture(UnifiedConsciousnessPolicyV2);
+    const attempted = { action: { kind: "basic_attack" }, speech: "試してみる", memoryOperations: [{ kind: "insert", priority: 1, text: "次は別の行為を試す" }] };
+    const input = { battleId: "action-failure", tick: 0, worldRevision: 0, port: f.port, frames,
+      transport: transport(async () => attempted), now: () => now };
+    const prepared = await prepareUnifiedBoundary(input);
+    assert.equal(prepared.selected.a.body, null);
+    assert.equal(prepared.selected.a.voice?.speech, "試してみる");
+    assert.equal(f.runtime.decisions[0]?.output?.action?.kind, "basic_attack");
+    assert.equal(f.runtime.decisions[0]?.actionFailure, "CONSCIOUSNESS_ACTION_UNKNOWN");
+    assert.deepEqual(f.runtime.sides.a.pendingEvents, []);
+    const committed = applyUnifiedConsciousnessBoundary(f.runtime, 0);
+    assert.equal(committed.sides.a.memory[0]?.text, "次は別の行為を試す");
+    assert.equal(committed.sides.a.pendingEvents.length, 1);
+    assert.match(committed.sides.a.pendingEvents[0]?.text ?? "", /CONSCIOUSNESS_ACTION_UNKNOWN/);
+    assert.notEqual(committed.sides.a.pendingEvents[0]?.id, committed.sides.b.pendingEvents[0]?.id);
+    assert.throws(() => applyUnifiedConsciousnessBoundary(committed, 0), /ALREADY_APPLIED/);
+    assert.deepEqual((await prepareUnifiedBoundary(input)).selected.a, prepared.selected.a);
+  });
+  it("keeps historical policy v1 strict and rejects invalid memory even under policy v2", async () => {
+    for (const policy of [UnifiedConsciousnessPolicyV1, UnifiedConsciousnessPolicyV2]) {
+      const f = fixture(policy);
+      await assert.rejects(prepareUnifiedBoundary({ battleId: "invalid-memory", tick: 0, worldRevision: 0, port: f.port, frames,
+        transport: transport(async () => ({ action: { kind: "basic_attack" }, memoryOperations: [{ kind: "remove", id: "missing" }] })), now: () => now }));
+      assert.ok(f.runtime.decisions.every((decision) => decision.status === "failed"));
+      assert.deepEqual(f.runtime.sides.a.memory, []);
+    }
+    const f = fixture();
+    await assert.rejects(prepareUnifiedBoundary({ battleId: "historical-action", tick: 0, worldRevision: 0, port: f.port, frames,
+      transport: transport(async () => ({ action: { kind: "basic_attack" } })), now: () => now }), /CONSCIOUSNESS_ACTION_UNKNOWN/);
+  });
+  it("reports an unknown action reference without executing the action", async () => {
+    const f = fixture(UnifiedConsciousnessPolicyV2);
+    const free = { ...frames.a, availableActions: [{ kind: "free_action" as const, name: "試み", target: { kind: "self" as const, perceivedAs: "自分" } }] };
+    const result = await prepareUnifiedBoundary({ battleId: "bad-reference", tick: 0, worldRevision: 0, port: f.port, frames: { a: free, b: { ...free, side: "b", perception: frames.b.perception } },
+      transport: transport(async () => ({ action: { kind: "free_action", description: "手を伸ばす", subjectRefs: ["invented"] } })), now: () => now });
+    assert.equal(result.selected.a.body, null);
+    assert.equal(f.runtime.decisions[0]?.actionFailure, "CONSCIOUSNESS_REFERENCE_UNKNOWN");
   });
   it("ignores tick and revision alone in perception activation", () => {
     const perception = frames.a.perception;
@@ -135,11 +174,11 @@ describe("unified consciousness v1 execution", () => {
   });
 });
 
-async function persisted(id: string) {
+async function persisted(id: string, policy = UnifiedConsciousnessPolicyV1, failedAction = false) {
   const base = validAwarenessBattleFixture(id).state;
   const manifest = BattleAssetManifestV6Schema.parse({ ...base.assetManifest, schemaVersion: 6,
     consciousOutputContract: "unified-consciousness-v1", outputRevision: "unified-consciousness-output-v1",
-    awarenessPolicy: AwarenessNormalPolicy, consciousnessPolicy: UnifiedConsciousnessPolicyV1,
+    awarenessPolicy: AwarenessNormalPolicy, consciousnessPolicy: policy,
     consciousnessPromptRevision: "unified-consciousness-prompt-v1", rules: { ...base.assetManifest?.rules, psycheReaction: "unified-consciousness-v1" } });
   const state = BattleStateSchema.parse({ ...base, assetManifest: manifest });
   const meta = { sideAUserId: "owner", sideACharacterId: "a", sideBCharacterId: "b", expectedRevision: 0 };
@@ -147,9 +186,9 @@ async function persisted(id: string) {
   getDb().prepare("INSERT INTO battle_leases(battle_id,owner_id,fencing_token,acquired_at,expires_at) VALUES (?, 'owner', 1, ?, ?)")
     .run(id, new Date(now).toISOString(), new Date(now + 180000).toISOString());
   const fence = { battleId: id, ownerId: "owner", fencingToken: 1 };
-  await withTransaction((connection) => repo.insertUnifiedRuntime(connection, id, initializeUnifiedConsciousness(UnifiedConsciousnessPolicyV1, now), new Date(now).toISOString()));
+  await withTransaction((connection) => repo.insertUnifiedRuntime(connection, id, initializeUnifiedConsciousness(policy, now), new Date(now).toISOString()));
   await prepareUnifiedBoundary({ battleId: id, tick: 0, worldRevision: 0, frames, now: () => now,
-    transport: transport(async () => ({ memoryOperations: [{ kind: "insert", priority: 1, text: "秘密の意図" }] })), port: {
+    transport: transport(async () => ({ ...(failedAction ? { action: { kind: "basic_attack" } } : {}), memoryOperations: [{ kind: "insert", priority: 1, text: "秘密の意図" }] })), port: {
       async read() { const saved = await repo.getUnifiedRuntime(id); assert.ok(saved); return saved.runtime; },
       async update(reduce) { await repo.mutateUnifiedRuntime(id, fence, reduce); },
       async account(reduce) { await repo.mutateUnifiedRuntime(id, undefined, reduce); },
@@ -157,6 +196,20 @@ async function persisted(id: string) {
   return { state, meta, fence, tick: 0, now: () => now + 1000 };
 }
 describe("unified consciousness v1 world transaction", () => {
+  it("commits policy v2 self-only action feedback atomically and rolls it back with world failure", async () => {
+    const f = await persisted("unified-failed-action", UnifiedConsciousnessPolicyV2, true);
+    const before = await repo.getUnifiedRuntime(f.state.id);
+    await assert.rejects(commitUnifiedWorld({ ...f, meta: { ...f.meta, expectedRevision: 99 }, state: { ...f.state, battleRevision: 1 } }), /REVISION_CONFLICT/);
+    assert.deepEqual(await repo.getUnifiedRuntime(f.state.id), before);
+    await commitUnifiedWorld({ ...f, state: { ...f.state, battleRevision: 1 } });
+    const runtime = (await repo.getUnifiedRuntime(f.state.id))?.runtime; assert.ok(runtime);
+    assert.equal(runtime.sides.a.pendingEvents.length, 1);
+    assert.equal(runtime.decisions[0]?.status, "applied");
+    assert.equal(runtime.decisions[0]?.output?.action?.kind, "basic_attack");
+    assert.match(runtime.sides.a.pendingEvents[0]?.text ?? "", /候補にない/);
+    assert.doesNotMatch(JSON.stringify(await battles.getBattle(f.state.id)), /秘密の意図|actionFailure|CONSCIOUSNESS_ACTION_UNKNOWN|action-failed/);
+    assert.equal(runtime.sides.a.memory[0]?.text, "秘密の意図");
+  });
   it("commits memory with canonical revision and keeps private state out of saved world", async () => {
     const f = await persisted("unified-world");
     await commitUnifiedWorld({ ...f, state: { ...f.state, battleRevision: 1 } });

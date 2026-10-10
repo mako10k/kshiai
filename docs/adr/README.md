@@ -136,3 +136,5 @@ current check.
 - [ADR-0067: 統合意識と優先順位付き記憶](0067-unified-consciousness-priority-memory.md) — Accepted revision2; 統合意識と詳細契約案 第1版、同期並列判断と記憶操作。
 
 - [ADR-0068: 根拠不備のテストを除外した成功を禁止する](0068-fail-tests-on-invalid-authority.md) — Accepted revision1; stale等のdisabledがあれば公式unit/e2eを実行前にexit1。ADR0058を置換。
+
+- [ADR-0069: 有界な429再試行と本人への行為失敗フィードバック](0069-bounded-transport-retry-and-action-failure.md) — Accepted revision1; 新policy v2、最大2追加429送信とprivate feedback。

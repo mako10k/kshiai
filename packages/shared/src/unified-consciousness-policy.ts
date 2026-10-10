@@ -1,6 +1,6 @@
 // R: Bind one finite operating contract and explicit model identity to each new battle.
 import { z } from "zod";
-export const UnifiedConsciousnessPolicySchema = z.object({
+const UnifiedConsciousnessPolicyV1Schema = z.object({
   revision: z.literal("unified-consciousness-policy-v1"),
   model: z.object({ provider: z.literal("openai"), model: z.literal("gpt-6-luna"), reasoning: z.literal("none") }).strict(),
   maxTicks: z.literal(36), maxCalls: z.literal(74), maxCallsPerSide: z.literal(37),
@@ -10,6 +10,10 @@ export const UnifiedConsciousnessPolicySchema = z.object({
   maxPhysicalAttempts: z.literal(200), maxPhysicalConcurrent: z.literal(6),
   repairs: z.literal(0), retries: z.literal(0), fallbacks: z.literal(0),
 }).strict();
+export const UnifiedConsciousnessPolicySchema = z.discriminatedUnion("revision", [
+  UnifiedConsciousnessPolicyV1Schema,
+  UnifiedConsciousnessPolicyV1Schema.extend({ revision: z.literal("unified-consciousness-policy-v2"), retries: z.literal(2) }),
+]);
 export type UnifiedConsciousnessPolicy = z.infer<typeof UnifiedConsciousnessPolicySchema>;
 export const UnifiedConsciousnessPolicyV1: UnifiedConsciousnessPolicy = {
   revision: "unified-consciousness-policy-v1", model: { provider: "openai", model: "gpt-6-luna", reasoning: "none" },
@@ -18,3 +22,7 @@ export const UnifiedConsciousnessPolicyV1: UnifiedConsciousnessPolicy = {
   eventCharacters: 16000, reassessmentTicks: 3, maxPhysicalAttempts: 200, maxPhysicalConcurrent: 6,
   repairs: 0, retries: 0, fallbacks: 0,
 };
+
+export const UnifiedConsciousnessPolicyV2 = UnifiedConsciousnessPolicySchema.parse({
+  ...UnifiedConsciousnessPolicyV1, revision: "unified-consciousness-policy-v2", retries: 2,
+});

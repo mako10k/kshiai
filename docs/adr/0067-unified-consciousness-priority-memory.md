@@ -1,6 +1,6 @@
 # ADR-0067: 統合意識と優先順位付き記憶
 
-- Status: Accepted
+- Status: Superseded
 - Revision: 2
 - Date: 2026-10-10
 - Decision owner: Product owner
@@ -65,3 +65,7 @@ D8: 詳細値はC6の候補policyで固定する。記憶5件×400文字、操�
 ## Implementation references
 
 - canonical PERT: `docs/unified-consciousness.pert`。初期scopeは設計、後続に受入・実装・検証を置く。
+
+## Supersession
+
+ADR0069 revision1 supersedes C5/C6 only for new policy v2 bounded429 transport retries and private unsupported-action feedback; the historical revision2 decision and all other contracts remain unchanged.

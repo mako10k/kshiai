@@ -42,6 +42,7 @@ export const UnifiedConsciousnessPreparedSchema = z.object({
   inputDigest: z.string().min(1), input: UnifiedConsciousnessInputSchema,
   status: z.enum(["reserved", "prepared", "applied", "failed"]),
   output: UnifiedConsciousnessDecisionSchema.nullable(),
+  actionFailure: z.enum(["CONSCIOUSNESS_ACTION_UNKNOWN", "CONSCIOUSNESS_REFERENCE_UNKNOWN"]).optional(),
   physicalOutstanding: z.boolean(), failure: z.string().nullable(),
   deadlineAt: z.number().finite().nonnegative(),
 }).strict().superRefine((decision, context) => {
@@ -61,6 +62,10 @@ export const UnifiedConsciousnessRuntimeSchema = z.object({
   if (runtime.deadlineAt !== runtime.startedAt + runtime.policy.durationMs) context.addIssue({ code: "custom", message: "Deadline binding mismatch" });
   if (new Set(runtime.decisions.map((decision) => decision.id)).size !== runtime.decisions.length) context.addIssue({ code: "custom", message: "Duplicate decision ID" });
   if ((runtime.status === "incomplete") !== (runtime.incompleteReason !== null)) context.addIssue({ code: "custom", message: "Incomplete reason mismatch" });
+  for (const decision of runtime.decisions) {
+    if (decision.actionFailure && (runtime.policy.revision !== "unified-consciousness-policy-v2" || decision.output === null ||
+      decision.actionFailure !== unifiedActionFailure(decision.input, decision.output.action))) context.addIssue({ code: "custom", message: "Invalid failed-action receipt" });
+  }
   for (const side of ["a", "b"] as const) {
     if (runtime.sides[side].calls !== runtime.decisions.filter((decision) => decision.side === side).length) context.addIssue({ code: "custom", message: "Call count mismatch" });
   }
@@ -76,14 +81,18 @@ export function initializeUnifiedConsciousness(policy: UnifiedConsciousnessPolic
 export function shouldRunUnifiedConsciousness(side: UnifiedConsciousnessSide, atTick: number, policy: UnifiedConsciousnessPolicy): boolean {
   return side.lastDecisionTick === null || side.pendingEvents.length > 0 || atTick - side.lastDecisionTick >= policy.reassessmentTicks;
 }
-export function validateUnifiedDecision(input: UnifiedConsciousnessInput, raw: unknown, decisionId: string): UnifiedConsciousnessDecision {
-  const output = UnifiedConsciousnessDecisionSchema.parse(raw);
-  const refs = new Set(input.facts.map((fact) => fact.ref));
-  const action = output.action;
+export function unifiedActionFailure(input: UnifiedConsciousnessInput, action: UnifiedConsciousnessDecision["action"]): "CONSCIOUSNESS_ACTION_UNKNOWN" | "CONSCIOUSNESS_REFERENCE_UNKNOWN" | null {
   if (action && !input.availableActions.some((option) => option.kind === action.kind &&
-    (option.kind !== "skill" || (action.kind === "skill" && option.skillId === action.skillId)))) throw new Error("CONSCIOUSNESS_ACTION_UNKNOWN");
-  if (action?.kind === "free_action" && action.subjectRefs.some((ref) => !refs.has(ref))) throw new Error("CONSCIOUSNESS_REFERENCE_UNKNOWN");
-  if (action && "instrumentRef" in action && action.instrumentRef && !refs.has(action.instrumentRef)) throw new Error("CONSCIOUSNESS_REFERENCE_UNKNOWN");
+    (option.kind !== "skill" || (action.kind === "skill" && option.skillId === action.skillId)))) return "CONSCIOUSNESS_ACTION_UNKNOWN";
+  const refs = new Set(input.facts.map((fact) => fact.ref));
+  if (action?.kind === "free_action" && action.subjectRefs.some((ref) => !refs.has(ref))) return "CONSCIOUSNESS_REFERENCE_UNKNOWN";
+  if (action && "instrumentRef" in action && action.instrumentRef && !refs.has(action.instrumentRef)) return "CONSCIOUSNESS_REFERENCE_UNKNOWN";
+  return null;
+}
+export function validateUnifiedDecision(input: UnifiedConsciousnessInput, raw: unknown, decisionId: string, actionFeedback = false): UnifiedConsciousnessDecision {
+  const output = UnifiedConsciousnessDecisionSchema.parse(raw);
+  const failure = unifiedActionFailure(input, output.action);
+  if (failure && !actionFeedback) throw new Error(failure);
   applyConsciousnessMemory(input.memory, output.memoryOperations ?? [], decisionId);
   return output;
 }
@@ -92,6 +101,14 @@ function assertRequiredDecisions(next: UnifiedConsciousnessRuntime, atTick: numb
     const decisions = next.decisions.filter((item) => item.tick === atTick && item.side === side);
     if (decisions.length > 1 || (shouldRunUnifiedConsciousness(next.sides[side], atTick, next.policy) && decisions.length !== 1)) throw new Error("CONSCIOUSNESS_BOUNDARY_NOT_READY");
   }
+}
+function appendActionFailureEvent(side: UnifiedConsciousnessSide, decision: UnifiedConsciousnessPrepared, policy: UnifiedConsciousnessPolicy): void {
+  if (!decision.actionFailure) return;
+  const reason = decision.actionFailure === "CONSCIOUSNESS_ACTION_UNKNOWN"
+    ? "現在の候補にない行為または技を指定した" : "提示されていない対象・道具の参照を指定した";
+  const event = { id: `${decision.id}:action-failed`, text: `行為は実行されなかった。${reason}（${decision.actionFailure}）。現在提示された候補と参照を使って次の行為を選ぶ。` };
+  if (!side.pendingEvents.some((item) => item.id === event.id) && !side.consumedEventIds.includes(event.id)) side.pendingEvents.push(event);
+  if (side.pendingEvents.length > policy.maxEvents || side.pendingEvents.reduce((size, item) => size + Array.from(item.text).length, 0) > policy.eventCharacters) throw new Error("CONSCIOUSNESS_EVENT_CAPACITY_EXCEEDED");
 }
 /** Only a world transaction may persist this reducer's result. */
 export function applyUnifiedConsciousnessBoundary(runtime: UnifiedConsciousnessRuntime, atTick: number): UnifiedConsciousnessRuntime {
@@ -108,6 +125,7 @@ export function applyUnifiedConsciousnessBoundary(runtime: UnifiedConsciousnessR
     const consumed = new Set(decision.input.events.map((event) => event.id));
     side.consumedEventIds.push(...consumed);
     side.pendingEvents = side.pendingEvents.filter((event) => !consumed.has(event.id));
+    appendActionFailureEvent(side, decision, runtime.policy);
     decision.status = "applied";
   }
   next.tick = atTick;

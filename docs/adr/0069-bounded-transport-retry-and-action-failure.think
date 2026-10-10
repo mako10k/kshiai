@@ -1,0 +1,12 @@
+domain ADR0069:
+  description "Accepted revision1: bounded same-provider HTTP429 retries and private failed-action feedback for new unified policy v2."
+evidence OWNER_ACCEPTANCE:
+  "2026-10-10 owner requests rate-limit retries absorbed in adapter, candidate-outside action failure with reason feedback, and explicitly authorizes correction, tests, deployment and staging execution."
+evidence CURRENT:
+  "Stage38042991400 application v0.24.0-rc.2 failed CONSCIOUSNESS_ACTION_UNKNOWN; four consciousness responses counted correctly, independently xAI narration HTTP429 model at capacity. Six physical attempts, prior run one."
+premise SCOPE:
+  "New immutable unified-consciousness-policy-v2 only; max2 additional known429 sends, original deadlines and200physical cap, all attempts reserved/accounted, SDK retry0, no billing/unknown/timeout/schema retry or provider fallback. Structurally valid unsupported action fails privately; preserve original attempt and valid speech/memory, atomic one-time self feedback. Historical v1 unchanged."
+premise OPTIONS:
+  "Keep fail-all/retry0 contradicts owner direction. Unlimited retries/coercing action fabricates success and unbounds cost. Bounded adapter retry and private failed action is selected."
+decision ACCEPTANCE based_on OWNER_ACCEPTANCE, CURRENT, SCOPE, OPTIONS:
+  "Accept revision1. Replace ADR0067 revision2 only for known429 retry and unsupported/reference-invalid action handling on new policy v2. Preserve all other contracts, invalid memory/schema technical failure, privacy and historical evidence. Scope paid staging to one additional battle38advances200physical attempts without character-create or automatic new battle rerun."

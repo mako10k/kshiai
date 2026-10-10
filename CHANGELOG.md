@@ -7,6 +7,10 @@ based on Keep a Changelog, and releases follow Semantic Versioning.
 
 ## [0.24.0] - 2026-10-10
 
+- New battles bind consciousness operating policy v2: up to two same-provider HTTP429 retries within existing deadlines and physical-attempt ceilings, with separate reservations and usage accounting. Billing errors, unknown sends and invalid content are not retried. Unsupported actions fail without execution and deliver a private reason to the character's next decision; valid speech/memory remain atomic. Historical policy v1 behavior remains unchanged (ADR0069 revision1).
+- Preserve failed staging evidence for application v0.24.0-rc.2; corrective candidate application v0.24.0-rc.3 requires fresh exact-source CI and staging acceptance before production promotion.
+
+
 ### Changed
 
 - New public battles bind battle binding format v6 and consciousness pipeline

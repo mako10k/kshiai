@@ -76,6 +76,12 @@ function errorMessage(value: unknown): string {
   return typeof message === "string" ? message : "";
 }
 
+function isBillingRefusal(statuses: number[], codes: string[], messages: string): boolean {
+  return statuses.some((status) => [402, 403, 429].includes(status)) &&
+    (/INSUFFICIENT_QUOTA|CREDIT_BALANCE_TOO_LOW|BILLING_HARD_LIMIT/.test(codes.join(" ")) ||
+      /credits? exhausted|insufficient.+(?:balance|quota|credits)|quota exhausted|billing|payment required|spending limit/i.test(messages));
+}
+
 export function classifyLlmProviderError(
   error: unknown,
 ): LlmProviderFailureReason {
@@ -89,6 +95,7 @@ export function classifyLlmProviderError(
     (code): code is string => code !== null,
   );
 
+  if (isBillingRefusal(statuses, codes, messages)) return "billing";
   if (
     statuses.includes(429) ||
     /rate[ -]?limit|too many requests|throttl/i.test(messages)
@@ -146,14 +153,14 @@ function headerValue(headers: unknown, key: string): string | null {
     : null;
 }
 
-export function providerRetryAfterMs(error: unknown): number | null {
+export function providerRetryAfterMs(error: unknown, maximumMs = 10_000): number | null {
   const holder = errorHeaders(error);
   const headers = holder?.headers;
   const rawMilliseconds = headerValue(headers, "retry-after-ms");
   if (rawMilliseconds !== null) {
     const milliseconds = Number(rawMilliseconds);
     if (Number.isFinite(milliseconds) && milliseconds >= 0) {
-      return Math.min(Math.round(milliseconds), 10_000);
+      return Math.min(Math.round(milliseconds), maximumMs);
     }
   }
 
@@ -161,9 +168,16 @@ export function providerRetryAfterMs(error: unknown): number | null {
   if (!raw) return null;
   const seconds = Number(raw);
   if (Number.isFinite(seconds) && seconds >= 0) {
-    return Math.min(Math.round(seconds * 1_000), 10_000);
+    return Math.min(Math.round(seconds * 1_000), maximumMs);
   }
   const date = Date.parse(raw);
   if (!Number.isFinite(date)) return null;
-  return Math.min(Math.max(0, date - Date.now()), 10_000);
+  return Math.min(Math.max(0, date - Date.now()), maximumMs);
+}
+
+export function hasLlmProviderResponse(error: unknown): boolean {
+  return errorChain(error).some((item) => { const status = numericStatus(item); return status !== null && status >= 100 && status <= 599; });
+}
+export function isLlmRateLimitResponse(error: unknown): boolean {
+  return classifyLlmProviderError(error) === "rate_limit" && errorChain(error).some((item) => numericStatus(item) === 429);
 }
