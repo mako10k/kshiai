@@ -7,6 +7,8 @@ based on Keep a Changelog, and releases follow Semantic Versioning.
 
 ## [0.25.0] - 2026-10-11
 
+- Corrective application v0.25.0-rc.2 binds reserved-turn adjudication prompt v2: each reservation carries the exact pre-action baseRevision. Preserve prompt v1 for saved bindings and continue rejecting invalid traces without output repair. Application v0.25.0-rc.1 Stage38138135830 failed on a one-based revision trace after4 attempts; no world or memory commit and no production promotion.
+
 - Application v0.25.0-rc.1 introduces reserved-turn pipeline v1 for new battles: parallel A/B planning, up to five action reservations each, one sequential adjudication trace and one public narration call. Normal turns use four logical LLM calls. Ranked memory remains required.
 - Battle binding format v7 commits validated world changes, both memories and completed public narration atomically. Invalid traces leave the turn unchanged; known HTTP429 retries are bounded and unknown sends are never resent. Historical battles keep their recorded engines.
 - Add migration0038_reserved_turns.sql before deployment. Application v0.24.0-rc.9 is schema-compatible but cannot execute battle binding format v7; rollback must stop new creation and retain a compatible executor. No historical battle conversion or new environment variables.

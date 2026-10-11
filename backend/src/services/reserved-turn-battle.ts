@@ -80,7 +80,7 @@ export async function advanceReservedTurn(input: { userId: string; battleId: str
   });
   try {
     const [a, b] = await Promise.all([frame("a"), frame("b")]);
-    const resolved = await executeReservedTurn({ battleId: baseline.id, start: worldAtStart(baseline), frames: { a, b },
+    const resolved = await executeReservedTurn({ battleId: baseline.id, promptRevision: manifest.reservedTurnPromptRevision, start: worldAtStart(baseline), frames: { a, b },
       assets: { characters: { a: manifest.characters.a.snapshot, b: manifest.characters.b.snapshot }, rules: manifest.rules, battlefield: manifest.battlefield.snapshot },
       publicScene: baseline.situation.scene, narrationStyle: narrationInstructionForPhase(baseline.narrationStyle, "combat"), character: roles.consciousness, adjudication: roles.adjudication, narration: roles.adjudication,
       port: { async read() { const row = await getReservedRuntime(baseline.id); if (!row) throw new Error("RESERVED_RUNTIME_REQUIRED"); return row.runtime; },

@@ -1,4 +1,4 @@
-import { ReservedTurnPolicySchema, type ReservedTurnPolicy } from "./reserved-turn-policy.js";
+import { ReservedTurnPolicySchema, ReservedTurnPromptRevisionSchema, type ReservedTurnPolicy, type ReservedTurnPromptRevision } from "./reserved-turn-policy.js";
 import { UnifiedConsciousnessPolicySchema, type UnifiedConsciousnessPolicy } from "./unified-consciousness-policy.js";
 import { ActionEffortPolicyV1Schema, AppliedFreeActionPenaltyV1Schema, PendingDefenseExposureV1Schema } from "./action-effort-policy.js";
 import { validateConsequenceParameters } from "./battle-consequence-validation.js";
@@ -1996,7 +1996,7 @@ export type BattleAssetManifest = BattleAssetManifestFields & (
   | { schemaVersion: 4; consciousOutputContract?: "dynamic-v4" }
   | { schemaVersion: 5; consciousOutputContract: "awareness-v5"; awarenessPolicy: AwarenessPolicyV1; promptRevision: AwarenessPromptRevision; outputRevision: string }
   | { schemaVersion: 6; consciousOutputContract: "unified-consciousness-v1"; awarenessPolicy: AwarenessPolicyV1; promptRevision: AwarenessPromptRevision; outputRevision: "unified-consciousness-output-v1" | "unified-consciousness-output-v2"; consciousnessPolicy: UnifiedConsciousnessPolicy; consciousnessPromptRevision: "unified-consciousness-prompt-v1" | "unified-consciousness-prompt-v2" | "unified-consciousness-prompt-v3" }
-  | { schemaVersion: 7; consciousOutputContract: "reserved-turns-v1"; awarenessPolicy: AwarenessPolicyV1; promptRevision: AwarenessPromptRevision; outputRevision: "reserved-turn-output-v1"; reservedTurnPolicy: ReservedTurnPolicy; reservedTurnPromptRevision: "reserved-turn-prompt-v1" }
+  | { schemaVersion: 7; consciousOutputContract: "reserved-turns-v1"; awarenessPolicy: AwarenessPolicyV1; promptRevision: AwarenessPromptRevision; outputRevision: "reserved-turn-output-v1"; reservedTurnPolicy: ReservedTurnPolicy; reservedTurnPromptRevision: ReservedTurnPromptRevision }
 );
 
 export const BattleBasicAttackSourceSchema = z.discriminatedUnion("kind", [
@@ -2235,7 +2235,7 @@ export const BattleAssetManifestV7Schema = BattleAssetManifestV5Schema.extend({
   consciousOutputContract: z.literal("reserved-turns-v1"),
   outputRevision: z.literal("reserved-turn-output-v1"),
   reservedTurnPolicy: ReservedTurnPolicySchema,
-  reservedTurnPromptRevision: z.literal("reserved-turn-prompt-v1"),
+  reservedTurnPromptRevision: ReservedTurnPromptRevisionSchema,
   rules: BattleAssetManifestV5Schema.shape.rules.extend({
     battleEngine: z.literal("reserved-turns-v1"), temporalRules: z.literal("reserved-order-v1"), psycheReaction: z.literal("reserved-turns-v1"),
   }).strict(),

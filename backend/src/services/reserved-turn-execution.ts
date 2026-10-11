@@ -19,11 +19,12 @@ export async function executeReservedTurn(input: {
   battleId: string; start: ReservedTurnWorld; frames: { a: ReservedPlannerFrame; b: ReservedPlannerFrame }; assets: object;
   publicScene: string; narrationStyle?: string; port: ReservedExecutionPort;
   character: AwarenessJsonTransport; adjudication: AwarenessJsonTransport; narration: AwarenessJsonTransport;
-  now?: () => number;
+  promptRevision?: "reserved-turn-prompt-v1" | "reserved-turn-prompt-v2"; now?: () => number;
 }) {
   const now = input.now ?? Date.now;
   const initial = ReservedTurnRuntimeSchema.parse(await input.port.read());
   const policy = initial.policy; const turn = initial.turn + 1;
+  const promptRevision = input.promptRevision ?? "reserved-turn-prompt-v2";
   if (initial.status !== "active" || input.start.turn !== turn || turn > policy.maxTurns || now() >= initial.deadlineAt) throw new Error("RESERVED_TURN_BOUNDARY_INVALID");
   if (input.character.identity.provider !== policy.character.provider || input.character.identity.fastModel !== policy.character.model ||
       input.adjudication.identity.provider !== policy.adjudication.provider || input.adjudication.identity.engineModel !== policy.adjudication.model ||
@@ -92,7 +93,7 @@ export async function executeReservedTurn(input: {
   if (b.status !== "fulfilled") throw b.reason;
   const plans = { a: a.value, b: b.value };
   const order = orderReservedActions(turn, { a: input.start.actors.a.initiative, b: input.start.actors.b.initiative }, plans);
-  const judged = await request("adjudication", null, reservedAdjudicationSystem(), reservedAdjudicationUser(input.start, order, { ...input.assets, observedReferences: { a: input.frames.a.references, b: input.frames.b.references } }), (raw) => ({ role: "adjudication", trace: applyReservedTurnTrace(input.start, order, ReservedTurnTraceSchema.parse(raw)).trace }));
+  const judged = await request("adjudication", null, reservedAdjudicationSystem(promptRevision), reservedAdjudicationUser(input.start, order, { ...input.assets, observedReferences: { a: input.frames.a.references, b: input.frames.b.references } }, promptRevision), (raw) => ({ role: "adjudication", trace: applyReservedTurnTrace(input.start, order, ReservedTurnTraceSchema.parse(raw)).trace }));
   if (judged.role !== "adjudication") throw new Error("RESERVED_TRACE_ROLE");
   const resolved = applyReservedTurnTrace(input.start, order, judged.trace);
   const narrated = await request("narration", null, reservedNarrationSystem, JSON.stringify({ turn, scene: input.publicScene, style: input.narrationStyle, consequences: judged.trace.results.flatMap((r) => r.observations.public) }), (raw) => ({ role: "narration", narration: ReservedTurnNarrationSchema.parse(raw) }));
