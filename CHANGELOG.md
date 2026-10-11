@@ -7,6 +7,8 @@ based on Keep a Changelog, and releases follow Semantic Versioning.
 
 ## [0.24.0] - 2026-10-10
 
+- Application v0.24.0-rc.9 selects consciousness policy v3, consciousness prompt v3 and consciousness output format v2 for new public battles. Every decision outputs the next ranked memory array, with old-rank references for retention/reordering. Saved historical battles remain bound; no new database migration. Previous application v0.24.0-rc.8 cannot execute newly bound policy v3 battles after rollback.
+
 - Application v0.24.0-rc.7 constrains frozen narration provider grammar to each receipt identity and committed speech side/text pairs. Strict runtime source/coverage checks remain; generated text is never repaired. Preserve the application v0.24.0-rc.6 failure: battle finished but a mismatched speech prevented successful narration publication.
 
 - Application v0.24.0-rc.6 clarifies the strict free-action JSON contract for consciousness policy v2 and logs bounded schema codes/known paths without private output values. Historical guarded prompts remain unchanged; invalid results still fail without content repair or fallback. Preserve the failed application v0.24.0-rc.5 Stage evidence.

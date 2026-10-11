@@ -1,0 +1,57 @@
+{
+  "commitSha": "f0200150bb5296b0feecff4e61939e8086bcc446",
+  "contract": "consciousness output format v2 / policy v3 / prompt v3",
+  "fixture": "saved Gaku inputs ticks16/17 from btl_879a7f53a2e46266e0970549da8baa1d; previous response memory carried into next frozen input, no world simulation",
+  "status": "completed",
+  "additionalApprovedAttemptCeiling": 2,
+  "successfulPhysicalAttempts": 2,
+  "priorFailedPhysicalAttempts": 1,
+  "cumulativePhysicalAttempts": 3,
+  "automaticRetries": 0,
+  "provider": "openai",
+  "model": "gpt-6-luna",
+  "steps": [
+    {
+      "tick": 16,
+      "inputMemoryCount": 0,
+      "nextMemoryCount": 2,
+      "rankReferenceCount": 0,
+      "action": "rest",
+      "firstMemoryIdRetained": null
+    },
+    {
+      "tick": 17,
+      "inputMemoryCount": 2,
+      "nextMemoryCount": 2,
+      "rankReferenceCount": 1,
+      "action": "rest",
+      "firstMemoryIdRetained": true
+    }
+  ],
+  "usage": [
+    {
+      "status": "completed",
+      "requestedModel": "gpt-6-luna",
+      "responseModel": "gpt-6-luna",
+      "promptTokens": 5601,
+      "completionTokens": 94,
+      "totalTokens": 5695,
+      "cachedTokens": 0,
+      "elapsedMs": 3080
+    },
+    {
+      "status": "completed",
+      "requestedModel": "gpt-6-luna",
+      "responseModel": "gpt-6-luna",
+      "promptTokens": 5612,
+      "completionTokens": 78,
+      "totalTokens": 5690,
+      "cachedTokens": 0,
+      "elapsedMs": 1847
+    }
+  ],
+  "price": "unpriced",
+  "productionDataChanges": 0,
+  "persistentSecretWrites": 0,
+  "limitations": "Two frozen-input decisions only; not a completed battle, randomized comparison, reorder test or proof of quality/cost improvement."
+}

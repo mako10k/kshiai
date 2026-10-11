@@ -1,6 +1,6 @@
 # 意識出力形式 v2：必須の優先記憶配列
 
-Accepted ADR-0070 revision1。意識パイプライン unified-consciousness-v1で、意識ポリシー v3と意識プロンプト v3を明示選択する試験用契約。公開作成の既定は意識ポリシー v2のまま。
+記憶契約はADR-0070 revision1、公開作成への適用はAccepted ADR-0071 revision1。意識パイプライン unified-consciousness-v1の新規公開作成では、意識ポリシー v3・意識プロンプト v3・意識出力形式 v2を既定とする。
 
 ```json
 {

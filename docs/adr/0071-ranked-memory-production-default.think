@@ -1,0 +1,12 @@
+domain ADR0071:
+  description "Accepted revision1: new public battles use required ranked memory in production."
+evidence OWNER_ACCEPTANCE:
+  "2026-10-11 owner goal: 記憶を利用した実装で本番デプロイ。そのための最小限の本番接続やテスト、課金利用は許可。"
+evidence CURRENT:
+  "PR183 four CI checks passed; governed1530tests passed. Two approved real gpt-6-luna calls created2memories, then retained old rank1 and updated another. Prior local-key401 remains failed evidence. Full battle and production cutover remain unverified."
+premise SCOPE:
+  "Select policy v3/prompt v3/output format v2 for new public binding6 only; preserve saved old battles and ADR0070 memory semantics. No extra calls/repair/fallback. One fixed Stage battle max38advances200physical attempts, no character creation, price unverified, no unchanged automatic rerun. Require exact-source CI, successful Stage, memory carry-forward, complete narration/usage, exact artifact promotion and production auth/public readback."
+premise OPTIONS:
+  "Opt-in alone fails production goal. Existing-battle conversion violates immutable bindings. New public creation selector is selected."
+decision ACCEPTANCE based_on OWNER_ACCEPTANCE, CURRENT, SCOPE, OPTIONS:
+  "Accept revision1; supersede ADR0070 only for opt-in/default and execution-authority boundary. Owner permits minimal paid Stage and production deployment; preserve memory/privacy/transaction contracts. No schema/environment/secret change. Prior application cannot execute new v3/output-v2 battles on rollback."

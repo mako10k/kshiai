@@ -1,6 +1,6 @@
 # ADR-0070: Require a ranked memory snapshot in each consciousness decision
 
-- Status: Accepted
+- Status: Superseded
 - Revision: 1
 - Authority: [canonical decision](0070-required-ranked-memory-snapshot.think)
 - Date: 2026-10-11
@@ -53,3 +53,7 @@ Test old-rank swaps, mixed new/retained entries, deletion/clear, duplicate/missi
 
 - Canonical task: docs/unified-consciousness.pert task memorySnapshot.
 - Baseline live battle: btl_879a7f53a2e46266e0970549da8baa1d, Stage38114752919; application v0.24.0-rc.8 release evidence.
+
+## Partial supersession
+
+Accepted [ADR-0071 revision1](0071-ranked-memory-production-default.md) supersedes only the opt-in/public-default and later execution-authority boundary. The memory contract above remains authoritative.
