@@ -1,7 +1,7 @@
 // R: Prepare three/four logical turn requests with durable identities and no unknown-send replay.
 import { ReservedTurnRuntimeSchema, ReservedTurnTraceSchema, ReservedTurnNarrationSchema,
   validateReservedPlan, orderReservedActions, applyReservedTurnTrace, applyConsciousnessMemorySnapshot,
-  type ReservedTurnRuntime, type ReservedTurnRequest, type ReservedTurnWorld, type ReservedTurnPlan } from "@kshiai/shared";
+  type ReservedTurnPromptRevision, type ReservedTurnRuntime, type ReservedTurnRequest, type ReservedTurnWorld, type ReservedTurnPlan } from "@kshiai/shared";
 import type { AwarenessJsonTransport } from "../llm/awareness-provider-contract.js";
 import { reservedPlanSystem, reservedAdjudicationSystem, reservedAdjudicationUser, reservedNarrationSystem } from "../llm/reserved-turns.js";
 import { withLlmUsageScope } from "../llm/llm-usage-context.js";
@@ -19,12 +19,12 @@ export async function executeReservedTurn(input: {
   battleId: string; start: ReservedTurnWorld; frames: { a: ReservedPlannerFrame; b: ReservedPlannerFrame }; assets: object;
   publicScene: string; narrationStyle?: string; port: ReservedExecutionPort;
   character: AwarenessJsonTransport; adjudication: AwarenessJsonTransport; narration: AwarenessJsonTransport;
-  promptRevision?: "reserved-turn-prompt-v1" | "reserved-turn-prompt-v2"; now?: () => number;
+  promptRevision?: ReservedTurnPromptRevision; now?: () => number;
 }) {
   const now = input.now ?? Date.now;
   const initial = ReservedTurnRuntimeSchema.parse(await input.port.read());
   const policy = initial.policy; const turn = initial.turn + 1;
-  const promptRevision = input.promptRevision ?? "reserved-turn-prompt-v2";
+  const promptRevision = input.promptRevision ?? "reserved-turn-prompt-v3";
   if (initial.status !== "active" || input.start.turn !== turn || turn > policy.maxTurns || now() >= initial.deadlineAt) throw new Error("RESERVED_TURN_BOUNDARY_INVALID");
   if (input.character.identity.provider !== policy.character.provider || input.character.identity.fastModel !== policy.character.model ||
       input.adjudication.identity.provider !== policy.adjudication.provider || input.adjudication.identity.engineModel !== policy.adjudication.model ||
@@ -33,6 +33,13 @@ export async function executeReservedTurn(input: {
     const logicalId = `${input.battleId}:turn:${turn}:${role}:${side ?? "both"}`;
     const digest = requestDigest({ system, user, role, policy });
     if (system.length + user.length > policy.inputCharacters) throw new Error("RESERVED_INPUT_LIMIT");
+    const roleDeadlineMs = role === "adjudication" && policy.revision !== "reserved-turn-policy-v1" ? policy.adjudicationDeadlineMs : policy.deadlineMs;
+    const logicalDeadlineAt = Math.min(initial.deadlineAt, now() + roleDeadlineMs);
+    const softDeadlineMs = policy.revision === "reserved-turn-policy-v3" ? role === "adjudication" ? policy.softAdjudicationDeadlineMs : policy.softDeadlineMs : null;
+    const logicalStartedAt = now();
+    if (policy.revision === "reserved-turn-policy-v3" && now() >= initial.startedAt + policy.softDurationMs) {
+      console.warn("[reserved-turns] soft-limit", { battleId: input.battleId, turn, scope: "battle", elapsedMs: now() - initial.startedAt, softLimitMs: policy.softDurationMs, hardLimitMs: policy.durationMs });
+    }
     for (let attempt = 0; attempt < 3; attempt += 1) {
       const id = `${logicalId}:${attempt}`;
       const before = await input.port.read(); const existing = before.requests.find((r) => r.id === id);
@@ -42,8 +49,7 @@ export async function executeReservedTurn(input: {
         if (existing.status === "failed" && existing.failure === "RATE_LIMIT" && !existing.physicalOutstanding) continue;
         throw new Error("RESERVED_SEND_NOT_REPLAYABLE");
       }
-      const roleDeadlineMs = role === "adjudication" && policy.revision === "reserved-turn-policy-v2" ? policy.adjudicationDeadlineMs : policy.deadlineMs;
-      const deadlineAt = Math.min(initial.deadlineAt, now() + roleDeadlineMs);
+      const deadlineAt = policy.revision === "reserved-turn-policy-v3" ? logicalDeadlineAt : Math.min(initial.deadlineAt, now() + roleDeadlineMs);
       await input.port.update((runtime) => {
         if (runtime.turn !== initial.turn || runtime.status !== "active" || now() >= deadlineAt || runtime.requests.some((r) => r.id === id)) throw new Error("RESERVED_RESERVATION_CONFLICT");
         if (runtime.requests.length + runtime.budget.physicalAttempts >= policy.maxPhysicalAttempts) throw new Error("RESERVED_ATTEMPT_LIMIT");
@@ -57,6 +63,12 @@ export async function executeReservedTurn(input: {
           maxCompletionTokens: role === "adjudication" ? policy.adjudicationOutputTokens : policy.characterOutputTokens,
           label: `reserved-turns-v1:${role}`, responseFormat: { type: "json_object" } })));
       let timer: ReturnType<typeof setTimeout> | undefined;
+      const softTimer = softDeadlineMs === null ? undefined : setTimeout(() => {
+        console.warn("[reserved-turns] soft-limit", { battleId: input.battleId, turn, scope: role, side, elapsedMs: now() - logicalStartedAt, softLimitMs: softDeadlineMs, hardLimitMs: roleDeadlineMs });
+      }, Math.max(1, logicalStartedAt + softDeadlineMs - now()));
+      const battleSoftTimer = policy.revision !== "reserved-turn-policy-v3" || now() >= initial.startedAt + policy.softDurationMs ? undefined : setTimeout(() => {
+        console.warn("[reserved-turns] soft-limit", { battleId: input.battleId, turn, scope: "battle", elapsedMs: now() - initial.startedAt, softLimitMs: policy.softDurationMs, hardLimitMs: policy.durationMs });
+      }, Math.max(1, initial.startedAt + policy.softDurationMs - now()));
       const processed = send.then(async (raw) => {
         closed = true;
         await input.port.account((runtime) => ({ ...runtime, requests: runtime.requests.map((r) => r.id === id ? { ...r, physicalOutstanding: false, rawResponse: JSON.stringify(raw) ?? "null" } : r) }));
@@ -84,7 +96,7 @@ export async function executeReservedTurn(input: {
         const delay = providerRetryAfterMs(error) ?? 250 * 2 ** attempt;
         if (now() + delay >= initial.deadlineAt) throw new Error("RESERVED_RETRY_DEADLINE");
         await new Promise<void>((resolve) => setTimeout(resolve, delay));
-      } finally { if (timer) clearTimeout(timer); }
+      } finally { if (timer) clearTimeout(timer); if (softTimer) clearTimeout(softTimer); if (battleSoftTimer) clearTimeout(battleSoftTimer); }
     }
     throw new Error("RESERVED_RATE_LIMIT_EXHAUSTED");
   }

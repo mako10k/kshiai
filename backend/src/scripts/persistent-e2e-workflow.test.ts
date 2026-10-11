@@ -161,3 +161,10 @@ describe("persistent E2E workflow contract", () => {
     assert.match(stage, /characterGenerationReadProbe: "v2_v3_and_migration_resume"/);
   });
 });
+
+it("keeps staged transport outside reserved turn policy v3 hard time budgets", () => {
+  const stage = workflow("stage-release.yml");
+  assert.match(stage, /--timeout=600s/);
+  assert.match(stage, /--task-timeout=45m/);
+  assert.match(repositoryFile("backend/src/scripts/persistent-battle-e2e-advance.ts"), /ADVANCE_DEADLINE_MS = 600_000/);
+});

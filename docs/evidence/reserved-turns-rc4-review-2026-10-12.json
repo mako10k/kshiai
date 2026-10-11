@@ -1,0 +1,209 @@
+{
+  "application": "v0.25.0-rc.4",
+  "governingAdr": "Accepted ADR0074 revision1",
+  "focused": {
+    "pass": 20,
+    "fail": 0,
+    "skip": 0
+  },
+  "reviews": [
+    {
+      "ref": "verification/persistent-e2e-workflow-bounded-20261008",
+      "seal": "e9d5064919d780ffff1c7968a94e477c5f2ddd442193576259649d4fddd7f254",
+      "path": "backend/src/scripts/persistent-e2e-workflow.test.ts",
+      "changed": true,
+      "review": "Reviewed backend/src/scripts/persistent-e2e-workflow.test.ts: policy v3 soft warnings do not cancel, looser hard deadlines clip wholebattle and span known429 retries; prompt v3 losslessly factors schema without discarding state/assets/order; CloudRun600s and Stagejob45m aligned, preserve policy/prompt v1/v2 and unknown send refusal. Focused20pass, typecheck/static/build passed. Accepted ADR0074 revision1 soft timing, compression and historical binding contract. No new paid execution or promotion. Preserved coverage: persistent E2E workflow contract; binds the administrator in Stage and verifies it before Promote; freezes the selected pacing policy into Stage and verifies it before Promote; binds isolated dialogue overrides to Stage and rejects them at Promote; runs the observer only against a confirmed immutable production revision; requires exact Compact battle evidence before production promotion; proves narration and authoring queue OIDC delivery against the staged revision; keeps the paid A3 smoke opt-in and records the B8 read proof; keeps staged transport outside reserved turn policy v3 hard time budgets",
+      "previousSeal": "09bc5ef000c38601bc679fe851b224233b6bdd9b8179fdb277992bd9311bf509"
+    },
+    {
+      "ref": "reserved-turns-v1/source/packages-shared-src-reserved-turn-policy",
+      "seal": "20a7c25a8780cc3d79c6de3fc8bd714c09ede0e11e51f4f8b56d754669c6e6f5",
+      "path": "packages/shared/src/reserved-turn-policy.ts",
+      "changed": true,
+      "review": "Reviewed packages/shared/src/reserved-turn-policy.ts: policy v3 soft warnings do not cancel, looser hard deadlines clip wholebattle and span known429 retries; prompt v3 losslessly factors schema without discarding state/assets/order; CloudRun600s and Stagejob45m aligned, preserve policy/prompt v1/v2 and unknown send refusal. Focused20pass, typecheck/static/build passed. Accepted ADR0074 revision1 soft timing, compression and historical binding contract. No new paid execution or promotion.",
+      "previousSeal": "0fbd9c44168c234d9b5b018a36841ab15acf7c7bb994642c09fc1253072c8310"
+    },
+    {
+      "ref": "reserved-turns-v1/test/backend-src-repositories-reserved-turns-postgres.test",
+      "seal": "88fc34b0cd45e71eb2eefae98d59b0a34409373bd9dadac1805b3d92a482b5be",
+      "path": "backend/src/repositories/reserved-turns-postgres.test.ts",
+      "changed": false,
+      "review": "Reviewed backend/src/repositories/reserved-turns-postgres.test.ts: retained historical behavior and assertions remain valid after compatible policy/prompt v3 admission, advisory warnings and unchanged atomic trace validation. Focused20pass, typecheck/static/build passed. Accepted ADR0074 revision1 soft timing, compression and historical binding contract. No new paid execution or promotion. Preserved coverage: reserved-turn pipeline v1 persists only current fenced writes and rolls back atomically on PostgreSQL",
+      "previousSeal": "83c70760495b101a99782871f8b9543ec0744b3d9fab1d905b62a11949db15a9"
+    },
+    {
+      "ref": "reserved-turns-v1/test/packages-shared-src-reserved-turns.test",
+      "seal": "3eac91f90e5b70f65b439223d821fad7f73c99eab992b2137f47d31af877cd15",
+      "path": "packages/shared/src/reserved-turns.test.ts",
+      "changed": false,
+      "review": "Reviewed packages/shared/src/reserved-turns.test.ts: retained historical behavior and assertions remain valid after compatible policy/prompt v3 admission, advisory warnings and unchanged atomic trace validation. Focused20pass, typecheck/static/build passed. Accepted ADR0074 revision1 soft timing, compression and historical binding contract. No new paid execution or promotion. Preserved coverage: reserved-turn pipeline v1; accepts zero or five reservations and rejects six or duplicate IDs; interleaves plans without starving the slower side and alternates exact ties; validates all frozen rank references and observer-visible targets before dispatch; applies both attacks to successive canonical states and advances one turn; cancels later actions after defeat instead of executing stale intentions; rejects missing, invented, reordered or stale receipts atomically; permits failed attempts with costs but refuses empty success and out-of-range side effects",
+      "previousSeal": "e0a170667c45803a4ce9b7f33f2215f6bb798472723740657a10ecf9254010b2"
+    },
+    {
+      "ref": "reserved-turns-v1/source/backend-src-services-reserved-turn-policy",
+      "seal": "9d48ca7c0aa1fa0922ab6fb6a557733619a67650aafe02a07e21d0d594edba6a",
+      "path": "backend/src/services/reserved-turn-policy.ts",
+      "changed": true,
+      "review": "Reviewed backend/src/services/reserved-turn-policy.ts: policy v3 soft warnings do not cancel, looser hard deadlines clip wholebattle and span known429 retries; prompt v3 losslessly factors schema without discarding state/assets/order; CloudRun600s and Stagejob45m aligned, preserve policy/prompt v1/v2 and unknown send refusal. Focused20pass, typecheck/static/build passed. Accepted ADR0074 revision1 soft timing, compression and historical binding contract. No new paid execution or promotion.",
+      "previousSeal": "154f01e9faa5899cf04339e893dc7f687f0323a1e1a490ae8b6c3337f6bdcc04"
+    },
+    {
+      "ref": "reserved-turns-v1/source/backend-src-services-reserved-turn-execution",
+      "seal": "fdc2506251a0d23d501367cba1bd7de47b9d114c66c9f7759b831d3f7ad32640",
+      "path": "backend/src/services/reserved-turn-execution.ts",
+      "changed": true,
+      "review": "Reviewed backend/src/services/reserved-turn-execution.ts: policy v3 soft warnings do not cancel, looser hard deadlines clip wholebattle and span known429 retries; prompt v3 losslessly factors schema without discarding state/assets/order; CloudRun600s and Stagejob45m aligned, preserve policy/prompt v1/v2 and unknown send refusal. Focused20pass, typecheck/static/build passed. Accepted ADR0074 revision1 soft timing, compression and historical binding contract. No new paid execution or promotion.",
+      "previousSeal": "5478045224ffd346094b37267c4812c89708c8b4613981f7ceabead1b3c8f62e"
+    },
+    {
+      "ref": "reserved-turns-v1/source/backend-src-llm-reserved-turns",
+      "seal": "8cffa8387cd094dce1bb20cd6eca0243f7378431e06b6c88c799c00f02d9714a",
+      "path": "backend/src/llm/reserved-turns.ts",
+      "changed": true,
+      "review": "Reviewed backend/src/llm/reserved-turns.ts: policy v3 soft warnings do not cancel, looser hard deadlines clip wholebattle and span known429 retries; prompt v3 losslessly factors schema without discarding state/assets/order; CloudRun600s and Stagejob45m aligned, preserve policy/prompt v1/v2 and unknown send refusal. Focused20pass, typecheck/static/build passed. Accepted ADR0074 revision1 soft timing, compression and historical binding contract. No new paid execution or promotion.",
+      "previousSeal": "60ca79b1774b0a49a5ed8aa3c3d8f7e5f9c0b845fba7bb333d7ea61c2d1c0440"
+    },
+    {
+      "ref": "reserved-turns-v1/test/backend-src-services-reserved-turn-execution.test",
+      "seal": "4d6b2555a2c172c5c356b2b60ac46dec5718f1315e4b49b664a3af1967b9fbc6",
+      "path": "backend/src/services/reserved-turn-execution.test.ts",
+      "changed": true,
+      "review": "Reviewed backend/src/services/reserved-turn-execution.test.ts: policy v3 soft warnings do not cancel, looser hard deadlines clip wholebattle and span known429 retries; prompt v3 losslessly factors schema without discarding state/assets/order; CloudRun600s and Stagejob45m aligned, preserve policy/prompt v1/v2 and unknown send refusal. Focused20pass, typecheck/static/build passed. Accepted ADR0074 revision1 soft timing, compression and historical binding contract. No new paid execution or promotion. Preserved coverage: reserved-turn execution; dispatches A/B together, calls one judge for ten reservations and only public narration; does not dispatch adjudication when one plan is malformed or references hidden objects; refuses to resend a reserved request with unknown physical completion; retries only known rate-limit responses within the physical cap; keeps a timed-out request unknown until late physical completion without preparing its output; pins every adjudication base revision before dispatch and preserves prompt v1; binds role deadlines in policy v2, preserves policy v1 and clips both to the battle deadline; closes late received rejection accounting without preparing output or resending unknown failures; warns at soft time limits without stopping requests or committing private state; continues beyond the battle soft limit and applies the looser policy v3 hard deadlines; losslessly factors the complete adjudication schema and preserves every user input field; keeps known rate-limit retries inside the original policy v3 role hard deadline",
+      "previousSeal": "32d2449372820b221fbdbe1ceeb602de35f4624df37ce800945eb144d20688bc"
+    },
+    {
+      "ref": "all-tests-20261008/current-source-closure/verification/structured-asset-integration-bounded-20261008",
+      "seal": "13736d2146621e1045461dec6f63fbeb18295cd4c1ba3759c53881108971324a",
+      "path": "backend/src/routes-structured-asset-integration.test.ts",
+      "changed": true,
+      "review": "Reviewed backend/src/routes-structured-asset-integration.test.ts: policy v3 soft warnings do not cancel, looser hard deadlines clip wholebattle and span known429 retries; prompt v3 losslessly factors schema without discarding state/assets/order; CloudRun600s and Stagejob45m aligned, preserve policy/prompt v1/v2 and unknown send refusal. Focused20pass, typecheck/static/build passed. Accepted ADR0074 revision1 soft timing, compression and historical binding contract. No new paid execution or promotion. Preserved coverage: integrated structured asset cutover; keeps selection, binding, replay, history, and deletion on immutable generations; freezes legacy character rows without appending V1 generations New-creation prompt expectation explicitly updated to v3; standalone binding/persistence/replay regression2pass. Initial governed run caught old v2 assertion; no validator relaxed.",
+      "previousSeal": "5f8104b1b5df6e8b564d5c77b366801499cf93c90dc3a3e0b011221eb3a2f7ec",
+      "supersededReviewSeal": "ab6de280e9a3c4050ab8ab3f87998b495211bb87e7ac9fed404e2a5d52c2a9ff"
+    }
+  ],
+  "paidAttempts": 0,
+  "productionPromotion": false,
+  "initialValidationFailure": {
+    "phase": "governed tests",
+    "pass": 1026,
+    "fail": 1,
+    "reason": "new-creation binding expected historical prompt v2 rather than current v3",
+    "correction": "update current expectation, preserve historical renderer tests; targeted2pass and reseal one affected test"
+  },
+  "validation": {
+    "officialTests": {
+      "pass": 1556,
+      "fail": 0,
+      "skip": 0,
+      "activeFiles": 254,
+      "disabledFiles": 0,
+      "nativePostgres": true
+    },
+    "typecheck": "passed",
+    "static": "passed",
+    "build": "passed",
+    "focusedTests": 20,
+    "bindingIntegrationTests": 2,
+    "adrAudit": "clean Accepted ADR0074 revision1; ADR0073 Superseded",
+    "pert": "forward projection document, precedence/resource and next passed; owner/history fields omitted for CLI compatibility",
+    "sealgraphFsck": "ok"
+  },
+  "compression": {
+    "systemBeforeCharacters": 20943,
+    "systemAfterCharacters": 13498,
+    "unit": "JavaScript UTF-16 code units",
+    "fixtures": [
+      {
+        "turn": 1,
+        "beforeCharacters": 34362,
+        "afterCharacters": 26917,
+        "reductionPercent": 21.67,
+        "userExactlyPreserved": true
+      },
+      {
+        "turn": 2,
+        "beforeCharacters": 34229,
+        "afterCharacters": 26784,
+        "reductionPercent": 21.75,
+        "userExactlyPreserved": true
+      },
+      {
+        "turn": 3,
+        "beforeCharacters": 34594,
+        "afterCharacters": 27149,
+        "reductionPercent": 21.52,
+        "userExactlyPreserved": true
+      },
+      {
+        "turn": 4,
+        "beforeCharacters": 34588,
+        "afterCharacters": 27143,
+        "reductionPercent": 21.52,
+        "userExactlyPreserved": true
+      },
+      {
+        "turn": 5,
+        "beforeCharacters": 34260,
+        "afterCharacters": 26815,
+        "reductionPercent": 21.73,
+        "userExactlyPreserved": true
+      },
+      {
+        "turn": 6,
+        "beforeCharacters": 34369,
+        "afterCharacters": 26924,
+        "reductionPercent": 21.66,
+        "userExactlyPreserved": true
+      },
+      {
+        "turn": 7,
+        "beforeCharacters": 34298,
+        "afterCharacters": 26853,
+        "reductionPercent": 21.71,
+        "userExactlyPreserved": true
+      },
+      {
+        "turn": 8,
+        "beforeCharacters": 34364,
+        "afterCharacters": 26919,
+        "reductionPercent": 21.67,
+        "userExactlyPreserved": true
+      },
+      {
+        "turn": 9,
+        "beforeCharacters": 34266,
+        "afterCharacters": 26821,
+        "reductionPercent": 21.73,
+        "userExactlyPreserved": true
+      },
+      {
+        "turn": 10,
+        "beforeCharacters": 34237,
+        "afterCharacters": 26792,
+        "reductionPercent": 21.75,
+        "userExactlyPreserved": true
+      }
+    ],
+    "schemaExpandedEquality": true,
+    "propertyMapsRemainMaps": true,
+    "historicalPromptV1V2ByteEquality": true,
+    "additionalApiCalls": 0
+  },
+  "timeLimitsMs": {
+    "battle": {
+      "soft": 600000,
+      "hard": 1800000
+    },
+    "characterAndNarration": {
+      "soft": 60000,
+      "hard": 120000
+    },
+    "adjudication": {
+      "soft": 180000,
+      "hard": 300000
+    },
+    "softAction": "warning log only"
+  },
+  "priorPhysicalAttempts": 49,
+  "paidFixtureAuthorization": "No new fixture inferred; prior three bounded fixtures consumed. Prepare concrete candidate before new paid-run approval."
+}

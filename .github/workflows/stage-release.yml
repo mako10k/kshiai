@@ -241,6 +241,7 @@ jobs:
             --region="$GCP_REGION" \
             --image="$IMAGE_REF" \
             --no-traffic \
+            --timeout=600s \
             --tag="$alias" \
             --update-secrets=SUPABASE_SECRET_KEY=kshiai-supabase-secret-key:latest \
             "${override_flags[@]}" \
@@ -452,7 +453,7 @@ jobs:
             --command=node \
             --args=backend/dist/scripts/persistent-battle-e2e.js \
             --max-retries=0 \
-            --task-timeout=25m \
+            --task-timeout=45m \
             --quiet
           execution="$(gcloud run jobs execute "$E2E_JOB" \
             --project="$GCP_PROJECT" \

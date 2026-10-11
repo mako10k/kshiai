@@ -1,0 +1,10 @@
+domain ADR0074:
+  description "Accepted revision1: advisory time warnings, looser hard stops and lossless adjudication prompt v3."
+evidence STAGE_FAILURE:
+  "Stage38179086287 committed9turns/25reservations,41attempts, no memory mismatch; all10judges completed in518seconds total, but wholebattle600second hard cap stopped turn10narration. Inputs approximately34000characters."
+premise CONTRACT:
+  "Policy v3 battle soft600000/hard1800000ms; planner/narrator soft60000/hard120000ms; judge soft180000/hard300000ms. Soft expiry only logs structured value-free warnings. Hard role bound spans known429retries and clips to global deadline. Keep36turns/5reservations/4normalcalls/200physicalattempts/models/strict atomic validation. Prompt v3 losslessly factors duplicate schema subtrees; retain every state/asset/order value and old policy/prompt bytes. CloudRun600seconds and Stagejob45minutes align transport."
+evidence OWNER_ACCEPTANCE:
+  "2026-10-12 owner directs ソフトリミットでログ出力で、ハードリミットをもっとゆるくすべきでは？裁定入力の圧縮は行って下さい。 Existing correction/testing/deployment authority persists. No further paid fixture is inferred from input compression or timing-policy approval."
+decision ACCEPTANCE based_on STAGE_FAILURE, CONTRACT, OWNER_ACCEPTANCE:
+  "Accept revision1 for policy v3/prompt v3, offline verification, individual authority reviews and exact-source CI. Supersede ADR0073 only for new-creation timing/prompt; preserve all failed runs and unknown sends. Prepare reviewable candidate before any new bounded paid-fixture approval."

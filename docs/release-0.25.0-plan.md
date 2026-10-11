@@ -23,3 +23,11 @@ The first fixture consumed4physical attempts. Existing session authority include
 Stage38140597482 for application v0.25.0-rc.2 stopped at turn0 after four physical attempts; the xAI grok-4.5 adjudication reached its60second deadline. No429 evidence or world commit. Retain the unknown physical completion and do not resend it. Accepted ADR0073 revision1 introduces reserved turn policy v2: adjudication180seconds; planners/narrator60seconds; whole battle600seconds, four normal calls and200physical attempts unchanged. Existing policy v1 remains60seconds.
 
 Owner explicitly approved 裁定180秒への変更と追加1対戦・200試行を承認. One additional fixed fixture only, max38advances/200attempts; cumulative maximum208 after prior8. Unpriced; no character generation, unknown-send resend or automatic same-candidate rerun. Promote only successful exact Stage artifacts after required CI and durable readback.
+
+## Corrective application v0.25.0-rc.4
+
+Application v0.25.0-rc.3 passed main CI38178565853 at97478bb9; immutable tag preserved. Stage38179086287 failed the600second whole-battle limit during turn10 narration after41physical attempts. Nine turns/25reservations committed, all10judges succeeded, memory mismatch0; no promotion. Cumulative attempts49.
+
+Owner2026-10-12 explicitly requests soft-limit warning logs, looser hard stops and input compression. Accepted ADR0074 revision1: policy v3 battle soft10minutes/hard30minutes, planners/narrator soft60seconds/hard120seconds, judge soft180seconds/hard300seconds. Prompt v3 losslessly factors duplicated schema definitions; retain all world/assets/order input and strict validation. Preserve old policies/prompts and every failed fixture. CloudRun request600seconds; E2E job45minutes. No new model, secret, database migration or change to the200physical-attempt ceiling.
+
+Current authority covers correction/offline checks/CI and conditional exact-artifact deployment. The one additional paid fixture was consumed by rc.3; prepare the concrete rc.4 candidate before requesting fresh fixed-fixture approval. No automatic fourth paid battle.
