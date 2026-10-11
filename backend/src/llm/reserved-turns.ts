@@ -11,6 +11,40 @@ export const reservedPlanSystem = [
   "返答はJSONのみ。必須actions、任意speech、必須memory。memoryは次の判断に残す優先順最大5文字列。正確な文字列1〜5は全て更新前順位への参照でID/本文を保持する。新規本文は1〜400Unicode code point。省略した旧記憶は削除、[]は全消去。存在しない順位と重複参照は禁止。",
   JSON.stringify(zodToJsonSchema(ReservedTurnPlanSchema, { name: "reserved_turn_plan", openaiStrictMode: false })),
 ].join("\n");
+// Prompt metadata only: factor identical schema objects without dropping any fields or constraints.
+export function compactReservedAdjudicationSchema(): object {
+  const schema = zodToJsonSchema(ReservedTurnTraceSchema, { $refStrategy: "none", openaiStrictMode: false });
+  const counts = new Map<string, number>();
+  function object(value: unknown): value is Record<string, unknown> { return value !== null && typeof value === "object" && !Array.isArray(value); }
+  function count(value: unknown): void {
+    if (Array.isArray(value)) { for (const item of value) count(item); return; }
+    if (!object(value)) return;
+    const key = JSON.stringify(value);
+    const schemaNode = typeof value.type === "string" || [value.anyOf, value.oneOf, value.allOf, value.enum].some(Array.isArray);
+    if (schemaNode && key.length >= 60) counts.set(key, (counts.get(key) ?? 0) + 1);
+    for (const item of Object.values(value)) count(item);
+  }
+  count(schema);
+  const definitions: Record<string, unknown> = {};
+  const names = new Map<string, string>();
+  function factor(value: unknown, inline = false): unknown {
+    if (Array.isArray(value)) return value.map((item: unknown) => factor(item));
+    if (!object(value)) return value;
+    const key = JSON.stringify(value);
+    if (!inline && (counts.get(key) ?? 0) * (key.length - 40) > key.length + 30) {
+      let name = names.get(key);
+      if (!name) {
+        name = `reserved${names.size}`; names.set(key, name);
+        definitions[name] = factor(value, true);
+      }
+      return { $ref: `#/$defs/${name}` };
+    }
+    return Object.fromEntries(Object.entries(value).map(([key, item]) => [key, factor(item)]));
+  }
+  const compact = factor(schema, true);
+  if (!object(compact)) throw new Error("RESERVED_SCHEMA_OBJECT_REQUIRED");
+  return { ...compact, $defs: definitions };
+}
 export function reservedAdjudicationSystem(revision: ReservedTurnPromptRevision = "reserved-turn-prompt-v1"): string {
   return [
     "予約ターン裁定 v1。入力の不変資料と正準世界だけを根拠に、指定orderの各予約を一度ずつ裁定する。返答はJSON resultsのみ。",
@@ -20,8 +54,9 @@ export function reservedAdjudicationSystem(revision: ReservedTurnPromptRevision 
     "条件の成否、先行する傷・位置・遮蔽・物の変化・資源の残量を評価する。どちらかがhp0なら残りを全てcancelled、updates[]にする。本人が不在/意識を失った場合も中止。復活・資源上限超過・負の残量は禁止。資源コストは重複請求せず、技や身体動作の相応の負担と一緒に裁定する。",
     "resource更新は{kind:'resource',side:'a'|'b',resource:'hp'|'mp'|'stamina',delta:整数}。残量0..最大値に収まる実際の増減を出す。world更新は{kind:'world',operation:以下schemaのworld operation}。参照は既存正準IDを使い、順次整合性を保つ。新しい物体や状態は不変の資料と行為から成立する場合だけ。",
     "observations.a/bは各本人が知覚できる結果だけ。publicは公開視点で観測できる結果だけ。本人の内心・記憶・秘密の条件・未観測の原因を漏らさない。発話は行為の成功証拠ではない。物語の都合で勝者を決めない。",
-    ...(revision === "reserved-turn-prompt-v2" ? ["予約ターン裁定プロンプト v2。各order項目のbaseRevisionはその予約を実行する直前の状態番号。結果には同じ値をそのまま写す。最初の値はstate.revisionそのもの（0なら0）、先に1を足さない。ターン番号や更新後の番号ではない。"] : []),
-    JSON.stringify(zodToJsonSchema(ReservedTurnTraceSchema, { name: "reserved_turn_trace", openaiStrictMode: false })),
+    ...(revision !== "reserved-turn-prompt-v1" ? [`予約ターン裁定プロンプト ${revision === "reserved-turn-prompt-v3" ? "v3" : "v2"}。各order項目のbaseRevisionはその予約を実行する直前の状態番号。結果には同じ値をそのまま写す。最初の値はstate.revisionそのもの（0なら0）、先に1を足さない。ターン番号や更新後の番号ではない。`] : []),
+    ...(revision === "reserved-turn-prompt-v3" ? ["予約ターン裁定プロンプト v3。応答schema内の$refは$defsの共通定義を参照する。全予約の逐次裁定と既存の世界・資源制約は同じ。"] : []),
+    JSON.stringify(revision === "reserved-turn-prompt-v3" ? compactReservedAdjudicationSchema() : zodToJsonSchema(ReservedTurnTraceSchema, { name: "reserved_turn_trace", openaiStrictMode: false })),
   ].join("\n");
 }
 export const reservedNarrationSystem = [
@@ -30,6 +65,6 @@ export const reservedNarrationSystem = [
   JSON.stringify(zodToJsonSchema(ReservedTurnNarrationSchema, { name: "reserved_turn_narration", openaiStrictMode: false })),
 ].join("\n");
 export function reservedAdjudicationUser(state: ReservedTurnWorld, order: readonly OrderedReservation[], assets: object, revision: ReservedTurnPromptRevision = "reserved-turn-prompt-v1"): string {
-  const ordered = revision === "reserved-turn-prompt-v2" ? order.map((reservation, index) => ({ ...reservation, baseRevision: state.revision + index })) : order;
+  const ordered = revision !== "reserved-turn-prompt-v1" ? order.map((reservation, index) => ({ ...reservation, baseRevision: state.revision + index })) : order;
   return JSON.stringify({ state, order: ordered, assets });
 }

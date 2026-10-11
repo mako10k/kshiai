@@ -1,7 +1,8 @@
 # ADR-0073: Separate reserved-turn adjudication deadline
 
-- Status: Accepted
+- Status: Superseded
 - Revision: 1
+- Superseded by: [ADR-0074 revision1](0074-reserved-soft-limits-and-compact-input.md) for new-creation timing and prompt selection; historical policy v2 remains valid.
 - Date: 2026-10-11
 - Decision owner: Repository owner
 - Authority: [canonical decision](0073-reserved-adjudication-role-deadline.think)

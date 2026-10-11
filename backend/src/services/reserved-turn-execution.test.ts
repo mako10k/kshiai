@@ -1,9 +1,10 @@
 import assert from "node:assert/strict";
+import { zodToJsonSchema } from "openai/_vendor/zod-to-json-schema/index";
 import { describe, it } from "node:test";
 import { createBattleWorldState, createBattleSemanticState, initializeReservedTurns, ReservedTurnRuntimeSchema,
-  ReservedTurnPolicySchema, orderReservedActions, type ReservedTurnRuntime, type ReservedTurnWorld } from "@kshiai/shared";
+  ReservedTurnTraceSchema, ReservedTurnPolicySchema, orderReservedActions, type ReservedTurnRuntime, type ReservedTurnWorld } from "@kshiai/shared";
 import { executeReservedTurn, type ReservedExecutionPort } from "./reserved-turn-execution.js";
-import { reservedAdjudicationSystem, reservedAdjudicationUser } from "../llm/reserved-turns.js";
+import { compactReservedAdjudicationSchema, reservedAdjudicationSystem, reservedAdjudicationUser } from "../llm/reserved-turns.js";
 import type { AwarenessJsonTransport } from "../llm/awareness-provider-contract.js";
 import { LlmPhysicalCompletionError } from "../llm/llm-physical-completion.js";
 import { bindReservedTurnPolicy } from "./reserved-turn-policy.js";
@@ -87,7 +88,9 @@ describe("reserved-turn execution", () => {
   });
   it("keeps a timed-out request unknown until late physical completion without preparing its output", async () => {
     const f = fixture();
-    f.set({ ...f.runtime(), policy: { ...f.runtime().policy, deadlineMs: 10 } });
+    const policy = f.runtime().policy;
+    if (policy.revision !== "reserved-turn-policy-v3") throw new Error("expected policy v3");
+    f.set({ ...f.runtime(), policy: { ...policy, deadlineMs: 10, softDeadlineMs: 5 } });
     let release: (() => void) | undefined;
     const barrier = new Promise<void>((resolve) => { release = resolve; });
     const t = transport(async () => { await barrier; return { actions: [], memory: [] }; });
@@ -117,10 +120,12 @@ it("pins every adjudication base revision before dispatch and preserves prompt v
 it("binds role deadlines in policy v2, preserves policy v1 and clips both to the battle deadline", async () => {
   for (const version of ["v1", "v2", "clipped"] as const) {
     const f = fixture(); const current = f.runtime().policy;
-    assert.equal(current.revision, "reserved-turn-policy-v2");
-    if (current.revision !== "reserved-turn-policy-v2") throw new Error("expected policy v2");
-    const { adjudicationDeadlineMs: _deadline, ...historical } = current;
-    const policy = version === "v1" ? ReservedTurnPolicySchema.parse({ ...historical, revision: "reserved-turn-policy-v1" }) : current;
+    assert.equal(current.revision, "reserved-turn-policy-v3");
+    if (current.revision !== "reserved-turn-policy-v3") throw new Error("expected policy v3");
+    const { softDurationMs: _duration, softDeadlineMs: _role, softAdjudicationDeadlineMs: _judge, ...hard } = current;
+    const v2 = { ...hard, revision: "reserved-turn-policy-v2", durationMs: 600000, deadlineMs: 60000, adjudicationDeadlineMs: 180000 };
+    const { adjudicationDeadlineMs: _deadline, ...historical } = v2;
+    const policy = ReservedTurnPolicySchema.parse(version === "v1" ? { ...historical, revision: "reserved-turn-policy-v1" } : v2);
     assert.equal(ReservedTurnPolicySchema.safeParse({ ...historical, revision: "reserved-turn-policy-v1", adjudicationDeadlineMs: 180000 }).success, false);
     const clock = f.runtime().startedAt;
     f.set({ ...f.runtime(), policy: { ...policy, durationMs: version === "clipped" ? 30000 : 600000 }, deadlineAt: clock + (version === "clipped" ? 30000 : 600000) });
@@ -138,7 +143,9 @@ it("binds role deadlines in policy v2, preserves policy v1 and clips both to the
 
 it("closes late received rejection accounting without preparing output or resending unknown failures", async () => {
   for (const received of [true, false]) {
-    const f = fixture(); f.set({ ...f.runtime(), policy: { ...f.runtime().policy, deadlineMs: 10 } });
+    const f = fixture(); const policy = f.runtime().policy;
+    if (policy.revision !== "reserved-turn-policy-v3") throw new Error("expected policy v3");
+    f.set({ ...f.runtime(), policy: { ...policy, deadlineMs: 10, softDeadlineMs: 5 } });
     let release: (() => void) | undefined;
     const barrier = new Promise<void>((resolve) => { release = resolve; }); let calls = 0;
     const t = transport(async () => { calls += 1; await barrier; throw received ? new LlmPhysicalCompletionError(new Error("invalid JSON")) : new Error("unknown network termination"); });
@@ -149,4 +156,92 @@ it("closes late received rejection accounting without preparing output or resend
     await assert.rejects(executeReservedTurn(input), /NOT_REPLAYABLE/); assert.equal(calls, 2);
     assert.equal(f.runtime().turn, 0);
   }
+});
+
+it("warns at soft time limits without stopping requests or committing private state", async (test) => {
+  const warnings: unknown[][] = [];
+  test.mock.method(console, "warn", (...args: unknown[]) => { warnings.push(args); });
+  const f = fixture(); const start = Date.now();
+  const policy = f.runtime().policy;
+  if (policy.revision !== "reserved-turn-policy-v3") throw new Error("expected policy v3");
+  f.set({ ...f.runtime(), startedAt: start, deadlineAt: start + 2000,
+    policy: { ...policy, durationMs: 2000, softDurationMs: 5, deadlineMs: 1000, softDeadlineMs: 5, adjudicationDeadlineMs: 1000, softAdjudicationDeadlineMs: 5 } });
+  const t = transport(async (_system, _user, options) => {
+    await new Promise<void>((resolve) => setTimeout(resolve, 20));
+    if (options.label.endsWith("character")) return { actions: [], memory: [] };
+    if (options.label.endsWith("adjudication")) return { results: [] };
+    return { lines: ["間合いを保つ。"] };
+  });
+  await executeReservedTurn({ battleId: "btl_test", ...f, assets: {}, publicScene: "路地", character: t, adjudication: t, narration: t });
+  assert.equal(f.runtime().requests.length, 4); assert.equal(f.runtime().status, "active");
+  assert.ok(f.runtime().requests.every((r) => r.status === "prepared" && !r.physicalOutstanding));
+  for (const scope of ["battle", "character", "adjudication", "narration"]) assert.ok(warnings.some(([, metadata]) => typeof metadata === "object" && metadata !== null && "scope" in metadata && metadata.scope === scope));
+  assert.equal(JSON.stringify(warnings).includes("A_ONLY"), false);
+  assert.equal(f.runtime().turn, 0); assert.deepEqual(f.runtime().memories, { a: [], b: [] });
+});
+
+it("continues beyond the battle soft limit and applies the looser policy v3 hard deadlines", async (test) => {
+  test.mock.method(console, "warn", () => undefined);
+  const f = fixture(); const clock = f.runtime().startedAt + 600001;
+  const t = transport(async (_system, _user, options) => {
+    assert.equal(options.timeoutMs, options.label.endsWith("adjudication") ? 300000 : 120000);
+    if (options.label.endsWith("character")) return { actions: [], memory: [] };
+    if (options.label.endsWith("adjudication")) return { results: [] };
+    return { lines: ["間合いを保つ。"] };
+  });
+  await executeReservedTurn({ battleId: "btl_test", ...f, assets: {}, publicScene: "路地", character: t, adjudication: t, narration: t, now: () => clock });
+  assert.equal(f.runtime().requests.length, 4);
+  assert.equal(ReservedTurnPolicySchema.safeParse({ ...f.runtime().policy, softDurationMs: 1800001 }).success, false);
+});
+
+it("losslessly factors the complete adjudication schema and preserves every user input field", () => {
+  const schema = compactReservedAdjudicationSchema();
+  function object(value: unknown): value is Record<string, unknown> { return value !== null && typeof value === "object" && !Array.isArray(value); }
+  if (!object(schema) || !object(schema.$defs)) throw new Error("expected schema definitions");
+  const { $defs: definitions, ...body } = schema;
+  function checkPropertyMaps(value: unknown): void {
+    if (Array.isArray(value)) { value.forEach((item: unknown) => checkPropertyMaps(item)); return; }
+    if (!object(value)) return;
+    if (object(value.properties)) assert.equal(Object.hasOwn(value.properties, "$ref"), false, "property maps must remain maps, not schema references");
+    Object.values(value).forEach(checkPropertyMaps);
+  }
+  checkPropertyMaps(schema);
+  function expand(value: unknown): unknown {
+    if (Array.isArray(value)) return value.map((item: unknown) => expand(item));
+    if (!object(value)) return value;
+    if (typeof value.$ref === "string") {
+      assert.ok(value.$ref.startsWith("#/$defs/"));
+      const key = value.$ref.slice("#/$defs/".length);
+      assert.ok(Object.hasOwn(definitions, key));
+      return expand(definitions[key]);
+    }
+    return Object.fromEntries(Object.entries(value).map(([key, item]) => [key, expand(item)]));
+  }
+  const original = zodToJsonSchema(ReservedTurnTraceSchema, { $refStrategy: "none", openaiStrictMode: false });
+  assert.deepEqual(expand(body), original);
+  assert.ok(reservedAdjudicationSystem("reserved-turn-prompt-v3").length < reservedAdjudicationSystem("reserved-turn-prompt-v2").length * 0.7);
+  const f = fixture(); const plan = { actions: [{ id: "r", intent: "試みる", targets: ["opponent"] }], memory: [] };
+  const order = orderReservedActions(1, { a: 1, b: 1 }, { a: plan, b: plan });
+  assert.equal(reservedAdjudicationUser(f.start, order, { immutable: "資料" }, "reserved-turn-prompt-v3"), reservedAdjudicationUser(f.start, order, { immutable: "資料" }, "reserved-turn-prompt-v2"));
+});
+
+it("keeps known rate-limit retries inside the original policy v3 role hard deadline", async () => {
+  const f = fixture(); const policy = f.runtime().policy;
+  if (policy.revision !== "reserved-turn-policy-v3") throw new Error("expected policy v3");
+  f.set({ ...f.runtime(), policy: { ...policy, deadlineMs: 1200, softDeadlineMs: 1000 } });
+  let clock = f.runtime().startedAt; let aCalls = 0;
+  const t = transport(async (_system, user, options) => {
+    if (options.label.endsWith("character")) {
+      if (JSON.parse(user).side === "a") {
+        aCalls += 1;
+        if (aCalls === 1) { clock += 1100; throw Object.assign(new Error("rate limit"), { status: 429, headers: { "retry-after-ms": "0" } }); }
+        assert.equal(options.timeoutMs, 100, "retry does not reset the role deadline");
+      }
+      return { actions: [], memory: [] };
+    }
+    if (options.label.endsWith("adjudication")) return { results: [] };
+    return { lines: ["間合いを保つ。"] };
+  });
+  await executeReservedTurn({ battleId: "btl_test", ...f, assets: {}, publicScene: "路地", character: t, adjudication: t, narration: t, now: () => clock });
+  assert.equal(aCalls, 2); assert.equal(f.runtime().requests.length, 5);
 });
