@@ -1,0 +1,10 @@
+domain ADR0073:
+  description "Accepted revision1: reserved-turn policy v2, adjudication-only180seconds and one additional bounded fixture."
+evidence STAGE_FAILURE:
+  "Stage38140597482 at application v0.25.0-rc.2 failed before first commit: three reservations and34306input characters, grok-4.5 SDK timeout59933ms without a received response. Both character calls completed in3-4seconds. World/memory/narration unchanged; preserve unknown physical send and usage. Prior two fixtures used8physical attempts, no production promotion."
+premise CONTRACT:
+  "New reserved-turn policy v2 adds adjudicationDeadlineMs180000 while character/narration deadlineMs60000,36turns,600000ms battle cap,200physical attempts and4normal logical calls remain unchanged. Each request clips to global deadline. Preserve exact v1 behavior and all saved failures, no unknown-send replay, timeout retry, schema repair or fallback."
+evidence OWNER_ACCEPTANCE:
+  "2026-10-11 owner answers 裁定180秒への変更と追加1対戦・200試行を承認 to the exact ADR0073 revision1 proposal: adjudication180seconds, others60seconds, battle10minutes,4calls, one additional fixture200attempts/cumulative208maximum, unpriced, no character generation or unchanged automatic retry."
+decision ACCEPTANCE based_on STAGE_FAILURE, CONTRACT, OWNER_ACCEPTANCE:
+  "Accept revision1 and authorize policy v2 implementation, offline verification, exact-source CI, one additional fixed Stage fixture within limits, and previously authorized exact-artifact production promotion only after successful acceptance."

@@ -17,3 +17,9 @@ Application v0.25.0-rc.1 tag remains immutable at dc57146b. Exact-main CI3813745
 Fix the ambiguity by sending explicit per-reservation pre-action baseRevision and a zero-based explanation in immutable reserved-turn adjudication prompt v2. Preserve prompt v1 input/system for saved bindings. Do not modify or adopt the failed trace, weaken validation or introduce schema retries. Add nonzero-start regression and HTTP creation binding coverage; individually review affected authority and run official tests before a new candidate. No new schema/environment change.
 
 The first fixture consumed4physical attempts. Existing session authority includes 修正、テスト、デプロイ、ステージング実行までを許可します, 修復分のリトライも許可します, and the latest お願いします・許可します for this deployment/test. Apply that repair-retry authority to one corrected rc.2 fixture only: max38advances/200physical attempts, cumulative204maximum. No unchanged automatic rerun or character-generation test. Exact-artifact production promotion remains authorized after successful acceptance.
+
+## Corrective application v0.25.0-rc.3
+
+Stage38140597482 for application v0.25.0-rc.2 stopped at turn0 after four physical attempts; the xAI grok-4.5 adjudication reached its60second deadline. No429 evidence or world commit. Retain the unknown physical completion and do not resend it. Accepted ADR0073 revision1 introduces reserved turn policy v2: adjudication180seconds; planners/narrator60seconds; whole battle600seconds, four normal calls and200physical attempts unchanged. Existing policy v1 remains60seconds.
+
+Owner explicitly approved 裁定180秒への変更と追加1対戦・200試行を承認. One additional fixed fixture only, max38advances/200attempts; cumulative maximum208 after prior8. Unpriced; no character generation, unknown-send resend or automatic same-candidate rerun. Promote only successful exact Stage artifacts after required CI and durable readback.

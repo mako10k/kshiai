@@ -42,7 +42,8 @@ export async function executeReservedTurn(input: {
         if (existing.status === "failed" && existing.failure === "RATE_LIMIT" && !existing.physicalOutstanding) continue;
         throw new Error("RESERVED_SEND_NOT_REPLAYABLE");
       }
-      const deadlineAt = Math.min(initial.deadlineAt, now() + policy.deadlineMs);
+      const roleDeadlineMs = role === "adjudication" && policy.revision === "reserved-turn-policy-v2" ? policy.adjudicationDeadlineMs : policy.deadlineMs;
+      const deadlineAt = Math.min(initial.deadlineAt, now() + roleDeadlineMs);
       await input.port.update((runtime) => {
         if (runtime.turn !== initial.turn || runtime.status !== "active" || now() >= deadlineAt || runtime.requests.some((r) => r.id === id)) throw new Error("RESERVED_RESERVATION_CONFLICT");
         if (runtime.requests.length + runtime.budget.physicalAttempts >= policy.maxPhysicalAttempts) throw new Error("RESERVED_ATTEMPT_LIMIT");
@@ -65,6 +66,13 @@ export async function executeReservedTurn(input: {
           return { ...runtime, requests: runtime.requests.map((r) => r.id === id ? { ...r, status: "prepared", output } : r) };
         });
         return output;
+      }, async (error: unknown) => {
+        // A received late rejection closes accounting only; unknown network termination stays outstanding.
+        if (isLlmRateLimitResponse(error) || error instanceof LlmPhysicalCompletionError) {
+          closed = true;
+          await input.port.account((runtime) => ({ ...runtime, requests: runtime.requests.map((r) => r.id === id ? { ...r, physicalOutstanding: false } : r) }));
+        }
+        throw error;
       });
       void processed.catch(() => undefined);
       try {
