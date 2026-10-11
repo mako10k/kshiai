@@ -872,8 +872,8 @@ export async function startBattle(input: StartBattleInput): Promise<BattlePublic
     };
     if (consciousnessPolicy) {
       state = { ...state, assetManifest: BattleAssetManifestV6Schema.parse({ ...state.assetManifest,
-        schemaVersion: 6, consciousOutputContract: "unified-consciousness-v1", outputRevision: "unified-consciousness-output-v1",
-        consciousnessPolicy, consciousnessPromptRevision: consciousnessPolicy.revision === "unified-consciousness-policy-v2" ? "unified-consciousness-prompt-v2" : "unified-consciousness-prompt-v1",
+        schemaVersion: 6, consciousOutputContract: "unified-consciousness-v1", outputRevision: consciousnessPolicy.revision === "unified-consciousness-policy-v3" ? "unified-consciousness-output-v2" : "unified-consciousness-output-v1",
+        consciousnessPolicy, consciousnessPromptRevision: consciousnessPolicy.revision === "unified-consciousness-policy-v3" ? "unified-consciousness-prompt-v3" : consciousnessPolicy.revision === "unified-consciousness-policy-v2" ? "unified-consciousness-prompt-v2" : "unified-consciousness-prompt-v1",
         rules: { ...state.assetManifest?.rules, psycheReaction: "unified-consciousness-v1" } }) };
     }
     const inserted = await battleRepo.insertNewBattle(state, {

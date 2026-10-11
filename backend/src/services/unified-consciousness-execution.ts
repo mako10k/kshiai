@@ -67,9 +67,9 @@ export async function prepareUnifiedBoundary(input: {
       () => input.transport.requestJson(request.system, request.user, { ...request.options, timeoutMs: Math.max(1, deadlineAt - now()) })));
     const processed = requestPromise.then(async (raw) => {
       let output: UnifiedConsciousnessDecision;
-      try { output = validateUnifiedDecision(frame, raw, id, before.policy.revision === "unified-consciousness-policy-v2"); }
+      try { output = validateUnifiedDecision(frame, raw, id, before.policy.revision !== "unified-consciousness-policy-v1", before.policy.revision === "unified-consciousness-policy-v3"); }
       catch (error) { await updateReceipt(true, "CONSCIOUSNESS_OUTPUT_INVALID"); throw error; }
-      const actionFailure = before.policy.revision === "unified-consciousness-policy-v2" ? unifiedActionFailure(frame, output.action) : null;
+      const actionFailure = before.policy.revision !== "unified-consciousness-policy-v1" ? unifiedActionFailure(frame, output.action) : null;
       // Persist first, then require the current world lease before making it usable.
       await input.port.account((runtime) => ({ ...runtime, decisions: runtime.decisions.map((item) => item.id === id ? { ...item, physicalOutstanding: false } : item) }));
       await input.port.update((runtime) => {

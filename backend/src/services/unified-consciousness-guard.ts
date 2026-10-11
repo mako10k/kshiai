@@ -13,7 +13,7 @@ import type { BattleLeaseFence } from "./distributed-guard.js";
 export async function createUnifiedAdjudicationGuard(input: { battleId: string; fence: BattleLeaseFence; provider: string; model: string }): Promise<AwarenessDispatchContext & { assertUsable(): void }> {
   const initial = await getBattleOperationalRuntime(input.battleId);
   if (!initial) throw new Error("CONSCIOUSNESS_RUNTIME_NOT_FOUND");
-  const retry429 = (await getUnifiedRuntime(input.battleId))?.runtime.policy.revision === "unified-consciousness-policy-v2";
+  const retry429 = (await getUnifiedRuntime(input.battleId))?.runtime.policy.retries === 2;
   let failure: Error | null = initial.runtime.budget.reservations.some((item) => item.role === "adjudication" && item.physicalOutstanding)
     ? new Error("CONSCIOUSNESS_ADJUDICATION_OUTSTANDING") : null;
   const assertUsable = () => { if (failure) throw failure; };

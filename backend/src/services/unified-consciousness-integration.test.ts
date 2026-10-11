@@ -4,7 +4,7 @@ import { after, it } from "node:test";
 import { mkdtempSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
-import { UnifiedConsciousnessPolicyV1, type AwarenessFrozenNarration } from "@kshiai/shared";
+import { UnifiedConsciousnessPolicyV1, UnifiedConsciousnessPolicyV3, type AwarenessFrozenNarration } from "@kshiai/shared";
 const directory = mkdtempSync(join(tmpdir(), "kshiai-unified-integration-"));
 process.env.DATABASE_URL = "";
 process.env.DATABASE_PATH = join(directory, "test.db");
@@ -31,7 +31,7 @@ const { processNextNarration, createLlmNarrationGenerator } = await import("./na
 after(async () => { await closeDatabase(); rmSync(directory, { recursive: true, force: true }); });
 const document = readAwarenessTrialCandidate(resolve(import.meta.dirname, "../../../docs/evidence/awareness-real-trial-candidate-2026-10-05.json"));
 const seeded = await seedAwarenessTrial(document.candidate);
-it("creates v6 without historical psyche runtime and commits prologue plus a combat tick", async (t) => {
+for (const policy of [UnifiedConsciousnessPolicyV1, UnifiedConsciousnessPolicyV3]) it(`creates binding v6 with ${policy.revision} and commits private memory through prologue and combat`, async (t) => {
   const llm = createLlmProvider(); const roles = llm.awareness; assert.ok(roles?.consciousness);
   t.mock.method(roles.narration, "narrateFrozenBatch", async (materials: readonly AwarenessFrozenNarration[]) => materials.map((material) => {
     const phase = material.phase;
@@ -43,13 +43,25 @@ it("creates v6 without historical psyche runtime and commits prologue plus a com
   let calls = 0;
   t.mock.method(roles.models, "subconscious", async () => { throw new Error("OLD_SUBCONSCIOUS_FORBIDDEN"); });
   t.mock.method(roles.models, "conscious", async () => { throw new Error("OLD_CONSCIOUS_FORBIDDEN"); });
-  t.mock.method(roles.consciousness, "requestJson", async () => { calls += 1; return { speech: "まず様子を見よう", memoryOperations: [{ kind: "insert", priority: 1, text: "秘密の観察方針" }] }; });
+  t.mock.method(roles.consciousness, "requestJson", async (system: string, user: string) => { calls += 1;
+    if (policy.revision === "unified-consciousness-policy-v3") {
+      assert.match(system, /必須memory/);
+      return { speech: "まず様子を見よう", memory: user.includes("秘密の観察方針") ? ["1"] : ["秘密の観察方針"] };
+    }
+    return { speech: "まず様子を見よう", memoryOperations: [{ kind: "insert", priority: 1, text: "秘密の観察方針" }] };
+  });
   const [a, b] = document.candidate.characters; assert.ok(a); assert.ok(b);
-  const battleId = "unified-local-integration";
+  const battleId = `unified-local-integration-${policy.revision}`;
   const createdPublic = await startBattle({ userId: seeded.userId, battleId, myCharacterId: a.sheet.id, opponentCharacterId: b.sheet.id,
-    battlefieldMode: "preset", battlefieldPresetId: seeded.battlefieldId, consciousnessPolicy: UnifiedConsciousnessPolicyV1, llm });
+    battlefieldMode: "preset", battlefieldPresetId: seeded.battlefieldId, consciousnessPolicy: policy, llm });
   assert.doesNotMatch(JSON.stringify(createdPublic), /秘密の観察方針/);
   assert.equal((await getBattle(battleId))?.assetManifest?.schemaVersion, 6);
+  const manifest = (await getBattle(battleId))?.assetManifest;
+  assert.equal(manifest?.schemaVersion, 6);
+  if (manifest?.schemaVersion === 6 && policy.revision === "unified-consciousness-policy-v3") {
+    assert.equal(manifest.outputRevision, "unified-consciousness-output-v2");
+    assert.equal(manifest.consciousnessPromptRevision, "unified-consciousness-prompt-v3");
+  }
   assert.equal(await getAwarenessRuntime(battleId), null);
   const prologue = await advanceTurn({ userId: seeded.userId, battleId, operationId: "unified-prologue", llm });
   assert.notEqual(prologue.status, "incomplete");
@@ -61,6 +73,11 @@ it("creates v6 without historical psyche runtime and commits prologue plus a com
   assert.notEqual(stored.status, "incomplete", stored.incompleteReason);
   assert.equal((await getUnifiedRuntime(battleId))?.runtime.tick, 1);
   assert.doesNotMatch(JSON.stringify(combat), /秘密の観察方針|memoryOperations/);
+  if (policy.revision === "unified-consciousness-policy-v3") {
+    const current = await getUnifiedRuntime(battleId);
+    assert.deepEqual(current?.runtime.sides.a.memory, runtime.runtime.sides.a.memory);
+    assert.ok(current?.runtime.decisions.every((decision) => decision.output && "memory" in decision.output));
+  }
   assert.ok(stored.turnRecords?.some((record) => record.events.some((event) => event.utterance?.text === "まず様子を見よう")));
   assert.deepEqual((await getUnifiedRuntime(battleId))?.runtime.sides.a.pendingEvents, []);
   const beforeNarration = await getUnifiedRuntime(battleId);

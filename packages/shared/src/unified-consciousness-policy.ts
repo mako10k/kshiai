@@ -13,6 +13,7 @@ const UnifiedConsciousnessPolicyV1Schema = z.object({
 export const UnifiedConsciousnessPolicySchema = z.discriminatedUnion("revision", [
   UnifiedConsciousnessPolicyV1Schema,
   UnifiedConsciousnessPolicyV1Schema.extend({ revision: z.literal("unified-consciousness-policy-v2"), retries: z.literal(2) }),
+  UnifiedConsciousnessPolicyV1Schema.extend({ revision: z.literal("unified-consciousness-policy-v3"), retries: z.literal(2) }),
 ]);
 export type UnifiedConsciousnessPolicy = z.infer<typeof UnifiedConsciousnessPolicySchema>;
 export const UnifiedConsciousnessPolicyV1: UnifiedConsciousnessPolicy = {
@@ -25,4 +26,8 @@ export const UnifiedConsciousnessPolicyV1: UnifiedConsciousnessPolicy = {
 
 export const UnifiedConsciousnessPolicyV2 = UnifiedConsciousnessPolicySchema.parse({
   ...UnifiedConsciousnessPolicyV1, revision: "unified-consciousness-policy-v2", retries: 2,
+});
+
+export const UnifiedConsciousnessPolicyV3 = UnifiedConsciousnessPolicySchema.parse({
+  ...UnifiedConsciousnessPolicyV2, revision: "unified-consciousness-policy-v3",
 });

@@ -42,3 +42,28 @@ export function applyConsciousnessMemory(
   }
   return ConsciousnessMemorySchema.parse(next);
 }
+
+export const ConsciousnessMemorySnapshotSchema = z.array(consciousnessText(400)).max(5);
+
+/** Resolve every old rank against the same frozen input, without partial mutation. */
+export function applyConsciousnessMemorySnapshot(
+  memory: ConsciousnessMemory, snapshot: readonly string[], decisionId: string,
+): ConsciousnessMemory {
+  if (!decisionId || decisionId.length > 220) throw new Error("CONSCIOUSNESS_DECISION_ID_INVALID");
+  const previous = ConsciousnessMemorySchema.parse(memory);
+  const checked = ConsciousnessMemorySnapshotSchema.parse(snapshot);
+  const retained = new Set<string>();
+  const next = checked.map((text, index) => {
+    if (/^[1-5]$/.test(text)) {
+      const entry = previous[Number(text) - 1];
+      if (!entry) throw new Error("CONSCIOUSNESS_MEMORY_RANK_UNKNOWN");
+      if (retained.has(entry.id)) throw new Error("CONSCIOUSNESS_MEMORY_RANK_DUPLICATE");
+      retained.add(entry.id);
+      return entry;
+    }
+    const id = `${decisionId}:m${index}`;
+    if (previous.some((entry) => entry.id === id)) throw new Error("CONSCIOUSNESS_MEMORY_ALREADY_APPLIED");
+    return { id, text };
+  });
+  return ConsciousnessMemorySchema.parse(next);
+}
