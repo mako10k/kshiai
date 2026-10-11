@@ -313,7 +313,7 @@ describe("integrated structured asset cutover", () => {
     assert.ok(bound?.assetManifest);
     assert.equal(bound.assetManifest.schemaVersion, 7);
     assert.equal(bound.assetManifest.consciousOutputContract, "reserved-turns-v1");
-    assert.equal(bound.assetManifest.reservedTurnPolicy.revision, "reserved-turn-policy-v1");
+    assert.equal(bound.assetManifest.reservedTurnPolicy.revision, "reserved-turn-policy-v2");
     assert.equal(bound.assetManifest.reservedTurnPromptRevision, "reserved-turn-prompt-v2");
     assert.equal(bound.assetManifest.outputRevision, "reserved-turn-output-v1");
     assert.equal(BattleStateSchema.safeParse({ ...bound, combatTick: 1 }).success, false);

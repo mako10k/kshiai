@@ -1,0 +1,102 @@
+{
+  "runId": "stage-38140597482-1",
+  "battleId": "btl_9729dab655e215993fcd20013bfa4df8",
+  "binding": 7,
+  "prompt": "reserved-turn-prompt-v2",
+  "status": "incomplete",
+  "turn": 0,
+  "runtimeStatus": "incomplete",
+  "failure": "RESERVED_DEADLINE",
+  "operation": {
+    "battle_id": "btl_9729dab655e215993fcd20013bfa4df8",
+    "status": "failed",
+    "reserved_attempts": 4,
+    "approved_attempt_ceiling": 200
+  },
+  "narration": [],
+  "attempts": [
+    {
+      "operation": "prepareBattleEncounter",
+      "layer": "encounter",
+      "status": "succeeded",
+      "count": 1
+    },
+    {
+      "operation": "reserved-turns-v1:adjudication",
+      "layer": "environment",
+      "status": "failed",
+      "count": 1
+    },
+    {
+      "operation": "reserved-turns-v1:character",
+      "layer": "characterExpression",
+      "status": "succeeded",
+      "count": 2
+    }
+  ],
+  "usage": [
+    {
+      "role": "creation",
+      "side": null,
+      "provider": "xai",
+      "model": "grok-4.5",
+      "status": "completed",
+      "startedAt": 1791723254816,
+      "finishedAt": 1791723266123,
+      "elapsedMs": 11306.962667000014,
+      "promptTokens": 1398,
+      "completionTokens": 177,
+      "totalTokens": 2319
+    },
+    {
+      "role": "consciousness",
+      "side": "a",
+      "provider": "openai",
+      "model": "gpt-6-luna",
+      "status": "completed",
+      "startedAt": 1791723267094,
+      "finishedAt": 1791723270804,
+      "elapsedMs": 3709.24406300002,
+      "promptTokens": 2237,
+      "completionTokens": 133,
+      "totalTokens": 2370
+    },
+    {
+      "role": "consciousness",
+      "side": "b",
+      "provider": "openai",
+      "model": "gpt-6-luna",
+      "status": "completed",
+      "startedAt": 1791723267117,
+      "finishedAt": 1791723270054,
+      "elapsedMs": 2937.217600999982,
+      "promptTokens": 2273,
+      "completionTokens": 75,
+      "totalTokens": 2348
+    },
+    {
+      "role": "adjudication",
+      "side": null,
+      "provider": "xai",
+      "model": "grok-4.5",
+      "status": "timeout",
+      "startedAt": 1791723270977,
+      "finishedAt": 1791723330910,
+      "elapsedMs": 59933.42720799998,
+      "promptTokens": null,
+      "completionTokens": null,
+      "totalTokens": null
+    }
+  ],
+  "application": "v0.25.0-rc.2",
+  "stageRunId": 38140597482,
+  "commit": "310faa1c8b244cbeccc38d06133bed41df271949",
+  "cumulativePhysicalAttempts": 8,
+  "worldMemoryNarrationCommitted": false,
+  "unknownPhysicalRequests": 1,
+  "adjudicationInputCharacters": 34306,
+  "reservations": 3,
+  "proposedDecision": "ADR0073 revision1, adjudication-only180seconds; not accepted or implemented",
+  "production": "Not promoted; application v0.24.0-rc.9 remains serving",
+  "privacy": "No private inputs, memory text or raw output included."
+}

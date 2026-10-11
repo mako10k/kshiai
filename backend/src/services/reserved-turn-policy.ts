@@ -3,8 +3,8 @@ import { BattleAssetManifestV7Schema, ReservedTurnPolicySchema, type BattleState
 import type { AwarenessProviderRoles } from "../llm/awareness-provider-factory.js";
 export function bindReservedTurnPolicy(roles: AwarenessProviderRoles | undefined) {
   if (!roles?.consciousness) throw new Error("RESERVED_CHARACTER_ROUTE_REQUIRED");
-  return ReservedTurnPolicySchema.parse({ revision: "reserved-turn-policy-v1", maxTurns: 36, maxReservations: 5, maxLogicalCallsPerTurn: 4,
-    maxPhysicalAttempts: 200, durationMs: 600000, deadlineMs: 60000, characterOutputTokens: 2000, adjudicationOutputTokens: 10000, inputCharacters: 128000,
+  return ReservedTurnPolicySchema.parse({ revision: "reserved-turn-policy-v2", maxTurns: 36, maxReservations: 5, maxLogicalCallsPerTurn: 4,
+    maxPhysicalAttempts: 200, durationMs: 600000, deadlineMs: 60000, adjudicationDeadlineMs: 180000, characterOutputTokens: 2000, adjudicationOutputTokens: 10000, inputCharacters: 128000,
     character: { provider: roles.consciousness.identity.provider, model: roles.consciousness.identity.fastModel },
     adjudication: { provider: roles.adjudication.identity.provider, model: roles.adjudication.identity.engineModel },
     narration: { provider: roles.adjudication.identity.provider, model: roles.adjudication.identity.fastModel } });

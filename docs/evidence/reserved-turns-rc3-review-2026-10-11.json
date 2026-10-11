@@ -1,0 +1,94 @@
+{
+  "application": "v0.25.0-rc.3",
+  "governingAdr": "Accepted ADR0073 revision1",
+  "focused": {
+    "pass": 8,
+    "fail": 0,
+    "skip": 0
+  },
+  "reviews": [
+    {
+      "ref": "reserved-turns-v1/source/packages-shared-src-reserved-turn-policy",
+      "seal": "0fbd9c44168c234d9b5b018a36841ab15acf7c7bb994642c09fc1253072c8310",
+      "path": "packages/shared/src/reserved-turn-policy.ts",
+      "changed": true,
+      "review": "Reviewed packages/shared/src/reserved-turn-policy.ts: immutable policy v2 uses judge180seconds, otherroles60seconds, clips wholebattle; preserve v1 sixtyseconds; late physically received rejection closes accounting only, unknown termination remains outstanding; no resend or world commit. Focused8pass, typecheck/static/build passed. Accepted ADR0073 revision1 role deadline and immutable binding contract. No new paid execution or promotion.",
+      "previousSeal": "a5347b8548bf069a8ceafc10c2d34e174e417b1376435f57d6444b9cc76951ab"
+    },
+    {
+      "ref": "reserved-turns-v1/test/backend-src-repositories-reserved-turns-postgres.test",
+      "seal": "83c70760495b101a99782871f8b9543ec0744b3d9fab1d905b62a11949db15a9",
+      "path": "backend/src/repositories/reserved-turns-postgres.test.ts",
+      "changed": false,
+      "review": "Reviewed backend/src/repositories/reserved-turns-postgres.test.ts: retained historical behavior and assertions remain valid after compatible policy v2 admission and strict late-response accounting. Focused8pass, typecheck/static/build passed. Accepted ADR0073 revision1 role deadline and immutable binding contract. No new paid execution or promotion. Preserved coverage: reserved-turn pipeline v1 persists only current fenced writes and rolls back atomically on PostgreSQL",
+      "previousSeal": "26d995a921b32f3e04ceecf8a3249762e9cd2a814167713785ce50ce74b2f4ca"
+    },
+    {
+      "ref": "reserved-turns-v1/test/packages-shared-src-reserved-turns.test",
+      "seal": "e0a170667c45803a4ce9b7f33f2215f6bb798472723740657a10ecf9254010b2",
+      "path": "packages/shared/src/reserved-turns.test.ts",
+      "changed": false,
+      "review": "Reviewed packages/shared/src/reserved-turns.test.ts: retained historical behavior and assertions remain valid after compatible policy v2 admission and strict late-response accounting. Focused8pass, typecheck/static/build passed. Accepted ADR0073 revision1 role deadline and immutable binding contract. No new paid execution or promotion. Preserved coverage: reserved-turn pipeline v1; accepts zero or five reservations and rejects six or duplicate IDs; interleaves plans without starving the slower side and alternates exact ties; validates all frozen rank references and observer-visible targets before dispatch; applies both attacks to successive canonical states and advances one turn; cancels later actions after defeat instead of executing stale intentions; rejects missing, invented, reordered or stale receipts atomically; permits failed attempts with costs but refuses empty success and out-of-range side effects",
+      "previousSeal": "a07221818878b2eed7bf40c4c08379ee93b3f9f44417eaf61837f72b2f6d6a44"
+    },
+    {
+      "ref": "reserved-turns-v1/source/backend-src-services-reserved-turn-policy",
+      "seal": "154f01e9faa5899cf04339e893dc7f687f0323a1e1a490ae8b6c3337f6bdcc04",
+      "path": "backend/src/services/reserved-turn-policy.ts",
+      "changed": true,
+      "review": "Reviewed backend/src/services/reserved-turn-policy.ts: immutable policy v2 uses judge180seconds, otherroles60seconds, clips wholebattle; preserve v1 sixtyseconds; late physically received rejection closes accounting only, unknown termination remains outstanding; no resend or world commit. Focused8pass, typecheck/static/build passed. Accepted ADR0073 revision1 role deadline and immutable binding contract. No new paid execution or promotion.",
+      "previousSeal": "52fb2844c727a04f4183b2cb61149f83d673a62b7b66ce9949af144f10c5a792"
+    },
+    {
+      "ref": "reserved-turns-v1/source/backend-src-services-reserved-turn-execution",
+      "seal": "5478045224ffd346094b37267c4812c89708c8b4613981f7ceabead1b3c8f62e",
+      "path": "backend/src/services/reserved-turn-execution.ts",
+      "changed": true,
+      "review": "Reviewed backend/src/services/reserved-turn-execution.ts: immutable policy v2 uses judge180seconds, otherroles60seconds, clips wholebattle; preserve v1 sixtyseconds; late physically received rejection closes accounting only, unknown termination remains outstanding; no resend or world commit. Focused8pass, typecheck/static/build passed. Accepted ADR0073 revision1 role deadline and immutable binding contract. No new paid execution or promotion.",
+      "previousSeal": "f077ec08c7a0d396ae57cd2a40510b0a5ebcef620298615b72381170bad73a98"
+    },
+    {
+      "ref": "reserved-turns-v1/test/backend-src-services-reserved-turn-execution.test",
+      "seal": "32d2449372820b221fbdbe1ceeb602de35f4624df37ce800945eb144d20688bc",
+      "path": "backend/src/services/reserved-turn-execution.test.ts",
+      "changed": true,
+      "review": "Reviewed backend/src/services/reserved-turn-execution.test.ts: immutable policy v2 uses judge180seconds, otherroles60seconds, clips wholebattle; preserve v1 sixtyseconds; late physically received rejection closes accounting only, unknown termination remains outstanding; no resend or world commit. Focused8pass, typecheck/static/build passed. Accepted ADR0073 revision1 role deadline and immutable binding contract. No new paid execution or promotion. Preserved coverage: reserved-turn execution; dispatches A/B together, calls one judge for ten reservations and only public narration; does not dispatch adjudication when one plan is malformed or references hidden objects; refuses to resend a reserved request with unknown physical completion; retries only known rate-limit responses within the physical cap; keeps a timed-out request unknown until late physical completion without preparing its output; pins every adjudication base revision before dispatch and preserves prompt v1; binds role deadlines in policy v2, preserves policy v1 and clips both to the battle deadline; closes late received rejection accounting without preparing output or resending unknown failures",
+      "previousSeal": "9b0fd2afd8bc8a98d38bacb4eb80d0a4f9e9997c2e5c27823245697cd26df040"
+    },
+    {
+      "ref": "all-tests-20261008/current-source-closure/verification/structured-asset-integration-bounded-20261008",
+      "seal": "5f8104b1b5df6e8b564d5c77b366801499cf93c90dc3a3e0b011221eb3a2f7ec",
+      "path": "backend/src/routes-structured-asset-integration.test.ts",
+      "changed": true,
+      "review": "Reviewed backend/src/routes-structured-asset-integration.test.ts: immutable policy v2 uses judge180seconds, otherroles60seconds, clips wholebattle; preserve v1 sixtyseconds; late physically received rejection closes accounting only, unknown termination remains outstanding; no resend or world commit. Focused8pass, typecheck/static/build passed. Accepted ADR0073 revision1 role deadline and immutable binding contract. No new paid execution or promotion. Preserved coverage: integrated structured asset cutover; keeps selection, binding, replay, history, and deletion on immutable generations; freezes legacy character rows without appending V1 generations",
+      "previousSeal": "4667cd27971eb11818082896ee387a1325c918f6821dbb5f195a4d7fff540200"
+    }
+  ],
+  "paidAttempts": 0,
+  "productionPromotion": false,
+  "validation": {
+    "officialTests": {
+      "pass": 1551,
+      "fail": 0,
+      "skip": 0,
+      "activeFiles": 254,
+      "disabledFiles": 0,
+      "nativePostgres": true
+    },
+    "typecheck": "passed",
+    "static": "passed",
+    "build": "passed",
+    "adrAudit": "clean Accepted ADR0073 revision1",
+    "pert": "forward projection document, precedence/resource and next passed; owner/history fields omitted for CLI compatibility",
+    "sealgraphFsck": "ok"
+  },
+  "stageAuthority": {
+    "additionalFixtures": 1,
+    "maxAdvances": 38,
+    "maxPhysicalAttempts": 200,
+    "priorAttempts": 8,
+    "cumulativeMaximum": 208,
+    "cost": "unpriced",
+    "automaticRetry": false
+  }
+}

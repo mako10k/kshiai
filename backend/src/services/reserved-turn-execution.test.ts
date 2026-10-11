@@ -1,10 +1,11 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import { createBattleWorldState, createBattleSemanticState, initializeReservedTurns, ReservedTurnRuntimeSchema,
-  orderReservedActions, type ReservedTurnRuntime, type ReservedTurnWorld } from "@kshiai/shared";
+  ReservedTurnPolicySchema, orderReservedActions, type ReservedTurnRuntime, type ReservedTurnWorld } from "@kshiai/shared";
 import { executeReservedTurn, type ReservedExecutionPort } from "./reserved-turn-execution.js";
 import { reservedAdjudicationSystem, reservedAdjudicationUser } from "../llm/reserved-turns.js";
 import type { AwarenessJsonTransport } from "../llm/awareness-provider-contract.js";
+import { LlmPhysicalCompletionError } from "../llm/llm-physical-completion.js";
 import { bindReservedTurnPolicy } from "./reserved-turn-policy.js";
 import { AwarenessLatentOutputSchema, AwarenessConsciousOutputSchema } from "@kshiai/shared";
 function transport(send: AwarenessJsonTransport["requestJson"]): AwarenessJsonTransport {
@@ -111,4 +112,41 @@ it("pins every adjudication base revision before dispatch and preserves prompt v
   assert.deepEqual(historical.order, order);
   assert.equal(reservedAdjudicationSystem("reserved-turn-prompt-v1").includes("予約ターン裁定プロンプト v2"), false);
   assert.equal(reservedAdjudicationSystem("reserved-turn-prompt-v2").includes("先に1を足さない"), true);
+});
+
+it("binds role deadlines in policy v2, preserves policy v1 and clips both to the battle deadline", async () => {
+  for (const version of ["v1", "v2", "clipped"] as const) {
+    const f = fixture(); const current = f.runtime().policy;
+    assert.equal(current.revision, "reserved-turn-policy-v2");
+    if (current.revision !== "reserved-turn-policy-v2") throw new Error("expected policy v2");
+    const { adjudicationDeadlineMs: _deadline, ...historical } = current;
+    const policy = version === "v1" ? ReservedTurnPolicySchema.parse({ ...historical, revision: "reserved-turn-policy-v1" }) : current;
+    assert.equal(ReservedTurnPolicySchema.safeParse({ ...historical, revision: "reserved-turn-policy-v1", adjudicationDeadlineMs: 180000 }).success, false);
+    const clock = f.runtime().startedAt;
+    f.set({ ...f.runtime(), policy: { ...policy, durationMs: version === "clipped" ? 30000 : 600000 }, deadlineAt: clock + (version === "clipped" ? 30000 : 600000) });
+    const t = transport(async (_system, _user, options) => {
+      const expected = version === "clipped" ? 30000 : version === "v2" && options.label.endsWith("adjudication") ? 180000 : 60000;
+      assert.equal(options.timeoutMs, expected);
+      if (options.label.endsWith("character")) return { actions: [], memory: [] };
+      if (options.label.endsWith("adjudication")) return { results: [] };
+      return { lines: ["間合いを保つ。"] };
+    });
+    await executeReservedTurn({ battleId: "btl_test", ...f, assets: {}, publicScene: "路地", character: t, adjudication: t, narration: t, now: () => clock });
+    assert.equal(f.runtime().requests.length, 4);
+  }
+});
+
+it("closes late received rejection accounting without preparing output or resending unknown failures", async () => {
+  for (const received of [true, false]) {
+    const f = fixture(); f.set({ ...f.runtime(), policy: { ...f.runtime().policy, deadlineMs: 10 } });
+    let release: (() => void) | undefined;
+    const barrier = new Promise<void>((resolve) => { release = resolve; }); let calls = 0;
+    const t = transport(async () => { calls += 1; await barrier; throw received ? new LlmPhysicalCompletionError(new Error("invalid JSON")) : new Error("unknown network termination"); });
+    const input = { battleId: "btl_test", ...f, assets: {}, publicScene: "路地", character: t, adjudication: t, narration: t };
+    await assert.rejects(executeReservedTurn(input), /DEADLINE/);
+    release?.(); await new Promise<void>((resolve) => setTimeout(resolve, 20));
+    assert.ok(f.runtime().requests.every((r) => r.physicalOutstanding === !received && r.status === "failed" && r.output === null));
+    await assert.rejects(executeReservedTurn(input), /NOT_REPLAYABLE/); assert.equal(calls, 2);
+    assert.equal(f.runtime().turn, 0);
+  }
 });
