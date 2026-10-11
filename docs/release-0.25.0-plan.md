@@ -1,0 +1,11 @@
+# Application v0.25.0-rc.1 release plan
+
+Owner approval2026-10-11: 「お願いします・許可します」 after implementation PR186 and the offer to deploy and test real-model behavior. Governing decision: Accepted ADR0072 revision1; canonical plan docs/unified-consciousness.pert version20; procedure docs/release_process.md.
+
+Release the reserved-turn pipeline v1 and battle binding format v7. New battles plan A/B in parallel, reserve up to five actions each and use one adjudication trace plus one public narration call. Preserve historical engines and required ranked memory. The offline checkpoint b36b9e27 passed1548 tests/254active0disabled and all four CI checks38135908749. Offline verification does not prove entertainment value, live causality or savings.
+
+Authorized paid acceptance: one existing fixed Stage fixture battle, max38advances and200physical provider attempts including encounter and transport retries. No new character generation, automatic rerun or extra model comparison. Price is unpriced;200attempts is not a monetary cap. Use existing deployed provider credentials and routes. Inspect live saved plans, ordered trace, world changes, private memory carry-forward, public narration and closed usage. Report actual quality separately from functional acceptance.
+
+Apply additive migration0038_reserved_turns.sql before staged execution. No historical conversion/deletion. Known-good application v0.24.0-rc.9 uses backend kshiai-api-00198-gel and Worker e20e86ff-7869-43ae-b1f1-1abca77c623b; re-read serving identities immediately before promotion. It accepts the expanded database schema but cannot execute newly created battle binding format v7. Rollback must stop new creation and retain a compatible executor for those battles; database rollback is not part of application rollback.
+
+Required path: release PR186 on existing authorized branch, squash merge, four exact-main checks, immutable annotated v0.25.0-rc.1 tag, Stage release, retained digest/revision/Worker and battle acceptance, protected Promote release, independent readback and GitHub Release. Preserve any failure; a correction uses a new candidate and any additional paid fixture requires separate authorization unless later explicitly granted.
