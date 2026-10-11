@@ -1,5 +1,7 @@
 // R: Bind turn-only budgets and models without importing historical battle schemas.
 import { z } from "zod";
+export const ReservedTurnPromptRevisionSchema = z.enum(["reserved-turn-prompt-v1", "reserved-turn-prompt-v2"]);
+export type ReservedTurnPromptRevision = z.infer<typeof ReservedTurnPromptRevisionSchema>;
 const id = z.string().min(1).max(160);
 export const ReservedTurnPolicySchema = z.object({
   revision: z.literal("reserved-turn-policy-v1"),

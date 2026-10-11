@@ -1,0 +1,159 @@
+{
+  "application": "v0.25.0-rc.2",
+  "governingAdr": "Accepted ADR0072 revision1",
+  "focused": {
+    "pass": 15,
+    "fail": 0,
+    "skip": 0
+  },
+  "reviews": [
+    {
+      "ref": "reserved-turns-v1/source/packages-shared-src-reserved-turns",
+      "seal": "093e8b90704fff41986a0b81b47fc122d189e5bd923ff480e5224c114a8980d3",
+      "path": "packages/shared/src/reserved-turns.ts",
+      "changed": true,
+      "review": "Reviewed packages/shared/src/reserved-turns.ts: immutable prompt v2 carries explicit pre-action baseRevision; preserve v1 bytes and failed rc.1 evidence, strict atomic trace validation unchanged. Focused15pass, typecheck/static/build passed. Accepted ADR0072 sequential trace and immutable binding contract. No new paid execution or promotion.",
+      "previousSeal": "45c4cd969f2f3018a210108c1882f8611a0a010986a7cc36357ed25c6e03b284"
+    },
+    {
+      "ref": "unified-completion-v1/source/awareness-public-observation",
+      "seal": "09b153b4502f90b4e67d36a9cc6f09b9a6789e37db4e62a80e79573263c5eccb",
+      "path": "backend/src/scripts/awareness-public-observation.ts",
+      "changed": false,
+      "review": "Reviewed backend/src/scripts/awareness-public-observation.ts: retained historical behavior and assertions remain valid after compatible prompt revision admission. Focused15pass, typecheck/static/build passed. Accepted ADR0072 sequential trace and immutable binding contract. No new paid execution or promotion.",
+      "previousSeal": "6bdddf911e3d12d5705d3ed3ceaa401ce4b1d4c8b9adb710b7aed5c4d9f912dd"
+    },
+    {
+      "ref": "verification/awareness-usage-verifier-bounded-20261008",
+      "seal": "5df06c1863576359d23550f28e28eb51a39d2d5d7af77b319c383cd23799dd31",
+      "path": "backend/src/scripts/awareness-public-observation.test.ts",
+      "changed": false,
+      "review": "Reviewed backend/src/scripts/awareness-public-observation.test.ts: retained historical behavior and assertions remain valid after compatible prompt revision admission. Focused15pass, typecheck/static/build passed. Accepted ADR0072 sequential trace and immutable binding contract. No new paid execution or promotion. Preserved coverage: reports one physical batch attempt and actual tokens without inventing prices or private content; rejects missing runtime, outstanding execution, cross-battle rows and ledger mismatches; verifies unified v1 completion using both sides plus operational reservations without private content; rejects unified unresolved execution, tuple drift, uncommitted decisions and missing roles; verifies reserved-turn pipeline v1 completion by every turn request and ledger receipt without exposing private responses",
+      "previousSeal": "491cee0da10c9d067b2da32cbdbf82a85320a00999661c9ae913c3f150e420d0"
+    },
+    {
+      "ref": "reserved-turns-v1/source/packages-shared-src-reserved-turn-policy",
+      "seal": "a5347b8548bf069a8ceafc10c2d34e174e417b1376435f57d6444b9cc76951ab",
+      "path": "packages/shared/src/reserved-turn-policy.ts",
+      "changed": true,
+      "review": "Reviewed packages/shared/src/reserved-turn-policy.ts: immutable prompt v2 carries explicit pre-action baseRevision; preserve v1 bytes and failed rc.1 evidence, strict atomic trace validation unchanged. Focused15pass, typecheck/static/build passed. Accepted ADR0072 sequential trace and immutable binding contract. No new paid execution or promotion.",
+      "previousSeal": "851396c0ed17ceccaeb558b9e913fca88ab41b4ee1100e55623e65dad8f51f42"
+    },
+    {
+      "ref": "reserved-turns-v1/test/backend-src-repositories-reserved-turns-postgres.test",
+      "seal": "26d995a921b32f3e04ceecf8a3249762e9cd2a814167713785ce50ce74b2f4ca",
+      "path": "backend/src/repositories/reserved-turns-postgres.test.ts",
+      "changed": false,
+      "review": "Reviewed backend/src/repositories/reserved-turns-postgres.test.ts: retained historical behavior and assertions remain valid after compatible prompt revision admission. Focused15pass, typecheck/static/build passed. Accepted ADR0072 sequential trace and immutable binding contract. No new paid execution or promotion. Preserved coverage: reserved-turn pipeline v1 persists only current fenced writes and rolls back atomically on PostgreSQL",
+      "previousSeal": "3cd5d38ff1a6a9da58eb48971af265ae26b5100e87a0244c5c2ca33b9544707a"
+    },
+    {
+      "ref": "reserved-turns-v1/test/packages-shared-src-reserved-turns.test",
+      "seal": "a07221818878b2eed7bf40c4c08379ee93b3f9f44417eaf61837f72b2f6d6a44",
+      "path": "packages/shared/src/reserved-turns.test.ts",
+      "changed": false,
+      "review": "Reviewed packages/shared/src/reserved-turns.test.ts: retained historical behavior and assertions remain valid after compatible prompt revision admission. Focused15pass, typecheck/static/build passed. Accepted ADR0072 sequential trace and immutable binding contract. No new paid execution or promotion. Preserved coverage: reserved-turn pipeline v1; accepts zero or five reservations and rejects six or duplicate IDs; interleaves plans without starving the slower side and alternates exact ties; validates all frozen rank references and observer-visible targets before dispatch; applies both attacks to successive canonical states and advances one turn; cancels later actions after defeat instead of executing stale intentions; rejects missing, invented, reordered or stale receipts atomically; permits failed attempts with costs but refuses empty success and out-of-range side effects",
+      "previousSeal": "6798daf873217f8ba2b568f212d05ea50a59040595a8791175cac5ea5be200dc"
+    },
+    {
+      "ref": "reserved-turns-v1/source/backend-src-services-reserved-turn-battle",
+      "seal": "870b44f13a0a8de9f82bff5a8cb22b12a79556a10232131e76b065f1b91b8cf1",
+      "path": "backend/src/services/reserved-turn-battle.ts",
+      "changed": true,
+      "review": "Reviewed backend/src/services/reserved-turn-battle.ts: immutable prompt v2 carries explicit pre-action baseRevision; preserve v1 bytes and failed rc.1 evidence, strict atomic trace validation unchanged. Focused15pass, typecheck/static/build passed. Accepted ADR0072 sequential trace and immutable binding contract. No new paid execution or promotion.",
+      "previousSeal": "bcf2e9afba47cf4c6b23a3c1129cb15616f035896342f765808b5677fc671afe"
+    },
+    {
+      "ref": "reserved-turns-v1/source/backend-src-services-reserved-turn-policy",
+      "seal": "52fb2844c727a04f4183b2cb61149f83d673a62b7b66ce9949af144f10c5a792",
+      "path": "backend/src/services/reserved-turn-policy.ts",
+      "changed": true,
+      "review": "Reviewed backend/src/services/reserved-turn-policy.ts: immutable prompt v2 carries explicit pre-action baseRevision; preserve v1 bytes and failed rc.1 evidence, strict atomic trace validation unchanged. Focused15pass, typecheck/static/build passed. Accepted ADR0072 sequential trace and immutable binding contract. No new paid execution or promotion.",
+      "previousSeal": "fee6074b3050d9247673d9d8bb4feb3e407cfb9f74a89b41637c48d36db742cb"
+    },
+    {
+      "ref": "reserved-turns-v1/source/backend-src-services-reserved-turn-execution",
+      "seal": "f077ec08c7a0d396ae57cd2a40510b0a5ebcef620298615b72381170bad73a98",
+      "path": "backend/src/services/reserved-turn-execution.ts",
+      "changed": true,
+      "review": "Reviewed backend/src/services/reserved-turn-execution.ts: immutable prompt v2 carries explicit pre-action baseRevision; preserve v1 bytes and failed rc.1 evidence, strict atomic trace validation unchanged. Focused15pass, typecheck/static/build passed. Accepted ADR0072 sequential trace and immutable binding contract. No new paid execution or promotion.",
+      "previousSeal": "016a4246f2a46ace3725de5fa457374c464d45eff9114e094204e89018ea2715"
+    },
+    {
+      "ref": "reserved-turns-v1/source/backend-src-llm-reserved-turns",
+      "seal": "60ca79b1774b0a49a5ed8aa3c3d8f7e5f9c0b845fba7bb333d7ea61c2d1c0440",
+      "path": "backend/src/llm/reserved-turns.ts",
+      "changed": true,
+      "review": "Reviewed backend/src/llm/reserved-turns.ts: immutable prompt v2 carries explicit pre-action baseRevision; preserve v1 bytes and failed rc.1 evidence, strict atomic trace validation unchanged. Focused15pass, typecheck/static/build passed. Accepted ADR0072 sequential trace and immutable binding contract. No new paid execution or promotion.",
+      "previousSeal": "aca0f1ae008232cec363cadb708bd63b7404cf027f2508f16c1a6adca2cd0d1f"
+    },
+    {
+      "ref": "reserved-turns-v1/test/backend-src-services-reserved-turn-execution.test",
+      "seal": "9b0fd2afd8bc8a98d38bacb4eb80d0a4f9e9997c2e5c27823245697cd26df040",
+      "path": "backend/src/services/reserved-turn-execution.test.ts",
+      "changed": true,
+      "review": "Reviewed backend/src/services/reserved-turn-execution.test.ts: immutable prompt v2 carries explicit pre-action baseRevision; preserve v1 bytes and failed rc.1 evidence, strict atomic trace validation unchanged. Focused15pass, typecheck/static/build passed. Accepted ADR0072 sequential trace and immutable binding contract. No new paid execution or promotion. Preserved coverage: reserved-turn execution; dispatches A/B together, calls one judge for ten reservations and only public narration; does not dispatch adjudication when one plan is malformed or references hidden objects; refuses to resend a reserved request with unknown physical completion; retries only known rate-limit responses within the physical cap; keeps a timed-out request unknown until late physical completion without preparing its output; pins every adjudication base revision before dispatch and preserves prompt v1",
+      "previousSeal": "c2e7f95fd1c215fcedef3cc6d433a586211376130385e788ef14408c2c7b8ab2"
+    },
+    {
+      "ref": "reserved-turns-v1/source/packages-shared-src-battle",
+      "seal": "1b40d0dd8abf217c835db35ad54dfd96879b3d2c12561fd5a79d045e24cf0743",
+      "path": "packages/shared/src/battle.ts",
+      "changed": true,
+      "review": "Reviewed packages/shared/src/battle.ts: immutable prompt v2 carries explicit pre-action baseRevision; preserve v1 bytes and failed rc.1 evidence, strict atomic trace validation unchanged. Focused15pass, typecheck/static/build passed. Accepted ADR0072 sequential trace and immutable binding contract. No new paid execution or promotion.",
+      "previousSeal": "fd637d1a715741a3254ff69b33b7cb37c0050329df6c2b8422601c181e711f24"
+    },
+    {
+      "ref": "unified-v1/source/packages-shared-src-battle",
+      "seal": "596185aaebd4cefae0392b9809a8c7e8de4fb1fe069f7fda2c7b04a8fabbc9bd",
+      "path": "packages/shared/src/battle.ts",
+      "changed": true,
+      "review": "Reviewed packages/shared/src/battle.ts: immutable prompt v2 carries explicit pre-action baseRevision; preserve v1 bytes and failed rc.1 evidence, strict atomic trace validation unchanged. Focused15pass, typecheck/static/build passed. Accepted ADR0072 sequential trace and immutable binding contract. No new paid execution or promotion.",
+      "previousSeal": "e33685aeaa26f8446534bad8fd5a61ed85725359e526a7b579d4fd5d3d854406"
+    },
+    {
+      "ref": "unified-v1/test/backend-src-services-unified-consciousness-execution.test",
+      "seal": "e1f28ad988ab7c6befc3faf797105a7da976d097fd839de3655a597001bc2f6a",
+      "path": "backend/src/services/unified-consciousness-execution.test.ts",
+      "changed": false,
+      "review": "Reviewed backend/src/services/unified-consciousness-execution.test.ts: retained historical behavior and assertions remain valid after compatible prompt revision admission. Focused15pass, typecheck/static/build passed. Accepted ADR0072 sequential trace and immutable binding contract. No new paid execution or promotion. Preserved coverage: unified consciousness policies v1/v2 execution; always renders private ranked memory, including an empty list; renders prompt v2 as complete legal decision envelopes and preserves prompt v1; binds the selected prompt revision through the prepared execution request; fails an unsupported action privately, preserves speech/memory and delivers feedback once; keeps historical policy v1 strict and rejects invalid memory even under policy v2; reports an unknown action reference without executing the action; ignores tick and revision alone in perception activation; dispatches both sides before either resolves, reuses preparation and applies once; retains partial prepared evidence and never resends an unknown failed send; accounts late replies after lease loss without accepting their output; rejects responses received past the decision deadline while retaining accounting; skips unchanged ticks, retains pending events until commit and runs only the stimulated side; requires every due side and rejects unavailable actions atomically; unified consciousness v1 world transaction; commits policy v2 self-only action feedback atomically and rolls it back with world failure; commits memory with canonical revision and keeps private state out of saved world; rolls back private memory when canonical revision CAS fails; rolls back the entire boundary if the global deadline passes inside the transaction; rejects expired fences and stops incomplete without applying prepared memory; required ranked me",
+      "previousSeal": "bd3872c6de2090816092e2470eaa9cb7a8173ddc0ab82de1a23cc36330516bc7"
+    },
+    {
+      "ref": "all-tests-20261008/current-source-closure/verification/structured-asset-integration-bounded-20261008",
+      "seal": "4667cd27971eb11818082896ee387a1325c918f6821dbb5f195a4d7fff540200",
+      "path": "backend/src/routes-structured-asset-integration.test.ts",
+      "changed": true,
+      "review": "Reviewed backend/src/routes-structured-asset-integration.test.ts: immutable prompt v2 carries explicit pre-action baseRevision; preserve v1 bytes and failed rc.1 evidence, strict atomic trace validation unchanged. Focused15pass, typecheck/static/build passed. Accepted ADR0072 sequential trace and immutable binding contract. No new paid execution or promotion. Preserved coverage: integrated structured asset cutover; keeps selection, binding, replay, history, and deletion on immutable generations; freezes legacy character rows without appending V1 generations",
+      "previousSeal": "d08be3c7a12918b5304a7285b9c856afa72037fc9c58c5f9cbb041f100b31c31"
+    },
+    {
+      "ref": "reserved-turns-v1/source/docs-reserved-turns-v1",
+      "seal": "83d3b147a8f248d3af7a36146b02d96342a573862739e5c33e6a8c92a73d5835",
+      "path": "docs/reserved-turns-v1.md",
+      "changed": true,
+      "review": "Reviewed versioned adjudication prompt v2 documentation and retained failed rc.1/old v1 contract. Explicit expected baseRevision, strict rejection unchanged; no new paid acceptance claimed.",
+      "previousSeal": "478e832426bf1e98ceed75d2010d062d3bac3c9297dfa2b44f411a963ae4e8d8"
+    }
+  ],
+  "paidAttempts": 0,
+  "productionPromotion": false,
+  "officialVerification": {
+    "command": "npm test",
+    "activeFiles": 254,
+    "disabled": 0,
+    "tests": 1549,
+    "suites": 256,
+    "pass": 1549,
+    "fail": 0,
+    "cancelled": 0,
+    "skipped": 0,
+    "postgres": "PostgreSQL 16.15 (Ubuntu 16.15-0ubuntu0.24.04.1) on x86_64-pc-linux-gnu, compiled by gcc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0, 64-bit|kshiai_awareness_test|127.0.0.1|15441",
+    "typecheck": "passed",
+    "build": "passed",
+    "static": "passed",
+    "fsck": "ok",
+    "diffCheck": "passed",
+    "pert": "supported read-only projection document, precedence/resource schedules and next passed; owner/history full version21 not supported"
+  }
+}

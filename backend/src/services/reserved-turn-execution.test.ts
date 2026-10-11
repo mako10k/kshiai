@@ -1,8 +1,9 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import { createBattleWorldState, createBattleSemanticState, initializeReservedTurns, ReservedTurnRuntimeSchema,
-  type ReservedTurnRuntime, type ReservedTurnWorld } from "@kshiai/shared";
+  orderReservedActions, type ReservedTurnRuntime, type ReservedTurnWorld } from "@kshiai/shared";
 import { executeReservedTurn, type ReservedExecutionPort } from "./reserved-turn-execution.js";
+import { reservedAdjudicationSystem, reservedAdjudicationUser } from "../llm/reserved-turns.js";
 import type { AwarenessJsonTransport } from "../llm/awareness-provider-contract.js";
 import { bindReservedTurnPolicy } from "./reserved-turn-policy.js";
 import { AwarenessLatentOutputSchema, AwarenessConsciousOutputSchema } from "@kshiai/shared";
@@ -96,4 +97,18 @@ describe("reserved-turn execution", () => {
     assert.ok(f.runtime().requests.every((request) => !request.physicalOutstanding && request.status === "failed" && request.output === null));
   });
 
+});
+
+// Frozen prompt revisions remain executable without changing old request digests.
+it("pins every adjudication base revision before dispatch and preserves prompt v1", () => {
+  const f = fixture();
+  const start = { ...f.start, revision: 7 };
+  const plan = { actions: [{ id: "first", intent: "試みる", targets: ["opponent"] }], memory: [] };
+  const order = orderReservedActions(1, { a: 1, b: 1 }, { a: plan, b: plan });
+  const current = JSON.parse(reservedAdjudicationUser(start, order, {}, "reserved-turn-prompt-v2"));
+  assert.deepEqual(current.order.map((item: { baseRevision: number }) => item.baseRevision), [7, 8]);
+  const historical = JSON.parse(reservedAdjudicationUser(start, order, {}, "reserved-turn-prompt-v1"));
+  assert.deepEqual(historical.order, order);
+  assert.equal(reservedAdjudicationSystem("reserved-turn-prompt-v1").includes("予約ターン裁定プロンプト v2"), false);
+  assert.equal(reservedAdjudicationSystem("reserved-turn-prompt-v2").includes("先に1を足さない"), true);
 });

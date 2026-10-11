@@ -15,7 +15,7 @@ export function bindReservedBattleState(state: BattleState, reservedTurnPolicy: 
   state = { ...state, prologuePending: false, aftermathPending: false, turn: 0, turnLimit: reservedTurnPolicy.maxTurns,
     assetManifest: BattleAssetManifestV7Schema.parse({ ...state.assetManifest, schemaVersion: 7,
       consciousOutputContract: "reserved-turns-v1", outputRevision: "reserved-turn-output-v1", reservedTurnPolicy,
-      reservedTurnPromptRevision: "reserved-turn-prompt-v1",
+      reservedTurnPromptRevision: "reserved-turn-prompt-v2",
       rules: { ...state.assetManifest?.rules, battleEngine: "reserved-turns-v1", temporalRules: "reserved-order-v1", psycheReaction: "reserved-turns-v1" } }) };
   delete state.sceneBeat;
   delete state.combatTick;

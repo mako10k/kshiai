@@ -1,7 +1,7 @@
 project UNIFIED_CONSCIOUSNESS:
-  version 20
+  version 21
   title "予約ターンパイプライン v1への統合"
-  description "Owner direction2026-10-11; Accepted ADR0072 revision1 and docs/reserved-turns-v1.md govern reserved-turn pipeline v1. Prior application v0.24.0-rc.9 production acceptance remains completed history. Current scope: owner approval2026-10-11 お願いします・許可します extends completed offline implementation to application v0.25.0-rc.1 release, one fixed Stage battle max38advances/200physical provider attempts, no character generation or automatic rerun, exact-artifact production promotion and readback. Price is unpriced. Preserve immutable historical battles and required ranked memory."
+  description "Owner direction2026-10-11; Accepted ADR0072 revision1 and docs/reserved-turns-v1.md govern reserved-turn pipeline v1. Prior application v0.24.0-rc.9 production acceptance remains completed history. Current scope: owner approval2026-10-11 お願いします・許可します extends completed offline implementation to application v0.25.0-rc.2 corrective release, first Stage38138135830 failed after4attempts with zero committed turns; prepare prompt v2 repair and apply existing explicit repair-retry authority to one corrected additional fixture max200attempts/cumulative204, no character generation or automatic rerun, exact-artifact production promotion and readback. Price is unpriced. Preserve immutable historical battles and required ranked memory."
   duration_unit point
   finish RESERVED_DEPLOYED
   goal_owner user
@@ -77,21 +77,21 @@ task reservedVerify RESERVED_INTEGRATED -> RESERVED_VERIFIED:
     DEV 1
   status done
 milestone RESERVED_RELEASE_READY:
-  title "Application v0.25.0-rc.1の正確なmainコミットでCI成功"
+  title "Application v0.25.0-rc.2の正確なmainコミットでCI成功"
 milestone RESERVED_STAGED:
   title "予約ターンパイプライン v1の実モデル固定対戦を検証"
 milestone RESERVED_DEPLOYED:
-  title "Application v0.25.0-rc.1を本番配備し独立確認"
+  title "Application v0.25.0-rc.2を本番配備し独立確認"
 task reservedRelease RESERVED_VERIFIED -> RESERVED_RELEASE_READY:
   title "予約ターンの版と公開候補を準備"
-  description "Owner approval2026-10-11 authorizes release and real-model test. Application v0.25.0-rc.1 includes binding v7 and additive migration0038 under Accepted ADR0072 revision1. Existing branch codex/unified-consciousness, PR186, four required checks, squash merge and exact-main CI; annotated tag only after success. No new branch or environment secret."
+  description "Owner approval2026-10-11 authorizes release and real-model test. Application v0.25.0-rc.1 includes binding v7 and additive migration0038 under Accepted ADR0072 revision1. Existing branch codex/unified-consciousness; original PR186 merged at dc57146b, main CI38137456777 passed and rc.1 Stage failed. Corrective prompt v2 preserves v1 bindings and adds explicit expected base revisions; new repair PR and four required checks, squash merge and exact-main CI; annotated tag only after success. No new branch or environment secret."
   duration 2p
   requires:
     DEV 1
   status active
 task reservedStage RESERVED_RELEASE_READY -> RESERVED_STAGED:
   title "固定1対戦の因果・記憶・実況・利用台帳を検証"
-  description "Owner permits one Stage fixture battle, max38advances and200physical provider attempts including encounter and known429 retries; no automatic rerun and no character-create smoke. Price unpriced. Preserve failures. Verify binding v7 terminal battle, all reservations adjudicated, ranked memory carry-forward, sequential concrete effects, completed inline public narration and closed usage; inspect quality separately from structural acceptance. Apply additive migration0038, record exact digest/revision/Worker and current rollback targets."
+  description "First authorized Stage38138135830 failed after4attempts with RESERVED_TRACE_REVISION_CONFLICT; preserve evidence. Existing explicit repair-retry authority plus latest deployment/test approval authorize one corrected fixture only after reviewable repair and exact-source CI. Bound max38advances and200physical provider attempts including encounter and known429 retries; no automatic rerun and no character-create smoke. Price unpriced. Preserve failures. Verify binding v7 terminal battle, all reservations adjudicated, ranked memory carry-forward, sequential concrete effects, completed inline public narration and closed usage; inspect quality separately from structural acceptance. Apply additive migration0038, record exact digest/revision/Worker and current rollback targets."
   duration 3p
   requires:
     DEV 1

@@ -1,0 +1,36 @@
+{
+  "application": "v0.25.0-rc.1",
+  "commit": "dc57146b6a618ab6b0838119a447e344e4ad2fdc",
+  "stageRunId": 38138135830,
+  "execution": "kshiai-persistent-e2e-pj5dj",
+  "battleId": "btl_b68950c61762ca5e365d4eb91f4d53cf",
+  "status": "failed",
+  "reason": "RESERVED_TRACE_REVISION_CONFLICT",
+  "expectedBaseRevisions": [
+    0,
+    1,
+    2
+  ],
+  "returnedBaseRevisions": [
+    1,
+    2,
+    3
+  ],
+  "committedTurns": 0,
+  "hp": {
+    "a": 90,
+    "b": 90
+  },
+  "committedMemory": 0,
+  "publishedNarration": 0,
+  "physicalAttempts": 4,
+  "failedTransportAttempts": 0,
+  "outstanding": 0,
+  "operationRunStatus": "failed",
+  "migration": "0038 succeeded; additive schema retained",
+  "revision": "kshiai-api-00200-sag",
+  "production": "Not promoted; application v0.24.0-rc.9 unchanged",
+  "cost": "unpriced",
+  "fix": "Explicit per-order pre-action baseRevision in immutable reserved-turn-prompt-v2; no output repair; retain prompt v1 saved bindings",
+  "privacy": "Private inputs and raw response retained in database; omitted from this evidence."
+}

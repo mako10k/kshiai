@@ -1,5 +1,5 @@
 import { ReservedTurnPolicySchema, type ReservedTurnPolicy } from "./reserved-turn-policy.js";
-export { ReservedTurnPolicySchema, type ReservedTurnPolicy } from "./reserved-turn-policy.js";
+export { ReservedTurnPolicySchema, ReservedTurnPromptRevisionSchema, type ReservedTurnPolicy, type ReservedTurnPromptRevision } from "./reserved-turn-policy.js";
 import { AwarenessPolicyV1Schema, AwarenessBudgetSnapshotSchema, AwarenessNormalPolicy, type AwarenessPolicyV1 } from "./awareness-pipeline.js";
 // R: Resolve one frozen parallel plan through an ordered, atomic canonical trace.
 import { z } from "zod";
