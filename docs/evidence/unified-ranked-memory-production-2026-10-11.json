@@ -1,0 +1,483 @@
+{
+  "application": "v0.24.0-rc.9",
+  "commit": "22d234830a00145ad8b5af07e5254af3d8a7f938",
+  "governingAdr": "Accepted ADR0071 revision1",
+  "pr": 184,
+  "ci": {
+    "pr": 38119995623,
+    "main": 38120386406,
+    "requiredChecks": "all four succeeded"
+  },
+  "stage": {
+    "schemaVersion": 1,
+    "stageRunId": "38120884186",
+    "stageRunAttempt": "1",
+    "releaseTag": "v0.24.0-rc.9",
+    "commitSha": "22d234830a00145ad8b5af07e5254af3d8a7f938",
+    "revision": "kshiai-api-00198-gel",
+    "workerVersion": "e20e86ff-7869-43ae-b1f1-1abca77c623b",
+    "dialogueProjection": "compact",
+    "dialogueActivationSource": "persisted_setting",
+    "observationExecution": "kshiai-persistent-e2e-bb6nd",
+    "characterCreateSmoke": false,
+    "characterCreateProviderAttemptCeiling": 30,
+    "characterGenerationReadProbe": "v2_v3_and_migration_resume",
+    "verification": "exact_revision_health_and_battle_receipt"
+  },
+  "promotion": {
+    "runId": 38121540621,
+    "status": "success",
+    "revision": "kshiai-api-00198-gel",
+    "workerVersion": "e20e86ff-7869-43ae-b1f1-1abca77c623b",
+    "backendDigest": "asia-northeast1-docker.pkg.dev/kshiai/kshiai/backend@sha256:e54ab59da2e9ad25a6d40ac71320ff3eed5e6af7903f079dcb4f63ac5933505b",
+    "cloudRunTrafficPercent": 100,
+    "workerTrafficPercent": 100,
+    "independentDeploymentSmoke": "passed",
+    "authenticatedSmokeExecution": "kshiai-auth-smoke-4snrb",
+    "authenticatedSmoke": "succeeded"
+  },
+  "memory": {
+    "battleId": "btl_9cb1bba3a1dfa119dfd108175f7fd8a9",
+    "status": "finished",
+    "policy": "unified-consciousness-policy-v3",
+    "prompt": "unified-consciousness-prompt-v3",
+    "output": "unified-consciousness-output-v2",
+    "runtimeStatus": "terminal",
+    "sides": {
+      "a": {
+        "calls": 8,
+        "memoryCount": 1
+      },
+      "b": {
+        "calls": 8,
+        "memoryCount": 2
+      }
+    },
+    "decisions": [
+      {
+        "side": "b",
+        "tick": 0,
+        "status": "applied",
+        "inputMemoryCount": 0,
+        "requiredMemoryPresent": true,
+        "outputMemoryCount": 1,
+        "rankReferences": 0,
+        "failure": null
+      },
+      {
+        "side": "a",
+        "tick": 0,
+        "status": "applied",
+        "inputMemoryCount": 0,
+        "requiredMemoryPresent": true,
+        "outputMemoryCount": 1,
+        "rankReferences": 0,
+        "failure": null
+      },
+      {
+        "side": "b",
+        "tick": 1,
+        "status": "applied",
+        "inputMemoryCount": 1,
+        "requiredMemoryPresent": true,
+        "outputMemoryCount": 2,
+        "rankReferences": 0,
+        "failure": null
+      },
+      {
+        "side": "a",
+        "tick": 1,
+        "status": "applied",
+        "inputMemoryCount": 1,
+        "requiredMemoryPresent": true,
+        "outputMemoryCount": 1,
+        "rankReferences": 0,
+        "failure": null
+      },
+      {
+        "side": "b",
+        "tick": 2,
+        "status": "applied",
+        "inputMemoryCount": 2,
+        "requiredMemoryPresent": true,
+        "outputMemoryCount": 2,
+        "rankReferences": 2,
+        "failure": null
+      },
+      {
+        "side": "a",
+        "tick": 2,
+        "status": "applied",
+        "inputMemoryCount": 1,
+        "requiredMemoryPresent": true,
+        "outputMemoryCount": 1,
+        "rankReferences": 0,
+        "failure": null
+      },
+      {
+        "side": "b",
+        "tick": 3,
+        "status": "applied",
+        "inputMemoryCount": 2,
+        "requiredMemoryPresent": true,
+        "outputMemoryCount": 2,
+        "rankReferences": 0,
+        "failure": null
+      },
+      {
+        "side": "a",
+        "tick": 3,
+        "status": "applied",
+        "inputMemoryCount": 1,
+        "requiredMemoryPresent": true,
+        "outputMemoryCount": 1,
+        "rankReferences": 0,
+        "failure": null
+      },
+      {
+        "side": "b",
+        "tick": 4,
+        "status": "applied",
+        "inputMemoryCount": 2,
+        "requiredMemoryPresent": true,
+        "outputMemoryCount": 2,
+        "rankReferences": 1,
+        "failure": null
+      },
+      {
+        "side": "a",
+        "tick": 4,
+        "status": "applied",
+        "inputMemoryCount": 1,
+        "requiredMemoryPresent": true,
+        "outputMemoryCount": 1,
+        "rankReferences": 0,
+        "failure": null
+      },
+      {
+        "side": "a",
+        "tick": 5,
+        "status": "applied",
+        "inputMemoryCount": 1,
+        "requiredMemoryPresent": true,
+        "outputMemoryCount": 1,
+        "rankReferences": 0,
+        "failure": null
+      },
+      {
+        "side": "b",
+        "tick": 5,
+        "status": "applied",
+        "inputMemoryCount": 2,
+        "requiredMemoryPresent": true,
+        "outputMemoryCount": 2,
+        "rankReferences": 0,
+        "failure": null
+      },
+      {
+        "side": "b",
+        "tick": 6,
+        "status": "applied",
+        "inputMemoryCount": 2,
+        "requiredMemoryPresent": true,
+        "outputMemoryCount": 2,
+        "rankReferences": 2,
+        "failure": null
+      },
+      {
+        "side": "a",
+        "tick": 6,
+        "status": "applied",
+        "inputMemoryCount": 1,
+        "requiredMemoryPresent": true,
+        "outputMemoryCount": 1,
+        "rankReferences": 0,
+        "failure": null
+      },
+      {
+        "side": "a",
+        "tick": 7,
+        "status": "applied",
+        "inputMemoryCount": 1,
+        "requiredMemoryPresent": true,
+        "outputMemoryCount": 1,
+        "rankReferences": 0,
+        "failure": null
+      },
+      {
+        "side": "b",
+        "tick": 7,
+        "status": "applied",
+        "inputMemoryCount": 2,
+        "requiredMemoryPresent": true,
+        "outputMemoryCount": 2,
+        "rankReferences": 0,
+        "failure": null
+      }
+    ],
+    "carryForward": [
+      {
+        "side": "a",
+        "fromTick": 0,
+        "toTick": 1,
+        "nonempty": true,
+        "exactMatch": true
+      },
+      {
+        "side": "a",
+        "fromTick": 1,
+        "toTick": 2,
+        "nonempty": true,
+        "exactMatch": true
+      },
+      {
+        "side": "a",
+        "fromTick": 2,
+        "toTick": 3,
+        "nonempty": true,
+        "exactMatch": true
+      },
+      {
+        "side": "a",
+        "fromTick": 3,
+        "toTick": 4,
+        "nonempty": true,
+        "exactMatch": true
+      },
+      {
+        "side": "a",
+        "fromTick": 4,
+        "toTick": 5,
+        "nonempty": true,
+        "exactMatch": true
+      },
+      {
+        "side": "a",
+        "fromTick": 5,
+        "toTick": 6,
+        "nonempty": true,
+        "exactMatch": true
+      },
+      {
+        "side": "a",
+        "fromTick": 6,
+        "toTick": 7,
+        "nonempty": true,
+        "exactMatch": true
+      },
+      {
+        "side": "b",
+        "fromTick": 0,
+        "toTick": 1,
+        "nonempty": true,
+        "exactMatch": true
+      },
+      {
+        "side": "b",
+        "fromTick": 1,
+        "toTick": 2,
+        "nonempty": true,
+        "exactMatch": true
+      },
+      {
+        "side": "b",
+        "fromTick": 2,
+        "toTick": 3,
+        "nonempty": true,
+        "exactMatch": true
+      },
+      {
+        "side": "b",
+        "fromTick": 3,
+        "toTick": 4,
+        "nonempty": true,
+        "exactMatch": true
+      },
+      {
+        "side": "b",
+        "fromTick": 4,
+        "toTick": 5,
+        "nonempty": true,
+        "exactMatch": true
+      },
+      {
+        "side": "b",
+        "fromTick": 5,
+        "toTick": 6,
+        "nonempty": true,
+        "exactMatch": true
+      },
+      {
+        "side": "b",
+        "fromTick": 6,
+        "toTick": 7,
+        "nonempty": true,
+        "exactMatch": true
+      }
+    ],
+    "summary": {
+      "decisions": 16,
+      "requiredOutputs": 16,
+      "nonemptyInputs": 14,
+      "rankReferences": 5,
+      "nonemptyCarryForward": 14,
+      "mismatches": 0
+    }
+  },
+  "observation": {
+    "battleStatus": "finished",
+    "engine": "unified-consciousness-v1",
+    "policy": "unified-consciousness-policy-v3",
+    "prompt": "unified-consciousness-prompt-v3",
+    "tick": 7,
+    "physicalAttempts": 33,
+    "physicalOutstanding": 0,
+    "narrationAttempts": 9,
+    "reportedTokens": {
+      "prompt": 219252,
+      "completion": 5301,
+      "total": 234551,
+      "unknownAttempts": 0
+    },
+    "monetaryCost": "unknown_without_verified_prices"
+  },
+  "narration": {
+    "entries": [
+      {
+        "sequence": "1",
+        "status": "completed",
+        "attempt_count": 1,
+        "fallback_reason": null
+      },
+      {
+        "sequence": "2",
+        "status": "completed",
+        "attempt_count": 1,
+        "fallback_reason": null
+      },
+      {
+        "sequence": "3",
+        "status": "completed",
+        "attempt_count": 1,
+        "fallback_reason": null
+      },
+      {
+        "sequence": "4",
+        "status": "completed",
+        "attempt_count": 1,
+        "fallback_reason": null
+      },
+      {
+        "sequence": "5",
+        "status": "completed",
+        "attempt_count": 1,
+        "fallback_reason": null
+      },
+      {
+        "sequence": "6",
+        "status": "completed",
+        "attempt_count": 1,
+        "fallback_reason": null
+      },
+      {
+        "sequence": "7",
+        "status": "completed",
+        "attempt_count": 1,
+        "fallback_reason": null
+      },
+      {
+        "sequence": "8",
+        "status": "completed",
+        "attempt_count": 1,
+        "fallback_reason": null
+      },
+      {
+        "sequence": "9",
+        "status": "completed",
+        "attempt_count": 1,
+        "fallback_reason": null
+      }
+    ],
+    "attempts": [
+      {
+        "status": "completed",
+        "http_attempts": 1,
+        "error_class": null,
+        "fallback_reason": null
+      },
+      {
+        "status": "completed",
+        "http_attempts": 1,
+        "error_class": null,
+        "fallback_reason": null
+      },
+      {
+        "status": "completed",
+        "http_attempts": 1,
+        "error_class": null,
+        "fallback_reason": null
+      },
+      {
+        "status": "completed",
+        "http_attempts": 1,
+        "error_class": null,
+        "fallback_reason": null
+      },
+      {
+        "status": "completed",
+        "http_attempts": 1,
+        "error_class": null,
+        "fallback_reason": null
+      },
+      {
+        "status": "completed",
+        "http_attempts": 1,
+        "error_class": null,
+        "fallback_reason": null
+      },
+      {
+        "status": "completed",
+        "http_attempts": 1,
+        "error_class": null,
+        "fallback_reason": null
+      },
+      {
+        "status": "completed",
+        "http_attempts": 1,
+        "error_class": null,
+        "fallback_reason": null
+      },
+      {
+        "status": "completed",
+        "http_attempts": 1,
+        "error_class": null,
+        "fallback_reason": null
+      }
+    ]
+  },
+  "usage": {
+    "physicalAttempts": 33,
+    "ceiling": 200,
+    "operationRun": "completed",
+    "failed": 0,
+    "outstanding": 0,
+    "cumulativeReleaseBattleAttempts": 261,
+    "separateMemoryProbeAttempts": 3,
+    "combinedHistoricalAttempts": 264,
+    "monetaryCost": "unpriced_without_verified_price_table",
+    "reportedTokenFields": "Provider-reported fields retained as returned; total is not recomputed from prompt/completion."
+  },
+  "migration": "none added for memory output format v2",
+  "historicalBindings": "unchanged",
+  "rollback": {
+    "previousApplication": "v0.24.0-rc.8",
+    "revision": "kshiai-api-00196-hos",
+    "workerVersion": "6b9a3b10-d89c-4d8a-94b2-024479234e7a",
+    "limitation": "Previous application cannot execute newly bound policy v3/output v2 battles; use compatible application for those battles."
+  },
+  "privacy": "No memory text, private world state, prompts, raw outputs or credentials included.",
+  "limitations": [
+    "One fixed battle proves bounded contract/execution, not broad memory quality or cost savings.",
+    "Canonical PERT owner/history syntax unsupported by available tooling; forward DAG validated via temporary compatible projection."
+  ]
+}

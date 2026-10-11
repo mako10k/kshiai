@@ -1,7 +1,7 @@
 project UNIFIED_CONSCIOUSNESS:
-  version 17
+  version 18
   title "統合意識と優先順位付き記憶の方向転換"
-  description "Owner direction2026-10-10; requirements docs/unified-consciousness-design-v1.md; ADR0067 revision2 as superseded in part by Accepted ADR0069 revision1 and docs/unified-consciousness-contract-v1.md C1-C8. Canonical successor planning for new consciousness work. Preserve historical awareness-v5 and unfinished release evidence. Estimates provisional. Owner authorized production deployment2026-10-10; separate bounded paid-trial authority is still required."
+  description "Owner direction2026-10-10; requirements docs/unified-consciousness-design-v1.md; ADR0067 revision2 as superseded in part by Accepted ADR0069 revision1 and docs/unified-consciousness-contract-v1.md C1-C8. Canonical successor planning for new consciousness work. Preserve historical awareness-v5 and unfinished release evidence. Estimates provisional. Owner authorized production deployment2026-10-10; current2026-10-11 production goal and Accepted ADR0071 revision1 authorize minimal necessary paid testing and exact-artifact promotion."
   duration_unit point
   finish MEMORY_DEPLOYED
   goal_owner user
@@ -38,19 +38,19 @@ milestone MEMORY_DEPLOYED:
   title "記憶を使う成果物が本番稼働し認証確認済み"
 task releaseMemory MEMORY_VERIFIED -> MEMORY_RELEASE_READY:
   title "必須順位記憶を新規公開対戦の既定へ切替"
-  description "Current owner goal2026-10-11 authorizes production deployment and minimal production connections/tests/paid use. Accepted ADR0071 revision1 supersedes only ADR0070 opt-in boundary. Change public new creation to policy v3/prompt v3/output v2, preserve existing saved bindings. Update HTTP regression, individually review affected authority, full governed tests/build/typecheck/static, PR and exact-main CI. Completion requires successful checks on exact candidate."
+  description "Current owner goal2026-10-11 authorizes production deployment and minimal production connections/tests/paid use. Accepted ADR0071 revision1 supersedes only ADR0070 opt-in boundary. Change public new creation to policy v3/prompt v3/output v2, preserve existing saved bindings. Update HTTP regression, individually review affected authority, full governed tests/build/typecheck/static, PR and exact-main CI. Completion requires successful checks on exact candidate. Completed: PR184, main22d23483, exact-main CI38120386406 all four successful; governed1530pass/250active0disabled."
   duration 2p
-  status planned
+  status done
 task stageMemory MEMORY_RELEASE_READY -> MEMORY_STAGED:
   title "固定対戦で必須記憶と次判断への引き継ぎを検証"
-  description "Owner permits minimal paid use: one fixed Stage battle max38advances200physical attempts, character-create false, no unchanged automatic rerun, price unpriced. Require auth/Postgres/CloudTasks/SSE/R2 and terminal battle, narration complete, closed provider usage, policy v3/output v2 mandatory memory and nonempty next-input carry-forward. Preserve failed runs; no coercion or bypass. Two-call probe passed but is not whole-battle acceptance."
+  description "Owner permits minimal paid use: one fixed Stage battle max38advances200physical attempts, character-create false, no unchanged automatic rerun, price unpriced. Require auth/Postgres/CloudTasks/SSE/R2 and terminal battle, narration complete, closed provider usage, policy v3/output v2 mandatory memory and nonempty next-input carry-forward. Preserve failed runs; no coercion or bypass. Two-call probe passed but is not whole-battle acceptance. Completed: Stage38120884186, fixed battle btl_9cb1bba3a1dfa119dfd108175f7fd8a9 terminal tick7,33physical attempts,16required outputs,14exact nonempty carry-forwards,5rank references,0mismatches,9completed narration receipts,closed ledger."
   duration 2p
-  status planned
+  status done
 task promoteMemory MEMORY_STAGED -> MEMORY_DEPLOYED:
   title "同一成果物を本番昇格し記憶契約の稼働を確認"
-  description "Owner production deployment authority persists. Promote exact successful Stage revision/digest/Worker via protected review; verify100percent serving revision, independent public health and authenticated smoke. Record migration none, rollback limitation for newly bound policy v3 battles, actual usage and durable sanitized evidence. Completion needs real successful promotion and readback."
+  description "Owner production deployment authority persists. Promote exact successful Stage revision/digest/Worker via protected review; verify100percent serving revision, independent public health and authenticated smoke. Record migration none, rollback limitation for newly bound policy v3 battles, actual usage and durable sanitized evidence. Completion needs real successful promotion and readback. Completed: application v0.24.0-rc.9 Promote38121540621 succeeded; revision kshiai-api-00198-gel and Worker e20e86ff-7869-43ae-b1f1-1abca77c623b at100percent, independent deployment smoke and authenticated smoke4snrb passed. Durable evidence docs/evidence/unified-ranked-memory-production-2026-10-11.json."
   duration 1p
-  status planned
+  status done
 task memorySnapshot DEPLOYED -> MEMORY_VERIFIED:
   title "必須の次記憶配列と旧順位参照を試験実装"
   description "Owner2026-10-11 accepts ADR0070 revision1: output format v2 requires memory array max5; exact1..5 refer to frozen old ranks, new text1..400codepoints, omit deletes, empty clears, duplicate/nonexistent refs reject whole response. Explicit trial policy v3/prompt v3 preserves old policies/prompts/output and public policy v2 default. No extra end-turn call. Dependencies: application v0.24.0-rc.8 exact CI38114345164 Stage38114752919 and Promote38115473049 successful, 66physical attempts/19narrations/zerooutstanding, production revision00196-hos100percent. Scope implementation, behavioral regression, individual authority review, full governed suite/build/typecheck. Paid trial and public cutover remain separate bounded acceptance. Completion requires required output, old-rank swap/new/delete/clear, rejection atomicity, replay, next-input propagation and historical compatibility, actual checks recorded in docs/evidence/unified-ranked-memory-authority-review-2026-10-11.json: full1530pass/250active0disabled, targeted33pass, build/typecheck/static/ADR passed, no paid provider calls."
