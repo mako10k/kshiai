@@ -95,14 +95,12 @@ task reservedStage RESERVED_RELEASE_READY -> RESERVED_STAGED:
   duration 3p
   requires:
     DEV 1
-  status pending
 task reservedPromote RESERVED_STAGED -> RESERVED_DEPLOYED:
   title "検証済み同一成果物を本番へ昇格し確認"
   description "Owner production approval2026-10-11. Promote only successful Stage exact revision/digest/Worker using protected production workflow and typed confirmation. Read back100percent traffic and independent health/auth smoke. Publish release and durable acceptance plus battle review. Old rc.9 cannot execute binding v7: rollback must stop new creation and retain compatible execution; no destructive schema rollback or history migration."
   duration 2p
   requires:
     DEV 1
-  status pending
 task releaseMemory MEMORY_VERIFIED -> MEMORY_RELEASE_READY:
   title "必須順位記憶を新規公開対戦の既定へ切替"
   description "Current owner goal2026-10-11 authorizes production deployment and minimal production connections/tests/paid use. Accepted ADR0071 revision1 supersedes only ADR0070 opt-in boundary. Change public new creation to policy v3/prompt v3/output v2, preserve existing saved bindings. Update HTTP regression, individually review affected authority, full governed tests/build/typecheck/static, PR and exact-main CI. Completion requires successful checks on exact candidate. Completed: PR184, main22d23483, exact-main CI38120386406 all four successful; governed1530pass/250active0disabled."
