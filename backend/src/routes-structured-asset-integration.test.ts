@@ -75,7 +75,7 @@ provider.prepareBattleEncounter = async function(
   }, async () => ({ result: await MockLlmProvider.prototype.prepareBattleEncounter.call(this, input), usage: null }));
 };
 const awarenessRoles: AwarenessProviderRoles = {
-  consciousness: { identity: { provider: "openai", engineModel: "gpt-6-luna", fastModel: "gpt-6-luna" }, requestJson: async () => ({}) },
+  consciousness: { identity: { provider: "openai", engineModel: "gpt-6-luna", fastModel: "gpt-6-luna" }, requestJson: async (system) => system.includes("必須memory") ? { memory: [] } : ({}) },
   models: {
     subconscious: async (input) => AwarenessLatentOutputSchema.parse({ state: { ...input.currentState, updatedTick: input.tick }, reflexDesires: [], affectiveDesires: [], reconsider: false, cancelThought: false }),
     conscious: async () => AwarenessConsciousOutputSchema.parse({ goal: null, thought: "", desires: [], influences: [] }),
@@ -297,8 +297,9 @@ describe("integrated structured asset cutover", () => {
     assert.ok(bound?.assetManifest);
     assert.equal(bound.assetManifest.schemaVersion, 6);
     assert.equal(bound.assetManifest.consciousOutputContract, "unified-consciousness-v1");
-    assert.equal(bound.assetManifest.consciousnessPolicy.revision, "unified-consciousness-policy-v2");
-    assert.equal(bound.assetManifest.consciousnessPromptRevision, "unified-consciousness-prompt-v2");
+    assert.equal(bound.assetManifest.consciousnessPolicy.revision, "unified-consciousness-policy-v3");
+    assert.equal(bound.assetManifest.consciousnessPromptRevision, "unified-consciousness-prompt-v3");
+    assert.equal(bound.assetManifest.outputRevision, "unified-consciousness-output-v2");
     assert.equal((await query<{ count: number }>("SELECT COUNT(*) AS count FROM battle_unified_consciousness WHERE battle_id=$1", [battleId])).rows[0]?.count, 1);
     assert.equal((await query<{ count: number }>("SELECT COUNT(*) AS count FROM battle_awareness_runtime WHERE battle_id=$1", [battleId])).rows[0]?.count, 0);
     assert.ok(bound.narrationStyle?.compiledPolicyV2);

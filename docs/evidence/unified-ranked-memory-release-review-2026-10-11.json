@@ -1,0 +1,85 @@
+{
+  "scope": "new public policy v3/prompt v3/output format v2",
+  "governingAdr": "Accepted ADR0071 revision1",
+  "affectedOfflineTests": {
+    "files": 4,
+    "pass": 20,
+    "fail": 0
+  },
+  "reviews": [
+    {
+      "ref": "test-recovery-v1/basis/a07dd2c8f0ac65c2",
+      "path": "backend/src/routes.ts",
+      "review": "Accepted ADR0071 revision1 owner production goal; only new public create selector changes policy v2 to v3. Saved battles, auth/idempotency/private projections, asset lifecycle and internal historical selectors unchanged.",
+      "previousSeal": "820b7faa67edd766a2de2acd794d4b6fa15cfa1eb23beb3b8f3f5cc4d73c4790",
+      "seal": "699bc6ed2a362afaabacfbfdc0f882f4a5730c32fe3a40d2b8d83665e648f303"
+    },
+    {
+      "ref": "all-tests-20261008/current-source-closure/verification/stable-area-battlefield-http-acceptance-20261007",
+      "path": "backend/src/routes-structured-battlefield-acceptance.test.ts",
+      "review": "All eight failure/legacy exclusion/owner confirmation/expiry/drift/exact revision/compiler tests unchanged and passed. Public memory policy selection does not change battlefield authoring or immutable selection.",
+      "previousSeal": "f5a72b87adaddaab3c2a6269ec52721d773543b32e7439b67a4ba5cdbf9c2db0",
+      "seal": "536162867c5577f4940f3c8cf175e910280d1c57c29741d29db496435787d619"
+    },
+    {
+      "ref": "all-tests-20261008/current-source-closure/verification/stable-area-narration-http-acceptance-20261007",
+      "path": "backend/src/routes-structured-narration-acceptance.test.ts",
+      "review": "All six structure failure/legacy exclusion/confirmation/idempotency/drift/expiry/corruption tests unchanged and passed. Public memory policy selection does not change narration style authoring or saved generation binding.",
+      "previousSeal": "62bc7c507a1ae3a6ceab10b10d9ecce855bc02afe91316159015733ba5ff8ebd",
+      "seal": "553112a0957f8a7d5bf0a0fe03f7b0f35f68bdcb8d3ffea781025631eead4a10"
+    },
+    {
+      "ref": "unified-release-v1/source/public-battle-selector",
+      "path": "backend/src/routes.ts",
+      "review": "Accepted ADR0071 revision1 owner production goal; only new public create selector changes policy v2 to v3. Saved battles, auth/idempotency/private projections, asset lifecycle and internal historical selectors unchanged.",
+      "previousSeal": "dbac961ac1fbc73cf33957e4ec258c870a8ad637a8a2f90fba0c922a40055961",
+      "seal": "ae06d86c63edaad2ebc527a3d81d1f04649fe3e537e51d67af17601ac4f28918"
+    },
+    {
+      "ref": "all-tests-20261008/current-source-closure/verification/structured-asset-integration-bounded-20261008",
+      "path": "backend/src/routes-structured-asset-integration.test.ts",
+      "review": "Preserve immutable generation/history/deletion/replay/narration/privacy assertions. Exact saved manifest assertions now require policy v3/prompt v3/output v2. Test transport returns required memory[] for prompt v3 only and keeps historical empty response. Full two tests passed.",
+      "previousSeal": "4b941e45faec76059a51c58e1413334619108573444b301d5eb6c2fd5d5fe566",
+      "seal": "3f4f96acc346b6951f74080639a0eef3d5e1c09319732a0f1c81d8d86ff6282d"
+    },
+    {
+      "ref": "all-tests-20261008/current-source-closure/verification/v3-battle-creation-recovery-bounded-20261008",
+      "path": "backend/src/services/v3-battle-creation.test.ts",
+      "review": "Historical V4 continuation/generation snapshots, V5 creation, free-action and durable repair assertions preserved. The later public-route cutover fixture returns required memory[] only for new prompt v3; it no longer makes new v3 battles fail on an obsolete empty envelope. All four tests passed.",
+      "previousSeal": "1488567c29e3422e302c071ac6950189a388100cd137f5c5396db4502085865c",
+      "seal": "d40e6d2d3cc376066d6b26f9cea65c83c0986670a61042287422ebfea76bdd60"
+    }
+  ],
+  "planningValidation": {
+    "forwardProjectionOnly": true,
+    "mapping": "version17 to supported grammar6, owner/history metadata omitted only in temporary copy",
+    "checks": "document check, both schedules and next passed; releaseMemory recommended",
+    "limitation": "canonical owner/history syntax unsupported by installed/current upstream tooling"
+  },
+  "stageAuthorization": {
+    "battleCount": 1,
+    "maxAdvances": 38,
+    "maxPhysicalProviderAttempts": 200,
+    "characterCreateSmoke": false,
+    "price": "unpriced",
+    "authority": "owner active production goal explicitly permits minimal necessary connections/tests/paid use"
+  },
+  "localVerification": {
+    "governedTestFiles": 250,
+    "disabledTestFiles": 0,
+    "testsPassed": 1530,
+    "testsFailed": 0,
+    "testsSkipped": 0,
+    "isolatedPostgres": 16,
+    "build": "passed",
+    "typecheck": "passed",
+    "static": "passed",
+    "adr0071": "passed",
+    "sealgraph": {
+      "result": "ok",
+      "seals": 3138,
+      "refs": 1827
+    },
+    "deployment": "pending exact-source CI and bounded Stage"
+  }
+}

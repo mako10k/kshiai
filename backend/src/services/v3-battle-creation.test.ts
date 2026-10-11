@@ -120,7 +120,7 @@ describe("ADR-0039 V3 character battle binding", () => {
     assert.ok(llm.awareness);
     llm.awareness.consciousness = {
       identity: { provider: "openai", engineModel: "gpt-6-luna", fastModel: "gpt-6-luna" },
-      requestJson: async () => ({}),
+      requestJson: async (system) => system.includes("必須memory") ? { memory: [] } : ({}),
     };
     llm.advanceCharacterPsyche = async () => { throw new Error("Unexpected V4 psyche call"); };
     let consciousCalls = 0;
