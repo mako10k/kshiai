@@ -120,7 +120,13 @@ describe("ADR-0039 V3 character battle binding", () => {
     assert.ok(llm.awareness);
     llm.awareness.consciousness = {
       identity: { provider: "openai", engineModel: "gpt-6-luna", fastModel: "gpt-6-luna" },
-      requestJson: async (system) => system.includes("必須memory") ? { memory: [] } : ({}),
+      requestJson: async (system) => system.includes("予約ターンパイプライン") ? { actions: [], memory: [] } : system.includes("必須memory") ? { memory: [] } : ({}),
+    };
+    const originalAdjudication = llm.awareness.adjudication.requestJson.bind(llm.awareness.adjudication);
+    llm.awareness.adjudication.requestJson = async (system, user, options) => {
+      if (system.includes("予約ターン裁定")) return { results: [] };
+      if (system.includes("予約ターン実況")) return { lines: ["双方が様子を見た。"] };
+      return originalAdjudication(system, user, options);
     };
     llm.advanceCharacterPsyche = async () => { throw new Error("Unexpected V4 psyche call"); };
     let consciousCalls = 0;

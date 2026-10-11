@@ -221,6 +221,11 @@ export function resolveObservationRunId(raw: string | undefined): string {
   return raw;
 }
 
+export function assertCanonicalObservationEvidence(schemaVersion: number, turnRecords: number, transitions: number, phaseReceipts: number): void {
+  const valid = schemaVersion === 7 ? phaseReceipts > 0 : turnRecords > 0 && transitions > 0;
+  if (!valid) throw new Error("Internal observation API did not expose retained canonical execution evidence");
+}
+
 export function assertSanitizedObservation(
   value: unknown,
   expectedRevision: string | null,
@@ -512,21 +517,20 @@ async function inspectInternalBattleObservation(input: {
     accessToken: input.account.accessToken,
     path: `/api/internal/observations/${input.battleId}`,
   });
+  const manifest = BattleAssetManifestSchema.parse(
+    response.canonicalCurrent?.assetManifest,
+  );
   const turnRecordCount = response.capabilities?.turnRecordCount ?? 0;
   const canonicalTransitionCount =
     response.capabilities?.canonicalTransitionCount ?? 0;
   if (
     response.role !== "e2e" ||
     response.summary?.battleId !== input.battleId ||
-    response.rawBattleState?.id !== input.battleId ||
-    turnRecordCount <= 0 ||
-    canonicalTransitionCount <= 0
+    response.rawBattleState?.id !== input.battleId
   ) {
     throw new Error("Internal observation API did not expose the retained canonical battle");
   }
-  const manifest = BattleAssetManifestSchema.parse(
-    response.canonicalCurrent?.assetManifest,
-  );
+  assertCanonicalObservationEvidence(manifest.schemaVersion, turnRecordCount, canonicalTransitionCount, response.canonicalCurrent?.phaseReceipts?.length ?? 0);
   const dialogueActivationSource = manifest.dialoguePipeline.activationSource;
   if (!dialogueActivationSource) {
     throw new Error("Battle dialogue activation source is missing");

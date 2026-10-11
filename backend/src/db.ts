@@ -1,3 +1,4 @@
+import { reservedTurnsSchemaSql } from "./repositories/reserved-turns-schema.js";
 import { unifiedConsciousnessSchemaSql } from "./repositories/unified-consciousness-schema.js";
 import { llmUsageSchemaSql } from "./repositories/llm-usage-schema.js";
 import { awarenessNarratorStorageSchemaSql } from "./repositories/awareness-narrator-storage-schema.js";
@@ -755,6 +756,7 @@ function ensureSqliteFamilyAuthoringJobs(database: SqliteDatabase.Database): voi
   `);
   database.exec(battleAwarenessSchemaSql);
   database.exec(unifiedConsciousnessSchemaSql);
+  database.exec(reservedTurnsSchemaSql);
   database.exec(battleAwarenessCreationSchemaSql);
   database.exec(awarenessNarrationStorageSchemaSql);
   database.exec(awarenessNarratorStorageSchemaSql);

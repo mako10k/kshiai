@@ -1,6 +1,6 @@
 # ADR-0071: Use required ranked memory for new public battles
 
-- Status: Accepted
+- Status: Superseded
 - Revision: 1
 - Date: 2026-10-11
 - Decision owner: Repository owner
@@ -53,3 +53,7 @@ HTTP creation regression asserts exact policy v3/prompt v3/output format v2 and 
 
 - PR #183: https://github.com/mako10k/kshiai/pull/183
 - Real-model probe: https://github.com/mako10k/kshiai/pull/183#issuecomment-6106374943
+
+## Subsequent decision
+
+ADR-0072 revision1 supersedes the new-public-battle pipeline direction. Existing battle binding format v6 records and the production acceptance evidence above remain historical contracts. Required ranked memory is retained by reserved-turn pipeline v1.

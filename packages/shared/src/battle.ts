@@ -1,8 +1,10 @@
+import { ReservedTurnPolicySchema, type ReservedTurnPolicy } from "./reserved-turn-policy.js";
 import { UnifiedConsciousnessPolicySchema, type UnifiedConsciousnessPolicy } from "./unified-consciousness-policy.js";
 import { ActionEffortPolicyV1Schema, AppliedFreeActionPenaltyV1Schema, PendingDefenseExposureV1Schema } from "./action-effort-policy.js";
 import { validateConsequenceParameters } from "./battle-consequence-validation.js";
 import {
   validateBattleAgencyBindings,
+  validateReservedTurnClock,
   validateIncompleteBattleResult,
   validateFrozenBattleReceipts,
   validateBattleUniqueReferences,
@@ -1994,6 +1996,7 @@ export type BattleAssetManifest = BattleAssetManifestFields & (
   | { schemaVersion: 4; consciousOutputContract?: "dynamic-v4" }
   | { schemaVersion: 5; consciousOutputContract: "awareness-v5"; awarenessPolicy: AwarenessPolicyV1; promptRevision: AwarenessPromptRevision; outputRevision: string }
   | { schemaVersion: 6; consciousOutputContract: "unified-consciousness-v1"; awarenessPolicy: AwarenessPolicyV1; promptRevision: AwarenessPromptRevision; outputRevision: "unified-consciousness-output-v1" | "unified-consciousness-output-v2"; consciousnessPolicy: UnifiedConsciousnessPolicy; consciousnessPromptRevision: "unified-consciousness-prompt-v1" | "unified-consciousness-prompt-v2" | "unified-consciousness-prompt-v3" }
+  | { schemaVersion: 7; consciousOutputContract: "reserved-turns-v1"; awarenessPolicy: AwarenessPolicyV1; promptRevision: AwarenessPromptRevision; outputRevision: "reserved-turn-output-v1"; reservedTurnPolicy: ReservedTurnPolicy; reservedTurnPromptRevision: "reserved-turn-prompt-v1" }
 );
 
 export const BattleBasicAttackSourceSchema = z.discriminatedUnion("kind", [
@@ -2226,6 +2229,19 @@ export const BattleAssetManifestV6Schema = BattleAssetManifestV5Schema.extend({
 export type BattleAssetManifestV6 = z.infer<typeof BattleAssetManifestV6Schema>;
 
 
+/** V7 owns a turn-only planner/judge runtime; older manifests retain their engines. */
+export const BattleAssetManifestV7Schema = BattleAssetManifestV5Schema.extend({
+  schemaVersion: z.literal(7),
+  consciousOutputContract: z.literal("reserved-turns-v1"),
+  outputRevision: z.literal("reserved-turn-output-v1"),
+  reservedTurnPolicy: ReservedTurnPolicySchema,
+  reservedTurnPromptRevision: z.literal("reserved-turn-prompt-v1"),
+  rules: BattleAssetManifestV5Schema.shape.rules.extend({
+    battleEngine: z.literal("reserved-turns-v1"), temporalRules: z.literal("reserved-order-v1"), psycheReaction: z.literal("reserved-turns-v1"),
+  }).strict(),
+}).strict();
+export type BattleAssetManifestV7 = z.infer<typeof BattleAssetManifestV7Schema>;
+
 export function upgradeLegacyBattleCharacterBindingV1(
   binding: z.infer<typeof LegacyBattleCharacterAssetBindingV1Schema>,
 ): BattleCharacterAssetBinding {
@@ -2246,6 +2262,7 @@ export const BattleAssetManifestSchema: z.ZodType<
   z.ZodTypeDef,
   unknown
 > = z.union([
+  BattleAssetManifestV7Schema,
   BattleAssetManifestV6Schema,
   BattleAssetManifestV5Schema,
   BattleAssetManifestV4Schema,
@@ -2844,6 +2861,7 @@ export const BattleStateSchema: z.ZodType<
   updatedAt: z.string(),
  }).superRefine((state, ctx) => {
   validateBattleAgencyBindings(state, ctx);
+  validateReservedTurnClock(state, ctx);
   validateIncompleteBattleResult(state, ctx);
   validateFrozenBattleReceipts(state, ctx);
   validateBattleUniqueReferences(state, ctx);

@@ -1,0 +1,803 @@
+{
+  "pipeline": "reserved-turns-v1",
+  "governingAdr": "Accepted ADR0072 revision1",
+  "scope": "Offline implementation; no new paid calls or deployment",
+  "preliminaryOffline": {
+    "pass": 1543,
+    "fail": 0,
+    "skip": 0
+  },
+  "reviews": [
+    {
+      "ref": "all-tests-20261008/current-source-closure/verification/awareness-battle-service-bounded-awareness-creation-20261007",
+      "seal": "24349732ae3fea0da14cf910001538c55198bd76e99c4bfcca54f90fa5fe9426",
+      "path": "backend/src/services/awareness-battle-service.test.ts",
+      "changed": false,
+      "review": "Behavioral file individually reviewed against accepted reserved-turn pipeline v1; existing historical, privacy and transaction assertions retained; changed fixtures use bound new pipeline. Native PostgreSQL offline run:1543 pass,0 fail,0 skip. Repoint only replaced causal targets; no authority exclusions.",
+      "previousSeal": "082f2f097cc0ffe30dca2eb1df9d6a591f33f8738ccf59e0eeead0b09f9029e6"
+    },
+    {
+      "ref": "unified-v1/source/packages-shared-src-battle",
+      "seal": "e33685aeaa26f8446534bad8fd5a61ed85725359e526a7b579d4fd5d3d854406",
+      "path": "packages/shared/src/battle.ts",
+      "changed": true,
+      "review": "Reviewed packages/shared/src/battle.ts: additive reserved-turn binding/dispatch/accounting/schema integration; old saved battle paths retained. Accepted ADR0072 revision1 and complete1543-test offline pass are the new review basis; no live quality claim.",
+      "previousSeal": "1209cd2c643d37e39c334d7c00823abeba9ca6472b0f673b80eba44b604a38cb"
+    },
+    {
+      "ref": "all-tests-20261008/current-source-closure/verification/battle-speech-wiring-bounded-20261008",
+      "seal": "ea8981152e40920df30a0c5f233b4db2f08ea5b6ef489c904a86a969b92d07e0",
+      "path": "backend/src/services/battle-speech-wiring.test.ts",
+      "changed": false,
+      "review": "Behavioral file individually reviewed against accepted reserved-turn pipeline v1; existing historical, privacy and transaction assertions retained; changed fixtures use bound new pipeline. Native PostgreSQL offline run:1543 pass,0 fail,0 skip. Repoint only replaced causal targets; no authority exclusions.",
+      "previousSeal": "162f7e37c20c617fe82d5ddbd884ee2c74be932eaf76af88646a79272abb01b5"
+    },
+    {
+      "ref": "test-recovery-v1/basis/65f6aa8b07364138",
+      "seal": "b682f9e3d2d2c5c920dc917f7f38ecfcc52cdfda38ba953bf811f0deb4af5c8c",
+      "path": "backend/src/services/awareness-narration-worker-lifecycle.ts",
+      "changed": false,
+      "review": "Reviewed backend/src/services/awareness-narration-worker-lifecycle.ts: content unchanged; downstream historical path still valid under additive new binding/runtime. Accepted ADR0072 revision1 and complete1543-test offline pass are the new review basis; no live quality claim.",
+      "previousSeal": "26f9d04684fb564848162b454fd370dbdc8220cd8578eb708fd4b27c7ad4ed59"
+    },
+    {
+      "ref": "all-tests-20261008/current-source-closure/verification/owner-characters-rating-20261008",
+      "seal": "8b0d5d5ec79c639db8c1f05f16adfe0e10ba410b8b0a5e749eb48586f5f05925",
+      "path": "backend/src/repositories/characters.test.ts",
+      "changed": false,
+      "review": "Behavioral file individually reviewed against accepted reserved-turn pipeline v1; existing historical, privacy and transaction assertions retained; changed fixtures use bound new pipeline. Native PostgreSQL offline run:1543 pass,0 fail,0 skip. Repoint only replaced causal targets; no authority exclusions.",
+      "previousSeal": "2be73c0ae3679684ff47b86c2624d3062fdf8252806c1def0b30530f62dee622"
+    },
+    {
+      "ref": "all-tests-20261008/current-source-closure/verification/awareness-narration-continuation-bounded-current-20261007",
+      "seal": "4c19860733ec157486b289d2708ec6ebd33723732e35c58e00e17cbbaa4bf2c2",
+      "path": "backend/src/services/awareness-narration-continuation.test.ts",
+      "changed": false,
+      "review": "Behavioral file individually reviewed against accepted reserved-turn pipeline v1; existing historical, privacy and transaction assertions retained; changed fixtures use bound new pipeline. Native PostgreSQL offline run:1543 pass,0 fail,0 skip. Repoint only replaced causal targets; no authority exclusions.",
+      "previousSeal": "2fbc33886c3a19eb1e1ce8c99edc88b6580b8b6ca4ce8b48216779d70b742acb"
+    },
+    {
+      "ref": "unified-v1/source/backend-src-services-battle-service",
+      "seal": "6170186aaae246c8c8353c689cda695c50ef4c5b91b532a7e8bbfdf083ef9dd9",
+      "path": "backend/src/services/battle-service.ts",
+      "changed": true,
+      "review": "Reviewed backend/src/services/battle-service.ts: additive reserved-turn binding/dispatch/accounting/schema integration; old saved battle paths retained. Accepted ADR0072 revision1 and complete1543-test offline pass are the new review basis; no live quality claim.",
+      "previousSeal": "3ec7187c634f38741cf59ebdeeb90c2d17b46551ba33da85eb347cfe2bdb901a"
+    },
+    {
+      "ref": "test-recovery-v1/basis/cfc05bf8504710df",
+      "seal": "de5c1dab8f5639acc89867dda89b34c2e303c8c32d0bfc4972abbce6c95fbe98",
+      "path": "backend/src/services/awareness-narration-worker-publication.ts",
+      "changed": false,
+      "review": "Reviewed backend/src/services/awareness-narration-worker-publication.ts: content unchanged; downstream historical path still valid under additive new binding/runtime. Accepted ADR0072 revision1 and complete1543-test offline pass are the new review basis; no live quality claim.",
+      "previousSeal": "3ee2b145d5178260773921da667593778de1e3ca0e6036436494645ce3d70223"
+    },
+    {
+      "ref": "all-tests-20261008/current-source-closure/verification/structured-asset-integration-bounded-20261008",
+      "seal": "630e65d86d6613b1014929f0799ab96b046d4aec51a8509e3c5766dc916986e9",
+      "path": "backend/src/routes-structured-asset-integration.test.ts",
+      "changed": true,
+      "review": "Behavioral file individually reviewed against accepted reserved-turn pipeline v1; existing historical, privacy and transaction assertions retained; changed fixtures use bound new pipeline. Native PostgreSQL offline run:1543 pass,0 fail,0 skip. Repoint only replaced causal targets; no authority exclusions.",
+      "previousSeal": "3f4f96acc346b6951f74080639a0eef3d5e1c09319732a0f1c81d8d86ff6282d"
+    },
+    {
+      "ref": "all-tests-20261008/current-source-closure/verification/battle-consumer-wiring-bounded-current-20261007",
+      "seal": "9b99429096425c48f73c4479d4ed9dbcae354802469690ae3083bbd4a6d68c43",
+      "path": "backend/src/services/battle-consumer-wiring.test.ts",
+      "changed": false,
+      "review": "Behavioral file individually reviewed against accepted reserved-turn pipeline v1; existing historical, privacy and transaction assertions retained; changed fixtures use bound new pipeline. Native PostgreSQL offline run:1543 pass,0 fail,0 skip. Repoint only replaced causal targets; no authority exclusions.",
+      "previousSeal": "3faa15d670913ac4bdbb380a8682e49f4ebc4eaf525475779dc5588e2b711ab3"
+    },
+    {
+      "ref": "all-tests-20261008/current-source-closure/verification/stable-area-battlefield-http-acceptance-20261007",
+      "seal": "f030a4b212bdf15d6302b4e8eaed5001d057c68e522e7b67ccfc9b51258ebbbf",
+      "path": "backend/src/routes-structured-battlefield-acceptance.test.ts",
+      "changed": true,
+      "review": "Behavioral file individually reviewed against accepted reserved-turn pipeline v1; existing historical, privacy and transaction assertions retained; changed fixtures use bound new pipeline. Native PostgreSQL offline run:1543 pass,0 fail,0 skip. Repoint only replaced causal targets; no authority exclusions.",
+      "previousSeal": "536162867c5577f4940f3c8cf175e910280d1c57c29741d29db496435787d619"
+    },
+    {
+      "ref": "all-tests-20261008/current-source-closure/verification/stable-area-narration-http-acceptance-20261007",
+      "seal": "573e2431f1f360123d00c46d186fc9f22c8772ee9f355231e91f8fd880228f28",
+      "path": "backend/src/routes-structured-narration-acceptance.test.ts",
+      "changed": false,
+      "review": "Behavioral file individually reviewed against accepted reserved-turn pipeline v1; existing historical, privacy and transaction assertions retained; changed fixtures use bound new pipeline. Native PostgreSQL offline run:1543 pass,0 fail,0 skip. Repoint only replaced causal targets; no authority exclusions.",
+      "previousSeal": "553112a0957f8a7d5bf0a0fe03f7b0f35f68bdcb8d3ffea781025631eead4a10"
+    },
+    {
+      "ref": "test-recovery-v1/basis/0159fc2ab1c5fb85",
+      "seal": "470e10a5a456be92a9058df04fff0ad5de399b02a6461e32a04716efa4ed37c4",
+      "path": "backend/src/services/battle-service.ts",
+      "changed": true,
+      "review": "Reviewed backend/src/services/battle-service.ts: additive reserved-turn binding/dispatch/accounting/schema integration; old saved battle paths retained. Accepted ADR0072 revision1 and complete1543-test offline pass are the new review basis; no live quality claim.",
+      "previousSeal": "5c9593c54eee7093fcb9bb41909cc7ade080d0dd509ba5f9257870971a86eddd"
+    },
+    {
+      "ref": "test-recovery-v1/basis/8b25aa886c43cba9",
+      "seal": "e46305ee87f0df3226cde96e9a9ec00d5d3435d1372506a9251bba2aec9976a4",
+      "path": "backend/src/services/awareness-narration-worker-dispatch.ts",
+      "changed": false,
+      "review": "Reviewed backend/src/services/awareness-narration-worker-dispatch.ts: content unchanged; downstream historical path still valid under additive new binding/runtime. Accepted ADR0072 revision1 and complete1543-test offline pass are the new review basis; no live quality claim.",
+      "previousSeal": "5ec7385a46dc3811129b33b93aa0d1e02aae5f8b52456e6412cdaf35afbe39d1"
+    },
+    {
+      "ref": "all-tests-20261008/current-source-closure/awareness-guidance-20261007/verification-execution",
+      "seal": "4329b6c3a8db94ad8f110a4b239d69e5019e37fbfb1644d69ba05550e013e0a7",
+      "path": "backend/src/services/awareness-execution.test.ts",
+      "changed": false,
+      "review": "Behavioral file individually reviewed against accepted reserved-turn pipeline v1; existing historical, privacy and transaction assertions retained; changed fixtures use bound new pipeline. Native PostgreSQL offline run:1543 pass,0 fail,0 skip. Repoint only replaced causal targets; no authority exclusions.",
+      "previousSeal": "63bbc457642b34484219129c4c21b70f2ec87da1c00e324b4f1540298a24c1b3"
+    },
+    {
+      "ref": "test-recovery-v1/basis/a07dd2c8f0ac65c2",
+      "seal": "4a4b8af698e6964ff18f89f0d487174135f617c5d072e13a4e63f3feee42ceef",
+      "path": "backend/src/routes.ts",
+      "changed": true,
+      "review": "Reviewed backend/src/routes.ts: additive reserved-turn binding/dispatch/accounting/schema integration; old saved battle paths retained. Accepted ADR0072 revision1 and complete1543-test offline pass are the new review basis; no live quality claim.",
+      "previousSeal": "699bc6ed2a362afaabacfbfdc0f882f4a5730c32fe3a40d2b8d83665e648f303"
+    },
+    {
+      "ref": "all-tests-20261008/current-source-closure/verification/retained-agency-v3-persistence-current-20261007",
+      "seal": "8e6f38c0f3610c4bb9e4cd9c2d48aa1296cca88b95bd936e40b765154a52d2ad",
+      "path": "backend/src/services/conscious-agency-persistence.test.ts",
+      "changed": false,
+      "review": "Behavioral file individually reviewed against accepted reserved-turn pipeline v1; existing historical, privacy and transaction assertions retained; changed fixtures use bound new pipeline. Native PostgreSQL offline run:1543 pass,0 fail,0 skip. Repoint only replaced causal targets; no authority exclusions.",
+      "previousSeal": "6d900ddb59ea9e57d07468998963fd4f3cb2e6d8f9f007627eb7dad95d3bea5f"
+    },
+    {
+      "ref": "all-tests-20261008/current-source-closure/verification/scene-beat-wiring-bounded-20261008",
+      "seal": "82ce09e4615abed631f1e2a45eb9a477a230eb90f8878ae5d1f502c2811fb0e7",
+      "path": "backend/src/services/scene-beat-wiring.test.ts",
+      "changed": false,
+      "review": "Behavioral file individually reviewed against accepted reserved-turn pipeline v1; existing historical, privacy and transaction assertions retained; changed fixtures use bound new pipeline. Native PostgreSQL offline run:1543 pass,0 fail,0 skip. Repoint only replaced causal targets; no authority exclusions.",
+      "previousSeal": "7560f2c05fbe8a37957346140ee044173efd312db391ca6a49acdb24a506d579"
+    },
+    {
+      "ref": "unified-v1/test/backend-src-services-unified-consciousness-execution.test",
+      "seal": "bd3872c6de2090816092e2470eaa9cb7a8173ddc0ab82de1a23cc36330516bc7",
+      "path": "backend/src/services/unified-consciousness-execution.test.ts",
+      "changed": false,
+      "review": "Behavioral file individually reviewed against accepted reserved-turn pipeline v1; existing historical, privacy and transaction assertions retained; changed fixtures use bound new pipeline. Native PostgreSQL offline run:1543 pass,0 fail,0 skip. Repoint only replaced causal targets; no authority exclusions.",
+      "previousSeal": "760f3ebbd5e63051f809a09475175e2cacda5d7c5af364b2a72c4a74ee9cfd6c"
+    },
+    {
+      "ref": "all-tests-20261009/current-source-closure/verification/owner-battle-public-20261008",
+      "seal": "4a79bc8b54c9436f8ca10cad6d8a30795d221a4ad79c2f2f659e4867a50446ef",
+      "path": "backend/src/services/battle-public.test.ts",
+      "changed": false,
+      "review": "Behavioral file individually reviewed against accepted reserved-turn pipeline v1; existing historical, privacy and transaction assertions retained; changed fixtures use bound new pipeline. Native PostgreSQL offline run:1543 pass,0 fail,0 skip. Repoint only replaced causal targets; no authority exclusions.",
+      "previousSeal": "7c593dffb72eb2d4e269994d175f27efe2755538acaf781a6870f8243a55d1a0"
+    },
+    {
+      "ref": "test-recovery-v1/basis/0725ece43a7079bf",
+      "seal": "422c48ac67c4e7480f5b39fc35e487f9bd3b8f778bd88cb2fe64029bf5351146",
+      "path": "backend/src/repositories/battle-awareness-narration-reservation.ts",
+      "changed": false,
+      "review": "Reviewed backend/src/repositories/battle-awareness-narration-reservation.ts: content unchanged; downstream historical path still valid under additive new binding/runtime. Accepted ADR0072 revision1 and complete1543-test offline pass are the new review basis; no live quality claim.",
+      "previousSeal": "92040a0d4c69f8e8ac84f6cefbd47b3a2b5cf9b182ddbca9bc9853fde11d79a2"
+    },
+    {
+      "ref": "all-tests-20261008/current-source-closure/verification/provider-accounting-current-20261007",
+      "seal": "a5668380d6684c21303b3ccb0da38341aadc2896b39ab816a08218fdc82ccf33",
+      "path": "backend/src/llm/provider-accounting.test.ts",
+      "changed": true,
+      "review": "Behavioral file individually reviewed against accepted reserved-turn pipeline v1; existing historical, privacy and transaction assertions retained; changed fixtures use bound new pipeline. Native PostgreSQL offline run:1543 pass,0 fail,0 skip. Repoint only replaced causal targets; no authority exclusions.",
+      "previousSeal": "9270601e1531838ed039ef06eb8b422630d6bce2706883fa3bcc32fae808b65f"
+    },
+    {
+      "ref": "test-recovery-v1/source/battle-operational-runtime",
+      "seal": "44335e317c973c7f05d0f548b22042660d3388128b5eb2ce8f90f7efdd127a2f",
+      "path": "backend/src/repositories/battle-operational-runtime.ts",
+      "changed": true,
+      "review": "Reviewed backend/src/repositories/battle-operational-runtime.ts: additive reserved-turn binding/dispatch/accounting/schema integration; old saved battle paths retained. Accepted ADR0072 revision1 and complete1543-test offline pass are the new review basis; no live quality claim.",
+      "previousSeal": "94d34c6fa48f46397bfa9bb489217da428aac97b97d4dd009be393c4808e2158"
+    },
+    {
+      "ref": "all-tests-20261008/current-source-closure/verification/battle-causal-narration-bounded-current-20261007",
+      "seal": "71c739f20b80962dc1ee367843dc4f8e468fa816940c1590ea9612b64a8a04a4",
+      "path": "backend/src/services/battle-causal-narration.test.ts",
+      "changed": false,
+      "review": "Behavioral file individually reviewed against accepted reserved-turn pipeline v1; existing historical, privacy and transaction assertions retained; changed fixtures use bound new pipeline. Native PostgreSQL offline run:1543 pass,0 fail,0 skip. Repoint only replaced causal targets; no authority exclusions.",
+      "previousSeal": "9d8587f5b6ff40f643fd17c93d437253842808fde0f851de33ddf2ac0a00df89"
+    },
+    {
+      "ref": "test-recovery-v1/basis/c5c8997e9f5f67cb",
+      "seal": "f09c6065f1edc1950cd9f57dfb8ffb61ac80730b748ae4af79d150e63b600d7c",
+      "path": "backend/src/services/battle-service.ts",
+      "changed": true,
+      "review": "Reviewed backend/src/services/battle-service.ts: additive reserved-turn binding/dispatch/accounting/schema integration; old saved battle paths retained. Accepted ADR0072 revision1 and complete1543-test offline pass are the new review basis; no live quality claim.",
+      "previousSeal": "ac64f0f36931df5a2e83ab8c2603266a7c71d5991163ff5cac9735c1cc7eafd8"
+    },
+    {
+      "ref": "unified-release-v1/source/public-battle-selector",
+      "seal": "714385fce50268da357813263116a99271bf6ab8c275c63b96845e146ccdce9e",
+      "path": "backend/src/routes.ts",
+      "changed": true,
+      "review": "Reviewed backend/src/routes.ts: additive reserved-turn binding/dispatch/accounting/schema integration; old saved battle paths retained. Accepted ADR0072 revision1 and complete1543-test offline pass are the new review basis; no live quality claim.",
+      "previousSeal": "ae06d86c63edaad2ebc527a3d81d1f04649fe3e537e51d67af17601ac4f28918"
+    },
+    {
+      "ref": "all-tests-20261008/current-source-closure/verification/normal-awareness-policy-bounded-current-20261007",
+      "seal": "310daab48bf45ae9d99b9f88e2a51f747ebb78a78558f5bfef962405abd7ed58",
+      "path": "backend/src/services/normal-awareness-policy.test.ts",
+      "changed": false,
+      "review": "Behavioral file individually reviewed against accepted reserved-turn pipeline v1; existing historical, privacy and transaction assertions retained; changed fixtures use bound new pipeline. Native PostgreSQL offline run:1543 pass,0 fail,0 skip. Repoint only replaced causal targets; no authority exclusions.",
+      "previousSeal": "b11141c5e278ba10bf208f236bb816369c6092c28a6d20db18296a4d50e11bfd"
+    },
+    {
+      "ref": "all-tests-20261008/current-source-closure/verification/battle-create-idempotency-bounded-awareness-creation-20261007",
+      "seal": "29939820e56815287493aea59808c9c0bbd65fd76d598584a2b412875f2c7020",
+      "path": "backend/src/services/battle-create-idempotency.test.ts",
+      "changed": false,
+      "review": "Behavioral file individually reviewed against accepted reserved-turn pipeline v1; existing historical, privacy and transaction assertions retained; changed fixtures use bound new pipeline. Native PostgreSQL offline run:1543 pass,0 fail,0 skip. Repoint only replaced causal targets; no authority exclusions.",
+      "previousSeal": "b1ce93ff09e984af303e6da8aa0e58b6749f4283a01244c652b7bd5a3e1f048b"
+    },
+    {
+      "ref": "all-tests-20261008/current-source-closure/verification/persistent-battle-e2e-bounded-20261008",
+      "seal": "3c0a08e1ac4f1d070c0adf865b17b112d56a0d04c05c5b6be6b54a398dd633fe",
+      "path": "backend/src/scripts/persistent-battle-e2e.test.ts",
+      "changed": true,
+      "review": "Behavioral file individually reviewed against accepted reserved-turn pipeline v1; existing historical, privacy and transaction assertions retained; changed fixtures use bound new pipeline. Native PostgreSQL offline run:1543 pass,0 fail,0 skip. Repoint only replaced causal targets; no authority exclusions.",
+      "previousSeal": "b1f471abf293ca0c88aab7a545fca209951ff81bb64ff13c268dfcd95c43a4ac"
+    },
+    {
+      "ref": "unified-v1/test/backend-src-services-unified-consciousness-integration.test",
+      "seal": "f7d4f99d412e596db05bd26c27059cbe5bf378d21223fcae2d0611b4a637a05e",
+      "path": "backend/src/services/unified-consciousness-integration.test.ts",
+      "changed": false,
+      "review": "Behavioral file individually reviewed against accepted reserved-turn pipeline v1; existing historical, privacy and transaction assertions retained; changed fixtures use bound new pipeline. Native PostgreSQL offline run:1543 pass,0 fail,0 skip. Repoint only replaced causal targets; no authority exclusions.",
+      "previousSeal": "b28d7e65c92d8a576b709e206952cfab1c005c9fed0609afea6e6e6f290be1c4"
+    },
+    {
+      "ref": "test-recovery-v1/basis/c1a76bfb7cb2eba3",
+      "seal": "bc6c7233c61848cb5611d2e9f2d87ece32bc3101e20fd8d6ee8cf4df732d5a57",
+      "path": "backend/src/services/battle-service.ts",
+      "changed": true,
+      "review": "Reviewed backend/src/services/battle-service.ts: additive reserved-turn binding/dispatch/accounting/schema integration; old saved battle paths retained. Accepted ADR0072 revision1 and complete1543-test offline pass are the new review basis; no live quality claim.",
+      "previousSeal": "b31be10bd696e60c41039a6bef2ffe1115e8458283ae028c664d8fa2aff39ddf"
+    },
+    {
+      "ref": "all-tests-20261008/current-source-closure/verification/historical-agency-inventory-bounded-20261008",
+      "seal": "fa3152b479b3314075041f85acc0cd2c2d730ad5d6d0e882cb24c9fb604a66cc",
+      "path": "backend/src/services/character-agency-inventory.test.ts",
+      "changed": false,
+      "review": "Behavioral file individually reviewed against accepted reserved-turn pipeline v1; existing historical, privacy and transaction assertions retained; changed fixtures use bound new pipeline. Native PostgreSQL offline run:1543 pass,0 fail,0 skip. Repoint only replaced causal targets; no authority exclusions.",
+      "previousSeal": "bc5a648d3a4dae3de69c56477416fb0a5d088b9aa7e6ca7b7a350e2d79c473ff"
+    },
+    {
+      "ref": "test-recovery-v1/basis/289569cc98d93350",
+      "seal": "ef50fc0a97858134dc6be48f27d20b483566fe1184c0b94b5d8fe96d42462e36",
+      "path": "backend/src/services/awareness-narration-worker.ts",
+      "changed": false,
+      "review": "Reviewed backend/src/services/awareness-narration-worker.ts: content unchanged; downstream historical path still valid under additive new binding/runtime. Accepted ADR0072 revision1 and complete1543-test offline pass are the new review basis; no live quality claim.",
+      "previousSeal": "c5c79906ecba173fec268db07a788eb19aa67b9bf90137520b431b3564f6b3ac"
+    },
+    {
+      "ref": "all-tests-20261008/current-source-closure/verification/battle-awareness-narration-events-postgres-bounded-native-pg-20261007",
+      "seal": "66b49fa222355da4b0ce7cdc2469ae893bd16c233f1a7289e417b2ac7f39b88a",
+      "path": "backend/src/repositories/battle-awareness-narration-events-postgres.test.ts",
+      "changed": false,
+      "review": "Behavioral file individually reviewed against accepted reserved-turn pipeline v1; existing historical, privacy and transaction assertions retained; changed fixtures use bound new pipeline. Native PostgreSQL offline run:1543 pass,0 fail,0 skip. Repoint only replaced causal targets; no authority exclusions.",
+      "previousSeal": "cb81993e18438a57535487dd4b45e7cef79368d2be9ac2d331cb0e374aa50f39"
+    },
+    {
+      "ref": "test-recovery-v1/basis/2cf9e71939aef7dd",
+      "seal": "cedae4824cda07622823e62ab509cafd7697b06aa259f40f8a9ad8b3be9cdcd0",
+      "path": "docs/evidence/test-authority-recovery-postgres-2026-10-10.json",
+      "changed": false,
+      "review": "Historical evidence content retained verbatim. This review updates current causal references only; original dated observations remain historical and do not prove reserved-turn pipeline v1 quality or deployment. New offline evidence recorded separately.",
+      "previousSeal": "d1e50017ccfe91225744b2cdb0c575b7e8e740a2852983d0e1d148da7d821463"
+    },
+    {
+      "ref": "all-tests-20261008/current-source-closure/verification/v3-battle-creation-recovery-bounded-20261008",
+      "seal": "72203183e7c0ea8d886fdfe68899c4b7fc850553ec14d31ee6ef758b1d6d3566",
+      "path": "backend/src/services/v3-battle-creation.test.ts",
+      "changed": true,
+      "review": "Behavioral file individually reviewed against accepted reserved-turn pipeline v1; existing historical, privacy and transaction assertions retained; changed fixtures use bound new pipeline. Native PostgreSQL offline run:1543 pass,0 fail,0 skip. Repoint only replaced causal targets; no authority exclusions.",
+      "previousSeal": "d40e6d2d3cc376066d6b26f9cea65c83c0986670a61042287422ebfea76bdd60"
+    },
+    {
+      "ref": "all-tests-20261008/current-source-closure/verification/battle-awareness-postgres-bounded-native-pg-20261007",
+      "seal": "7847d2980a6c5dc102a55142bd04c29922f7b5035dd954c3619688dfe72b4f18",
+      "path": "backend/src/repositories/battle-awareness-postgres.test.ts",
+      "changed": false,
+      "review": "Behavioral file individually reviewed against accepted reserved-turn pipeline v1; existing historical, privacy and transaction assertions retained; changed fixtures use bound new pipeline. Native PostgreSQL offline run:1543 pass,0 fail,0 skip. Repoint only replaced causal targets; no authority exclusions.",
+      "previousSeal": "da8481d5accb9c126dc69e68383ebbce7154815f6a801eea196b1ee806ac4a00"
+    },
+    {
+      "ref": "test-recovery-v1/basis/0e5e6c7cf01a162e",
+      "seal": "30bd81a5be691199213d2e9b061c82f25fd29a9c0b21edcab1eb0d8d84157cc6",
+      "path": "backend/src/services/battle-service.ts",
+      "changed": true,
+      "review": "Reviewed backend/src/services/battle-service.ts: additive reserved-turn binding/dispatch/accounting/schema integration; old saved battle paths retained. Accepted ADR0072 revision1 and complete1543-test offline pass are the new review basis; no live quality claim.",
+      "previousSeal": "dde1dd3653e3978421c26f3660a5b831b72002cddf0e8d60e467c1125f9d1e8f"
+    },
+    {
+      "ref": "test-recovery-v1/basis/65bd5e628346546f",
+      "seal": "4bd5a59425413e9dffef51812d6ef65f2417991b3947c73445ea17ccdc6d2e06",
+      "path": "backend/src/services/battle-service.ts",
+      "changed": true,
+      "review": "Reviewed backend/src/services/battle-service.ts: additive reserved-turn binding/dispatch/accounting/schema integration; old saved battle paths retained. Accepted ADR0072 revision1 and complete1543-test offline pass are the new review basis; no live quality claim.",
+      "previousSeal": "df376b4eb3bb1f4a0f67995eae586c2907339880b8e1b2d235cbe2a9a943538f"
+    },
+    {
+      "ref": "test-recovery-v1/basis/a3adc469058d306b",
+      "seal": "95e8baf8d07849b97ffedfe2c56512e3dd6a481a225f93187edbb180dea6ba76",
+      "path": "backend/src/services/battle-service.ts",
+      "changed": true,
+      "review": "Reviewed backend/src/services/battle-service.ts: additive reserved-turn binding/dispatch/accounting/schema integration; old saved battle paths retained. Accepted ADR0072 revision1 and complete1543-test offline pass are the new review basis; no live quality claim.",
+      "previousSeal": "e8322aff5540c8da8c0ad6fba06137c2189daeebb69ff9d176e3956e07ea8ca8"
+    },
+    {
+      "ref": "all-tests-20261008/current-source-closure/verification/awareness-narration-worker-bounded-current-20261007",
+      "seal": "cda56c6407ca6e078e5347444476f903e02de62ed6c31028a5cf190079968ca1",
+      "path": "backend/src/services/awareness-narration-worker.test.ts",
+      "changed": false,
+      "review": "Behavioral file individually reviewed against accepted reserved-turn pipeline v1; existing historical, privacy and transaction assertions retained; changed fixtures use bound new pipeline. Native PostgreSQL offline run:1543 pass,0 fail,0 skip. Repoint only replaced causal targets; no authority exclusions.",
+      "previousSeal": "eb15d4e2d5626abfe3fd3db0da845da95e62581ddad6edf6780bfdf9a44c87a2"
+    },
+    {
+      "ref": "test-recovery-v1/basis/18b9b5dcd683f549",
+      "seal": "e05963af10051411ba620ba8c62137b64d22cd9ee3c4b15bd304f8a6b7df29df",
+      "path": "backend/src/services/battle-service.ts",
+      "changed": true,
+      "review": "Reviewed backend/src/services/battle-service.ts: additive reserved-turn binding/dispatch/accounting/schema integration; old saved battle paths retained. Accepted ADR0072 revision1 and complete1543-test offline pass are the new review basis; no live quality claim.",
+      "previousSeal": "ebdb386cb89d0ba84393547ebe93b09b549d6375cba3f7844fb69ccfdcad7595"
+    },
+    {
+      "ref": "test-recovery-v1/basis/59df7291e9c37342",
+      "seal": "2399222e20b69d094b64c91dc829daeac96fc595cc58a51a1e48984e4bee698f",
+      "path": "backend/src/services/battle-service.ts",
+      "changed": true,
+      "review": "Reviewed backend/src/services/battle-service.ts: additive reserved-turn binding/dispatch/accounting/schema integration; old saved battle paths retained. Accepted ADR0072 revision1 and complete1543-test offline pass are the new review basis; no live quality claim.",
+      "previousSeal": "edad73a04ea05d6584b65b3c897425c4f9466edee123796189b7ecd0bd807df7"
+    },
+    {
+      "ref": "all-tests-20261008/current-source-closure/verification/awareness-battle-creation-bounded-awareness-creation-20261007",
+      "seal": "a5b9281c2ab70a6a5b220326ae908e444bf9e8d5a018fc0b529465483dea6120",
+      "path": "backend/src/services/awareness-battle-creation.test.ts",
+      "changed": false,
+      "review": "Behavioral file individually reviewed against accepted reserved-turn pipeline v1; existing historical, privacy and transaction assertions retained; changed fixtures use bound new pipeline. Native PostgreSQL offline run:1543 pass,0 fail,0 skip. Repoint only replaced causal targets; no authority exclusions.",
+      "previousSeal": "f01656113632be85aa9576eafe908f339158b54c7de4a8e1d965d190b3457698"
+    },
+    {
+      "ref": "all-tests-20261008/current-source-closure/verification/retained-agency-v3-runtime-current-20261007",
+      "seal": "76d74365b4c406eb6099c1941b5167379a6f089bbb3b6baddc9ebb9b24f9168f",
+      "path": "backend/src/services/conscious-agency-runtime.test.ts",
+      "changed": false,
+      "review": "Behavioral file individually reviewed against accepted reserved-turn pipeline v1; existing historical, privacy and transaction assertions retained; changed fixtures use bound new pipeline. Native PostgreSQL offline run:1543 pass,0 fail,0 skip. Repoint only replaced causal targets; no authority exclusions.",
+      "previousSeal": "f2738410069445ed575f4d9876f0cc399c9b9663031faa0149dc2cb3bd7f7310"
+    },
+    {
+      "ref": "all-tests-20261008/current-source-closure/verification/battle-awareness-narration-reservation-postgres-bounded-native-pg-20261007",
+      "seal": "77c1a17704e83a9e872db34859ed7485cdde6691ded7a2c07967faaba966636f",
+      "path": "backend/src/repositories/battle-awareness-narration-reservation-postgres.test.ts",
+      "changed": true,
+      "review": "Behavioral file individually reviewed against accepted reserved-turn pipeline v1; existing historical, privacy and transaction assertions retained; changed fixtures use bound new pipeline. Native PostgreSQL offline run:1543 pass,0 fail,0 skip. Repoint only replaced causal targets; no authority exclusions.",
+      "previousSeal": "f7a4a387124e29d8970bb08e69d40f401c3bf08e11cd651a6764dfe06266c6b3"
+    },
+    {
+      "ref": "test-recovery-v1/basis/73effe445735205f",
+      "seal": "48ed816417a64004946b461827f1324c330c7e30f6afdf96406b888155ddaff1",
+      "path": "backend/src/services/narration-worker.ts",
+      "changed": false,
+      "review": "Reviewed backend/src/services/narration-worker.ts: content unchanged; downstream historical path still valid under additive new binding/runtime. Accepted ADR0072 revision1 and complete1543-test offline pass are the new review basis; no live quality claim.",
+      "previousSeal": "f8540b16d6fd1a6a8111e3a6369078ff527d9edeb9b6f8c70e5881155156cad3"
+    },
+    {
+      "ref": "test-recovery-v1/basis/5d646414a88f23e7",
+      "seal": "cad844dac0bd60944089c62d763d45291525e366bf8781655e3429971176a6b2",
+      "path": "backend/src/services/battle-service.ts",
+      "changed": true,
+      "review": "Reviewed backend/src/services/battle-service.ts: additive reserved-turn binding/dispatch/accounting/schema integration; old saved battle paths retained. Accepted ADR0072 revision1 and complete1543-test offline pass are the new review basis; no live quality claim.",
+      "previousSeal": "fad085f1eebeab30e70bba636be77f8854676a64c67c23a01102c8d529cff50b"
+    },
+    {
+      "ref": "test-recovery-v1/basis/e2f8650923675c23",
+      "seal": "0923436327c610ed0b8ab52985bdad6b13913ad98a70daaa58b7baed6fd99a5d",
+      "path": "backend/src/services/awareness-narration-worker-claim.ts",
+      "changed": false,
+      "review": "Reviewed backend/src/services/awareness-narration-worker-claim.ts: content unchanged; downstream historical path still valid under additive new binding/runtime. Accepted ADR0072 revision1 and complete1543-test offline pass are the new review basis; no live quality claim.",
+      "previousSeal": "fcb37ed9dd0e02fd70070909a342081b7703bdcce8fb117260ff81da2521e8f9"
+    },
+    {
+      "ref": "unified-release-v1/source/provider-operation-taxonomy-v4",
+      "seal": "b0938f26f3b373a93e3a0d534d824947fa03241ee4fcfea6200a16b86ded7c1b",
+      "path": "backend/src/llm/provider-operation-taxonomy.ts",
+      "changed": true,
+      "review": "Reviewed backend/src/llm/provider-operation-taxonomy.ts: additive reserved-turn binding/dispatch/accounting/schema integration; old saved battle paths retained. Accepted ADR0072 revision1 and complete1543-test offline pass are the new review basis; no live quality claim.",
+      "previousSeal": "fe3f1269191eac46c833eaf125ed9adb6594e0b3a7e1f0c135813ea7123c247c"
+    }
+  ],
+  "retainedHistoricalRefs": [
+    {
+      "ref": "plan/character-semantic-migration",
+      "seal": "0f624b84b39d4715c63305355bb7290dd8ca4de484d7332e70bb3d2589772ec9",
+      "path": "docs/character-semantic-migration.pert",
+      "changed": false,
+      "review": "Existing character migration plan content retained. Shared bootstrap cause now adds a separate reserved-turn runtime table; migration authority/scope is unchanged. Current reserved-turn work is governed by ADR0072 and its separate canonical PERT."
+    },
+    {
+      "ref": "verification/vt102-v3-battle-paths-20260930",
+      "seal": "1d4a4f7e7e9d9b0f305eb31b246d435c27afa5709b13a5ce38e114929bb61db2",
+      "path": "backend/src/services/v3-battle-creation.test.ts",
+      "changed": true,
+      "review": "Behavioral file individually reviewed against accepted reserved-turn pipeline v1; existing historical, privacy and transaction assertions retained; changed fixtures use bound new pipeline. Native PostgreSQL offline run:1543 pass,0 fail,0 skip. Repoint only replaced causal targets; no authority exclusions."
+    },
+    {
+      "ref": "verification/semantic-authoring-kernel-foundation-v1",
+      "seal": "261617baf6a89d85a9bcf2a9efd120fbdda743ed5e22e0d8dd9daa6ed21e38ec",
+      "path": "backend/src/services/semantic-authoring/kernel-foundation.test.ts",
+      "changed": false,
+      "review": "Behavioral file individually reviewed against accepted reserved-turn pipeline v1; existing historical, privacy and transaction assertions retained; changed fixtures use bound new pipeline. Native PostgreSQL offline run:1543 pass,0 fail,0 skip. Repoint only replaced causal targets; no authority exclusions."
+    },
+    {
+      "ref": "implementation/character-semantic-migration-repository",
+      "seal": "271a0474ff563f90592ea32b22596e439a9443bf21a779bcce0417d9f38b4c5b",
+      "path": "backend/src/repositories/character-semantic-migration.ts",
+      "changed": false,
+      "review": "Reviewed backend/src/repositories/character-semantic-migration.ts: content unchanged; downstream historical path still valid under additive new binding/runtime. Accepted ADR0072 revision1 and complete1543-test offline pass are the new review basis; no live quality claim."
+    },
+    {
+      "ref": "reasoning/adr-0030-b4-local-verification",
+      "seal": "291ffbe0e7901f4bb13e53975c29705a4a602ab99f67b6268dc5ee584106b200",
+      "path": "docs/evidence/adr-0030-b4-local-verification-2026-09-10.think",
+      "changed": false,
+      "review": "Historical evidence content retained verbatim. This review updates current causal references only; original dated observations remain historical and do not prove reserved-turn pipeline v1 quality or deployment. New offline evidence recorded separately."
+    },
+    {
+      "ref": "verification/postgres-runtime-smoke",
+      "seal": "2a7d6797779815432a4c122a29dd40dd8008596dac6fec175bdaadcf7a012513",
+      "path": "backend/src/scripts/postgres-runtime-smoke.ts",
+      "changed": false,
+      "review": "Reviewed backend/src/scripts/postgres-runtime-smoke.ts: content unchanged; downstream historical path still valid under additive new binding/runtime. Accepted ADR0072 revision1 and complete1543-test offline pass are the new review basis; no live quality claim."
+    },
+    {
+      "ref": "verification/semantic-authoring-kernel-slice1-independent-review-2026-09-12",
+      "seal": "4009bc281d48ba2dfa7ad8c9b54e3cfe6d57e0cdc68bcd38c460b75fe7455be1",
+      "path": "docs/evidence/semantic-authoring-kernel-slice1-independent-review-2026-09-12.md",
+      "changed": false,
+      "review": "Historical evidence content retained verbatim. This review updates current causal references only; original dated observations remain historical and do not prove reserved-turn pipeline v1 quality or deployment. New offline evidence recorded separately."
+    },
+    {
+      "ref": "verification/vt104-provider-accounting-20260930",
+      "seal": "5ca4ea5ac9fad7d6d527a9c599d34984480dd6f5c1eb703ebcec3dd45060f6b5",
+      "path": "backend/src/llm/provider-accounting.test.ts",
+      "changed": true,
+      "review": "Behavioral file individually reviewed against accepted reserved-turn pipeline v1; existing historical, privacy and transaction assertions retained; changed fixtures use bound new pipeline. Native PostgreSQL offline run:1543 pass,0 fail,0 skip. Repoint only replaced causal targets; no authority exclusions."
+    },
+    {
+      "ref": "verification/character-semantic-migration-persistence",
+      "seal": "5eb0f71201f56d86856402bd2a7e06ba0a31807d410a73b05fb53715b3b46967",
+      "path": "backend/src/repositories/character-semantic-migration.test.ts",
+      "changed": false,
+      "review": "Behavioral file individually reviewed against accepted reserved-turn pipeline v1; existing historical, privacy and transaction assertions retained; changed fixtures use bound new pipeline. Native PostgreSQL offline run:1543 pass,0 fail,0 skip. Repoint only replaced causal targets; no authority exclusions."
+    },
+    {
+      "ref": "implementation/semantic-authoring-shared-export-v1",
+      "seal": "732d2eae7927c3eb132a3e3a513b13d3dae9bd5fc42b5bfffe3a7f939d21461c",
+      "path": "packages/shared/src/index.ts",
+      "changed": true,
+      "review": "Reviewed packages/shared/src/index.ts: additive reserved-turn binding/dispatch/accounting/schema integration; old saved battle paths retained. Accepted ADR0072 revision1 and complete1543-test offline pass are the new review basis; no live quality claim."
+    },
+    {
+      "ref": "evidence/test-authority-inventory-2026-09-15",
+      "seal": "ba36917cd617e691fe0a9e914164146d904a19160aabf4cbeb7cc3c03531f3a9",
+      "path": "docs/evidence/test-authority-inventory-2026-09-15.md",
+      "changed": false,
+      "review": "Historical evidence content retained verbatim. This review updates current causal references only; original dated observations remain historical and do not prove reserved-turn pipeline v1 quality or deployment. New offline evidence recorded separately."
+    },
+    {
+      "ref": "implementation/character-semantic-migration-sqlite-bootstrap",
+      "seal": "bbe0776593d3d34117075dcb94672ae5d447642d2fc44fb59feadd912a035185",
+      "path": "backend/src/db.ts",
+      "changed": true,
+      "review": "Reviewed backend/src/db.ts: additive reserved-turn binding/dispatch/accounting/schema integration; old saved battle paths retained. Accepted ADR0072 revision1 and complete1543-test offline pass are the new review basis; no live quality claim."
+    },
+    {
+      "ref": "evidence/adr-0030-b4-local-verification",
+      "seal": "f7fb6c9972d0d3e319f3292fd759aa63be69bb18249744bc3d20f1bba9723114",
+      "path": "docs/evidence/adr-0030-b4-local-verification-2026-09-10.md",
+      "changed": false,
+      "review": "Historical evidence content retained verbatim. This review updates current causal references only; original dated observations remain historical and do not prove reserved-turn pipeline v1 quality or deployment. New offline evidence recorded separately."
+    }
+  ],
+  "newSources": [
+    {
+      "path": "backend/migrations/0038_reserved_turns.sql",
+      "ref": "reserved-turns-v1/source/backend-migrations-0038_reserved_turns",
+      "seal": "ae023a64c9de94dbc177ab0256bbaaaa4b7b39ca81d199b48f39b267078c9156"
+    },
+    {
+      "path": "backend/src/db.ts",
+      "ref": "reserved-turns-v1/source/backend-src-db",
+      "seal": "c3d52762ad0da82299d8b473127ce218e01ce974017ee154adf10154672713f4"
+    },
+    {
+      "path": "backend/src/llm/provider-accounting.ts",
+      "ref": "reserved-turns-v1/source/backend-src-llm-provider-accounting",
+      "seal": "0fd68bfac777087c802b3d02c90df0bd624d38ef0d889818c29aa9be6cf35607"
+    },
+    {
+      "path": "backend/src/llm/provider-operation-taxonomy.ts",
+      "ref": "reserved-turns-v1/source/backend-src-llm-provider-operation-taxonomy",
+      "seal": "e938ec31cbd815cc53527be62c272bc08970b08e2bfa9f42206fd15e750bc15b"
+    },
+    {
+      "path": "backend/src/llm/reserved-turns.ts",
+      "ref": "reserved-turns-v1/source/backend-src-llm-reserved-turns",
+      "seal": "aca0f1ae008232cec363cadb708bd63b7404cf027f2508f16c1a6adca2cd0d1f"
+    },
+    {
+      "path": "backend/src/repositories/battle-awareness-creation.ts",
+      "ref": "reserved-turns-v1/source/backend-src-repositories-battle-awareness-creation",
+      "seal": "41787a14b3e495df5b56ed15c0357df681dd116b0b499c836294fd93ab4d689d"
+    },
+    {
+      "path": "backend/src/repositories/battle-operational-runtime.ts",
+      "ref": "reserved-turns-v1/source/backend-src-repositories-battle-operational-runtime",
+      "seal": "f72d0c1d220951d890de19e941e80548dfc1cd895a3b31301a2017f3f0693181"
+    },
+    {
+      "path": "backend/src/repositories/battles.ts",
+      "ref": "reserved-turns-v1/source/backend-src-repositories-battles",
+      "seal": "4e21d9ac736aa62aaedcaf630b162b718cda27aeea56a36c6ed296e670303c79"
+    },
+    {
+      "path": "backend/src/repositories/reserved-turns-schema.ts",
+      "ref": "reserved-turns-v1/source/backend-src-repositories-reserved-turns-schema",
+      "seal": "2b3bae0dbce942928edea90fad0a380805f3fc8969af75eb8404013375a3d70f"
+    },
+    {
+      "path": "backend/src/repositories/reserved-turns.ts",
+      "ref": "reserved-turns-v1/source/backend-src-repositories-reserved-turns",
+      "seal": "50fb8b2a7490c6b07e04701eabdea40ad7c34ea809aa35e36ef7b8b701f794c0"
+    },
+    {
+      "path": "backend/src/routes.ts",
+      "ref": "reserved-turns-v1/source/backend-src-routes",
+      "seal": "0c932197ea78708a6513687ad51f895bdaa6ef97921e87a61be944a206edc32d"
+    },
+    {
+      "path": "backend/src/services/awareness-context.ts",
+      "ref": "reserved-turns-v1/source/backend-src-services-awareness-context",
+      "seal": "00b7805ce1f9c079f7555ff8af67f7f0ead8fa07b74e61df746dde43b5b078ab"
+    },
+    {
+      "path": "backend/src/services/battle-service.ts",
+      "ref": "reserved-turns-v1/source/backend-src-services-battle-service",
+      "seal": "b03c885608d7e88cf5624dfcfd45c9af61d3c50de864766fed1eeeee2c0463fc"
+    },
+    {
+      "path": "backend/src/services/reserved-turn-battle.ts",
+      "ref": "reserved-turns-v1/source/backend-src-services-reserved-turn-battle",
+      "seal": "8702bf13b99bb837b5e8941065070c9e34cb9b6b7b03536553ae6d80f2ad07e1"
+    },
+    {
+      "path": "backend/src/services/reserved-turn-execution.ts",
+      "ref": "reserved-turns-v1/source/backend-src-services-reserved-turn-execution",
+      "seal": "016a4246f2a46ace3725de5fa457374c464d45eff9114e094204e89018ea2715"
+    },
+    {
+      "path": "backend/src/services/reserved-turn-failure.ts",
+      "ref": "reserved-turns-v1/source/backend-src-services-reserved-turn-failure",
+      "seal": "83b98c39f8bb6deb1b512c8d8756e724b42d7d31dab0a39c5d6ff7a99ed8d516"
+    },
+    {
+      "path": "backend/src/services/reserved-turn-policy.ts",
+      "ref": "reserved-turns-v1/source/backend-src-services-reserved-turn-policy",
+      "seal": "b08f20e277387f1f34eb19b74efe9732da07d5326ca49472c4a5611eb1418854"
+    },
+    {
+      "path": "backend/src/testing/offline-awareness-provider.ts",
+      "ref": "reserved-turns-v1/source/backend-src-testing-offline-awareness-provider",
+      "seal": "9ac64847123b87048990e1dd623860c1b5594f9ea87371cb2f09ff7de504f386"
+    },
+    {
+      "path": "backend/src/testing/offline-focused-authoring-provider.ts",
+      "ref": "reserved-turns-v1/source/backend-src-testing-offline-focused-authoring-provider",
+      "seal": "58eb2137b76b6411648fc84fa4897786b494f2702121fa82a76d1ec984a5faf9"
+    },
+    {
+      "path": "docs/adr/0071-ranked-memory-production-default.md",
+      "ref": "reserved-turns-v1/source/docs-adr-0071-ranked-memory-production-default",
+      "seal": "c6c8d12ae9dc215f0a09e8027fa8a8a03ebacf5cde0ba55bc176da6385f74281"
+    },
+    {
+      "path": "docs/adr/0072-reserved-turn-adjudication.md",
+      "ref": "reserved-turns-v1/source/docs-adr-0072-reserved-turn-adjudication",
+      "seal": "1f1aa6838a9ade23eab5ce9fd41fc55164f4f843ff4e8ebc53ca48e9598d1409"
+    },
+    {
+      "path": "docs/reserved-turns-v1.md",
+      "ref": "reserved-turns-v1/source/docs-reserved-turns-v1",
+      "seal": "8ddd0bf4e29c7e6ae8c9875cbfc2439c05a89e91488be429bce41743c79a69bb"
+    },
+    {
+      "path": "packages/shared/src/battle-state-validation.ts",
+      "ref": "reserved-turns-v1/source/packages-shared-src-battle-state-validation",
+      "seal": "f00811da35d272216270d0bbeffea66c15db5d7b55bd56e9a102af08013d397b"
+    },
+    {
+      "path": "packages/shared/src/battle.ts",
+      "ref": "reserved-turns-v1/source/packages-shared-src-battle",
+      "seal": "fd637d1a715741a3254ff69b33b7cb37c0050329df6c2b8422601c181e711f24"
+    },
+    {
+      "path": "packages/shared/src/index.ts",
+      "ref": "reserved-turns-v1/source/packages-shared-src-index",
+      "seal": "64b4edfdad918cd0c2f9b7d9c91f236618b61ecb56e0b161a6d5dd83fc28c304"
+    },
+    {
+      "path": "packages/shared/src/reserved-turn-policy.ts",
+      "ref": "reserved-turns-v1/source/packages-shared-src-reserved-turn-policy",
+      "seal": "851396c0ed17ceccaeb558b9e913fca88ab41b4ee1100e55623e65dad8f51f42"
+    },
+    {
+      "path": "packages/shared/src/reserved-turns.ts",
+      "ref": "reserved-turns-v1/source/packages-shared-src-reserved-turns",
+      "seal": "45c4cd969f2f3018a210108c1882f8611a0a010986a7cc36357ed25c6e03b284"
+    },
+    {
+      "path": "backend/src/repositories/reserved-turn-narration.ts",
+      "ref": "reserved-turns-v1/source/backend-src-repositories-reserved-turn-narration",
+      "seal": "e2302445803343019b0eb2877cd807f9946a42e9a7a196cb18c6c50afe485b36"
+    },
+    {
+      "path": "backend/src/scripts/persistent-battle-e2e.ts",
+      "ref": "reserved-turns-v1/source/backend-src-scripts-persistent-battle-e2e",
+      "seal": "b394aedda9092d3587610a402caf5e120831ca6fbd0e9c71f43c994282eb87d8"
+    }
+  ],
+  "newTests": [
+    {
+      "path": "backend/src/repositories/reserved-turns-postgres.test.ts",
+      "ref": "reserved-turns-v1/test/backend-src-repositories-reserved-turns-postgres.test",
+      "seal": "3cd5d38ff1a6a9da58eb48971af265ae26b5100e87a0244c5c2ca33b9544707a"
+    },
+    {
+      "path": "backend/src/services/reserved-turn-execution.test.ts",
+      "ref": "reserved-turns-v1/test/backend-src-services-reserved-turn-execution.test",
+      "seal": "e9170bf0430ecc6fa8bb7d398e00b26da7e3d929b5a6a2a6d21aaccde3e1d7b1"
+    },
+    {
+      "path": "backend/src/services/reserved-turn-failure.test.ts",
+      "ref": "reserved-turns-v1/test/backend-src-services-reserved-turn-failure.test",
+      "seal": "6bec09af88a32f40a5cc659811efe16b32d1a4b64c35143b4bac22ac9e00fa15"
+    },
+    {
+      "path": "packages/shared/src/reserved-turns.test.ts",
+      "ref": "reserved-turns-v1/test/packages-shared-src-reserved-turns.test",
+      "seal": "6798daf873217f8ba2b568f212d05ea50a59040595a8791175cac5ea5be200dc"
+    }
+  ],
+  "publicationIntegration": {
+    "focusedPass": 32,
+    "focusedFail": 0,
+    "reviews": [
+      {
+        "ref": "all-tests-20261008/current-source-closure/verification/persistent-battle-e2e-bounded-20261008",
+        "path": "backend/src/scripts/persistent-battle-e2e.test.ts",
+        "seal": "b2a460d58f0a52aae3450d68a2157b25bd1a222dab39b9cee7b7fca8a0da74a8",
+        "previousSeal": "3c0a08e1ac4f1d070c0adf865b17b112d56a0d04c05c5b6be6b54a398dd633fe",
+        "review": "Reviewed backend/src/scripts/persistent-battle-e2e.test.ts: publish completed narration and follow events inside the world/runtime transaction, no async worker claims or additional provider calls; verify binding v7 requests and usage receipts while retaining historical completion rules. Focused32 tests passed; public snapshot and invalid-turn non-publication covered. Historical test assertions retained."
+      },
+      {
+        "ref": "unified-completion-v1/source/awareness-narration-convergence",
+        "path": "backend/src/scripts/awareness-narration-convergence.ts",
+        "seal": "d599f5193ff4d0cdb12309a1b131abc6ef0e68a298944766135c82aff1774c48",
+        "previousSeal": "788185511f655bf3eafd35a8ded2cac619354a35cad3c9a9e128c65283b8bcc0",
+        "review": "Reviewed backend/src/scripts/awareness-narration-convergence.ts: publish completed narration and follow events inside the world/runtime transaction, no async worker claims or additional provider calls; verify binding v7 requests and usage receipts while retaining historical completion rules. Focused32 tests passed; public snapshot and invalid-turn non-publication covered. Historical test assertions retained."
+      },
+      {
+        "ref": "verification/awareness-narration-convergence-bounded-current-20261007",
+        "path": "backend/src/scripts/awareness-narration-convergence.test.ts",
+        "seal": "817436947e23deee295039b53e87b0e783579efbbdd3013d38d02f1d8b01151b",
+        "previousSeal": "130681853093d9caebd1f7c013133576680bd47b54f60207b3dd4ec4f6945602",
+        "review": "Reviewed backend/src/scripts/awareness-narration-convergence.test.ts: publish completed narration and follow events inside the world/runtime transaction, no async worker claims or additional provider calls; verify binding v7 requests and usage receipts while retaining historical completion rules. Focused32 tests passed; public snapshot and invalid-turn non-publication covered. Historical test assertions retained."
+      },
+      {
+        "ref": "reserved-turns-v1/source/backend-src-services-reserved-turn-battle",
+        "path": "backend/src/services/reserved-turn-battle.ts",
+        "seal": "bcf2e9afba47cf4c6b23a3c1129cb15616f035896342f765808b5677fc671afe",
+        "previousSeal": "8702bf13b99bb837b5e8941065070c9e34cb9b6b7b03536553ae6d80f2ad07e1",
+        "review": "Reviewed backend/src/services/reserved-turn-battle.ts: publish completed narration and follow events inside the world/runtime transaction, no async worker claims or additional provider calls; verify binding v7 requests and usage receipts while retaining historical completion rules. Focused32 tests passed; public snapshot and invalid-turn non-publication covered. Historical test assertions retained."
+      },
+      {
+        "ref": "all-tests-20261008/current-source-closure/verification/structured-asset-integration-bounded-20261008",
+        "path": "backend/src/routes-structured-asset-integration.test.ts",
+        "seal": "2b501130e2cf47aba64722a743ff0d5fac727d59e92fb20438a545c729fe8155",
+        "previousSeal": "630e65d86d6613b1014929f0799ab96b046d4aec51a8509e3c5766dc916986e9",
+        "review": "Reviewed backend/src/routes-structured-asset-integration.test.ts: publish completed narration and follow events inside the world/runtime transaction, no async worker claims or additional provider calls; verify binding v7 requests and usage receipts while retaining historical completion rules. Focused32 tests passed; public snapshot and invalid-turn non-publication covered. Historical test assertions retained."
+      },
+      {
+        "ref": "reserved-turns-v1/source/docs-reserved-turns-v1",
+        "path": "docs/reserved-turns-v1.md",
+        "seal": "478e832426bf1e98ceed75d2010d062d3bac3c9297dfa2b44f411a963ae4e8d8",
+        "previousSeal": "8ddd0bf4e29c7e6ae8c9875cbfc2439c05a89e91488be429bce41743c79a69bb",
+        "review": "Reviewed docs/reserved-turns-v1.md: publish completed narration and follow events inside the world/runtime transaction, no async worker claims or additional provider calls; verify binding v7 requests and usage receipts while retaining historical completion rules. Focused32 tests passed; public snapshot and invalid-turn non-publication covered. Historical test assertions retained."
+      },
+      {
+        "ref": "unified-completion-v1/source/awareness-public-observation",
+        "path": "backend/src/scripts/awareness-public-observation.ts",
+        "seal": "6bdddf911e3d12d5705d3ed3ceaa401ce4b1d4c8b9adb710b7aed5c4d9f912dd",
+        "previousSeal": "d3f9d3cd25d72fa3ed8aca6330236050eb067dee2b1ee277ebf5de1db02625fb",
+        "review": "Reviewed backend/src/scripts/awareness-public-observation.ts: publish completed narration and follow events inside the world/runtime transaction, no async worker claims or additional provider calls; verify binding v7 requests and usage receipts while retaining historical completion rules. Focused32 tests passed; public snapshot and invalid-turn non-publication covered. Historical test assertions retained."
+      },
+      {
+        "ref": "verification/awareness-usage-verifier-bounded-20261008",
+        "path": "backend/src/scripts/awareness-public-observation.test.ts",
+        "seal": "491cee0da10c9d067b2da32cbdbf82a85320a00999661c9ae913c3f150e420d0",
+        "previousSeal": "b10cb0ec76f58cbd67da2b21dafb7685339d78a149d0e398b001370c5a62805d",
+        "review": "Reviewed backend/src/scripts/awareness-public-observation.test.ts: publish completed narration and follow events inside the world/runtime transaction, no async worker claims or additional provider calls; verify binding v7 requests and usage receipts while retaining historical completion rules. Focused32 tests passed; public snapshot and invalid-turn non-publication covered. Historical test assertions retained."
+      },
+      {
+        "ref": "all-tests-20261008/current-source-closure/verification/provider-accounting-current-20261007",
+        "path": "backend/src/llm/provider-accounting.test.ts",
+        "previousSeal": "a5668380d6684c21303b3ccb0da38341aadc2896b39ab816a08218fdc82ccf33",
+        "seal": "a1538ad85e18d9a3611b7e2f6da969c0d9287150f2c96ffddf99913094adf270",
+        "review": "Bind the current accounting and taxonomy implementations exercised by all17 behavioral cases."
+      }
+    ]
+  },
+  "officialVerification": {
+    "date": "2026-10-11",
+    "command": "npm test",
+    "postgres": "PostgreSQL 16.15 (Ubuntu 16.15-0ubuntu0.24.04.1) on x86_64-pc-linux-gnu, compiled by gcc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0, 64-bit|kshiai_awareness_test|127.0.0.1|15441",
+    "testAuthority": {
+      "active": 254,
+      "provisional": 0,
+      "disabled": 0
+    },
+    "tests": 1548,
+    "suites": 256,
+    "pass": 1548,
+    "fail": 0,
+    "cancelled": 0,
+    "skipped": 0,
+    "checks": {
+      "typecheck": "passed",
+      "build": "passed",
+      "static": "passed",
+      "adr0071and0072": "passed",
+      "sealgraphFsck": "ok",
+      "diffCheck": "passed"
+    },
+    "pertValidation": "Read-only supported projection: version6 without owner/history fields; document check, precedence/resource schedules and next; full version19 owner/history validation not available in local CLI.",
+    "normalLogicalCallsPerTurn": 4,
+    "paidCalls": 0,
+    "deployment": "Not performed; application v0.24.0-rc.9 remains production.",
+    "quality": "Live model adjudication, entertainment value and monetary savings not measured."
+  },
+  "finalWhitespaceReview": [
+    {
+      "path": "backend/src/services/reserved-turn-policy.ts",
+      "ref": "reserved-turns-v1/source/backend-src-services-reserved-turn-policy",
+      "previousSeal": "b08f20e277387f1f34eb19b74efe9732da07d5326ca49472c4a5611eb1418854",
+      "seal": "fee6074b3050d9247673d9d8bb4feb3e407cfb9f74a89b41637c48d36db742cb",
+      "review": "Individually reviewed final EOF-only whitespace cleanup in reserved-turn-policy.ts. No token or behavior change; official1548pass and downstream execution/HTTP regressions preserved."
+    },
+    {
+      "path": "backend/src/routes-structured-asset-integration.test.ts",
+      "ref": "all-tests-20261008/current-source-closure/verification/structured-asset-integration-bounded-20261008",
+      "previousSeal": "2b501130e2cf47aba64722a743ff0d5fac727d59e92fb20438a545c729fe8155",
+      "seal": "d08be3c7a12918b5304a7285b9c856afa72037fc9c58c5f9cbb041f100b31c31",
+      "review": "Individually reviewed final EOF-only whitespace cleanup in reserved-turn-policy.ts. No token or behavior change; official1548pass and downstream execution/HTTP regressions preserved."
+    },
+    {
+      "path": "backend/src/services/reserved-turn-execution.test.ts",
+      "ref": "reserved-turns-v1/test/backend-src-services-reserved-turn-execution.test",
+      "previousSeal": "e9170bf0430ecc6fa8bb7d398e00b26da7e3d929b5a6a2a6d21aaccde3e1d7b1",
+      "seal": "c2e7f95fd1c215fcedef3cc6d433a586211376130385e788ef14408c2c7b8ab2",
+      "review": "Individually reviewed final EOF-only whitespace cleanup in reserved-turn-policy.ts. No token or behavior change; official1548pass and downstream execution/HTTP regressions preserved."
+    }
+  ],
+  "finalWhitespaceVerification": {
+    "change": "Remove one blank line at EOF; no executable token change.",
+    "tests": 7,
+    "pass": 7,
+    "fail": 0,
+    "skipped": 0,
+    "command": "node --import tsx --test backend/src/services/reserved-turn-execution.test.ts backend/src/routes-structured-asset-integration.test.ts"
+  }
+}

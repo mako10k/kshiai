@@ -1017,6 +1017,22 @@
     {
       "path": "backend/src/services/unified-consciousness-integration.test.ts",
       "ref": "unified-v1/test/backend-src-services-unified-consciousness-integration.test"
+    },
+    {
+      "path": "backend/src/repositories/reserved-turns-postgres.test.ts",
+      "ref": "reserved-turns-v1/test/backend-src-repositories-reserved-turns-postgres.test"
+    },
+    {
+      "path": "backend/src/services/reserved-turn-execution.test.ts",
+      "ref": "reserved-turns-v1/test/backend-src-services-reserved-turn-execution.test"
+    },
+    {
+      "path": "backend/src/services/reserved-turn-failure.test.ts",
+      "ref": "reserved-turns-v1/test/backend-src-services-reserved-turn-failure.test"
+    },
+    {
+      "path": "packages/shared/src/reserved-turns.test.ts",
+      "ref": "reserved-turns-v1/test/packages-shared-src-reserved-turns.test"
     }
   ]
 }

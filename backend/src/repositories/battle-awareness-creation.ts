@@ -1,3 +1,5 @@
+import { type ReservedTurnRuntime } from "@kshiai/shared";
+import { insertReservedRuntime } from "./reserved-turns.js";
 import { type UnifiedConsciousnessRuntime } from "@kshiai/shared";
 import { insertUnifiedRuntime } from "./unified-consciousness.js";
 import { budgetSnapshot } from "./awareness-reservation-budget.js";
@@ -202,6 +204,21 @@ export async function adoptUnifiedCreationInTransaction(connection: DatabaseConn
   const reservation = current.snapshot.reservation;
   if (!reservation) throw new Error("AWARENESS_CREATION_NOT_ADOPTABLE");
   await insertUnifiedRuntime(connection, input.battleId, { ...input.runtime,
+    startedAt: current.snapshot.startedAt, deadlineAt: current.snapshot.startedAt + input.runtime.policy.durationMs,
+    budget: budgetSnapshot([reservation]) }, new Date(input.now).toISOString());
+  await write(connection, current.revision, { ...current.snapshot, status: "adopted" }, input.now);
+}
+
+/** New turn runtime adopts the immutable encounter receipt without starting the old scheduler. */
+export async function adoptReservedCreationInTransaction(connection: DatabaseConnection, input: {
+  battleId: string; requestDigest: string; runtime: ReservedTurnRuntime; now: number;
+}): Promise<void> {
+  const current = await read(connection, input.battleId);
+  if (!current) throw new Error("AWARENESS_CREATION_IDENTITY_CONFLICT");
+  validateAdoption(current.snapshot, { ...input, runtime: { policy: input.runtime.operatingPolicy, budget: input.runtime.budget } });
+  const reservation = current.snapshot.reservation;
+  if (!reservation) throw new Error("AWARENESS_CREATION_NOT_ADOPTABLE");
+  await insertReservedRuntime(connection, input.battleId, { ...input.runtime,
     startedAt: current.snapshot.startedAt, deadlineAt: current.snapshot.startedAt + input.runtime.policy.durationMs,
     budget: budgetSnapshot([reservation]) }, new Date(input.now).toISOString());
   await write(connection, current.revision, { ...current.snapshot, status: "adopted" }, input.now);

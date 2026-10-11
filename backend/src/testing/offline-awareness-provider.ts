@@ -36,6 +36,7 @@ export function createOfflineAwarenessProvider(options?: { encounter: LlmProvide
   const frozenNarrationRequests: AwarenessFrozenNarration[][] = [];
   const identity = { provider: "xai", engineModel: "grok-e2e", fastModel: "grok-e2e" };
   const roles: AwarenessProviderRoles = {
+    consciousness: { identity, requestJson: async () => ({ actions: [], memory: [] }) },
     models: {
       subconscious: async (input) => AwarenessLatentOutputSchema.parse({
         state: { ...input.currentState, updatedTick: input.tick }, reflexDesires: [],
@@ -45,7 +46,7 @@ export function createOfflineAwarenessProvider(options?: { encounter: LlmProvide
         goal: "相手を見守る", thought: "距離を保つ", desires: [], influences: [],
       }),
     },
-    adjudication: { identity, requestJson: async () => { throw new Error("E2E_UNEXPECTED_JSON_TRANSPORT"); } },
+    adjudication: { identity, requestJson: async (system) => { if (system.includes("予約ターン裁定")) return { results: [] }; if (system.includes("予約ターン実況")) return { lines: ["二人が向き合う。"] }; throw new Error("E2E_UNEXPECTED_JSON_TRANSPORT"); } },
     adjudicationProvider: domain,
     narration: {
       identity,

@@ -161,7 +161,7 @@ export async function createProviderOperationRun(input: {
     ? JSON.parse(row.projected_operations_json) as unknown
     : row?.projected_operations_json;
   if (!row || row.observer_user_id !== input.observerUserId ||
-      row.taxonomy_revision !== PROVIDER_OPERATION_TAXONOMY_REVISION ||
+      ![PROVIDER_OPERATION_TAXONOMY_REVISION, "battle-provider-operations-v4"].includes(row.taxonomy_revision) ||
       Number(row.approved_attempt_ceiling) !== input.approvedAttemptCeiling ||
       !isDeepStrictEqual(storedProjection, input.projectedOperations) ||
       row.status !== "active") {
@@ -235,11 +235,11 @@ export async function reserveProviderOperationAttempt(input: {
       `UPDATE provider_operation_runs
           SET reserved_attempts = reserved_attempts + 1
         WHERE run_id = $1 AND battle_id = $2 AND status = 'active'
-          AND taxonomy_revision = $3
+          AND (taxonomy_revision = $3 OR (taxonomy_revision = 'battle-provider-operations-v4' AND $4 = 0))
           AND reserved_attempts < approved_attempt_ceiling
         RETURNING reserved_attempts`,
       [input.context.runId, input.context.battleId,
-        PROVIDER_OPERATION_TAXONOMY_REVISION],
+        PROVIDER_OPERATION_TAXONOMY_REVISION, input.operation.startsWith("reserved-turns-v1:") ? 1 : 0],
     );
     if (reservation.rowCount !== 1) {
       const run = await connection.query<{

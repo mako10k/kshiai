@@ -83,3 +83,5 @@ export * from "./battle-effort-perception.js";
 export * from "./consciousness-memory.js";
 export * from "./unified-consciousness-policy.js";
 export * from "./unified-consciousness.js";
+
+export * from "./reserved-turns.js";

@@ -1,3 +1,7 @@
+import { bindReservedBattleState, parseReservedCreationPolicy } from "./reserved-turn-policy.js";
+import { initializeReservedTurns, type ReservedTurnPolicy } from "@kshiai/shared";
+import { adoptReservedCreationInTransaction } from "../repositories/battle-awareness-creation.js";
+import { advanceReservedTurn } from "./reserved-turn-battle.js";
 import { BattleAssetManifestV6Schema, UnifiedConsciousnessPolicySchema, initializeUnifiedConsciousness, type UnifiedConsciousnessPolicy } from "@kshiai/shared";
 import { adoptUnifiedCreationInTransaction } from "../repositories/battle-awareness-creation.js";
 import { prepareUnifiedBattleBoundary } from "./unified-consciousness-battle.js";
@@ -541,6 +545,7 @@ type StartBattleInput = {
   awarenessPolicy?: AwarenessPolicyV1;
   /** Internal explicit opt-in; public creation remains unchanged until deployment approval. */
   consciousnessPolicy?: UnifiedConsciousnessPolicy;
+  reservedTurnPolicy?: ReservedTurnPolicy;
 };
 
 async function replayExistingBattle(
@@ -564,7 +569,7 @@ async function replayExistingBattle(
     throw new Error("BATTLE_CREATE_IDENTITY_CONFLICT");
   }
   if (input.expectedCharacterGenerationIds &&
-      ((existing.assetManifest?.schemaVersion !== 4 && (existing.assetManifest?.schemaVersion !== 5 && existing.assetManifest?.schemaVersion !== 6)) ||
+      ((!existing.assetManifest || ![4, 5, 6, 7].includes(existing.assetManifest.schemaVersion)) ||
        existing.assetManifest.characters.a.generationId !== input.expectedCharacterGenerationIds[0] ||
        existing.assetManifest.characters.b.generationId !== input.expectedCharacterGenerationIds[1])) {
     throw new Error("CUTOVER_TRIAL_GENERATION_MISMATCH");
@@ -631,6 +636,7 @@ async function resolveBattleParticipants(
 
 export async function startBattle(input: StartBattleInput): Promise<BattlePublic> {
   const awarenessPolicy = AwarenessPolicyV1Schema.parse(input.awarenessPolicy ?? AwarenessNormalPolicy);
+  const reservedTurnPolicy = parseReservedCreationPolicy(input);
   const consciousnessPolicy = input.consciousnessPolicy ? UnifiedConsciousnessPolicySchema.parse(input.consciousnessPolicy) : null;
   if (consciousnessPolicy && (awarenessPolicy.accountingMode !== "observed" || awarenessPolicy.maxDurationMs !== consciousnessPolicy.durationMs)) throw new Error("CONSCIOUSNESS_OPERATING_POLICY_INCOMPATIBLE");
   const replay = await replayExistingBattle(input);
@@ -870,6 +876,7 @@ export async function startBattle(input: StartBattleInput): Promise<BattlePublic
       log: [],
       updatedAt: new Date().toISOString(),
     };
+    state = bindReservedBattleState(state, reservedTurnPolicy);
     if (consciousnessPolicy) {
       state = { ...state, assetManifest: BattleAssetManifestV6Schema.parse({ ...state.assetManifest,
         schemaVersion: 6, consciousOutputContract: "unified-consciousness-v1", outputRevision: consciousnessPolicy.revision === "unified-consciousness-policy-v3" ? "unified-consciousness-output-v2" : "unified-consciousness-output-v1",
@@ -881,6 +888,11 @@ export async function startBattle(input: StartBattleInput): Promise<BattlePublic
       sideACharacterId: mine.id,
       sideBCharacterId: opp.id,
     }, async (connection) => {
+      if (reservedTurnPolicy) {
+        await adoptReservedCreationInTransaction(connection, { battleId: id, requestDigest: preparedEncounter.creation.requestDigest,
+          runtime: initializeReservedTurns(reservedTurnPolicy, preparedEncounter.creation.startedAt, awarenessPolicy), now: Date.now() });
+        return;
+      }
       if (consciousnessPolicy) {
         await adoptUnifiedCreationInTransaction(connection, { battleId: id, requestDigest: preparedEncounter.creation.requestDigest,
           runtime: initializeUnifiedConsciousness(consciousnessPolicy, preparedEncounter.creation.startedAt, awarenessPolicy), now: Date.now() });
@@ -4831,6 +4843,7 @@ function bindEngineLiveCheckpoint(input: {
 
 async function advanceTurnWithLease(input: Parameters<typeof advanceTurnCoreWithLease>[0]): Promise<BattlePublic> {
   const baseline = await battleRepo.getBattle(input.battleId);
+  if (baseline?.assetManifest?.schemaVersion === 7) return advanceReservedTurn(input, baseline);
   if (baseline?.assetManifest?.schemaVersion === 6) return advanceUnifiedTurnWithLease(input, baseline);
   if (baseline?.assetManifest?.schemaVersion !== 5) return advanceTurnCoreWithLease(input);
   const meta = await battleRepo.getBattleMeta(input.battleId);

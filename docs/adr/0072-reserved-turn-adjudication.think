@@ -1,0 +1,10 @@
+domain ADR0072:
+  description "Accepted revision1: reserved-turn pipeline v1; parallel A/B planning and one sequential adjudication trace."
+evidence OWNER_ACCEPTANCE:
+  "Owner requests fewer calls, stronger adjudication, no beats/ticks, parallel turns and up to5 reservations per character, then accepts the proposal: では、提案に沿って進めましょう。"
+premise CONTRACT:
+  "Two isolated parallel planning calls plus one whole-turn adjudication trace, max one public narration call. Server fixes interleaved index/initiative order and sequentially validates canonical DSL on working copy. Every reservation exactly once; success/partial has concrete effects; failure may have side effects; cancelled has no mutation. Atomic fenced world/memory/receipt commit. No mid-turn character restart, schema repair or unknown-send replay. Keep frozen ranked memory semantics and historical engines; new immutable binding/runtime."
+premise LIMITS:
+  "One generated trace cannot incorporate fresh server intermediate feedback. Long traces may be incoherent; structural tests do not prove narrative quality or savings. Initial work is implementation and offline validation; production application v0.24.0-rc.9 remains unchanged until verified release."
+decision ACCEPTANCE based_on OWNER_ACCEPTANCE, CONTRACT, LIMITS:
+  "Accept revision1. Implement new reserved-turn pipeline v1 under aligned canonical PERT; preserve historical contracts, privacy, immutable assets, usage accounting and finite transport retry policy."

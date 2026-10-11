@@ -1,9 +1,9 @@
 project UNIFIED_CONSCIOUSNESS:
-  version 18
-  title "統合意識と優先順位付き記憶の方向転換"
-  description "Owner direction2026-10-10; requirements docs/unified-consciousness-design-v1.md; ADR0067 revision2 as superseded in part by Accepted ADR0069 revision1 and docs/unified-consciousness-contract-v1.md C1-C8. Canonical successor planning for new consciousness work. Preserve historical awareness-v5 and unfinished release evidence. Estimates provisional. Owner authorized production deployment2026-10-10; current2026-10-11 production goal and Accepted ADR0071 revision1 authorize minimal necessary paid testing and exact-artifact promotion."
+  version 19
+  title "予約ターンパイプライン v1への統合"
+  description "Owner direction2026-10-11; Accepted ADR0072 revision1 and docs/reserved-turns-v1.md govern reserved-turn pipeline v1. Prior application v0.24.0-rc.9 production acceptance remains completed history. Current scope: implementation, offline verification and reviewable PR; preserve immutable historical battles and required ranked memory. No new paid execution or production change is needed for this task."
   duration_unit point
-  finish MEMORY_DEPLOYED
+  finish RESERVED_VERIFIED
   goal_owner user
   dag_owner agent
 resource DEV:
@@ -36,6 +36,46 @@ milestone MEMORY_STAGED:
   title "意識出力形式 v2の固定対戦と記憶引き継ぎを検証"
 milestone MEMORY_DEPLOYED:
   title "記憶を使う成果物が本番稼働し認証確認済み"
+milestone RESERVED_CONTRACT:
+  title "予約ターンパイプライン v1の契約を所有者受入"
+  state reached
+milestone RESERVED_CORE:
+  title "行動予約と逐次正準更新DSLの契約・実行を実装"
+  state reached
+milestone RESERVED_INTEGRATED:
+  title "新規束縛・永続化・公開APIで予約ターンを実行"
+  state reached
+milestone RESERVED_VERIFIED:
+  title "予約ターンの因果・呼出し上限・互換性を検証"
+  state reached
+task reservedContract MEMORY_DEPLOYED -> RESERVED_CONTRACT:
+  title "予約ターンパイプライン v1の契約と計画を整合"
+  description "Owner accepts proposed direction2026-10-11; Accepted ADR0072 revision1 and docs/reserved-turns-v1.md govern. Define0..5 reservations each, parallel isolated A/B planning, one adjudication trace, deterministic sequential DSL application, ranked memory and historical compatibility. No paid run or production change in this implementation task. Completion: accepted ADR, aligned DAG and supported projection document/both schedules/next checks."
+  duration 2p
+  requires:
+    DEV 1
+  status done
+task reservedCore RESERVED_CONTRACT -> RESERVED_CORE:
+  title "予約・裁定列・正準状態更新の型と実行境界を実装"
+  description "Implement strict reservation/result/world DSL and deterministic order; one result per reservation and sequential working-copy validation, atomic failure, no semantic classifier fields in memory. Backend parallel A/B and single judge request with durable no-resend receipts and bounded role calls. Behavioral regressions for conflicts, real consequences, partial/failure/cancel and frozen memory."
+  duration 5p
+  requires:
+    DEV 1
+  status done
+task reservedIntegration RESERVED_CORE -> RESERVED_INTEGRATED:
+  title "不変束縛と保存・作成・advance・公開表示を接続"
+  description "New immutable binding/runtime and additive SQLite/PostgreSQL migration, new creation selector and one-turn advance dispatch; preserve all saved old engine paths. Reuse auth/fences/idempotency/accounting/privacy and bound narration to public consequences. Test complete HTTP/repository execution with mock transports, no paid provider."
+  duration 5p
+  requires:
+    DEV 1
+  status done
+task reservedVerify RESERVED_INTEGRATED -> RESERVED_VERIFIED:
+  title "予約ターンと旧対戦の回帰を公式検証"
+  description "Individually review/reseal affected authority; shared build then official full suite with zero invalid authority disabled, typecheck/build/static/ADR. Record exact verification and call budget; PR reviewable. Offline completion is not provider quality, savings or production deployment. Completed: official1548pass/254active0disabled/0skip with native PostgreSQL; build/typecheck/static/ADR0071+0072/fsck pass, atomic public narration and binding v7 acceptance covered; focused authority review recorded in docs/evidence/reserved-turns-offline-review-2026-10-11.json. Reviewable change prepared on authorized codex/unified-consciousness; no paid run or deployment."
+  duration 3p
+  requires:
+    DEV 1
+  status done
 task releaseMemory MEMORY_VERIFIED -> MEMORY_RELEASE_READY:
   title "必須順位記憶を新規公開対戦の既定へ切替"
   description "Current owner goal2026-10-11 authorizes production deployment and minimal production connections/tests/paid use. Accepted ADR0071 revision1 supersedes only ADR0070 opt-in boundary. Change public new creation to policy v3/prompt v3/output v2, preserve existing saved bindings. Update HTTP regression, individually review affected authority, full governed tests/build/typecheck/static, PR and exact-main CI. Completion requires successful checks on exact candidate. Completed: PR184, main22d23483, exact-main CI38120386406 all four successful; governed1530pass/250active0disabled."

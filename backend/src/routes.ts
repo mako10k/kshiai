@@ -1,3 +1,4 @@
+import { bindReservedTurnPolicy } from "./services/reserved-turn-policy.js";
 import { getHistoricalBattleCharacter } from "./repositories/battle-historical-characters.js";
 import { assertCharacterV3UpdateTarget } from "./services/character-update-policy.js";
 /** R: Adapt authenticated HTTP requests to application operations. */
@@ -5,7 +6,6 @@ import { readBattleAccess } from "./services/battle-lifecycle-access.js";
 import { candidateToSheet, assertCharacterCandidateReady, fixedCandidateOwnerReview } from "./services/character-authoring-candidate.js";
 import { Hono } from "hono";
 import {
-  UnifiedConsciousnessPolicyV3,
   BattlefieldChatRequestSchema,
   CharacterChatRequestSchema,
   CharacterDraftCorrectionRequestSchema,
@@ -2605,7 +2605,7 @@ export function buildRoutes(options: {
         ? admissionControl.policy.trialBindings?.generationIds
         : undefined;
       const create = () => startBattle({
-        consciousnessPolicy: UnifiedConsciousnessPolicyV3,
+        reservedTurnPolicy: bindReservedTurnPolicy(llm.awareness),
         userId: user.id,
         battleId,
         myCharacterId: body.myCharacterId,

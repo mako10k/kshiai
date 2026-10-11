@@ -3,6 +3,7 @@ import { z } from "zod";
 import { CharacterDefinitionV3Schema, type CharacterProposalPayloadV1 } from "@kshiai/shared";
 import { createCharacterSemanticAuthoringAdapterV3 } from "../services/semantic-authoring/adapters/character-v3.js";
 import { createSemanticAuthoringHttpProviderV1 } from "../llm/semantic-authoring-provider.js";
+import { createOfflineAwarenessProvider } from "./offline-awareness-provider.js";
 import { MockLlmProvider } from "../llm/mock.js";
 import { FocusedCharacterProfileGenerationV1Schema, FocusedCharacterProfileClaimsV1Schema }
   from "../services/semantic-authoring/adapters/character-profile-work.js";
@@ -171,7 +172,8 @@ export function createOfflineFocusedAuthoringProvider(options: {
     override async generateCharacterDefinitionV2(): Promise<never> { throw new Error("LEGACY_AUTHORING_CALLED"); }
     override async generateCharacterProfile(): Promise<never> { throw new Error("LEGACY_AUTHORING_CALLED"); }
   }
-  return Object.assign(new NoLegacyAuthoring(), { semanticAuthoringProvider: measuredTransport,
+  const battle = createOfflineAwarenessProvider();
+  return Object.assign(new NoLegacyAuthoring(), { awareness: battle.awareness, awarenessBillingContracts: [], prepareBattleEncounter: battle.prepareBattleEncounter.bind(battle), semanticAuthoringProvider: measuredTransport,
     semanticAuthoringWorkerPolicy: workerPolicy, focusedFixtureCalls: () => calls,
     focusedFixtureWork: () => [...work], focusedFixtureBounds: () => [...preparedBounds] });
 }

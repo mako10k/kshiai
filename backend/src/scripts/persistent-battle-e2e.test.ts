@@ -53,7 +53,7 @@ describe("persistent battle E2E runner", () => {
   it("classifies every observation provider operation under one revision", () => {
     assert.equal(
       OBSERVATION_PROVIDER_OPERATION_TAXONOMY_REVISION,
-      "battle-provider-operations-v4",
+      "battle-provider-operations-v5",
     );
     assert.deepEqual(OBSERVATION_PROVIDER_OPERATION_LAYERS, {
       concretizeBattlefield: "encounter",
@@ -73,6 +73,9 @@ describe("persistent battle E2E runner", () => {
       narrateTurn: "narration",
       narrateJudgment: "narration",
       narrateAftermath: "narration",
+      "reserved-turns-v1:character": "characterExpression",
+      "reserved-turns-v1:adjudication": "environment",
+      "reserved-turns-v1:narration": "narration",
       referee: "referee",
       "awareness-v5:subconscious": "deepPsyche",
       "awareness-v5:conscious": "characterExpression",
@@ -118,7 +121,7 @@ describe("persistent battle E2E runner", () => {
       runId: "run-ledger",
       battleId: "battle-ledger",
       battleObservationRunId: "run-ledger",
-      taxonomyRevision: "battle-provider-operations-v4",
+      taxonomyRevision: "battle-provider-operations-v5",
       approvedAttemptCeiling: 5,
       reservedAttempts: 3,
       status: "active",
@@ -434,4 +437,12 @@ describe("persistent battle E2E runner", () => {
     assert.equal(calls, 9);
     assert.deepEqual(delays, [250, 500, 1000, 2000, 2000, 2000, 2000, 2000]);
   });
+});
+
+it("uses committed turn receipts for battle binding v7 while retaining older canonical transition requirements", async () => {
+  const { assertCanonicalObservationEvidence } = await import("./persistent-battle-e2e.js");
+  assert.doesNotThrow(() => assertCanonicalObservationEvidence(7, 0, 0, 1));
+  assert.throws(() => assertCanonicalObservationEvidence(7, 0, 0, 0));
+  assert.throws(() => assertCanonicalObservationEvidence(6, 0, 0, 1));
+  assert.doesNotThrow(() => assertCanonicalObservationEvidence(6, 1, 1, 1));
 });

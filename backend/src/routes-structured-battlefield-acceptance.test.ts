@@ -83,6 +83,7 @@ class BattlefieldStructureFailureProvider extends MockLlmProvider {
 
 const llm = new BattlefieldAcceptanceProvider();
 const awarenessRoles: AwarenessProviderRoles = {
+  consciousness: { identity: { provider: "xai", engineModel: "grok-test", fastModel: "grok-test" }, requestJson: async () => ({ actions: [], memory: [] }) },
   models: {
     subconscious: async (input) => AwarenessLatentOutputSchema.parse({
       state: { ...input.currentState, updatedTick: input.tick },
