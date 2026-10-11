@@ -10,7 +10,7 @@ export async function unifiedTransportAdmission(timeoutMs: number, adjudicationB
   const battleId = scope?.battleId;
   if (!battleId || !["consciousness", "narration", "adjudication"].includes(scope.role ?? "")) return null;
   const current = await getUnifiedRuntime(battleId);
-  if (current?.runtime.policy.revision !== "unified-consciousness-policy-v2") return null;
+  if (!current || current.runtime.policy.retries === 0) return null;
   const deadlineAt = Math.min(Date.now() + timeoutMs, current.runtime.deadlineAt);
   const terminalNarration = current.runtime.status === "terminal" && scope.role === "narration" && current.runtime.terminalAt !== null &&
     Date.now() < current.runtime.terminalAt + current.runtime.operatingPolicy.narration.terminalDrainMs;

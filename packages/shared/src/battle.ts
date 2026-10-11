@@ -1993,7 +1993,7 @@ export type BattleAssetManifest = BattleAssetManifestFields & (
   | { schemaVersion: 2 | 3; consciousOutputContract?: never }
   | { schemaVersion: 4; consciousOutputContract?: "dynamic-v4" }
   | { schemaVersion: 5; consciousOutputContract: "awareness-v5"; awarenessPolicy: AwarenessPolicyV1; promptRevision: AwarenessPromptRevision; outputRevision: string }
-  | { schemaVersion: 6; consciousOutputContract: "unified-consciousness-v1"; awarenessPolicy: AwarenessPolicyV1; promptRevision: AwarenessPromptRevision; outputRevision: "unified-consciousness-output-v1"; consciousnessPolicy: UnifiedConsciousnessPolicy; consciousnessPromptRevision: "unified-consciousness-prompt-v1" | "unified-consciousness-prompt-v2" }
+  | { schemaVersion: 6; consciousOutputContract: "unified-consciousness-v1"; awarenessPolicy: AwarenessPolicyV1; promptRevision: AwarenessPromptRevision; outputRevision: "unified-consciousness-output-v1" | "unified-consciousness-output-v2"; consciousnessPolicy: UnifiedConsciousnessPolicy; consciousnessPromptRevision: "unified-consciousness-prompt-v1" | "unified-consciousness-prompt-v2" | "unified-consciousness-prompt-v3" }
 );
 
 export const BattleBasicAttackSourceSchema = z.discriminatedUnion("kind", [
@@ -2212,11 +2212,17 @@ export type BattleAssetManifestV5 = z.infer<typeof BattleAssetManifestV5Schema>;
 export const BattleAssetManifestV6Schema = BattleAssetManifestV5Schema.extend({
   schemaVersion: z.literal(6),
   consciousOutputContract: z.literal("unified-consciousness-v1"),
-  outputRevision: z.literal("unified-consciousness-output-v1"),
+  outputRevision: z.enum(["unified-consciousness-output-v1", "unified-consciousness-output-v2"]),
   consciousnessPolicy: UnifiedConsciousnessPolicySchema,
-  consciousnessPromptRevision: z.enum(["unified-consciousness-prompt-v1", "unified-consciousness-prompt-v2"]),
+  consciousnessPromptRevision: z.enum(["unified-consciousness-prompt-v1", "unified-consciousness-prompt-v2", "unified-consciousness-prompt-v3"]),
   rules: BattleAssetManifestV5Schema.shape.rules.extend({ psycheReaction: z.literal("unified-consciousness-v1") }).strict(),
-}).strict();
+}).strict().superRefine((manifest, context) => {
+  const ranked = manifest.consciousnessPolicy.revision === "unified-consciousness-policy-v3";
+  if (ranked !== (manifest.outputRevision === "unified-consciousness-output-v2") ||
+    ranked !== (manifest.consciousnessPromptRevision === "unified-consciousness-prompt-v3")) {
+    context.addIssue({ code: "custom", message: "Consciousness memory binding mismatch" });
+  }
+});
 export type BattleAssetManifestV6 = z.infer<typeof BattleAssetManifestV6Schema>;
 
 

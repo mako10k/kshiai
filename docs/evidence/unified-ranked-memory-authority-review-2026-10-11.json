@@ -1,0 +1,341 @@
+{
+  "scope": "opt-in consciousness policy v3 / prompt v3 / output format v2",
+  "governingAdr": "Accepted ADR0070 revision1",
+  "paidProviderAttempts": 0,
+  "publicDefault": "policy v2 unchanged",
+  "targetedTests": {
+    "files": 2,
+    "pass": 30,
+    "fail": 0
+  },
+  "affectedOfflineTests": {
+    "files": 22,
+    "pass": 197,
+    "fail": 0
+  },
+  "additionalIntegration": {
+    "pass": 3,
+    "fail": 0
+  },
+  "planningValidation": {
+    "forwardProjectionOnly": true,
+    "mapping": "version16 to grammar6; omit unsupported owner/history metadata in temporary copy only",
+    "checks": "document check, both schedules and next passed; next memorySnapshot",
+    "limitation": "full canonical owner/history DSL unsupported by installed and current upstream tools"
+  },
+  "reviews": [
+    {
+      "ref": "test-recovery-v1/basis/0e5e6c7cf01a162e",
+      "path": "backend/src/services/battle-service.ts",
+      "review": "Only explicit policy-v3 creation selects immutable output-v2/prompt-v3. Public routes continue policy-v2; encounter, migration, idempotency, historical bindings and world execution unchanged.",
+      "previousSeal": "d8919b608870bff9646a8fe62a84f56e604a7910ccd7392952ba444f23f7bda1",
+      "seal": "dde1dd3653e3978421c26f3660a5b831b72002cddf0e8d60e467c1125f9d1e8f"
+    },
+    {
+      "ref": "test-recovery-v1/basis/0159fc2ab1c5fb85",
+      "path": "backend/src/services/battle-service.ts",
+      "review": "Only explicit policy-v3 creation selects immutable output-v2/prompt-v3. Public routes continue policy-v2; encounter, migration, idempotency, historical bindings and world execution unchanged.",
+      "previousSeal": "13ed7f60d597ecee862ea60fb19691fe69765c27487ce5808b84f1dbc9978672",
+      "seal": "5c9593c54eee7093fcb9bb41909cc7ade080d0dd509ba5f9257870971a86eddd"
+    },
+    {
+      "ref": "test-recovery-v1/basis/18b9b5dcd683f549",
+      "path": "backend/src/services/battle-service.ts",
+      "review": "Only explicit policy-v3 creation selects immutable output-v2/prompt-v3. Public routes continue policy-v2; encounter, migration, idempotency, historical bindings and world execution unchanged.",
+      "previousSeal": "27fbc0bf8679d7def3e76172624388a0890cb4cd234ea2045df04df24360024b",
+      "seal": "ebdb386cb89d0ba84393547ebe93b09b549d6375cba3f7844fb69ccfdcad7595"
+    },
+    {
+      "ref": "all-tests-20261008/current-source-closure/verification/historical-agency-inventory-bounded-20261008",
+      "path": "backend/src/services/character-agency-inventory.test.ts",
+      "review": "Historical agency inventory remains bounded helper evidence, not model quality; legacy objective/knowledge/goal/privacy assertions unchanged. Current change adds only opt-in policy v3 ranked memory; no test/assertion deletion. Reviewed unchanged test intents and source diff, affected offline suite passed.",
+      "previousSeal": "e8d316b1fa48cf5f8116649e5063190b1f7a8afb7332ca2435b855ba9f389368",
+      "seal": "bc5a648d3a4dae3de69c56477416fb0a5d088b9aa7e6ca7b7a350e2d79c473ff"
+    },
+    {
+      "ref": "test-recovery-v1/basis/5d646414a88f23e7",
+      "path": "backend/src/services/battle-service.ts",
+      "review": "Only explicit policy-v3 creation selects immutable output-v2/prompt-v3. Public routes continue policy-v2; encounter, migration, idempotency, historical bindings and world execution unchanged.",
+      "previousSeal": "97490ced97e7aa5ab0807771a76e151741e9c65bae2a74c2ca3426490a719458",
+      "seal": "fad085f1eebeab30e70bba636be77f8854676a64c67c23a01102c8d529cff50b"
+    },
+    {
+      "ref": "all-tests-20261008/current-source-closure/verification/battle-speech-wiring-bounded-20261008",
+      "path": "backend/src/services/battle-speech-wiring.test.ts",
+      "review": "Historical speech acceptance/action rejection, causal receipts, committed utterance continuity and narration placement assertions unchanged; new prompt only opted-in v6. Current change adds only opt-in policy v3 ranked memory; no test/assertion deletion. Reviewed unchanged test intents and source diff, affected offline suite passed.",
+      "previousSeal": "50fa1b8996196b892700336cbdfc9768942f5cdf5670147ebb857f3d96132996",
+      "seal": "162f7e37c20c617fe82d5ddbd884ee2c74be932eaf76af88646a79272abb01b5"
+    },
+    {
+      "ref": "all-tests-20261008/current-source-closure/verification/scene-beat-wiring-bounded-20261008",
+      "path": "backend/src/services/scene-beat-wiring.test.ts",
+      "review": "Historical beat deferral, microturn commit, rejected bucket and orphan advance assertions unchanged; no change to beat scheduling. Current change adds only opt-in policy v3 ranked memory; no test/assertion deletion. Reviewed unchanged test intents and source diff, affected offline suite passed.",
+      "previousSeal": "04377b30b818e82bef7ce3ebf5289cd50a43bbb598b54fe474d4d2d695ecf7f6",
+      "seal": "7560f2c05fbe8a37957346140ee044173efd312db391ca6a49acdb24a506d579"
+    },
+    {
+      "ref": "all-tests-20261008/current-source-closure/verification/structured-asset-integration-bounded-20261008",
+      "path": "backend/src/routes-structured-asset-integration.test.ts",
+      "review": "Immutable generations, replay/history/deletion and privacy assertions retained; new exact saved prompt-v2 assertion for public policy-v2 creation passed offline. Current change adds only opt-in policy v3 ranked memory; no test/assertion deletion. Reviewed unchanged test intents and source diff, affected offline suite passed.",
+      "previousSeal": "b2f2b22e9c83b67df242d638cd05a65a3422e44015101803b113c75c111af9cd",
+      "seal": "4b941e45faec76059a51c58e1413334619108573444b301d5eb6c2fd5d5fe566"
+    },
+    {
+      "ref": "all-tests-20261008/current-source-closure/verification/v3-battle-creation-recovery-bounded-20261008",
+      "path": "backend/src/services/v3-battle-creation.test.ts",
+      "review": "Historical V4/V5 exact immutable character generations, free-action-only execution and durable repair assertions retained; no new reinterpretation of those bindings. Current change adds only opt-in policy v3 ranked memory; no test/assertion deletion. Reviewed unchanged test intents and source diff, affected offline suite passed.",
+      "previousSeal": "a63959104ec63dd65408cd6d3b7da4811e68101fa2af149a3b85b96d27f1ad6b",
+      "seal": "1488567c29e3422e302c071ac6950189a388100cd137f5c5396db4502085865c"
+    },
+    {
+      "ref": "test-recovery-v1/basis/65bd5e628346546f",
+      "path": "backend/src/services/battle-service.ts",
+      "review": "Only explicit policy-v3 creation selects immutable output-v2/prompt-v3. Public routes continue policy-v2; encounter, migration, idempotency, historical bindings and world execution unchanged.",
+      "previousSeal": "676edd54d0fbf7ea0c2dce2d98093e78f78b573f5bec41e654ec5fb654f5c426",
+      "seal": "df376b4eb3bb1f4a0f67995eae586c2907339880b8e1b2d235cbe2a9a943538f"
+    },
+    {
+      "ref": "all-tests-20261008/current-source-closure/awareness-guidance-20261007/verification-execution",
+      "path": "backend/src/services/awareness-execution.test.ts",
+      "review": "Historical latent/frozen A routing, deadlines, no-resend, proof and physical limits unchanged; unified saved prompt revision does not alter this executor. Current change adds only opt-in policy v3 ranked memory; no test/assertion deletion. Reviewed unchanged test intents and source diff, affected offline suite passed.",
+      "previousSeal": "bd2628d327d464a8b64d7298618eecd0b7bc21a66087ddf0cf5513cfc7f5f552",
+      "seal": "63bbc457642b34484219129c4c21b70f2ec87da1c00e324b4f1540298a24c1b3"
+    },
+    {
+      "ref": "test-recovery-v1/basis/a07dd2c8f0ac65c2",
+      "path": "backend/src/routes.ts",
+      "review": "Unchanged public selector remains UnifiedConsciousnessPolicyV2. Opt-in v3 is internal startBattle input only; auth, authoring assets, privacy and public creation tests remain.",
+      "previousSeal": "c58626607079962468ca32735437f4f8dfea16b4c859ba9c4318b08aced41caa",
+      "seal": "820b7faa67edd766a2de2acd794d4b6fa15cfa1eb23beb3b8f3f5cc4d73c4790"
+    },
+    {
+      "ref": "all-tests-20261008/current-source-closure/verification/stable-area-battlefield-http-acceptance-20261007",
+      "path": "backend/src/routes-structured-battlefield-acceptance.test.ts",
+      "review": "Failure, legacy exclusion, confirmation/expiry/drift and exact preset binding assertions unchanged; new prompt revision does not alter asset authoring lifecycle. Current change adds only opt-in policy v3 ranked memory; no test/assertion deletion. Reviewed unchanged test intents and source diff, affected offline suite passed.",
+      "previousSeal": "9d1414ccc298a499e1c6f62de453d71af03efe7be3b4ad1a9255dfd3f506845a",
+      "seal": "f5a72b87adaddaab3c2a6269ec52721d773543b32e7439b67a4ba5cdbf9c2db0"
+    },
+    {
+      "ref": "all-tests-20261008/current-source-closure/verification/stable-area-narration-http-acceptance-20261007",
+      "path": "backend/src/routes-structured-narration-acceptance.test.ts",
+      "review": "Failure, legacy exclusion, confirmation/expiry/corruption and ready generation assertions unchanged; prompt revision does not alter narration asset lifecycle. Current change adds only opt-in policy v3 ranked memory; no test/assertion deletion. Reviewed unchanged test intents and source diff, affected offline suite passed.",
+      "previousSeal": "cdc38d766e797495d22feb108e46da969c84ee6c99455d2b2bbd597444db8e75",
+      "seal": "62bc7c507a1ae3a6ceab10b10d9ecce855bc02afe91316159015733ba5ff8ebd"
+    },
+    {
+      "ref": "test-recovery-v1/basis/a3adc469058d306b",
+      "path": "backend/src/services/battle-service.ts",
+      "review": "Only explicit policy-v3 creation selects immutable output-v2/prompt-v3. Public routes continue policy-v2; encounter, migration, idempotency, historical bindings and world execution unchanged.",
+      "previousSeal": "456001cc920293122c02cc880808cf6addc4b780c6e0729887cfb313a6b7ddd9",
+      "seal": "e8322aff5540c8da8c0ad6fba06137c2189daeebb69ff9d176e3956e07ea8ca8"
+    },
+    {
+      "ref": "all-tests-20261008/current-source-closure/verification/owner-characters-rating-20261008",
+      "path": "backend/src/repositories/characters.test.ts",
+      "review": "Owner search/isolation, memory and rating population tests unchanged; prompt selection only affects opted-in v6 creation, not character repository state. Current change adds only opt-in policy v3 ranked memory; no test/assertion deletion. Reviewed unchanged test intents and source diff, affected offline suite passed.",
+      "previousSeal": "3fc00603f027a8a7043c24cee387ba97d8497f4c9fcabc695dc5b5110e342d08",
+      "seal": "2be73c0ae3679684ff47b86c2624d3062fdf8252806c1def0b30530f62dee622"
+    },
+    {
+      "ref": "all-tests-20261009/current-source-closure/verification/owner-battle-public-20261008",
+      "path": "backend/src/services/battle-public.test.ts",
+      "review": "Public semantic privacy, immutable rating, world patch rejection/commit and sensory registry assertions retained; prompt enum expansion does not expose private state. Current change adds only opt-in policy v3 ranked memory; no test/assertion deletion. Reviewed unchanged test intents and source diff, affected offline suite passed.",
+      "previousSeal": "566661782382862081d218dcd33d2dccb13b10c081fc7c82a10987c816106f65",
+      "seal": "7c593dffb72eb2d4e269994d175f27efe2755538acaf781a6870f8243a55d1a0"
+    },
+    {
+      "ref": "test-recovery-v1/basis/c1a76bfb7cb2eba3",
+      "path": "backend/src/services/battle-service.ts",
+      "review": "Only explicit policy-v3 creation selects immutable output-v2/prompt-v3. Public routes continue policy-v2; encounter, migration, idempotency, historical bindings and world execution unchanged.",
+      "previousSeal": "b0a578ac331b98885d7911fbdf079ea6eb56cff5a6f698b04818195ff76970d9",
+      "seal": "b31be10bd696e60c41039a6bef2ffe1115e8458283ae028c664d8fa2aff39ddf"
+    },
+    {
+      "ref": "all-tests-20261008/current-source-closure/verification/retained-agency-v3-persistence-current-20261007",
+      "path": "backend/src/services/conscious-agency-persistence.test.ts",
+      "review": "Historical V3/V4 saved agency and SQLite CAS assertions unchanged; new v6 prompt literal does not reinterpret saved historical generation. Current change adds only opt-in policy v3 ranked memory; no test/assertion deletion. Reviewed unchanged test intents and source diff, affected offline suite passed.",
+      "previousSeal": "82e8c031b71dfc90c0880e358e1b188cd08837b0d84436a3b1f672b7b7f054c1",
+      "seal": "6d900ddb59ea9e57d07468998963fd4f3cb2e6d8f9f007627eb7dad95d3bea5f"
+    },
+    {
+      "ref": "all-tests-20261008/current-source-closure/verification/retained-agency-v3-runtime-current-20261007",
+      "path": "backend/src/services/conscious-agency-runtime.test.ts",
+      "review": "Historical V3 tuple validation, prior decision, independent speech and private goal assertions unchanged; unified prompt text not used. Current change adds only opt-in policy v3 ranked memory; no test/assertion deletion. Reviewed unchanged test intents and source diff, affected offline suite passed.",
+      "previousSeal": "baeeb77da3b7490f493390eb1f9e9106687b8c0294ccf6486cd886d0b84373e2",
+      "seal": "f2738410069445ed575f4d9876f0cc399c9b9663031faa0149dc2cb3bd7f7310"
+    },
+    {
+      "ref": "test-recovery-v1/basis/c5c8997e9f5f67cb",
+      "path": "backend/src/services/battle-service.ts",
+      "review": "Only explicit policy-v3 creation selects immutable output-v2/prompt-v3. Public routes continue policy-v2; encounter, migration, idempotency, historical bindings and world execution unchanged.",
+      "previousSeal": "24192dc1b1855dda03361c44a2e75c973f4fe8aa99f9428cd71d9c9e92824ace",
+      "seal": "ac64f0f36931df5a2e83ab8c2603266a7c71d5991163ff5cac9735c1cc7eafd8"
+    },
+    {
+      "ref": "all-tests-20261008/current-source-closure/verification/battle-causal-narration-bounded-current-20261007",
+      "path": "backend/src/services/battle-causal-narration.test.ts",
+      "review": "Off/guarded narrator projection and invalid-evidence fallback assertions unchanged; consciousness prompt revision does not affect narration projection. Current change adds only opt-in policy v3 ranked memory; no test/assertion deletion. Reviewed unchanged test intents and source diff, affected offline suite passed.",
+      "previousSeal": "c9b11ed8ae7e47f993506aea053683e2c88c031809782792b0e017738aae96fb",
+      "seal": "9d8587f5b6ff40f643fd17c93d437253842808fde0f851de33ddf2ac0a00df89"
+    },
+    {
+      "ref": "all-tests-20261008/current-source-closure/verification/battle-consumer-wiring-bounded-current-20261007",
+      "path": "backend/src/services/battle-consumer-wiring.test.ts",
+      "review": "Frozen own profile/perception, knowledge and privacy boundaries unchanged; v6 prompt revision selects only consciousness text. Current change adds only opt-in policy v3 ranked memory; no test/assertion deletion. Reviewed unchanged test intents and source diff, affected offline suite passed.",
+      "previousSeal": "4d3c6a9cadb4986157f2a2d72d575e207eb7f701af9641fba31c849e1f41f2b9",
+      "seal": "3faa15d670913ac4bdbb380a8682e49f4ebc4eaf525475779dc5588e2b711ab3"
+    },
+    {
+      "ref": "all-tests-20261008/current-source-closure/verification/normal-awareness-policy-bounded-current-20261007",
+      "path": "backend/src/services/normal-awareness-policy.test.ts",
+      "review": "Historical default awareness-v5-usage-v3, fixed timing and prologue role policy assertions unchanged; only explicit consciousness policy-v2 selects prompt-v2. Current change adds only opt-in policy v3 ranked memory; no test/assertion deletion. Reviewed unchanged test intents and source diff, affected offline suite passed.",
+      "previousSeal": "bc8ecb69d2f522a61d622a38ba0af8fffb7414028265cdfd86bd3830069f109c",
+      "seal": "b11141c5e278ba10bf208f236bb816369c6092c28a6d20db18296a4d50e11bfd"
+    },
+    {
+      "ref": "test-recovery-v1/basis/59df7291e9c37342",
+      "path": "backend/src/services/battle-service.ts",
+      "review": "Only explicit policy-v3 creation selects immutable output-v2/prompt-v3. Public routes continue policy-v2; encounter, migration, idempotency, historical bindings and world execution unchanged.",
+      "previousSeal": "ea03c00833520d75b5d1ec6f56a97b7db1822ae63c77bd390b64fc2c4dde6882",
+      "seal": "edad73a04ea05d6584b65b3c897425c4f9466edee123796189b7ecd0bd807df7"
+    },
+    {
+      "ref": "all-tests-20261008/current-source-closure/verification/awareness-battle-creation-bounded-awareness-creation-20261007",
+      "path": "backend/src/services/awareness-battle-creation.test.ts",
+      "review": "Historical default v5 immutable binding, encounter accounting and idempotent no-duplicate dispatch retained; v6-only prompt selector never applies. Current change adds only opt-in policy v3 ranked memory; no test/assertion deletion. Reviewed unchanged test intents and source diff, affected offline suite passed.",
+      "previousSeal": "974db4b0742226ec5f25c619ec08f4f5d33741a25fcc40982fcc584227c26f25",
+      "seal": "f01656113632be85aa9576eafe908f339158b54c7de4a8e1d965d190b3457698"
+    },
+    {
+      "ref": "all-tests-20261008/current-source-closure/verification/awareness-battle-service-bounded-awareness-creation-20261007",
+      "path": "backend/src/services/awareness-battle-service.test.ts",
+      "review": "Historical v5 absent intents, KO/aftermath and atomic world preservation on semantic failure unchanged; new prompt renderer is outside saved v5 route. Current change adds only opt-in policy v3 ranked memory; no test/assertion deletion. Reviewed unchanged test intents and source diff, affected offline suite passed.",
+      "previousSeal": "afa984e89bbc04caef42625ceecde919534abcb484f13df41a05db5d6203ac5a",
+      "seal": "082f2f097cc0ffe30dca2eb1df9d6a591f33f8738ccf59e0eeead0b09f9029e6"
+    },
+    {
+      "ref": "all-tests-20261008/current-source-closure/verification/battle-create-idempotency-bounded-awareness-creation-20261007",
+      "path": "backend/src/services/battle-create-idempotency.test.ts",
+      "review": "Exactly-once deterministic battle encounter work unchanged; immutable prompt revision written only on first opted-in creation, not replay. Current change adds only opt-in policy v3 ranked memory; no test/assertion deletion. Reviewed unchanged test intents and source diff, affected offline suite passed.",
+      "previousSeal": "bc49df8033645cfff3ed6621dad103b4343f00869d9f85d9a4b8062be9a4bccd",
+      "seal": "b1ce93ff09e984af303e6da8aa0e58b6749f4283a01244c652b7bd5a3e1f048b"
+    },
+    {
+      "ref": "unified-resilience-v2/source/backend-src-llm-unified-transport-admission",
+      "path": "backend/src/llm/unified-transport-admission.ts",
+      "review": "Use bound retries0/2 rather than v2 literal so v3 inherits finite same-provider429 reservation/deadline/drain behavior; all physical accounting and unknown-send refusal unchanged.",
+      "previousSeal": "cfbb5c8e415c9e975cc5ee18ee2b1a3ac705ed57ebab0fffe4480681ba46c4bd",
+      "seal": "b83edadd35dcd1c25f30bd2c8812866029ac430e074e49b2aebe1d66db0d3009"
+    },
+    {
+      "ref": "unified-resilience-v2/source/backend-src-services-unified-consciousness-guard",
+      "path": "backend/src/services/unified-consciousness-guard.ts",
+      "review": "v3 inherits exactly retries2 via bound policy property. Per-physical adjudication reservation and strict output/free-action handoff semantics unchanged.",
+      "previousSeal": "eb5ceda8f860bfb9a65de28f5b9e951f318837a984f005d028530ef5a0cd6425",
+      "seal": "90ec5e767cad28e2e86385c8c449db03297059bd22bad5d922f8390adedb8b75"
+    },
+    {
+      "ref": "all-tests-20261008/current-source-closure/verification/provider-accounting-current-20261007",
+      "path": "backend/src/llm/provider-accounting.test.ts",
+      "review": "All physical retry, per-send reservation, unknown-send, terminal narration drain, taxonomy history and metadata privacy assertions retained and passed. v3 inherits exactly retries2; admission now gates the immutable retries property, preserving v1 retry0 and v2 behavior.",
+      "previousSeal": "29cf0f59098148a7e03aa73ddd1f3456e17e22253fe81572e76779abf00564fb",
+      "seal": "9270601e1531838ed039ef06eb8b422630d6bce2706883fa3bcc32fae808b65f"
+    },
+    {
+      "ref": "unified-v1/source/backend-src-llm-unified-consciousness",
+      "path": "backend/src/llm/unified-consciousness.ts",
+      "review": "Historical renderer v1/v2 unchanged including saved v1 SHA. Separate v3 renderer requires next-memory array, frozen rank references and empty-allowed review, validates complete grounded examples. Same one-call/output/input bounds, no extra semantic repair.",
+      "previousSeal": "89fda8889a7429115d4f7d7e1b88ad6231ecd389603c504d82a70f7607db8287",
+      "seal": "6d6648e8600a6bbc1934b1455ddfacd8f9c3b97b06f12fd91a7c037bf1069f86"
+    },
+    {
+      "ref": "unified-v1/source/backend-src-services-battle-service",
+      "path": "backend/src/services/battle-service.ts",
+      "review": "Only explicit policy-v3 creation selects immutable output-v2/prompt-v3. Public routes continue policy-v2; encounter, migration, idempotency, historical bindings and world execution unchanged.",
+      "previousSeal": "d859c285fcd2250e9b91149c87551a73526d389a0d9a2af13d6024823d314953",
+      "seal": "3ec7187c634f38741cf59ebdeeb90c2d17b46551ba33da85eb347cfe2bdb901a"
+    },
+    {
+      "ref": "unified-v1/source/backend-src-services-unified-consciousness-execution",
+      "path": "backend/src/services/unified-consciousness-execution.ts",
+      "review": "Before acceptance, policy-v3 strictly requires v2 memory. Existing A/B barrier, digest/reservation/late/account/no-resend semantics retained. v2/v3 share typed private actionFailure; invalid memory rejects all.",
+      "previousSeal": "0030ce037b722c548d268531424c02f5b5daa32b7dafac6bcd56749e39d0776e",
+      "seal": "48aa187c6e54b5978df21bb9d17cf8a3124ad58c353b7845ba113cd5551aa138"
+    },
+    {
+      "ref": "unified-v1/source/packages-shared-src-battle",
+      "path": "packages/shared/src/battle.ts",
+      "review": "Only binding6 gains output-v2/prompt-v3. Cross-field validation requires these together with policy-v3; historical policy-v1/v2 and saved prompt-v1/v2 shapes unchanged; private runtime never added to DTO.",
+      "previousSeal": "e10a497763a7197ae95083f2a30205dbd32ab91a60a8008c766e853aa9a746e5",
+      "seal": "1209cd2c643d37e39c334d7c00823abeba9ca6472b0f673b80eba44b604a38cb"
+    },
+    {
+      "ref": "unified-v1/source/packages-shared-src-consciousness-memory",
+      "path": "packages/shared/src/consciousness-memory.ts",
+      "review": "v1 reducer unchanged; v2 bounded string array resolves exact1..5 from parsed old array, preserves IDs, rejects unknown/duplicate refs and replay collisions atomically. New deterministic IDs, omitted deletion and explicit clear; no semantic text rewriting.",
+      "previousSeal": "4c090bddd737fe891c2a6ad3d3dfdd7b2724e2aede703e4a1da26ca99a6b004b",
+      "seal": "1d5381565503f2a84b03cc1d35b2b4799199ab189df654b2c92ddc5b86b60faa"
+    },
+    {
+      "ref": "unified-v1/source/packages-shared-src-unified-consciousness",
+      "path": "packages/shared/src/unified-consciousness.ts",
+      "review": "Historical v1 parsing and reducer path retained; strict v2 memory required, policy-v3 output coherence, pre-accept snapshot validation and atomic boundary reducer. Feedback remains allowed in v2/v3 only.",
+      "previousSeal": "a1878902c7050afcf5b86e4ae3bf14662f6400385e85b1474714565491ab5f56",
+      "seal": "5606e8f1cbd861344b41070c6ba4e7fd68a8d51dbf230648a9abee213b6d5854"
+    },
+    {
+      "ref": "unified-v1/source/packages-shared-src-unified-consciousness-policy",
+      "path": "packages/shared/src/unified-consciousness-policy.ts",
+      "review": "New immutable policy-v3 differs only in revision; inherits finite v2 budgets/retries2. Public selector remains v2.",
+      "previousSeal": "baefb4f9478853d0e8064c9f7845ed12b9fbff6b8b7f329a83c9552b0a87e33a",
+      "seal": "fad7137c1495013838a3169c0f1c683f710a82a2905e3f9a70b8ed1c6e59a8ae"
+    },
+    {
+      "ref": "unified-v1/test/backend-src-services-unified-consciousness-execution.test",
+      "path": "backend/src/services/unified-consciousness-execution.test.ts",
+      "review": "Original prompt-v1 SHA/no-resend/fence/deadline/atomic/private/action feedback assertions retained. Three new v2 tests exercise initial required memory, frozen old rank resolution, prepared replay without sends, commit once, next-input propagation and clear; counterpart success cannot commit when memory invalid; manifest/prompt/old-output drift rejected.",
+      "previousSeal": "f9fba2ef3208b02f3031a135b3a60bb0be929284020dc5d7737082431c820eb9",
+      "seal": "760f3ebbd5e63051f809a09475175e2cacda5d7c5af364b2a72c4a74ee9cfd6c"
+    },
+    {
+      "ref": "unified-v1/test/backend-src-services-unified-consciousness-integration.test",
+      "path": "backend/src/services/unified-consciousness-integration.test.ts",
+      "review": "Original historical v1 and default v5 continuation tests retained. Existing v6 service test also runs policy v3 through actual SQLite creation, prologue/combat/reload/narration; asserts bound output v2/prompt v3, mandatory memory on every prepared decision, stable retained IDs and public privacy. Three tests passed.",
+      "previousSeal": "ebc14e3e67f5fabaff14584cca0f1e15248cf907fa77f68fc433b81f7a0c63e8",
+      "seal": "b28d7e65c92d8a576b709e206952cfab1c005c9fed0609afea6e6e6f290be1c4"
+    },
+    {
+      "ref": "unified-v1/test/packages-shared-src-consciousness-memory.test",
+      "path": "packages/shared/src/consciousness-memory.test.ts",
+      "review": "Original v1 insertion/removal/overflow/Unicode/silence/scheduling tests retained. Three v2 tests lock old-rank swap, retain/new/delete/clear, missing and duplicate refs, empty and Unicode limits, input immutability and replay ID guard; required v2 memory rejects omission/null/numbers/old operations.",
+      "previousSeal": "40e70bf7d0c37e686a5f75c1f162b7b5fd64d4c76f4a813c1b3126a3959c9730",
+      "seal": "dc6036dccaca5c2557738918b7ca8a6a80dad86bf4ad754fa52ff5cbd09faa55"
+    }
+  ],
+  "finalTargetedTests": {
+    "files": 3,
+    "pass": 33,
+    "fail": 0,
+    "skip": 0
+  },
+  "officialSuite": {
+    "pass": 1530,
+    "fail": 0,
+    "skip": 0,
+    "exitCode": 0,
+    "database": "isolated PostgreSQL16 on localhost15441; stopped after suite",
+    "authoritySummary": "\n> kshiai@0.24.0 test\n> node scripts/test-authority.mjs\n\nTEST_SELECTION suite=unit active=250 provisional=0 disabled=0\nTAP version 13\n# Subtest: account realm access\n    # Subtest: fails unknown account kinds closed to the general realm\n    ok 1 - fails unknown account kinds closed to the general realm\n      ---\n      duration_ms: 1.122626\n      type: 'test'\n      ...\n    # Subtest: isolates general and test realms while administrators can access both\n    ok 2 - isolates general and test realms while administrators can access both\n      ---\n      duration_ms: 53.202066\n      type: 'test'\n      ...\n    # Subtest: hides internal observability from general users\n    ok 3 - hides internal observability from general users\n      ---\n      duration_ms: 15.105041\n      type: 'test'\n      ...\n    1..3\nok 1 - account realm access\n  ---\n  duration_ms: 70.869734\n  type: 'suite'\n  ...\n# Subtest: asyn"
+  },
+  "checks": {
+    "build": "passed",
+    "typecheck": "passed",
+    "static": "passed; no baseline changes",
+    "adr0070": "audit clean",
+    "diffCheck": "passed"
+  },
+  "sealgraph": {
+    "result": "ok",
+    "seals": 3131,
+    "refs": 1826
+  }
+}

@@ -5,7 +5,7 @@ import { after, describe, it } from "node:test";
 import { mkdtempSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { AwarenessNormalPolicy, BattleAssetManifestV6Schema, BattleStateSchema, UnifiedConsciousnessPolicyV1, UnifiedConsciousnessPolicyV2,
+import { AwarenessNormalPolicy, BattleAssetManifestV6Schema, BattleStateSchema, UnifiedConsciousnessPolicyV1, UnifiedConsciousnessPolicyV2, UnifiedConsciousnessPolicyV3,
   initializeUnifiedConsciousness, applyUnifiedConsciousnessBoundary, defaultCharacterIdentity,
   validateUnifiedDecision, type UnifiedConsciousnessRuntime, type UnifiedConsciousnessInput } from "@kshiai/shared";
 import type { AwarenessJsonTransport } from "../llm/awareness-provider-contract.js";
@@ -270,5 +270,68 @@ describe("unified consciousness v1 world transaction", () => {
     const runtime = (await repo.getUnifiedRuntime(f.state.id))?.runtime;
     assert.equal(runtime?.status, "incomplete"); assert.deepEqual(runtime?.sides.a.memory, []);
     assert.equal(runtime?.decisions[0]?.status, "prepared");
+  });
+});
+
+
+describe("required ranked memory output v2 execution", () => {
+  it("commits reordered memory once and includes it in the next request", async () => {
+    const f = fixture(UnifiedConsciousnessPolicyV3); let sends = 0;
+    await f.port.update((runtime) => ({ ...runtime, sides: { ...runtime.sides,
+      a: { ...runtime.sides.a, memory: [{ id: "a1", text: "方針" }, { id: "a2", text: "注意" }] } } }));
+    const send = transport(async (system, user) => {
+      assert.match(system, /必須memory/);
+      assert.doesNotMatch(system, /全て省略して/);
+      sends++;
+      if (user.includes('"side"：a')) return { action: { kind: "wait" }, memory: ["2", "新しい意図", "1"] };
+      return { memory: ["相手の動きを確認する"] };
+    });
+    const args = { battleId: "ranked", tick: 0, worldRevision: 0, port: f.port, frames,
+      promptRevision: "unified-consciousness-prompt-v3" as const, transport: send, now: () => now };
+    await prepareUnifiedBoundary(args);
+    assert.deepEqual(f.runtime.sides.a.memory.map((item) => item.text), ["方針", "注意"]);
+    await prepareUnifiedBoundary(args);
+    assert.equal(sends, 2);
+    await f.port.update((runtime) => applyUnifiedConsciousnessBoundary(runtime, 0));
+    assert.deepEqual(f.runtime.sides.a.memory.map((item) => item.text), ["注意", "新しい意図", "方針"]);
+    assert.equal(f.runtime.sides.a.memory[0]?.id, "a2");
+    assert.throws(() => applyUnifiedConsciousnessBoundary(f.runtime, 0), /ALREADY_APPLIED/);
+    await prepareUnifiedBoundary({ ...args, tick: 3, worldRevision: 1, transport: transport(async (system, user) => {
+      if (user.includes('"side"：a')) {
+        assert.match(user, /新しい意図/);
+        assert.match(user, /"priority"：1/);
+      }
+      return { memory: [] };
+    }) });
+    await f.port.update((runtime) => applyUnifiedConsciousnessBoundary(runtime, 3));
+    assert.deepEqual(f.runtime.sides.a.memory, []);
+  });
+  it("rejects omitted or invalid memory without committing the successful counterpart", async () => {
+    for (const invalid of [{}, { memory: ["1"] }, { memory: ["新規", "新規", "新規", "新規", "新規", "新規"] }]) {
+      const f = fixture(UnifiedConsciousnessPolicyV3); let calls = 0;
+      await assert.rejects(prepareUnifiedBoundary({ battleId: "invalid-memory", tick: 0, worldRevision: 0, port: f.port, frames,
+        promptRevision: "unified-consciousness-prompt-v3", now: () => now,
+        transport: transport(async (_system, user) => { calls++; return user.includes('"side"：a') ? invalid : { memory: ["保持する"] }; }) }));
+      assert.equal(calls, 2);
+      assert.deepEqual(f.runtime.sides.a.memory, []);
+      assert.deepEqual(f.runtime.sides.b.memory, []);
+      assert.throws(() => applyUnifiedConsciousnessBoundary(f.runtime, 0), /NOT_READY/);
+      assert.equal(f.runtime.decisions.filter((item) => item.failure === "CONSCIOUSNESS_OUTPUT_INVALID").length, 1);
+    }
+  });
+  it("binds output v2 to policy v3 and rejects historical output/prompt mismatches", () => {
+    assert.throws(() => prepareUnifiedConsciousnessRequest(frames.a, UnifiedConsciousnessPolicyV3, "unified-consciousness-prompt-v2"), /POLICY_MISMATCH/);
+    assert.throws(() => prepareUnifiedConsciousnessRequest(frames.a, UnifiedConsciousnessPolicyV2, "unified-consciousness-prompt-v3"), /POLICY_MISMATCH/);
+    assert.throws(() => validateUnifiedDecision(frames.a, { memory: [] }, "old"));
+    assert.throws(() => validateUnifiedDecision(frames.a, {}, "new", true, true));
+    const fixtureState = validAwarenessBattleFixture("ranked-binding").state;
+    assert.ok(fixtureState.assetManifest);
+    const legacy = BattleAssetManifestV6Schema.parse({ ...fixtureState.assetManifest, schemaVersion: 6,
+      consciousOutputContract: "unified-consciousness-v1", outputRevision: "unified-consciousness-output-v1",
+      consciousnessPolicy: UnifiedConsciousnessPolicyV2, consciousnessPromptRevision: "unified-consciousness-prompt-v2",
+      rules: { ...fixtureState.assetManifest.rules, psycheReaction: "unified-consciousness-v1" } });
+    assert.equal(BattleAssetManifestV6Schema.safeParse({ ...legacy, consciousnessPolicy: UnifiedConsciousnessPolicyV3 }).success, false);
+    assert.equal(BattleAssetManifestV6Schema.safeParse({ ...legacy, consciousnessPolicy: UnifiedConsciousnessPolicyV3,
+      outputRevision: "unified-consciousness-output-v2", consciousnessPromptRevision: "unified-consciousness-prompt-v3" }).success, true);
   });
 });

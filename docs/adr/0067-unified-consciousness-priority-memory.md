@@ -69,3 +69,7 @@ D8: 詳細値はC6の候補policyで固定する。記憶5件×400文字、操�
 ## Supersession
 
 ADR0069 revision1 supersedes C5/C6 only for new policy v2 bounded429 transport retries and private unsupported-action feedback; the historical revision2 decision and all other contracts remain unchanged.
+
+## Partial supersession: ranked memory output
+
+Accepted [ADR-0070 revision1](0070-required-ranked-memory-snapshot.md) supersedes only the optional memory output for opt-in consciousness policy v3 / consciousness output format v2. Historical contracts remain unchanged.

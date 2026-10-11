@@ -4,16 +4,22 @@ import { CharacterActionIntentSchema } from "./battle.js";
 import { CharacterSelfProfileAnchorSchema } from "./profile-grounding.js";
 import { CharacterPerceptionFrameSchema } from "./perception.js";
 import { AwarenessAvailableActionSchema, AwarenessBudgetSnapshotSchema, AwarenessNormalPolicy, AwarenessPolicyV1Schema, type AwarenessPolicyV1 } from "./awareness-pipeline.js";
-import { ConsciousnessMemorySchema, ConsciousnessMemoryOperationsSchema, consciousnessText, applyConsciousnessMemory } from "./consciousness-memory.js";
+import { ConsciousnessMemorySchema, ConsciousnessMemoryOperationsSchema, consciousnessText, applyConsciousnessMemory, ConsciousnessMemorySnapshotSchema, applyConsciousnessMemorySnapshot } from "./consciousness-memory.js";
 import { UnifiedConsciousnessPolicySchema, type UnifiedConsciousnessPolicy } from "./unified-consciousness-policy.js";
 const id = z.string().min(1).max(220);
 const tick = z.number().int().nonnegative();
 export const UnifiedConsciousnessEventSchema = z.object({ id, text: consciousnessText(4000) }).strict();
-export const UnifiedConsciousnessDecisionSchema = z.object({
+const UnifiedConsciousnessDecisionV1Schema = z.object({
   action: CharacterActionIntentSchema.nullable().optional(),
   speech: consciousnessText(400).nullable().optional(),
   memoryOperations: ConsciousnessMemoryOperationsSchema.optional(),
 }).strict();
+export const UnifiedConsciousnessDecisionV2Schema = z.object({
+  action: CharacterActionIntentSchema.nullable().optional(),
+  speech: consciousnessText(400).nullable().optional(),
+  memory: ConsciousnessMemorySnapshotSchema,
+}).strict();
+export const UnifiedConsciousnessDecisionSchema = z.union([UnifiedConsciousnessDecisionV1Schema, UnifiedConsciousnessDecisionV2Schema]);
 export type UnifiedConsciousnessDecision = z.infer<typeof UnifiedConsciousnessDecisionSchema>;
 export const UnifiedConsciousnessInputSchema = z.object({
   side: z.enum(["a", "b"]), tick,
@@ -63,7 +69,10 @@ export const UnifiedConsciousnessRuntimeSchema = z.object({
   if (new Set(runtime.decisions.map((decision) => decision.id)).size !== runtime.decisions.length) context.addIssue({ code: "custom", message: "Duplicate decision ID" });
   if ((runtime.status === "incomplete") !== (runtime.incompleteReason !== null)) context.addIssue({ code: "custom", message: "Incomplete reason mismatch" });
   for (const decision of runtime.decisions) {
-    if (decision.actionFailure && (runtime.policy.revision !== "unified-consciousness-policy-v2" || decision.output === null ||
+    if (decision.output !== null && ((runtime.policy.revision === "unified-consciousness-policy-v3") !== ("memory" in decision.output))) {
+      context.addIssue({ code: "custom", message: "Memory output policy mismatch" });
+    }
+    if (decision.actionFailure && (runtime.policy.revision === "unified-consciousness-policy-v1" || decision.output === null ||
       decision.actionFailure !== unifiedActionFailure(decision.input, decision.output.action))) context.addIssue({ code: "custom", message: "Invalid failed-action receipt" });
   }
   for (const side of ["a", "b"] as const) {
@@ -89,11 +98,12 @@ export function unifiedActionFailure(input: UnifiedConsciousnessInput, action: U
   if (action && "instrumentRef" in action && action.instrumentRef && !refs.has(action.instrumentRef)) return "CONSCIOUSNESS_REFERENCE_UNKNOWN";
   return null;
 }
-export function validateUnifiedDecision(input: UnifiedConsciousnessInput, raw: unknown, decisionId: string, actionFeedback = false): UnifiedConsciousnessDecision {
-  const output = UnifiedConsciousnessDecisionSchema.parse(raw);
+export function validateUnifiedDecision(input: UnifiedConsciousnessInput, raw: unknown, decisionId: string, actionFeedback = false, memorySnapshot = false): UnifiedConsciousnessDecision {
+  const output = (memorySnapshot ? UnifiedConsciousnessDecisionV2Schema : UnifiedConsciousnessDecisionV1Schema).parse(raw);
   const failure = unifiedActionFailure(input, output.action);
   if (failure && !actionFeedback) throw new Error(failure);
-  applyConsciousnessMemory(input.memory, output.memoryOperations ?? [], decisionId);
+  if ("memory" in output) applyConsciousnessMemorySnapshot(input.memory, output.memory, decisionId);
+  else applyConsciousnessMemory(input.memory, output.memoryOperations ?? [], decisionId);
   return output;
 }
 function assertRequiredDecisions(next: UnifiedConsciousnessRuntime, atTick: number): void {
@@ -119,7 +129,9 @@ export function applyUnifiedConsciousnessBoundary(runtime: UnifiedConsciousnessR
     if (decision.status !== "prepared" || decision.output === null || decision.physicalOutstanding) throw new Error("CONSCIOUSNESS_BOUNDARY_NOT_READY");
     const side = next.sides[decision.side];
     if (side.memoryRevision !== decision.memoryRevision) throw new Error("CONSCIOUSNESS_MEMORY_REVISION_CONFLICT");
-    side.memory = applyConsciousnessMemory(side.memory, decision.output.memoryOperations ?? [], decision.id);
+    side.memory = "memory" in decision.output
+      ? applyConsciousnessMemorySnapshot(side.memory, decision.output.memory, decision.id)
+      : applyConsciousnessMemory(side.memory, decision.output.memoryOperations ?? [], decision.id);
     side.memoryRevision += 1;
     side.lastDecisionTick = atTick;
     const consumed = new Set(decision.input.events.map((event) => event.id));

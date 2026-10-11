@@ -1,0 +1,12 @@
+domain ADR0070:
+  description "Accepted revision1: required ranked next-memory array for opt-in consciousness output format v2."
+evidence OWNER_ACCEPTANCE:
+  "2026-10-11 owner accepts the concrete proposal: mandatory memory string array, old rank strings1..5 for retain/reorder, omitted deletes, empty clears; says では、それで試しましょう。"
+evidence CURRENT:
+  "Application v0.24.0-rc.8 Stage38114752919 finished tick17 with66successful physical attempts and19completed narration receipts; all36consciousness decisions omitted memory operations and both memories remained empty."
+premise SCOPE:
+  "New policy v3/prompt v3/output format v2 only. Resolve exact strings1..5 against frozen input ranks; reject nonexistent/duplicate references; new text1..400Unicode codepoints, max5entries, deterministic IDs. Require memory even with no action/speech, empty allowed, no content repair. Existing atomic private world commit and bounded retry/feedback unchanged. Historical policies v1/v2 remain and public default stays v2."
+premise OPTIONS:
+  "Optional operations were unused; full repeated text costs output and loses identity. Required next-state rank-reference array selected for compact explicit review. Extra end-turn call rejected; each existing consciousness response includes memory."
+decision ACCEPTANCE based_on OWNER_ACCEPTANCE, CURRENT, SCOPE, OPTIONS:
+  "Accept revision1; partially supersede ADR0067 C1/C2 only for new opt-in policy v3. Authorize implementation and offline verification; separate bounded paid-trial approval and later public cutover acceptance remain required by C8. No historical conversion or database migration."
