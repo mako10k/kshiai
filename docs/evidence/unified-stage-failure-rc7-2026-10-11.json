@@ -1,0 +1,75 @@
+{
+  "applicationVersion": "v0.24.0-rc.7",
+  "sourceCommit": "df7d7f3db8e45461ac719511fff7c1788f1f9399",
+  "pullRequest": 181,
+  "prCi": {
+    "run": 38091259723,
+    "conclusion": "success"
+  },
+  "mainCommit": "bff888d5eb01fb193adff23eaae64552e69f9fa8",
+  "mainCi": {
+    "run": 38091883186,
+    "conclusion": "success"
+  },
+  "ownerAuthority": "2026-10-11 explicit repaired-run retry plus earlier repair/test/deploy/Stage grant",
+  "bounds": {
+    "battles": 1,
+    "advances": 38,
+    "physicalProviderAttempts": 200,
+    "characterCreateSmoke": false,
+    "automaticUnchangedRunRetry": false
+  },
+  "previousMeasuredAttempts": 162,
+  "price": "unpriced",
+  "rollback": {
+    "applicationVersion": "v0.23.0-rc.19",
+    "revision": "kshiai-api-00186-zop",
+    "workerVersion": "3c4e3d68-c7ed-4c8b-88eb-f22f108eaf24",
+    "schema": "additive0037alreadyapplied; no DB rollback; old backend cannot continue new binding6 battles"
+  },
+  "tag": "v0.24.0-rc.7",
+  "stage": {
+    "run": 38092497813,
+    "conclusion": "failure",
+    "imageDigest": "sha256:369b36bf34bdfa14bbfa42fd6e776fefd5f1da5086e8d83195d80497047ad90b",
+    "authExecution": "kshiai-auth-smoke-lwd96",
+    "revision": "kshiai-api-00195-gip",
+    "workerVersion": "f746bffe-cc01-4b77-a47d-cafa7d006916"
+  },
+  "actualPhysicalProviderAttempts": 0,
+  "cumulativeMeasuredAttempts": 162,
+  "promoted": false,
+  "externalBlock": {
+    "provider": "Supabase Auth",
+    "httpStatus": 402,
+    "reasonCode": "exceed_egress_quota",
+    "observed": "Admin user creation failed during required auth smoke. Read-only authenticated health and bounded admin-user list independently return the same service restriction.",
+    "evidence": [
+      {
+        "path": "/health",
+        "status": 402,
+        "message": "Service for this project is restricted due to the following violations: exceed_egress_quota. The project owner must upgrade their plan or remove spend caps to restore service."
+      },
+      {
+        "path": "/admin/users?page=1&per_page=1",
+        "status": 402,
+        "message": "Service for this project is restricted due to the following violations: exceed_egress_quota. The project owner must upgrade their plan or remove spend caps to restore service."
+      }
+    ],
+    "scope": "Organization/project API restriction; LLM credit balance is not inferred. Public app health remains200 on old revision, which does not establish sign-in health.",
+    "remediation": "Owner must inspect Supabase quota/billing and restore service. Plan/spend-cap changes are outside repair/deploy authorization. No billing changes, blind retries or failed Stage promotion performed."
+  },
+  "productionReadback": {
+    "ok": true,
+    "auth": "supabase",
+    "database": "postgres",
+    "revision": "kshiai-api-00186-zop"
+  },
+  "providerPrimaryDocumentation": "https://supabase.com/docs/guides/troubleshooting/http-status-codes",
+  "productionTraffic": [
+    {
+      "revision": "kshiai-api-00186-zop",
+      "percent": 100
+    }
+  ]
+}
