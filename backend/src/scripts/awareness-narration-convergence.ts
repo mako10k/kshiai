@@ -11,6 +11,10 @@ export function assertNarrationConvergence(
   schemaVersion: number,
   entries: readonly NarrationConvergenceEntry[],
 ): void {
+  if (schemaVersion === 7) {
+    if (!entries.length || entries.some((entry) => entry.status !== "completed" || entry.attemptCount !== 0 || entry.blockedBySequence !== null || entry.lease !== null || entry.outbox !== null)) throw new Error("Reserved-turn inline narration did not converge to atomic publication");
+    return;
+  }
   const invalid = entries.length === 0 || entries.some((entry) => {
     const terminal = (schemaVersion === 5 || schemaVersion === 6)
       ? entry.status === "completed"
@@ -28,6 +32,7 @@ export function assertNarrationConvergence(
 
 export function narrationConvergenceEvidence(schemaVersion: number, terminalReceiptCount: number) {
   const common = { terminalReceiptCount, orderedProjection: "passed", liveGenerations: 0 };
+  if (schemaVersion === 7) return { ...common, atomicInlinePublication: "passed", durableWorkerClaims: 0 };
   return (schemaVersion === 5 || schemaVersion === 6)
     ? { ...common, oneTerminalSnapshotPerReceipt: "passed",
       claimCountSemantics: "positive integer durable claims; no-send deferrals may increase the count" }

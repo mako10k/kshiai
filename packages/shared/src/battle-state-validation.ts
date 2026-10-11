@@ -5,7 +5,7 @@ import type { AwarenessFrozenNarration } from "./awareness-narration-source.js";
 
 export function validateBattleAgencyBindings(state: BattleState, ctx: z.RefinementCtx): void {
   const dynamic = state.assetManifest?.schemaVersion === 4 && state.assetManifest.consciousOutputContract === "dynamic-v4";
-  const awareness = (state.assetManifest?.schemaVersion === 5 || state.assetManifest?.schemaVersion === 6);
+  const awareness = (state.assetManifest?.schemaVersion === 5 || state.assetManifest?.schemaVersion === 6 || state.assetManifest?.schemaVersion === 7);
   for (const side of ["agentStateA", "agentStateB"] as const) {
     const agent = state[side];
     if (!awareness && (dynamic ? !agent?.consciousAgencyV2 || Boolean(agent.consciousAgencyV1) : Boolean(agent?.consciousAgencyV2))) {
@@ -27,7 +27,7 @@ export function validateBattleAgencyBindings(state: BattleState, ctx: z.Refineme
 }
 
 export function validateIncompleteBattleResult(state: BattleState, ctx: z.RefinementCtx): void {
-  const awareness = (state.assetManifest?.schemaVersion === 5 || state.assetManifest?.schemaVersion === 6);
+  const awareness = (state.assetManifest?.schemaVersion === 5 || state.assetManifest?.schemaVersion === 6 || state.assetManifest?.schemaVersion === 7);
   if (state.status === "incomplete") {
     if (!awareness || !state.incompleteReason?.trim()) {
       ctx.addIssue({ code: z.ZodIssueCode.custom, path: ["incompleteReason"], message: "incomplete requires awareness-v5 and a technical reason" });
@@ -146,4 +146,12 @@ export function validateBattleObservationRevisions(state: BattleState, ctx: z.Re
 function matchesFrozenReceipt(state: BattleState, receipt: BattlePhaseReceipt, source: AwarenessFrozenNarration): boolean {
   return (state.assetManifest?.schemaVersion === 5 || state.assetManifest?.schemaVersion === 6) && source.battleId === state.id && source.turnReceiptId === receipt.id &&
     source.phase === receipt.phase && (receipt.combatTurn === null || source.turn === receipt.combatTurn);
+}
+
+export function validateReservedTurnClock(state: BattleState, ctx: z.RefinementCtx): void {
+  if (state.assetManifest?.schemaVersion !== 7) return;
+  for (const field of ["sceneBeat", "combatTick", "causalEngineContinuation", "causalExecution", "causalBucketCommit", "causalLaterDecision", "latestTemporalResolution"] as const) {
+    if (Reflect.get(state, field) !== undefined) ctx.addIssue({ code: z.ZodIssueCode.custom, path: [field], message: "reserved-turns-v1 uses only the turn clock and no legacy continuation" });
+  }
+  if (state.prologuePending || state.aftermathPending) ctx.addIssue({ code: z.ZodIssueCode.custom, message: "reserved-turns-v1 has no separate prologue/aftermath advance" });
 }

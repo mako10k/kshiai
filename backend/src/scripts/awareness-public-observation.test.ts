@@ -111,3 +111,40 @@ it("rejects unified unresolved execution, tuple drift, uncommitted decisions and
   attempts[1]!.role = "subconscious"; attempts[2]!.role = "subconscious";
   assert.throws(() => verifyUnifiedPublicObservation("battle", bound, saved, attempts), /ROLE_MISSING:consciousness/);
 });
+
+it("verifies reserved-turn pipeline v1 completion by every turn request and ledger receipt without exposing private responses", async () => {
+  const { initializeReservedTurns, ReservedTurnPolicySchema, ReservedTurnRuntimeSchema } = await import("@kshiai/shared");
+  const { verifyReservedPublicObservation } = await import("./awareness-public-observation.js");
+  const policy = ReservedTurnPolicySchema.parse({ revision: "reserved-turn-policy-v1", maxTurns: 36, maxReservations: 5, maxLogicalCallsPerTurn: 4,
+    maxPhysicalAttempts: 200, durationMs: 600000, deadlineMs: 60000, characterOutputTokens: 2000, adjudicationOutputTokens: 10000, inputCharacters: 128000,
+    character: { provider: "xai", model: "test" }, adjudication: { provider: "xai", model: "test" }, narration: { provider: "xai", model: "test" } });
+  const bound = { reservedTurnPolicy: policy, reservedTurnPromptRevision: "reserved-turn-prompt-v1" as const, awarenessPolicy: AwarenessNormalPolicy };
+  const initial = initializeReservedTurns(policy, 1);
+  const requests = ["a", "b", "adjudication", "narration"].map((kind) => {
+    const role = kind === "a" || kind === "b" ? "character" : kind;
+    return { id: kind, turn: 1, role, side: kind === "a" || kind === "b" ? kind : null, inputDigest: kind,
+      system: "private prompt", user: "private input", status: "prepared", physicalOutstanding: false, failure: null, rawResponse: "private response",
+      output: role === "character" ? { role, plan: { actions: [], memory: [] } } : role === "adjudication" ? { role, trace: { results: [] } } : { role, narration: { lines: ["向き合う。"] } } };
+  });
+  const runtime = ReservedTurnRuntimeSchema.parse({ ...initial, turn: 1, status: "terminal", terminalAt: 2, requests,
+    memories: { a: [{ id: "secret", text: "private thought" }], b: [] },
+    budget: budgetSnapshot([{ id: "encounter", role: "adjudication", maximumUsd: null, actualUsd: null, status: "unknown", physicalOutstanding: false }]) });
+  const saved = { battleId: "battle", revision: 1, fencingToken: 1, updatedAt: "2026-10-11T00:00:00Z", runtime };
+  const base = sample().attempts[0]!;
+  const attempts = [base, ...runtime.requests.map((request) => ({ ...base, id: request.id, callId: request.id,
+    role: request.role === "character" ? "consciousness" : request.role, side: request.side, receiptIds: [request.id] }))];
+  const report = verifyReservedPublicObservation("battle", bound, saved, attempts);
+  assert.equal(report.engine, "reserved-turns-v1");
+  assert.equal(report.completedTurns, 1);
+  assert.equal(report.physicalAttempts, 5);
+  assert.equal(report.reportedTokens.total, 60);
+  assert.doesNotMatch(JSON.stringify(report), /private|rawResponse|inputDigest|memories|completedTicks/);
+  attempts[1]!.receiptIds = [];
+  assert.throws(() => verifyReservedPublicObservation("battle", bound, saved, attempts), /REQUEST_USAGE_MISMATCH/);
+  attempts[1]!.receiptIds = ["a"];
+  runtime.requests[0]!.rawResponse = null;
+  assert.throws(() => verifyReservedPublicObservation("battle", bound, saved, attempts), /TURN_CALLS_MISMATCH/);
+  runtime.requests[0]!.rawResponse = "private response";
+  runtime.status = "active";
+  assert.throws(() => verifyReservedPublicObservation("battle", bound, saved, attempts), /RUNTIME_NOT_FINISHED/);
+});

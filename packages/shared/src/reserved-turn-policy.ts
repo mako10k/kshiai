@@ -1,0 +1,19 @@
+// R: Bind turn-only budgets and models without importing historical battle schemas.
+import { z } from "zod";
+const id = z.string().min(1).max(160);
+export const ReservedTurnPolicySchema = z.object({
+  revision: z.literal("reserved-turn-policy-v1"),
+  maxTurns: z.number().int().min(1).max(100),
+  maxReservations: z.literal(5),
+  maxLogicalCallsPerTurn: z.literal(4),
+  maxPhysicalAttempts: z.number().int().positive().max(500),
+  durationMs: z.number().int().positive(),
+  deadlineMs: z.number().int().positive(),
+  characterOutputTokens: z.number().int().positive(),
+  adjudicationOutputTokens: z.number().int().positive(),
+  inputCharacters: z.number().int().positive(),
+  character: z.object({ provider: id, model: id }).strict(),
+  adjudication: z.object({ provider: id, model: id }).strict(),
+  narration: z.object({ provider: id, model: id }).strict(),
+}).strict();
+export type ReservedTurnPolicy = z.infer<typeof ReservedTurnPolicySchema>;

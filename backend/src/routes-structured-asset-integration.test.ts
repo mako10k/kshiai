@@ -8,6 +8,7 @@ import {
   defaultParameters,
   defaultBasicAttack,
   BattlePublicSchema,
+  BattleStateSchema,
   defaultDialoguePipelineSettings,
   AwarenessConsciousOutputSchema,
   AwarenessLatentOutputSchema,
@@ -74,13 +75,28 @@ provider.prepareBattleEncounter = async function(
       retry: "none", responseFormat: { type: "json_object" } },
   }, async () => ({ result: await MockLlmProvider.prototype.prepareBattleEncounter.call(this, input), usage: null }));
 };
+let reservedScenario: "idle" | "attack" | "invalid" = "idle";
+const reservedPlanInputs: string[] = [];
 const awarenessRoles: AwarenessProviderRoles = {
-  consciousness: { identity: { provider: "openai", engineModel: "gpt-6-luna", fastModel: "gpt-6-luna" }, requestJson: async (system) => system.includes("必須memory") ? { memory: [] } : ({}) },
+  consciousness: { identity: { provider: "openai", engineModel: "gpt-6-luna", fastModel: "gpt-6-luna" }, requestJson: async (system, user) => {
+    if (!system.includes("予約ターンパイプライン")) return system.includes("必須memory") ? { memory: [] } : {};
+    reservedPlanInputs.push(user);
+    return { actions: reservedScenario === "idle" ? [] : [{ id: "strike", intent: "相手に打撃を試みる", targets: ["opponent"] }], memory: reservedScenario === "idle" ? ["相手の変化を観察する"] : ["1"] };
+  } },
   models: {
     subconscious: async (input) => AwarenessLatentOutputSchema.parse({ state: { ...input.currentState, updatedTick: input.tick }, reflexDesires: [], affectiveDesires: [], reconsider: false, cancelThought: false }),
     conscious: async () => AwarenessConsciousOutputSchema.parse({ goal: null, thought: "", desires: [], influences: [] }),
   },
-  adjudication: { identity: { provider: "xai", engineModel: "grok-test", fastModel: "grok-test" }, requestJson: async () => { throw new Error("unexpected transport call"); } },
+  adjudication: { identity: { provider: "xai", engineModel: "grok-test", fastModel: "grok-test" }, requestJson: async (system, user) => {
+    if (system.includes("予約ターン裁定")) {
+      const input = z.object({ order: z.array(z.object({ reservationId: z.string(), side: z.enum(["a", "b"]) })) }).parse(JSON.parse(user));
+      return { results: input.order.map((action, index) => ({ ...action, baseRevision: reservedScenario === "invalid" && index === 1 ? 999 : index,
+        outcome: "success", reason: "打撃が届いた", updates: [{ kind: "resource", side: action.side === "a" ? "b" : "a", resource: "hp", delta: -1 }],
+        observations: { a: ["打撃が届いた"], b: ["打撃が届いた"], public: ["双方が打撃を交わした"] } })) };
+    }
+    if (system.includes("予約ターン実況")) return { lines: ["双方が間合いを確かめた。"] };
+    throw new Error("unexpected transport call");
+  } },
   adjudicationProvider: provider,
   narration: { identity: { provider: "xai", engineModel: "grok-test", fastModel: "grok-test" }, narrateBatch: async () => [], narrateFrozenBatch: async () => [] },
 };
@@ -295,19 +311,21 @@ describe("integrated structured asset cutover", () => {
     const battleId = createBody.battle.id;
     const bound = await battleRepo.getBattle(battleId);
     assert.ok(bound?.assetManifest);
-    assert.equal(bound.assetManifest.schemaVersion, 6);
-    assert.equal(bound.assetManifest.consciousOutputContract, "unified-consciousness-v1");
-    assert.equal(bound.assetManifest.consciousnessPolicy.revision, "unified-consciousness-policy-v3");
-    assert.equal(bound.assetManifest.consciousnessPromptRevision, "unified-consciousness-prompt-v3");
-    assert.equal(bound.assetManifest.outputRevision, "unified-consciousness-output-v2");
-    assert.equal((await query<{ count: number }>("SELECT COUNT(*) AS count FROM battle_unified_consciousness WHERE battle_id=$1", [battleId])).rows[0]?.count, 1);
+    assert.equal(bound.assetManifest.schemaVersion, 7);
+    assert.equal(bound.assetManifest.consciousOutputContract, "reserved-turns-v1");
+    assert.equal(bound.assetManifest.reservedTurnPolicy.revision, "reserved-turn-policy-v1");
+    assert.equal(bound.assetManifest.reservedTurnPromptRevision, "reserved-turn-prompt-v1");
+    assert.equal(bound.assetManifest.outputRevision, "reserved-turn-output-v1");
+    assert.equal(BattleStateSchema.safeParse({ ...bound, combatTick: 1 }).success, false);
+    assert.equal(BattleStateSchema.safeParse({ ...bound, prologuePending: true }).success, false);
+    assert.equal((await query<{ count: number }>("SELECT COUNT(*) AS count FROM battle_reserved_turns WHERE battle_id=$1", [battleId])).rows[0]?.count, 1);
     assert.equal((await query<{ count: number }>("SELECT COUNT(*) AS count FROM battle_awareness_runtime WHERE battle_id=$1", [battleId])).rows[0]?.count, 0);
     assert.ok(bound.narrationStyle?.compiledPolicyV2);
     const boundManifestJson = JSON.stringify(bound.assetManifest);
     const boundBattlefieldJson = JSON.stringify(bound.battlefield);
     const boundNarrationJson = JSON.stringify(bound.narrationStyle);
-    const boundPrologueInstruction =
-      bound.narrationStyle.compiledPolicyV2.phases.prologue.instruction;
+    const boundCombatInstruction =
+      bound.narrationStyle.compiledPolicyV2.phases.action.instruction;
 
     const mineGeneration = await characterAssetRepo.getReadyCharacterGeneration(mineId);
     const opponentGeneration = await characterAssetRepo
@@ -434,14 +452,52 @@ describe("integrated structured asset cutover", () => {
 
     const advanced = await battleRepo.getBattle(battleId);
     assert.equal(JSON.stringify(advanced?.assetManifest), boundManifestJson);
-    const prologueReceipt = advanced?.phaseReceipts?.find(
-      (receipt) => receipt.phase === "prologue",
+    assert.equal(advanced?.turn, 1);
+    assert.equal(advanced?.sceneBeat, undefined);
+    assert.equal(advanced?.combatTick, undefined);
+    assert.equal(advanced?.phaseReceipts?.[0]?.phase, "combat");
+    const narrationSnapshot = await app.request(`/api/battles/${battleId}/narration`, { headers: authHeaders });
+    assert.equal(narrationSnapshot.status, 200);
+    const publicNarration = z.object({ entries: z.array(z.object({ status: z.string(), narrative: z.object({ narrator: z.array(z.string()) }) })), cursor: z.string() }).parse(await narrationSnapshot.json());
+    assert.equal(publicNarration.entries.length, 1);
+    assert.equal(publicNarration.entries[0]?.status, "completed");
+    assert.deepEqual(publicNarration.entries[0]?.narrative.narrator, advanced?.log[0]?.narrator);
+    const runtimeRow = await query<{ snapshot_json: string }>(
+      "SELECT snapshot_json FROM battle_reserved_turns WHERE battle_id=$1", [battleId],
     );
-    const frozenInput = prologueReceipt?.narrationInput;
-    assert.ok(frozenInput && "kind" in frozenInput);
-    assert.equal(frozenInput.kind, "awareness-v5");
-    assert.equal(frozenInput.system.includes(boundPrologueInstruction), true);
-    assert.equal(JSON.stringify(frozenInput).includes("REVISED_STYLE_SECRET"), false);
+    const runtime = z.object({ turn: z.number(), requests: z.array(z.object({ role: z.string(), user: z.string() })) }).parse(JSON.parse(runtimeRow.rows[0]!.snapshot_json));
+    assert.equal(runtime.turn, 1);
+    assert.equal(runtime.requests.length, 4);
+    const narrator = runtime.requests.find((request) => request.role === "narration");
+    assert.ok(narrator);
+    assert.equal(z.object({ style: z.string() }).parse(JSON.parse(narrator.user)).style.includes(boundCombatInstruction), true);
+    assert.equal(narrator.user.includes("REVISED_STYLE_SECRET"), false);
+    reservedScenario = "attack";
+    const attack = await app.request(`/api/battles/${battleId}/advance`, { ...advanceRequest,
+      headers: { ...advanceRequest.headers, "Idempotency-Key": "asset-integration-advance-002" } });
+    assert.equal(attack.status, 200);
+    const attacked = await battleRepo.getBattle(battleId);
+    assert.equal(attacked?.status, "active");
+    assert.equal(attacked.turn, 2);
+    assert.equal(typeof bound.sideA.parameters.hp, "number");
+    assert.equal(attacked.sideA.parameters.hp, (bound.sideA.parameters.hp ?? 0) - 1);
+    assert.equal(attacked.sideB.parameters.hp, (bound.sideB.parameters.hp ?? 0) - 1);
+    assert.equal(reservedPlanInputs.length, 4);
+    for (const user of reservedPlanInputs.slice(2)) assert.equal(user.includes("相手の変化を観察する"), true);
+    const beforeInvalid = JSON.stringify({ world: attacked.worldState, a: attacked.sideA, b: attacked.sideB });
+    reservedScenario = "invalid";
+    const invalid = await app.request(`/api/battles/${battleId}/advance`, { ...advanceRequest,
+      headers: { ...advanceRequest.headers, "Idempotency-Key": "asset-integration-advance-003" } });
+    assert.equal(invalid.status, 200);
+    const stopped = await battleRepo.getBattle(battleId);
+    assert.equal(stopped?.status, "incomplete");
+    assert.equal(stopped.turn, 2);
+    assert.match(stopped.incompleteReason ?? "", /REVISION_CONFLICT/);
+    assert.equal(JSON.stringify({ world: stopped.worldState, a: stopped.sideA, b: stopped.sideB }), beforeInvalid);
+    const afterFailureNarration = await app.request(`/api/battles/${battleId}/narration`, { headers: authHeaders });
+    const afterFailureSnapshot = z.object({ entries: z.array(z.unknown()) }).parse(await afterFailureNarration.json());
+    assert.equal(afterFailureSnapshot.entries.length, 2, "invalid turn publishes no narration");
+
 
     assert.equal(
       (await idsFrom(await app.request(
@@ -483,7 +539,7 @@ describe("integrated structured asset cutover", () => {
     assert.equal(observationBody.rawBattleState.agentStateA, "[redacted]");
     assert.equal(
       observationBody.rawBattleState.phaseReceipts[0]?.narrationInput,
-      "[redacted]",
+      undefined,
     );
     const rawExport = await app.request("/api/assets/export", {
       headers: authHeaders,

@@ -51,3 +51,11 @@ test("V6 requires successful publication and permits only positive durable claim
   assert.throws(() => assertNarrationConvergence(6, [{ ...complete, outbox: { status: "pending" } }]));
   assert.deepEqual(narrationConvergenceEvidence(6, 10), narrationConvergenceEvidence(5, 10));
 });
+
+test("battle binding v7 requires completed inline publication without worker claims or pending jobs", () => {
+  const inline = { ...complete, attemptCount: 0, outbox: null };
+  assert.doesNotThrow(() => assertNarrationConvergence(7, [inline]));
+  for (const entry of [{ ...inline, status: "failed" }, { ...inline, attemptCount: 1 }, { ...inline, lease: {} }, { ...inline, outbox: { status: "pending" } }]) assert.throws(() => assertNarrationConvergence(7, [entry]));
+  assert.throws(() => assertNarrationConvergence(7, []));
+  assert.equal(narrationConvergenceEvidence(7, 1).terminalReceiptCount, 1);
+});

@@ -1,3 +1,5 @@
+import { type ReservedTurnRuntime } from "@kshiai/shared";
+import { getReservedRuntimeInTransaction, writeReservedRuntime } from "./reserved-turns.js";
 // R: Share world/narration accounting without exposing private consciousness to workers.
 import { type AwarenessPipelineState, type AwarenessReservation, type UnifiedConsciousnessRuntime } from "@kshiai/shared";
 import { query, withTransaction, type DatabaseConnection } from "../db.js";
@@ -12,7 +14,14 @@ export function unifiedOperationalRuntime(runtime: UnifiedConsciousnessRuntime):
     budget: { ...runtime.budget, physicalAttempts: runtime.budget.physicalAttempts + runtime.decisions.length,
       physicalOutstanding: runtime.budget.physicalOutstanding + runtime.decisions.filter((item) => item.physicalOutstanding).length } };
 }
+export function reservedOperationalRuntime(runtime: ReservedTurnRuntime): BattleOperationalRuntime {
+  return { policy: runtime.operatingPolicy, status: runtime.status, startedAt: runtime.startedAt, deadlineAt: runtime.deadlineAt, terminalAt: runtime.terminalAt,
+    budget: { ...runtime.budget, physicalAttempts: runtime.budget.physicalAttempts + runtime.requests.length,
+      physicalOutstanding: runtime.budget.physicalOutstanding + runtime.requests.filter((r) => r.physicalOutstanding).length } };
+}
 export async function getBattleOperationalRuntimeInTransaction(connection: DatabaseConnection, battleId: string, options = { lock: false }): Promise<BattleOperationalSnapshot | null> {
+  const reserved = await getReservedRuntimeInTransaction(connection, battleId, options);
+  if (reserved) return { ...reserved, runtime: reservedOperationalRuntime(reserved.runtime) };
   const unified = await getUnifiedRuntimeInTransaction(connection, battleId, options);
   if (unified) return { battleId, revision: unified.revision, fencingToken: unified.fencingToken, updatedAt: unified.updatedAt, runtime: unifiedOperationalRuntime(unified.runtime) };
   return getAwarenessRuntimeInTransaction(connection, battleId, options);
@@ -21,6 +30,12 @@ export function getBattleOperationalRuntime(battleId: string): Promise<BattleOpe
   return getBattleOperationalRuntimeInTransaction({ query }, battleId);
 }
 export async function writeUnifiedOperationalBudget(connection: DatabaseConnection, battleId: string, expectedRevision: number, reservations: AwarenessReservation[], now: string): Promise<boolean> {
+  const reserved = await getReservedRuntimeInTransaction(connection, battleId, { lock: true });
+  if (reserved) {
+    if (reserved.revision !== expectedRevision) throw new Error("RESERVED_TURN_REVISION_OR_LEASE_CONFLICT");
+    await writeReservedRuntime(connection, reserved, { ...reserved.runtime, budget: budgetSnapshot(reservations) }, now);
+    return true;
+  }
   const current = await getUnifiedRuntimeInTransaction(connection, battleId, { lock: true });
   if (!current) return false;
   if (current.revision !== expectedRevision) throw new Error("CONSCIOUSNESS_REVISION_OR_LEASE_CONFLICT");
@@ -32,6 +47,15 @@ function validateSettlement(input: AwarenessAttemptSettlement & { finishedAt: nu
     (input.outcome === "settled" ? input.actualUsd === null || input.physicalOutstanding : input.actualUsd !== null)) throw new Error("CONSCIOUSNESS_SETTLEMENT_INVALID");
 }
 export async function settleBattleOperationalAttemptInTransaction(connection: DatabaseConnection, input: AwarenessAttemptSettlement & { battleId: string; finishedAt: number }): Promise<BattleOperationalSnapshot> {
+  const reserved = await getReservedRuntimeInTransaction(connection, input.battleId, { lock: true });
+  if (reserved) {
+    validateSettlement(input);
+    const reservation = reserved.runtime.budget.reservations.find((r) => r.id === input.id);
+    if (!reservation || (!reservation.physicalOutstanding && input.physicalOutstanding) || (reservation.status === "settled" && (input.outcome !== "settled" || reservation.actualUsd !== input.actualUsd))) throw new Error("RESERVED_SETTLEMENT_CONFLICT");
+    const reservations = reserved.runtime.budget.reservations.map((r) => r.id === input.id ? { ...r, status: input.outcome, actualUsd: input.actualUsd, physicalOutstanding: input.physicalOutstanding } : r);
+    const saved = await writeReservedRuntime(connection, reserved, { ...reserved.runtime, budget: budgetSnapshot(reservations) }, new Date(input.finishedAt).toISOString());
+    return { ...saved, runtime: reservedOperationalRuntime(saved.runtime) };
+  }
   const current = await getUnifiedRuntimeInTransaction(connection, input.battleId, { lock: true });
   if (!current) return settleAwarenessAttemptInTransaction(connection, input);
   validateSettlement(input);

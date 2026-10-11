@@ -5,6 +5,12 @@ based on Keep a Changelog, and releases follow Semantic Versioning.
 
 ## [Unreleased]
 
+## [0.25.0] - 2026-10-11
+
+- Application v0.25.0-rc.1 introduces reserved-turn pipeline v1 for new battles: parallel A/B planning, up to five action reservations each, one sequential adjudication trace and one public narration call. Normal turns use four logical LLM calls. Ranked memory remains required.
+- Battle binding format v7 commits validated world changes, both memories and completed public narration atomically. Invalid traces leave the turn unchanged; known HTTP429 retries are bounded and unknown sends are never resent. Historical battles keep their recorded engines.
+- Add migration0038_reserved_turns.sql before deployment. Application v0.24.0-rc.9 is schema-compatible but cannot execute battle binding format v7; rollback must stop new creation and retain a compatible executor. No historical battle conversion or new environment variables.
+
 ## [0.24.0] - 2026-10-10
 
 - Application v0.24.0-rc.9 selects consciousness policy v3, consciousness prompt v3 and consciousness output format v2 for new public battles. Every decision outputs the next ranked memory array, with old-rank references for retention/reordering. Saved historical battles remain bound; no new database migration. Previous application v0.24.0-rc.8 cannot execute newly bound policy v3 battles after rollback.

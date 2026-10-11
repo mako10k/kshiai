@@ -1,4 +1,7 @@
 // R: Verify completed awareness execution and summarize actual SDK token usage for public acceptance.
+import { ReservedTurnRuntimeSchema, type BattleAssetManifestV7, type ReservedTurnRuntime } from "@kshiai/shared";
+import { getReservedRuntime, type ReservedRuntimeSnapshot } from "../repositories/reserved-turns.js";
+import { reservedOperationalRuntime } from "../repositories/battle-operational-runtime.js";
 import { isDeepStrictEqual } from "node:util";
 import { AwarenessNormalPolicy, CurrentAwarenessPromptRevision, UnifiedConsciousnessRuntimeSchema, type BattleAssetManifest, type BattleAssetManifestV6, type UnifiedConsciousnessRuntime } from "@kshiai/shared";
 import { getAwarenessRuntime, type AwarenessRuntimeSnapshot } from "../repositories/battle-awareness.js";
@@ -7,6 +10,7 @@ import { unifiedOperationalRuntime } from "../repositories/battle-operational-ru
 import { listLlmUsageAttempts, type LlmUsageAttempt } from "../repositories/llm-usage.js";
 
 export async function inspectAwarenessPublicObservation(battleId: string, manifest: BattleAssetManifest) {
+  if (manifest.schemaVersion === 7) return verifyReservedPublicObservation(battleId, manifest, await getReservedRuntime(battleId), await listLlmUsageAttempts({ battleId }));
   if (manifest.schemaVersion === 6) {
     let saved = await getUnifiedRuntime(battleId);
     const drainUntil = Date.now() + manifest.awarenessPolicy.narration.terminalDrainMs;
@@ -120,4 +124,35 @@ function publicUsageEvidence(attempts: readonly LlmUsageAttempt[]) {
       promptTokens: attempt.promptTokens, completionTokens: attempt.completionTokens, totalTokens: attempt.totalTokens,
       elapsedMs: attempt.elapsedMs, responseDiagnostics: attempt.responseDiagnostics ?? null })),
   };
+}
+
+export function verifyReservedPublicObservation(battleId: string,
+  manifest: Pick<BattleAssetManifestV7, "reservedTurnPolicy" | "reservedTurnPromptRevision" | "awarenessPolicy">,
+  saved: ReservedRuntimeSnapshot | null, attempts: readonly LlmUsageAttempt[]) {
+  if (!saved || saved.battleId !== battleId) throw new Error("PUBLIC_COMPLETION_RUNTIME_NOT_FINISHED");
+  const runtime = ReservedTurnRuntimeSchema.parse(saved.runtime);
+  if (!isDeepStrictEqual(runtime.policy, manifest.reservedTurnPolicy) || !isDeepStrictEqual(runtime.operatingPolicy, manifest.awarenessPolicy) || runtime.status !== "terminal" || runtime.terminalAt === null || runtime.turn < 1) throw new Error("PUBLIC_COMPLETION_RUNTIME_NOT_FINISHED");
+  const budget = reservedOperationalRuntime(runtime).budget;
+  if (budget.physicalOutstanding || budget.physicalAttempts > runtime.policy.maxPhysicalAttempts) throw new Error("PUBLIC_COMPLETION_PHYSICAL_BUDGET_UNRESOLVED");
+  assertReservedRequests(runtime);
+  assertCompleteUsageLedger(battleId, attempts, budget.physicalAttempts, ["creation", "consciousness", "adjudication", "narration"]);
+  for (const request of runtime.requests) {
+    const role = request.role === "character" ? "consciousness" : request.role;
+    const matches = attempts.filter((attempt) => attempt.receiptIds.includes(request.id) && attempt.role === role && attempt.side === request.side);
+    if (matches.length !== 1) throw new Error("PUBLIC_COMPLETION_REQUEST_USAGE_MISMATCH");
+  }
+  return { engine: "reserved-turns-v1" as const, policyRevision: runtime.policy.revision,
+    recordedPromptRevision: manifest.reservedTurnPromptRevision, effectivePromptRevision: manifest.reservedTurnPromptRevision,
+    completedTurns: runtime.turn, physicalAttemptLimit: runtime.policy.maxPhysicalAttempts,
+    physicalAttempts: budget.physicalAttempts, physicalOutstanding: budget.physicalOutstanding, ...publicUsageEvidence(attempts) };
+}
+function assertReservedRequests(runtime: ReservedTurnRuntime): void {
+  if (runtime.requests.some((request) => request.turn > runtime.turn || request.physicalOutstanding ||
+    (request.status !== "prepared" && request.failure !== "RATE_LIMIT"))) throw new Error("PUBLIC_COMPLETION_REQUEST_NOT_FINISHED");
+  for (let turn = 1; turn <= runtime.turn; turn += 1) {
+    const prepared = runtime.requests.filter((request) => request.turn === turn && request.status === "prepared");
+    if (prepared.length !== 4 || prepared.some((request) => request.rawResponse === null)) throw new Error("PUBLIC_COMPLETION_TURN_CALLS_MISMATCH");
+    const kinds = new Set(prepared.map((request) => `${request.role}:${request.side}`));
+    if (!["character:a", "character:b", "adjudication:null", "narration:null"].every((kind) => kinds.has(kind))) throw new Error("PUBLIC_COMPLETION_TURN_CALLS_MISMATCH");
+  }
 }
