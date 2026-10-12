@@ -1,7 +1,7 @@
 project UNIFIED_CONSCIOUSNESS:
-  version 35
+  version 38
   title "予約ターンパイプライン v1への統合"
-  description "Current goal: deploy reserved turn pipeline v1 under Accepted ADR0072/0074/0075/0076/0077/0078. New policy v7/prompt v6 preserves output v3 and mandatory ranked memory while recovering received invalid plans. Owner authorizes correction/tests/deployment/staging/switching and repair retries; latest direction requires automatic repair/error-directed redo and failed reservation slot consumption. Application v0.25.0-rc.8 Stage38208113568 stopped at turn9 empty narration after8committed turns/37closed attempts with no world/memory mismatches. Cumulative157 leaves104 under approved261; unpriced. Preserve all failed fixtures and immutable historical bindings. Corrected application v0.25.0-rc.9 requires full checks/exact CI/tag, one corrected fixed fixture/max38advances/104physical attempts, then successful exact-artifact production promotion. Production remains application v0.24.0-rc.9."
+  description "Current goal: deploy reserved turn pipeline v1 under Accepted ADR0072/0074/0075/0076/0077/0078/0079. Application v0.25.0-rc.9 policy v7/prompt v6/output v3 passed1579tests and exact PR/main4checks/tag. Stage38211435113 job kshiai-persistent-e2e-z9wf4 failed after5committed consistent turns while turn6 adjudication remained reserved;24reserved attempts/23closed/1unresolved. Root cause confirmed by Cloud Run logs after owner reauthentication: unhandled idle BoundPool error Connection terminated unexpectedly exited API at06:24:33Z, truncating SSE. Accepted ADR0079 revision1 contains idle errors without write/provider replay. Do not replay unresolved send or unchanged candidate. Cumulative181reserved leaves80 under approved261, unpriced. Preserve immutable failures; no production promotion. Production remains application v0.24.0-rc.9. Next: implement idle-pool error containment and isolated PostgreSQL fault regressions for application v0.25.0-rc.10, full checks/exact CI/tag and corrected bounded Stage, then exact successful artifacts promotion under existing authority."
   duration_unit point
   finish RESERVED_DEPLOYED
   goal_owner user
@@ -92,7 +92,7 @@ task reservedRelease RESERVED_VERIFIED -> RESERVED_RELEASE_READY:
 milestone RESERVED_REPAIR_CONTRACT:
   title "予約ターン出力 v3の行動単位失敗契約を所有者受入"
 milestone RESERVED_REPAIR_READY:
-  title "Application v0.25.0-rc.9の修正・全検証・正確なCI成功"
+  title "Application v0.25.0-rc.10の修正・全検証・正確なCI成功"
 task reservedRepairDecision RESERVED_RELEASE_READY -> RESERVED_REPAIR_CONTRACT:
   title "資源不正を行動失敗として返す契約を整理し受入確認"
   description "Accepted ADR0076 revision1 changes the Accepted ADR0072 whole-turn failure boundary. Later Accepted ADR0077 revision1 applies the owner recovery direction to received invalid character plans while preserving mandatory memory. Stage38189337992 charged4MP from1MP and failed turn9 after8committed turns/36attempts. Prepare exact versioned policy v5/output v3/prompt v5, private raw evidence and safe observer feedback rules; Owner latest accepts automatic repair/error-directed correction; record Accepted ADR0076 before implementation. No runtime implementation or new paid run before decision. Completion: Accepted ADR0076 and aligned document/precedence/resource/next checks."
@@ -101,15 +101,15 @@ task reservedRepairDecision RESERVED_RELEASE_READY -> RESERVED_REPAIR_CONTRACT:
     DEV 1
   status done
 task reservedRepair RESERVED_REPAIR_CONTRACT -> RESERVED_REPAIR_READY:
-  title "予約ターン方針 v7の公開実況修復を実装検証"
-  description "Accepted ADR0078 revision1. Actual application v0.25.0-rc.8 Stage38208113568 received empty narration for zero public consequences after8turns/37closed attempts. Implement policy v7/prompt v6/output v3: received invalid narration renders only frozen public consequences or factual no-public-result line; preserve raw receipt, explicit NARRATION_FALLBACK, original deadlines/fences, no additional calls. Keep prior character/judge recovery, immutable old bindings and four effective outputs. Individually review affected authority; regress schema/JSON/empty/public privacy/bounds/replay/unknown/oldpolicy and API atomic continuation. Completion: governed fulltests/typecheck/build/static/ADR/fsck/PERT, exact PR/main4checks and annotated application v0.25.0-rc.9 tag. Prior rc.8 PR193/main98c80277 allchecks1577pass/15reviews, but no production promotion. Existing repair authority and cumulative261 ceiling remain."
+  title "Application v0.25.0-rc.10の待機DB接続エラーを修復検証"
+  description "Accepted ADR0079 revision1. Cloud Run logs confirm unhandled idle BoundPool error exited rc.9 API and truncated SSE; not an LLM output defect. Install safe idle error listener before pool use, rely on pg-pool discarded-client replacement, preserve checked-out errors/no write or provider replay and policy v7/prompt v6/output v3. Regress actual isolated PostgreSQL idle termination/process survival/new query and active-query failure without replay, safe diagnostic/no secrets. Individually review affected authority and full governed tests/typecheck/build/static/ADR/fsck/PERT. Completion: exact PR/main4checks and annotated application v0.25.0-rc.10 tag. Prior rc.9 full1579pass/48focused/13reviews and main642f696b CI38210711020 allpassed; preserve all prior evidence and unresolved judge. Cumulative181reserved leaves80 of261."
   duration 3p
   requires:
     DEV 1
   status active
 task reservedStage RESERVED_REPAIR_READY -> RESERVED_STAGED:
   title "固定1対戦の因果・記憶・実況・利用台帳を検証"
-  description "After application v0.25.0-rc.9 exact CI/tag, execute one corrected fixed fixture max38advances/104physical attempts; cumulative157used/261approved, unpriced. Prior rc.8 used37/8turns, rc.7 used23/5turns, rc.6 used0, rc.5 used36, rc.4 used12, rc.3 used41 and rc.1/rc.2 each4; preserve all failures. Verify terminal battle, exact canonical output v3 trace, ranked memory, public-only narration fallback and closed usage. No unchanged-candidate automatic retry, unknown replay or character generation. Completion: successful Stage and exact immutable artifacts preserved for Promote."
+  description "After evidenced correction and next exact CI/tag, execute one corrected fixed fixture max38advances/80physical attempts; cumulative181reserved/261approved, unpriced. Prior rc.9 reserved24/5committed turns/1unresolved send, rc.8 used37/8turns, rc.7 used23/5turns, rc.6 used0, rc.5 used36, rc.4 used12, rc.3 used41 and rc.1/rc.2 each4; preserve all failures. Verify terminal battle, exact canonical output v3 trace, ranked memory, public-only narration fallback and closed usage. No unchanged-candidate automatic retry, unknown replay or character generation. Completion: successful Stage and exact immutable artifacts preserved for Promote."
   duration 3p
   requires:
     DEV 1

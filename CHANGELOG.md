@@ -1,5 +1,10 @@
 # Changelog
 
+## Application v0.25.0-rc.10
+
+- Contain idle PostgreSQL pool connection errors so they do not crash unrelated battle streams; log a fixed diagnostic without connection details.
+- Preserve active query failures and prohibit automatic write/provider replay; reserved turn policy v7/prompt v6/output v3 remain unchanged.
+
 ## Application v0.25.0-rc.9
 
 - Reserved turn policy v7 recovers received invalid narration using only frozen public consequences, without extra provider calls; prompt v6/output v3 and historical bindings remain unchanged.

@@ -1,0 +1,63 @@
+{
+  "application": "v0.25.0-rc.10",
+  "governingAdr": "Accepted ADR0079 revision1",
+  "focused": {
+    "pass": 54,
+    "fail": 0,
+    "skip": 0
+  },
+  "reviews": [
+    {
+      "ref": "implementation/character-semantic-migration-sqlite-bootstrap",
+      "seal": "c4884fa79f61313bee8260cae3ef409d52b08afbc407eb8d10c44c5efbb473f0",
+      "path": "backend/src/db.ts",
+      "changed": true,
+      "review": "Reviewed backend/src/db.ts: Create application pool through managed helper with safe idle error listener; preserve SQLite init, query/transaction failure propagation and no automatic replay. Accepted ADR0079 revision1 and ADR0076 output v3. Focused54pass; final typecheck/static/build validation and full governed suite follow individual resealing. Actual isolated PostgreSQL idle termination/replacement and checked-out query rejection regressions passed; fixed diagnostic privacy verified. Focused54pass/0skip and no provider calls.",
+      "previousSeal": "bbe0776593d3d34117075dcb94672ae5d447642d2fc44fb59feadd912a035185"
+    },
+    {
+      "ref": "verification/postgres-ca-path-bounded-20261008",
+      "seal": "b575720e384e13d6bae2a14a9005ed76d11f315010146fb1aa3b6eb405d5686f",
+      "path": "backend/src/postgres-config.test.ts",
+      "changed": true,
+      "review": "Reviewed backend/src/postgres-config.test.ts: Safe listener logs no Error/client data; actual isolated PostgreSQL idle termination replaces client, active query rejection remains visible, no replay. Accepted ADR0079 revision1 and ADR0076 output v3. Focused54pass; final typecheck/static/build validation and full governed suite follow individual resealing. Actual isolated PostgreSQL idle termination/replacement and checked-out query rejection regressions passed; fixed diagnostic privacy verified. Focused54pass/0skip and no provider calls. Preserved coverage: createPostgresConfig; uses the bundled CA when the override is absent; uses the bundled CA when the override is empty; uses the bundled CA when the override is whitespace; uses a non-empty explicit override; contains idle pool errors without serializing connection errors or clients; error; replaces a terminated idle PostgreSQL client and rejects active query errors without replay",
+      "previousSeal": "f3110c18db1f5fcb4572f5a367b76dd13df82d47fa241097e4ab10e3304dfbed"
+    },
+    {
+      "ref": "reserved-turns-v1/source/backend-src-db",
+      "seal": "bdd86f53a7282e191dcce8eda5d342033adfb0ea71e4ad664b1262844745d0f7",
+      "path": "backend/src/db.ts",
+      "changed": true,
+      "review": "Reviewed backend/src/db.ts: Create application pool through managed helper with safe idle error listener; preserve SQLite init, query/transaction failure propagation and no automatic replay. Accepted ADR0079 revision1 and ADR0076 output v3. Focused54pass; final typecheck/static/build validation and full governed suite follow individual resealing. Actual isolated PostgreSQL idle termination/replacement and checked-out query rejection regressions passed; fixed diagnostic privacy verified. Focused54pass/0skip and no provider calls.",
+      "previousSeal": "c3d52762ad0da82299d8b473127ce218e01ce974017ee154adf10154672713f4"
+    },
+    {
+      "ref": "all-tests-20261008/current-source-closure/verification/structured-asset-integration-bounded-20261008",
+      "seal": "0012e24954fa96bf39eb0f98866e5c18aca56ab4782c9987d399b7f890659eac",
+      "path": "backend/src/routes-structured-asset-integration.test.ts",
+      "changed": false,
+      "review": "Reviewed backend/src/routes-structured-asset-integration.test.ts: Unchanged downstream contract reviewed for managed application pool: preserve historical assertions, immutable bindings, SQLite bootstrap, atomic/fenced state and query failure propagation; no test disabled. Accepted ADR0079 revision1 and ADR0076 output v3. Focused54pass; final typecheck/static/build validation and full governed suite follow individual resealing. Actual isolated PostgreSQL idle termination/replacement and checked-out query rejection regressions passed; fixed diagnostic privacy verified. Focused54pass/0skip and no provider calls. Preserved coverage: integrated structured asset cutover; keeps selection, binding, replay, history, and deletion on immutable generations; freezes legacy character rows without appending V1 generations",
+      "previousSeal": "c8491587c2c64ca536b6616631728e03ff527bbb7fda24f69ee026c1f4892ed8"
+    }
+  ],
+  "paidAttempts": 0,
+  "productionPromotion": false,
+  "newPoolSourceReview": {
+    "ref": "reserved-turns-v1/source/backend-src-postgres-config",
+    "path": "backend/src/postgres-config.ts",
+    "review": "Create pool with safe idle error listener before use. pg-pool removes idle failed clients; no query or provider replay. Actual PostgreSQL idle termination/replacement and checked-out query rejection passed; diagnostic does not serialize Error/client/config."
+  },
+  "validation": {
+    "focused": 54,
+    "typecheck": "pass",
+    "static": "pass",
+    "build": "pass",
+    "governedSuite": {
+      "passed": 1581,
+      "failed": 0,
+      "skipped": 0,
+      "activeFiles": 254,
+      "disabledFiles": 0
+    }
+  }
+}
