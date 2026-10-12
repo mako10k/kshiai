@@ -59,3 +59,24 @@ test("battle binding v7 requires completed inline publication without worker cla
   assert.throws(() => assertNarrationConvergence(7, []));
   assert.equal(narrationConvergenceEvidence(7, 1).terminalReceiptCount, 1);
 });
+
+
+test("battle binding v7 ordered outbox accepts successful durable claims and reports queue evidence", () => {
+  assert.doesNotThrow(() => assertNarrationConvergence(7, [complete, { ...complete, attemptCount: 3 }], "ordered-outbox"));
+  const evidence = narrationConvergenceEvidence(7, 12, "ordered-outbox");
+  assert.equal("atomicInlinePublication" in evidence, false);
+  assert.equal("durableWorkerClaims" in evidence, false);
+  assert.ok("oneTerminalSnapshotPerReceipt" in evidence);
+  assert.equal(evidence.oneTerminalSnapshotPerReceipt, "passed");
+});
+
+test("battle binding v7 ordered outbox rejects failed or unresolved publication and missing claims", () => {
+  assert.throws(() => assertNarrationConvergence(7, [], "ordered-outbox"));
+  for (const entry of [
+    { ...complete, status: "failed" }, { ...complete, status: "cancelled" }, { ...complete, status: "generating" },
+    { ...complete, attemptCount: 0 }, { ...complete, attemptCount: undefined }, { ...complete, attemptCount: 1.5 },
+    { ...complete, blockedBySequence: 1 }, { ...complete, blockedBySequence: undefined },
+    { ...complete, lease: {} }, { ...complete, lease: undefined },
+    { ...complete, outbox: null }, { ...complete, outbox: { status: "pending" } },
+  ]) assert.throws(() => assertNarrationConvergence(7, [entry], "ordered-outbox"), /successful terminal publication/);
+});

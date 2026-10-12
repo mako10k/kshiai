@@ -1,5 +1,5 @@
 // R: Verify ordinary public battle progression and retain bounded release acceptance evidence.
-import { assertNarrationConvergence, narrationConvergenceEvidence } from "./awareness-narration-convergence.js";
+import { assertNarrationConvergence, narrationConvergenceEvidence, type NarrationPublicationMode } from "./awareness-narration-convergence.js";
 import { inspectAwarenessPublicObservation } from "./awareness-public-observation.js";
 import { randomUUID } from "node:crypto";
 import {
@@ -498,6 +498,7 @@ async function inspectInternalBattleObservation(input: {
   dialogueActivationSource: "default" | "persisted_setting" | "deployment_override";
   awareness: Awaited<ReturnType<typeof inspectAwarenessPublicObservation>>;
   manifestSchemaVersion: number;
+  narrationPublicationMode: NarrationPublicationMode;
 }> {
   const response = await apiJson<{
     role?: string;
@@ -548,7 +549,8 @@ async function inspectInternalBattleObservation(input: {
     throw new Error("Battle dialogue activation source is missing");
   }
   const narrationQueue = response.narrationQueue ?? [];
-  assertNarrationConvergence(manifest.schemaVersion, narrationQueue);
+  const narrationPublicationMode: NarrationPublicationMode = manifest.schemaVersion === 7 && "canonicalNarration" in manifest.reservedTurnPolicy ? "ordered-outbox" : "inline";
+  assertNarrationConvergence(manifest.schemaVersion, narrationQueue, narrationPublicationMode);
   const sequences = narrationQueue.map((entry) => Number(entry.sequence));
   assertPublicNarrationOrder(sequences);
   reconcileSparseNarrationProjection({
@@ -566,6 +568,7 @@ async function inspectInternalBattleObservation(input: {
   return {
     awareness,
     manifestSchemaVersion: manifest.schemaVersion,
+    narrationPublicationMode,
     turnRecordCount,
     canonicalTransitionCount,
     narrationProviderOperations: awareness.narrationPhysicalAttempts,
@@ -881,7 +884,7 @@ async function main(): Promise<void> {
         },
       },
       narrationConvergence: narrationConvergenceEvidence(
-        internalObservability.manifestSchemaVersion, narration.entries.length,
+        internalObservability.manifestSchemaVersion, narration.entries.length, internalObservability.narrationPublicationMode,
       ),
       historyVisibility: "passed",
       battle: {
