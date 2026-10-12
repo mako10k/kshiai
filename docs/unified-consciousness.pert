@@ -1,7 +1,7 @@
 project UNIFIED_CONSCIOUSNESS:
-  version 37
+  version 38
   title "予約ターンパイプライン v1への統合"
-  description "Current goal: deploy reserved turn pipeline v1 under Accepted ADR0072/0074/0075/0076/0077/0078. Application v0.25.0-rc.9 policy v7/prompt v6/output v3 passed1579tests and exact PR/main4checks/tag. Stage38211435113 job kshiai-persistent-e2e-z9wf4 failed after5committed consistent turns while turn6 adjudication remained reserved;24reserved attempts/23closed/1unresolved. Root cause unconfirmed: detailed logs unavailable due expired local gcloud authentication; owner renewal requested while read-only diagnosis continues. Do not replay unresolved send or unchanged candidate. Cumulative181reserved leaves80 under approved261, unpriced. Preserve immutable failures; no production promotion. Production remains application v0.24.0-rc.9. Next: diagnose actual job/backend failure, implement only evidenced repair, run full checks/exact CI/tag and corrected bounded Stage, then exact successful artifacts promotion under existing authority."
+  description "Current goal: deploy reserved turn pipeline v1 under Accepted ADR0072/0074/0075/0076/0077/0078/0079. Application v0.25.0-rc.9 policy v7/prompt v6/output v3 passed1579tests and exact PR/main4checks/tag. Stage38211435113 job kshiai-persistent-e2e-z9wf4 failed after5committed consistent turns while turn6 adjudication remained reserved;24reserved attempts/23closed/1unresolved. Root cause confirmed by Cloud Run logs after owner reauthentication: unhandled idle BoundPool error Connection terminated unexpectedly exited API at06:24:33Z, truncating SSE. Accepted ADR0079 revision1 contains idle errors without write/provider replay. Do not replay unresolved send or unchanged candidate. Cumulative181reserved leaves80 under approved261, unpriced. Preserve immutable failures; no production promotion. Production remains application v0.24.0-rc.9. Next: implement idle-pool error containment and isolated PostgreSQL fault regressions for application v0.25.0-rc.10, full checks/exact CI/tag and corrected bounded Stage, then exact successful artifacts promotion under existing authority."
   duration_unit point
   finish RESERVED_DEPLOYED
   goal_owner user
@@ -92,7 +92,7 @@ task reservedRelease RESERVED_VERIFIED -> RESERVED_RELEASE_READY:
 milestone RESERVED_REPAIR_CONTRACT:
   title "予約ターン出力 v3の行動単位失敗契約を所有者受入"
 milestone RESERVED_REPAIR_READY:
-  title "Application v0.25.0-rc.9の修正・全検証・正確なCI成功"
+  title "Application v0.25.0-rc.10の修正・全検証・正確なCI成功"
 task reservedRepairDecision RESERVED_RELEASE_READY -> RESERVED_REPAIR_CONTRACT:
   title "資源不正を行動失敗として返す契約を整理し受入確認"
   description "Accepted ADR0076 revision1 changes the Accepted ADR0072 whole-turn failure boundary. Later Accepted ADR0077 revision1 applies the owner recovery direction to received invalid character plans while preserving mandatory memory. Stage38189337992 charged4MP from1MP and failed turn9 after8committed turns/36attempts. Prepare exact versioned policy v5/output v3/prompt v5, private raw evidence and safe observer feedback rules; Owner latest accepts automatic repair/error-directed correction; record Accepted ADR0076 before implementation. No runtime implementation or new paid run before decision. Completion: Accepted ADR0076 and aligned document/precedence/resource/next checks."
@@ -101,8 +101,8 @@ task reservedRepairDecision RESERVED_RELEASE_READY -> RESERVED_REPAIR_CONTRACT:
     DEV 1
   status done
 task reservedRepair RESERVED_REPAIR_CONTRACT -> RESERVED_REPAIR_READY:
-  title "予約ターン方針 v7の公開実況修復を実装検証"
-  description "Accepted ADR0078 revision1. Actual application v0.25.0-rc.8 Stage38208113568 received empty narration for zero public consequences after8turns/37closed attempts. Implement policy v7/prompt v6/output v3: received invalid narration renders only frozen public consequences or factual no-public-result line; preserve raw receipt, explicit NARRATION_FALLBACK, original deadlines/fences, no additional calls. Keep prior character/judge recovery, immutable old bindings and four effective outputs. Individually review affected authority; regress schema/JSON/empty/public privacy/bounds/replay/unknown/oldpolicy and API atomic continuation. Completed: full1579pass/254active/0disabled/0skip,48focused/13reviews, typecheck/build/static/ADR/fsck/PERT; PR194 head0426bdf9 CI38209968197, exact-main642f696b CI38210711020 all4passed and annotated application v0.25.0-rc.9 tag. Stage38211435113 rc.9 failed while battle remained active at turn5; turn6 judge reserved,24physical reservations/1unresolved. Preserve successful source verification but reopen repair for root-cause diagnosis, no speculative change. Detailed job/backend logs need renewed local gcloud auth; owner asked. Next corrected candidate requires evidenced fix, full checks/exact CI/tag. No production promotion. Existing repair authority and cumulative261 ceiling remain."
+  title "Application v0.25.0-rc.10の待機DB接続エラーを修復検証"
+  description "Accepted ADR0079 revision1. Cloud Run logs confirm unhandled idle BoundPool error exited rc.9 API and truncated SSE; not an LLM output defect. Install safe idle error listener before pool use, rely on pg-pool discarded-client replacement, preserve checked-out errors/no write or provider replay and policy v7/prompt v6/output v3. Regress actual isolated PostgreSQL idle termination/process survival/new query and active-query failure without replay, safe diagnostic/no secrets. Individually review affected authority and full governed tests/typecheck/build/static/ADR/fsck/PERT. Completion: exact PR/main4checks and annotated application v0.25.0-rc.10 tag. Prior rc.9 full1579pass/48focused/13reviews and main642f696b CI38210711020 allpassed; preserve all prior evidence and unresolved judge. Cumulative181reserved leaves80 of261."
   duration 3p
   requires:
     DEV 1

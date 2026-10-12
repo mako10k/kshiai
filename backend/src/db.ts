@@ -9,9 +9,9 @@ import { battleAwarenessSchemaSql } from "./repositories/battle-awareness-schema
 import fs from "node:fs";
 import path from "node:path";
 import SqliteDatabase from "better-sqlite3";
-import { Pool, type PoolClient } from "pg";
+import type { Pool, PoolClient } from "pg";
 import { config } from "./config.js";
-import { createPostgresConfig } from "./postgres-config.js";
+import { createPostgresConfig, createPostgresPool } from "./postgres-config.js";
 
 export type DatabaseRow = object;
 
@@ -991,7 +991,7 @@ function ensureSqliteOwnerNotifications(database: SqliteDatabase.Database): void
 function getPostgresPool(): Pool {
   if (!config.databaseUrl) throw new Error("DATABASE_URL is required");
   if (!postgres) {
-    postgres = new Pool({
+    postgres = createPostgresPool({
       ...createPostgresConfig(config.databaseUrl),
       max: config.databasePoolMax,
       idleTimeoutMillis: 30_000,

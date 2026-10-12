@@ -1,0 +1,10 @@
+domain ADR0079:
+  description "Accepted revision1: contain idle PostgreSQL pool errors without retrying writes or unknown provider sends."
+evidence CRASH:
+  "Stage38211435113 application v0.25.0-rc.9 backend kshiai-api-00208-zur exited at06:24:33Z after unhandled BoundPool error Connection terminated unexpectedly. SSE truncated; observer no done event. Five committed consistent turns;24reserved physical attempts including1unresolved judge."
+premise CONTRACT:
+  "Install application pool error listener before connection use; fixed safe diagnostic only, no Error/client/config serialization. pg-pool discards broken idle connections and subsequent requests acquire new clients. Checked-out query/transaction errors still reject. No automatic write/transaction/provider replay, schema or binding change. Application v0.25.0-rc.10 retains policy v7/prompt v6/output v3."
+evidence OWNER_ACCEPTANCE:
+  "Owner explicitly authorizes repairs/tests/deployment/staging/switching and repair retries, renews authentication and says continue. Cumulative181reserved leaves80 within approved261; corrected fixed1battle/max38advances, unpriced, no unchanged-candidate rerun or unknown-send replay."
+decision ACCEPTANCE based_on CRASH, CONTRACT, OWNER_ACCEPTANCE:
+  "Accept revision1: implement evidenced idle-pool containment, isolated PostgreSQL fault regression, individual authority review and full checks/exact CI/tag, successful bounded Stage before exact-artifact promotion. Preserve unresolved prior receipt."

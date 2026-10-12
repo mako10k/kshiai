@@ -27,5 +27,6 @@
   "productionPromoted": false,
   "jobExecution": "kshiai-persistent-e2e-z9wf4",
   "stagedRevision": "kshiai-api-00208-zur",
-  "failureDiagnosis": "Unknown: observer job failed while turn6 adjudication remained reserved; detailed Cloud Run logs require renewed local authentication. Do not replay unresolved physical send."
+  "failureDiagnosis": "Confirmed Cloud Run logs: unhandled BoundPool error Connection terminated unexpectedly exited API at2026-10-12T06:24:33Z; truncated SSE caused observer no done event. Idle pool error listener absent. Unresolved judge is not replayed.",
+  "governingRepair": "Accepted ADR0079 revision1"
 }
