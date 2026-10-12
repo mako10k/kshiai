@@ -1,0 +1,10 @@
+domain ADR0078:
+  description "Accepted revision1: received narration presentation recovery under reserved turn policy v7, prompt v6/output v3."
+evidence STAGE_FAILURE:
+  "Application v0.25.0-rc.8 Stage38208113568 committed8turns then received lines:[] with zero public consequences at turn9. All37 attempts closed, canonical world/memory consistent; cumulative157 remaining104 under approved261."
+premise CONTRACT:
+  "For policy v7 only, recover received invalid narration JSON/schema from frozen public consequences, at most16lines/600characters each, or factual no-public-result line. Preserve raw receipt, mark NARRATION_FALLBACK and log safely; no extra provider calls or private facts. Original deadline/fences and four effective outputs/atomic commit/accounting remain. Unknown sends/transport/late failures not replayed. Existing policy v1-v6 and prompts unchanged."
+evidence OWNER_ACCEPTANCE:
+  "Owner directs automatic mechanical repair/error-directed redo for imperfect LLM outputs, flexible integrated LLM-only feedback, and explicitly authorizes repair retries plus fixes/tests/deployment/staging/switching. Remaining104 of cumulative261 funds corrected fixed1battle/max38advances without increasing paid authority."
+decision ACCEPTANCE based_on STAGE_FAILURE, CONTRACT, OWNER_ACCEPTANCE:
+  "Accept revision1 under existing recovery authority. Implement immutable policy v7/prompt v6/output v3 and application v0.25.0-rc.9 with individual authority review/fullchecks/exact CI/tag, successful bounded Stage and exact-artifact promotion."

@@ -13,15 +13,16 @@ import { AwarenessLatentOutputSchema, AwarenessConsciousOutputSchema } from "@ks
 function transport(send: AwarenessJsonTransport["requestJson"]): AwarenessJsonTransport {
   return { identity: { provider: "openai", engineModel: "judge", fastModel: "character" }, requestJson: send };
 }
-function fixture(version: "v5" | "v6" = "v5") {
+function fixture(version: "v5" | "v6" | "v7" = "v5") {
   const stub = transport(async () => ({}));
   const boundPolicy = bindReservedTurnPolicy({ consciousness: stub, adjudication: stub,
     narration: { identity: stub.identity, narrateBatch: async () => [], narrateFrozenBatch: async () => [] },
     models: { subconscious: async (input) => AwarenessLatentOutputSchema.parse({ state: input.currentState, reflexDesires: [], affectiveDesires: [], reconsider: false, cancelThought: false }),
       conscious: async () => AwarenessConsciousOutputSchema.parse({ goal: null, thought: "", desires: [], influences: [] }) } });
-  if (boundPolicy.revision !== "reserved-turn-policy-v6") throw new Error("expected creation policy v6");
-  const { maxCharacterCorrections: _characterCorrections, ...historical } = boundPolicy;
-  const policy = version === "v6" ? boundPolicy : ReservedTurnPolicySchema.parse({ ...historical, revision: "reserved-turn-policy-v5" });
+  if (boundPolicy.revision !== "reserved-turn-policy-v7") throw new Error("expected creation policy v7");
+  const { narrationFallback: _narrationFallback, ...v6 } = boundPolicy;
+  const { maxCharacterCorrections: _characterCorrections, ...historical } = v6;
+  const policy = version === "v7" ? boundPolicy : version === "v6" ? ReservedTurnPolicySchema.parse({ ...v6, revision: "reserved-turn-policy-v6" }) : ReservedTurnPolicySchema.parse({ ...historical, revision: "reserved-turn-policy-v5" });
   let runtime = initializeReservedTurns(policy, Date.now());
   const port: ReservedExecutionPort = { read: async () => structuredClone(runtime),
     update: async (reduce) => { runtime = ReservedTurnRuntimeSchema.parse(reduce(runtime)); },
@@ -526,4 +527,57 @@ it("keeps policy v5 strict on missing memory and preserves prompt v5 while promp
   assert.equal(reservedPlanSystemFor("reserved-turn-prompt-v5").includes("先頭に必ずmemory"), false);
   assert.match(reservedPlanSystemFor("reserved-turn-prompt-v6"), /先頭に必ずmemory/);
   assert.equal(reservedAdjudicationSystem("reserved-turn-prompt-v6"), reservedAdjudicationSystem("reserved-turn-prompt-v5"));
+});
+
+it("repairs received narration from public facts without extra calls and preserves raw/replay", async () => {
+  for (const mode of ["empty", "schema", "json", "bounds", "valid"] as const) {
+    const f = fixture("v7"); let calls = 0;
+    const t = transport(async (_system, user, options) => {
+      calls += 1;
+      if (options.label.endsWith("character")) return { actions: Array.from({ length: mode === "bounds" ? 2 : 1 }, (_, i) => ({ id: `observe${i}`, intent: "観察", targets: ["opponent"] })), memory: ["秘密の記憶"] };
+      assert.equal(user.includes("PRIVATE"), false);
+      assert.equal(user.includes("秘密"), false);
+      if (mode === "json") throw new LlmPhysicalCompletionError(new ProviderJsonSyntaxError("{broken"));
+      if (mode === "schema") return { invalid: true };
+      return { lines: mode === "valid" ? ["有効な実況"] : [] };
+    });
+    // Frozen public observations obey the trace's bounded observation contract.
+    const judge = transport(async (_system, user) => {
+      const parsed: { order: { reservationId: string; side: "a" | "b"; baseRevision: number }[] } = JSON.parse(user);
+      calls += 1;
+      return { results: parsed.order.map((r) => ({ reservationId: r.reservationId, side: r.side, baseRevision: r.baseRevision, outcome: "success", reason: "観察", updates: [], observations: { a: ["A_PRIVATE"], b: ["B_PRIVATE"], public: mode === "empty" ? [] : mode === "bounds" ? Array.from({ length: 8 }, () => "公".repeat(600)) : ["公開された事実"] } })) };
+    });
+    const args = { battleId: `btl_narration_${mode}`, ...f, assets: {}, publicScene: "路地", character: t, adjudication: judge, narration: t };
+    const result = await executeReservedTurn(args);
+    assert.equal(calls, 4);
+    assert.deepEqual(result.narration.lines, mode === "valid" ? ["有効な実況"] : mode === "empty" ? ["このターンに公開された行動結果はありません。"] : mode === "bounds" ? Array.from({ length: 16 }, () => "公".repeat(300)) : ["公開された事実", "公開された事実"]);
+    assert.equal(JSON.stringify(result.narration).includes("PRIVATE"), false);
+    const receipt = f.runtime().requests.find((r) => r.role === "narration");
+    assert.equal(receipt?.failure, mode === "valid" ? null : "NARRATION_FALLBACK");
+    assert.equal(receipt?.physicalOutstanding, false);
+    assert.equal(receipt?.rawResponse, mode === "json" ? "{broken" : JSON.stringify(mode === "schema" ? { invalid: true } : { lines: mode === "valid" ? ["有効な実況"] : [] }));
+    assert.deepEqual((await executeReservedTurn(args)).narration, result.narration);
+    assert.equal(calls, 4, "replay uses the effective narration receipt");
+  }
+});
+it("keeps old narration strict and never converts unknown narration sends into fallback", async () => {
+  for (const version of ["v6", "v7"] as const) {
+    const f = fixture(version); let calls = 0;
+    const t = transport(async (_system, _user, options) => {
+      calls += 1;
+      if (options.label.endsWith("character")) return { actions: [], memory: [] };
+      if (options.label.endsWith("adjudication")) return { results: [] };
+      if (version === "v7") throw new Error("unknown narration network termination");
+      return { lines: [] };
+    });
+    const args = { battleId: `btl_narration_strict_${version}`, ...f, assets: {}, publicScene: "路地", character: t, adjudication: t, narration: t };
+    await assert.rejects(executeReservedTurn(args));
+    assert.equal(calls, 4);
+    assert.equal(f.runtime().requests.filter((r) => r.failure === "NARRATION_FALLBACK").length, 0);
+    if (version === "v7") {
+      assert.equal(f.runtime().requests.find((r) => r.role === "narration")?.physicalOutstanding, true);
+      await assert.rejects(executeReservedTurn(args), /RESERVED_SEND_NOT_REPLAYABLE/);
+      assert.equal(calls, 4);
+    }
+  }
 });

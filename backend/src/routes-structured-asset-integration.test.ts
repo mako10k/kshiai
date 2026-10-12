@@ -75,14 +75,14 @@ provider.prepareBattleEncounter = async function(
       retry: "none", responseFormat: { type: "json_object" } },
   }, async () => ({ result: await MockLlmProvider.prototype.prepareBattleEncounter.call(this, input), usage: null }));
 };
-let reservedScenario: "idle" | "attack" | "invalid" | "correction" | "plan-invalid" | "unknown" = "idle";
+let reservedScenario: "idle" | "attack" | "invalid" | "correction" | "plan-invalid" | "narration-empty" | "unknown" = "idle";
 const reservedPlanInputs: string[] = [];
 const awarenessRoles: AwarenessProviderRoles = {
   consciousness: { identity: { provider: "openai", engineModel: "gpt-6-luna", fastModel: "gpt-6-luna" }, requestJson: async (system, user) => {
     if (!system.includes("予約ターンパイプライン")) return system.includes("必須memory") ? { memory: [] } : {};
     reservedPlanInputs.push(user);
     if (reservedScenario === "plan-invalid" && z.object({ side: z.enum(["a", "b"]) }).parse(JSON.parse(user)).side === "a") return { actions: [{ id: "strike", intent: "相手に打撃を試みる", targets: ["opponent"] }] };
-    return { actions: reservedScenario === "idle" ? [] : [{ id: "strike", intent: "相手に打撃を試みる", targets: ["opponent"] }], memory: reservedScenario === "idle" ? ["相手の変化を観察する"] : ["1"] };
+    return { actions: ["idle", "narration-empty"].includes(reservedScenario) ? [] : [{ id: "strike", intent: "相手に打撃を試みる", targets: ["opponent"] }], memory: reservedScenario === "idle" ? ["相手の変化を観察する"] : ["1"] };
   } },
   models: {
     subconscious: async (input) => AwarenessLatentOutputSchema.parse({ state: { ...input.currentState, updatedTick: input.tick }, reflexDesires: [], affectiveDesires: [], reconsider: false, cancelThought: false }),
@@ -97,7 +97,7 @@ const awarenessRoles: AwarenessProviderRoles = {
         outcome: "success", reason: "打撃が届いた", updates: [{ kind: "resource", side: action.side === "a" ? "b" : "a", resource: "hp", delta: -1 }],
         observations: { a: ["打撃が届いた"], b: ["打撃が届いた"], public: ["双方が打撃を交わした"] } })) };
     }
-    if (system.includes("予約ターン実況")) return { lines: ["双方が間合いを確かめた。"] };
+    if (system.includes("予約ターン実況")) return { lines: reservedScenario === "narration-empty" ? [] : ["双方が間合いを確かめた。"] };
     throw new Error("unexpected transport call");
   } },
   adjudicationProvider: provider,
@@ -316,7 +316,7 @@ describe("integrated structured asset cutover", () => {
     assert.ok(bound?.assetManifest);
     assert.equal(bound.assetManifest.schemaVersion, 7);
     assert.equal(bound.assetManifest.consciousOutputContract, "reserved-turns-v1");
-    assert.equal(bound.assetManifest.reservedTurnPolicy.revision, "reserved-turn-policy-v6");
+    assert.equal(bound.assetManifest.reservedTurnPolicy.revision, "reserved-turn-policy-v7");
     assert.equal(bound.assetManifest.reservedTurnPromptRevision, "reserved-turn-prompt-v6");
     assert.equal(bound.assetManifest.outputRevision, "reserved-turn-output-v3");
     assert.equal(BattleStateSchema.safeParse({ ...bound, assetManifest: { ...bound.assetManifest, outputRevision: "reserved-turn-output-v1" } }).success, false);
@@ -512,19 +512,26 @@ describe("integrated structured asset cutover", () => {
     assert.equal(afterRejectedPlan?.turn, 5, "one invalid side plan does not stop the counterpart's turn");
     assert.equal(afterRejectedPlan?.sideA.parameters.hp, (correctedState?.sideA.parameters.hp ?? 0) - 1);
     assert.equal(afterRejectedPlan?.sideB.parameters.hp, correctedState?.sideB.parameters.hp);
-    const beforeInvalid = JSON.stringify({ world: afterRejectedPlan?.worldState, a: afterRejectedPlan?.sideA, b: afterRejectedPlan?.sideB });
+    reservedScenario = "narration-empty";
+    const repairedNarration = await app.request(`/api/battles/${battleId}/advance`, { ...advanceRequest,
+      headers: { ...advanceRequest.headers, "Idempotency-Key": "asset-integration-narration-006" } });
+    assert.equal(repairedNarration.status, 200);
+    const afterRepairedNarration = await battleRepo.getBattle(battleId);
+    assert.equal(afterRepairedNarration?.status, "active");
+    assert.equal(afterRepairedNarration?.turn, 6, "empty public narration does not discard the turn");
+    const beforeInvalid = JSON.stringify({ world: afterRepairedNarration?.worldState, a: afterRepairedNarration?.sideA, b: afterRepairedNarration?.sideB });
     reservedScenario = "unknown";
     const invalid = await app.request(`/api/battles/${battleId}/advance`, { ...advanceRequest,
       headers: { ...advanceRequest.headers, "Idempotency-Key": "asset-integration-advance-003" } });
     assert.equal(invalid.status, 200);
     const stopped = await battleRepo.getBattle(battleId);
     assert.equal(stopped?.status, "incomplete");
-    assert.equal(stopped.turn, 5);
+    assert.equal(stopped.turn, 6);
     assert.match(stopped.incompleteReason ?? "", /RESERVED_TURN_FAILED/);
     assert.equal(JSON.stringify({ world: stopped.worldState, a: stopped.sideA, b: stopped.sideB }), beforeInvalid);
     const afterFailureNarration = await app.request(`/api/battles/${battleId}/narration`, { headers: authHeaders });
     const afterFailureSnapshot = z.object({ entries: z.array(z.unknown()) }).parse(await afterFailureNarration.json());
-    assert.equal(afterFailureSnapshot.entries.length, 5, "unknown-send turn publishes no narration");
+    assert.equal(afterFailureSnapshot.entries.length, 6, "unknown-send turn publishes no narration");
 
 
     assert.equal(

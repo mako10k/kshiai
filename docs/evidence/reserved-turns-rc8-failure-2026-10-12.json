@@ -1,0 +1,29 @@
+{
+  "runId": "stage-38208113568-1",
+  "battleId": "btl_00e7162c754dd98d4f292d6ce0435bd6",
+  "status": "incomplete",
+  "turn": 8,
+  "failure": "[\n  {\n    \"code\": \"too_small\",\n    \"minimum\": 1,\n    \"type\": \"array\",\n    \"inclusive\": true,\n    \"exact\": false,\n    \"message\": \"Array must contain at least 1 element(s)\",\n    \"path\": [\n      \"lines\"\n    ]\n  }\n]",
+  "recovery": {
+    "invalidClosedPlanReceipts": 0,
+    "rejectedPlanReceipts": 0,
+    "correctivePhysicalReceipts": 0,
+    "invalidClosedReceipts": 0,
+    "fallbackReceipts": 0,
+    "rejectedReservations": 1,
+    "physicalOutstanding": 0
+  },
+  "traceMismatches": [],
+  "memoryMismatches": 0,
+  "application": "v0.25.0-rc.8",
+  "stageRunId": 38208113568,
+  "commitSha": "98c802773b18d6576dcf4cab9910dbf1f0ac61ac",
+  "physicalAttempts": 37,
+  "cumulativeAttempts": 157,
+  "remainingApprovedAttempts": 104,
+  "productionPromoted": false,
+  "publicConsequencesAtFailure": 0,
+  "receivedNarration": {
+    "lines": []
+  }
+}

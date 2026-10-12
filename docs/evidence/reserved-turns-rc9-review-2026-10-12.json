@@ -1,0 +1,148 @@
+{
+  "application": "v0.25.0-rc.9",
+  "governingAdr": "Accepted ADR0078 revision1",
+  "focused": {
+    "pass": 48,
+    "fail": 0,
+    "skip": 0
+  },
+  "reviews": [
+    {
+      "ref": "reserved-turns-v1/source/packages-shared-src-reserved-turns",
+      "seal": "25709e28e7682a0afbb49380b6433852837037c711cbcabb2da53496bdc56ef4",
+      "path": "packages/shared/src/reserved-turns.ts",
+      "changed": true,
+      "review": "Reviewed packages/shared/src/reserved-turns.ts: Extend existing closed-receipt recovery and original role timestamps to policy v7; preserve historical strict trace/output contracts. Accepted ADR0078 revision1 and ADR0076 output v3. Focused48pass; final typecheck/static/build validation and full governed suite follow individual resealing. Received narration empty/schema/JSON/bounds/privacy/replay regressions pass with exactly4mock calls and0provider calls; oldpolicy remains strict and unknown sends are refused.",
+      "previousSeal": "a1e6d6df7a9bc4c4c51a07e1742daf4c2d75add3941e32876fddcecbd1d271f1"
+    },
+    {
+      "ref": "unified-completion-v1/source/awareness-public-observation",
+      "seal": "941d1911185d3eefc304c7820d4f63b6d2f9de9a9184524dc9f91af157866fea",
+      "path": "backend/src/scripts/awareness-public-observation.ts",
+      "changed": false,
+      "review": "Reviewed backend/src/scripts/awareness-public-observation.ts: Count every closed invalid character/judge receipt in exact physical usage, while requiring four effective prepared outputs per committed turn. Invalid roles/statuses/outstanding sends remain rejected. Accepted ADR0078 revision1 and ADR0076 output v3. Focused48pass; final typecheck/static/build validation and full governed suite follow individual resealing. Received narration empty/schema/JSON/bounds/privacy/replay regressions pass with exactly4mock calls and0provider calls; oldpolicy remains strict and unknown sends are refused.",
+      "previousSeal": "f14f5a079f21e3b5a020088f5cfebafe1b66722f8bf3eac65dd4c234c23bfda3"
+    },
+    {
+      "ref": "verification/awareness-usage-verifier-bounded-20261008",
+      "seal": "ff2bb75929f401ebea230869430c6555d99cc0e560598ac78d23f96c017be827",
+      "path": "backend/src/scripts/awareness-public-observation.test.ts",
+      "changed": false,
+      "review": "Reviewed backend/src/scripts/awareness-public-observation.test.ts: Retain historical assertions, immutable bindings and atomic/fenced state contracts with versioned character-output recovery; no test disabled. Accepted ADR0078 revision1 and ADR0076 output v3. Focused48pass; final typecheck/static/build validation and full governed suite follow individual resealing. Received narration empty/schema/JSON/bounds/privacy/replay regressions pass with exactly4mock calls and0provider calls; oldpolicy remains strict and unknown sends are refused. Preserved coverage: reports one physical batch attempt and actual tokens without inventing prices or private content; rejects missing runtime, outstanding execution, cross-battle rows and ledger mismatches; verifies unified v1 completion using both sides plus operational reservations without private content; rejects unified unresolved execution, tuple drift, uncommitted decisions and missing roles; verifies reserved-turn pipeline v1 completion by every turn request and ledger receipt without exposing private responses; accounts closed invalid judge and character receipts alongside four effective outputs under their frozen policy",
+      "previousSeal": "71ca778d89b8fad4ef330e7b1cc5c4978d316728045064cae5d6ee66f8f0a536"
+    },
+    {
+      "ref": "reserved-turns-v1/source/packages-shared-src-reserved-turn-policy",
+      "seal": "c0fc460755b73e96cb8178502bd1d338cf9f6344a632b30f47f391b27bb2da65",
+      "path": "packages/shared/src/reserved-turn-policy.ts",
+      "changed": true,
+      "review": "Reviewed packages/shared/src/reserved-turn-policy.ts: Add immutable policy v7 with public-consequences-v1 narration fallback; retain all prior recovery and numeric budgets. Accepted ADR0078 revision1 and ADR0076 output v3. Focused48pass; final typecheck/static/build validation and full governed suite follow individual resealing. Received narration empty/schema/JSON/bounds/privacy/replay regressions pass with exactly4mock calls and0provider calls; oldpolicy remains strict and unknown sends are refused.",
+      "previousSeal": "a28149a1455dfa2983b98d6a4bb842e4359c45adb5117c5c336e4949b4ce003f"
+    },
+    {
+      "ref": "reserved-turns-v1/test/backend-src-repositories-reserved-turns-postgres.test",
+      "seal": "a04e79c27c996333115f2a05c47273d0718bd516a254159ce843752ff5c0fe77",
+      "path": "backend/src/repositories/reserved-turns-postgres.test.ts",
+      "changed": false,
+      "review": "Reviewed backend/src/repositories/reserved-turns-postgres.test.ts: Retain historical assertions, immutable bindings and atomic/fenced state contracts with versioned character-output recovery; no test disabled. Accepted ADR0078 revision1 and ADR0076 output v3. Focused48pass; final typecheck/static/build validation and full governed suite follow individual resealing. Received narration empty/schema/JSON/bounds/privacy/replay regressions pass with exactly4mock calls and0provider calls; oldpolicy remains strict and unknown sends are refused. Preserved coverage: reserved-turn pipeline v1 persists only current fenced writes and rolls back atomically on PostgreSQL",
+      "previousSeal": "475a6eb7bee03442db617256d4d3259069fbec36f6d03da47c9a8ff05bb7b77d"
+    },
+    {
+      "ref": "reserved-turns-v1/test/packages-shared-src-reserved-turns.test",
+      "seal": "d3b6816cbbdcc74080432e0c9f076fb1d256309308d34f6ad21bcd34c0b99c80",
+      "path": "packages/shared/src/reserved-turns.test.ts",
+      "changed": false,
+      "review": "Reviewed packages/shared/src/reserved-turns.test.ts: Retain historical assertions, immutable bindings and atomic/fenced state contracts with versioned character-output recovery; no test disabled. Accepted ADR0078 revision1 and ADR0076 output v3. Focused48pass; final typecheck/static/build validation and full governed suite follow individual resealing. Received narration empty/schema/JSON/bounds/privacy/replay regressions pass with exactly4mock calls and0provider calls; oldpolicy remains strict and unknown sends are refused. Preserved coverage: reserved-turn pipeline v1; allows information-only success and partial in output v2 while preserving output v1; keeps cancelled mutations, resource overflow and fake patches invalid in output v2; validates saved prepared and last traces against their frozen legacy policy; rejects an unaffordable reservation atomically and continues the next action in output v3; repairs unambiguous order, side and base revisions but refuses missing or duplicate identities; rejects invalid world references and zero effects without applying earlier costs; cancels later stale effects after defeat and drops mutations attached to cancellation; accepts zero or five reservations and rejects six or duplicate IDs; interleaves plans without starving the slower side and alternates exact ties; validates all frozen rank references and observer-visible targets before dispatch; applies both attacks to successive canonical states and advances one turn; cancels later actions after defeat instead of executing stale intentions; rejects missing, invented, reordered or stale receipts atomically; permits failed attempts with costs but refuses empty success and out-of-range side effects",
+      "previousSeal": "cbb3a2b3aa97cedd1c20929de4fcb7eb7f225b76df56c1d93c7e8e3227cdf2b0"
+    },
+    {
+      "ref": "reserved-turns-v1/source/backend-src-services-reserved-turn-policy",
+      "seal": "f146d5aed0e8a9111d4fddee3783d5b9976d4dfa2b607c8889ef8f6ba3b4d74c",
+      "path": "backend/src/services/reserved-turn-policy.ts",
+      "changed": true,
+      "review": "Reviewed backend/src/services/reserved-turn-policy.ts: New creation selects policy v7/prompt v6/output v3; no migration, model, prompt or numeric limit changes. Accepted ADR0078 revision1 and ADR0076 output v3. Focused48pass; final typecheck/static/build validation and full governed suite follow individual resealing. Received narration empty/schema/JSON/bounds/privacy/replay regressions pass with exactly4mock calls and0provider calls; oldpolicy remains strict and unknown sends are refused.",
+      "previousSeal": "767412dd9cb71ed00d380395234a9cbb9f200795a0fcd4f68a396aa52cc2fba0"
+    },
+    {
+      "ref": "reserved-turns-v1/source/backend-src-services-reserved-turn-execution",
+      "seal": "d2d7a3f75e23933d981932a23d4df5005d57fd4c9252af9e95aae959aa4fb8f3",
+      "path": "backend/src/services/reserved-turn-execution.ts",
+      "changed": true,
+      "review": "Reviewed backend/src/services/reserved-turn-execution.ts: Repair received invalid narration from frozen public facts or factual no-result line without additional calls; preserve actual raw response, NARRATION_FALLBACK, original deadlines/fences, privacy, replay and prior character/judge recovery. Accepted ADR0078 revision1 and ADR0076 output v3. Focused48pass; final typecheck/static/build validation and full governed suite follow individual resealing. Received narration empty/schema/JSON/bounds/privacy/replay regressions pass with exactly4mock calls and0provider calls; oldpolicy remains strict and unknown sends are refused.",
+      "previousSeal": "4799d2e32a6fa4e1b7ed2d4b219ab93ad6f268c1123a2041dbe944db72b25ffe"
+    },
+    {
+      "ref": "reserved-turns-v1/test/backend-src-services-reserved-turn-execution.test",
+      "seal": "80e6a3aa57830c84fc456d20dff61a460414d3aead0bc6c34d56025432b0386b",
+      "path": "backend/src/services/reserved-turn-execution.test.ts",
+      "changed": true,
+      "review": "Reviewed backend/src/services/reserved-turn-execution.test.ts: Retain historical assertions, immutable bindings and atomic/fenced state contracts with versioned character-output recovery; no test disabled. Accepted ADR0078 revision1 and ADR0076 output v3. Focused48pass; final typecheck/static/build validation and full governed suite follow individual resealing. Received narration empty/schema/JSON/bounds/privacy/replay regressions pass with exactly4mock calls and0provider calls; oldpolicy remains strict and unknown sends are refused. Preserved coverage: reserved-turn execution; prepares observation-only success, carries observer feedback and memory with four calls; dispatches A/B together, calls one judge for ten reservations and only public narration; rejects information-only success under frozen policy v3 without repair calls; does not dispatch adjudication when one plan is malformed or references hidden objects; refuses to resend a reserved request with unknown physical completion; retries only known rate-limit responses within the physical cap; keeps a timed-out request unknown until late physical completion without preparing its output; pins every adjudication base revision before dispatch and preserves prompt v1; binds role deadlines in policy v2, preserves policy v1 and clips both to the battle deadline; closes late received rejection accounting without preparing output or resending unknown failures; warns at soft time limits without stopping requests or committing private state; continues beyond the battle soft limit and applies the looser policy v3 hard deadlines; losslessly factors the complete adjudication schema and preserves every user input field; keeps known rate-limit retries inside the original policy v3 role hard deadline; retries a received ambiguous adjudication with explicit errors and replays all five receipts without sending again; continues with explicit failure receipts after one invalid correction and preserves both raw responses; repairs unaffordable actions in four calls, discards unverified obser",
+      "previousSeal": "fab2c0254d2c7d27b94abfceb8bb0f30c70c97808de4372ef396d6590f4d1c79"
+    },
+    {
+      "ref": "reserved-turns-v1/source/packages-shared-src-battle",
+      "seal": "f58656b08bba620099f3824fa4540663b4c36ee03b1e552fb8059572507e7a1c",
+      "path": "packages/shared/src/battle.ts",
+      "changed": true,
+      "review": "Reviewed packages/shared/src/battle.ts: Bind policy v7/prompt v6/output v3 while preserving old combinations. Accepted ADR0078 revision1 and ADR0076 output v3. Focused48pass; final typecheck/static/build validation and full governed suite follow individual resealing. Received narration empty/schema/JSON/bounds/privacy/replay regressions pass with exactly4mock calls and0provider calls; oldpolicy remains strict and unknown sends are refused.",
+      "previousSeal": "f392300f21d640894aea29c849ccd01d228c793c442cbd34e530edde5b8492c1"
+    },
+    {
+      "ref": "unified-v1/source/packages-shared-src-battle",
+      "seal": "8547873d9a421246100aa26ed4559efe8094c0c93a06a6a774c1a31af564ff3c",
+      "path": "packages/shared/src/battle.ts",
+      "changed": true,
+      "review": "Reviewed packages/shared/src/battle.ts: Bind policy v7/prompt v6/output v3 while preserving old combinations. Accepted ADR0078 revision1 and ADR0076 output v3. Focused48pass; final typecheck/static/build validation and full governed suite follow individual resealing. Received narration empty/schema/JSON/bounds/privacy/replay regressions pass with exactly4mock calls and0provider calls; oldpolicy remains strict and unknown sends are refused.",
+      "previousSeal": "23aff9d3e5821e1f4c471df7b68ad7c3dbe6c08fe59c98786811f2495fa0b4fc"
+    },
+    {
+      "ref": "unified-v1/test/backend-src-services-unified-consciousness-execution.test",
+      "seal": "8fcae4e80322d0063dd194d54e475c071f9e7bf9050d6235029afdd209b2802f",
+      "path": "backend/src/services/unified-consciousness-execution.test.ts",
+      "changed": false,
+      "review": "Reviewed backend/src/services/unified-consciousness-execution.test.ts: Retain historical assertions, immutable bindings and atomic/fenced state contracts with versioned character-output recovery; no test disabled. Accepted ADR0078 revision1 and ADR0076 output v3. Focused48pass; final typecheck/static/build validation and full governed suite follow individual resealing. Received narration empty/schema/JSON/bounds/privacy/replay regressions pass with exactly4mock calls and0provider calls; oldpolicy remains strict and unknown sends are refused. Preserved coverage: unified consciousness policies v1/v2 execution; always renders private ranked memory, including an empty list; renders prompt v2 as complete legal decision envelopes and preserves prompt v1; binds the selected prompt revision through the prepared execution request; fails an unsupported action privately, preserves speech/memory and delivers feedback once; keeps historical policy v1 strict and rejects invalid memory even under policy v2; reports an unknown action reference without executing the action; ignores tick and revision alone in perception activation; dispatches both sides before either resolves, reuses preparation and applies once; retains partial prepared evidence and never resends an unknown failed send; accounts late replies after lease loss without accepting their output; rejects responses received past the decision deadline while retaining accounting; skips unchanged ticks, retains pending events until commit and runs only the stimulated side; requires every due side and rejects unavailable actions atomically; unified consciousness v1 world transaction; commits policy v2 self-only action feedback atomically and rolls it back with world failure; commits memory with canonical revision and keeps private state out of saved world; rolls back private memory when canonical revision CAS fails; rolls back the entire boundary if the global deadline passes inside the transaction; rejects expired fences and stops incomplete without applying prepared memory; required ranked me",
+      "previousSeal": "695d76f558aed3e8c96c5e81ef4ecd67822e7a633bdfe4d0d1d68dc35e434f02"
+    },
+    {
+      "ref": "all-tests-20261008/current-source-closure/verification/structured-asset-integration-bounded-20261008",
+      "seal": "c8491587c2c64ca536b6616631728e03ff527bbb7fda24f69ee026c1f4892ed8",
+      "path": "backend/src/routes-structured-asset-integration.test.ts",
+      "changed": true,
+      "review": "Reviewed backend/src/routes-structured-asset-integration.test.ts: Retain historical assertions, immutable bindings and atomic/fenced state contracts with versioned character-output recovery; no test disabled. Accepted ADR0078 revision1 and ADR0076 output v3. Focused48pass; final typecheck/static/build validation and full governed suite follow individual resealing. Received narration empty/schema/JSON/bounds/privacy/replay regressions pass with exactly4mock calls and0provider calls; oldpolicy remains strict and unknown sends are refused. Preserved coverage: integrated structured asset cutover; keeps selection, binding, replay, history, and deletion on immutable generations; freezes legacy character rows without appending V1 generations",
+      "previousSeal": "7c5c85bda4a6d7d382aa3ab615e20a70805c9ccbfb1471a59325cd6163a9044a"
+    }
+  ],
+  "paidAttempts": 0,
+  "productionPromotion": false,
+  "historicalPromptByteMatches": 86,
+  "actualMissingMemoryReplay": {
+    "historicalV5PromptByteMatches": 17,
+    "actualMissingMemoryRecovered": true,
+    "calls": 5,
+    "sideCalls": {
+      "a": 2,
+      "b": 1
+    },
+    "memoryPreserved": true,
+    "newProviderCalls": 0
+  },
+  "priorResourceFailureReplay": {
+    "historicalPromptByteMatches": 69,
+    "actualRc5FailureRecovered": true,
+    "mpPreserved": 1,
+    "successorApplied": true
+  },
+  "validation": {
+    "focused": 48,
+    "typecheck": "pass",
+    "static": "pass",
+    "build": "pass",
+    "governedSuite": {
+      "passed": 1579,
+      "failed": 0,
+      "skipped": 0,
+      "activeFiles": 254,
+      "disabledFiles": 0
+    }
+  }
+}
