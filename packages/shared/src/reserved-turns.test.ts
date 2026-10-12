@@ -55,6 +55,60 @@ describe("reserved-turn pipeline v1", () => {
     assert.equal(ReservedTurnRuntimeSchema.safeParse({ ...legacy, requests: [request] }).success, false);
   });
 
+  it("rejects an unaffordable reservation atomically and continues the next action in output v3", () => {
+    const start = world(); start.actors.a.mp = 1;
+    const before = structuredClone(start);
+    const order = orderReservedActions(1, { a: 10, b: 10 }, { a: plan(), b: plan() });
+    const invalid = { ...result("a:r0", "a", 0), updates: [
+      { kind: "resource", side: "b", resource: "hp", delta: -5 },
+      { kind: "resource", side: "a", resource: "mp", delta: -4 },
+    ], observations: { a: ["未成立の効果"], b: ["未成立の効果"], public: ["未成立の効果"] } };
+    const guard = { ...result("b:r0", "b", 1), updates: [{ kind: "resource", side: "b", resource: "stamina", delta: -3 }] };
+    const resolved = applyReservedTurnTrace(start, order, { results: [invalid, guard] }, "reserved-turn-output-v3");
+    assert.equal(resolved.state.actors.a.mp, 1);
+    assert.equal(resolved.state.actors.b.hp, 20);
+    assert.equal(resolved.state.actors.b.stamina, 7);
+    assert.equal(resolved.trace.results[0]?.outcome, "failure");
+    assert.match(resolved.trace.results[0]?.reason ?? "", /RESOURCE_RANGE/);
+    assert.deepEqual(resolved.trace.results[0]?.observations.b, []);
+    assert.deepEqual(resolved.trace.results[0]?.observations.public, []);
+    assert.equal(JSON.stringify(resolved.trace).includes("未成立の効果"), false);
+    assert.deepEqual(start, before);
+    assert.throws(() => applyReservedTurnTrace(start, order, { results: [invalid, guard] }, "reserved-turn-output-v2"), /RESOURCE_RANGE/);
+  });
+  it("repairs unambiguous order, side and base revisions but refuses missing or duplicate identities", () => {
+    const start = world(); const order = orderReservedActions(1, { a: 10, b: 10 }, { a: plan(), b: plan() });
+    const results = [result("b:r0", "a", 999), result("a:r0", "b", 999)];
+    const resolved = applyReservedTurnTrace(start, order, { results }, "reserved-turn-output-v3");
+    assert.deepEqual(resolved.trace.results.map((r) => [r.reservationId, r.side, r.baseRevision]), [["a:r0", "a", 0], ["b:r0", "b", 1]]);
+    assert.throws(() => applyReservedTurnTrace(start, order, { results: [results[0], results[0]] }, "reserved-turn-output-v3"), /IDENTITY_MISMATCH/);
+    assert.throws(() => applyReservedTurnTrace(start, order, { results: [results[0]] }, "reserved-turn-output-v3"), /IDENTITY_MISMATCH/);
+    assert.throws(() => applyReservedTurnTrace(start, order, { results: [result("unknown", "a", 0), results[0]] }, "reserved-turn-output-v3"), /IDENTITY_MISMATCH/);
+  });
+  it("rejects invalid world references and zero effects without applying earlier costs", () => {
+    const start = world(); const order = orderReservedActions(1, { a: 10, b: 10 }, { a: plan(), b: plan(0) });
+    const badWorld = { ...result("a:r0", "a", 0), updates: [
+      { kind: "resource", side: "a", resource: "stamina", delta: -2 },
+      { kind: "world", operation: { op: "set_actor_state", entityId: "unknown", changes: { consciousness: "alert" } } },
+    ] };
+    const rejected = applyReservedTurnTrace(start, order, { results: [badWorld] }, "reserved-turn-output-v3");
+    assert.equal(rejected.state.actors.a.stamina, 10);
+    assert.match(rejected.trace.results[0]?.reason ?? "", /RESERVED_WORLD_/);
+    const empty = { ...result("a:r0", "a", 0), updates: [], observations: { a: [], b: [], public: [] } };
+    assert.equal(applyReservedTurnTrace(start, order, { results: [empty] }, "reserved-turn-output-v3").trace.results[0]?.outcome, "failure");
+    const noOp = { ...result("a:r0", "a", 0), updates: [{ kind: "world", operation: { op: "set_actor_state", entityId: "character.a", changes: { consciousness: "alert" } } }] };
+    assert.equal(applyReservedTurnTrace(start, order, { results: [noOp] }, "reserved-turn-output-v3").trace.results[0]?.outcome, "failure");
+  });
+  it("cancels later stale effects after defeat and drops mutations attached to cancellation", () => {
+    const start = world(); const order = orderReservedActions(1, { a: 10, b: 10 }, { a: plan(), b: plan() });
+    const resolved = applyReservedTurnTrace(start, order, { results: [result("a:r0", "a", 0, -20), result("b:r0", "b", 1)] }, "reserved-turn-output-v3");
+    assert.equal(resolved.state.actors.a.hp, 20); assert.equal(resolved.state.actors.b.hp, 0);
+    assert.equal(resolved.trace.results[1]?.outcome, "cancelled");
+    assert.deepEqual(resolved.trace.results[1]?.updates, []);
+    const cancelled = { ...result("a:r0", "a", 0), outcome: "cancelled" };
+    const one = orderReservedActions(1, { a: 10, b: 10 }, { a: plan(), b: plan(0) });
+    assert.equal(applyReservedTurnTrace(start, one, { results: [cancelled] }, "reserved-turn-output-v3").state.actors.b.hp, 20);
+  });
   it("accepts zero or five reservations and rejects six or duplicate IDs", () => {
     assert.ok(ReservedTurnPlanSchema.safeParse(plan(0)).success);
     assert.ok(ReservedTurnPlanSchema.safeParse(plan(5)).success);

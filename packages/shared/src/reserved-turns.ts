@@ -60,7 +60,8 @@ export const ReservedActionResultV2Schema = reservedActionResultBaseSchema.super
   if (result.outcome === "cancelled" && result.updates.length !== 0) ctx.addIssue({ code: "custom", message: "Cancelled attempt cannot mutate world" });
 });
 export const ReservedTurnTraceV2Schema = z.object({ results: z.array(ReservedActionResultV2Schema).max(10) }).strict();
-export type ReservedTurnOutputRevision = "reserved-turn-output-v1" | "reserved-turn-output-v2";
+export type ReservedTurnOutputRevision = "reserved-turn-output-v1" | "reserved-turn-output-v2" | "reserved-turn-output-v3";
+const reservedTurnWireV3Schema = z.object({ results: z.array(reservedActionResultBaseSchema).max(10) }).strict();
 export type ReservedTurnTrace = z.infer<typeof ReservedTurnTraceSchema>;
 export type OrderedReservation = { side: "a" | "b"; reservationId: string; action: z.infer<typeof ReservedActionSchema> };
 export function orderReservedActions(turn: number, initiative: { a: number; b: number }, plans: { a: ReservedTurnPlan; b: ReservedTurnPlan }): OrderedReservation[] {
@@ -115,6 +116,7 @@ function requiresPhysicalEffect(result: ReservedTurnTrace["results"][number], re
 }
 /** No mutation escapes this reducer until every receipt validates. */
 export function applyReservedTurnTrace(start: ReservedTurnWorld, order: readonly OrderedReservation[], raw: unknown, outputRevision: ReservedTurnOutputRevision = "reserved-turn-output-v1"): { state: ReservedTurnWorld; trace: ReservedTurnTrace } {
+  if (outputRevision === "reserved-turn-output-v3") return applyRecoverableReservedTrace(start, order, raw);
   const trace = (outputRevision === "reserved-turn-output-v2" ? ReservedTurnTraceV2Schema : ReservedTurnTraceSchema).parse(raw);
   if (trace.results.length !== order.length) throw new Error("RESERVED_TRACE_INCOMPLETE");
   let state = ReservedTurnWorldSchema.parse(start);
@@ -131,6 +133,56 @@ export function applyReservedTurnTrace(start: ReservedTurnWorld, order: readonly
   return { state: { ...state, turn: start.turn + 1 }, trace };
 }
 
+function rejectedReservedResult(result: ReservedTurnTrace["results"][number], code: string, cancelled = false): ReservedTurnTrace["results"][number] {
+  const explanation = code === "RESERVED_RESOURCE_RANGE" ? "資源の残量不足または上限超過" : code.startsWith("RESERVED_WORLD_") ? "参照先または世界状態の不整合" : code === "RESERVED_EFFECT_EMPTY" ? "効果または観測結果の欠落" : "裁定応答の不整合";
+  const reason = cancelled ? `行動を中止しました（${code}）。` : `${explanation}のため、この行動の更新を適用しませんでした（${code}）。`;
+  return { ...result, outcome: cancelled ? "cancelled" : "failure", reason, updates: [],
+    observations: { a: result.side === "a" ? [reason] : [], b: result.side === "b" ? [reason] : [], public: [] } };
+}
+function nextReservedState(state: ReservedTurnWorld, result: ReservedTurnTrace["results"][number], turn: number): ReservedTurnWorld {
+  return ReservedTurnWorldSchema.parse({ ...state, revision: state.revision + 1, ...applyReservationUpdates(state, result, turn) });
+}
+function recoverReservedResult(state: ReservedTurnWorld, raw: ReservedTurnTrace["results"][number], turn: number) {
+  let result = raw;
+  if (!canAct(state, raw.side) || state.actors.a.hp === 0 || state.actors.b.hp === 0) {
+    result = rejectedReservedResult(raw, "RESERVED_INCAPACITATED_ACTION", true);
+  } else if (raw.outcome === "cancelled" && raw.updates.length > 0) {
+    result = rejectedReservedResult(raw, "RESERVED_CANCELLED_UPDATES", true);
+  } else if (!ReservedActionResultV2Schema.safeParse(raw).success) {
+    result = rejectedReservedResult(raw, "RESERVED_EFFECT_EMPTY");
+  }
+  try {
+    const next = nextReservedState(state, result, turn);
+    if (requiresPhysicalEffect(result, "reserved-turn-output-v3") && effectSnapshot(state) === effectSnapshot(next)) throw new Error("RESERVED_EFFECT_EMPTY");
+    return { state: next, result };
+  } catch (error) {
+    if (!(error instanceof Error) || !/^RESERVED_(RESOURCE_RANGE|DEFEAT_IRREVERSIBLE|WORLD_[A-Za-z0-9_]+|EFFECT_EMPTY)$/.test(error.message)) throw error;
+    result = rejectedReservedResult(result, error.message);
+    return { state: nextReservedState(state, result, turn), result };
+  }
+}
+/** Server-owned identity/order metadata is repairable; ambiguous identity requires corrective adjudication. */
+function applyRecoverableReservedTrace(start: ReservedTurnWorld, order: readonly OrderedReservation[], raw: unknown): { state: ReservedTurnWorld; trace: ReservedTurnTrace } {
+  const wire = reservedTurnWireV3Schema.parse(raw);
+  const byId = new Map(wire.results.map((result) => [result.reservationId, result]));
+  if (wire.results.length !== order.length || byId.size !== order.length || order.some((reservation) => !byId.has(reservation.reservationId))) throw new Error("RESERVED_TRACE_IDENTITY_MISMATCH");
+  let state = ReservedTurnWorldSchema.parse(start);
+  const results: ReservedTurnTrace["results"] = [];
+  for (const reservation of order) {
+    const original = byId.get(reservation.reservationId);
+    if (!original) throw new Error("RESERVED_TRACE_IDENTITY_MISMATCH");
+    const normalized = { ...original, side: reservation.side, baseRevision: state.revision };
+    const resolved = recoverReservedResult(state, normalized, start.turn);
+    results.push(resolved.result); state = resolved.state;
+  }
+  return { state: { ...state, turn: start.turn + 1 }, trace: ReservedTurnTraceV2Schema.parse({ results }) };
+}
+/** Explicit protocol failure receipts do not claim any unverified physical effect. */
+export function failedReservedAdjudicationTrace(start: ReservedTurnWorld, order: readonly OrderedReservation[]): ReservedTurnTrace {
+  return { results: order.map((reservation, index) => rejectedReservedResult({ reservationId: reservation.reservationId, side: reservation.side,
+    baseRevision: start.revision + index, outcome: "failure", reason: "裁定応答を検証できませんでした。", updates: [], observations: { a: [], b: [], public: [] } }, "RESERVED_ADJUDICATION_INVALID")) };
+}
+
 export const ReservedTurnNarrationSchema = z.object({ lines: z.array(consciousnessText(600)).min(1).max(16) }).strict();
 const requestOutputSchema = z.discriminatedUnion("role", [
   z.object({ role: z.literal("character"), plan: ReservedTurnPlanSchema }).strict(),
@@ -139,6 +191,7 @@ const requestOutputSchema = z.discriminatedUnion("role", [
 ]);
 export const ReservedTurnRequestSchema = z.object({
   id, turn: ordinal, role: z.enum(["character", "adjudication", "narration"]), side: sideSchema.nullable(),
+  logicalStartedAt: ordinal.optional(),
   inputDigest: id, system: z.string().min(1), user: z.string().min(1),
   status: z.enum(["reserved", "prepared", "failed"]),
   output: requestOutputSchema.nullable(), rawResponse: z.string().nullable(), physicalOutstanding: z.boolean(), failure: z.string().nullable(),
@@ -159,11 +212,15 @@ export const ReservedTurnRuntimeSchema = z.object({
   lastTrace: ReservedTurnTraceV2Schema.nullable(),
 }).strict().superRefine((runtime, ctx) => {
   // Policy is frozen with the output revision; old persisted traces retain v1 validation.
-  if (runtime.policy.revision !== "reserved-turn-policy-v4") {
+  if (runtime.policy.revision !== "reserved-turn-policy-v4" && runtime.policy.revision !== "reserved-turn-policy-v5") {
     const traces = [runtime.lastTrace, ...runtime.requests.flatMap((request) => request.output?.role === "adjudication" ? [request.output.trace] : [])];
     for (const trace of traces) {
       if (trace && !ReservedTurnTraceSchema.safeParse(trace).success) ctx.addIssue({ code: "custom", message: "Legacy policy requires reserved turn output v1" });
     }
+  }
+  for (const request of runtime.requests) {
+    const timedJudge = runtime.policy.revision === "reserved-turn-policy-v5" && request.role === "adjudication";
+    if (timedJudge !== (request.logicalStartedAt !== undefined)) ctx.addIssue({ code: "custom", message: "Adjudication logical start binding mismatch" });
   }
   if (new Set(runtime.requests.map((r) => r.id)).size !== runtime.requests.length) ctx.addIssue({ code: "custom", message: "Duplicate request" });
   if (runtime.deadlineAt !== runtime.startedAt + runtime.policy.durationMs) ctx.addIssue({ code: "custom", message: "Deadline mismatch" });
