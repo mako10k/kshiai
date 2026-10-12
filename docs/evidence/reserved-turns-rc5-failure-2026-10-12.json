@@ -1,0 +1,995 @@
+{
+  "runId": "stage-38189337992-1",
+  "battleId": "btl_2db9b7788695f750dc3de0be31ee3333",
+  "binding": 7,
+  "outputRevision": "reserved-turn-output-v2",
+  "prompt": "reserved-turn-prompt-v4",
+  "status": "incomplete",
+  "turn": 8,
+  "runtimeStatus": "incomplete",
+  "failure": "RESERVED_RESOURCE_RANGE",
+  "policy": {
+    "revision": "reserved-turn-policy-v4",
+    "maxTurns": 36,
+    "maxReservations": 5,
+    "maxLogicalCallsPerTurn": 4,
+    "maxPhysicalAttempts": 200,
+    "durationMs": 1800000,
+    "deadlineMs": 120000,
+    "characterOutputTokens": 2000,
+    "adjudicationOutputTokens": 10000,
+    "inputCharacters": 128000,
+    "character": {
+      "provider": "openai",
+      "model": "gpt-6-luna"
+    },
+    "adjudication": {
+      "provider": "xai",
+      "model": "grok-4.5"
+    },
+    "narration": {
+      "provider": "xai",
+      "model": "grok-4.3"
+    },
+    "adjudicationDeadlineMs": 300000,
+    "softDurationMs": 600000,
+    "softDeadlineMs": 60000,
+    "softAdjudicationDeadlineMs": 180000
+  },
+  "operation": {
+    "battle_id": "btl_2db9b7788695f750dc3de0be31ee3333",
+    "status": "failed",
+    "reserved_attempts": 36,
+    "approved_attempt_ceiling": 200
+  },
+  "turns": [
+    {
+      "turn": 1,
+      "logicalCalls": 4,
+      "reservations": 2,
+      "outcomes": {
+        "success": 2
+      },
+      "before": {
+        "a": {
+          "hp": 90,
+          "maxHp": 90,
+          "mp": 35,
+          "maxMp": 35,
+          "stamina": 50,
+          "maxStamina": 50,
+          "initiative": 14
+        },
+        "b": {
+          "hp": 90,
+          "maxHp": 90,
+          "mp": 35,
+          "maxMp": 35,
+          "stamina": 50,
+          "maxStamina": 50,
+          "initiative": 9
+        }
+      },
+      "after": {
+        "a": {
+          "hp": 68,
+          "maxHp": 90,
+          "mp": 31,
+          "maxMp": 35,
+          "stamina": 50,
+          "maxStamina": 50,
+          "initiative": 14
+        },
+        "b": {
+          "hp": 90,
+          "maxHp": 90,
+          "mp": 35,
+          "maxMp": 35,
+          "stamina": 44,
+          "maxStamina": 50,
+          "initiative": 9
+        }
+      },
+      "resourceUpdates": 3,
+      "worldUpdates": 0
+    },
+    {
+      "turn": 2,
+      "logicalCalls": 4,
+      "reservations": 4,
+      "outcomes": {
+        "success": 2,
+        "failure": 1,
+        "partial": 1
+      },
+      "before": {
+        "a": {
+          "hp": 68,
+          "maxHp": 90,
+          "mp": 31,
+          "maxMp": 35,
+          "stamina": 50,
+          "maxStamina": 50,
+          "initiative": 14
+        },
+        "b": {
+          "hp": 90,
+          "maxHp": 90,
+          "mp": 35,
+          "maxMp": 35,
+          "stamina": 44,
+          "maxStamina": 50,
+          "initiative": 9
+        }
+      },
+      "after": {
+        "a": {
+          "hp": 68,
+          "maxHp": 90,
+          "mp": 31,
+          "maxMp": 35,
+          "stamina": 41,
+          "maxStamina": 50,
+          "initiative": 14
+        },
+        "b": {
+          "hp": 78,
+          "maxHp": 90,
+          "mp": 35,
+          "maxMp": 35,
+          "stamina": 32,
+          "maxStamina": 50,
+          "initiative": 9
+        }
+      },
+      "resourceUpdates": 5,
+      "worldUpdates": 6
+    },
+    {
+      "turn": 3,
+      "logicalCalls": 4,
+      "reservations": 3,
+      "outcomes": {
+        "success": 2,
+        "failure": 1
+      },
+      "before": {
+        "a": {
+          "hp": 68,
+          "maxHp": 90,
+          "mp": 31,
+          "maxMp": 35,
+          "stamina": 41,
+          "maxStamina": 50,
+          "initiative": 14
+        },
+        "b": {
+          "hp": 78,
+          "maxHp": 90,
+          "mp": 35,
+          "maxMp": 35,
+          "stamina": 32,
+          "maxStamina": 50,
+          "initiative": 9
+        }
+      },
+      "after": {
+        "a": {
+          "hp": 68,
+          "maxHp": 90,
+          "mp": 20,
+          "maxMp": 35,
+          "stamina": 37,
+          "maxStamina": 50,
+          "initiative": 14
+        },
+        "b": {
+          "hp": 78,
+          "maxHp": 90,
+          "mp": 35,
+          "maxMp": 35,
+          "stamina": 32,
+          "maxStamina": 50,
+          "initiative": 9
+        }
+      },
+      "resourceUpdates": 3,
+      "worldUpdates": 0
+    },
+    {
+      "turn": 4,
+      "logicalCalls": 4,
+      "reservations": 4,
+      "outcomes": {
+        "success": 3,
+        "failure": 1
+      },
+      "before": {
+        "a": {
+          "hp": 68,
+          "maxHp": 90,
+          "mp": 20,
+          "maxMp": 35,
+          "stamina": 37,
+          "maxStamina": 50,
+          "initiative": 14
+        },
+        "b": {
+          "hp": 78,
+          "maxHp": 90,
+          "mp": 35,
+          "maxMp": 35,
+          "stamina": 32,
+          "maxStamina": 50,
+          "initiative": 9
+        }
+      },
+      "after": {
+        "a": {
+          "hp": 68,
+          "maxHp": 90,
+          "mp": 16,
+          "maxMp": 35,
+          "stamina": 37,
+          "maxStamina": 50,
+          "initiative": 14
+        },
+        "b": {
+          "hp": 78,
+          "maxHp": 90,
+          "mp": 35,
+          "maxMp": 35,
+          "stamina": 24,
+          "maxStamina": 50,
+          "initiative": 9
+        }
+      },
+      "resourceUpdates": 3,
+      "worldUpdates": 1
+    },
+    {
+      "turn": 5,
+      "logicalCalls": 4,
+      "reservations": 3,
+      "outcomes": {
+        "success": 3
+      },
+      "before": {
+        "a": {
+          "hp": 68,
+          "maxHp": 90,
+          "mp": 16,
+          "maxMp": 35,
+          "stamina": 37,
+          "maxStamina": 50,
+          "initiative": 14
+        },
+        "b": {
+          "hp": 78,
+          "maxHp": 90,
+          "mp": 35,
+          "maxMp": 35,
+          "stamina": 24,
+          "maxStamina": 50,
+          "initiative": 9
+        }
+      },
+      "after": {
+        "a": {
+          "hp": 54,
+          "maxHp": 90,
+          "mp": 5,
+          "maxMp": 35,
+          "stamina": 33,
+          "maxStamina": 50,
+          "initiative": 14
+        },
+        "b": {
+          "hp": 78,
+          "maxHp": 90,
+          "mp": 35,
+          "maxMp": 35,
+          "stamina": 17,
+          "maxStamina": 50,
+          "initiative": 9
+        }
+      },
+      "resourceUpdates": 5,
+      "worldUpdates": 1
+    },
+    {
+      "turn": 6,
+      "logicalCalls": 4,
+      "reservations": 3,
+      "outcomes": {
+        "failure": 3
+      },
+      "before": {
+        "a": {
+          "hp": 54,
+          "maxHp": 90,
+          "mp": 5,
+          "maxMp": 35,
+          "stamina": 33,
+          "maxStamina": 50,
+          "initiative": 14
+        },
+        "b": {
+          "hp": 78,
+          "maxHp": 90,
+          "mp": 35,
+          "maxMp": 35,
+          "stamina": 17,
+          "maxStamina": 50,
+          "initiative": 9
+        }
+      },
+      "after": {
+        "a": {
+          "hp": 54,
+          "maxHp": 90,
+          "mp": 5,
+          "maxMp": 35,
+          "stamina": 33,
+          "maxStamina": 50,
+          "initiative": 14
+        },
+        "b": {
+          "hp": 78,
+          "maxHp": 90,
+          "mp": 35,
+          "maxMp": 35,
+          "stamina": 17,
+          "maxStamina": 50,
+          "initiative": 9
+        }
+      },
+      "resourceUpdates": 0,
+      "worldUpdates": 0
+    },
+    {
+      "turn": 7,
+      "logicalCalls": 4,
+      "reservations": 2,
+      "outcomes": {
+        "success": 2
+      },
+      "before": {
+        "a": {
+          "hp": 54,
+          "maxHp": 90,
+          "mp": 5,
+          "maxMp": 35,
+          "stamina": 33,
+          "maxStamina": 50,
+          "initiative": 14
+        },
+        "b": {
+          "hp": 78,
+          "maxHp": 90,
+          "mp": 35,
+          "maxMp": 35,
+          "stamina": 17,
+          "maxStamina": 50,
+          "initiative": 9
+        }
+      },
+      "after": {
+        "a": {
+          "hp": 42,
+          "maxHp": 90,
+          "mp": 1,
+          "maxMp": 35,
+          "stamina": 33,
+          "maxStamina": 50,
+          "initiative": 14
+        },
+        "b": {
+          "hp": 78,
+          "maxHp": 90,
+          "mp": 35,
+          "maxMp": 35,
+          "stamina": 12,
+          "maxStamina": 50,
+          "initiative": 9
+        }
+      },
+      "resourceUpdates": 3,
+      "worldUpdates": 1
+    },
+    {
+      "turn": 8,
+      "logicalCalls": 4,
+      "reservations": 3,
+      "outcomes": {
+        "success": 2,
+        "failure": 1
+      },
+      "before": {
+        "a": {
+          "hp": 42,
+          "maxHp": 90,
+          "mp": 1,
+          "maxMp": 35,
+          "stamina": 33,
+          "maxStamina": 50,
+          "initiative": 14
+        },
+        "b": {
+          "hp": 78,
+          "maxHp": 90,
+          "mp": 35,
+          "maxMp": 35,
+          "stamina": 12,
+          "maxStamina": 50,
+          "initiative": 9
+        }
+      },
+      "after": {
+        "a": {
+          "hp": 42,
+          "maxHp": 90,
+          "mp": 1,
+          "maxMp": 35,
+          "stamina": 30,
+          "maxStamina": 50,
+          "initiative": 14
+        },
+        "b": {
+          "hp": 78,
+          "maxHp": 90,
+          "mp": 35,
+          "maxMp": 35,
+          "stamina": 7,
+          "maxStamina": 50,
+          "initiative": 9
+        }
+      },
+      "resourceUpdates": 2,
+      "worldUpdates": 1
+    }
+  ],
+  "traceMismatches": [],
+  "memoryMismatches": 0,
+  "narration": [
+    {
+      "status": "completed",
+      "count": 8
+    }
+  ],
+  "attempts": [
+    {
+      "operation": "prepareBattleEncounter",
+      "layer": "encounter",
+      "status": "succeeded",
+      "count": 1
+    },
+    {
+      "operation": "reserved-turns-v1:adjudication",
+      "layer": "environment",
+      "status": "succeeded",
+      "count": 9
+    },
+    {
+      "operation": "reserved-turns-v1:character",
+      "layer": "characterExpression",
+      "status": "succeeded",
+      "count": 18
+    },
+    {
+      "operation": "reserved-turns-v1:narration",
+      "layer": "narration",
+      "status": "succeeded",
+      "count": 8
+    }
+  ],
+  "usage": [
+    {
+      "role": "creation",
+      "side": null,
+      "provider": "xai",
+      "model": "grok-4.5",
+      "status": "completed",
+      "startedAt": 1791766446098,
+      "finishedAt": 1791766458519,
+      "elapsedMs": 12421.278229000018,
+      "promptTokens": 1398,
+      "completionTokens": 192,
+      "totalTokens": 2254
+    },
+    {
+      "role": "consciousness",
+      "side": "b",
+      "provider": "openai",
+      "model": "gpt-6-luna",
+      "status": "completed",
+      "startedAt": 1791766459377,
+      "finishedAt": 1791766461640,
+      "elapsedMs": 2262.709151999996,
+      "promptTokens": 2273,
+      "completionTokens": 80,
+      "totalTokens": 2353
+    },
+    {
+      "role": "consciousness",
+      "side": "a",
+      "provider": "openai",
+      "model": "gpt-6-luna",
+      "status": "completed",
+      "startedAt": 1791766459404,
+      "finishedAt": 1791766462106,
+      "elapsedMs": 2702.2820749999955,
+      "promptTokens": 2237,
+      "completionTokens": 110,
+      "totalTokens": 2347
+    },
+    {
+      "role": "adjudication",
+      "side": null,
+      "provider": "xai",
+      "model": "grok-4.5",
+      "status": "completed",
+      "startedAt": 1791766462266,
+      "finishedAt": 1791766474357,
+      "elapsedMs": 12091.085594000004,
+      "promptTokens": 9781,
+      "completionTokens": 356,
+      "totalTokens": 10137
+    },
+    {
+      "role": "narration",
+      "side": null,
+      "provider": "xai",
+      "model": "grok-4.3",
+      "status": "completed",
+      "startedAt": 1791766474531,
+      "finishedAt": 1791766476507,
+      "elapsedMs": 1975.3803689999913,
+      "promptTokens": 1592,
+      "completionTokens": 142,
+      "totalTokens": 1734
+    },
+    {
+      "role": "consciousness",
+      "side": "a",
+      "provider": "openai",
+      "model": "gpt-6-luna",
+      "status": "completed",
+      "startedAt": 1791766477557,
+      "finishedAt": 1791766480640,
+      "elapsedMs": 3083.1568399999815,
+      "promptTokens": 2313,
+      "completionTokens": 180,
+      "totalTokens": 2493
+    },
+    {
+      "role": "consciousness",
+      "side": "b",
+      "provider": "openai",
+      "model": "gpt-6-luna",
+      "status": "completed",
+      "startedAt": 1791766477589,
+      "finishedAt": 1791766479461,
+      "elapsedMs": 1872.3840659999987,
+      "promptTokens": 2325,
+      "completionTokens": 142,
+      "totalTokens": 2467
+    },
+    {
+      "role": "adjudication",
+      "side": null,
+      "provider": "xai",
+      "model": "grok-4.5",
+      "status": "completed",
+      "startedAt": 1791766480846,
+      "finishedAt": 1791766578408,
+      "elapsedMs": 97562.53836500001,
+      "promptTokens": 9952,
+      "completionTokens": 1246,
+      "totalTokens": 13922
+    },
+    {
+      "role": "narration",
+      "side": null,
+      "provider": "xai",
+      "model": "grok-4.3",
+      "status": "completed",
+      "startedAt": 1791766578736,
+      "finishedAt": 1791766580536,
+      "elapsedMs": 1800.7923159999773,
+      "promptTokens": 1673,
+      "completionTokens": 106,
+      "totalTokens": 1779
+    },
+    {
+      "role": "consciousness",
+      "side": "b",
+      "provider": "openai",
+      "model": "gpt-6-luna",
+      "status": "completed",
+      "startedAt": 1791766581589,
+      "finishedAt": 1791766583847,
+      "elapsedMs": 2258.5274919999647,
+      "promptTokens": 2484,
+      "completionTokens": 108,
+      "totalTokens": 2592
+    },
+    {
+      "role": "consciousness",
+      "side": "a",
+      "provider": "openai",
+      "model": "gpt-6-luna",
+      "status": "completed",
+      "startedAt": 1791766581623,
+      "finishedAt": 1791766584567,
+      "elapsedMs": 2943.8616980000515,
+      "promptTokens": 2461,
+      "completionTokens": 195,
+      "totalTokens": 2656
+    },
+    {
+      "role": "adjudication",
+      "side": null,
+      "provider": "xai",
+      "model": "grok-4.5",
+      "status": "completed",
+      "startedAt": 1791766584793,
+      "finishedAt": 1791766649667,
+      "elapsedMs": 64873.928195000044,
+      "promptTokens": 9881,
+      "completionTokens": 499,
+      "totalTokens": 10380
+    },
+    {
+      "role": "narration",
+      "side": null,
+      "provider": "xai",
+      "model": "grok-4.3",
+      "status": "completed",
+      "startedAt": 1791766649927,
+      "finishedAt": 1791766651094,
+      "elapsedMs": 1167.4152230000473,
+      "promptTokens": 1603,
+      "completionTokens": 69,
+      "totalTokens": 1672
+    },
+    {
+      "role": "consciousness",
+      "side": "b",
+      "provider": "openai",
+      "model": "gpt-6-luna",
+      "status": "completed",
+      "startedAt": 1791766652064,
+      "finishedAt": 1791766654417,
+      "elapsedMs": 2353.301692000008,
+      "promptTokens": 2342,
+      "completionTokens": 183,
+      "totalTokens": 2525
+    },
+    {
+      "role": "consciousness",
+      "side": "a",
+      "provider": "openai",
+      "model": "gpt-6-luna",
+      "status": "completed",
+      "startedAt": 1791766652124,
+      "finishedAt": 1791766654699,
+      "elapsedMs": 2574.8745800000033,
+      "promptTokens": 2414,
+      "completionTokens": 237,
+      "totalTokens": 2651
+    },
+    {
+      "role": "adjudication",
+      "side": null,
+      "provider": "xai",
+      "model": "grok-4.5",
+      "status": "completed",
+      "startedAt": 1791766654990,
+      "finishedAt": 1791766696207,
+      "elapsedMs": 41217.183332000044,
+      "promptTokens": 9933,
+      "completionTokens": 739,
+      "totalTokens": 12482
+    },
+    {
+      "role": "narration",
+      "side": null,
+      "provider": "xai",
+      "model": "grok-4.3",
+      "status": "completed",
+      "startedAt": 1791766696632,
+      "finishedAt": 1791766699155,
+      "elapsedMs": 2523.1188780000084,
+      "promptTokens": 1618,
+      "completionTokens": 90,
+      "totalTokens": 1708
+    },
+    {
+      "role": "consciousness",
+      "side": "a",
+      "provider": "openai",
+      "model": "gpt-6-luna",
+      "status": "completed",
+      "startedAt": 1791766700403,
+      "finishedAt": 1791766702379,
+      "elapsedMs": 1976.248603999964,
+      "promptTokens": 2496,
+      "completionTokens": 186,
+      "totalTokens": 2682
+    },
+    {
+      "role": "consciousness",
+      "side": "b",
+      "provider": "openai",
+      "model": "gpt-6-luna",
+      "status": "completed",
+      "startedAt": 1791766700519,
+      "finishedAt": 1791766702654,
+      "elapsedMs": 2135.059910000011,
+      "promptTokens": 2464,
+      "completionTokens": 162,
+      "totalTokens": 2626
+    },
+    {
+      "role": "adjudication",
+      "side": null,
+      "provider": "xai",
+      "model": "grok-4.5",
+      "status": "completed",
+      "startedAt": 1791766702988,
+      "finishedAt": 1791766767611,
+      "elapsedMs": 64623.06721000001,
+      "promptTokens": 9873,
+      "completionTokens": 712,
+      "totalTokens": 13379
+    },
+    {
+      "role": "narration",
+      "side": null,
+      "provider": "xai",
+      "model": "grok-4.3",
+      "status": "completed",
+      "startedAt": 1791766767908,
+      "finishedAt": 1791766768912,
+      "elapsedMs": 1003.6790169999585,
+      "promptTokens": 1607,
+      "completionTokens": 68,
+      "totalTokens": 1675
+    },
+    {
+      "role": "consciousness",
+      "side": "a",
+      "provider": "openai",
+      "model": "gpt-6-luna",
+      "status": "completed",
+      "startedAt": 1791766770110,
+      "finishedAt": 1791766772700,
+      "elapsedMs": 2589.6012880000053,
+      "promptTokens": 2459,
+      "completionTokens": 221,
+      "totalTokens": 2680
+    },
+    {
+      "role": "consciousness",
+      "side": "b",
+      "provider": "openai",
+      "model": "gpt-6-luna",
+      "status": "completed",
+      "startedAt": 1791766770146,
+      "finishedAt": 1791766772254,
+      "elapsedMs": 2108.02440699999,
+      "promptTokens": 2464,
+      "completionTokens": 155,
+      "totalTokens": 2619
+    },
+    {
+      "role": "adjudication",
+      "side": null,
+      "provider": "xai",
+      "model": "grok-4.5",
+      "status": "completed",
+      "startedAt": 1791766773018,
+      "finishedAt": 1791766781940,
+      "elapsedMs": 8921.56616799999,
+      "promptTokens": 9897,
+      "completionTokens": 403,
+      "totalTokens": 10300
+    },
+    {
+      "role": "narration",
+      "side": null,
+      "provider": "xai",
+      "model": "grok-4.3",
+      "status": "completed",
+      "startedAt": 1791766782364,
+      "finishedAt": 1791766783291,
+      "elapsedMs": 926.7357490000431,
+      "promptTokens": 1607,
+      "completionTokens": 65,
+      "totalTokens": 1672
+    },
+    {
+      "role": "consciousness",
+      "side": "a",
+      "provider": "openai",
+      "model": "gpt-6-luna",
+      "status": "completed",
+      "startedAt": 1791766784460,
+      "finishedAt": 1791766786209,
+      "elapsedMs": 1749.2496689999825,
+      "promptTokens": 2376,
+      "completionTokens": 132,
+      "totalTokens": 2508
+    },
+    {
+      "role": "consciousness",
+      "side": "b",
+      "provider": "openai",
+      "model": "gpt-6-luna",
+      "status": "completed",
+      "startedAt": 1791766784491,
+      "finishedAt": 1791766786234,
+      "elapsedMs": 1742.5409740000032,
+      "promptTokens": 2396,
+      "completionTokens": 104,
+      "totalTokens": 2500
+    },
+    {
+      "role": "adjudication",
+      "side": null,
+      "provider": "xai",
+      "model": "grok-4.5",
+      "status": "completed",
+      "startedAt": 1791766786747,
+      "finishedAt": 1791766822641,
+      "elapsedMs": 35894.08011399995,
+      "promptTokens": 9794,
+      "completionTokens": 488,
+      "totalTokens": 11939
+    },
+    {
+      "role": "narration",
+      "side": null,
+      "provider": "xai",
+      "model": "grok-4.3",
+      "status": "completed",
+      "startedAt": 1791766823226,
+      "finishedAt": 1791766824357,
+      "elapsedMs": 1130.3362049999996,
+      "promptTokens": 1595,
+      "completionTokens": 55,
+      "totalTokens": 1650
+    },
+    {
+      "role": "consciousness",
+      "side": "a",
+      "provider": "openai",
+      "model": "gpt-6-luna",
+      "status": "completed",
+      "startedAt": 1791766825725,
+      "finishedAt": 1791766828253,
+      "elapsedMs": 2527.673461999977,
+      "promptTokens": 2401,
+      "completionTokens": 231,
+      "totalTokens": 2632
+    },
+    {
+      "role": "consciousness",
+      "side": "b",
+      "provider": "openai",
+      "model": "gpt-6-luna",
+      "status": "completed",
+      "startedAt": 1791766825812,
+      "finishedAt": 1791766828249,
+      "elapsedMs": 2436.729911000002,
+      "promptTokens": 2416,
+      "completionTokens": 167,
+      "totalTokens": 2583
+    },
+    {
+      "role": "adjudication",
+      "side": null,
+      "provider": "xai",
+      "model": "grok-4.5",
+      "status": "completed",
+      "startedAt": 1791766828899,
+      "finishedAt": 1791766884043,
+      "elapsedMs": 55144.490911,
+      "promptTokens": 9896,
+      "completionTokens": 562,
+      "totalTokens": 13142
+    },
+    {
+      "role": "narration",
+      "side": null,
+      "provider": "xai",
+      "model": "grok-4.3",
+      "status": "completed",
+      "startedAt": 1791766884518,
+      "finishedAt": 1791766885461,
+      "elapsedMs": 943.567510999972,
+      "promptTokens": 1600,
+      "completionTokens": 58,
+      "totalTokens": 1658
+    },
+    {
+      "role": "consciousness",
+      "side": "b",
+      "provider": "openai",
+      "model": "gpt-6-luna",
+      "status": "completed",
+      "startedAt": 1791766886930,
+      "finishedAt": 1791766889509,
+      "elapsedMs": 2578.2341650000308,
+      "promptTokens": 2429,
+      "completionTokens": 198,
+      "totalTokens": 2627
+    },
+    {
+      "role": "consciousness",
+      "side": "a",
+      "provider": "openai",
+      "model": "gpt-6-luna",
+      "status": "completed",
+      "startedAt": 1791766887035,
+      "finishedAt": 1791766889069,
+      "elapsedMs": 2033.614040000015,
+      "promptTokens": 2406,
+      "completionTokens": 134,
+      "totalTokens": 2540
+    },
+    {
+      "role": "adjudication",
+      "side": null,
+      "provider": "xai",
+      "model": "grok-4.5",
+      "status": "completed",
+      "startedAt": 1791766889926,
+      "finishedAt": 1791766896962,
+      "elapsedMs": 7036.125345000066,
+      "promptTokens": 9811,
+      "completionTokens": 419,
+      "totalTokens": 10230
+    }
+  ],
+  "application": "v0.25.0-rc.5",
+  "stageRunId": 38189337992,
+  "commit": "f89192418dbeba67bcf7773d561ccee751e0c633",
+  "physicalAttempts": 36,
+  "cumulativePhysicalAttempts": 97,
+  "failedTurn": 9,
+  "atomicity": "Turn9 invalid trace rejected; eight turns committed, no turn9 world/memory changes.",
+  "rootCause": {
+    "side": "a",
+    "resource": "mp",
+    "available": 1,
+    "proposedDelta": -4,
+    "invalidRemainder": -3
+  },
+  "production": "No Promote dispatched; application v0.24.0-rc.9 remains serving.",
+  "cost": "Unpriced; token usage is provider reported.",
+  "privacy": "No private inputs, memory text or raw responses included.",
+  "committedReservations": 24,
+  "logicalCallsPerCommittedTurn": [
+    4,
+    4,
+    4,
+    4,
+    4,
+    4,
+    4,
+    4
+  ],
+  "physicalOutstanding": 0,
+  "providerReportedKnownTotalTokens": 167794,
+  "unknownTokenUsageRows": 0,
+  "illustrativeProposal": {
+    "implementation": "not implemented; ADR0076 pending owner acceptance",
+    "savedInputReplay": "legacy raw trace rejects MP1 minus4; illustrative failed first receipt preservesMP1 and allows successor stamina7to4",
+    "databaseWrites": 0,
+    "physicalCalls": 0,
+    "rawSnapshotUnchanged": true
+  },
+  "nextAuthority": "Proposed ADR0076 revision1 and proposed additional fixed1battle/164attempts preserve cumulative261maximum; pending owner acceptance."
+}

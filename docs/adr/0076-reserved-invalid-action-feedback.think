@@ -1,0 +1,8 @@
+domain ADR0076:
+  description "Proposed revision1: versioned per-action rejection of invalid canonical updates with feedback."
+evidence STAGE_FAILURE:
+  "Stage38189337992 committed8turns/36attempts, then charged4MP from1MP. Strict reducer rejected turn9; no world/memory commit. Cumulative97attempts, production not promoted."
+premise CONTRACT:
+  "New policy v5/output v3/prompt v5 retain strict wire/order/baseRevision validation but reject invalid resource/world updates per reservation, emit failure and acting-side feedback, and continue from unchanged world. Defeat forces cancellation. Preserve raw evidence, historical strict policies and four normal calls. Proposed additional fixed1battle max164attempts preserves cumulative261maximum."
+pending OWNER_ACCEPTANCE:
+  "Owner must accept the changed per-action failure boundary before implementation; accepted ADR0072 currently aborts the entire turn on any invalid canonical trace."
