@@ -1,0 +1,10 @@
+domain ADR0075:
+  description "Accepted revision1: versioned information-only success in reserved turn output v2."
+evidence STAGE_FAILURE:
+  "Stage38184308617 consumed12physical attempts and committed2turns; successful observation with observations but updates[] failed the legacy success requirement. Cumulative61 attempts; no production promotion."
+premise CONTRACT:
+  "New policy v4/output v2/prompt v4 allow success/partial with empty updates only when observer/public feedback exists. Preserve strict legacy output v1 under old policies, physical-effect validation for nonempty updates, atomicity, reference/resource/order/deadline constraints and unchanged four normal calls. No historical migration or added paid fixture inferred."
+evidence OWNER_ACCEPTANCE:
+  "2026-10-12 owner replies 許可します。 to explicit proposal for observation/feedback-only success with integrity checks and old bindings retained."
+decision ACCEPTANCE based_on STAGE_FAILURE, CONTRACT, OWNER_ACCEPTANCE:
+  "Accept revision1; implement versioned schemas and immutable new bindings, regression tests, authority review and exact-source release preparation under existing deployment authority. Successful Stage remains a production prerequisite."

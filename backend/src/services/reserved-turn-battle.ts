@@ -2,6 +2,7 @@
 import { BattleStateSchema, narrationInstructionForPhase, ReservedTurnWorldSchema, buildCharacterSelfProfileAnchor, deriveBattleProfileStateOverrides,
   projectObserverPerception, buildServerOnlyReserveCues, projectBattleActionEffort,
   type BattleState, type BattlePublic, type TurnEvent, type ReservedTurnRuntime } from "@kshiai/shared";
+import { isDeepStrictEqual } from "node:util";
 import type { LlmProvider } from "../llm/types.js";
 import { getBattleMeta, saveBattleInTransaction } from "../repositories/battles.js";
 import { getAssetGeneration } from "../repositories/asset-generations.js";
@@ -52,7 +53,7 @@ export async function advanceReservedTurn(input: { userId: string; battleId: str
   const roles = input.llm.awareness;
   if (!roles?.consciousness) throw new Error("RESERVED_ROUTES_REQUIRED");
   const snapshot = await getReservedRuntime(baseline.id);
-  if (!snapshot || snapshot.runtime.turn !== baseline.turn) throw new Error("RESERVED_TURN_RUNTIME_CONFLICT");
+  if (!snapshot || snapshot.runtime.turn !== baseline.turn || !isDeepStrictEqual(snapshot.runtime.policy, manifest.reservedTurnPolicy)) throw new Error("RESERVED_TURN_RUNTIME_CONFLICT");
   const frame = async (side: "a" | "b"): Promise<ReservedPlannerFrame> => {
     const generation = await getAssetGeneration(manifest.characters[side].generationId);
     if (!generation) throw new Error("RESERVED_IMMUTABLE_GENERATION_REQUIRED");

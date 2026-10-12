@@ -1,0 +1,164 @@
+{
+  "application": "v0.25.0-rc.4",
+  "governingAdr": "Accepted ADR0075 revision1",
+  "focused": {
+    "pass": 26,
+    "fail": 0,
+    "skip": 0
+  },
+  "reviews": [
+    {
+      "ref": "reserved-turns-v1/source/packages-shared-src-reserved-turns",
+      "seal": "15354459eac93471db87753617d06286478b329c37e0ab321d7caf524a60189e",
+      "path": "packages/shared/src/reserved-turns.ts",
+      "changed": true,
+      "review": "Reviewed packages/shared/src/reserved-turns.ts: policy v4/output v2/prompt v4 permit concrete information-only success without resource/world mutations; preserve old-policy strict persisted traces and exact historical prompt v1/v2/v3, typed canonical updates and atomicity. Focused26pass, typecheck/static/build passed. Accepted ADR0075 revision1 information-success and historical binding contract. No new paid execution or promotion. Individual assessment: Added output v2 observation-aware schema, retained strict v1 default reducer, and checks old-policy last/prepared traces at runtime parse; no-op world patches, capacity/order/incapacitation guards remain strict.",
+      "previousSeal": "093e8b90704fff41986a0b81b47fc122d189e5bd923ff480e5224c114a8980d3"
+    },
+    {
+      "ref": "unified-completion-v1/source/awareness-public-observation",
+      "seal": "fd7060bc0898974a79958e540ff918b8a3dd2589e0d51e65fc2bc56c048722de",
+      "path": "backend/src/scripts/awareness-public-observation.ts",
+      "changed": false,
+      "review": "Reviewed backend/src/scripts/awareness-public-observation.ts: retained historical behavior and assertions remain valid after versioned information-success admission, legacy trace validation, unchanged timing and atomic canonical consistency. Focused26pass, typecheck/static/build passed. Accepted ADR0075 revision1 information-success and historical binding contract. No new paid execution or promotion. Individual assessment: Completion still requires terminal runtime, frozen policy equality, every closed prepared role and matching ledger receipt; new policy admitted via shared parser without relaxing accounting.",
+      "previousSeal": "09b153b4502f90b4e67d36a9cc6f09b9a6789e37db4e62a80e79573263c5eccb"
+    },
+    {
+      "ref": "verification/awareness-usage-verifier-bounded-20261008",
+      "seal": "10477690e4f1339a4679d436fa0fcdeeba333d5578b33db7d53a53301fbf1816",
+      "path": "backend/src/scripts/awareness-public-observation.test.ts",
+      "changed": false,
+      "review": "Reviewed backend/src/scripts/awareness-public-observation.test.ts: retained historical behavior and assertions remain valid after versioned information-success admission, legacy trace validation, unchanged timing and atomic canonical consistency. Focused26pass, typecheck/static/build passed. Accepted ADR0075 revision1 information-success and historical binding contract. No new paid execution or promotion. Preserved coverage: reports one physical batch attempt and actual tokens without inventing prices or private content; rejects missing runtime, outstanding execution, cross-battle rows and ledger mismatches; verifies unified v1 completion using both sides plus operational reservations without private content; rejects unified unresolved execution, tuple drift, uncommitted decisions and missing roles; verifies reserved-turn pipeline v1 completion by every turn request and ledger receipt without exposing private responses Individual assessment: Existing reserved policy1 and unified completion fixtures still enforce closed runtime/usage/role boundaries; no assertion disabled or broadened.",
+      "previousSeal": "5df06c1863576359d23550f28e28eb51a39d2d5d7af77b319c383cd23799dd31"
+    },
+    {
+      "ref": "reserved-turns-v1/source/packages-shared-src-reserved-turn-policy",
+      "seal": "75419a8b1cbcc5d59f3579ad5f02ec6c0b46d49ba42d87d18bf9aa583ba13027",
+      "path": "packages/shared/src/reserved-turn-policy.ts",
+      "changed": true,
+      "review": "Reviewed packages/shared/src/reserved-turn-policy.ts: policy v4/output v2/prompt v4 permit concrete information-only success without resource/world mutations; preserve old-policy strict persisted traces and exact historical prompt v1/v2/v3, typed canonical updates and atomicity. Focused26pass, typecheck/static/build passed. Accepted ADR0075 revision1 information-success and historical binding contract. No new paid execution or promotion. Individual assessment: Shared policy admits v4 as v3 timing extension and validates soft<=hard; backend new creation freezes v4/output2/prompt4 with unchanged role models and attempts.",
+      "previousSeal": "20a7c25a8780cc3d79c6de3fc8bd714c09ede0e11e51f4f8b56d754669c6e6f5"
+    },
+    {
+      "ref": "reserved-turns-v1/test/backend-src-repositories-reserved-turns-postgres.test",
+      "seal": "379e7c6f0467f4e8d049fd220de3c2844cfa2915af3556f133937f17971d6334",
+      "path": "backend/src/repositories/reserved-turns-postgres.test.ts",
+      "changed": false,
+      "review": "Reviewed backend/src/repositories/reserved-turns-postgres.test.ts: retained historical behavior and assertions remain valid after versioned information-success admission, legacy trace validation, unchanged timing and atomic canonical consistency. Focused26pass, typecheck/static/build passed. Accepted ADR0075 revision1 information-success and historical binding contract. No new paid execution or promotion. Preserved coverage: reserved-turn pipeline v1 persists only current fenced writes and rolls back atomically on PostgreSQL Individual assessment: Native PostgreSQL policy1 fixture retains fencing, optimistic revision, rollback and late physical accounting contracts unchanged.",
+      "previousSeal": "88fc34b0cd45e71eb2eefae98d59b0a34409373bd9dadac1805b3d92a482b5be"
+    },
+    {
+      "ref": "reserved-turns-v1/test/packages-shared-src-reserved-turns.test",
+      "seal": "1495d9480ec30abbea146eda172140873dac68d28e6e19cfa75e70126d7f954e",
+      "path": "packages/shared/src/reserved-turns.test.ts",
+      "changed": true,
+      "review": "Reviewed packages/shared/src/reserved-turns.test.ts: policy v4/output v2/prompt v4 permit concrete information-only success without resource/world mutations; preserve old-policy strict persisted traces and exact historical prompt v1/v2/v3, typed canonical updates and atomicity. Focused26pass, typecheck/static/build passed. Accepted ADR0075 revision1 information-success and historical binding contract. No new paid execution or promotion. Preserved coverage: reserved-turn pipeline v1; allows information-only success and partial in output v2 while preserving output v1; keeps cancelled mutations, resource overflow and fake patches invalid in output v2; validates saved prepared and last traces against their frozen legacy policy; accepts zero or five reservations and rejects six or duplicate IDs; interleaves plans without starving the slower side and alternates exact ties; validates all frozen rank references and observer-visible targets before dispatch; applies both attacks to successive canonical states and advances one turn; cancels later actions after defeat instead of executing stale intentions; rejects missing, invented, reordered or stale receipts atomically; permits failed attempts with costs but refuses empty success and out-of-range side effects Individual assessment: Locks v1 refusal, v2 success/partial observation-only zero resource effect, empty rejection, cancellation/range/no-op rejection and legacy persisted prepared/last trace refusal.",
+      "previousSeal": "3eac91f90e5b70f65b439223d821fad7f73c99eab992b2137f47d31af877cd15"
+    },
+    {
+      "ref": "reserved-turns-v1/source/backend-src-services-reserved-turn-battle",
+      "seal": "bc80f306fb1b985c70d539ab7f0eea3d7b1753eecf93ee4db51e3a4b89028775",
+      "path": "backend/src/services/reserved-turn-battle.ts",
+      "changed": true,
+      "review": "Reviewed backend/src/services/reserved-turn-battle.ts: policy v4/output v2/prompt v4 permit concrete information-only success without resource/world mutations; preserve old-policy strict persisted traces and exact historical prompt v1/v2/v3, typed canonical updates and atomicity. Focused26pass, typecheck/static/build passed. Accepted ADR0075 revision1 information-success and historical binding contract. No new paid execution or promotion. Individual assessment: Frozen runtime policy must equal manifest policy before dispatch; prepared traces, memories, feedback and world still commit together under live fencing.",
+      "previousSeal": "870b44f13a0a8de9f82bff5a8cb22b12a79556a10232131e76b065f1b91b8cf1"
+    },
+    {
+      "ref": "reserved-turns-v1/source/backend-src-services-reserved-turn-policy",
+      "seal": "da43e78345013e7724c48011b445fd7b1a168a05a69aab81e1a926caaa06781a",
+      "path": "backend/src/services/reserved-turn-policy.ts",
+      "changed": true,
+      "review": "Reviewed backend/src/services/reserved-turn-policy.ts: policy v4/output v2/prompt v4 permit concrete information-only success without resource/world mutations; preserve old-policy strict persisted traces and exact historical prompt v1/v2/v3, typed canonical updates and atomicity. Focused26pass, typecheck/static/build passed. Accepted ADR0075 revision1 information-success and historical binding contract. No new paid execution or promotion. Individual assessment: Shared policy admits v4 as v3 timing extension and validates soft<=hard; backend new creation freezes v4/output2/prompt4 with unchanged role models and attempts.",
+      "previousSeal": "9d48ca7c0aa1fa0922ab6fb6a557733619a67650aafe02a07e21d0d594edba6a"
+    },
+    {
+      "ref": "reserved-turns-v1/source/backend-src-services-reserved-turn-execution",
+      "seal": "ad3a4075afeb85c8ab63106a91c8e03c1e6bdf7999a6512943a56e56bec9ea86",
+      "path": "backend/src/services/reserved-turn-execution.ts",
+      "changed": true,
+      "review": "Reviewed backend/src/services/reserved-turn-execution.ts: policy v4/output v2/prompt v4 permit concrete information-only success without resource/world mutations; preserve old-policy strict persisted traces and exact historical prompt v1/v2/v3, typed canonical updates and atomicity. Focused26pass, typecheck/static/build passed. Accepted ADR0075 revision1 information-success and historical binding contract. No new paid execution or promotion. Individual assessment: Version selected from frozen policy on both validation and final application. Soft timing/retry behavior applies to v3 and v4, old v1/v2 timing preserved; no schema repair calls.",
+      "previousSeal": "fdc2506251a0d23d501367cba1bd7de47b9d114c66c9f7759b831d3f7ad32640"
+    },
+    {
+      "ref": "reserved-turns-v1/source/backend-src-llm-reserved-turns",
+      "seal": "a314a475f0edafcf74a21d6ec24833ee25a2533b08ab3b2c1f4bafebb671961f",
+      "path": "backend/src/llm/reserved-turns.ts",
+      "changed": true,
+      "review": "Reviewed backend/src/llm/reserved-turns.ts: policy v4/output v2/prompt v4 permit concrete information-only success without resource/world mutations; preserve old-policy strict persisted traces and exact historical prompt v1/v2/v3, typed canonical updates and atomicity. Focused26pass, typecheck/static/build passed. Accepted ADR0075 revision1 information-success and historical binding contract. No new paid execution or promotion. Individual assessment: Added output v2 observation-aware schema, retained strict v1 default reducer, and checks old-policy last/prepared traces at runtime parse; no-op world patches, capacity/order/incapacitation guards remain strict.",
+      "previousSeal": "8cffa8387cd094dce1bb20cd6eca0243f7378431e06b6c88c799c00f02d9714a"
+    },
+    {
+      "ref": "reserved-turns-v1/test/backend-src-services-reserved-turn-execution.test",
+      "seal": "3480278a3dacb1ce259f0c1270ee0abbfc2632017a0ebff93dabb2269b72a778",
+      "path": "backend/src/services/reserved-turn-execution.test.ts",
+      "changed": true,
+      "review": "Reviewed backend/src/services/reserved-turn-execution.test.ts: policy v4/output v2/prompt v4 permit concrete information-only success without resource/world mutations; preserve old-policy strict persisted traces and exact historical prompt v1/v2/v3, typed canonical updates and atomicity. Focused26pass, typecheck/static/build passed. Accepted ADR0075 revision1 information-success and historical binding contract. No new paid execution or promotion. Preserved coverage: reserved-turn execution; prepares observation-only success, carries observer feedback and memory with four calls; dispatches A/B together, calls one judge for ten reservations and only public narration; rejects information-only success under frozen policy v3 without repair calls; does not dispatch adjudication when one plan is malformed or references hidden objects; refuses to resend a reserved request with unknown physical completion; retries only known rate-limit responses within the physical cap; keeps a timed-out request unknown until late physical completion without preparing its output; pins every adjudication base revision before dispatch and preserves prompt v1; binds role deadlines in policy v2, preserves policy v1 and clips both to the battle deadline; closes late received rejection accounting without preparing output or resending unknown failures; warns at soft time limits without stopping requests or committing private state; continues beyond the battle soft limit and applies the looser policy v3 hard deadlines; losslessly factors the complete adjudication schema and preserves every user input field; keeps known rate-limit retries inside the original policy v3 role hard deadline Individual assessment: Exercises four-call private observation feedback/memory, old v3 rejection with three calls and no repair, timing/unknown-send and compressed schema compatibility.",
+      "previousSeal": "4d6b2555a2c172c5c356b2b60ac46dec5718f1315e4b49b664a3af1967b9fbc6"
+    },
+    {
+      "ref": "reserved-turns-v1/source/packages-shared-src-battle",
+      "seal": "02f3403687fcfbe353269464a47c523f0b57dd4036b3d72b22f8475f97837fbd",
+      "path": "packages/shared/src/battle.ts",
+      "changed": true,
+      "review": "Reviewed packages/shared/src/battle.ts: policy v4/output v2/prompt v4 permit concrete information-only success without resource/world mutations; preserve old-policy strict persisted traces and exact historical prompt v1/v2/v3, typed canonical updates and atomicity. Focused26pass, typecheck/static/build passed. Accepted ADR0075 revision1 information-success and historical binding contract. No new paid execution or promotion. Individual assessment: V7 output enum gains v2 only with policy4/prompt4; old v1/v2/v3 bindings remain parseable; V6 unified contracts untouched. Both current source refs reviewed.",
+      "previousSeal": "1b40d0dd8abf217c835db35ad54dfd96879b3d2c12561fd5a79d045e24cf0743"
+    },
+    {
+      "ref": "unified-v1/source/packages-shared-src-battle",
+      "seal": "45f3c18a454649bc52ee5325e8d555c7acab9e0c25919085b33987d8dc399bfa",
+      "path": "packages/shared/src/battle.ts",
+      "changed": true,
+      "review": "Reviewed packages/shared/src/battle.ts: policy v4/output v2/prompt v4 permit concrete information-only success without resource/world mutations; preserve old-policy strict persisted traces and exact historical prompt v1/v2/v3, typed canonical updates and atomicity. Focused26pass, typecheck/static/build passed. Accepted ADR0075 revision1 information-success and historical binding contract. No new paid execution or promotion. Individual assessment: V7 output enum gains v2 only with policy4/prompt4; old v1/v2/v3 bindings remain parseable; V6 unified contracts untouched. Both current source refs reviewed.",
+      "previousSeal": "596185aaebd4cefae0392b9809a8c7e8de4fb1fe069f7fda2c7b04a8fabbc9bd"
+    },
+    {
+      "ref": "unified-v1/test/backend-src-services-unified-consciousness-execution.test",
+      "seal": "6cee4f4e2672ab895042844c7a95648cce459aa4861e5adce95447d47f19a529",
+      "path": "backend/src/services/unified-consciousness-execution.test.ts",
+      "changed": false,
+      "review": "Reviewed backend/src/services/unified-consciousness-execution.test.ts: retained historical behavior and assertions remain valid after versioned information-success admission, legacy trace validation, unchanged timing and atomic canonical consistency. Focused26pass, typecheck/static/build passed. Accepted ADR0075 revision1 information-success and historical binding contract. No new paid execution or promotion. Preserved coverage: unified consciousness policies v1/v2 execution; always renders private ranked memory, including an empty list; renders prompt v2 as complete legal decision envelopes and preserves prompt v1; binds the selected prompt revision through the prepared execution request; fails an unsupported action privately, preserves speech/memory and delivers feedback once; keeps historical policy v1 strict and rejects invalid memory even under policy v2; reports an unknown action reference without executing the action; ignores tick and revision alone in perception activation; dispatches both sides before either resolves, reuses preparation and applies once; retains partial prepared evidence and never resends an unknown failed send; accounts late replies after lease loss without accepting their output; rejects responses received past the decision deadline while retaining accounting; skips unchanged ticks, retains pending events until commit and runs only the stimulated side; requires every due side and rejects unavailable actions atomically; unified consciousness v1 world transaction; commits policy v2 self-only action feedback atomically and rolls it back with world failure; commits memory with canonical revision and keeps private state out of saved world; rolls back private memory when canonical revision CAS fails; rolls back the entire boundary if the global deadline passes inside the transaction; rejects expired fences and stops incomplete without applying prepared memory; required ranked me Individual assessment: Legacy unified execution and memory atomicity tests unchanged; V7 union extension cannot change V6 rules.",
+      "previousSeal": "e1f28ad988ab7c6befc3faf797105a7da976d097fd839de3655a597001bc2f6a"
+    },
+    {
+      "ref": "all-tests-20261008/current-source-closure/verification/structured-asset-integration-bounded-20261008",
+      "seal": "7020fe1c0265d26201f2145a28baa91c3d43b2fb1263d326da71fe160235c5d0",
+      "path": "backend/src/routes-structured-asset-integration.test.ts",
+      "changed": true,
+      "review": "Reviewed backend/src/routes-structured-asset-integration.test.ts: policy v4/output v2/prompt v4 permit concrete information-only success without resource/world mutations; preserve old-policy strict persisted traces and exact historical prompt v1/v2/v3, typed canonical updates and atomicity. Focused26pass, typecheck/static/build passed. Accepted ADR0075 revision1 information-success and historical binding contract. No new paid execution or promotion. Preserved coverage: integrated structured asset cutover; keeps selection, binding, replay, history, and deletion on immutable generations; freezes legacy character rows without appending V1 generations Individual assessment: Current public creation binds output2/policy4/prompt4; rejects mixed bindings; retains two atomic turns, replay and invalid third-turn rejection.",
+      "previousSeal": "13736d2146621e1045461dec6f63fbeb18295cd4c1ba3759c53881108971324a"
+    }
+  ],
+  "paidAttempts": 0,
+  "productionPromotion": false,
+  "outputRevision": "reserved-turn-output-v2",
+  "policyRevision": "reserved-turn-policy-v4",
+  "promptRevision": "reserved-turn-prompt-v4",
+  "historicalPromptBytes": "v1/v2/v3 exactly equal to previous committed renderer",
+  "savedFailureReplay": {
+    "fixture": "rc.4 turn3 saved input/response",
+    "reservations": 4,
+    "legacyContract": "rejected",
+    "newContract": "accepted",
+    "physicalCalls": 0
+  },
+  "initialStaticFailure": "New reducer complexity16 increased threshold count by1; extracted requiresPhysicalEffect, final static passed without baseline changes.",
+  "production": "Not promoted; no additional paid fixture executed.",
+  "planProjection": "Forward-compatible version6 projection only, omitting owner fields/work_event history unsupported by installed validator; canonical version25 retained.",
+  "officialTests": {
+    "tests": 1561,
+    "pass": 1561,
+    "fail": 0,
+    "skipped": 0,
+    "nativePostgres": true,
+    "active": 254,
+    "disabled": 0
+  },
+  "checks": {
+    "typecheck": "passed",
+    "build": "passed",
+    "static": "passed",
+    "ADR0075": "passed",
+    "PERTForwardProjection": "passed with historical PTDAG208 warnings",
+    "fsck": "ok"
+  }
+}

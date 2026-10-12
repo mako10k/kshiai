@@ -28,6 +28,28 @@ function fixture() {
   return { port, start, frames, runtime: () => runtime, set: (next: ReservedTurnRuntime) => { runtime = next; } };
 }
 describe("reserved-turn execution", () => {
+  it("prepares observation-only success, carries observer feedback and memory with four calls", async () => {
+    const f = fixture(); let calls = 0;
+    const t = transport(async (system, user, options) => {
+      calls += 1;
+      if (options.label.endsWith("character")) return { actions: [{ id: "observe", intent: "相手を観察する", targets: ["opponent"] }], memory: ["次も足運びを見る"] };
+      if (options.label.endsWith("adjudication")) {
+        assert.match(system, /予約ターン出力 v2/);
+        const input: { order: { reservationId: string; side: "a" | "b"; baseRevision: number }[] } = JSON.parse(user);
+        return { results: input.order.map((r) => ({ reservationId: r.reservationId, side: r.side, baseRevision: r.baseRevision, outcome: "success", reason: "足運びを見極めた", updates: [], observations: { a: ["Aだけの観測"], b: ["Bだけの観測"], public: [] } })) };
+      }
+      assert.equal(user.includes("Aだけの観測"), false);
+      assert.equal(user.includes("Bだけの観測"), false);
+      return { lines: ["両者が相手の足運びを見定める。"] };
+    });
+    const resolved = await executeReservedTurn({ battleId: "btl_observe", ...f, assets: {}, publicScene: "路地", character: t, adjudication: t, narration: t });
+    assert.equal(calls, 4);
+    assert.deepEqual(resolved.state.actors, f.start.actors);
+    assert.deepEqual(resolved.feedback, { a: ["Aだけの観測", "Aだけの観測"], b: ["Bだけの観測", "Bだけの観測"] });
+    assert.equal(resolved.memories.a[0]?.text, "次も足運びを見る");
+    assert.equal(f.runtime().requests.filter((r) => r.status === "prepared").length, 4);
+    assert.equal(f.runtime().turn, 0, "whole-turn commit still belongs to the fenced battle service");
+  });
   it("dispatches A/B together, calls one judge for ten reservations and only public narration", async () => {
     const f = fixture(); const calls: string[] = []; const characterInputs: string[] = []; let unblock: (() => void) | undefined;
     const barrier = new Promise<void>((resolve) => { unblock = resolve; });
@@ -56,6 +78,22 @@ describe("reserved-turn execution", () => {
     await executeReservedTurn(input); assert.equal(calls.length, 4, "prepared responses replay without provider calls");
     f.set({ ...f.runtime(), turn: 1, memories: resolved.memories, feedback: resolved.feedback });
     assert.equal(f.runtime().memories.a[0]?.text, "aの考え");
+  });
+  it("rejects information-only success under frozen policy v3 without repair calls", async () => {
+    const f = fixture(); const current = f.runtime().policy;
+    if (current.revision !== "reserved-turn-policy-v4") throw new Error("expected policy v4");
+    f.set({ ...f.runtime(), policy: { ...current, revision: "reserved-turn-policy-v3" } });
+    let calls = 0;
+    const t = transport(async (_system, user, options) => {
+      calls += 1;
+      if (options.label.endsWith("character")) return { actions: [{ id: "observe", intent: "観察する", targets: ["opponent"] }], memory: [] };
+      const input: { order: { reservationId: string; side: "a" | "b"; baseRevision: number }[] } = JSON.parse(user);
+      return { results: input.order.map((r) => ({ reservationId: r.reservationId, side: r.side, baseRevision: r.baseRevision, outcome: "success", reason: "観察した", updates: [], observations: { a: ["足運びが見える"], b: [], public: [] } })) };
+    });
+    await assert.rejects(executeReservedTurn({ battleId: "btl_legacy", ...f, promptRevision: "reserved-turn-prompt-v3", assets: {}, publicScene: "路地", character: t, adjudication: t, narration: t }), /concrete consequences/);
+    assert.equal(calls, 3);
+    assert.equal(f.runtime().turn, 0);
+    assert.equal(f.runtime().requests.find((r) => r.role === "adjudication")?.physicalOutstanding, false);
   });
   it("does not dispatch adjudication when one plan is malformed or references hidden objects", async () => {
     const f = fixture(); let calls = 0;
@@ -89,7 +127,7 @@ describe("reserved-turn execution", () => {
   it("keeps a timed-out request unknown until late physical completion without preparing its output", async () => {
     const f = fixture();
     const policy = f.runtime().policy;
-    if (policy.revision !== "reserved-turn-policy-v3") throw new Error("expected policy v3");
+    if (policy.revision !== "reserved-turn-policy-v4") throw new Error("expected policy v4");
     f.set({ ...f.runtime(), policy: { ...policy, deadlineMs: 10, softDeadlineMs: 5 } });
     let release: (() => void) | undefined;
     const barrier = new Promise<void>((resolve) => { release = resolve; });
@@ -120,8 +158,8 @@ it("pins every adjudication base revision before dispatch and preserves prompt v
 it("binds role deadlines in policy v2, preserves policy v1 and clips both to the battle deadline", async () => {
   for (const version of ["v1", "v2", "clipped"] as const) {
     const f = fixture(); const current = f.runtime().policy;
-    assert.equal(current.revision, "reserved-turn-policy-v3");
-    if (current.revision !== "reserved-turn-policy-v3") throw new Error("expected policy v3");
+    assert.equal(current.revision, "reserved-turn-policy-v4");
+    if (current.revision !== "reserved-turn-policy-v4") throw new Error("expected policy v4");
     const { softDurationMs: _duration, softDeadlineMs: _role, softAdjudicationDeadlineMs: _judge, ...hard } = current;
     const v2 = { ...hard, revision: "reserved-turn-policy-v2", durationMs: 600000, deadlineMs: 60000, adjudicationDeadlineMs: 180000 };
     const { adjudicationDeadlineMs: _deadline, ...historical } = v2;
@@ -144,7 +182,7 @@ it("binds role deadlines in policy v2, preserves policy v1 and clips both to the
 it("closes late received rejection accounting without preparing output or resending unknown failures", async () => {
   for (const received of [true, false]) {
     const f = fixture(); const policy = f.runtime().policy;
-    if (policy.revision !== "reserved-turn-policy-v3") throw new Error("expected policy v3");
+    if (policy.revision !== "reserved-turn-policy-v4") throw new Error("expected policy v4");
     f.set({ ...f.runtime(), policy: { ...policy, deadlineMs: 10, softDeadlineMs: 5 } });
     let release: (() => void) | undefined;
     const barrier = new Promise<void>((resolve) => { release = resolve; }); let calls = 0;
@@ -163,7 +201,7 @@ it("warns at soft time limits without stopping requests or committing private st
   test.mock.method(console, "warn", (...args: unknown[]) => { warnings.push(args); });
   const f = fixture(); const start = Date.now();
   const policy = f.runtime().policy;
-  if (policy.revision !== "reserved-turn-policy-v3") throw new Error("expected policy v3");
+  if (policy.revision !== "reserved-turn-policy-v4") throw new Error("expected policy v4");
   f.set({ ...f.runtime(), startedAt: start, deadlineAt: start + 2000,
     policy: { ...policy, durationMs: 2000, softDurationMs: 5, deadlineMs: 1000, softDeadlineMs: 5, adjudicationDeadlineMs: 1000, softAdjudicationDeadlineMs: 5 } });
   const t = transport(async (_system, _user, options) => {
@@ -227,7 +265,7 @@ it("losslessly factors the complete adjudication schema and preserves every user
 
 it("keeps known rate-limit retries inside the original policy v3 role hard deadline", async () => {
   const f = fixture(); const policy = f.runtime().policy;
-  if (policy.revision !== "reserved-turn-policy-v3") throw new Error("expected policy v3");
+  if (policy.revision !== "reserved-turn-policy-v4") throw new Error("expected policy v4");
   f.set({ ...f.runtime(), policy: { ...policy, deadlineMs: 1200, softDeadlineMs: 1000 } });
   let clock = f.runtime().startedAt; let aCalls = 0;
   const t = transport(async (_system, user, options) => {
