@@ -1,7 +1,7 @@
 project UNIFIED_CONSCIOUSNESS:
-  version 41
+  version 42
   title "予約ターンパイプライン v1への統合"
-  description "Goal remains reserved turn pipeline v1 production deployment. Application v0.25.0-rc.10 Stage38227163875 committed36 consistent turns/145 closed attempts/4narration fallbacks, then failed max-turn boundary because old design says incomplete while Stage requires finished. Cumulative406 of461 approved attempts,55remain; no new full battle within remaining capacity. Proposed ADR0080 awaits owner choice: explicit draw vs no-winner limit completion. Preserve all failed evidence and historical bindings; no unknown-send replay. Align endpoint decision before repair/new immutable policy/exact CI/tag/Stage/Promote. Production remains application v0.24.0-rc.9."
+  description "Owner confirms12public turns and asks restoration of existing turn-end victory determination. Withdraw prior new draw/no-winner question; Proposed ADR0080 must be realigned to restoration, not treated as accepted. Migration audit docs/reserved-turn-migration-adr-audit-2026-10-12.md confirms clock/terminal omissions, Accepted ADR0006 vs ADR0072 narration-commit conflict and missing fatigue enforcement; speech/personality/phase coverage needs regression verification. Audit and resolve governing contracts before implementation. Preserve rc.10 Stage36turn/145closed evidence and cumulative406/461 paid accounting. Production remains application v0.24.0-rc.9."
   duration_unit point
   finish RESERVED_DEPLOYED
   goal_owner user
@@ -113,7 +113,7 @@ milestone RESERVED_TERMINAL_READY:
   title "承認済み終了ルールを修復検証"
 task reservedTerminalDecision RESERVED_REPAIR_READY -> RESERVED_TERMINAL_DECIDED:
   title "予約ターンパイプライン v1の上限終了を決定"
-  description "Proposed ADR0080 revision1. Owner choice pending: explicit draw at maxTurns with no extra call vs explicit no-winner limit completion and narrowly adjusted Stage gate. Do not silently reinterpret old policy or paid failure. Completion: owner decision recorded as Accepted ADR and canonical plan/doc/both schedules/next aligned."
+  description "Owner decides12turns and restoration of existing turn-end victory. Withdraw unconditional draw/no-winner choice. Use migration audit2026-10-12 to reconcile canonical-first narration ADR0006 with atomic-narration ADR0072, fatigue ADR0062 and required speech/personality/public verdict coverage. Record precise restoration/partial supersession in governing ADR before implementation; old paid snapshots unchanged. Completion: aligned governing decision and canonical doc/both schedules/next checked."
   duration 1p
   requires:
     DEV 1

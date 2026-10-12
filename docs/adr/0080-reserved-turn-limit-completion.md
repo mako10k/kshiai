@@ -26,7 +26,9 @@ Application v0.25.0-rc.10 Stage38227163875 committed all36 turns using145 physic
 
 ## Decision
 
-Propose option1. The owner decision between options1 and2 is pending; neither implementation nor relaxed acceptance is authorized by this Proposed ADR. After acceptance, define a new immutable policy revision for the selected endpoint, preserve older policy semantics, and implement only that option. Keep numeric limits, provider/model routes, prompt v6 and output v3 unchanged unless compatibility requires an explicitly documented binding adjustment. No existing failed battle is resumed, rewritten or retrospectively declared successful.
+The prior option1 recommendation and draw/no-winner owner question are withdrawn. The owner confirms12public turns and asks where existing turn-end victory determination went. Restore that existing contract; do not introduce unconditional draw semantics. See [migration audit](../reserved-turn-migration-adr-audit-2026-10-12.md). The remaining paragraph below describes the superseded proposal for audit history only.
+
+Previously proposed option1: The earlier proposal incorrectly treated an existing rule as an unresolved product choice; neither implementation nor relaxed acceptance is authorized by this Proposed ADR. After acceptance, define a new immutable policy revision for the selected endpoint, preserve older policy semantics, and implement only that option. Keep numeric limits, provider/model routes, prompt v6 and output v3 unchanged unless compatibility requires an explicitly documented binding adjustment. No existing failed battle is resumed, rewritten or retrospectively declared successful.
 
 ## Consequences
 
