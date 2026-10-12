@@ -1,0 +1,10 @@
+domain ADR0080:
+  description "Proposed revision1: explicit reserved turn maximum-duration completion; owner choice pending."
+evidence LIVE:
+  "Application v0.25.0-rc.10 Stage38227163875 committed36 turns/145 closed physical attempts, four narration fallbacks without extra calls, zero world/memory mismatches, both HP62. Next advance rejected RESERVED_TURN_BOUNDARY_INVALID. Cumulative406 of461 approved attempts."
+premise MISMATCH:
+  "Original design limits stop incomplete without invented winner; Stage requires finished/terminal. Runtime remains active after maxTurns. Neither endpoint should be silently reinterpreted or Stage gate bypassed."
+premise OPTIONS:
+  "Recommend new immutable policy with explicit draw/turn_limit on last committed turn if both remain able to fight; incapacitation takes precedence, no extra provider call, exactly-once existing draw rating. Alternative: explicit no-winner max-turn completion accepted narrowly by Stage, no rating. Preserve old bindings and failed evidence, no replay or migration."
+pending OWNER_ACCEPTANCE:
+  "Owner must choose draw or no-winner limit completion. Proposed ADR0080 authorizes neither implementation nor paid rerun. Additional full36-turn battle exceeds remaining55 attempts and requires separate concrete approval after offline repair and exact candidate validation."
