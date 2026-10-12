@@ -1,0 +1,54 @@
+{
+  "runId": "stage-38202989828-1",
+  "battleId": "btl_a2e247bfbf9693f5cdbaad9aa91eee5a",
+  "status": "incomplete",
+  "turn": 5,
+  "failure": "[\n  {\n    \"code\": \"invalid_type\",\n    \"expected\": \"array\",\n    \"received\": \"undefined\",\n    \"path\": [\n      \"memory\"\n    ],\n    \"message\": \"Required\"\n  }\n]",
+  "recovery": {
+    "correctivePhysicalReceipts": 0,
+    "invalidClosedReceipts": 0,
+    "fallbackReceipts": 0,
+    "rejectedReservations": 0,
+    "physicalOutstanding": 0
+  },
+  "traceMismatches": [],
+  "memoryMismatches": 0,
+  "attempts": [
+    {
+      "operation": "prepareBattleEncounter",
+      "layer": "encounter",
+      "status": "succeeded",
+      "count": 1
+    },
+    {
+      "operation": "reserved-turns-v1:adjudication",
+      "layer": "environment",
+      "status": "succeeded",
+      "count": 5
+    },
+    {
+      "operation": "reserved-turns-v1:character",
+      "layer": "characterExpression",
+      "status": "succeeded",
+      "count": 12
+    },
+    {
+      "operation": "reserved-turns-v1:narration",
+      "layer": "narration",
+      "status": "succeeded",
+      "count": 5
+    }
+  ],
+  "application": "v0.25.0-rc.7",
+  "stageRunId": 38202989828,
+  "commitSha": "810698eba5b6b339c157a87677e6b91e46e2e086",
+  "physicalAttempts": 23,
+  "cumulativeAttempts": 120,
+  "remainingApprovedAttempts": 141,
+  "productionPromoted": false,
+  "nextApplication": "v0.25.0-rc.8",
+  "providerReportedTotalTokens": 106379,
+  "unknownUsageAttempts": 0,
+  "failedCharacterCompletionTokens": 160,
+  "characterOutputTokenLimit": 2000
+}

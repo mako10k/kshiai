@@ -150,28 +150,29 @@ it("verifies reserved-turn pipeline v1 completion by every turn request and ledg
 });
 
 
-it("accounts a closed invalid primary judge receipt alongside four prepared policy v5 outputs", async () => {
+it("accounts closed invalid judge and character receipts alongside four effective outputs under their frozen policy", async () => {
+  for (const planRecovery of [false, true]) {
   const { initializeReservedTurns, ReservedTurnPolicySchema, ReservedTurnRuntimeSchema } = await import("@kshiai/shared");
   const { verifyReservedPublicObservation } = await import("./awareness-public-observation.js");
-  const policy = ReservedTurnPolicySchema.parse({ revision: "reserved-turn-policy-v5", maxAdjudicationCorrections: 1, maxTurns: 36, maxReservations: 5, maxLogicalCallsPerTurn: 4,
+  const policy = ReservedTurnPolicySchema.parse({ revision: planRecovery ? "reserved-turn-policy-v6" : "reserved-turn-policy-v5", ...(planRecovery ? { maxCharacterCorrections: 1 } : {}), maxAdjudicationCorrections: 1, maxTurns: 36, maxReservations: 5, maxLogicalCallsPerTurn: 4,
     maxPhysicalAttempts: 200, durationMs: 1800000, softDurationMs: 600000, deadlineMs: 120000, softDeadlineMs: 60000, adjudicationDeadlineMs: 300000, softAdjudicationDeadlineMs: 180000,
     characterOutputTokens: 2000, adjudicationOutputTokens: 10000, inputCharacters: 128000,
     character: { provider: "xai", model: "test" }, adjudication: { provider: "xai", model: "test" }, narration: { provider: "xai", model: "test" } });
   const requests = ["a", "b", "adjudication", "narration"].map((kind) => {
     const role = kind === "a" || kind === "b" ? "character" : kind;
     return { id: kind, turn: 1, role, side: kind === "a" || kind === "b" ? kind : null, inputDigest: kind,
-      ...(role === "adjudication" ? { logicalStartedAt: 1 } : {}),
+      ...((planRecovery || role === "adjudication") ? { logicalStartedAt: 1 } : {}),
       system: "private prompt", user: "private input", status: "prepared", physicalOutstanding: false, failure: null, rawResponse: "private response",
       output: role === "character" ? { role, plan: { actions: [], memory: [] } } : role === "adjudication" ? { role, trace: { results: [] } } : { role, narration: { lines: ["向き合う。"] } } };
   });
   const runtime = ReservedTurnRuntimeSchema.parse({ ...initializeReservedTurns(policy, 1), turn: 1, status: "terminal", terminalAt: 2,
-    requests: [...requests, { ...requests[2], id: "invalid", status: "failed", output: null, failure: "ADJUDICATION_INVALID" }],
+    requests: [...requests, { ...requests[planRecovery ? 0 : 2], id: "invalid", status: "failed", output: null, failure: planRecovery ? "PLAN_INVALID" : "ADJUDICATION_INVALID" }],
     budget: budgetSnapshot([{ id: "encounter", role: "adjudication", maximumUsd: null, actualUsd: null, status: "unknown", physicalOutstanding: false }]) });
   const saved = { battleId: "battle", revision: 1, fencingToken: 1, updatedAt: "2026-10-12T00:00:00Z", runtime };
   const base = sample().attempts[0]!;
   const attempts = [base, ...runtime.requests.map((request) => ({ ...base, id: request.id, callId: request.id,
     role: request.role === "character" ? "consciousness" : request.role, side: request.side, receiptIds: [request.id] }))];
-  const bound = { reservedTurnPolicy: policy, reservedTurnPromptRevision: "reserved-turn-prompt-v5" as const, awarenessPolicy: AwarenessNormalPolicy };
+  const bound = { reservedTurnPolicy: policy, reservedTurnPromptRevision: planRecovery ? "reserved-turn-prompt-v6" as const : "reserved-turn-prompt-v5" as const, awarenessPolicy: AwarenessNormalPolicy };
   const report = verifyReservedPublicObservation("battle", bound, saved, attempts);
   assert.equal(report.physicalAttempts, 6);
   runtime.requests[4]!.status = "reserved";
@@ -179,4 +180,5 @@ it("accounts a closed invalid primary judge receipt alongside four prepared poli
   runtime.requests[4]!.status = "failed";
   runtime.requests[4]!.physicalOutstanding = true;
   assert.throws(() => verifyReservedPublicObservation("battle", bound, saved, attempts), /PHYSICAL_BUDGET_UNRESOLVED/);
+  }
 });

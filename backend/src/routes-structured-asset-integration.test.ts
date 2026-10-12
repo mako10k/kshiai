@@ -75,12 +75,13 @@ provider.prepareBattleEncounter = async function(
       retry: "none", responseFormat: { type: "json_object" } },
   }, async () => ({ result: await MockLlmProvider.prototype.prepareBattleEncounter.call(this, input), usage: null }));
 };
-let reservedScenario: "idle" | "attack" | "invalid" | "correction" | "unknown" = "idle";
+let reservedScenario: "idle" | "attack" | "invalid" | "correction" | "plan-invalid" | "unknown" = "idle";
 const reservedPlanInputs: string[] = [];
 const awarenessRoles: AwarenessProviderRoles = {
   consciousness: { identity: { provider: "openai", engineModel: "gpt-6-luna", fastModel: "gpt-6-luna" }, requestJson: async (system, user) => {
     if (!system.includes("予約ターンパイプライン")) return system.includes("必須memory") ? { memory: [] } : {};
     reservedPlanInputs.push(user);
+    if (reservedScenario === "plan-invalid" && z.object({ side: z.enum(["a", "b"]) }).parse(JSON.parse(user)).side === "a") return { actions: [{ id: "strike", intent: "相手に打撃を試みる", targets: ["opponent"] }] };
     return { actions: reservedScenario === "idle" ? [] : [{ id: "strike", intent: "相手に打撃を試みる", targets: ["opponent"] }], memory: reservedScenario === "idle" ? ["相手の変化を観察する"] : ["1"] };
   } },
   models: {
@@ -315,8 +316,8 @@ describe("integrated structured asset cutover", () => {
     assert.ok(bound?.assetManifest);
     assert.equal(bound.assetManifest.schemaVersion, 7);
     assert.equal(bound.assetManifest.consciousOutputContract, "reserved-turns-v1");
-    assert.equal(bound.assetManifest.reservedTurnPolicy.revision, "reserved-turn-policy-v5");
-    assert.equal(bound.assetManifest.reservedTurnPromptRevision, "reserved-turn-prompt-v5");
+    assert.equal(bound.assetManifest.reservedTurnPolicy.revision, "reserved-turn-policy-v6");
+    assert.equal(bound.assetManifest.reservedTurnPromptRevision, "reserved-turn-prompt-v6");
     assert.equal(bound.assetManifest.outputRevision, "reserved-turn-output-v3");
     assert.equal(BattleStateSchema.safeParse({ ...bound, assetManifest: { ...bound.assetManifest, outputRevision: "reserved-turn-output-v1" } }).success, false);
     assert.equal(BattleStateSchema.safeParse({ ...bound, assetManifest: { ...bound.assetManifest, reservedTurnPromptRevision: "reserved-turn-prompt-v3" } }).success, false);
@@ -502,19 +503,28 @@ describe("integrated structured asset cutover", () => {
     const correctedState = await battleRepo.getBattle(battleId);
     assert.equal(correctedState?.status, "active");
     assert.equal(correctedState?.turn, 4, "closed invalid primary receipt permits atomic corrected-turn commit");
-    const beforeInvalid = JSON.stringify({ world: correctedState?.worldState, a: correctedState?.sideA, b: correctedState?.sideB });
+    reservedScenario = "plan-invalid";
+    const rejectedPlan = await app.request(`/api/battles/${battleId}/advance`, { ...advanceRequest,
+      headers: { ...advanceRequest.headers, "Idempotency-Key": "asset-integration-rejected-plan-005" } });
+    assert.equal(rejectedPlan.status, 200);
+    const afterRejectedPlan = await battleRepo.getBattle(battleId);
+    assert.equal(afterRejectedPlan?.status, "active");
+    assert.equal(afterRejectedPlan?.turn, 5, "one invalid side plan does not stop the counterpart's turn");
+    assert.equal(afterRejectedPlan?.sideA.parameters.hp, (correctedState?.sideA.parameters.hp ?? 0) - 1);
+    assert.equal(afterRejectedPlan?.sideB.parameters.hp, correctedState?.sideB.parameters.hp);
+    const beforeInvalid = JSON.stringify({ world: afterRejectedPlan?.worldState, a: afterRejectedPlan?.sideA, b: afterRejectedPlan?.sideB });
     reservedScenario = "unknown";
     const invalid = await app.request(`/api/battles/${battleId}/advance`, { ...advanceRequest,
       headers: { ...advanceRequest.headers, "Idempotency-Key": "asset-integration-advance-003" } });
     assert.equal(invalid.status, 200);
     const stopped = await battleRepo.getBattle(battleId);
     assert.equal(stopped?.status, "incomplete");
-    assert.equal(stopped.turn, 4);
+    assert.equal(stopped.turn, 5);
     assert.match(stopped.incompleteReason ?? "", /RESERVED_TURN_FAILED/);
     assert.equal(JSON.stringify({ world: stopped.worldState, a: stopped.sideA, b: stopped.sideB }), beforeInvalid);
     const afterFailureNarration = await app.request(`/api/battles/${battleId}/narration`, { headers: authHeaders });
     const afterFailureSnapshot = z.object({ entries: z.array(z.unknown()) }).parse(await afterFailureNarration.json());
-    assert.equal(afterFailureSnapshot.entries.length, 4, "unknown-send turn publishes no narration");
+    assert.equal(afterFailureSnapshot.entries.length, 5, "unknown-send turn publishes no narration");
 
 
     assert.equal(

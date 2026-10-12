@@ -12,12 +12,13 @@ export const reservedPlanSystem = [
   JSON.stringify(zodToJsonSchema(ReservedTurnPlanSchema, { name: "reserved_turn_plan", openaiStrictMode: false })),
 ].join("\n");
 export function reservedPlanSystemFor(revision: ReservedTurnPromptRevision): string {
+  if (revision === "reserved-turn-prompt-v6") return reservedPlanSystemFor("reserved-turn-prompt-v5") + "\n予約ターン計画プロンプト v6。返答の先頭に必ずmemoryを書き、actionsも必ず含める。最小の完全な返答は{\"memory\":[],\"actions\":[]}。既存記憶を保持するなら実在する順位文字列をmemoryへ明示し、[]は全消去の意思表示。memoryの省略は計画不受理になる。補正要求のvalidationErrorsがあれば、同じ入力に対する完全なmemory/actions JSONを返して誤りを修正する。";
   if (revision !== "reserved-turn-prompt-v5") return reservedPlanSystem;
   return reservedPlanSystem + "\n予約ターン計画プロンプト v5。失敗・中止した予約も今ターンの貴重な枠を消費し、破棄される。追加や差し替えはできない。失敗しただけで一律の追加資源罰は課さないが、実際の消耗や副作用は裁定される。本人の性格と状況から枠の使い方を選ぶ。慎重なら成功確率・余力・安全な条件を重視し、投機的なら失敗の代償を承知で大きな効果を狙い、計画的なら先行予約の成否・消耗・相手の割込みを予測して順序と条件を組み立てる。これらは例であり性格を固定分類しない。前の予約が成功したと決めつけず、不成立の場合も考える。裁定の補正は既存予約の評価だけで、本人の再計画ではない。";
 }
 // Prompt metadata only: factor identical schema objects without dropping any fields or constraints.
 export function compactReservedAdjudicationSchema(revision: ReservedTurnPromptRevision = "reserved-turn-prompt-v3"): object {
-  const schema = zodToJsonSchema((revision === "reserved-turn-prompt-v4" || revision === "reserved-turn-prompt-v5") ? ReservedTurnTraceV2Schema : ReservedTurnTraceSchema, { $refStrategy: "none", openaiStrictMode: false });
+  const schema = zodToJsonSchema((revision === "reserved-turn-prompt-v4" || revision === "reserved-turn-prompt-v5" || revision === "reserved-turn-prompt-v6") ? ReservedTurnTraceV2Schema : ReservedTurnTraceSchema, { $refStrategy: "none", openaiStrictMode: false });
   const counts = new Map<string, number>();
   function object(value: unknown): value is Record<string, unknown> { return value !== null && typeof value === "object" && !Array.isArray(value); }
   function count(value: unknown): void {
@@ -50,6 +51,7 @@ export function compactReservedAdjudicationSchema(revision: ReservedTurnPromptRe
   return { ...compact, $defs: definitions };
 }
 export function reservedAdjudicationSystem(revision: ReservedTurnPromptRevision = "reserved-turn-prompt-v1"): string {
+  if (revision === "reserved-turn-prompt-v6") return reservedAdjudicationSystem("reserved-turn-prompt-v5");
   return [
     "予約ターン裁定 v1。入力の不変資料と正準世界だけを根拠に、指定orderの各予約を一度ずつ裁定する。返答はJSON resultsのみ。",
     "各結果は先行結果の更新後の世界を読む。順序/side/reservationIdを変更しない。baseRevisionは入力state.revisionから各結果ごとに1増える。world.revisionとは別。ターン途中のキャラクター判断はない。",

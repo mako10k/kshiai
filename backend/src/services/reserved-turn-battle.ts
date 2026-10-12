@@ -1,5 +1,5 @@
 // R: Connect one parallel-plan turn to immutable battle assets and an atomic fenced world commit.
-import { BattleStateSchema, narrationInstructionForPhase, ReservedTurnWorldSchema, buildCharacterSelfProfileAnchor, deriveBattleProfileStateOverrides,
+import { isClosedRecoverableReservedRequest, BattleStateSchema, narrationInstructionForPhase, ReservedTurnWorldSchema, buildCharacterSelfProfileAnchor, deriveBattleProfileStateOverrides,
   projectObserverPerception, buildServerOnlyReserveCues, projectBattleActionEffort,
   type BattleState, type BattlePublic, type TurnEvent, type ReservedTurnRuntime } from "@kshiai/shared";
 import { isDeepStrictEqual } from "node:util";
@@ -118,7 +118,7 @@ export async function advanceReservedTurn(input: { userId: string; battleId: str
     const checked = BattleStateSchema.parse(next);
     const saved = await save(checked, (runtime) => {
       if (runtime.status !== "active" || Date.now() >= runtime.deadlineAt) throw new Error("RESERVED_COMMIT_DEADLINE");
-      if (runtime.requests.some((r) => r.turn === resolved.turn && (r.status !== "prepared" && r.failure !== "RATE_LIMIT" && !(runtime.policy.revision === "reserved-turn-policy-v5" && r.role === "adjudication" && r.status === "failed" && r.failure === "ADJUDICATION_INVALID" && r.rawResponse !== null) || r.physicalOutstanding))) throw new Error("RESERVED_UNFINISHED_REQUESTS");
+      if (runtime.requests.some((r) => r.turn === resolved.turn && (r.status !== "prepared" && r.failure !== "RATE_LIMIT" && !isClosedRecoverableReservedRequest(r, runtime.policy) || r.physicalOutstanding))) throw new Error("RESERVED_UNFINISHED_REQUESTS");
       return { ...runtime, turn: resolved.turn, memories: resolved.memories, feedback: resolved.feedback, lastTrace: resolved.trace,
         status: finished ? "terminal" : "active", terminalAt: finished ? Date.now() : null };
     });
