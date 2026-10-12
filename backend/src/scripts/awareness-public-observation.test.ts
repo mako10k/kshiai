@@ -174,6 +174,9 @@ it("accounts a closed invalid primary judge receipt alongside four prepared poli
   const bound = { reservedTurnPolicy: policy, reservedTurnPromptRevision: "reserved-turn-prompt-v5" as const, awarenessPolicy: AwarenessNormalPolicy };
   const report = verifyReservedPublicObservation("battle", bound, saved, attempts);
   assert.equal(report.physicalAttempts, 6);
+  runtime.requests[4]!.status = "reserved";
+  assert.throws(() => verifyReservedPublicObservation("battle", bound, saved, attempts), /REQUEST_NOT_FINISHED/);
+  runtime.requests[4]!.status = "failed";
   runtime.requests[4]!.physicalOutstanding = true;
   assert.throws(() => verifyReservedPublicObservation("battle", bound, saved, attempts), /PHYSICAL_BUDGET_UNRESOLVED/);
 });

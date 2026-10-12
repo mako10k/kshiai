@@ -1,0 +1,57 @@
+{
+  "application": "v0.25.0-rc.6",
+  "governingAdr": "Accepted ADR0076 revision1",
+  "focused": {
+    "pass": 42,
+    "fail": 0,
+    "skip": 0
+  },
+  "reviews": [
+    {
+      "ref": "unified-completion-v1/source/awareness-public-observation",
+      "seal": "60492dbd2869135c3df1dca056e0cdc5c8931ccd34c684f2e7d1ffce7b23ee83",
+      "path": "backend/src/scripts/awareness-public-observation.ts",
+      "changed": true,
+      "review": "Reviewed closed-receipt follow-up backend/src/scripts/awareness-public-observation.ts: require status failed in addition to ADJUDICATION_INVALID/raw/physical closure; reject reserved invalid-tag receipts; correction still commits atomically. Completion accounts invalid closed judge receipts in physical usage while retaining four prepared outputs per committed turn and exact usage mapping. Accepted ADR0076 revision1. Focused42pass; typecheck/static/build passed; full governed suite follows resealing.",
+      "previousSeal": "56d4937480efb7a5849db1e56c06e2c3bac65e7687772c018a2a8a28015137a9"
+    },
+    {
+      "ref": "verification/awareness-usage-verifier-bounded-20261008",
+      "seal": "57b060d02a5ca07189d7b6ffed96fb1e118338dd1b2bd7d3dd1f4ba97153f368",
+      "path": "backend/src/scripts/awareness-public-observation.test.ts",
+      "changed": true,
+      "review": "Reviewed closed-receipt follow-up backend/src/scripts/awareness-public-observation.test.ts: require status failed in addition to ADJUDICATION_INVALID/raw/physical closure; reject reserved invalid-tag receipts; correction still commits atomically. Verify preserved assertions and consumer contracts for versioned per-action recovery, bounded correction, immutable historical bindings and atomic commit; no assertion disabled. Accepted ADR0076 revision1. Focused42pass; typecheck/static/build passed; full governed suite follows resealing. Preserved coverage: reports one physical batch attempt and actual tokens without inventing prices or private content; rejects missing runtime, outstanding execution, cross-battle rows and ledger mismatches; verifies unified v1 completion using both sides plus operational reservations without private content; rejects unified unresolved execution, tuple drift, uncommitted decisions and missing roles; verifies reserved-turn pipeline v1 completion by every turn request and ledger receipt without exposing private responses; accounts a closed invalid primary judge receipt alongside four prepared policy v5 outputs",
+      "previousSeal": "e6c9f14d687013fefe6fb508683dc51f33895855537753a49e70f097b213af54"
+    },
+    {
+      "ref": "reserved-turns-v1/source/backend-src-services-reserved-turn-battle",
+      "seal": "ccd559426d2ddd3329e5edad81cb8596343eb6f220b3e59c5283e778c570f10a",
+      "path": "backend/src/services/reserved-turn-battle.ts",
+      "changed": true,
+      "review": "Reviewed closed-receipt follow-up backend/src/services/reserved-turn-battle.ts: require status failed in addition to ADJUDICATION_INVALID/raw/physical closure; reject reserved invalid-tag receipts; correction still commits atomically. Atomic commit accepts only closed policy v5 invalid judge receipts alongside four effective outputs; fencing and unresolved-send protection retained. Accepted ADR0076 revision1. Focused42pass; typecheck/static/build passed; full governed suite follows resealing.",
+      "previousSeal": "1b1b8e8f4fe0c30871aeac17ebf0ad92b1c4c19e9d2f0edb2b66be4164942e02"
+    },
+    {
+      "ref": "all-tests-20261008/current-source-closure/verification/structured-asset-integration-bounded-20261008",
+      "seal": "ad6eb19e0791d4251f1c7998f40e9826db90f53a61a29218ac80e6afd6ade82f",
+      "path": "backend/src/routes-structured-asset-integration.test.ts",
+      "changed": false,
+      "review": "Reviewed closed-receipt follow-up backend/src/routes-structured-asset-integration.test.ts: require status failed in addition to ADJUDICATION_INVALID/raw/physical closure; reject reserved invalid-tag receipts; correction still commits atomically. Verify preserved assertions and consumer contracts for versioned per-action recovery, bounded correction, immutable historical bindings and atomic commit; no assertion disabled. Accepted ADR0076 revision1. Focused42pass; typecheck/static/build passed; full governed suite follows resealing. Preserved coverage: integrated structured asset cutover; keeps selection, binding, replay, history, and deletion on immutable generations; freezes legacy character rows without appending V1 generations",
+      "previousSeal": "3d03f23271f24240074be0c3d288aa38a623af70629739f0c9a655b159e756da"
+    }
+  ],
+  "paidAttempts": 0,
+  "productionPromotion": false,
+  "validation": {
+    "pass": 1572,
+    "fail": 0,
+    "skipped": 0,
+    "activeFiles": 254,
+    "disabledFiles": 0,
+    "nativePostgreSQL": true,
+    "typecheck": "pass",
+    "static": "pass",
+    "build": "pass",
+    "closedReceiptFocused": 8
+  }
+}
