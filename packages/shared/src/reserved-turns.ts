@@ -204,8 +204,8 @@ export type ReservedTurnRequest = z.infer<typeof ReservedTurnRequestSchema>;
 /** Only received, invalid and physically closed outputs qualify for versioned recovery. */
 export function isClosedRecoverableReservedRequest(request: ReservedTurnRequest, policy: ReservedTurnPolicy): boolean {
   if (request.status !== "failed" || request.physicalOutstanding || request.rawResponse === null) return false;
-  if (request.role === "character") return policy.revision === "reserved-turn-policy-v6" && request.failure === "PLAN_INVALID";
-  return request.role === "adjudication" && ["reserved-turn-policy-v5", "reserved-turn-policy-v6"].includes(policy.revision) && request.failure === "ADJUDICATION_INVALID";
+  if (request.role === "character") return "maxCharacterCorrections" in policy && request.failure === "PLAN_INVALID";
+  return request.role === "adjudication" && ["reserved-turn-policy-v5", "reserved-turn-policy-v6", "reserved-turn-policy-v7"].includes(policy.revision) && request.failure === "ADJUDICATION_INVALID";
 }
 
 export const ReservedTurnRuntimeSchema = z.object({
@@ -219,14 +219,14 @@ export const ReservedTurnRuntimeSchema = z.object({
   lastTrace: ReservedTurnTraceV2Schema.nullable(),
 }).strict().superRefine((runtime, ctx) => {
   // Policy is frozen with the output revision; old persisted traces retain v1 validation.
-  if (runtime.policy.revision !== "reserved-turn-policy-v4" && runtime.policy.revision !== "reserved-turn-policy-v5" && runtime.policy.revision !== "reserved-turn-policy-v6") {
+  if (runtime.policy.revision !== "reserved-turn-policy-v4" && runtime.policy.revision !== "reserved-turn-policy-v5" && runtime.policy.revision !== "reserved-turn-policy-v6" && runtime.policy.revision !== "reserved-turn-policy-v7") {
     const traces = [runtime.lastTrace, ...runtime.requests.flatMap((request) => request.output?.role === "adjudication" ? [request.output.trace] : [])];
     for (const trace of traces) {
       if (trace && !ReservedTurnTraceSchema.safeParse(trace).success) ctx.addIssue({ code: "custom", message: "Legacy policy requires reserved turn output v1" });
     }
   }
   for (const request of runtime.requests) {
-    const timedRequest = runtime.policy.revision === "reserved-turn-policy-v6" || (runtime.policy.revision === "reserved-turn-policy-v5" && request.role === "adjudication");
+    const timedRequest = "maxCharacterCorrections" in runtime.policy || (runtime.policy.revision === "reserved-turn-policy-v5" && request.role === "adjudication");
     if (timedRequest !== (request.logicalStartedAt !== undefined)) ctx.addIssue({ code: "custom", message: "Request logical start binding mismatch" });
   }
   if (new Set(runtime.requests.map((r) => r.id)).size !== runtime.requests.length) ctx.addIssue({ code: "custom", message: "Duplicate request" });

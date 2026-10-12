@@ -1,7 +1,7 @@
 project UNIFIED_CONSCIOUSNESS:
-  version 33
+  version 35
   title "予約ターンパイプライン v1への統合"
-  description "Current goal: deploy reserved turn pipeline v1 under Accepted ADR0072/0074/0075/0076/0077. New policy v6/prompt v6 preserves output v3 and mandatory ranked memory while recovering received invalid plans. Owner authorizes correction/tests/deployment/staging/switching and repair retries; latest direction requires automatic repair/error-directed redo and failed reservation slot consumption. Application v0.25.0-rc.7 Stage38202989828 stopped at turn6 missing memory after5committed turns/23closed attempts with no world/memory mismatches. Cumulative120 leaves141 under approved261; unpriced. Preserve all failed fixtures and immutable historical bindings. Corrected application v0.25.0-rc.8 requires full checks/exact CI/tag, one corrected fixed fixture/max38advances/141physical attempts, then successful exact-artifact production promotion. Production remains application v0.24.0-rc.9."
+  description "Current goal: deploy reserved turn pipeline v1 under Accepted ADR0072/0074/0075/0076/0077/0078. New policy v7/prompt v6 preserves output v3 and mandatory ranked memory while recovering received invalid plans. Owner authorizes correction/tests/deployment/staging/switching and repair retries; latest direction requires automatic repair/error-directed redo and failed reservation slot consumption. Application v0.25.0-rc.8 Stage38208113568 stopped at turn9 empty narration after8committed turns/37closed attempts with no world/memory mismatches. Cumulative157 leaves104 under approved261; unpriced. Preserve all failed fixtures and immutable historical bindings. Corrected application v0.25.0-rc.9 requires full checks/exact CI/tag, one corrected fixed fixture/max38advances/104physical attempts, then successful exact-artifact production promotion. Production remains application v0.24.0-rc.9."
   duration_unit point
   finish RESERVED_DEPLOYED
   goal_owner user
@@ -92,7 +92,7 @@ task reservedRelease RESERVED_VERIFIED -> RESERVED_RELEASE_READY:
 milestone RESERVED_REPAIR_CONTRACT:
   title "予約ターン出力 v3の行動単位失敗契約を所有者受入"
 milestone RESERVED_REPAIR_READY:
-  title "Application v0.25.0-rc.8の修正・全検証・正確なCI成功"
+  title "Application v0.25.0-rc.9の修正・全検証・正確なCI成功"
 task reservedRepairDecision RESERVED_RELEASE_READY -> RESERVED_REPAIR_CONTRACT:
   title "資源不正を行動失敗として返す契約を整理し受入確認"
   description "Accepted ADR0076 revision1 changes the Accepted ADR0072 whole-turn failure boundary. Later Accepted ADR0077 revision1 applies the owner recovery direction to received invalid character plans while preserving mandatory memory. Stage38189337992 charged4MP from1MP and failed turn9 after8committed turns/36attempts. Prepare exact versioned policy v5/output v3/prompt v5, private raw evidence and safe observer feedback rules; Owner latest accepts automatic repair/error-directed correction; record Accepted ADR0076 before implementation. No runtime implementation or new paid run before decision. Completion: Accepted ADR0076 and aligned document/precedence/resource/next checks."
@@ -101,15 +101,15 @@ task reservedRepairDecision RESERVED_RELEASE_READY -> RESERVED_REPAIR_CONTRACT:
     DEV 1
   status done
 task reservedRepair RESERVED_REPAIR_CONTRACT -> RESERVED_REPAIR_READY:
-  title "予約ターン出力 v3の行動単位失敗・フィードバックを実装検証"
-  description "Accepted ADR0077 revision1 applies the existing recovery direction to actual missing-memory failure. Implement new immutable policy v6/prompt v6, preserving output v3: mandatory valid memory for accepted model plans, one received-error correction per side under original persisted role deadline; second received invalid response rejects that side's plan, preserves previous memory and supplies private failure feedback while valid counterpart continues. Centralize closed-invalid-receipt guards for atomic commit/completion; retain raw responses, four normal calls, old-policy strict behavior and no unknown replay. Regress missing memory/ranks/refs, bounded correction/replay/deadlines, rejected-plan continuation, counterpart/feedback privacy and exact usage; individually review affected authority and full governed PostgreSQL/typecheck/build/static/ADR/fsck/PERT. Completion: PR/exact-main CI and annotated application v0.25.0-rc.8 tag. Existing repair-retry authority funds corrected fixed1battle/max38advances/141attempts within cumulative261 after120used. Historical application v0.25.0-rc.7 PR192/main810698eb passed1573tests and exact CI38202493356; observer lower-cap defect fixed, but Stage38202989828 exposed missing memory after5turns/23attempts. No historical rebinding or paid scope increase."
-  duration 4p
+  title "予約ターン方針 v7の公開実況修復を実装検証"
+  description "Accepted ADR0078 revision1. Actual application v0.25.0-rc.8 Stage38208113568 received empty narration for zero public consequences after8turns/37closed attempts. Implement policy v7/prompt v6/output v3: received invalid narration renders only frozen public consequences or factual no-public-result line; preserve raw receipt, explicit NARRATION_FALLBACK, original deadlines/fences, no additional calls. Keep prior character/judge recovery, immutable old bindings and four effective outputs. Individually review affected authority; regress schema/JSON/empty/public privacy/bounds/replay/unknown/oldpolicy and API atomic continuation. Completion: governed fulltests/typecheck/build/static/ADR/fsck/PERT, exact PR/main4checks and annotated application v0.25.0-rc.9 tag. Prior rc.8 PR193/main98c80277 allchecks1577pass/15reviews, but no production promotion. Existing repair authority and cumulative261 ceiling remain."
+  duration 3p
   requires:
     DEV 1
   status active
 task reservedStage RESERVED_REPAIR_READY -> RESERVED_STAGED:
   title "固定1対戦の因果・記憶・実況・利用台帳を検証"
-  description "After corrected application v0.25.0-rc.8 exact CI/tag, execute the owner-authorized repair fixture max38advances/141physical attempts, cumulative261 ceiling after120used. Stage38202989828 application v0.25.0-rc.7 committed5turns and failed turn6 missing memory with23closed attempts; world/memory mismatches0, no Promote. Earlier rc.6 startup consumed0, rc.5 consumed36, rc.4 12, rc.3 41 and rc.1/rc.2 each4. Preserve all evidence. Verify terminal battle, canonical output v3 traces, ranked-memory continuity, explicit rejected-plan feedback, closed physical usage and public narration. No unchanged-candidate automatic rerun, unknown-send replay or character generation. Completion: successful Stage and exact revision/digest/Worker preserved for promotion."
+  description "After application v0.25.0-rc.9 exact CI/tag, execute one corrected fixed fixture max38advances/104physical attempts; cumulative157used/261approved, unpriced. Prior rc.8 used37/8turns, rc.7 used23/5turns, rc.6 used0, rc.5 used36, rc.4 used12, rc.3 used41 and rc.1/rc.2 each4; preserve all failures. Verify terminal battle, exact canonical output v3 trace, ranked memory, public-only narration fallback and closed usage. No unchanged-candidate automatic retry, unknown replay or character generation. Completion: successful Stage and exact immutable artifacts preserved for Promote."
   duration 3p
   requires:
     DEV 1

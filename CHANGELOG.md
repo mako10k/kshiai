@@ -1,5 +1,10 @@
 # Changelog
 
+## Application v0.25.0-rc.9
+
+- Reserved turn policy v7 recovers received invalid narration using only frozen public consequences, without extra provider calls; prompt v6/output v3 and historical bindings remain unchanged.
+- Preserve raw responses and mark NARRATION_FALLBACK; empty public turns render an explicit no-public-result line and continue atomically.
+
 All notable changes to this project are documented in this file. The format is
 based on Keep a Changelog, and releases follow Semantic Versioning.
 
