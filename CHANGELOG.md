@@ -7,6 +7,8 @@ based on Keep a Changelog, and releases follow Semantic Versioning.
 
 ## [0.25.0] - 2026-10-11
 
+- Application v0.25.0-rc.7 fixes observation admission for an approved run ceiling below the immutable policy maximum: use the effective lower budget while enforcing the same transactional physical cap. Preserve exact run approval and legacy forecast rejection. Application v0.25.0-rc.6 Stage38200394221 stopped before any provider run or battle because200 exceeded remaining164; no additional paid attempts.
+
 - Application v0.25.0-rc.6 binds reserved-turn policy v5/output v3/prompt v5. Mechanically repair unambiguous reservation metadata; reject infeasible resource/world changes per action and continue with private failure feedback. One received invalid adjudication may be corrected within the original deadline; a second invalid response yields explicit no-effect failures. Failed reservations consume their slots without replacement, and planning reflects character personality. Retain original raw evidence, closed physical accounting and atomic effective state; historical bindings and prompts remain unchanged. No additional migration or environment variable.
 
 - Corrective application v0.25.0-rc.2 binds reserved-turn adjudication prompt v2: each reservation carries the exact pre-action baseRevision. Preserve prompt v1 for saved bindings and continue rejecting invalid traces without output repair. Application v0.25.0-rc.1 Stage38138135830 failed on a one-based revision trace after4 attempts; no world or memory commit and no production promotion.

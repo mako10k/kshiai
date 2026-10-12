@@ -1,0 +1,25 @@
+{
+  "application": "v0.25.0-rc.6",
+  "stageRunId": 38200394221,
+  "commitSha": "38be4094eae6336df539428d899601c9635e18d4",
+  "conclusion": "failure",
+  "failedStep": "Exercise the exact staged revision with a dialogue-bound battle",
+  "execution": "kshiai-persistent-e2e-q458b",
+  "providerRunPresent": false,
+  "battleCreated": false,
+  "newProviderAttempts": 0,
+  "cumulativeProviderAttempts": 97,
+  "remainingApprovedAttempts": 164,
+  "diagnosis": {
+    "sourceDerivedPreflight": "Normal policy maximum200 was treated as required approval and exceeded approved ceiling164 before run creation",
+    "cloudJobLog": "local gcloud reauthentication unavailable; not claimed as a directly read error",
+    "localReproduction": "Regression asserts original projected200 with ceiling164 throws, effective projection164 is admitted"
+  },
+  "productionPromoted": false,
+  "nextApplication": "v0.25.0-rc.7",
+  "previewHealth": {
+    "ok": true,
+    "revision": "kshiai-api-00205-zev",
+    "independentlyRead": true
+  }
+}

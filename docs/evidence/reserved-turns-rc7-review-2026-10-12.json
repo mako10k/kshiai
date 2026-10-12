@@ -1,0 +1,41 @@
+{
+  "application": "v0.25.0-rc.7",
+  "governingAdr": "Accepted ADR0076 revision1",
+  "focused": {
+    "pass": 36,
+    "fail": 0,
+    "skip": 0
+  },
+  "reviews": [
+    {
+      "ref": "reserved-turns-v1/source/backend-src-scripts-persistent-battle-e2e",
+      "seal": "253770d921acefc16d0a23cdc2c48f3d313e9dac4df296f84c8e3c088a301768",
+      "path": "backend/src/scripts/persistent-battle-e2e.ts",
+      "changed": true,
+      "review": "Reviewed backend/src/scripts/persistent-battle-e2e.ts: Accepted ADR0076 revision1 remaining164 enforcement and existing physical-accounting contract. Observer projection now uses min(normal immutable200 maximum, approved run ceiling), while generic estimated-over-budget and exact-run approval rejection remain. Provider run persists the actual164 ceiling and transactional admission denies the next transport after the cap; no unknown replay or cap increase. Focused36pass; typecheck/static/build validation; full governed suite follows individual resealing.",
+      "previousSeal": "b394aedda9092d3587610a402caf5e120831ca6fbd0e9c71f43c994282eb87d8"
+    },
+    {
+      "ref": "all-tests-20261008/current-source-closure/verification/persistent-battle-e2e-bounded-20261008",
+      "seal": "4a2655062f402025fee272b27c3c8e07c68c2e7abcafd25d2afbd5a1ed0a2687",
+      "path": "backend/src/scripts/persistent-battle-e2e.test.ts",
+      "changed": true,
+      "review": "Reviewed backend/src/scripts/persistent-battle-e2e.test.ts: Accepted ADR0076 revision1 remaining164 enforcement and existing physical-accounting contract. Observer projection now uses min(normal immutable200 maximum, approved run ceiling), while generic estimated-over-budget and exact-run approval rejection remain. Provider run persists the actual164 ceiling and transactional admission denies the next transport after the cap; no unknown replay or cap increase. Focused36pass; typecheck/static/build validation; full governed suite follows individual resealing. Preserved coverage: persistent battle E2E runner; rejects a successful health response from a different backend revision; classifies every observation provider operation under one revision; requires an exact operator approval and rejects an over-budget observation; uses the approved lower physical ceiling without changing the immutable normal policy maximum; accepts only a terminal reconciled physical-attempt ledger; generates a strong ephemeral password within the Supabase limit; accepts only a bounded portable observation run ID; validates and durably records a sanitized observation; accepts only an explicitly allowed HTTPS origin; derives the normal observation bound from the 36-tick policy; takes the authoritative done battle from an SSE response; accepts sparse strictly increasing narration sequences from a completed beat; rejects an SSE error without a done event; retries only explicit SSE BATTLE_BUSY with the same idempotency key; fails immediately for non-busy and ambiguous SSE outcomes; never retries a busy error after an execution progress event; counts requests and waits against the absolute busy deadline; bounds persistent contention without advancing the request identity; uses committed turn receipts for battle binding v7 while retaining older canonical transition requirements",
+      "previousSeal": "b2a460d58f0a52aae3450d68a2157b25bd1a222dab39b9cee7b7fca8a0da74a8"
+    }
+  ],
+  "paidAttempts": 0,
+  "productionPromotion": false,
+  "validation": {
+    "pass": 1573,
+    "fail": 0,
+    "skipped": 0,
+    "activeFiles": 254,
+    "disabledFiles": 0,
+    "nativePostgreSQL": true,
+    "typecheck": "pass",
+    "static": "pass",
+    "build": "pass",
+    "focused": 36
+  }
+}
