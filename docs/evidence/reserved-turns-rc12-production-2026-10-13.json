@@ -1,0 +1,188 @@
+{
+  "schemaVersion": 1,
+  "application": "v0.25.0-rc.12",
+  "commitSha": "30cc77c3f24f8e34ec9930bcbccecc2598847e84",
+  "governingAdr": "Accepted ADR0080 revision2",
+  "stage": {
+    "schemaVersion": 1,
+    "stageRunId": "38268836081",
+    "stageRunAttempt": "1",
+    "releaseTag": "v0.25.0-rc.12",
+    "commitSha": "30cc77c3f24f8e34ec9930bcbccecc2598847e84",
+    "revision": "kshiai-api-00212-wif",
+    "workerVersion": "f0dac5c3-3683-431a-9411-400cb39f6acd",
+    "dialogueProjection": "compact",
+    "dialogueActivationSource": "persisted_setting",
+    "observationExecution": "kshiai-persistent-e2e-sdvps",
+    "characterCreateSmoke": false,
+    "characterCreateProviderAttemptCeiling": 30,
+    "characterGenerationReadProbe": "v2_v3_and_migration_resume",
+    "verification": "exact_revision_health_and_battle_receipt",
+    "conclusion": "success",
+    "url": "https://github.com/mako10k/kshiai/actions/runs/38268836081",
+    "imageDigest": "sha256:0e5fd91d3e108cff38446ce23e388fd81addc71d0bdfd316cf7250affce7dc23"
+  },
+  "promotion": {
+    "runId": 38271543096,
+    "url": "https://github.com/mako10k/kshiai/actions/runs/38271543096",
+    "conclusion": "success",
+    "productionEnvironmentApproval": "Normal required-review API, under explicit owner deployment/switch authorization; environment protection unchanged.",
+    "cloudRunRevision": "kshiai-api-00212-wif",
+    "cloudRunTrafficPercent": 100,
+    "workerVersion": "f0dac5c3-3683-431a-9411-400cb39f6acd",
+    "workerTrafficPercent": 100,
+    "workerReadbackSource": "Successful Promote Cloudflare API deployment response at2026-10-12T15:38:36Z. Independent local wrangler readback unavailable: no local Cloudflare token; no credential change requested.",
+    "productionAuthSmokeExecution": "kshiai-auth-smoke-tsrz2",
+    "productionAuthSseSmoke": "passed",
+    "independentPublicAndProtectedOriginSmoke": "passed",
+    "releaseUrl": "https://github.com/mako10k/kshiai/releases/tag/v0.25.0-rc.12"
+  },
+  "battle": {
+    "battleId": "btl_2ae0da6b00ffeb5dcdb690316ac84bb2",
+    "status": "finished",
+    "turn": 10,
+    "winner": "b",
+    "runtimeStatus": "terminal",
+    "failure": null,
+    "recovery": {
+      "narrationFallbackReceipts": 0,
+      "invalidClosedPlanReceipts": 0,
+      "rejectedPlanReceipts": 0,
+      "correctivePhysicalReceipts": 0,
+      "invalidClosedReceipts": 0,
+      "fallbackReceipts": 0,
+      "rejectedReservations": 18,
+      "physicalOutstanding": 0
+    },
+    "traceMismatches": [],
+    "memoryMismatches": 0,
+    "narration": [
+      {
+        "status": "completed",
+        "count": 10
+      }
+    ],
+    "attempts": [
+      {
+        "operation": "reserved-turns-v1:narration",
+        "layer": "narration",
+        "status": "succeeded",
+        "count": 10
+      },
+      {
+        "operation": "reserved-turns-v1:character",
+        "layer": "characterExpression",
+        "status": "succeeded",
+        "count": 20
+      },
+      {
+        "operation": "prepareBattleEncounter",
+        "layer": "encounter",
+        "status": "succeeded",
+        "count": 1
+      },
+      {
+        "operation": "reserved-turns-v1:adjudication",
+        "layer": "environment",
+        "status": "succeeded",
+        "count": 10
+      }
+    ]
+  },
+  "reservationResults": {
+    "total": 32,
+    "outcomes": {
+      "failure": 24,
+      "success": 7,
+      "cancelled": 1
+    },
+    "resourceUpdates": 14,
+    "worldUpdates": 1
+  },
+  "publicAcceptance": {
+    "engine": "reserved-turns-v1",
+    "policyRevision": "reserved-turn-policy-v8",
+    "recordedPromptRevision": "reserved-turn-prompt-v7",
+    "effectivePromptRevision": "reserved-turn-prompt-v7",
+    "completedTurns": 10,
+    "physicalAttemptLimit": 200,
+    "physicalAttempts": 41,
+    "physicalOutstanding": 0,
+    "narrationPhysicalAttempts": 10,
+    "reportedTokens": {
+      "prompt": 200992,
+      "completion": 8909,
+      "total": 244498,
+      "unknownAttempts": 0
+    },
+    "monetaryCost": "unknown_without_verified_prices"
+  },
+  "narrationConvergence": {
+    "terminalReceiptCount": 10,
+    "orderedProjection": "passed",
+    "liveGenerations": 0,
+    "oneTerminalSnapshotPerReceipt": "passed",
+    "claimCountSemantics": "positive integer durable claims; no-send deferrals may increase the count"
+  },
+  "latency": {
+    "creation": {
+      "count": 1,
+      "medianMs": 12179.604689,
+      "maxMs": 12179.604689
+    },
+    "consciousness": {
+      "count": 20,
+      "medianMs": 2921.776073999994,
+      "maxMs": 3648.9259680000832
+    },
+    "adjudication": {
+      "count": 10,
+      "medianMs": 76017.519034,
+      "maxMs": 125644.80934499999
+    },
+    "narration": {
+      "count": 10,
+      "medianMs": 1324.1077280000318,
+      "maxMs": 4133.447459999996
+    }
+  },
+  "authority": {
+    "ownerAuthorizationDateJst": "2026-10-13",
+    "approvedFixedBattles": 1,
+    "approvedAttemptCeiling": 151,
+    "actualAttempts": 41,
+    "previousCumulativeActual": 455,
+    "cumulativeActual": 496,
+    "cumulativeMaximum": 606,
+    "characterGeneration": false,
+    "unknownSendResends": 0,
+    "cost": "unknown_without_verified_prices"
+  },
+  "validation": {
+    "governedTests": {
+      "passed": 1596,
+      "failed": 0,
+      "skipped": 0,
+      "activeFiles": 256,
+      "disabledFiles": 0
+    },
+    "focusedConvergenceTestsPassed": 9,
+    "prCi": {
+      "runId": 38262743579,
+      "conclusion": "success"
+    },
+    "exactMainCi": {
+      "runId": 38263998100,
+      "conclusion": "success"
+    },
+    "typecheck": "passed",
+    "build": "passed",
+    "static": "passed",
+    "sealgraphFsck": "ok"
+  },
+  "limits": [
+    "One fixed battle validates this fixture; no general model-quality claim.",
+    "Historical failed trials and saved battle bindings retained.",
+    "Monetary cost remains unknown; unknown cost is not zero."
+  ]
+}
