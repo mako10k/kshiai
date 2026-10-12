@@ -1,0 +1,31 @@
+{
+  "runId": "stage-38211435113-1",
+  "battleId": "btl_673ca76d9b89d6674abc63783478d4fb",
+  "status": "active",
+  "turn": 5,
+  "failure": null,
+  "recovery": {
+    "narrationFallbackReceipts": 0,
+    "invalidClosedPlanReceipts": 0,
+    "rejectedPlanReceipts": 0,
+    "correctivePhysicalReceipts": 0,
+    "invalidClosedReceipts": 0,
+    "fallbackReceipts": 0,
+    "rejectedReservations": 0,
+    "physicalOutstanding": 1
+  },
+  "traceMismatches": [],
+  "memoryMismatches": 0,
+  "application": "v0.25.0-rc.9",
+  "stageRunId": 38211435113,
+  "commitSha": "642f696bb2d7348578b734aca141bf37cf1588e7",
+  "physicalAttemptsReserved": 24,
+  "physicalAttemptsClosed": 23,
+  "physicalAttemptsUnresolved": 1,
+  "cumulativeReservedAttempts": 181,
+  "remainingApprovedAttempts": 80,
+  "productionPromoted": false,
+  "jobExecution": "kshiai-persistent-e2e-z9wf4",
+  "stagedRevision": "kshiai-api-00208-zur",
+  "failureDiagnosis": "Unknown: observer job failed while turn6 adjudication remained reserved; detailed Cloud Run logs require renewed local authentication. Do not replay unresolved physical send."
+}
