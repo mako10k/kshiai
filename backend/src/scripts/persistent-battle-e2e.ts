@@ -182,6 +182,18 @@ export function projectObservationProviderOperations(
   return { ...layers, total: Object.values(layers).reduce((sum, value) => sum + value, 0) };
 }
 
+/** The enclosing provider-operation run enforces this lower physical ceiling. */
+export function projectNormalObservationBudget(approvedAttemptCeiling: number) {
+  if (!Number.isInteger(approvedAttemptCeiling) || approvedAttemptCeiling < 1) {
+    throw new Error("E2E_PROVIDER_OPERATION_CEILING must be a positive integer");
+  }
+  return {
+    policyRevision: AwarenessNormalPolicy.revision,
+    maximumPhysicalAttempts: AwarenessNormalPolicy.maxPhysicalAttempts,
+    total: Math.min(AwarenessNormalPolicy.maxPhysicalAttempts, approvedAttemptCeiling),
+  };
+}
+
 export function authorizeObservationProviderBudget(input: {
   runId: string;
   approvedRunId: string | undefined;
@@ -689,12 +701,8 @@ async function main(): Promise<void> {
   }
   assertObservedBackendIdentity(await healthResponse.json(), targetRevision);
   const maxAdvances = parseNormalObservationAdvances(process.env.E2E_MAX_ADVANCES);
-  const projectedProviderOperations = {
-    policyRevision: AwarenessNormalPolicy.revision,
-    maximumPhysicalAttempts: AwarenessNormalPolicy.maxPhysicalAttempts,
-    total: AwarenessNormalPolicy.maxPhysicalAttempts,
-  };
   const providerOperationCeiling = Number(process.env.E2E_PROVIDER_OPERATION_CEILING ?? "");
+  const projectedProviderOperations = projectNormalObservationBudget(providerOperationCeiling);
   authorizeObservationProviderBudget({
     runId,
     approvedRunId: process.env.E2E_OBSERVATION_APPROVED_RUN_ID,

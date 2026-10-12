@@ -25,6 +25,7 @@ const {
   parseBattleAdvanceStream,
   persistSanitizedObservation,
   projectObservationProviderOperations,
+  projectNormalObservationBudget,
   reconcileSparseNarrationProjection,
   resolveObservationRunId,
   validateProductionApiUrl,
@@ -114,6 +115,20 @@ describe("persistent battle E2E runner", () => {
       ceiling: 89,
       projected,
     });
+  });
+
+  it("uses the approved lower physical ceiling without changing the immutable normal policy maximum", () => {
+    const projected = projectNormalObservationBudget(164);
+    assert.equal(projected.maximumPhysicalAttempts, 200);
+    assert.equal(projected.total, 164);
+    assert.throws(() => authorizeObservationProviderBudget({ runId: "remaining-budget", approvedRunId: "remaining-budget", ceiling: 164, projected: { total: 200 } }), /Projected provider operations 200 exceed ceiling 164/);
+    authorizeObservationProviderBudget({ runId: "remaining-budget", approvedRunId: "remaining-budget", ceiling: 164, projected });
+    assert.throws(() => authorizeObservationProviderBudget({ runId: "remaining-budget", approvedRunId: "remaining-budget", ceiling: 163, projected }), /exceed ceiling/);
+    assert.throws(() => authorizeObservationProviderBudget({ runId: "remaining-budget", approvedRunId: "other", ceiling: 164, projected }), /exactly match/);
+    assert.equal(projectNormalObservationBudget(200).total, 200);
+    assert.equal(projectNormalObservationBudget(250).total, 200);
+    assert.equal(projectNormalObservationBudget(1).total, 1);
+    for (const value of [0, -1, 1.5, NaN, Infinity]) assert.throws(() => projectNormalObservationBudget(value), /positive integer/);
   });
 
   it("accepts only a terminal reconciled physical-attempt ledger", () => {

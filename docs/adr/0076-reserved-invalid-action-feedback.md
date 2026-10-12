@@ -53,6 +53,8 @@ Owner clarification: failed reservations consume their original slot and are dis
 
 Policy v5 adjudication receipts persist logicalStartedAt so the same deadline survives process restart and corrected-response replay.
 
+Implementation correction after Stage38200394221: its observer rejected the remaining approved164 attempts against the normal policy maximum200 before creating any provider run or battle. The accepted remaining164 ceiling must be executable: project the effective observation budget as min(policy maximum, approved run ceiling), while retaining the immutable policy maximum separately and the existing transactionally enforced provider-operation ceiling. Exact run approval, physical accounting and the generic forecast-over-budget rejection remain unchanged. No new battle or provider attempt was consumed by this failed startup; corrected immutable candidate application v0.25.0-rc.7 uses the same remaining authority.
+
 ## References
 
 - https://github.com/mako10k/kshiai/actions/runs/38189337992
