@@ -1,0 +1,10 @@
+domain ADR0077:
+  description "Accepted revision1: contain received invalid character plans under reserved turn policy v6/prompt v6, preserving output v3 and mandatory ranked memory."
+evidence STAGE_FAILURE:
+  "Application v0.25.0-rc.7 Stage38202989828 committed5turns then side A omitted required memory;23closed physical attempts, zero world/memory mismatches. Cumulative120, remaining141 under approved261."
+premise CONTRACT:
+  "Reject invalid character outputs and preserve raw evidence. One explicit-error correction per side on the same frozen input and persisted original deadline; no unknown-send replay. A second received invalid output rejects that side's complete plan, retains last committed memory through explicit server failure rank references, and sends private PLAN_INVALID feedback. Never accept missing memory as a valid model plan or invent actions. Valid counterpart continues. Normal4logical calls, exceptional up to7 with existing judge correction; physical budget unchanged. Old policies/prompts remain immutable."
+evidence OWNER_ACCEPTANCE:
+  "Owner directs automatic mechanical repair/error-directed redo because LLM outputs are imperfect, earlier requests flexible integrated LLM-only feedback, and explicitly permits repair retries plus correction/test/deploy/staging/switching. Preserve mandatory ranked memory and cumulative261 approval; remaining141 funds the corrected fixed fixture, not a new budget."
+decision ACCEPTANCE based_on STAGE_FAILURE, CONTRACT, OWNER_ACCEPTANCE:
+  "Accept revision1 within the existing recovery direction. Implement policy v6/prompt v6 with unchanged output v3, individual authority review and full checks; immutable application v0.25.0-rc.8 and successful bounded Stage before exact-artifact promotion. Preserve all failures, required-memory semantics and unknown physical sends."

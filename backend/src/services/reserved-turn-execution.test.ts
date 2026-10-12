@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { zodToJsonSchema } from "openai/_vendor/zod-to-json-schema/index";
 import { describe, it } from "node:test";
 import { createBattleWorldState, createBattleSemanticState, initializeReservedTurns, ReservedTurnRuntimeSchema,
-  ReservedTurnTraceSchema, ReservedTurnPolicySchema, orderReservedActions, type ReservedTurnRuntime, type ReservedTurnWorld } from "@kshiai/shared";
+  isClosedRecoverableReservedRequest, ReservedTurnTraceSchema, ReservedTurnPolicySchema, orderReservedActions, type ReservedTurnRuntime, type ReservedTurnWorld } from "@kshiai/shared";
 import { executeReservedTurn, type ReservedExecutionPort } from "./reserved-turn-execution.js";
 import { reservedPlanSystem, reservedPlanSystemFor, compactReservedAdjudicationSchema, reservedAdjudicationSystem, reservedAdjudicationUser } from "../llm/reserved-turns.js";
 import type { AwarenessJsonTransport } from "../llm/awareness-provider-contract.js";
@@ -13,12 +13,15 @@ import { AwarenessLatentOutputSchema, AwarenessConsciousOutputSchema } from "@ks
 function transport(send: AwarenessJsonTransport["requestJson"]): AwarenessJsonTransport {
   return { identity: { provider: "openai", engineModel: "judge", fastModel: "character" }, requestJson: send };
 }
-function fixture() {
+function fixture(version: "v5" | "v6" = "v5") {
   const stub = transport(async () => ({}));
-  const policy = bindReservedTurnPolicy({ consciousness: stub, adjudication: stub,
+  const boundPolicy = bindReservedTurnPolicy({ consciousness: stub, adjudication: stub,
     narration: { identity: stub.identity, narrateBatch: async () => [], narrateFrozenBatch: async () => [] },
     models: { subconscious: async (input) => AwarenessLatentOutputSchema.parse({ state: input.currentState, reflexDesires: [], affectiveDesires: [], reconsider: false, cancelThought: false }),
       conscious: async () => AwarenessConsciousOutputSchema.parse({ goal: null, thought: "", desires: [], influences: [] }) } });
+  if (boundPolicy.revision !== "reserved-turn-policy-v6") throw new Error("expected creation policy v6");
+  const { maxCharacterCorrections: _characterCorrections, ...historical } = boundPolicy;
+  const policy = version === "v6" ? boundPolicy : ReservedTurnPolicySchema.parse({ ...historical, revision: "reserved-turn-policy-v5" });
   let runtime = initializeReservedTurns(policy, Date.now());
   const port: ReservedExecutionPort = { read: async () => structuredClone(runtime),
     update: async (reduce) => { runtime = ReservedTurnRuntimeSchema.parse(reduce(runtime)); },
@@ -401,4 +404,126 @@ it("pins historical planning prompts and exposes failed-slot opportunity cost on
   assert.match(prompt, /追加や差し替えはできない/);
   assert.match(prompt, /慎重.*投機的.*計画的/);
   assert.match(prompt, /本人の再計画ではない/);
+});
+
+it("corrects missing memory on just one side, keeps its original deadline and replays without new calls", async () => {
+  const f = fixture("v6"); let clock = f.runtime().startedAt; let calls = 0; let aCalls = 0; let bCalls = 0;
+  const policy = f.runtime().policy;
+  if (policy.revision !== "reserved-turn-policy-v6") throw new Error("expected policy v6");
+  const previous = [{ id: "retained", text: "A_PRIVATE_MEMORY" }];
+  f.set({ ...f.runtime(), memories: { a: previous, b: [] }, policy: { ...policy, deadlineMs: 1200, softDeadlineMs: 1000 } });
+  const t = transport(async (_system, user, options) => {
+    calls += 1;
+    if (options.label.endsWith("character")) {
+      const input: { side: "a" | "b"; validationErrors?: string[] } = JSON.parse(user);
+      const actions = [{ id: "r", intent: "働きかける", targets: ["opponent"] }];
+      if (input.side === "a") {
+        aCalls += 1;
+        if (aCalls === 1) { clock += 1100; return { actions }; }
+        assert.match(input.validationErrors?.join() ?? "", /memory/);
+        assert.equal(options.timeoutMs, 100);
+        return { actions, memory: ["1"] };
+      }
+      bCalls += 1; return { actions, memory: [] };
+    }
+    if (options.label.endsWith("adjudication")) {
+      const input: { order: { reservationId: string; side: "a" | "b"; baseRevision: number }[] } = JSON.parse(user);
+      return { results: input.order.map((r) => ({ reservationId: r.reservationId, side: r.side, baseRevision: r.baseRevision, outcome: "failure", reason: "届かない", updates: [], observations: { a: [], b: [], public: [] } })) };
+    }
+    assert.equal(user.includes("A_PRIVATE_MEMORY"), false);
+    return { lines: ["距離を保つ。"] };
+  });
+  const input = { battleId: "btl_plan_correction", ...f, assets: {}, publicScene: "路地", character: t, adjudication: t, narration: t, now: () => clock };
+  const result = await executeReservedTurn(input);
+  assert.equal(calls, 5); assert.equal(aCalls, 2); assert.equal(bCalls, 1);
+  assert.deepEqual(result.memories.a, previous);
+  const invalid = f.runtime().requests.find((r) => r.failure === "PLAN_INVALID");
+  const corrected = f.runtime().requests.find((r) => r.role === "character" && r.id.includes(":correction:1:"));
+  assert.equal(invalid?.physicalOutstanding, false);
+  assert.equal(corrected?.logicalStartedAt, invalid?.logicalStartedAt);
+  assert.equal(f.runtime().requests.filter((r) => r.status === "prepared").length, 4);
+  await executeReservedTurn(input); assert.equal(calls, 5);
+});
+
+it("rejects a twice-invalid side plan, preserves its memory and lets the counterpart act with private feedback", async () => {
+  const f = fixture("v6"); const previous = [{ id: "old1", text: "A_SECRET_ONE" }, { id: "old2", text: "A_SECRET_TWO" }];
+  f.set({ ...f.runtime(), memories: { a: previous, b: [] } }); let calls = 0;
+  const t = transport(async (_system, user, options) => {
+    calls += 1;
+    if (options.label.endsWith("character")) {
+      const input: { side: "a" | "b" } = JSON.parse(user);
+      const actions = [{ id: "r", intent: "相手を攻める", targets: ["opponent"] }];
+      return input.side === "a" ? { actions } : { actions, memory: [] };
+    }
+    if (options.label.endsWith("adjudication")) {
+      const input: { order: { reservationId: string; side: "a" | "b"; baseRevision: number }[] } = JSON.parse(user);
+      assert.equal(input.order.length, 1); assert.equal(input.order[0]?.side, "b");
+      return { results: input.order.map((r) => ({ reservationId: r.reservationId, side: r.side, baseRevision: r.baseRevision, outcome: "success", reason: "打撃", updates: [{ kind: "resource", side: "a", resource: "hp", delta: -1 }], observations: { a: [], b: [], public: ["打撃が届く。"] } })) };
+    }
+    assert.equal(user.includes("A_SECRET"), false); assert.equal(user.includes("PLAN_INVALID"), false);
+    return { lines: ["打撃が届く。"] };
+  });
+  const input = { battleId: "btl_plan_rejected", ...f, assets: {}, publicScene: "路地", character: t, adjudication: t, narration: t };
+  const result = await executeReservedTurn(input);
+  assert.equal(calls, 5); assert.equal(result.plans.a.actions.length, 0);
+  assert.equal(result.state.actors.a.hp, 19); assert.equal(result.state.actors.b.hp, 20);
+  assert.deepEqual(result.memories.a, previous); assert.match(result.feedback.a.join(), /PLAN_INVALID/);
+  assert.equal(result.feedback.b.join().includes("PLAN_INVALID"), false);
+  assert.equal(f.runtime().requests.filter((r) => r.failure === "PLAN_FALLBACK").length, 1);
+  assert.equal(f.runtime().requests.filter((r) => r.role === "character" && r.side === "a" && r.rawResponse?.includes('"memory"') === false).length, 2);
+  const invalid = f.runtime().requests.find((r) => r.failure === "PLAN_INVALID");
+  assert.ok(invalid);
+  assert.equal(isClosedRecoverableReservedRequest(invalid, f.runtime().policy), true);
+  assert.equal(isClosedRecoverableReservedRequest(invalid, fixture().runtime().policy), false);
+  assert.equal(isClosedRecoverableReservedRequest({ ...invalid, status: "reserved" }, f.runtime().policy), false);
+  assert.equal(isClosedRecoverableReservedRequest({ ...invalid, rawResponse: null }, f.runtime().policy), false);
+  assert.equal(isClosedRecoverableReservedRequest({ ...invalid, physicalOutstanding: true }, f.runtime().policy), false);
+  assert.equal(isClosedRecoverableReservedRequest({ ...invalid, role: "adjudication", side: null }, f.runtime().policy), false);
+  const replayed = await executeReservedTurn(input);
+  assert.equal(calls, 5); assert.deepEqual(replayed.feedback, result.feedback);
+});
+
+it("corrects received character JSON and invalid ranks/references, while refusing unknown sends under policy v6", async () => {
+  for (const defect of ["json", "rank", "reference", "unknown"] as const) {
+    const f = fixture("v6"); let aCalls = 0;
+    const t = transport(async (_system, user, options) => {
+      if (options.label.endsWith("character")) {
+        const input: { side: "a" | "b"; validationErrors?: string[] } = JSON.parse(user);
+        if (input.side === "a") {
+          aCalls += 1;
+          if (aCalls === 1) {
+            if (defect === "json") throw new LlmPhysicalCompletionError(new ProviderJsonSyntaxError("{broken"));
+            if (defect === "unknown") throw new Error("unknown network termination");
+            if (defect === "rank") return { actions: [], memory: ["1"] };
+            return { actions: [{ id: "r", intent: "働きかける", targets: ["not_observed"] }], memory: [] };
+          }
+          assert.ok(input.validationErrors?.length);
+        }
+        return { actions: [], memory: [] };
+      }
+      if (options.label.endsWith("adjudication")) return { results: [] };
+      return { lines: ["距離を保つ。"] };
+    });
+    const input = { battleId: `btl_plan_${defect}`, ...f, assets: {}, publicScene: "路地", character: t, adjudication: t, narration: t };
+    if (defect === "unknown") {
+      await assert.rejects(executeReservedTurn(input)); await assert.rejects(executeReservedTurn(input)); assert.equal(aCalls, 1);
+      assert.equal(f.runtime().requests.some((r) => r.id.includes(":correction:")), false);
+    } else {
+      await executeReservedTurn(input); assert.equal(aCalls, 2);
+      assert.equal(f.runtime().requests.find((r) => r.failure === "PLAN_INVALID")?.physicalOutstanding, false);
+    }
+  }
+});
+
+it("keeps policy v5 strict on missing memory and preserves prompt v5 while prompt v6 requires memory first", async () => {
+  const f = fixture(); let aCalls = 0;
+  const t = transport(async (_system, user) => {
+    if (JSON.parse(user).side === "a") { aCalls += 1; return { actions: [] }; }
+    return { actions: [], memory: [] };
+  });
+  await assert.rejects(executeReservedTurn({ battleId: "btl_old_plan", ...f, assets: {}, publicScene: "路地", character: t, adjudication: t, narration: t }));
+  assert.equal(aCalls, 1); assert.equal(f.runtime().requests.length, 2);
+  assert.equal(reservedPlanSystemFor("reserved-turn-prompt-v5").includes("先頭に必ずmemory"), false);
+  assert.match(reservedPlanSystemFor("reserved-turn-prompt-v6"), /先頭に必ずmemory/);
+  assert.equal(reservedAdjudicationSystem("reserved-turn-prompt-v6"), reservedAdjudicationSystem("reserved-turn-prompt-v5"));
 });

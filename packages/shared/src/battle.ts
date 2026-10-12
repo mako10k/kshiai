@@ -2240,6 +2240,11 @@ export const BattleAssetManifestV7Schema = BattleAssetManifestV5Schema.extend({
     battleEngine: z.literal("reserved-turns-v1"), temporalRules: z.literal("reserved-order-v1"), psycheReaction: z.literal("reserved-turns-v1"),
   }).strict(),
 }).strict().superRefine((manifest, ctx) => {
+  const planRecovery = manifest.reservedTurnPolicy.revision === "reserved-turn-policy-v6";
+  if (planRecovery || manifest.reservedTurnPromptRevision === "reserved-turn-prompt-v6") {
+    if (!planRecovery || manifest.outputRevision !== "reserved-turn-output-v3" || manifest.reservedTurnPromptRevision !== "reserved-turn-prompt-v6") ctx.addIssue({ code: "custom", message: "Reserved plan recovery revision mismatch" });
+    return;
+  }
   const recovery = manifest.reservedTurnPolicy.revision === "reserved-turn-policy-v5";
   if (recovery || manifest.outputRevision === "reserved-turn-output-v3" || manifest.reservedTurnPromptRevision === "reserved-turn-prompt-v5") {
     if (!recovery || manifest.outputRevision !== "reserved-turn-output-v3" || manifest.reservedTurnPromptRevision !== "reserved-turn-prompt-v5") ctx.addIssue({ code: "custom", message: "Reserved turn recovery revision mismatch" });

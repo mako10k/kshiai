@@ -1,0 +1,164 @@
+{
+  "application": "v0.25.0-rc.8",
+  "governingAdr": "Accepted ADR0077 revision1",
+  "focused": {
+    "pass": 46,
+    "fail": 0,
+    "skip": 0
+  },
+  "reviews": [
+    {
+      "ref": "reserved-turns-v1/source/packages-shared-src-reserved-turns",
+      "seal": "a1e6d6df7a9bc4c4c51a07e1742daf4c2d75add3941e32876fddcecbd1d271f1",
+      "path": "packages/shared/src/reserved-turns.ts",
+      "changed": true,
+      "review": "Reviewed packages/shared/src/reserved-turns.ts: Centralize failed/raw/physically-closed role/version guard; permit character PLAN_INVALID only in policy v6 and judge errors only in v5/v6. Persist original starts for all v6 roles; preserve old trace/output semantics. Accepted ADR0077 revision1 and ADR0076 output v3. Focused46pass; final typecheck/static/build validation and full governed suite follow individual resealing. Actual missing-memory response replay recovers in5mock calls (a2/b1), preserves memory and makes0provider calls.",
+      "previousSeal": "2200729f1ec6db96cf0370fa8e222be165d248593afe2355cca43293d818c1e8"
+    },
+    {
+      "ref": "unified-completion-v1/source/awareness-public-observation",
+      "seal": "f14f5a079f21e3b5a020088f5cfebafe1b66722f8bf3eac65dd4c234c23bfda3",
+      "path": "backend/src/scripts/awareness-public-observation.ts",
+      "changed": true,
+      "review": "Reviewed backend/src/scripts/awareness-public-observation.ts: Count every closed invalid character/judge receipt in exact physical usage, while requiring four effective prepared outputs per committed turn. Invalid roles/statuses/outstanding sends remain rejected. Accepted ADR0077 revision1 and ADR0076 output v3. Focused46pass; final typecheck/static/build validation and full governed suite follow individual resealing. Actual missing-memory response replay recovers in5mock calls (a2/b1), preserves memory and makes0provider calls.",
+      "previousSeal": "60492dbd2869135c3df1dca056e0cdc5c8931ccd34c684f2e7d1ffce7b23ee83"
+    },
+    {
+      "ref": "verification/awareness-usage-verifier-bounded-20261008",
+      "seal": "71ca778d89b8fad4ef330e7b1cc5c4978d316728045064cae5d6ee66f8f0a536",
+      "path": "backend/src/scripts/awareness-public-observation.test.ts",
+      "changed": true,
+      "review": "Reviewed backend/src/scripts/awareness-public-observation.test.ts: Retain historical assertions, immutable bindings and atomic/fenced state contracts with versioned character-output recovery; no test disabled. Accepted ADR0077 revision1 and ADR0076 output v3. Focused46pass; final typecheck/static/build validation and full governed suite follow individual resealing. Actual missing-memory response replay recovers in5mock calls (a2/b1), preserves memory and makes0provider calls. Preserved coverage: reports one physical batch attempt and actual tokens without inventing prices or private content; rejects missing runtime, outstanding execution, cross-battle rows and ledger mismatches; verifies unified v1 completion using both sides plus operational reservations without private content; rejects unified unresolved execution, tuple drift, uncommitted decisions and missing roles; verifies reserved-turn pipeline v1 completion by every turn request and ledger receipt without exposing private responses; accounts closed invalid judge and character receipts alongside four effective outputs under their frozen policy",
+      "previousSeal": "57b060d02a5ca07189d7b6ffed96fb1e118338dd1b2bd7d3dd1f4ba97153f368"
+    },
+    {
+      "ref": "reserved-turns-v1/source/packages-shared-src-reserved-turn-policy",
+      "seal": "a28149a1455dfa2983b98d6a4bb842e4359c45adb5117c5c336e4949b4ce003f",
+      "path": "packages/shared/src/reserved-turn-policy.ts",
+      "changed": true,
+      "review": "Reviewed packages/shared/src/reserved-turn-policy.ts: Add immutable policy v6 with exactly one character correction per side; retain one judge correction, normal4calls and unchanged budgets/models. Accepted ADR0077 revision1 and ADR0076 output v3. Focused46pass; final typecheck/static/build validation and full governed suite follow individual resealing. Actual missing-memory response replay recovers in5mock calls (a2/b1), preserves memory and makes0provider calls.",
+      "previousSeal": "5095fb7d80114ae7685aaa09becb6d66b78d21d0e5435ce747faea7f7a0aa2ff"
+    },
+    {
+      "ref": "reserved-turns-v1/test/backend-src-repositories-reserved-turns-postgres.test",
+      "seal": "475a6eb7bee03442db617256d4d3259069fbec36f6d03da47c9a8ff05bb7b77d",
+      "path": "backend/src/repositories/reserved-turns-postgres.test.ts",
+      "changed": false,
+      "review": "Reviewed backend/src/repositories/reserved-turns-postgres.test.ts: Retain historical assertions, immutable bindings and atomic/fenced state contracts with versioned character-output recovery; no test disabled. Accepted ADR0077 revision1 and ADR0076 output v3. Focused46pass; final typecheck/static/build validation and full governed suite follow individual resealing. Actual missing-memory response replay recovers in5mock calls (a2/b1), preserves memory and makes0provider calls. Preserved coverage: reserved-turn pipeline v1 persists only current fenced writes and rolls back atomically on PostgreSQL Existing policy v1 native PostgreSQL owner/fence/revision rejection, rollback, late accounting and cascade deletion are unchanged.",
+      "previousSeal": "c52e1a3c8ed781c7835e0ddbcb26b8cb80e4b8db9ced75dd837ff950be832236"
+    },
+    {
+      "ref": "reserved-turns-v1/test/packages-shared-src-reserved-turns.test",
+      "seal": "cbb3a2b3aa97cedd1c20929de4fcb7eb7f225b76df56c1d93c7e8e3227cdf2b0",
+      "path": "packages/shared/src/reserved-turns.test.ts",
+      "changed": false,
+      "review": "Reviewed packages/shared/src/reserved-turns.test.ts: Retain historical assertions, immutable bindings and atomic/fenced state contracts with versioned character-output recovery; no test disabled. Accepted ADR0077 revision1 and ADR0076 output v3. Focused46pass; final typecheck/static/build validation and full governed suite follow individual resealing. Actual missing-memory response replay recovers in5mock calls (a2/b1), preserves memory and makes0provider calls. Preserved coverage: reserved-turn pipeline v1; allows information-only success and partial in output v2 while preserving output v1; keeps cancelled mutations, resource overflow and fake patches invalid in output v2; validates saved prepared and last traces against their frozen legacy policy; rejects an unaffordable reservation atomically and continues the next action in output v3; repairs unambiguous order, side and base revisions but refuses missing or duplicate identities; rejects invalid world references and zero effects without applying earlier costs; cancels later stale effects after defeat and drops mutations attached to cancellation; accepts zero or five reservations and rejects six or duplicate IDs; interleaves plans without starving the slower side and alternates exact ties; validates all frozen rank references and observer-visible targets before dispatch; applies both attacks to successive canonical states and advances one turn; cancels later actions after defeat instead of executing stale intentions; rejects missing, invented, reordered or stale receipts atomically; permits failed attempts with costs but refuses empty success and out-of-range side effects All14 canonical ordering/resource/world/cancellation/per-reservation rejection tests retain their assertions; character recovery does not alter output v3 reducer semantics.",
+      "previousSeal": "d5109271df8f2f13d2587b97c60bce0c43f5aedf81e0a9e4a0f7b8a6d674bd68"
+    },
+    {
+      "ref": "reserved-turns-v1/source/backend-src-services-reserved-turn-battle",
+      "seal": "566013cb868f0aa77917ed7a8042a7a256d9461df2d8fb4384ec6a6e6a220dc8",
+      "path": "backend/src/services/reserved-turn-battle.ts",
+      "changed": true,
+      "review": "Reviewed backend/src/services/reserved-turn-battle.ts: Use shared closed-invalid guard so one corrected/rejected character plan can commit atomically with counterpart, world, memory and narration; fences and unknown-send refusal remain. Accepted ADR0077 revision1 and ADR0076 output v3. Focused46pass; final typecheck/static/build validation and full governed suite follow individual resealing. Actual missing-memory response replay recovers in5mock calls (a2/b1), preserves memory and makes0provider calls.",
+      "previousSeal": "ccd559426d2ddd3329e5edad81cb8596343eb6f220b3e59c5283e778c570f10a"
+    },
+    {
+      "ref": "reserved-turns-v1/source/backend-src-services-reserved-turn-policy",
+      "seal": "767412dd9cb71ed00d380395234a9cbb9f200795a0fcd4f68a396aa52cc2fba0",
+      "path": "backend/src/services/reserved-turn-policy.ts",
+      "changed": true,
+      "review": "Reviewed backend/src/services/reserved-turn-policy.ts: New creation selects policy v6/prompt v6/output v3; no migration, model or numeric limit changes. Accepted ADR0077 revision1 and ADR0076 output v3. Focused46pass; final typecheck/static/build validation and full governed suite follow individual resealing. Actual missing-memory response replay recovers in5mock calls (a2/b1), preserves memory and makes0provider calls.",
+      "previousSeal": "0dd2b5027a0d44a5b0599a7e066e7f8dea6144a5c4c9498dce8ff92983bcf1bd"
+    },
+    {
+      "ref": "reserved-turns-v1/source/backend-src-services-reserved-turn-execution",
+      "seal": "4799d2e32a6fa4e1b7ed2d4b219ab93ad6f268c1123a2041dbe944db72b25ffe",
+      "path": "backend/src/services/reserved-turn-execution.ts",
+      "changed": true,
+      "review": "Reviewed backend/src/services/reserved-turn-execution.ts: Correct only received invalid character JSON/schema/rank/reference once on same frozen input/original deadline. Reject twice-invalid side plan, retain committed memory, give private feedback and continue valid counterpart. Preserve raw responses, replay without duplicate calls and old-policy strict character behavior. Accepted ADR0077 revision1 and ADR0076 output v3. Focused46pass; final typecheck/static/build validation and full governed suite follow individual resealing. Actual missing-memory response replay recovers in5mock calls (a2/b1), preserves memory and makes0provider calls.",
+      "previousSeal": "9d323d42d296e9793e2686d01dc8969bb9d07f8bb5e4f74f5e3e774e273560c8"
+    },
+    {
+      "ref": "reserved-turns-v1/source/backend-src-llm-reserved-turns",
+      "seal": "99622adc01b0a34d4ffb3a41945108a2b9a82b723c09b688475f5c0437111ab7",
+      "path": "backend/src/llm/reserved-turns.ts",
+      "changed": true,
+      "review": "Reviewed backend/src/llm/reserved-turns.ts: Prompt v6 requires memory first with a complete minimal envelope and error correction. Historical v1-v5 bytes match86 saved requests; judge v6 intentionally reuses v5 instructions. Accepted ADR0077 revision1 and ADR0076 output v3. Focused46pass; final typecheck/static/build validation and full governed suite follow individual resealing. Actual missing-memory response replay recovers in5mock calls (a2/b1), preserves memory and makes0provider calls.",
+      "previousSeal": "2b7a495cb012aa90b98c08064eb8594739d4dad8596245a853eb97bbc4bebac2"
+    },
+    {
+      "ref": "reserved-turns-v1/test/backend-src-services-reserved-turn-execution.test",
+      "seal": "fab2c0254d2c7d27b94abfceb8bb0f30c70c97808de4372ef396d6590f4d1c79",
+      "path": "backend/src/services/reserved-turn-execution.test.ts",
+      "changed": true,
+      "review": "Reviewed backend/src/services/reserved-turn-execution.test.ts: Retain historical assertions, immutable bindings and atomic/fenced state contracts with versioned character-output recovery; no test disabled. Accepted ADR0077 revision1 and ADR0076 output v3. Focused46pass; final typecheck/static/build validation and full governed suite follow individual resealing. Actual missing-memory response replay recovers in5mock calls (a2/b1), preserves memory and makes0provider calls. Preserved coverage: reserved-turn execution; prepares observation-only success, carries observer feedback and memory with four calls; dispatches A/B together, calls one judge for ten reservations and only public narration; rejects information-only success under frozen policy v3 without repair calls; does not dispatch adjudication when one plan is malformed or references hidden objects; refuses to resend a reserved request with unknown physical completion; retries only known rate-limit responses within the physical cap; keeps a timed-out request unknown until late physical completion without preparing its output; pins every adjudication base revision before dispatch and preserves prompt v1; binds role deadlines in policy v2, preserves policy v1 and clips both to the battle deadline; closes late received rejection accounting without preparing output or resending unknown failures; warns at soft time limits without stopping requests or committing private state; continues beyond the battle soft limit and applies the looser policy v3 hard deadlines; losslessly factors the complete adjudication schema and preserves every user input field; keeps known rate-limit retries inside the original policy v3 role hard deadline; retries a received ambiguous adjudication with explicit errors and replays all five receipts without sending again; continues with explicit failure receipts after one invalid correction and preserves both raw responses; repairs unaffordable actions in four calls, discards unverified obser",
+      "previousSeal": "101a864d868bba4ce554308636caefe9fd6916e6bf7f60d6c98e27366764a915"
+    },
+    {
+      "ref": "reserved-turns-v1/source/packages-shared-src-battle",
+      "seal": "f392300f21d640894aea29c849ccd01d228c793c442cbd34e530edde5b8492c1",
+      "path": "packages/shared/src/battle.ts",
+      "changed": true,
+      "review": "Reviewed packages/shared/src/battle.ts: Bind policy v6/prompt v6 with unchanged output v3, preserving strict older revision combinations. Accepted ADR0077 revision1 and ADR0076 output v3. Focused46pass; final typecheck/static/build validation and full governed suite follow individual resealing. Actual missing-memory response replay recovers in5mock calls (a2/b1), preserves memory and makes0provider calls.",
+      "previousSeal": "6aa85bc538553e88b5e6466a4455ed6d0ae5e0646e2071059ac4fbbe5e470e14"
+    },
+    {
+      "ref": "unified-v1/source/packages-shared-src-battle",
+      "seal": "23aff9d3e5821e1f4c471df7b68ad7c3dbe6c08fe59c98786811f2495fa0b4fc",
+      "path": "packages/shared/src/battle.ts",
+      "changed": true,
+      "review": "Reviewed packages/shared/src/battle.ts: Bind policy v6/prompt v6 with unchanged output v3, preserving strict older revision combinations. Accepted ADR0077 revision1 and ADR0076 output v3. Focused46pass; final typecheck/static/build validation and full governed suite follow individual resealing. Actual missing-memory response replay recovers in5mock calls (a2/b1), preserves memory and makes0provider calls.",
+      "previousSeal": "48b61d0982e652318d2c40458baa042a273735a9f4a799fa36b5720ba7b66e64"
+    },
+    {
+      "ref": "unified-v1/test/backend-src-services-unified-consciousness-execution.test",
+      "seal": "695d76f558aed3e8c96c5e81ef4ecd67822e7a633bdfe4d0d1d68dc35e434f02",
+      "path": "backend/src/services/unified-consciousness-execution.test.ts",
+      "changed": false,
+      "review": "Reviewed backend/src/services/unified-consciousness-execution.test.ts: Retain historical assertions, immutable bindings and atomic/fenced state contracts with versioned character-output recovery; no test disabled. Accepted ADR0077 revision1 and ADR0076 output v3. Focused46pass; final typecheck/static/build validation and full governed suite follow individual resealing. Actual missing-memory response replay recovers in5mock calls (a2/b1), preserves memory and makes0provider calls. Preserved coverage: unified consciousness policies v1/v2 execution; always renders private ranked memory, including an empty list; renders prompt v2 as complete legal decision envelopes and preserves prompt v1; binds the selected prompt revision through the prepared execution request; fails an unsupported action privately, preserves speech/memory and delivers feedback once; keeps historical policy v1 strict and rejects invalid memory even under policy v2; reports an unknown action reference without executing the action; ignores tick and revision alone in perception activation; dispatches both sides before either resolves, reuses preparation and applies once; retains partial prepared evidence and never resends an unknown failed send; accounts late replies after lease loss without accepting their output; rejects responses received past the decision deadline while retaining accounting; skips unchanged ticks, retains pending events until commit and runs only the stimulated side; requires every due side and rejects unavailable actions atomically; unified consciousness v1 world transaction; commits policy v2 self-only action feedback atomically and rolls it back with world failure; commits memory with canonical revision and keeps private state out of saved world; rolls back private memory when canonical revision CAS fails; rolls back the entire boundary if the global deadline passes inside the transaction; rejects expired fences and stops incomplete without applying prepared memory; required ranked me Historical binding format v6/unified policies v1-v3 still preserve rank references, paired dispatch, CAS rollback, deadlines and fences; new reserved policy v6 belongs only to binding format v7.",
+      "previousSeal": "5f41315b9c949d4900e59cbcf5d39a9a76f9ba698bf8e1e0f6ebf155ac3024b1"
+    },
+    {
+      "ref": "all-tests-20261008/current-source-closure/verification/structured-asset-integration-bounded-20261008",
+      "seal": "7c5c85bda4a6d7d382aa3ab615e20a70805c9ccbfb1471a59325cd6163a9044a",
+      "path": "backend/src/routes-structured-asset-integration.test.ts",
+      "changed": true,
+      "review": "Reviewed backend/src/routes-structured-asset-integration.test.ts: Retain historical assertions, immutable bindings and atomic/fenced state contracts with versioned character-output recovery; no test disabled. Accepted ADR0077 revision1 and ADR0076 output v3. Focused46pass; final typecheck/static/build validation and full governed suite follow individual resealing. Actual missing-memory response replay recovers in5mock calls (a2/b1), preserves memory and makes0provider calls. Preserved coverage: integrated structured asset cutover; keeps selection, binding, replay, history, and deletion on immutable generations; freezes legacy character rows without appending V1 generations",
+      "previousSeal": "ad6eb19e0791d4251f1c7998f40e9826db90f53a61a29218ac80e6afd6ade82f"
+    }
+  ],
+  "paidAttempts": 0,
+  "productionPromotion": false,
+  "historicalPromptByteMatches": 86,
+  "actualMissingMemoryReplay": {
+    "historicalV5PromptByteMatches": 17,
+    "actualMissingMemoryRecovered": true,
+    "calls": 5,
+    "sideCalls": {
+      "a": 2,
+      "b": 1
+    },
+    "memoryPreserved": true,
+    "newProviderCalls": 0
+  },
+  "priorResourceFailureReplay": {
+    "historicalPromptByteMatches": 69,
+    "actualRc5FailureRecovered": true,
+    "mpPreserved": 1,
+    "successorApplied": true
+  },
+  "validation": {
+    "focused": 46,
+    "typecheck": "pass",
+    "static": "pass",
+    "build": "pass",
+    "governedSuite": {
+      "passed": 1577,
+      "failed": 0,
+      "skipped": 0,
+      "activeFiles": 254,
+      "disabledFiles": 0
+    }
+  }
+}

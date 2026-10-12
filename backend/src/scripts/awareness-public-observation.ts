@@ -1,5 +1,5 @@
 // R: Verify completed awareness execution and summarize actual SDK token usage for public acceptance.
-import { ReservedTurnRuntimeSchema, type BattleAssetManifestV7, type ReservedTurnRuntime } from "@kshiai/shared";
+import { isClosedRecoverableReservedRequest, ReservedTurnRuntimeSchema, type BattleAssetManifestV7, type ReservedTurnRuntime } from "@kshiai/shared";
 import { getReservedRuntime, type ReservedRuntimeSnapshot } from "../repositories/reserved-turns.js";
 import { reservedOperationalRuntime } from "../repositories/battle-operational-runtime.js";
 import { isDeepStrictEqual } from "node:util";
@@ -148,7 +148,7 @@ export function verifyReservedPublicObservation(battleId: string,
 }
 function assertReservedRequests(runtime: ReservedTurnRuntime): void {
   if (runtime.requests.some((request) => request.turn > runtime.turn || request.physicalOutstanding ||
-    (request.status !== "prepared" && request.failure !== "RATE_LIMIT" && !(runtime.policy.revision === "reserved-turn-policy-v5" && request.role === "adjudication" && request.status === "failed" && request.failure === "ADJUDICATION_INVALID" && request.rawResponse !== null)))) throw new Error("PUBLIC_COMPLETION_REQUEST_NOT_FINISHED");
+    (request.status !== "prepared" && request.failure !== "RATE_LIMIT" && !isClosedRecoverableReservedRequest(request, runtime.policy)))) throw new Error("PUBLIC_COMPLETION_REQUEST_NOT_FINISHED");
   for (let turn = 1; turn <= runtime.turn; turn += 1) {
     const prepared = runtime.requests.filter((request) => request.turn === turn && request.status === "prepared");
     if (prepared.length !== 4 || prepared.some((request) => request.rawResponse === null)) throw new Error("PUBLIC_COMPLETION_TURN_CALLS_MISMATCH");

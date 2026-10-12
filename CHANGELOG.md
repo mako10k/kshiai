@@ -7,6 +7,8 @@ based on Keep a Changelog, and releases follow Semantic Versioning.
 
 ## [0.25.0] - 2026-10-11
 
+- Application v0.25.0-rc.8 binds reserved-turn policy v6/prompt v6 with unchanged output v3. A received invalid character plan gets one explicit-error correction on its original deadline; a second invalid response rejects that side's plan, preserves committed memory and returns private feedback while the counterpart continues. Valid model plans still require explicit memory. Prompt v6 requests memory first. Normal four calls and historical bindings remain; no migration. Preserve application v0.25.0-rc.7's missing-memory failure after five turns/23 closed attempts.
+
 - Application v0.25.0-rc.7 fixes observation admission for an approved run ceiling below the immutable policy maximum: use the effective lower budget while enforcing the same transactional physical cap. Preserve exact run approval and legacy forecast rejection. Application v0.25.0-rc.6 Stage38200394221 stopped before any provider run or battle because200 exceeded remaining164; no additional paid attempts.
 
 - Application v0.25.0-rc.6 binds reserved-turn policy v5/output v3/prompt v5. Mechanically repair unambiguous reservation metadata; reject infeasible resource/world changes per action and continue with private failure feedback. One received invalid adjudication may be corrected within the original deadline; a second invalid response yields explicit no-effect failures. Failed reservations consume their slots without replacement, and planning reflects character personality. Retain original raw evidence, closed physical accounting and atomic effective state; historical bindings and prompts remain unchanged. No additional migration or environment variable.
