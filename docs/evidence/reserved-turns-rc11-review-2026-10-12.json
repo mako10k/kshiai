@@ -1,0 +1,857 @@
+{
+  "application": "v0.25.0-rc.11",
+  "governingAdr": "Accepted ADR0080 revision2",
+  "validation": {
+    "focused": {
+      "pass": 67,
+      "fail": 0,
+      "skip": 0
+    },
+    "units": {
+      "pass": 13,
+      "fail": 0,
+      "skip": 0
+    },
+    "inventory": {
+      "active": 256,
+      "disabled": 0,
+      "provisional": 0
+    },
+    "priorFocusedFailures": [
+      {
+        "pass": 66,
+        "fail": 1,
+        "reason": "New fixture incorrectly used UPDATE-only saveBattle for creation; switched to insertNewBattle with atomic runtime initializer."
+      },
+      {
+        "pass": 66,
+        "fail": 1,
+        "reason": "New public rating-settlement assertion expected undefined; existing public DTO uses null when undisclosed."
+      }
+    ],
+    "fullSuite": {
+      "pass": 1594,
+      "fail": 0,
+      "skip": 0,
+      "isolatedPostgres": "PostgreSQL16 local fixture, temporary database, stopped after run"
+    },
+    "build": "Passed",
+    "typecheck": "Passed",
+    "static": "Passed within unchanged baselines",
+    "adr": {
+      "currentAudited": 58,
+      "pinnedHistoricalExcluded": 4,
+      "result": "Passed"
+    },
+    "sealgraphFsck": {
+      "result": "ok",
+      "seals": 3459,
+      "refs": 1880
+    },
+    "uiScreenshot": {
+      "path": "docs/evidence/reserved-turns-rc11-result-wait-2026-10-12.png",
+      "environment": "Built frontend, isolated Playwright mock API; all external traffic blocked; no provider/backend calls"
+    }
+  },
+  "reviews": [
+    {
+      "ref": "reserved-turns-v1/effort-v1",
+      "path": "packages/shared/src/reserved-turn-effort.ts",
+      "review": "Sequential fixed skill/basic costs, bounded typed free-action penalties, original change indexes, normalized replay and single incoming attack exposure consumption.",
+      "seal": "94de0a1a81e6f4ab303f4614fd1574ac87d20167063ac34a3458e2bf3f7ea5f1"
+    },
+    {
+      "ref": "reserved-turns-v1/narration-v2",
+      "path": "backend/src/services/reserved-turn-narration.ts",
+      "review": "Frozen committed public input, bound model/policy, durable role accounting after canonical advance, invalid received output fallback without another call.",
+      "seal": "4454d6fe907d157f1746bd3eec565163f58a849d1eec6bddd37f0536ebf06806"
+    },
+    {
+      "ref": "reserved-turns-v1/disclosure-v1",
+      "path": "backend/src/repositories/reserved-result-disclosure.ts",
+      "review": "Only policy v8 finished outcomes are hidden until every canonical receipt has terminal narration; canonical database state is untouched.",
+      "seal": "a3da04bdef602cfa5f092ac6f5168506379b043459e1f611cfc47ebef120eb5a"
+    },
+    {
+      "ref": "reserved-turns-v1/outcome-v2",
+      "path": "backend/src/services/reserved-turn-outcome.ts",
+      "review": "Established combatScore formula and incapacitation precedence; turn-limit enabled explicitly for new binding only.",
+      "seal": "fc1b07f9201ff8a2db36c6ccc853f0133b75a1db8120ec9f203061433e6c0b31"
+    },
+    {
+      "ref": "reserved-turns-v1/combat-score-export-v1",
+      "path": "packages/shared/src/battle-engine.ts",
+      "review": "Export existing combatScore without changing formula or old engine behavior.",
+      "seal": "f33f630aac3f518bd67aca1d569406070b505dea36113a5b0704f350e062dc79"
+    },
+    {
+      "ref": "reserved-turns-v1/effort-perception-v2",
+      "path": "packages/shared/src/battle-effort-perception.ts",
+      "review": "Preserve existing sensation and allow reserved penalty receipt fallback.",
+      "seal": "18aaa4b42121f4ea943e0a493c862e703ca1c9156a18853935019c64413d3329"
+    },
+    {
+      "ref": "reserved-turns-v1/result-poll-v1",
+      "path": "frontend/src/pages/BattlePage.tsx",
+      "review": "Stop advances while disclosure pending; bounded polling updates result after narration terminal; ignore unmounted responses.",
+      "seal": "baba933d563a0369816013f2c51a2d2d5cefc100e4ffe74737cb211e2e8bf02b"
+    },
+    {
+      "ref": "reserved-turns-v1/result-wait-v1",
+      "path": "frontend/src/pages/BattlePageView.tsx",
+      "review": "Natural result-wait display without internal state disclosure.",
+      "seal": "30a736c19c72dc151234b502bb9608045c614a88f3c5ccfcaeb0bce3ad66b61d"
+    },
+    {
+      "ref": "reserved-turns-v1/verification/effort-v1",
+      "path": "packages/shared/src/reserved-turn-effort.test.ts",
+      "review": "Costs/repetition, skill resource refusal, free-action quote/revision binding, replay, one-hit exposure, unattempted slot, original execution indexes and historical strict plan.",
+      "seal": "bd7288a058059d60ff216a41aa9f2b9d338d46ef80445871532dbb1542175083"
+    },
+    {
+      "ref": "reserved-turns-v1/verification/outcome-v2",
+      "path": "backend/src/services/reserved-turn-outcome.test.ts",
+      "review": "Turn11 active/12 scored, exact ties, incapacity precedence and historical limit behavior.",
+      "seal": "9cf97482be49f5502e07201d978595e43b9b484a2d24b479e5632595e0c932bf"
+    },
+    {
+      "ref": "implementation/semantic-authoring-shared-export-v1",
+      "seal": "c58640c69c0caab5f6eb7bc38a6b25c1b49293ceb1d7fa3e4d6a33a6ed4b2dc2",
+      "path": "packages/shared/src/index.ts",
+      "changed": true,
+      "review": "Export new effort contract while preserving existing public exports. Accepted ADR0080 revision2. Typecheck passed before final small corrections; governed execution follows reseal, no paid requests.",
+      "previousSeal": "732d2eae7927c3eb132a3e3a513b13d3dae9bd5fc42b5bfffe3a7f939d21461c"
+    },
+    {
+      "ref": "reserved-turns-v1/source/docs-reserved-turns-v1",
+      "seal": "5e5a55f2d7e079a90fa622cbc0450ec10b5ba26196d361d85bf7135bba54acc6",
+      "path": "docs/reserved-turns-v1.md",
+      "changed": true,
+      "review": "Align documented12-turn completion, effort and ordered independent narration with Accepted ADR0080 revision2. Accepted ADR0080 revision2. Typecheck passed before final small corrections; governed execution follows reseal, no paid requests.",
+      "previousSeal": "83d3b147a8f248d3af7a36146b02d96342a573862739e5c33e6a8c92a73d5835"
+    },
+    {
+      "ref": "reserved-turns-v1/source/packages-shared-src-reserved-turns",
+      "seal": "4018dbc8adb8d3acd7826ea6a1697b5683ec3552afcb396f6b6ad16c3a0fb1b6",
+      "path": "packages/shared/src/reserved-turns.ts",
+      "changed": true,
+      "review": "Versioned plan v2/output v4/effort state required only for new policy; historical schemas stay strict; ordinary apply rejects v4 without effort context. Accepted ADR0080 revision2. Typecheck passed before final small corrections; governed execution follows reseal, no paid requests.",
+      "previousSeal": "25709e28e7682a0afbb49380b6433852837037c711cbcabb2da53496bdc56ef4"
+    },
+    {
+      "ref": "unified-completion-v1/source/awareness-public-observation",
+      "seal": "b0ffbbe93c425fabd69fd6f35f9ffaa889f56c5780c585f2e287830ca90745e2",
+      "path": "backend/src/scripts/awareness-public-observation.ts",
+      "changed": false,
+      "review": "Preserve historical contracts, immutable assets, fenced execution and public/private projection across the new policy v8 integration. Accepted ADR0080 revision2. Typecheck passed before final small corrections; governed execution follows reseal, no paid requests.",
+      "previousSeal": "941d1911185d3eefc304c7820d4f63b6d2f9de9a9184524dc9f91af157866fea"
+    },
+    {
+      "ref": "verification/awareness-usage-verifier-bounded-20261008",
+      "seal": "b801760012770a8b874141be6297aba1506fc511694f47253b80a45a60a2f040",
+      "path": "backend/src/scripts/awareness-public-observation.test.ts",
+      "changed": false,
+      "review": "Retain existing behavioral cases: reports one physical batch attempt and actual tokens without inventing prices or private content; rejects missing runtime, outstanding execution, cross-battle rows and ledger mismatches; verifies unified v1 completion using both sides plus operational reservations without private content; rejects unified unresolved execution, tuple drift, uncommitted decisions and missing roles; verifies reserved-turn pipeline v1 completion by every turn request and ledger receipt without exposing private responses; accounts closed invalid judge and character receipts alongside four effective outputs under their frozen policy. Review compatibility with policy v8 through the updated source cause; no assertion removed or test disabled. Accepted ADR0080 revision2. Typecheck passed before final small corrections; governed execution follows reseal, no paid requests.",
+      "previousSeal": "ff2bb75929f401ebea230869430c6555d99cc0e560598ac78d23f96c017be827"
+    },
+    {
+      "ref": "reserved-turns-v1/source/backend-src-repositories-reserved-turn-narration",
+      "seal": "d8b3db4debe48e816b9b1409d74a875f4453a1b35930ed21695f1fc2e8827022",
+      "path": "backend/src/repositories/reserved-turn-narration.ts",
+      "changed": true,
+      "review": "Enqueue frozen narrative and digest inside canonical transaction, preserve legacy inline publisher. Accepted ADR0080 revision2. Typecheck passed before final small corrections; governed execution follows reseal, no paid requests.",
+      "previousSeal": "e2302445803343019b0eb2877cd807f9946a42e9a7a196cb18c6c50afe485b36"
+    },
+    {
+      "ref": "reserved-turns-v1/source/packages-shared-src-reserved-turn-policy",
+      "seal": "dfb7abc28dc7b650ba982a2c4c4346ecff0c5f69cf029dbc1748c27d908dd533",
+      "path": "packages/shared/src/reserved-turn-policy.ts",
+      "changed": true,
+      "review": "Add immutable v8 literal12-turn ordered-outbox binding; retain all prior versions. Accepted ADR0080 revision2. Typecheck passed before final small corrections; governed execution follows reseal, no paid requests.",
+      "previousSeal": "c0fc460755b73e96cb8178502bd1d338cf9f6344a632b30f47f391b27bb2da65"
+    },
+    {
+      "ref": "reserved-turns-v1/test/backend-src-repositories-reserved-turns-postgres.test",
+      "seal": "01cbd651ab138019531177c977e6a45d14163c31d9c3863426f77e62290457ee",
+      "path": "backend/src/repositories/reserved-turns-postgres.test.ts",
+      "changed": false,
+      "review": "Retain existing behavioral cases: reserved-turn pipeline v1 persists only current fenced writes and rolls back atomically on PostgreSQL. Review compatibility with policy v8 through the updated source cause; no assertion removed or test disabled. Accepted ADR0080 revision2. Typecheck passed before final small corrections; governed execution follows reseal, no paid requests.",
+      "previousSeal": "a04e79c27c996333115f2a05c47273d0718bd516a254159ce843752ff5c0fe77"
+    },
+    {
+      "ref": "reserved-turns-v1/test/packages-shared-src-reserved-turns.test",
+      "seal": "1978792065b256a09cfbe3962e8942427d05c2f8b616718360793c0acb4c5903",
+      "path": "packages/shared/src/reserved-turns.test.ts",
+      "changed": false,
+      "review": "Retain existing behavioral cases: reserved-turn pipeline v1; allows information-only success and partial in output v2 while preserving output v1; keeps cancelled mutations, resource overflow and fake patches invalid in output v2; validates saved prepared and last traces against their frozen legacy policy; rejects an unaffordable reservation atomically and continues the next action in output v3; repairs unambiguous order, side and base revisions but refuses missing or duplicate identities; rejects invalid world references and zero effects without applying earlier costs; cancels later stale effects after defeat and drops mutations attached to cancellation; accepts zero or five reservations and rejects six or duplicate IDs; interleaves plans without starving the slower side and alternates exact ties; validates all frozen rank references and observer-visible targets before dispatch; applies both attacks to successive canonical states and advances one turn; cancels later actions after defeat instead of executing stale intentions; rejects missing, invented, reordered or stale receipts atomically; permits failed attempts with costs but refuses empty success and out-of-range side effects. Review compatibility with policy v8 through the updated source cause; no assertion removed or test disabled. Accepted ADR0080 revision2. Typecheck passed before final small corrections; governed execution follows reseal, no paid requests.",
+      "previousSeal": "d3b6816cbbdcc74080432e0c9f076fb1d256309308d34f6ad21bcd34c0b99c80"
+    },
+    {
+      "ref": "reserved-turns-v1/source/backend-src-services-reserved-turn-battle",
+      "seal": "dc6a0634de810ded2e69684bed5ff93a09dbb2b57cdb15380f28969c7a1f7e4f",
+      "path": "backend/src/services/reserved-turn-battle.ts",
+      "changed": true,
+      "review": "Atomic world/memory/rating/trace plus frozen outbox, 12-turn outcome, effort and speech perception propagation; old inline narration policies unchanged. Accepted ADR0080 revision2. Typecheck passed before final small corrections; governed execution follows reseal, no paid requests.",
+      "previousSeal": "566013cb868f0aa77917ed7a8042a7a256d9461df2d8fb4384ec6a6e6a220dc8"
+    },
+    {
+      "ref": "reserved-turns-v1/source/backend-src-scripts-persistent-battle-e2e",
+      "seal": "7e4dbae196256525b75aafcf113b98802eb298d00b44ddd63875539eabeaffed",
+      "path": "backend/src/scripts/persistent-battle-e2e.ts",
+      "changed": true,
+      "review": "Wait narration convergence at resultPending then reload public result, avoiding meaningless extra advance calls. Accepted ADR0080 revision2. Typecheck passed before final small corrections; governed execution follows reseal, no paid requests.",
+      "previousSeal": "253770d921acefc16d0a23cdc2c48f3d313e9dac4df296f84c8e3c088a301768"
+    },
+    {
+      "ref": "reserved-turns-v1/source/backend-src-services-reserved-turn-policy",
+      "seal": "fd23126054f0c4a88ea259079b1f17c9b99cf60aa7ccb2b75a825dbf25eedb27",
+      "path": "backend/src/services/reserved-turn-policy.ts",
+      "changed": true,
+      "review": "Select v8 for new creations only; immutable old policies not rebound. Accepted ADR0080 revision2. Typecheck passed before final small corrections; governed execution follows reseal, no paid requests.",
+      "previousSeal": "f146d5aed0e8a9111d4fddee3783d5b9976d4dfa2b607c8889ef8f6ba3b4d74c"
+    },
+    {
+      "ref": "reserved-turns-v1/source/packages-shared-src-index",
+      "seal": "dbdc818eac0b50d6996aef41450fb7f32996e0f55e43cf586515311cc7d22072",
+      "path": "packages/shared/src/index.ts",
+      "changed": true,
+      "review": "Export new effort contract while preserving existing public exports. Accepted ADR0080 revision2. Typecheck passed before final small corrections; governed execution follows reseal, no paid requests.",
+      "previousSeal": "64b4edfdad918cd0c2f9b7d9c91f236618b61ecb56e0b161a6d5dd83fc28c304"
+    },
+    {
+      "ref": "reserved-turns-v1/source/backend-src-repositories-battles",
+      "seal": "85f99ac8746c2a99c0400890a690362479da18c63dc33b17a4eb5b9c47fd7cba",
+      "path": "backend/src/repositories/battles.ts",
+      "changed": true,
+      "review": "Hide pending outcomes across list/history/detail and prior-match summary; retain canonical stored winner. Accepted ADR0080 revision2. Typecheck passed before final small corrections; governed execution follows reseal, no paid requests.",
+      "previousSeal": "4e21d9ac736aa62aaedcaf630b162b718cda27aeea56a36c6ed296e670303c79"
+    },
+    {
+      "ref": "reserved-turns-v1/source/backend-src-services-reserved-turn-execution",
+      "seal": "f4976cb81c79a8c23f87fad28fd8dd86d2c8f0a5aeb4a3e3de32404c387d002d",
+      "path": "backend/src/services/reserved-turn-execution.ts",
+      "changed": true,
+      "review": "Extract shared durable request runner; new policy commits trace without narration dispatch; retain original rate, correction, raw/accounting and unknown-send boundaries. Accepted ADR0080 revision2. Typecheck passed before final small corrections; governed execution follows reseal, no paid requests.",
+      "previousSeal": "d2d7a3f75e23933d981932a23d4df5005d57fd4c9252af9e95aae959aa4fb8f3"
+    },
+    {
+      "ref": "reserved-turns-v1/source/backend-src-llm-reserved-turns",
+      "seal": "f40b06e401c520dd17c8338a47d443587c6113fae38d521eccb51171ff7ae66f",
+      "path": "backend/src/llm/reserved-turns.ts",
+      "changed": true,
+      "review": "Version v7 requires typed mechanics/penalties, personality and actual speech; compact shared schema factoring; prior prompts retained. Accepted ADR0080 revision2. Typecheck passed before final small corrections; governed execution follows reseal, no paid requests.",
+      "previousSeal": "99622adc01b0a34d4ffb3a41945108a2b9a82b723c09b688475f5c0437111ab7"
+    },
+    {
+      "ref": "reserved-turns-v1/test/backend-src-services-reserved-turn-execution.test",
+      "seal": "ebbfa0e2cbaac94a7c3d9c91fdeffaa0737f4688ac0fbdaf7f7d9d9cc70d13a6",
+      "path": "backend/src/services/reserved-turn-execution.test.ts",
+      "changed": true,
+      "review": "Retain existing behavioral cases: reserved-turn execution; prepares observation-only success, carries observer feedback and memory with four calls; dispatches A/B together, calls one judge for ten reservations and only public narration; rejects information-only success under frozen policy v3 without repair calls; does not dispatch adjudication when one plan is malformed or references hidden objects; refuses to resend a reserved request with unknown physical completion; retries only known rate-limit responses within the physical cap; keeps a timed-out request unknown until late physical completion without preparing its output; pins every adjudication base revision before dispatch and preserves prompt v1; binds role deadlines in policy v2, preserves policy v1 and clips both to the battle deadline; closes late received rejection accounting without preparing output or resending unknown failures; warns at soft time limits without stopping requests or committing private state; continues beyond the battle soft limit and applies the looser policy v3 hard deadlines; losslessly factors the complete adjudication schema and preserves every user input field; keeps known rate-limit retries inside the original policy v3 role hard deadline; retries a received ambiguous adjudication with explicit errors and replays all five receipts without sending again; continues with explicit failure receipts after one invalid correction and preserves both raw responses; repairs unaffordable actions in four calls, discards unverified observations and retains original raw output; corrects received invalid JSON inside the original judge deadline; does not correct or resend a judge whose network completion is unknown; pins historical planning prompts and exposes failed-slot opportunity cost only in prompt v5; corrects missing memory on . Review compatibility with policy v8 through the updated source cause; no assertion removed or test disabled. Accepted ADR0080 revision2. Typecheck passed before final small corrections; governed execution follows reseal, no paid requests.",
+      "previousSeal": "80e6a3aa57830c84fc456d20dff61a460414d3aead0bc6c34d56025432b0386b"
+    },
+    {
+      "ref": "reserved-turns-v1/source/backend-src-services-battle-service",
+      "seal": "aefae0c416b2ee2db03c3e88574706081e9c246a33df83e75691e4f8e4516b4e",
+      "path": "backend/src/services/battle-service.ts",
+      "changed": true,
+      "review": "Read async presentations for new binding even flag off; public winner/rating wait terminal narration. Accepted ADR0080 revision2. Typecheck passed before final small corrections; governed execution follows reseal, no paid requests.",
+      "previousSeal": "b03c885608d7e88cf5624dfcfd45c9af61d3c50de864766fed1eeeee2c0463fc"
+    },
+    {
+      "ref": "reserved-turns-v1/source/packages-shared-src-battle",
+      "seal": "122a135b5a1647e9a624b4ad0d955c1e465e2cfbb505333d8bcbbace65e4aa72",
+      "path": "packages/shared/src/battle.ts",
+      "changed": true,
+      "review": "Enforce policy v8/prompt v7/output v4 combination and optional public disclosure marker. Accepted ADR0080 revision2. Typecheck passed before final small corrections; governed execution follows reseal, no paid requests.",
+      "previousSeal": "f58656b08bba620099f3824fa4540663b4c36ee03b1e552fb8059572507e7a1c"
+    },
+    {
+      "ref": "unified-v1/source/backend-src-services-battle-service",
+      "seal": "69815c98dfc6c582648bcd56377730626158b44234ce922afc6cca6e2fcaa704",
+      "path": "backend/src/services/battle-service.ts",
+      "changed": true,
+      "review": "Read async presentations for new binding even flag off; public winner/rating wait terminal narration. Accepted ADR0080 revision2. Typecheck passed before final small corrections; governed execution follows reseal, no paid requests.",
+      "previousSeal": "6170186aaae246c8c8353c689cda695c50ef4c5b91b532a7e8bbfdf083ef9dd9"
+    },
+    {
+      "ref": "unified-v1/test/backend-src-services-unified-consciousness-integration.test",
+      "seal": "57d9208a7e15abf211fb214d395e593257b09215abd2df414aee78d258d9bcf0",
+      "path": "backend/src/services/unified-consciousness-integration.test.ts",
+      "changed": false,
+      "review": "Retain existing behavioral cases: keeps default battle binding v5 creation and historical consciousness execution. Review compatibility with policy v8 through the updated source cause; no assertion removed or test disabled. Accepted ADR0080 revision2. Typecheck passed before final small corrections; governed execution follows reseal, no paid requests.",
+      "previousSeal": "f7d4f99d412e596db05bd26c27059cbe5bf378d21223fcae2d0611b4a637a05e"
+    },
+    {
+      "ref": "unified-v1/source/packages-shared-src-battle",
+      "seal": "a148596d16f528e0c14474e8578350b1bd4074f9562f0e83bc8a77a209f6e7ba",
+      "path": "packages/shared/src/battle.ts",
+      "changed": true,
+      "review": "Enforce policy v8/prompt v7/output v4 combination and optional public disclosure marker. Accepted ADR0080 revision2. Typecheck passed before final small corrections; governed execution follows reseal, no paid requests.",
+      "previousSeal": "8547873d9a421246100aa26ed4559efe8094c0c93a06a6a774c1a31af564ff3c"
+    },
+    {
+      "ref": "unified-v1/test/backend-src-services-unified-consciousness-execution.test",
+      "seal": "41cb254e45b4aa62ec9eca34d9e123288bf2d858a21ab7e8fcc239b680759ce9",
+      "path": "backend/src/services/unified-consciousness-execution.test.ts",
+      "changed": false,
+      "review": "Retain existing behavioral cases: unified consciousness policies v1/v2 execution; always renders private ranked memory, including an empty list; renders prompt v2 as complete legal decision envelopes and preserves prompt v1; binds the selected prompt revision through the prepared execution request; fails an unsupported action privately, preserves speech/memory and delivers feedback once; keeps historical policy v1 strict and rejects invalid memory even under policy v2; reports an unknown action reference without executing the action; ignores tick and revision alone in perception activation; dispatches both sides before either resolves, reuses preparation and applies once; retains partial prepared evidence and never resends an unknown failed send; accounts late replies after lease loss without accepting their output; rejects responses received past the decision deadline while retaining accounting; skips unchanged ticks, retains pending events until commit and runs only the stimulated side; requires every due side and rejects unavailable actions atomically; unified consciousness v1 world transaction; commits policy v2 self-only action feedback atomically and rolls it back with world failure; commits memory with canonical revision and keeps private state out of saved world; rolls back private memory when canonical revision CAS fails; rolls back the entire boundary if the global deadline passes inside the transaction; rejects expired fences and stops incomplete without applying prepared memory; required ranked memory output v2 execution; commits reordered memory once and includes it in the next request; rejects omitted or invalid memory without committing the successful counterpart; binds output v2 to policy v3 and rejects historical output/prompt mismatches. Review compatibility with policy v8 through the updated source cause; no assertion removed or test disabled. Accepted ADR0080 revision2. Typecheck passed before final small corrections; governed execution follows reseal, no paid requests.",
+      "previousSeal": "8fcae4e80322d0063dd194d54e475c071f9e7bf9050d6235029afdd209b2802f"
+    },
+    {
+      "ref": "test-recovery-v1/basis/0e5e6c7cf01a162e",
+      "seal": "0534335ec93c05e6677436543f286ab299d250124c0cf5f25304b0af794ed004",
+      "path": "backend/src/services/battle-service.ts",
+      "changed": true,
+      "review": "Read async presentations for new binding even flag off; public winner/rating wait terminal narration. Accepted ADR0080 revision2. Typecheck passed before final small corrections; governed execution follows reseal, no paid requests.",
+      "previousSeal": "30bd81a5be691199213d2e9b061c82f25fd29a9c0b21edcab1eb0d8d84157cc6"
+    },
+    {
+      "ref": "test-recovery-v1/basis/a3adc469058d306b",
+      "seal": "e02a753098984c4af22d0e1b1bf9274ebce18906df0396a239728a044fa2c995",
+      "path": "backend/src/services/battle-service.ts",
+      "changed": true,
+      "review": "Read async presentations for new binding even flag off; public winner/rating wait terminal narration. Accepted ADR0080 revision2. Typecheck passed before final small corrections; governed execution follows reseal, no paid requests.",
+      "previousSeal": "95e8baf8d07849b97ffedfe2c56512e3dd6a481a225f93187edbb180dea6ba76"
+    },
+    {
+      "ref": "all-tests-20261009/current-source-closure/verification/owner-battle-public-20261008",
+      "seal": "2af3a3f7720f8102641717269313bb069f27a21baa4bf8c4b3acba67eb024b16",
+      "path": "backend/src/services/battle-public.test.ts",
+      "changed": false,
+      "review": "Retain existing behavioral cases: public battle semantic projection; projects only explicitly visible pending effects without raw deltas; exposes observable semantic state without mechanics or private agents; preserves contemporaneous settled rating snapshots despite current population changes; keeps the committed state when a provider patch is invalid; commits structured semantic location changes through the world boundary; skips semantic mutation when the provider fails; commits an accepted environment proposal only through semantic and world state; drops a rejected environment proposal without a public fact or effect; rejects a structured environment operation outside the selected affordance; gives the happening provider one deterministic authored affordance; records an unavailable environment adjudication as skipped; freezes side-specific frames and keeps unknown source ids registry-private; projects engine cues normally after invalid sensory evidence is rejected; does not normalize an invalid prior perception registry; keeps only the latest transition and side-specific observations. Review compatibility with policy v8 through the updated source cause; no assertion removed or test disabled. Accepted ADR0080 revision2. Typecheck passed before final small corrections; governed execution follows reseal, no paid requests.",
+      "previousSeal": "4a79bc8b54c9436f8ca10cad6d8a30795d221a4ad79c2f2f659e4867a50446ef"
+    },
+    {
+      "ref": "test-recovery-v1/basis/18b9b5dcd683f549",
+      "seal": "3ae61c77c8a03cde3169cfbed9dfdca2262ec05e7846eedc6626d0b13a80b750",
+      "path": "backend/src/services/battle-service.ts",
+      "changed": true,
+      "review": "Read async presentations for new binding even flag off; public winner/rating wait terminal narration. Accepted ADR0080 revision2. Typecheck passed before final small corrections; governed execution follows reseal, no paid requests.",
+      "previousSeal": "e05963af10051411ba620ba8c62137b64d22cd9ee3c4b15bd304f8a6b7df29df"
+    },
+    {
+      "ref": "test-recovery-v1/basis/73effe445735205f",
+      "seal": "e557b37bd27e3a20f37472bb2967989827e946de28a0aa4128ac419458f770a2",
+      "path": "backend/src/services/narration-worker.ts",
+      "changed": true,
+      "review": "Ordered reserved outbox, longer lease than role deadline, terminal failure without unknown resend, fenced public fallback persisted as presentation; old worker path remains. Accepted ADR0080 revision2. Typecheck passed before final small corrections; governed execution follows reseal, no paid requests.",
+      "previousSeal": "48ed816417a64004946b461827f1324c330c7e30f6afdf96406b888155ddaff1"
+    },
+    {
+      "ref": "test-recovery-v1/basis/c1a76bfb7cb2eba3",
+      "seal": "4cbcfd893670848fc27f2ccaa3c591d5274bb5488584a7c1d03f4f74dd2ecd9f",
+      "path": "backend/src/services/battle-service.ts",
+      "changed": true,
+      "review": "Read async presentations for new binding even flag off; public winner/rating wait terminal narration. Accepted ADR0080 revision2. Typecheck passed before final small corrections; governed execution follows reseal, no paid requests.",
+      "previousSeal": "bc6c7233c61848cb5611d2e9f2d87ece32bc3101e20fd8d6ee8cf4df732d5a57"
+    },
+    {
+      "ref": "test-recovery-v1/basis/0159fc2ab1c5fb85",
+      "seal": "87d41c1aab44507b95d81204832dd23c81618002e3c95241c108e233913eac81",
+      "path": "backend/src/services/battle-service.ts",
+      "changed": true,
+      "review": "Read async presentations for new binding even flag off; public winner/rating wait terminal narration. Accepted ADR0080 revision2. Typecheck passed before final small corrections; governed execution follows reseal, no paid requests.",
+      "previousSeal": "470e10a5a456be92a9058df04fff0ad5de399b02a6461e32a04716efa4ed37c4"
+    },
+    {
+      "ref": "test-recovery-v1/basis/a07dd2c8f0ac65c2",
+      "seal": "ee368443f459d10bd66494be13f3e7fed5510562bf39836307604e42c1e6d1c4",
+      "path": "backend/src/routes.ts",
+      "changed": false,
+      "review": "Preserve historical contracts, immutable assets, fenced execution and public/private projection across the new policy v8 integration. Accepted ADR0080 revision2. Typecheck passed before final small corrections; governed execution follows reseal, no paid requests.",
+      "previousSeal": "4a4b8af698e6964ff18f89f0d487174135f617c5d072e13a4e63f3feee42ceef"
+    },
+    {
+      "ref": "test-recovery-v1/basis/65bd5e628346546f",
+      "seal": "3da3f649a180172a45e05919b01af6ccda0475f1ab0624a1c4cb4beb85f82f9f",
+      "path": "backend/src/services/battle-service.ts",
+      "changed": true,
+      "review": "Read async presentations for new binding even flag off; public winner/rating wait terminal narration. Accepted ADR0080 revision2. Typecheck passed before final small corrections; governed execution follows reseal, no paid requests.",
+      "previousSeal": "4bd5a59425413e9dffef51812d6ef65f2417991b3947c73445ea17ccdc6d2e06"
+    },
+    {
+      "ref": "test-recovery-v1/basis/c5c8997e9f5f67cb",
+      "seal": "1aa769bbaca0f19c744eb60e874ce7a43cb3173ca01a5eb012fc1562f69d14a5",
+      "path": "backend/src/services/battle-service.ts",
+      "changed": true,
+      "review": "Read async presentations for new binding even flag off; public winner/rating wait terminal narration. Accepted ADR0080 revision2. Typecheck passed before final small corrections; governed execution follows reseal, no paid requests.",
+      "previousSeal": "f09c6065f1edc1950cd9f57dfb8ffb61ac80730b748ae4af79d150e63b600d7c"
+    },
+    {
+      "ref": "test-recovery-v1/basis/59df7291e9c37342",
+      "seal": "f8e9a24be07d6ec5d40f5841ecc68261281331e8daf09274b4c93209641927c3",
+      "path": "backend/src/services/battle-service.ts",
+      "changed": true,
+      "review": "Read async presentations for new binding even flag off; public winner/rating wait terminal narration. Accepted ADR0080 revision2. Typecheck passed before final small corrections; governed execution follows reseal, no paid requests.",
+      "previousSeal": "2399222e20b69d094b64c91dc829daeac96fc595cc58a51a1e48984e4bee698f"
+    },
+    {
+      "ref": "test-recovery-v1/basis/5d646414a88f23e7",
+      "seal": "baa5089e20a649b3deb1025e5995bee926cd41cc9a6d00ae842efcf75aac633e",
+      "path": "backend/src/services/battle-service.ts",
+      "changed": true,
+      "review": "Read async presentations for new binding even flag off; public winner/rating wait terminal narration. Accepted ADR0080 revision2. Typecheck passed before final small corrections; governed execution follows reseal, no paid requests.",
+      "previousSeal": "cad844dac0bd60944089c62d763d45291525e366bf8781655e3429971176a6b2"
+    },
+    {
+      "ref": "all-tests-20261008/current-source-closure/awareness-guidance-20261007/verification-execution",
+      "seal": "a51a89950bdad04aba4cb87b811097b3b7944def0e6b02754d3079829f0d3973",
+      "path": "backend/src/services/awareness-execution.test.ts",
+      "changed": false,
+      "review": "Retain existing behavioral cases: awareness execution; delivers current bodily effort and the actual penalty result to both awareness roles; launches frozen A jobs before latent work, advances three ticks, and merges only at a later boundary; restarts without resending outstanding jobs and reuses an already accepted latent tick; stops an incomplete tick after required failure without fabricating world results; requires verified full-input token and charge proof before any physical dispatch; does not leak the counterpart; keeps unaware tendencies and training on the latent side of the model boundary; delivers live self-aware guidance from frozen assets through the actual decision and execution to the rendered prompt; rejects a missing guidance transfer before dispatching either character; ends when an initial physical thought remains unknown past its deadline; does not free unknown physical slots after logical results and bounds their grace window; waits for a tick interval and retries the same target without duplicate model calls; merges results ready before the durable latent cutoff without a fixed tick delay; does not merge a post-cutoff result during a retry of the prepared tick; admits combat tick 36 and rejects tick 37 without extra model dispatch; observed execution accepts explicit null-cost proofs and retains role/physical limits; keeps unknown thought failure slots reserved but closes observed late validation failures without applying them. Review compatibility with policy v8 through the updated source cause; no assertion removed or test disabled. Accepted ADR0080 revision2. Typecheck passed before final small corrections; governed execution follows reseal, no paid requests.",
+      "previousSeal": "4329b6c3a8db94ad8f110a4b239d69e5019e37fbfb1644d69ba05550e013e0a7"
+    },
+    {
+      "ref": "all-tests-20261008/current-source-closure/verification/retained-agency-v3-persistence-current-20261007",
+      "seal": "c4d4100fe4719af61c7e2279f6e8bac1cd8e0d6ecedd79e3e5aaaef0c6f5e421",
+      "path": "backend/src/services/conscious-agency-persistence.test.ts",
+      "changed": false,
+      "review": "Retain existing behavioral cases: ADR-0028 private agency state persistence; keeps retired legacy characters blocked from new battle creation; runs V3 service acceptance, SQLite reload, second judgment and stale-save rejection together; persists initial and second accepted decisions via real SQLite and rejects stale CAS. Review compatibility with policy v8 through the updated source cause; no assertion removed or test disabled. Accepted ADR0080 revision2. Typecheck passed before final small corrections; governed execution follows reseal, no paid requests.",
+      "previousSeal": "8e6f38c0f3610c4bb9e4cd9c2d48aa1296cca88b95bd936e40b765154a52d2ad"
+    },
+    {
+      "ref": "all-tests-20261008/current-source-closure/verification/battle-speech-wiring-bounded-20261008",
+      "seal": "94379641fc306870a72fe0315eaf2b518724680299a61181f990c233644f1e56",
+      "path": "backend/src/services/battle-speech-wiring.test.ts",
+      "changed": false,
+      "review": "Retain existing behavioral cases: character-authored public speech; persists internal character-rule receipts outside provider input; runs only the selected isolated character context; binds normal settings authority and isolated override provenance; persists narrator recognition only for subjects in the selected view; commits accepted character speech before narration and projects it to each frame; commits a grounded manifestation only after the expression realizes it; projects deterministic psyche and no-effect focus shadow without another model call; separates V2 Compact state from consumed utterance history; keeps matchup memory separate from compact battle-private memory; clears inherited compact private memory when prologue psyche is unavailable; records deep-psyche schema rejection as an application defect; records fulfilled speech with a rejected action as application rejection; uses initial perception for prologue decisions and reaction-only aftermath; applies the administrator history window only to character context; does not publish or remember an agent line that the world blocks; continues the eligible side when the other side has no self-directed action; carries committed utterances into the next agent perception without a provider; keeps committed speech within the perception limit and continues from the current registry; rejects expression commit atomically when current projection continuity is invalid; keeps character facts authoritative while accepting placement and punctuation; accepts narrator-authored display labels without changing canonical speech; keeps scene-grounded third-party speech without treating it as canonical A/B speech; keeps actual speech in private continuity regardless of public rendering; accepts a V2 utterance while rejecting only its invalid action; accepts actua. Review compatibility with policy v8 through the updated source cause; no assertion removed or test disabled. Accepted ADR0080 revision2. Typecheck passed before final small corrections; governed execution follows reseal, no paid requests.",
+      "previousSeal": "ea8981152e40920df30a0c5f233b4db2f08ea5b6ef489c904a86a969b92d07e0"
+    },
+    {
+      "ref": "all-tests-20261008/current-source-closure/verification/stable-area-narration-http-acceptance-20261007",
+      "seal": "1e2c8f4878219760a3f3491fd6d9038352011885f8dafb6c68e1eb76243611da",
+      "path": "backend/src/routes-structured-narration-acceptance.test.ts",
+      "changed": false,
+      "review": "Retain existing behavioral cases: structured narration route acceptance; records structure failure without exposing a partial style; keeps legacy styles manageable but outside selectors and direct binding; creates and upgrades only after owner confirmation with idempotent readback; binds the exact ready generation and never appends one at battle start; persists expiry and rejects a candidate after current-pointer drift; rejects corrupt stored styles on confirmation and completed replay without appending a generation. Review compatibility with policy v8 through the updated source cause; no assertion removed or test disabled. Accepted ADR0080 revision2. Typecheck passed before final small corrections; governed execution follows reseal, no paid requests.",
+      "previousSeal": "573e2431f1f360123d00c46d186fc9f22c8772ee9f355231e91f8fd880228f28"
+    },
+    {
+      "ref": "all-tests-20261008/current-source-closure/verification/structured-asset-integration-bounded-20261008",
+      "seal": "818f44725d32a76ac12c4101f4e8d81084816ecf9965ed36b28f9160ca2a261e",
+      "path": "backend/src/routes-structured-asset-integration.test.ts",
+      "changed": true,
+      "review": "Retain existing behavioral cases: integrated structured asset cutover; keeps selection, binding, replay, history, and deletion on immutable generations; freezes legacy character rows without appending V1 generations. New binding API fixture additionally covers12 canonical commits before narration, ordered dispatch, terminal narration failure, result hiding and replay/rating once. Accepted ADR0080 revision2. Typecheck passed before final small corrections; governed execution follows reseal, no paid requests.",
+      "previousSeal": "0012e24954fa96bf39eb0f98866e5c18aca56ab4782c9987d399b7f890659eac"
+    },
+    {
+      "ref": "all-tests-20261008/current-source-closure/verification/awareness-battle-creation-bounded-awareness-creation-20261007",
+      "seal": "68e9933e63a8da545ac7a2ed8141283eb241bd09fd826ac1e2bc3ec02e41e649",
+      "path": "backend/src/services/awareness-battle-creation.test.ts",
+      "changed": false,
+      "review": "Retain existing behavioral cases: actual awareness battle creation and advancement; binds immutable V5 assets, adopts encounter accounting and replays without duplicate dispatch. Review compatibility with policy v8 through the updated source cause; no assertion removed or test disabled. Accepted ADR0080 revision2. Typecheck passed before final small corrections; governed execution follows reseal, no paid requests.",
+      "previousSeal": "a5b9281c2ab70a6a5b220326ae908e444bf9e8d5a018fc0b529465483dea6120"
+    },
+    {
+      "ref": "all-tests-20261008/current-source-closure/verification/awareness-narration-continuation-bounded-current-20261007",
+      "seal": "c7b756efe7d27d4330fff7e55062e5c6765a90de832a673b421e1ca532444f9d",
+      "path": "backend/src/services/awareness-narration-continuation.test.ts",
+      "changed": false,
+      "review": "Retain existing behavioral cases: continues every phase and retained prompt revision through current transport publication. Review compatibility with policy v8 through the updated source cause; no assertion removed or test disabled. Accepted ADR0080 revision2. Typecheck passed before final small corrections; governed execution follows reseal, no paid requests.",
+      "previousSeal": "4c19860733ec157486b289d2708ec6ebd33723732e35c58e00e17cbbaa4bf2c2"
+    },
+    {
+      "ref": "all-tests-20261008/current-source-closure/verification/battle-consumer-wiring-bounded-current-20261007",
+      "seal": "7eb7dabe4cc65fa2bf2695b1f515fc4c516628926d1adad16a329d89723e64c6",
+      "path": "backend/src/services/battle-consumer-wiring.test.ts",
+      "changed": false,
+      "review": "Retain existing behavioral cases: battle perception consumer wiring; applies battle-bound action norms without exposing internal receipts; wires A and B only to their own frozen perception frame; grounds each agent in a frozen complete own profile; filters prologue and aftermath rendering anchors by narration focus; selects static narrator context by focus and only carries committed manifestations; wires canonical profile and scene projections without mutating the sheet; reveals counterpart name and condition only at the frame; gives legacy-seeded consumers the visible setup counterpart. Review compatibility with policy v8 through the updated source cause; no assertion removed or test disabled. Accepted ADR0080 revision2. Typecheck passed before final small corrections; governed execution follows reseal, no paid requests.",
+      "previousSeal": "9b99429096425c48f73c4479d4ed9dbcae354802469690ae3083bbd4a6d68c43"
+    },
+    {
+      "ref": "all-tests-20261008/current-source-closure/verification/awareness-battle-service-bounded-awareness-creation-20261007",
+      "seal": "ec1ed5cd75052a059912326bd37ed3260c9c30e827d0cba13e35053f8ec5fcc9",
+      "path": "backend/src/services/awareness-battle-service.test.ts",
+      "changed": false,
+      "review": "Retain existing behavioral cases: public configured prologue then combat preserves absent body intents without legacy agent calls; public KO commits terminal combat and aftermath together without starting post-KO thoughts; failed required semantic judgment preserves the last world instead of saving an earlier engine bucket. Review compatibility with policy v8 through the updated source cause; no assertion removed or test disabled. Accepted ADR0080 revision2. Typecheck passed before final small corrections; governed execution follows reseal, no paid requests.",
+      "previousSeal": "24349732ae3fea0da14cf910001538c55198bd76e99c4bfcca54f90fa5fe9426"
+    },
+    {
+      "ref": "all-tests-20261008/current-source-closure/verification/stable-area-battlefield-http-acceptance-20261007",
+      "seal": "7668b5334f7f0f29e00f35fdb70a79943fc78e1b056cf2c635eaf362976e226c",
+      "path": "backend/src/routes-structured-battlefield-acceptance.test.ts",
+      "changed": false,
+      "review": "Retain existing behavioral cases: structured battlefield route acceptance; records structure-stage failure without exposing a partial battlefield; keeps legacy battlefields visible to management but out of every match binding; upgrades a legacy battlefield only after explicit owner confirmation; returns a compare review and list mark for an awaiting battlefield upgrade; expires an upgrade candidate without creating or selecting a generation; rejects a stale revision candidate after concurrent current-pointer drift; commits create revision and image changes only as confirmed immutable generations; binds an exact preset revision and deterministic compiler without mutating it. Review compatibility with policy v8 through the updated source cause; no assertion removed or test disabled. Accepted ADR0080 revision2. Typecheck passed before final small corrections; governed execution follows reseal, no paid requests.",
+      "previousSeal": "f030a4b212bdf15d6302b4e8eaed5001d057c68e522e7b67ccfc9b51258ebbbf"
+    },
+    {
+      "ref": "all-tests-20261008/current-source-closure/verification/historical-agency-inventory-bounded-20261008",
+      "seal": "0801dd3e22bb49b0c1c480b2766fa62b83f71772ff9f7c70f7aa260ca2da8fac",
+      "path": "backend/src/services/character-agency-inventory.test.ts",
+      "changed": false,
+      "review": "Retain existing behavioral cases: CA-00 existing agency boundary inventory (not model quality); retains the old unbound turn psyche call; F01/F02 projects personality and known relationship without changing the fallback victory objective; F03/F04 removes unavailable skill and out-of-range basic action from the actual decision input; F05 changes conscious ability knowledge but not deterministic reaction; F06 saves and reloads the old goal, rejects stale revisions, but still omits it from conscious input; F07 records the later action adapter input without attributing an engine redecision to this helper test; F08 preserves repeated speech and keeps the private goal out of public projection. Review compatibility with policy v8 through the updated source cause; no assertion removed or test disabled. Accepted ADR0080 revision2. Typecheck passed before final small corrections; governed execution follows reseal, no paid requests.",
+      "previousSeal": "fa3152b479b3314075041f85acc0cd2c2d730ad5d6d0e882cb24c9fb604a66cc"
+    },
+    {
+      "ref": "all-tests-20261008/current-source-closure/verification/normal-awareness-policy-bounded-current-20261007",
+      "seal": "81e1e808f15a57ed75ea734da403166adea130ace2ed62e216e8072a334b87cb",
+      "path": "backend/src/services/normal-awareness-policy.test.ts",
+      "changed": false,
+      "review": "Retain existing behavioral cases: persists operating policy awareness-v5-usage-v3 for default creation and overrides a legacy provider. Review compatibility with policy v8 through the updated source cause; no assertion removed or test disabled. Accepted ADR0080 revision2. Typecheck passed before final small corrections; governed execution follows reseal, no paid requests.",
+      "previousSeal": "310daab48bf45ae9d99b9f88e2a51f747ebb78a78558f5bfef962405abd7ed58"
+    },
+    {
+      "ref": "all-tests-20261008/current-source-closure/verification/retained-agency-v3-runtime-current-20261007",
+      "seal": "54ae764d7604fb2d1ee1ca6b06ad8c8ce17ddd23c37edc5d0be48256a9609e46",
+      "path": "backend/src/services/conscious-agency-runtime.test.ts",
+      "changed": false,
+      "review": "Retain existing behavioral cases: ADR-0028 V3 runtime routing (network replaced, not model-quality evidence); passes the accepted prior decision to the next call, permits repeated speech, and keeps private goal out of public DTO; retains valid speech independently of rejected goal/intent/action; rejects tuple drift before dispatch and never silently falls back; disabled and missing observation do not dispatch, missing input holds reaction; later reuses agency/reaction without ticking and excludes private/extra envelope keys; rejects V3 legacy override before activation. Review compatibility with policy v8 through the updated source cause; no assertion removed or test disabled. Accepted ADR0080 revision2. Typecheck passed before final small corrections; governed execution follows reseal, no paid requests.",
+      "previousSeal": "76d74365b4c406eb6099c1941b5167379a6f089bbb3b6baddc9ebb9b24f9168f"
+    },
+    {
+      "ref": "all-tests-20261008/current-source-closure/verification/scene-beat-wiring-bounded-20261008",
+      "seal": "ac5887d0c9ccb3bba4f086bb7838404611bea0f03a680d4fdc770217818b87e7",
+      "path": "backend/src/services/scene-beat-wiring.test.ts",
+      "changed": false,
+      "review": "Retain existing behavioral cases: scene beat narration deferral; does not enqueue a combat narration job while the beat is open; freezes a 3-micro-turn beat on new battles; advances past turn 5 on a new scene-beat battle; holds the public turn across the first three combat beats; persists a rejected later-bucket proposal and its deterministic choice; saves the first skip turn after a beat-close semantic patch; adopts an orphaned active advance instead of conflicting. Review compatibility with policy v8 through the updated source cause; no assertion removed or test disabled. Accepted ADR0080 revision2. Typecheck passed before final small corrections; governed execution follows reseal, no paid requests.",
+      "previousSeal": "82ce09e4615abed631f1e2a45eb9a477a230eb90f8878ae5d1f502c2811fb0e7"
+    },
+    {
+      "ref": "all-tests-20261008/current-source-closure/verification/battle-causal-narration-bounded-current-20261007",
+      "seal": "47e9f63b37aa371f89735a166dbd033fe511bd172ae1d650b98fe12c5c29f050",
+      "path": "backend/src/services/battle-causal-narration.test.ts",
+      "changed": false,
+      "review": "Retain existing behavioral cases: guarded narration causal projection wiring; omits the projection in off mode without changing the turn; builds one narrator-only projection in guarded mode; falls back to the legacy narrator input when committed evidence is invalid. Review compatibility with policy v8 through the updated source cause; no assertion removed or test disabled. Accepted ADR0080 revision2. Typecheck passed before final small corrections; governed execution follows reseal, no paid requests.",
+      "previousSeal": "71c739f20b80962dc1ee367843dc4f8e468fa816940c1590ea9612b64a8a04a4"
+    },
+    {
+      "ref": "all-tests-20261008/current-source-closure/verification/v3-battle-creation-recovery-bounded-20261008",
+      "seal": "43b5bf20eb8605e6723ecbd7be3652f70110c749caf7785d3dc0a26fde0d9cbe",
+      "path": "backend/src/services/v3-battle-creation.test.ts",
+      "changed": false,
+      "review": "Retain existing behavioral cases: ADR-0039 V3 character battle binding; continues a historical V4 battle and keeps exact V3 character generations after pointer changes and reload; creates awareness-v5 with V3 characters and keeps their exact generations after pointer changes; advances a V4 battle whose frozen norms allow only free actions; reserves repair durably without committing unfinished phase state and does not reset on reload. Review compatibility with policy v8 through the updated source cause; no assertion removed or test disabled. Accepted ADR0080 revision2. Typecheck passed before final small corrections; governed execution follows reseal, no paid requests.",
+      "previousSeal": "72203183e7c0ea8d886fdfe68899c4b7fc850553ec14d31ee6ef758b1d6d3566"
+    },
+    {
+      "ref": "all-tests-20261008/current-source-closure/verification/awareness-narration-worker-bounded-current-20261007",
+      "seal": "83cadf7729af68306483f8b9711d397a7c5f83afa3d8724d61640677354530f1",
+      "path": "backend/src/services/awareness-narration-worker.test.ts",
+      "changed": false,
+      "review": "Retain existing behavioral cases: uses a bound 60-second narration request and publishes beyond the old 36-second window; missing verified proof sends zero calls and never fabricates a presentation or changes world; publishes one batch while the world lease remains held; publishes a selected receipt and requeues an unselected input while the world lease remains held; requeues a preclaim flush wait and accepts only the fresh delivery generation; requeues an outstanding batch input without a second provider call; requeues an unselected input after successful publication without touching its successor; publishes three frozen receipts atomically with one call and one retained fee reservation; tampered frozen input is rejected before dispatch; rejects partial batch coverage without publishing any receipt; expired publication window sends zero calls; initial prologue uses its frozen typed phase and publishes through the V5 worker; logical timeout retains physical occupancy and late completion only closes accounting; closes a completed physical response rejected during validation while retaining unknown transport failures; closes late observed response rejection after logical timeout without publishing its rejected result; persists recognition only with publication and quotes the next batch; history-inclusive token admission rejects a second call without advancing narrator cognition; splits mixed recognition targets so one subjective context never enters the other side; immutable observed policy dispatches without a price quote while retaining unknown cost. Review compatibility with policy v8 through the updated source cause; no assertion removed or test disabled. Accepted ADR0080 revision2. Typecheck passed before final small corrections; governed execution follows reseal, no paid requests.",
+      "previousSeal": "cda56c6407ca6e078e5347444476f903e02de62ed6c31028a5cf190079968ca1"
+    },
+    {
+      "ref": "all-tests-20261008/current-source-closure/verification/battle-create-idempotency-bounded-awareness-creation-20261007",
+      "seal": "f0be2e86100162fde764524bf2bc749557e6d4c1b6e7fce12be9906ee24c6423",
+      "path": "backend/src/services/battle-create-idempotency.test.ts",
+      "changed": false,
+      "review": "Retain existing behavioral cases: battle create idempotency; reads back one deterministic battle without repeating encounter LLM work. Review compatibility with policy v8 through the updated source cause; no assertion removed or test disabled. Accepted ADR0080 revision2. Typecheck passed before final small corrections; governed execution follows reseal, no paid requests.",
+      "previousSeal": "29939820e56815287493aea59808c9c0bbd65fd76d598584a2b412875f2c7020"
+    },
+    {
+      "ref": "all-tests-20261008/current-source-closure/verification/owner-characters-rating-20261008",
+      "seal": "ba94310f26870ecf188271d0fb962dd15f805e854d3417162f88cc4cd66d0aad",
+      "path": "backend/src/repositories/characters.test.ts",
+      "changed": false,
+      "review": "Retain existing behavioral cases: owner-scoped character generation references; never returns another user; lists all active identifying names for owner-scoped uniqueness checks; keeps bounded pre-battle plans and reflections for each opponent; auto-matches the nearest rating and combat profile; centers active character ratings without compensating for deletion; isolates test characters and rating populations from general users. Review compatibility with policy v8 through the updated source cause; no assertion removed or test disabled. Accepted ADR0080 revision2. Typecheck passed before final small corrections; governed execution follows reseal, no paid requests.",
+      "previousSeal": "8b0d5d5ec79c639db8c1f05f16adfe0e10ba410b8b0a5e749eb48586f5f05925"
+    },
+    {
+      "ref": "all-tests-20261008/current-source-closure/verification/persistent-battle-e2e-bounded-20261008",
+      "seal": "3f8f8ec37f1655ee168a6eb99b3ec51744aafb2880318d071c72255b934b8356",
+      "path": "backend/src/scripts/persistent-battle-e2e.test.ts",
+      "changed": false,
+      "review": "Retain existing behavioral cases: persistent battle E2E runner; rejects a successful health response from a different backend revision; classifies every observation provider operation under one revision; requires an exact operator approval and rejects an over-budget observation; uses the approved lower physical ceiling without changing the immutable normal policy maximum; accepts only a terminal reconciled physical-attempt ledger; generates a strong ephemeral password within the Supabase limit; accepts only a bounded portable observation run ID; validates and durably records a sanitized observation; accepts only an explicitly allowed HTTPS origin; derives the normal observation bound from the 36-tick policy; takes the authoritative done battle from an SSE response; accepts sparse strictly increasing narration sequences from a completed beat; rejects an SSE error without a done event; retries only explicit SSE BATTLE_BUSY with the same idempotency key; fails immediately for non-busy and ambiguous SSE outcomes; never retries a busy error after an execution progress event; counts requests and waits against the absolute busy deadline; bounds persistent contention without advancing the request identity; uses committed turn receipts for battle binding v7 while retaining older canonical transition requirements. Review compatibility with policy v8 through the updated source cause; no assertion removed or test disabled. Accepted ADR0080 revision2. Typecheck passed before final small corrections; governed execution follows reseal, no paid requests.",
+      "previousSeal": "4a2655062f402025fee272b27c3c8e07c68c2e7abcafd25d2afbd5a1ed0a2687"
+    }
+  ],
+  "paidAttempts": 0,
+  "productionPromotion": false,
+  "finalSourceReviews": [
+    {
+      "ref": "reserved-turns-v1/source/docs-adr-0072-reserved-turn-adjudication",
+      "path": "docs/adr/0072-reserved-turn-adjudication.md",
+      "previousSeal": "1f1aa6838a9ade23eab5ce9fd41fc55164f4f843ff4e8ebc53ca48e9598d1409",
+      "seal": "1e587a473a278bbd34792410a5ac4a94efa526b2e2293f2be4cbdf5f50cbf094",
+      "review": "Review docs/adr/0072-reserved-turn-adjudication.md: final ADR0080 revision2 corrections preserve historical policy speech inputs, server-owned metadata normalization, execution-limit selection/replay and frozen personality tests. Governed tests follow updated exact source; no assertions disabled."
+    },
+    {
+      "ref": "reserved-turns-v1/verification/effort-v1",
+      "path": "packages/shared/src/reserved-turn-effort.test.ts",
+      "previousSeal": "bd7288a058059d60ff216a41aa9f2b9d338d46ef80445871532dbb1542175083",
+      "seal": "55ed9380ed24bb56b8a3783e16fc98597a2d491b88fa7a173128b5e5c09dca1b",
+      "review": "Review packages/shared/src/reserved-turn-effort.test.ts: final ADR0080 revision2 corrections preserve historical policy speech inputs, server-owned metadata normalization, execution-limit selection/replay and frozen personality tests. Governed tests follow updated exact source; no assertions disabled."
+    },
+    {
+      "ref": "reserved-turns-v1/effort-v1",
+      "path": "packages/shared/src/reserved-turn-effort.ts",
+      "previousSeal": "94de0a1a81e6f4ab303f4614fd1574ac87d20167063ac34a3458e2bf3f7ea5f1",
+      "seal": "695c7027769d5e269d8a5a38d0c3703194a79c1d393f848400881eaf8e467fae",
+      "review": "Review packages/shared/src/reserved-turn-effort.ts: final ADR0080 revision2 corrections preserve historical policy speech inputs, server-owned metadata normalization, execution-limit selection/replay and frozen personality tests. Governed tests follow updated exact source; no assertions disabled."
+    },
+    {
+      "ref": "reserved-turns-v1/source/backend-src-services-reserved-turn-battle",
+      "path": "backend/src/services/reserved-turn-battle.ts",
+      "previousSeal": "dc6a0634de810ded2e69684bed5ff93a09dbb2b57cdb15380f28969c7a1f7e4f",
+      "seal": "3bab8990c3808a170b90d4e6244334d706e39cd539ec5b701774cf0aa035d264",
+      "review": "Review backend/src/services/reserved-turn-battle.ts: final ADR0080 revision2 corrections preserve historical policy speech inputs, server-owned metadata normalization, execution-limit selection/replay and frozen personality tests. Governed tests follow updated exact source; no assertions disabled."
+    },
+    {
+      "ref": "reserved-turns-v1/source/packages-shared-src-index",
+      "path": "packages/shared/src/index.ts",
+      "previousSeal": "dbdc818eac0b50d6996aef41450fb7f32996e0f55e43cf586515311cc7d22072",
+      "seal": "4aea294581f8b57768ea0b5d5cb56db819093b410934bab9072f90249e53148b",
+      "review": "Review packages/shared/src/index.ts: final ADR0080 revision2 corrections preserve historical policy speech inputs, server-owned metadata normalization, execution-limit selection/replay and frozen personality tests. Governed tests follow updated exact source; no assertions disabled."
+    },
+    {
+      "ref": "reserved-turns-v1/source/backend-src-repositories-battles",
+      "path": "backend/src/repositories/battles.ts",
+      "previousSeal": "85f99ac8746c2a99c0400890a690362479da18c63dc33b17a4eb5b9c47fd7cba",
+      "seal": "e40fa68c85cff7e46e2735e84706d5a60d54325a9a210e42e083b3de8994fe83",
+      "review": "Review backend/src/repositories/battles.ts: final ADR0080 revision2 corrections preserve historical policy speech inputs, server-owned metadata normalization, execution-limit selection/replay and frozen personality tests. Governed tests follow updated exact source; no assertions disabled."
+    },
+    {
+      "ref": "reserved-turns-v1/source/backend-src-services-reserved-turn-execution",
+      "path": "backend/src/services/reserved-turn-execution.ts",
+      "previousSeal": "f4976cb81c79a8c23f87fad28fd8dd86d2c8f0a5aeb4a3e3de32404c387d002d",
+      "seal": "104cf7cd85ee1bd168e29f9c38107d6edf8e1dac387e361b932ca25cc602e3f4",
+      "review": "Review backend/src/services/reserved-turn-execution.ts: final ADR0080 revision2 corrections preserve historical policy speech inputs, server-owned metadata normalization, execution-limit selection/replay and frozen personality tests. Governed tests follow updated exact source; no assertions disabled."
+    },
+    {
+      "ref": "reserved-turns-v1/test/backend-src-services-reserved-turn-execution.test",
+      "path": "backend/src/services/reserved-turn-execution.test.ts",
+      "previousSeal": "ebbfa0e2cbaac94a7c3d9c91fdeffaa0737f4688ac0fbdaf7f7d9d9cc70d13a6",
+      "seal": "818bc095db4f493b302abddfb31f7863c65dc3e4324a29438fce9e865afa8a60",
+      "review": "Review backend/src/services/reserved-turn-execution.test.ts: final ADR0080 revision2 corrections preserve historical policy speech inputs, server-owned metadata normalization, execution-limit selection/replay and frozen personality tests. Governed tests follow updated exact source; no assertions disabled."
+    },
+    {
+      "ref": "reserved-turns-v1/source/backend-src-services-battle-service",
+      "path": "backend/src/services/battle-service.ts",
+      "previousSeal": "aefae0c416b2ee2db03c3e88574706081e9c246a33df83e75691e4f8e4516b4e",
+      "seal": "d2451b578bf88255aa70b9bb8213c1b02e85d53545c0ee2d0ca62910e612d7f0",
+      "review": "Review backend/src/services/battle-service.ts: final ADR0080 revision2 corrections preserve historical policy speech inputs, server-owned metadata normalization, execution-limit selection/replay and frozen personality tests. Governed tests follow updated exact source; no assertions disabled."
+    },
+    {
+      "ref": "unified-v1/source/backend-src-services-battle-service",
+      "path": "backend/src/services/battle-service.ts",
+      "previousSeal": "69815c98dfc6c582648bcd56377730626158b44234ce922afc6cca6e2fcaa704",
+      "seal": "de5e020b668b52dd5d8a02ba9efd98854fa97602c6a400e40418f87ae00d57f7",
+      "review": "Review backend/src/services/battle-service.ts: final ADR0080 revision2 corrections preserve historical policy speech inputs, server-owned metadata normalization, execution-limit selection/replay and frozen personality tests. Governed tests follow updated exact source; no assertions disabled."
+    },
+    {
+      "ref": "unified-v1/test/backend-src-services-unified-consciousness-integration.test",
+      "path": "backend/src/services/unified-consciousness-integration.test.ts",
+      "previousSeal": "57d9208a7e15abf211fb214d395e593257b09215abd2df414aee78d258d9bcf0",
+      "seal": "8887f65d0bb364aa9daa0c0f3ca33a37f55166ce97dffbd28e945a8fdb4c1df4",
+      "review": "Review backend/src/services/unified-consciousness-integration.test.ts: final ADR0080 revision2 corrections preserve historical policy speech inputs, server-owned metadata normalization, execution-limit selection/replay and frozen personality tests. Governed tests follow updated exact source; no assertions disabled."
+    },
+    {
+      "ref": "test-recovery-v1/basis/0e5e6c7cf01a162e",
+      "path": "backend/src/services/battle-service.ts",
+      "previousSeal": "0534335ec93c05e6677436543f286ab299d250124c0cf5f25304b0af794ed004",
+      "seal": "b007b22a45f1770e40d5af41f07f1c68d9a75d3558083af802d8db83d0911dad",
+      "review": "Review backend/src/services/battle-service.ts: final ADR0080 revision2 corrections preserve historical policy speech inputs, server-owned metadata normalization, execution-limit selection/replay and frozen personality tests. Governed tests follow updated exact source; no assertions disabled."
+    },
+    {
+      "ref": "test-recovery-v1/basis/a3adc469058d306b",
+      "path": "backend/src/services/battle-service.ts",
+      "previousSeal": "e02a753098984c4af22d0e1b1bf9274ebce18906df0396a239728a044fa2c995",
+      "seal": "2b33d02545c9ef582c6e7b16ed515fdcf493624e619cfd8d01ecc78700b5c281",
+      "review": "Review backend/src/services/battle-service.ts: final ADR0080 revision2 corrections preserve historical policy speech inputs, server-owned metadata normalization, execution-limit selection/replay and frozen personality tests. Governed tests follow updated exact source; no assertions disabled."
+    },
+    {
+      "ref": "all-tests-20261009/current-source-closure/verification/owner-battle-public-20261008",
+      "path": "backend/src/services/battle-public.test.ts",
+      "previousSeal": "2af3a3f7720f8102641717269313bb069f27a21baa4bf8c4b3acba67eb024b16",
+      "seal": "6844f4572eabd546565fe1b43654154b0696e1820d0ee223747a5f9561020924",
+      "review": "Review backend/src/services/battle-public.test.ts: final ADR0080 revision2 corrections preserve historical policy speech inputs, server-owned metadata normalization, execution-limit selection/replay and frozen personality tests. Governed tests follow updated exact source; no assertions disabled."
+    },
+    {
+      "ref": "test-recovery-v1/basis/18b9b5dcd683f549",
+      "path": "backend/src/services/battle-service.ts",
+      "previousSeal": "3ae61c77c8a03cde3169cfbed9dfdca2262ec05e7846eedc6626d0b13a80b750",
+      "seal": "d08a3efc2ef68220e927e774dbdf8ee6dce6f4089d55fc53a6fcb7c0446c6902",
+      "review": "Review backend/src/services/battle-service.ts: final ADR0080 revision2 corrections preserve historical policy speech inputs, server-owned metadata normalization, execution-limit selection/replay and frozen personality tests. Governed tests follow updated exact source; no assertions disabled."
+    },
+    {
+      "ref": "test-recovery-v1/basis/73effe445735205f",
+      "path": "backend/src/services/narration-worker.ts",
+      "previousSeal": "e557b37bd27e3a20f37472bb2967989827e946de28a0aa4128ac419458f770a2",
+      "seal": "fbfd85f836e68309588ef0ea778c9639902042721270891b9b2c23ef2a01147b",
+      "review": "Review backend/src/services/narration-worker.ts: final ADR0080 revision2 corrections preserve historical policy speech inputs, server-owned metadata normalization, execution-limit selection/replay and frozen personality tests. Governed tests follow updated exact source; no assertions disabled."
+    },
+    {
+      "ref": "test-recovery-v1/basis/c1a76bfb7cb2eba3",
+      "path": "backend/src/services/battle-service.ts",
+      "previousSeal": "4cbcfd893670848fc27f2ccaa3c591d5274bb5488584a7c1d03f4f74dd2ecd9f",
+      "seal": "b90b31ad22198e0d866806a873037b7374e3a3980efe6ded27e9fcc1ced0b6e5",
+      "review": "Review backend/src/services/battle-service.ts: final ADR0080 revision2 corrections preserve historical policy speech inputs, server-owned metadata normalization, execution-limit selection/replay and frozen personality tests. Governed tests follow updated exact source; no assertions disabled."
+    },
+    {
+      "ref": "test-recovery-v1/basis/0159fc2ab1c5fb85",
+      "path": "backend/src/services/battle-service.ts",
+      "previousSeal": "87d41c1aab44507b95d81204832dd23c81618002e3c95241c108e233913eac81",
+      "seal": "94a7e0052fda8064571e48fc1b317d6f12d1642f48e702dd79ca131f48b5b1aa",
+      "review": "Review backend/src/services/battle-service.ts: final ADR0080 revision2 corrections preserve historical policy speech inputs, server-owned metadata normalization, execution-limit selection/replay and frozen personality tests. Governed tests follow updated exact source; no assertions disabled."
+    },
+    {
+      "ref": "test-recovery-v1/basis/a07dd2c8f0ac65c2",
+      "path": "backend/src/routes.ts",
+      "previousSeal": "ee368443f459d10bd66494be13f3e7fed5510562bf39836307604e42c1e6d1c4",
+      "seal": "0ef4d1a232ebfc77cfc5eba1840739f3797e8dc9c746facb3e6f7acfea1c80b9",
+      "review": "Review backend/src/routes.ts: final ADR0080 revision2 corrections preserve historical policy speech inputs, server-owned metadata normalization, execution-limit selection/replay and frozen personality tests. Governed tests follow updated exact source; no assertions disabled."
+    },
+    {
+      "ref": "test-recovery-v1/basis/65bd5e628346546f",
+      "path": "backend/src/services/battle-service.ts",
+      "previousSeal": "3da3f649a180172a45e05919b01af6ccda0475f1ab0624a1c4cb4beb85f82f9f",
+      "seal": "ecb585ac923014136924aff0a15aaa083dd77fcce2c9544d302fc5c970127c44",
+      "review": "Review backend/src/services/battle-service.ts: final ADR0080 revision2 corrections preserve historical policy speech inputs, server-owned metadata normalization, execution-limit selection/replay and frozen personality tests. Governed tests follow updated exact source; no assertions disabled."
+    },
+    {
+      "ref": "test-recovery-v1/basis/c5c8997e9f5f67cb",
+      "path": "backend/src/services/battle-service.ts",
+      "previousSeal": "1aa769bbaca0f19c744eb60e874ce7a43cb3173ca01a5eb012fc1562f69d14a5",
+      "seal": "a83dbe716c4545e0db4c4cdd99e1da5ac452c25e8d8f3bdccdc8e6b355a7b5d6",
+      "review": "Review backend/src/services/battle-service.ts: final ADR0080 revision2 corrections preserve historical policy speech inputs, server-owned metadata normalization, execution-limit selection/replay and frozen personality tests. Governed tests follow updated exact source; no assertions disabled."
+    },
+    {
+      "ref": "test-recovery-v1/basis/59df7291e9c37342",
+      "path": "backend/src/services/battle-service.ts",
+      "previousSeal": "f8e9a24be07d6ec5d40f5841ecc68261281331e8daf09274b4c93209641927c3",
+      "seal": "ca594df077038d4cb7986c6b56c6190495ccbd29d1732ab7fe2dc6622bb9cc7b",
+      "review": "Review backend/src/services/battle-service.ts: final ADR0080 revision2 corrections preserve historical policy speech inputs, server-owned metadata normalization, execution-limit selection/replay and frozen personality tests. Governed tests follow updated exact source; no assertions disabled."
+    },
+    {
+      "ref": "test-recovery-v1/basis/5d646414a88f23e7",
+      "path": "backend/src/services/battle-service.ts",
+      "previousSeal": "baa5089e20a649b3deb1025e5995bee926cd41cc9a6d00ae842efcf75aac633e",
+      "seal": "dc8bc02edb8e12d76ccca246482e5254daafc28e1c270bb886de79e52ca15a3b",
+      "review": "Review backend/src/services/battle-service.ts: final ADR0080 revision2 corrections preserve historical policy speech inputs, server-owned metadata normalization, execution-limit selection/replay and frozen personality tests. Governed tests follow updated exact source; no assertions disabled."
+    },
+    {
+      "ref": "all-tests-20261008/current-source-closure/awareness-guidance-20261007/verification-execution",
+      "path": "backend/src/services/awareness-execution.test.ts",
+      "previousSeal": "a51a89950bdad04aba4cb87b811097b3b7944def0e6b02754d3079829f0d3973",
+      "seal": "640b7d50d085e7091dd1317403dc1bbcdc80ae75a0954a9fc4a0d0b45450fada",
+      "review": "Review backend/src/services/awareness-execution.test.ts: final ADR0080 revision2 corrections preserve historical policy speech inputs, server-owned metadata normalization, execution-limit selection/replay and frozen personality tests. Governed tests follow updated exact source; no assertions disabled."
+    },
+    {
+      "ref": "all-tests-20261008/current-source-closure/verification/retained-agency-v3-persistence-current-20261007",
+      "path": "backend/src/services/conscious-agency-persistence.test.ts",
+      "previousSeal": "c4d4100fe4719af61c7e2279f6e8bac1cd8e0d6ecedd79e3e5aaaef0c6f5e421",
+      "seal": "576917d4d128702537cfdfd35b90cc8808112c62d354d01e702a7f5504f6e22c",
+      "review": "Review backend/src/services/conscious-agency-persistence.test.ts: final ADR0080 revision2 corrections preserve historical policy speech inputs, server-owned metadata normalization, execution-limit selection/replay and frozen personality tests. Governed tests follow updated exact source; no assertions disabled."
+    },
+    {
+      "ref": "all-tests-20261008/current-source-closure/verification/battle-speech-wiring-bounded-20261008",
+      "path": "backend/src/services/battle-speech-wiring.test.ts",
+      "previousSeal": "94379641fc306870a72fe0315eaf2b518724680299a61181f990c233644f1e56",
+      "seal": "fd68a652ccb07fcf27e2d5120909e7c260cca839e1878f86331af44b8dc5ca9c",
+      "review": "Review backend/src/services/battle-speech-wiring.test.ts: final ADR0080 revision2 corrections preserve historical policy speech inputs, server-owned metadata normalization, execution-limit selection/replay and frozen personality tests. Governed tests follow updated exact source; no assertions disabled."
+    },
+    {
+      "ref": "all-tests-20261008/current-source-closure/verification/stable-area-narration-http-acceptance-20261007",
+      "path": "backend/src/routes-structured-narration-acceptance.test.ts",
+      "previousSeal": "1e2c8f4878219760a3f3491fd6d9038352011885f8dafb6c68e1eb76243611da",
+      "seal": "92564a73cc598a9cb3b001ef9112749976463113c508e2d1fd9fedd4b0412edd",
+      "review": "Review backend/src/routes-structured-narration-acceptance.test.ts: final ADR0080 revision2 corrections preserve historical policy speech inputs, server-owned metadata normalization, execution-limit selection/replay and frozen personality tests. Governed tests follow updated exact source; no assertions disabled."
+    },
+    {
+      "ref": "all-tests-20261008/current-source-closure/verification/structured-asset-integration-bounded-20261008",
+      "path": "backend/src/routes-structured-asset-integration.test.ts",
+      "previousSeal": "818f44725d32a76ac12c4101f4e8d81084816ecf9965ed36b28f9160ca2a261e",
+      "seal": "df0893ad74a94bd32f4e7f8a5cd8d8aab5bee661b255764566273a68307ac061",
+      "review": "Review backend/src/routes-structured-asset-integration.test.ts: final ADR0080 revision2 corrections preserve historical policy speech inputs, server-owned metadata normalization, execution-limit selection/replay and frozen personality tests. Governed tests follow updated exact source; no assertions disabled."
+    },
+    {
+      "ref": "all-tests-20261008/current-source-closure/verification/awareness-battle-creation-bounded-awareness-creation-20261007",
+      "path": "backend/src/services/awareness-battle-creation.test.ts",
+      "previousSeal": "68e9933e63a8da545ac7a2ed8141283eb241bd09fd826ac1e2bc3ec02e41e649",
+      "seal": "346214935cb7b8171b3a666c1bd08b77b7e206de24533e1578d4b00ad80e64ec",
+      "review": "Review backend/src/services/awareness-battle-creation.test.ts: final ADR0080 revision2 corrections preserve historical policy speech inputs, server-owned metadata normalization, execution-limit selection/replay and frozen personality tests. Governed tests follow updated exact source; no assertions disabled."
+    },
+    {
+      "ref": "all-tests-20261008/current-source-closure/verification/awareness-narration-continuation-bounded-current-20261007",
+      "path": "backend/src/services/awareness-narration-continuation.test.ts",
+      "previousSeal": "c7b756efe7d27d4330fff7e55062e5c6765a90de832a673b421e1ca532444f9d",
+      "seal": "e30c9df73e487e8def7c4d3921616f2302413f9eeffdf5735578cc750e625943",
+      "review": "Review backend/src/services/awareness-narration-continuation.test.ts: final ADR0080 revision2 corrections preserve historical policy speech inputs, server-owned metadata normalization, execution-limit selection/replay and frozen personality tests. Governed tests follow updated exact source; no assertions disabled."
+    },
+    {
+      "ref": "all-tests-20261008/current-source-closure/verification/battle-consumer-wiring-bounded-current-20261007",
+      "path": "backend/src/services/battle-consumer-wiring.test.ts",
+      "previousSeal": "7eb7dabe4cc65fa2bf2695b1f515fc4c516628926d1adad16a329d89723e64c6",
+      "seal": "c3a19977f3fc2d686d76b71bee735c82e89e6910430a99d52a98dc31a1757f4a",
+      "review": "Review backend/src/services/battle-consumer-wiring.test.ts: final ADR0080 revision2 corrections preserve historical policy speech inputs, server-owned metadata normalization, execution-limit selection/replay and frozen personality tests. Governed tests follow updated exact source; no assertions disabled."
+    },
+    {
+      "ref": "all-tests-20261008/current-source-closure/verification/awareness-battle-service-bounded-awareness-creation-20261007",
+      "path": "backend/src/services/awareness-battle-service.test.ts",
+      "previousSeal": "ec1ed5cd75052a059912326bd37ed3260c9c30e827d0cba13e35053f8ec5fcc9",
+      "seal": "94c54a6f59a163f23938239e478314e9727f3c43e1444e1397c405aa29d9bc0c",
+      "review": "Review backend/src/services/awareness-battle-service.test.ts: final ADR0080 revision2 corrections preserve historical policy speech inputs, server-owned metadata normalization, execution-limit selection/replay and frozen personality tests. Governed tests follow updated exact source; no assertions disabled."
+    },
+    {
+      "ref": "all-tests-20261008/current-source-closure/verification/stable-area-battlefield-http-acceptance-20261007",
+      "path": "backend/src/routes-structured-battlefield-acceptance.test.ts",
+      "previousSeal": "7668b5334f7f0f29e00f35fdb70a79943fc78e1b056cf2c635eaf362976e226c",
+      "seal": "9351bd989f221e3718b6ccd4bfd3fee1bbb6041cd0848af67c855c0c9484f545",
+      "review": "Review backend/src/routes-structured-battlefield-acceptance.test.ts: final ADR0080 revision2 corrections preserve historical policy speech inputs, server-owned metadata normalization, execution-limit selection/replay and frozen personality tests. Governed tests follow updated exact source; no assertions disabled."
+    },
+    {
+      "ref": "all-tests-20261008/current-source-closure/verification/historical-agency-inventory-bounded-20261008",
+      "path": "backend/src/services/character-agency-inventory.test.ts",
+      "previousSeal": "0801dd3e22bb49b0c1c480b2766fa62b83f71772ff9f7c70f7aa260ca2da8fac",
+      "seal": "ef2ed6e55bd7f68f3b068785e348e84fd02543e4203d387eb91671e3f3234507",
+      "review": "Review backend/src/services/character-agency-inventory.test.ts: final ADR0080 revision2 corrections preserve historical policy speech inputs, server-owned metadata normalization, execution-limit selection/replay and frozen personality tests. Governed tests follow updated exact source; no assertions disabled."
+    },
+    {
+      "ref": "all-tests-20261008/current-source-closure/verification/normal-awareness-policy-bounded-current-20261007",
+      "path": "backend/src/services/normal-awareness-policy.test.ts",
+      "previousSeal": "81e1e808f15a57ed75ea734da403166adea130ace2ed62e216e8072a334b87cb",
+      "seal": "2840d8ec990887e00b752b52cf43f648da5994e768a8d1b9c2653eb79bee832c",
+      "review": "Review backend/src/services/normal-awareness-policy.test.ts: final ADR0080 revision2 corrections preserve historical policy speech inputs, server-owned metadata normalization, execution-limit selection/replay and frozen personality tests. Governed tests follow updated exact source; no assertions disabled."
+    },
+    {
+      "ref": "all-tests-20261008/current-source-closure/verification/retained-agency-v3-runtime-current-20261007",
+      "path": "backend/src/services/conscious-agency-runtime.test.ts",
+      "previousSeal": "54ae764d7604fb2d1ee1ca6b06ad8c8ce17ddd23c37edc5d0be48256a9609e46",
+      "seal": "8e281d979678b3d23f97c93563fa2ebf0376fee6a0525f766b607b10e8bbf0bf",
+      "review": "Review backend/src/services/conscious-agency-runtime.test.ts: final ADR0080 revision2 corrections preserve historical policy speech inputs, server-owned metadata normalization, execution-limit selection/replay and frozen personality tests. Governed tests follow updated exact source; no assertions disabled."
+    },
+    {
+      "ref": "all-tests-20261008/current-source-closure/verification/scene-beat-wiring-bounded-20261008",
+      "path": "backend/src/services/scene-beat-wiring.test.ts",
+      "previousSeal": "ac5887d0c9ccb3bba4f086bb7838404611bea0f03a680d4fdc770217818b87e7",
+      "seal": "1aae83dcb29539ffeb8037b4cf7f7e7f4284115b4f3c837886f47cb01a9704cc",
+      "review": "Review backend/src/services/scene-beat-wiring.test.ts: final ADR0080 revision2 corrections preserve historical policy speech inputs, server-owned metadata normalization, execution-limit selection/replay and frozen personality tests. Governed tests follow updated exact source; no assertions disabled."
+    },
+    {
+      "ref": "all-tests-20261008/current-source-closure/verification/battle-causal-narration-bounded-current-20261007",
+      "path": "backend/src/services/battle-causal-narration.test.ts",
+      "previousSeal": "47e9f63b37aa371f89735a166dbd033fe511bd172ae1d650b98fe12c5c29f050",
+      "seal": "b16bc02b0b90867e694568803e9ba8c21b78daf86fd5147a48ca916a6b93c0fd",
+      "review": "Review backend/src/services/battle-causal-narration.test.ts: final ADR0080 revision2 corrections preserve historical policy speech inputs, server-owned metadata normalization, execution-limit selection/replay and frozen personality tests. Governed tests follow updated exact source; no assertions disabled."
+    },
+    {
+      "ref": "all-tests-20261008/current-source-closure/verification/v3-battle-creation-recovery-bounded-20261008",
+      "path": "backend/src/services/v3-battle-creation.test.ts",
+      "previousSeal": "43b5bf20eb8605e6723ecbd7be3652f70110c749caf7785d3dc0a26fde0d9cbe",
+      "seal": "5f7e248f71e788781fdc850a50ee0abb586145e6bda26387fdc8e6896f599356",
+      "review": "Review backend/src/services/v3-battle-creation.test.ts: final ADR0080 revision2 corrections preserve historical policy speech inputs, server-owned metadata normalization, execution-limit selection/replay and frozen personality tests. Governed tests follow updated exact source; no assertions disabled."
+    },
+    {
+      "ref": "all-tests-20261008/current-source-closure/verification/awareness-narration-worker-bounded-current-20261007",
+      "path": "backend/src/services/awareness-narration-worker.test.ts",
+      "previousSeal": "83cadf7729af68306483f8b9711d397a7c5f83afa3d8724d61640677354530f1",
+      "seal": "9f2c9d1084e9dd93768d6efbe7c3e14f471200d5eccf2d470f4f78b3fea02a51",
+      "review": "Review backend/src/services/awareness-narration-worker.test.ts: final ADR0080 revision2 corrections preserve historical policy speech inputs, server-owned metadata normalization, execution-limit selection/replay and frozen personality tests. Governed tests follow updated exact source; no assertions disabled."
+    },
+    {
+      "ref": "all-tests-20261008/current-source-closure/verification/battle-create-idempotency-bounded-awareness-creation-20261007",
+      "path": "backend/src/services/battle-create-idempotency.test.ts",
+      "previousSeal": "f0be2e86100162fde764524bf2bc749557e6d4c1b6e7fce12be9906ee24c6423",
+      "seal": "1ecff715d39144107c8062e88d83c4c83bbc9d5ff2bf99513e8f3bfefe58b771",
+      "review": "Review backend/src/services/battle-create-idempotency.test.ts: final ADR0080 revision2 corrections preserve historical policy speech inputs, server-owned metadata normalization, execution-limit selection/replay and frozen personality tests. Governed tests follow updated exact source; no assertions disabled."
+    },
+    {
+      "ref": "all-tests-20261008/current-source-closure/verification/owner-characters-rating-20261008",
+      "path": "backend/src/repositories/characters.test.ts",
+      "previousSeal": "ba94310f26870ecf188271d0fb962dd15f805e854d3417162f88cc4cd66d0aad",
+      "seal": "955578e5bd9880b71db4d924a26a32757ab76572c0b4e8bb9fdf909552a261a8",
+      "review": "Review backend/src/repositories/characters.test.ts: final ADR0080 revision2 corrections preserve historical policy speech inputs, server-owned metadata normalization, execution-limit selection/replay and frozen personality tests. Governed tests follow updated exact source; no assertions disabled."
+    }
+  ],
+  "fixtureRepairSeal": "1e414f0020ef1dda0640bf749b4a1f35a2fd42b48762c6bb8d5e598a56a23a66"
+}

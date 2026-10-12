@@ -781,6 +781,12 @@ async function main(): Promise<void> {
         sequence,
       });
       battle = result.battle;
+      // Result disclosure waits for ordered narration, even though gameplay already committed.
+      if (battle.resultPending) {
+        await waitForNarrationConvergence({ apiBaseUrl, accessToken: observer.accessToken, battleId: battle.id });
+        const disclosed = await apiJson<{ battle?: unknown }>({ apiBaseUrl, accessToken: observer.accessToken, path: `/api/battles/${battle.id}` });
+        battle = BattlePublicSchema.parse(disclosed.battle);
+      }
       advances.push({
         sequence,
         turn: battle.turn,

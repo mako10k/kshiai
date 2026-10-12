@@ -19,10 +19,13 @@ function fixture(version: "v5" | "v6" | "v7" = "v5") {
     narration: { identity: stub.identity, narrateBatch: async () => [], narrateFrozenBatch: async () => [] },
     models: { subconscious: async (input) => AwarenessLatentOutputSchema.parse({ state: input.currentState, reflexDesires: [], affectiveDesires: [], reconsider: false, cancelThought: false }),
       conscious: async () => AwarenessConsciousOutputSchema.parse({ goal: null, thought: "", desires: [], influences: [] }) } });
-  if (boundPolicy.revision !== "reserved-turn-policy-v7") throw new Error("expected creation policy v7");
-  const { narrationFallback: _narrationFallback, ...v6 } = boundPolicy;
+  if (boundPolicy.revision !== "reserved-turn-policy-v8") throw new Error("expected creation policy v8");
+  const { canonicalNarration: _independent, ...previous } = boundPolicy;
+  const v7 = ReservedTurnPolicySchema.parse({ ...previous, revision: "reserved-turn-policy-v7", maxTurns: 36 });
+  if (v7.revision !== "reserved-turn-policy-v7") throw new Error("expected frozen policy v7");
+  const { narrationFallback: _narrationFallback, ...v6 } = v7;
   const { maxCharacterCorrections: _characterCorrections, ...historical } = v6;
-  const policy = version === "v7" ? boundPolicy : version === "v6" ? ReservedTurnPolicySchema.parse({ ...v6, revision: "reserved-turn-policy-v6" }) : ReservedTurnPolicySchema.parse({ ...historical, revision: "reserved-turn-policy-v5" });
+  const policy = version === "v7" ? v7 : version === "v6" ? ReservedTurnPolicySchema.parse({ ...v6, revision: "reserved-turn-policy-v6" }) : ReservedTurnPolicySchema.parse({ ...historical, revision: "reserved-turn-policy-v5" });
   let runtime = initializeReservedTurns(policy, Date.now());
   const port: ReservedExecutionPort = { read: async () => structuredClone(runtime),
     update: async (reduce) => { runtime = ReservedTurnRuntimeSchema.parse(reduce(runtime)); },

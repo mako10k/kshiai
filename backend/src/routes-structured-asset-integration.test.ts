@@ -5,7 +5,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { after, before, describe, it } from "node:test";
 import {
-  defaultParameters,
+  defaultParameters, initializeReservedTurns, combatScore,
   defaultBasicAttack,
   BattlePublicSchema,
   BattleStateSchema,
@@ -43,11 +43,14 @@ const narrationAssetRepo = await import(
   "./repositories/narration-style-assets-v2.js"
 );
 const battleRepo = await import("./repositories/battles.js");
+const { insertReservedRuntime } = await import("./repositories/reserved-turns.js");
 const settingsRepo = await import("./repositories/dialogue-pipeline-settings.js");
 const { buildImportedNarrationStyleEnvelopeV2 } = await import(
   "./services/narration-style-authoring-service.js"
 );
 const { buildRoutes } = await import("./routes.js");
+const { processNextNarration, createLlmNarrationGenerator } = await import("./services/narration-worker.js");
+const drainReservedNarration = (battleId: string) => processNextNarration({ battleId, ownerId: "reserved-integration-narrator", generator: createLlmNarrationGenerator(provider) });
 
 const ownerId = "asset-integration-owner";
 const opponentOwnerId = "asset-integration-opponent-owner";
@@ -75,14 +78,14 @@ provider.prepareBattleEncounter = async function(
       retry: "none", responseFormat: { type: "json_object" } },
   }, async () => ({ result: await MockLlmProvider.prototype.prepareBattleEncounter.call(this, input), usage: null }));
 };
-let reservedScenario: "idle" | "attack" | "invalid" | "correction" | "plan-invalid" | "narration-empty" | "unknown" = "idle";
+let reservedScenario: "idle" | "attack" | "invalid" | "correction" | "plan-invalid" | "narration-empty" | "narration-unknown" | "unknown" = "idle";
 const reservedPlanInputs: string[] = [];
 const awarenessRoles: AwarenessProviderRoles = {
   consciousness: { identity: { provider: "openai", engineModel: "gpt-6-luna", fastModel: "gpt-6-luna" }, requestJson: async (system, user) => {
     if (!system.includes("予約ターンパイプライン")) return system.includes("必須memory") ? { memory: [] } : {};
     reservedPlanInputs.push(user);
-    if (reservedScenario === "plan-invalid" && z.object({ side: z.enum(["a", "b"]) }).parse(JSON.parse(user)).side === "a") return { actions: [{ id: "strike", intent: "相手に打撃を試みる", targets: ["opponent"] }] };
-    return { actions: ["idle", "narration-empty"].includes(reservedScenario) ? [] : [{ id: "strike", intent: "相手に打撃を試みる", targets: ["opponent"] }], memory: reservedScenario === "idle" ? ["相手の変化を観察する"] : ["1"] };
+    if (reservedScenario === "plan-invalid" && z.object({ side: z.enum(["a", "b"]) }).parse(JSON.parse(user)).side === "a") return { actions: [{ id: "strike", intent: "相手に打撃を試みる", targets: ["opponent"], mechanics: { kind: "basic_attack" } }] };
+    return { actions: ["idle", "narration-empty"].includes(reservedScenario) ? [] : [{ id: "strike", intent: "相手に打撃を試みる", targets: ["opponent"], mechanics: { kind: "basic_attack" } }], speech: "同じ言葉", memory: reservedScenario === "idle" ? ["相手の変化を観察する"] : ["1"] };
   } },
   models: {
     subconscious: async (input) => AwarenessLatentOutputSchema.parse({ state: { ...input.currentState, updatedTick: input.tick }, reflexDesires: [], affectiveDesires: [], reconsider: false, cancelThought: false }),
@@ -94,9 +97,10 @@ const awarenessRoles: AwarenessProviderRoles = {
       if (reservedScenario === "correction" && !user.includes("validationErrors")) return { results: [] };
       const input = z.object({ order: z.array(z.object({ reservationId: z.string(), side: z.enum(["a", "b"]) })) }).parse(JSON.parse(user));
       return { results: input.order.map((action, index) => ({ ...action, baseRevision: reservedScenario === "invalid" && index === 1 ? 999 : index,
-        outcome: "success", reason: "打撃が届いた", updates: [{ kind: "resource", side: action.side === "a" ? "b" : "a", resource: "hp", delta: -1 }],
+        outcome: "success", attempted: true, penalty: null, reason: "打撃が届いた", updates: [{ kind: "resource", side: action.side === "a" ? "b" : "a", resource: "hp", delta: -1 }],
         observations: { a: ["打撃が届いた"], b: ["打撃が届いた"], public: ["双方が打撃を交わした"] } })) };
     }
+    if (system.includes("予約ターン実況") && reservedScenario === "narration-unknown") throw new Error("unknown narration network termination");
     if (system.includes("予約ターン実況")) return { lines: reservedScenario === "narration-empty" ? [] : ["双方が間合いを確かめた。"] };
     throw new Error("unexpected transport call");
   } },
@@ -316,9 +320,9 @@ describe("integrated structured asset cutover", () => {
     assert.ok(bound?.assetManifest);
     assert.equal(bound.assetManifest.schemaVersion, 7);
     assert.equal(bound.assetManifest.consciousOutputContract, "reserved-turns-v1");
-    assert.equal(bound.assetManifest.reservedTurnPolicy.revision, "reserved-turn-policy-v7");
-    assert.equal(bound.assetManifest.reservedTurnPromptRevision, "reserved-turn-prompt-v6");
-    assert.equal(bound.assetManifest.outputRevision, "reserved-turn-output-v3");
+    assert.equal(bound.assetManifest.reservedTurnPolicy.revision, "reserved-turn-policy-v8");
+    assert.equal(bound.assetManifest.reservedTurnPromptRevision, "reserved-turn-prompt-v7");
+    assert.equal(bound.assetManifest.outputRevision, "reserved-turn-output-v4");
     assert.equal(BattleStateSchema.safeParse({ ...bound, assetManifest: { ...bound.assetManifest, outputRevision: "reserved-turn-output-v1" } }).success, false);
     assert.equal(BattleStateSchema.safeParse({ ...bound, assetManifest: { ...bound.assetManifest, reservedTurnPromptRevision: "reserved-turn-prompt-v3" } }).success, false);
     assert.equal(BattleStateSchema.safeParse({ ...bound, combatTick: 1 }).success, false);
@@ -326,6 +330,7 @@ describe("integrated structured asset cutover", () => {
     assert.equal((await query<{ count: number }>("SELECT COUNT(*) AS count FROM battle_reserved_turns WHERE battle_id=$1", [battleId])).rows[0]?.count, 1);
     assert.equal((await query<{ count: number }>("SELECT COUNT(*) AS count FROM battle_awareness_runtime WHERE battle_id=$1", [battleId])).rows[0]?.count, 0);
     assert.ok(bound.narrationStyle?.compiledPolicyV2);
+    const boundManifest = bound.assetManifest;
     const boundManifestJson = JSON.stringify(bound.assetManifest);
     const boundBattlefieldJson = JSON.stringify(bound.battlefield);
     const boundNarrationJson = JSON.stringify(bound.narrationStyle);
@@ -455,6 +460,10 @@ describe("integrated structured asset cutover", () => {
     assert.equal(replay.status, 200);
     assert.deepEqual(await replay.json(), advanceBody);
 
+    const queued = await query<{ status: string }>("SELECT status FROM battle_narration_entries WHERE battle_id=$1", [battleId]);
+    assert.equal(queued.rows[0]?.status, "queued", "canonical turn commits before narration dispatch");
+    assert.equal((await battleRepo.getBattle(battleId))?.turn, 1);
+    assert.equal(await drainReservedNarration(battleId), "completed");
     const advanced = await battleRepo.getBattle(battleId);
     assert.equal(JSON.stringify(advanced?.assetManifest), boundManifestJson);
     assert.equal(advanced?.turn, 1);
@@ -466,7 +475,7 @@ describe("integrated structured asset cutover", () => {
     const publicNarration = z.object({ entries: z.array(z.object({ status: z.string(), narrative: z.object({ narrator: z.array(z.string()) }) })), cursor: z.string() }).parse(await narrationSnapshot.json());
     assert.equal(publicNarration.entries.length, 1);
     assert.equal(publicNarration.entries[0]?.status, "completed");
-    assert.deepEqual(publicNarration.entries[0]?.narrative.narrator, advanced?.log[0]?.narrator);
+    assert.deepEqual(publicNarration.entries[0]?.narrative.narrator, ["双方が間合いを確かめた。"]);
     const runtimeRow = await query<{ snapshot_json: string }>(
       "SELECT snapshot_json FROM battle_reserved_turns WHERE battle_id=$1", [battleId],
     );
@@ -481,9 +490,16 @@ describe("integrated structured asset cutover", () => {
     const attack = await app.request(`/api/battles/${battleId}/advance`, { ...advanceRequest,
       headers: { ...advanceRequest.headers, "Idempotency-Key": "asset-integration-advance-002" } });
     assert.equal(attack.status, 200);
+    assert.equal(await drainReservedNarration(battleId), "completed");
     const attacked = await battleRepo.getBattle(battleId);
     assert.equal(attacked?.status, "active");
     assert.equal(attacked.turn, 2);
+    assert.equal(reservedPlanInputs.slice(2).some((user) => user.includes("同じ言葉")), true, "committed speech reaches next observer-safe input");
+    const plannerFrame = z.object({ side: z.enum(["a", "b"]), context: z.object({ consciousCharacteristics: z.array(z.string()), actionEffort: z.unknown() }) }).parse(JSON.parse(reservedPlanInputs[0] ?? "null"));
+    const frozenSelf = boundManifest.characters[plannerFrame.side].compilerInputsV4?.consciousSelf;
+    assert.ok(frozenSelf);
+    assert.deepEqual(plannerFrame.context.consciousCharacteristics, [...frozenSelf.tendencies, ...frozenSelf.background, ...frozenSelf.actionPrinciples]);
+    assert.notEqual(plannerFrame.context.actionEffort, undefined);
     assert.equal(typeof bound.sideA.parameters.hp, "number");
     assert.equal(attacked.sideA.parameters.hp, (bound.sideA.parameters.hp ?? 0) - 1);
     assert.equal(attacked.sideB.parameters.hp, (bound.sideB.parameters.hp ?? 0) - 1);
@@ -493,6 +509,7 @@ describe("integrated structured asset cutover", () => {
     const repaired = await app.request(`/api/battles/${battleId}/advance`, { ...advanceRequest,
       headers: { ...advanceRequest.headers, "Idempotency-Key": "asset-integration-repaired-003" } });
     assert.equal(repaired.status, 200);
+    assert.equal(await drainReservedNarration(battleId), "completed");
     const repairedState = await battleRepo.getBattle(battleId);
     assert.equal(repairedState?.status, "active");
     assert.equal(repairedState?.turn, 3);
@@ -500,6 +517,7 @@ describe("integrated structured asset cutover", () => {
     const corrected = await app.request(`/api/battles/${battleId}/advance`, { ...advanceRequest,
       headers: { ...advanceRequest.headers, "Idempotency-Key": "asset-integration-corrected-004" } });
     assert.equal(corrected.status, 200);
+    assert.equal(await drainReservedNarration(battleId), "completed");
     const correctedState = await battleRepo.getBattle(battleId);
     assert.equal(correctedState?.status, "active");
     assert.equal(correctedState?.turn, 4, "closed invalid primary receipt permits atomic corrected-turn commit");
@@ -507,6 +525,7 @@ describe("integrated structured asset cutover", () => {
     const rejectedPlan = await app.request(`/api/battles/${battleId}/advance`, { ...advanceRequest,
       headers: { ...advanceRequest.headers, "Idempotency-Key": "asset-integration-rejected-plan-005" } });
     assert.equal(rejectedPlan.status, 200);
+    assert.equal(await drainReservedNarration(battleId), "completed");
     const afterRejectedPlan = await battleRepo.getBattle(battleId);
     assert.equal(afterRejectedPlan?.status, "active");
     assert.equal(afterRejectedPlan?.turn, 5, "one invalid side plan does not stop the counterpart's turn");
@@ -516,9 +535,53 @@ describe("integrated structured asset cutover", () => {
     const repairedNarration = await app.request(`/api/battles/${battleId}/advance`, { ...advanceRequest,
       headers: { ...advanceRequest.headers, "Idempotency-Key": "asset-integration-narration-006" } });
     assert.equal(repairedNarration.status, 200);
+    assert.equal(await drainReservedNarration(battleId), "completed");
     const afterRepairedNarration = await battleRepo.getBattle(battleId);
     assert.equal(afterRepairedNarration?.status, "active");
     assert.equal(afterRepairedNarration?.turn, 6, "empty public narration does not discard the turn");
+    // Canonical turns continue with queued narration and after an unknown-send narration failure.
+    const terminalId = "btl_reserved_terminal_integration";
+    const terminalStart = BattleStateSchema.parse({ ...bound, id: terminalId });
+    assert.equal(await battleRepo.insertNewBattle(terminalStart, { sideAUserId: ownerId, sideACharacterId: mineId, sideBCharacterId: opponentId },
+      (connection) => insertReservedRuntime(connection, terminalId, initializeReservedTurns(boundManifest.reservedTurnPolicy, Date.now(), boundManifest.awarenessPolicy), new Date().toISOString())), "created");
+    reservedScenario = "idle";
+    for (let turn = 1; turn <= 12; turn += 1) {
+      const response = await app.request(`/api/battles/${terminalId}/advance`, { ...advanceRequest,
+        headers: { ...advanceRequest.headers, "Idempotency-Key": `terminal-turn-${turn}` } });
+      assert.equal(response.status, 200);
+      const publicState = z.object({ battle: BattlePublicSchema }).parse(await response.json()).battle;
+      assert.equal(publicState.turn, turn);
+      if (turn === 12) { assert.equal(publicState.resultPending, true); assert.equal(publicState.winnerSide, null); assert.equal(publicState.ratingSettlement, null); }
+      if (turn === 1) {
+        const beforeNarration = await battleRepo.getBattle(terminalId);
+        reservedScenario = "narration-unknown";
+        assert.equal(await drainReservedNarration(terminalId), "failed");
+        assert.deepEqual((await battleRepo.getBattle(terminalId))?.sideA, beforeNarration?.sideA, "narration failure cannot alter canonical combat state");
+        reservedScenario = "idle";
+      }
+    }
+    const canonicalTerminal = await battleRepo.getBattle(terminalId);
+    assert.ok(canonicalTerminal);
+    assert.equal(canonicalTerminal.status, "finished");
+    assert.equal(canonicalTerminal.finishReason, "turn_limit");
+    assert.equal(canonicalTerminal.adjudication?.source, "deterministic_fallback");
+    const scoreA = combatScore(canonicalTerminal.sideA); const scoreB = combatScore(canonicalTerminal.sideB);
+    assert.equal(canonicalTerminal.winnerSide, scoreA === scoreB ? "draw" : scoreA > scoreB ? "a" : "b");
+    const terminalHistory = z.object({ battles: z.array(z.object({ id: z.string(), winnerSide: z.string().nullable() })) }).parse(await (await app.request("/api/battles?status=all", { headers: authHeaders })).json());
+    assert.equal(terminalHistory.battles.find((item) => item.id === terminalId)?.winnerSide, null);
+    assert.equal(await processNextNarration({ battleId: terminalId, receiptId: canonicalTerminal.phaseReceipts?.at(-1)?.id, ownerId: "out-of-order", generator: createLlmNarrationGenerator(provider) }), "deferred");
+    for (let turn = 2; turn <= 12; turn += 1) assert.equal(await drainReservedNarration(terminalId), "completed");
+    assert.equal(await drainReservedNarration(terminalId), "acknowledged", "terminal unknown-send narration is never resent");
+    const disclosed = z.object({ battle: BattlePublicSchema }).parse(await (await app.request(`/api/battles/${terminalId}`, { headers: authHeaders })).json()).battle;
+    assert.equal(disclosed.status, "finished"); assert.equal(disclosed.winnerSide, canonicalTerminal.winnerSide);
+    assert.equal(disclosed.log.at(-1)?.narrator.some((line) => line.startsWith("判定は")), true);
+    const beforeReplay = await query<{ snapshot_json: string }>("SELECT snapshot_json FROM battle_reserved_turns WHERE battle_id=$1", [terminalId]);
+    const terminalReplay = await app.request(`/api/battles/${terminalId}/advance`, { ...advanceRequest, headers: { ...advanceRequest.headers, "Idempotency-Key": "terminal-extra-advance" } });
+    assert.equal(terminalReplay.status, 200);
+    const afterReplay = await query<{ snapshot_json: string }>("SELECT snapshot_json FROM battle_reserved_turns WHERE battle_id=$1", [terminalId]);
+    assert.deepEqual(afterReplay.rows, beforeReplay.rows, "terminal advance creates no13th-turn calls or state changes");
+    assert.deepEqual((await battleRepo.getBattle(terminalId))?.ratingSettlement, canonicalTerminal.ratingSettlement);
+    reservedScenario = "narration-empty";
     const beforeInvalid = JSON.stringify({ world: afterRepairedNarration?.worldState, a: afterRepairedNarration?.sideA, b: afterRepairedNarration?.sideB });
     reservedScenario = "unknown";
     const invalid = await app.request(`/api/battles/${battleId}/advance`, { ...advanceRequest,

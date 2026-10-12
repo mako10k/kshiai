@@ -12,7 +12,7 @@ export function projectBattleActionEffort(state: Pick<BattleState, "sideA" | "si
   const previousRepeatCount = side === "a" ? state.dramaState?.repeatedActionA : state.dramaState?.repeatedActionB;
   const nextEffort = repeatedActionStaminaCost({ kind: "skill", repeatCount: (previousRepeatCount ?? 0) + 1,
     policy: actor.actionEffortPolicy });
-  const penalty = state.latestFreeActionReceipts?.find((receipt) => receipt.actorSide === side)?.penalty;
+  const penalty = state.latestFreeActionReceipts?.find((receipt) => receipt.actorSide === side)?.penalty ?? actor.lastFreeActionPenalty;
   return SelfActionEffortPerceptionV1Schema.parse({ contractVersion: actor.actionEffortPolicy.contractVersion, fatigue,
     repeatingEffort: nextEffort > 0 ? `同じ動きを続けると、いつもの負担にSTA${nextEffort}の消耗が重なりそう` : "同じ動きも、重ねれば息が乱れそう",
     freeActionRisk: actor.pendingDefenseExposure ? "体勢に隙が残り、次の攻撃で傷つきやすそう"

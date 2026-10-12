@@ -1,3 +1,4 @@
+import { reservedResultDisclosure } from "../repositories/reserved-result-disclosure.js";
 import { bindReservedBattleState, parseReservedCreationPolicy } from "./reserved-turn-policy.js";
 import { initializeReservedTurns, type ReservedTurnPolicy } from "@kshiai/shared";
 import { adoptReservedCreationInTransaction } from "../repositories/battle-awareness-creation.js";
@@ -338,18 +339,16 @@ export async function toBattlePublicForViewer(
   resultSummary?: string | null,
   oppSheet?: CharacterSheet | null,
 ): Promise<BattlePublic> {
-  const presentationLog = config.battlePresentationReadModel
+  const reservedOrdered = state.assetManifest?.schemaVersion === 7 && "canonicalNarration" in state.assetManifest.reservedTurnPolicy;
+  const presentationLog = config.battlePresentationReadModel || reservedOrdered
     ? await presentationRepo.listBattlePresentations(state.id)
     : [];
   const presentationState = presentationLog.length > 0
     ? { ...state, log: [...state.log, ...presentationLog] }
     : state;
-  return toBattlePublic(
-    presentationState,
-    mySheet,
-    resultSummary,
-    oppSheet,
-  );
+  const disclosure = await reservedResultDisclosure(presentationState);
+  const projected = toBattlePublic(disclosure.state, mySheet, disclosure.pending ? null : resultSummary, oppSheet);
+  return disclosure.pending ? { ...projected, resultPending: true } : projected;
 }
 
 async function resolveBattlefieldInstance(input: {

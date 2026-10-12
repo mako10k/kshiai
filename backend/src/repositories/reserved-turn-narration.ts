@@ -1,6 +1,9 @@
 // R: Publish already-generated reserved-turn narration atomically, without another worker or provider call.
 import { NarrativeBlockSchema, type BattleState, type ReservedTurnRuntime } from "@kshiai/shared";
 import type { DatabaseConnection } from "../db.js";
+import { enqueueNarrationInTransaction } from "../services/narration-worker.js";
+import { requestDigest } from "../services/distributed-guard.js";
+import type { ReservedNarrationInput } from "../services/reserved-turn-narration.js";
 import { appendNarrationEvent } from "../services/narration-event-storage.js";
 export async function publishReservedNarration(connection: DatabaseConnection, state: BattleState, runtime: ReservedTurnRuntime, now: string): Promise<void> {
   const receipt = state.phaseReceipts?.at(-1);
@@ -13,4 +16,11 @@ export async function publishReservedNarration(connection: DatabaseConnection, s
     [state.id,receipt.id,receipt.sequence,state.turn,JSON.stringify({ kind: "reserved-turns-v1", requestId: request.id }),request.inputDigest,JSON.stringify(narrative),now]);
   await appendNarrationEvent({ connection,battleId:state.id,receiptId:receipt.id,narrationSequence:receipt.sequence,kind:"completed",
     payload:{turnReceiptId:receipt.id,narrationSequence:receipt.sequence,phase:"combat",combatTurn:state.turn,status:"completed",narrative},now });
+}
+
+export async function enqueueReservedNarration(connection: DatabaseConnection, state: BattleState, frozen: ReservedNarrationInput, now: string): Promise<void> {
+  const receipt = state.phaseReceipts?.at(-1);
+  if (!receipt || receipt.combatTurn !== state.turn || frozen.turn !== state.turn || frozen.battleId !== state.id) throw new Error("RESERVED_PUBLICATION_BINDING_INVALID");
+  await enqueueNarrationInTransaction(connection, { battleId: state.id, receiptId: receipt.id, sequence: receipt.sequence,
+    phase: "combat", combatTurn: state.turn, frozenInput: frozen, inputDigest: requestDigest(frozen), now });
 }

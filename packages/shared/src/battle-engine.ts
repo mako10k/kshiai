@@ -3418,7 +3418,7 @@ function tagActionEvents(
   }
 }
 
-function combatScore(c: CombatantState): number {
+export function combatScore(c: Pick<CombatantState, "parameters">): number {
   const p = c.parameters;
   return (p.hp ?? 0) * 2 + (p.mp ?? 0) + (p.stamina ?? 0) + (p.atk ?? 0) + (p.def ?? 0);
 }

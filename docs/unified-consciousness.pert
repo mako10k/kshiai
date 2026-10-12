@@ -1,7 +1,7 @@
 project UNIFIED_CONSCIOUSNESS:
-  version 42
+  version 43
   title "予約ターンパイプライン v1への統合"
-  description "Owner confirms12public turns and asks restoration of existing turn-end victory determination. Withdraw prior new draw/no-winner question; Proposed ADR0080 must be realigned to restoration, not treated as accepted. Migration audit docs/reserved-turn-migration-adr-audit-2026-10-12.md confirms clock/terminal omissions, Accepted ADR0006 vs ADR0072 narration-commit conflict and missing fatigue enforcement; speech/personality/phase coverage needs regression verification. Audit and resolve governing contracts before implementation. Preserve rc.10 Stage36turn/145closed evidence and cumulative406/461 paid accounting. Production remains application v0.24.0-rc.9."
+  description "Owner accepts12public turns/existing victory and canonical-first narration with ordered publication/result gating. Accepted ADR0080 revision2 governs restoration. Migration audit docs/reserved-turn-migration-adr-audit-2026-10-12.md confirms clock/terminal omissions, Accepted ADR0006 vs ADR0072 narration-commit conflict and missing fatigue enforcement; speech/personality/phase coverage needs regression verification. Audit and resolve governing contracts before implementation. Preserve rc.10 Stage36turn/145closed evidence and cumulative406/461 paid accounting. Production remains application v0.24.0-rc.9."
   duration_unit point
   finish RESERVED_DEPLOYED
   goal_owner user
@@ -113,17 +113,18 @@ milestone RESERVED_TERMINAL_READY:
   title "承認済み終了ルールを修復検証"
 task reservedTerminalDecision RESERVED_REPAIR_READY -> RESERVED_TERMINAL_DECIDED:
   title "予約ターンパイプライン v1の上限終了を決定"
-  description "Owner decides12turns and restoration of existing turn-end victory. Withdraw unconditional draw/no-winner choice. Use migration audit2026-10-12 to reconcile canonical-first narration ADR0006 with atomic-narration ADR0072, fatigue ADR0062 and required speech/personality/public verdict coverage. Record precise restoration/partial supersession in governing ADR before implementation; old paid snapshots unchanged. Completion: aligned governing decision and canonical doc/both schedules/next checked."
+  description "Accepted ADR0080 revision2 records owner12turns/existing victory and canonical-first narration; result display and next narration wait. Restore fatigue, safe verdict and personality/speech inputs. Initial Proposed draw/no-winner question withdrawn. Governing audit and document/both schedules/next aligned before implementation."
   duration 1p
   requires:
     DEV 1
-  status active
+  status done
 task reservedTerminalRepair RESERVED_TERMINAL_DECIDED -> RESERVED_TERMINAL_READY:
   title "予約ターン上限終了を実装し検証"
-  description "Only after Accepted ADR0080 implement selected immutable endpoint, preserve historical bindings and last-turn incapacitation precedence. Offline saved-state boundary replay, API terminal/idempotency/accounting/rating coverage, individual authority review, full governed tests/typecheck/build/static/ADR/fsck and exact PR/main CI/tag. No paid run in this task."
-  duration 3p
+  description "Implement Accepted ADR0080 revision2: new immutable12turn policy, established canonical winner and rating, canonical-first ordered durable narration/result gating, typed fatigue/penalties, personality and speech continuity. Preserve historical bindings and paid evidence. Offline terminal/concurrency/privacy/effort regression coverage, individual authority review, full governed tests/typecheck/build/static/ADR/fsck and exact PR/main CI/tag; no paid calls in this task."
+  duration 8p
   requires:
     DEV 1
+  status active
 task reservedStage RESERVED_TERMINAL_READY -> RESERVED_STAGED:
   title "固定1対戦を十分な承認枠で完走し検証"
   description "Previous explicit approval consumed145 of200 in Stage38227163875: all36turns consistent but max-turn endpoint failed. Cumulative406/461 leaves55; insufficient for another maximum-duration battle. Await Accepted ADR0080 and verified candidate, then obtain concrete full-battle paid approval if needed. No new run, unknown-send replay or character generation now. Completion: selected endpoint passes exact Stage with canonical world/memory/physical accounting and immutable Promote artifacts."

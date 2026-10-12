@@ -1,3 +1,4 @@
+import { FreeActionPenaltyProposalV1Schema, PendingDefenseExposureV1Schema } from "./action-effort-policy.js";
 import { ReservedTurnPolicySchema, type ReservedTurnPolicy } from "./reserved-turn-policy.js";
 export { ReservedTurnPolicySchema, ReservedTurnPromptRevisionSchema, type ReservedTurnPolicy, type ReservedTurnPromptRevision } from "./reserved-turn-policy.js";
 import { AwarenessPolicyV1Schema, AwarenessBudgetSnapshotSchema, AwarenessNormalPolicy, type AwarenessPolicyV1 } from "./awareness-pipeline.js";
@@ -22,7 +23,17 @@ export const ReservedTurnPlanSchema = z.object({
 }).strict().superRefine((plan, ctx) => {
   if (new Set(plan.actions.map((a) => a.id)).size !== plan.actions.length) ctx.addIssue({ code: "custom", message: "Duplicate reservation ID" });
 });
-export type ReservedTurnPlan = z.infer<typeof ReservedTurnPlanSchema>;
+export const ReservedActionMechanicsSchema = z.discriminatedUnion("kind", [
+  z.object({ kind: z.literal("skill"), skillId: id }).strict(),
+  z.object({ kind: z.enum(["basic_attack", "reflect", "free_action", "other"]) }).strict(),
+]);
+export const ReservedTurnPlanV2Schema = z.object({
+  actions: z.array(ReservedActionSchema.extend({ mechanics: ReservedActionMechanicsSchema })).max(5),
+  speech: consciousnessText(400).optional(), memory: ConsciousnessMemorySnapshotSchema,
+}).strict().superRefine((plan, ctx) => {
+  if (new Set(plan.actions.map((a) => a.id)).size !== plan.actions.length) ctx.addIssue({ code: "custom", message: "Duplicate reservation ID" });
+});
+export type ReservedTurnPlan = z.infer<typeof ReservedTurnPlanSchema> | z.infer<typeof ReservedTurnPlanV2Schema>;
 const resourcesSchema = z.object({
   hp: ordinal, maxHp: ordinal.positive(), mp: ordinal, maxMp: ordinal, stamina: ordinal, maxStamina: ordinal,
   initiative: z.number().finite(),
@@ -60,10 +71,21 @@ export const ReservedActionResultV2Schema = reservedActionResultBaseSchema.super
   if (result.outcome === "cancelled" && result.updates.length !== 0) ctx.addIssue({ code: "custom", message: "Cancelled attempt cannot mutate world" });
 });
 export const ReservedTurnTraceV2Schema = z.object({ results: z.array(ReservedActionResultV2Schema).max(10) }).strict();
-export type ReservedTurnOutputRevision = "reserved-turn-output-v1" | "reserved-turn-output-v2" | "reserved-turn-output-v3";
+export const ReservedActionResultV4Schema = reservedActionResultBaseSchema.extend({
+  attempted: z.boolean(), penalty: FreeActionPenaltyProposalV1Schema.nullable(),
+  effortApplied: z.object({ requestedStamina: ordinal, paidStamina: ordinal, unpaidStamina: ordinal,
+    paidMp: ordinal, consumedExposure: z.boolean() }).strict().optional(),
+});
+export const ReservedTurnTraceV4Schema = z.object({ results: z.array(ReservedActionResultV4Schema).max(10) }).strict();
+export const ReservedEffortStateSchema = z.object({
+  a: z.object({ key: z.string(), count: ordinal, exposure: PendingDefenseExposureV1Schema.nullable() }).strict(),
+  b: z.object({ key: z.string(), count: ordinal, exposure: PendingDefenseExposureV1Schema.nullable() }).strict(),
+}).strict();
+export type ReservedEffortState = z.infer<typeof ReservedEffortStateSchema>;
+export type ReservedTurnOutputRevision = "reserved-turn-output-v1" | "reserved-turn-output-v2" | "reserved-turn-output-v3" | "reserved-turn-output-v4";
 const reservedTurnWireV3Schema = z.object({ results: z.array(reservedActionResultBaseSchema).max(10) }).strict();
 export type ReservedTurnTrace = z.infer<typeof ReservedTurnTraceSchema>;
-export type OrderedReservation = { side: "a" | "b"; reservationId: string; action: z.infer<typeof ReservedActionSchema> };
+export type OrderedReservation = { side: "a" | "b"; reservationId: string; action: ReservedTurnPlan["actions"][number] };
 export function orderReservedActions(turn: number, initiative: { a: number; b: number }, plans: { a: ReservedTurnPlan; b: ReservedTurnPlan }): OrderedReservation[] {
   const first: "a" | "b" = initiative.a === initiative.b ? (turn % 2 === 1 ? "a" : "b") : initiative.a > initiative.b ? "a" : "b";
   const second: "a" | "b" = first === "a" ? "b" : "a";
@@ -76,8 +98,8 @@ export function orderReservedActions(turn: number, initiative: { a: number; b: n
   }
   return ordered;
 }
-export function validateReservedPlan(raw: unknown, memory: z.infer<typeof ConsciousnessMemorySchema>, references: ReadonlySet<string>, decisionId: string): ReservedTurnPlan {
-  const plan = ReservedTurnPlanSchema.parse(raw);
+export function validateReservedPlan(raw: unknown, memory: z.infer<typeof ConsciousnessMemorySchema>, references: ReadonlySet<string>, decisionId: string, mechanics = false): ReservedTurnPlan {
+  const plan = mechanics ? ReservedTurnPlanV2Schema.parse(raw) : ReservedTurnPlanSchema.parse(raw);
   applyConsciousnessMemorySnapshot(memory, plan.memory, decisionId);
   if (plan.actions.some((action) => action.targets.some((target) => !references.has(target)))) throw new Error("RESERVED_UNKNOWN_REFERENCE");
   return plan;
@@ -116,6 +138,7 @@ function requiresPhysicalEffect(result: ReservedTurnTrace["results"][number], re
 }
 /** No mutation escapes this reducer until every receipt validates. */
 export function applyReservedTurnTrace(start: ReservedTurnWorld, order: readonly OrderedReservation[], raw: unknown, outputRevision: ReservedTurnOutputRevision = "reserved-turn-output-v1"): { state: ReservedTurnWorld; trace: ReservedTurnTrace } {
+  if (outputRevision === "reserved-turn-output-v4") throw new Error("RESERVED_EFFORT_CONTEXT_REQUIRED");
   if (outputRevision === "reserved-turn-output-v3") return applyRecoverableReservedTrace(start, order, raw);
   const trace = (outputRevision === "reserved-turn-output-v2" ? ReservedTurnTraceV2Schema : ReservedTurnTraceSchema).parse(raw);
   if (trace.results.length !== order.length) throw new Error("RESERVED_TRACE_INCOMPLETE");
@@ -185,8 +208,8 @@ export function failedReservedAdjudicationTrace(start: ReservedTurnWorld, order:
 
 export const ReservedTurnNarrationSchema = z.object({ lines: z.array(consciousnessText(600)).min(1).max(16) }).strict();
 const requestOutputSchema = z.discriminatedUnion("role", [
-  z.object({ role: z.literal("character"), plan: ReservedTurnPlanSchema }).strict(),
-  z.object({ role: z.literal("adjudication"), trace: ReservedTurnTraceV2Schema }).strict(),
+  z.object({ role: z.literal("character"), plan: z.union([ReservedTurnPlanV2Schema, ReservedTurnPlanSchema]) }).strict(),
+  z.object({ role: z.literal("adjudication"), trace: z.union([ReservedTurnTraceV4Schema, ReservedTurnTraceV2Schema]) }).strict(),
   z.object({ role: z.literal("narration"), narration: ReservedTurnNarrationSchema }).strict(),
 ]);
 export const ReservedTurnRequestSchema = z.object({
@@ -205,9 +228,20 @@ export type ReservedTurnRequest = z.infer<typeof ReservedTurnRequestSchema>;
 export function isClosedRecoverableReservedRequest(request: ReservedTurnRequest, policy: ReservedTurnPolicy): boolean {
   if (request.status !== "failed" || request.physicalOutstanding || request.rawResponse === null) return false;
   if (request.role === "character") return "maxCharacterCorrections" in policy && request.failure === "PLAN_INVALID";
-  return request.role === "adjudication" && ["reserved-turn-policy-v5", "reserved-turn-policy-v6", "reserved-turn-policy-v7"].includes(policy.revision) && request.failure === "ADJUDICATION_INVALID";
+  return request.role === "adjudication" && ["reserved-turn-policy-v5", "reserved-turn-policy-v6", "reserved-turn-policy-v7", "reserved-turn-policy-v8"].includes(policy.revision) && request.failure === "ADJUDICATION_INVALID";
 }
 
+function validateRuntimeOutputContracts(runtime: { policy: ReservedTurnPolicy; effortState?: ReservedEffortState; lastTrace: unknown; requests: z.infer<typeof ReservedTurnRequestSchema>[] }, ctx: z.RefinementCtx): void {
+  const independent = "canonicalNarration" in runtime.policy;
+  if (independent !== (runtime.effortState !== undefined)) ctx.addIssue({ code: "custom", message: "Reserved effort state binding mismatch" });
+  const plan = independent ? ReservedTurnPlanV2Schema : ReservedTurnPlanSchema;
+  const trace = independent ? ReservedTurnTraceV4Schema : ReservedTurnTraceV2Schema;
+  if (runtime.lastTrace && !trace.safeParse(runtime.lastTrace).success) ctx.addIssue({ code: "custom", message: "Reserved last trace contract mismatch" });
+  for (const request of runtime.requests) {
+    if (request.output?.role === "character" && !plan.safeParse(request.output.plan).success) ctx.addIssue({ code: "custom", message: "Reserved plan contract mismatch" });
+    if (request.output?.role === "adjudication" && !trace.safeParse(request.output.trace).success) ctx.addIssue({ code: "custom", message: "Reserved trace contract mismatch" });
+  }
+}
 export const ReservedTurnRuntimeSchema = z.object({
   pipeline: z.literal("reserved-turns-v1"), policy: ReservedTurnPolicySchema,
   operatingPolicy: AwarenessPolicyV1Schema, budget: AwarenessBudgetSnapshotSchema, terminalAt: ordinal.nullable(),
@@ -216,10 +250,12 @@ export const ReservedTurnRuntimeSchema = z.object({
   memories: z.object({ a: ConsciousnessMemorySchema, b: ConsciousnessMemorySchema }).strict(),
   feedback: z.object({ a: z.array(consciousnessText(600)).max(80), b: z.array(consciousnessText(600)).max(80) }).strict(),
   requests: z.array(ReservedTurnRequestSchema).max(500),
-  lastTrace: ReservedTurnTraceV2Schema.nullable(),
+  lastTrace: z.union([ReservedTurnTraceV4Schema, ReservedTurnTraceV2Schema]).nullable(),
+  effortState: ReservedEffortStateSchema.optional(),
 }).strict().superRefine((runtime, ctx) => {
+  validateRuntimeOutputContracts(runtime, ctx);
   // Policy is frozen with the output revision; old persisted traces retain v1 validation.
-  if (runtime.policy.revision !== "reserved-turn-policy-v4" && runtime.policy.revision !== "reserved-turn-policy-v5" && runtime.policy.revision !== "reserved-turn-policy-v6" && runtime.policy.revision !== "reserved-turn-policy-v7") {
+  if (!["reserved-turn-policy-v4", "reserved-turn-policy-v5", "reserved-turn-policy-v6", "reserved-turn-policy-v7", "reserved-turn-policy-v8"].includes(runtime.policy.revision)) {
     const traces = [runtime.lastTrace, ...runtime.requests.flatMap((request) => request.output?.role === "adjudication" ? [request.output.trace] : [])];
     for (const trace of traces) {
       if (trace && !ReservedTurnTraceSchema.safeParse(trace).success) ctx.addIssue({ code: "custom", message: "Legacy policy requires reserved turn output v1" });
@@ -236,5 +272,6 @@ export const ReservedTurnRuntimeSchema = z.object({
 export type ReservedTurnRuntime = z.infer<typeof ReservedTurnRuntimeSchema>;
 export function initializeReservedTurns(policy: ReservedTurnPolicy, startedAt: number, operatingPolicy: AwarenessPolicyV1 = AwarenessNormalPolicy): ReservedTurnRuntime {
   return ReservedTurnRuntimeSchema.parse({ pipeline: "reserved-turns-v1", policy, operatingPolicy, terminalAt: null, budget: { physicalAttempts: 0, physicalOutstanding: 0, reservedUsd: 0, settledUsd: 0, unknownAttemptIds: [], reservations: [] }, startedAt, deadlineAt: startedAt + policy.durationMs,
+    ...("canonicalNarration" in policy ? { effortState: { a: { key: "", count: 0, exposure: null }, b: { key: "", count: 0, exposure: null } } } : {}),
     turn: 0, status: "active", failure: null, memories: { a: [], b: [] }, feedback: { a: [], b: [] }, requests: [], lastTrace: null });
 }

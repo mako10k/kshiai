@@ -1,5 +1,6 @@
 // R: Generate and publish ordered narration from committed battle inputs under lease fences.
 import {
+  BattleStateSchema,
   JudgmentPresentationProjectionSchema,
   NarrativeBlockSchema,
   type BattleNarrationEntryPublic,
@@ -8,7 +9,8 @@ import {
   type BattleNarrationSnapshot,
   type NarrativeBlock,
 } from "@kshiai/shared";
-import { ZodError } from "zod";
+import { ZodError, z } from "zod";
+import { generateReservedNarration, ReservedNarrationInputSchema } from "./reserved-turn-narration.js";
 import { query, withTransaction, type DatabaseConnection } from "../db.js";
 import { appendNarrationEvent, type AppendNarrationEventInput } from "./narration-event-storage.js";
 import { newId } from "../id.js";
@@ -95,12 +97,15 @@ export type NarrationGenerator = ((
 ) => Promise<NarrationGenerationResult>) & { readonly awareness?: AwarenessNarrationWorkerOptions };
 
 export function createLlmNarrationGenerator(llm: LlmProvider, admission?: VerifiedNarrationDispatchAdmission): NarrationGenerator {
-  const generator: NarrationGenerator = async (raw) => {
-    if (!raw || typeof raw !== "object") throw new Error("narration_input_invalid");
-    const input = raw as { kind?: unknown; request?: unknown };
-    if (!input.request || typeof input.request !== "object") {
-      throw new Error("narration_request_missing");
+  const generator: NarrationGenerator = async (raw, context) => {
+    if (ReservedNarrationInputSchema.safeParse(raw).success) {
+      const transport = llm.awareness?.adjudication;
+      if (!transport || !context) throw new Error("RESERVED_NARRATION_ROUTE_REQUIRED");
+      const generated = await captureProviderHttpAttempts(() => generateReservedNarration(raw, transport, context.heartbeat));
+      return { narrative: generated.value, provider: transport.identity.provider, model: transport.identity.fastModel,
+        route: "fast", httpAttempts: generated.httpAttempts, tokenCount: null, estimatedCostUsd: null };
     }
+    const input = z.object({ kind: z.string(), request: z.record(z.unknown()) }).passthrough().parse(raw);
     const generated = await captureProviderHttpAttempts(async () => {
       let narrative: NarrativeBlock;
       if (input.kind === "combat") {
@@ -343,6 +348,11 @@ function deterministicFallback(entry: EntryRow): NarrativeBlock {
   const parsed = typeof entry.input_json === "string"
     ? JSON.parse(entry.input_json) as unknown
     : entry.input_json;
+  const reserved = ReservedNarrationInputSchema.safeParse(parsed);
+  if (reserved.success) {
+    return { turn: reserved.data.turn, narrator: [...(reserved.data.consequences.length ? reserved.data.consequences.slice(0, 16).map((line) => Array.from(line).slice(0, 300).join("")) : ["このターンに公開された行動結果はありません。"]),
+      ...(reserved.data.verdict ? ["——判定——", reserved.data.verdict] : [])], speeches: reserved.data.speeches };
+  }
   const sceneCandidate = parsed && typeof parsed === "object"
     ? Reflect.get(parsed, "scene")
     : null;
@@ -465,6 +475,14 @@ async function claimNarrationEntry(
     }
     await releaseNarrationLease(connection, input, fence);
     return { disposition: "acknowledged" as const };
+  }
+  const reservedInput = ReservedNarrationInputSchema.safeParse(typeof entry.input_json === "string" ? JSON.parse(entry.input_json) : entry.input_json);
+  if (reservedInput.success) {
+    const earlier = await connection.query("SELECT 1 FROM battle_narration_entries WHERE battle_id=$1 AND sequence<$2 AND status IN ('queued','generating') LIMIT 1", [input.battleId, entry.sequence]);
+    if (earlier.rowCount > 0) {
+      await releaseNarrationLease(connection, input, fence);
+      return { disposition: "deferred" };
+    }
   }
   const attemptId = newId("narration_attempt");
   const updated = await connection.query(
@@ -688,19 +706,7 @@ async function publishCompletedNarration(
       claimed.attemptId],
   );
   if (committed.rowCount !== 1) throw new Error("NARRATION_STALE_ATTEMPT");
-  const presentation = await connection.query(
-    `INSERT INTO battle_presentations
-          (battle_id, receipt_id, sequence, phase, combat_turn, input_digest,
-           narrative_json, created_at)
-         VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
-         ON CONFLICT (battle_id, receipt_id) DO UPDATE
-           SET narrative_json = EXCLUDED.narrative_json
-           WHERE battle_presentations.input_digest = EXCLUDED.input_digest`,
-    [input.battleId, claimed.entry.receipt_id, claimed.entry.sequence,
-      claimed.entry.phase, claimed.entry.combat_turn, claimed.entry.input_digest,
-      json(generated.narrative), finishedAt],
-  );
-  if (presentation.rowCount !== 1) throw new Error("PRESENTATION_DIGEST_CONFLICT");
+  await publishNarrationPresentation(connection, input.battleId, claimed, generated.narrative, finishedAt);
   await appendPublicEvent({
     connection,
     battleId: input.battleId,
@@ -760,6 +766,22 @@ async function recordFailedNarrationAttempt(
   );
 }
 
+async function publishNarrationPresentation(connection: DatabaseConnection, battleId: string, claimed: ClaimedNarration, narrative: NarrativeBlock, finishedAt: string) {
+  const presentation = await connection.query(
+    `INSERT INTO battle_presentations
+          (battle_id, receipt_id, sequence, phase, combat_turn, input_digest,
+           narrative_json, created_at)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+         ON CONFLICT (battle_id, receipt_id) DO UPDATE
+           SET narrative_json = EXCLUDED.narrative_json
+           WHERE battle_presentations.input_digest = EXCLUDED.input_digest`,
+    [battleId, claimed.entry.receipt_id, claimed.entry.sequence,
+      claimed.entry.phase, claimed.entry.combat_turn, claimed.entry.input_digest,
+      json(narrative), finishedAt],
+  );
+  if (presentation.rowCount !== 1) throw new Error("PRESENTATION_DIGEST_CONFLICT");
+}
+
 async function publishFailedNarration(
   connection: DatabaseConnection,
   input: ProcessNarrationInput,
@@ -770,7 +792,8 @@ async function publishFailedNarration(
   const { fallbackReason, ceilingReached, finishedAt } = outcome;
 
   const attempts = Number(claimed.entry.attempt_count) + 1;
-  const terminal = ceilingReached || attempts >= NARRATION_WORKER_MAX_ATTEMPTS;
+  const reserved = ReservedNarrationInputSchema.safeParse(typeof claimed.entry.input_json === "string" ? JSON.parse(claimed.entry.input_json) : claimed.entry.input_json);
+  const terminal = reserved.success || ceilingReached || attempts >= NARRATION_WORKER_MAX_ATTEMPTS;
   await recordFailedNarrationAttempt(connection, claimed, fence, outcome, terminal);
   if (!terminal) {
     await connection.query(
@@ -783,6 +806,7 @@ async function publishFailedNarration(
     return "retry_queued";
   }
   const fallback = deterministicFallback(claimed.entry);
+  if (reserved.success) await publishNarrationPresentation(connection, input.battleId, claimed, fallback, finishedAt);
   await connection.query(
     `UPDATE battle_narration_entries
           SET status = 'failed', terminal_narrative_json = $3,
@@ -846,6 +870,14 @@ async function finalizeNarrationAttempt(
     : publishFailedNarration(connection, input, claimed, fence, outcome);
 }
 
+function reservedNarrationLeaseInput(input: ProcessNarrationInput, candidate: unknown): ProcessNarrationInput {
+  const reservedBattle = BattleStateSchema.safeParse(candidate);
+  if (reservedBattle.success && reservedBattle.data.assetManifest?.schemaVersion === 7 && "canonicalNarration" in reservedBattle.data.assetManifest.reservedTurnPolicy) {
+    input = { ...input, leaseMs: Math.max(input.leaseMs ?? 60000, reservedBattle.data.assetManifest.reservedTurnPolicy.deadlineMs + 5000) };
+  }
+  return input;
+}
+
 async function processNextNarrationCore(
   input: ProcessNarrationInput,
 ): Promise<NarrationWorkerResult> {
@@ -873,6 +905,7 @@ async function processNextNarrationCore(
       },
     });
   }
+  input = reservedNarrationLeaseInput(input, candidate);
   const nowDate = input.now ?? new Date();
   const now = nowDate.toISOString();
   if (input.receiptId && input.outboxId && input.deliveryGeneration !== undefined) {

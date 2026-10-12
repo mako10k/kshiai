@@ -1,57 +1,64 @@
-# ADR-0080: Explicit reserved turn limit completion
+# ADR-0080: Restore reserved turn lifecycle and ordered independent narration
 
-- Status: Proposed
-- Revision: 1
+- Status: Accepted
+- Revision: 2
 - Date: 2026-10-12
 - Decision owner: Repository owner
 - Authority: [canonical decision](0080-reserved-turn-limit-completion.think)
-- Related: ADR-0072/0074; docs/reserved-turns-v1.md; docs/unified-consciousness.pert reservedTerminalDecision; docs/evidence/reserved-turns-rc10-turn-limit-2026-10-12.json
+- Related: ADR-0006/0009/0017/0062/0072; [migration audit](../reserved-turn-migration-adr-audit-2026-10-12.md); docs/unified-consciousness.pert
 
 ## Context
 
-Application v0.25.0-rc.10 Stage38227163875 committed all36 turns using145 physical attempts, all closed, with zero world or memory mismatches. Both actors retained62HP. Four invalid narration responses were recovered without extra calls. The runtime remained active after turn36, so the next advance failed RESERVED_TURN_BOUNDARY_INVALID. The original design says limits stop incomplete without inventing a winner; the Stage acceptance observer requires a finished battle with terminal runtime. A successful normal maximum-duration battle therefore cannot satisfy the existing release gate.
+Application v0.25.0-rc.10 incorrectly copied36ticks into public maxTurns and omitted the existing turn-limit winner. Stage38227163875 committed36consistent turns/145closed attempts but could not finish. The subsequent audit found narration blocking canonical commit and effort integration gaps. The initial Proposed revision1 draw/no-winner choice was withdrawn. Owner confirms12turns and existing turn-end victory, then explicitly directs canonical state not to wait for narration, while result display and next narration wait; correct the other migration defects.
 
 ## Decision drivers
 
-- Make the normal turn limit an explicit, understandable endpoint.
-- Preserve the final committed turn, memory, narration and exact usage.
-- Avoid an additional LLM call or unsupported winner inference.
-- Keep transport, budget and timeout failures distinct from normal maximum-turn completion.
+- Preserve owner-approved12turns and established victory mechanics.
+- Make narration latency/failure independent of canonical gameplay.
+- Preserve ordered public storytelling and delay result disclosure until narration completes.
+- Carry existing effort and perception requirements across the engine migration.
+- Preserve frozen historical bindings, paid evidence and unknown-send safety.
 
 ## Considered options
 
-1. Explicit draw at maxTurns when both actors remain able to fight: recommended, satisfies finished/terminal and uses existing turn_limit finish reason. Incapacitation on the last turn takes precedence. Draw rating settlement must follow the existing draw contract exactly once.
-2. No-winner limit completion: preserve incomplete/no rating semantics, expose an explicit turn-limit reason and allow only this precisely verified endpoint through Stage acceptance. This changes the release completion contract and must never admit other incomplete battles.
-3. Additional judgment call or HP-based winner: not proposed because this introduces extra cost or a new victory criterion.
+1. Unconditional draw/incomplete on maxTurns: withdrawn; contradicts existing victory contract.
+2. Wait for narration before state commit: conflicts with owner clarification.
+3. Canonical-first commit with existing durable ordered narration worker: selected.
 
 ## Decision
 
-The prior option1 recommendation and draw/no-winner owner question are withdrawn. The owner confirms12public turns and asks where existing turn-end victory determination went. Restore that existing contract; do not introduce unconditional draw semantics. See [migration audit](../reserved-turn-migration-adr-audit-2026-10-12.md). The remaining paragraph below describes the superseded proposal for audit history only.
+Accept revision2 under the owner's explicit direction. New reserved turn policy v8 binds12public turns. After each turn apply deterministic incapacitation; at turn12 use existing combatScore winner/tie rule, with incapacitation precedence. Set canonical winner/finish reason and settle rating once in the fenced world/memory transaction. Narration/referee prose never determines victory.
 
-Previously proposed option1: The earlier proposal incorrectly treated an existing rule as an unresolved product choice; neither implementation nor relaxed acceptance is authorized by this Proposed ADR. After acceptance, define a new immutable policy revision for the selected endpoint, preserve older policy semantics, and implement only that option. Keep numeric limits, provider/model routes, prompt v6 and output v3 unchanged unless compatibility requires an explicitly documented binding adjustment. No existing failed battle is resumed, rewritten or retrospectively declared successful.
+Commit canonical world, memories, plans, effective trace and receipt together with immutable narration input and durable outbox before provider narration dispatch. Reuse battle-local ordered narration leases, durable queue wake-up and terminal snapshots. Later canonical turns can commit while earlier narration is pending. Next narration generation waits for its predecessor terminal snapshot; public result display waits for the required narration endpoint. Terminal failure/fallback counts as a terminal snapshot; do not wait forever on transport failure. Preserve unknown-send receipts and never retry them automatically.
+
+Restore ADR0062 effort mechanics using typed action/skill identity and bounded penalty proposals rather than parsing natural-language intent. Apply normal costs/floors, repeated-action2/4STA, bounded free-action penalty and one-incoming-attack defense expiry through server validation; do not impose a blanket cost on failed reservations or ordinary thought/speech. Retain current effort sensation and private feedback, complete immutable personality guidance and actual received speech in next inputs. Keep repeated valid speech permitted. Publish safe canonical verdict without raw internal rationale.
+
+This partially supersedes ADR0072 only for its narration-before-canonical-commit boundary. It restores ADR0017/0006/0009/0062 requirements and retains intentional A/B parallel scheduling, ordered whole-turn adjudication and ranked memory. Later recovery ADR0076/0077/0078 remains for appropriate new receipt roles. No extra character/judge calls per normal turn.
 
 ## Consequences
 
 ### Positive
 
-- A full maximum-duration match has a specified endpoint without extra model calls.
-- Release acceptance tests the intended finite battle lifecycle.
+- Maximum-duration matches terminate under established victory mechanics.
+- Narration latency cannot discard adjudicated gameplay.
+- Result disclosure and narration order remain consistent.
 
 ### Negative and risks
 
-- Draws may remain repetitive; terminal correctness does not prove entertaining combat.
-- Option1 introduces draw/rating semantics for new policy bindings; option2 changes accepted Stage endpoints.
+- Narration may lag canonical gameplay; public projections must enforce disclosure boundaries.
+- Worker takeover and physical accounting require cross-boundary regression tests.
+- Typed effort metadata increases contract surface but avoids prose classification.
 
 ## Compatibility and migration
 
-Bind the selected endpoint in a new immutable policy revision; preserve historical policy bindings and paid evidence. No destructive database migration or old battle replay. Production remains application v0.24.0-rc.9. Remaining owner-approved paid capacity is55 physical attempts after cumulative406 of461; it is insufficient for another normal36-turn fixed battle. A new full paid battle needs a concrete separate approval; offline saved-turn validation requires no provider call.
+Only new immutable policy/prompt/output bindings adopt the repairs. Preserve historical v1–v7 policies and frozen prompts, failed battles and physical evidence. No old battle resume/rewrite or destructive migration. Existing queue tables are reused where sufficient. Production remains application v0.24.0-rc.9 until exact-source checks, successful Stage and Promote/readback. Cumulative406of461paid attempts; this record grants no new paid battle.
 
 ## Verification
 
-Regress turn35 active to turn36 endpoint, last-turn single and mutual incapacitation precedence, final world/memory/narration atomicity, no turn37 dispatch, idempotent terminal advance, exactly-once rating semantics or unchanged no-rating semantics, historical policy continuation and strict rejection of other incomplete/unknown-send cases. Replay retained final-turn inputs offline without provider sends. Review affected authority individually, full tests/typecheck/build/static/ADR checks, exact PR/main CI, annotated tag, successful Stage and exact-artifact Promote/readback.
+Test12turn endpoint and old36policy continuity; per-turn incapacity/last-turn precedence/tie and once-only rating; commit while narration blocked/failed; frozen outbox and ordered worker replay/unknown-send handling; public result suppression until terminal narration; exact speech/personality/effort next-input propagation; deterministic costs/repetition/penalties and defense expiry. Preserve original cases and individually reseal affected authority; governed tests/typecheck/build/static/ADR/fsck and exact CI/tag before release.
 
 ## Implementation references
 
-- Stage run: https://github.com/mako10k/kshiai/actions/runs/38227163875
-- Candidate source: 56ff6d8430efe24eb19e8594418b4e4b8fa00f0b
-- Sanitized evidence: docs/evidence/reserved-turns-rc10-turn-limit-2026-10-12.json
+- Stage: https://github.com/mako10k/kshiai/actions/runs/38227163875
+- Prior candidate: 56ff6d8430efe24eb19e8594418b4e4b8fa00f0b
+- docs/evidence/reserved-turns-rc10-turn-limit-2026-10-12.json

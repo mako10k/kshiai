@@ -277,6 +277,19 @@ export function BattlePage() {
   }, [id, battle?.id]);
 
   useEffect(() => {
+    if (!id || !battle?.resultPending) return;
+    let active = true;
+    const timer = setInterval(() => {
+      void api.getBattle(id).then((result) => {
+        if (!active) return;
+        setBattle(result.battle);
+        if (result.battle.status === "finished") setPaused(true);
+      }).catch((error: unknown) => { if (active) setError(String(error)); });
+    }, 1500);
+    return () => { active = false; clearInterval(timer); };
+  }, [id, battle?.resultPending]);
+
+  useEffect(() => {
     if (!id) return;
     void api
       .getBattle(id)
@@ -299,7 +312,7 @@ export function BattlePage() {
   ]);
 
   const canAdvance = Boolean(
-    id && battle && battle.status === "active" && !paused && !error && !isViewOnly,
+    id && battle && battle.status === "active" && !battle.resultPending && !paused && !error && !isViewOnly,
   );
 
   useEffect(() => {
@@ -329,7 +342,7 @@ export function BattlePage() {
           if (cancelledRef.current) return;
           setBattle(next);
           setError(null);
-          if (next.status !== "active") return;
+          if (next.status !== "active" || next.resultPending) return;
           nextDelay = next.prologuePending ? OPENING_DELAY_MS : AUTO_TURN_DELAY_MS;
         } catch (err) {
           if (stopped || cancelledRef.current) return;
