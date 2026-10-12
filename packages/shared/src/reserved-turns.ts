@@ -39,17 +39,28 @@ export const ReservedUpdateSchema = z.discriminatedUnion("kind", [
   z.object({ kind: z.literal("resource"), side: sideSchema, resource: z.enum(["hp", "mp", "stamina"]), delta: z.number().int().min(-100000).max(100000).refine((n) => n !== 0) }).strict(),
   z.object({ kind: z.literal("world"), operation: BattleWorldOperationSchema }).strict(),
 ]);
-export const ReservedActionResultSchema = z.object({
+const reservedActionResultBaseSchema = z.object({
   reservationId: id, side: sideSchema, baseRevision: ordinal,
   outcome: z.enum(["success", "partial", "failure", "cancelled"]),
   reason: consciousnessText(600),
   updates: z.array(ReservedUpdateSchema).max(24),
   observations: z.object({ a: z.array(consciousnessText(600)).max(8), b: z.array(consciousnessText(600)).max(8), public: z.array(consciousnessText(600)).max(8) }).strict(),
-}).strict().superRefine((result, ctx) => {
+}).strict();
+export const ReservedActionResultSchema = reservedActionResultBaseSchema.superRefine((result, ctx) => {
   if ((result.outcome === "success" || result.outcome === "partial") && result.updates.length === 0) ctx.addIssue({ code: "custom", message: "Successful attempt requires concrete consequences" });
   if (result.outcome === "cancelled" && result.updates.length !== 0) ctx.addIssue({ code: "custom", message: "Cancelled attempt cannot mutate world" });
 });
 export const ReservedTurnTraceSchema = z.object({ results: z.array(ReservedActionResultSchema).max(10) }).strict();
+/** Output v2 permits information gained without a physical mutation. */
+export const ReservedActionResultV2Schema = reservedActionResultBaseSchema.superRefine((result, ctx) => {
+  if ((result.outcome === "success" || result.outcome === "partial") && result.updates.length === 0 &&
+      !Object.values(result.observations).some((items) => items.length > 0)) {
+    ctx.addIssue({ code: "custom", message: "Successful attempt requires concrete consequences or observations" });
+  }
+  if (result.outcome === "cancelled" && result.updates.length !== 0) ctx.addIssue({ code: "custom", message: "Cancelled attempt cannot mutate world" });
+});
+export const ReservedTurnTraceV2Schema = z.object({ results: z.array(ReservedActionResultV2Schema).max(10) }).strict();
+export type ReservedTurnOutputRevision = "reserved-turn-output-v1" | "reserved-turn-output-v2";
 export type ReservedTurnTrace = z.infer<typeof ReservedTurnTraceSchema>;
 export type OrderedReservation = { side: "a" | "b"; reservationId: string; action: z.infer<typeof ReservedActionSchema> };
 export function orderReservedActions(turn: number, initiative: { a: number; b: number }, plans: { a: ReservedTurnPlan; b: ReservedTurnPlan }): OrderedReservation[] {
@@ -98,9 +109,13 @@ function effectSnapshot(state: ReservedTurnWorld): string {
     pairRelations: state.world.pairRelations.map((relation) => ({ ...relation, updatedTurn: 0 })),
   } });
 }
+function requiresPhysicalEffect(result: ReservedTurnTrace["results"][number], revision: ReservedTurnOutputRevision): boolean {
+  return (result.outcome === "success" || result.outcome === "partial") &&
+    (revision === "reserved-turn-output-v1" || result.updates.length > 0);
+}
 /** No mutation escapes this reducer until every receipt validates. */
-export function applyReservedTurnTrace(start: ReservedTurnWorld, order: readonly OrderedReservation[], raw: unknown): { state: ReservedTurnWorld; trace: ReservedTurnTrace } {
-  const trace = ReservedTurnTraceSchema.parse(raw);
+export function applyReservedTurnTrace(start: ReservedTurnWorld, order: readonly OrderedReservation[], raw: unknown, outputRevision: ReservedTurnOutputRevision = "reserved-turn-output-v1"): { state: ReservedTurnWorld; trace: ReservedTurnTrace } {
+  const trace = (outputRevision === "reserved-turn-output-v2" ? ReservedTurnTraceV2Schema : ReservedTurnTraceSchema).parse(raw);
   if (trace.results.length !== order.length) throw new Error("RESERVED_TRACE_INCOMPLETE");
   let state = ReservedTurnWorldSchema.parse(start);
   for (const [index, result] of trace.results.entries()) {
@@ -110,7 +125,7 @@ export function applyReservedTurnTrace(start: ReservedTurnWorld, order: readonly
     if ((!canAct(state, result.side) || state.actors.a.hp === 0 || state.actors.b.hp === 0) && result.outcome !== "cancelled") throw new Error("RESERVED_INCAPACITATED_ACTION");
     const { actors, world } = applyReservationUpdates(state, result, start.turn);
     const next = ReservedTurnWorldSchema.parse({ ...state, revision: state.revision + 1, actors, world });
-    if ((result.outcome === "success" || result.outcome === "partial") && effectSnapshot(state) === effectSnapshot(next)) throw new Error("RESERVED_EFFECT_EMPTY");
+    if (requiresPhysicalEffect(result, outputRevision) && effectSnapshot(state) === effectSnapshot(next)) throw new Error("RESERVED_EFFECT_EMPTY");
     state = next;
   }
   return { state: { ...state, turn: start.turn + 1 }, trace };
@@ -119,7 +134,7 @@ export function applyReservedTurnTrace(start: ReservedTurnWorld, order: readonly
 export const ReservedTurnNarrationSchema = z.object({ lines: z.array(consciousnessText(600)).min(1).max(16) }).strict();
 const requestOutputSchema = z.discriminatedUnion("role", [
   z.object({ role: z.literal("character"), plan: ReservedTurnPlanSchema }).strict(),
-  z.object({ role: z.literal("adjudication"), trace: ReservedTurnTraceSchema }).strict(),
+  z.object({ role: z.literal("adjudication"), trace: ReservedTurnTraceV2Schema }).strict(),
   z.object({ role: z.literal("narration"), narration: ReservedTurnNarrationSchema }).strict(),
 ]);
 export const ReservedTurnRequestSchema = z.object({
@@ -141,8 +156,15 @@ export const ReservedTurnRuntimeSchema = z.object({
   memories: z.object({ a: ConsciousnessMemorySchema, b: ConsciousnessMemorySchema }).strict(),
   feedback: z.object({ a: z.array(consciousnessText(600)).max(80), b: z.array(consciousnessText(600)).max(80) }).strict(),
   requests: z.array(ReservedTurnRequestSchema).max(500),
-  lastTrace: ReservedTurnTraceSchema.nullable(),
+  lastTrace: ReservedTurnTraceV2Schema.nullable(),
 }).strict().superRefine((runtime, ctx) => {
+  // Policy is frozen with the output revision; old persisted traces retain v1 validation.
+  if (runtime.policy.revision !== "reserved-turn-policy-v4") {
+    const traces = [runtime.lastTrace, ...runtime.requests.flatMap((request) => request.output?.role === "adjudication" ? [request.output.trace] : [])];
+    for (const trace of traces) {
+      if (trace && !ReservedTurnTraceSchema.safeParse(trace).success) ctx.addIssue({ code: "custom", message: "Legacy policy requires reserved turn output v1" });
+    }
+  }
   if (new Set(runtime.requests.map((r) => r.id)).size !== runtime.requests.length) ctx.addIssue({ code: "custom", message: "Duplicate request" });
   if (runtime.deadlineAt !== runtime.startedAt + runtime.policy.durationMs) ctx.addIssue({ code: "custom", message: "Deadline mismatch" });
   if ((runtime.status === "incomplete") !== (runtime.failure !== null)) ctx.addIssue({ code: "custom", message: "Failure/status mismatch" });

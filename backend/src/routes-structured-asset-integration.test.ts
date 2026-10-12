@@ -313,9 +313,11 @@ describe("integrated structured asset cutover", () => {
     assert.ok(bound?.assetManifest);
     assert.equal(bound.assetManifest.schemaVersion, 7);
     assert.equal(bound.assetManifest.consciousOutputContract, "reserved-turns-v1");
-    assert.equal(bound.assetManifest.reservedTurnPolicy.revision, "reserved-turn-policy-v3");
-    assert.equal(bound.assetManifest.reservedTurnPromptRevision, "reserved-turn-prompt-v3");
-    assert.equal(bound.assetManifest.outputRevision, "reserved-turn-output-v1");
+    assert.equal(bound.assetManifest.reservedTurnPolicy.revision, "reserved-turn-policy-v4");
+    assert.equal(bound.assetManifest.reservedTurnPromptRevision, "reserved-turn-prompt-v4");
+    assert.equal(bound.assetManifest.outputRevision, "reserved-turn-output-v2");
+    assert.equal(BattleStateSchema.safeParse({ ...bound, assetManifest: { ...bound.assetManifest, outputRevision: "reserved-turn-output-v1" } }).success, false);
+    assert.equal(BattleStateSchema.safeParse({ ...bound, assetManifest: { ...bound.assetManifest, reservedTurnPromptRevision: "reserved-turn-prompt-v3" } }).success, false);
     assert.equal(BattleStateSchema.safeParse({ ...bound, combatTick: 1 }).success, false);
     assert.equal(BattleStateSchema.safeParse({ ...bound, prologuePending: true }).success, false);
     assert.equal((await query<{ count: number }>("SELECT COUNT(*) AS count FROM battle_reserved_turns WHERE battle_id=$1", [battleId])).rows[0]?.count, 1);

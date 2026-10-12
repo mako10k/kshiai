@@ -3,7 +3,7 @@ import { BattleAssetManifestV7Schema, ReservedTurnPolicySchema, type BattleState
 import type { AwarenessProviderRoles } from "../llm/awareness-provider-factory.js";
 export function bindReservedTurnPolicy(roles: AwarenessProviderRoles | undefined) {
   if (!roles?.consciousness) throw new Error("RESERVED_CHARACTER_ROUTE_REQUIRED");
-  return ReservedTurnPolicySchema.parse({ revision: "reserved-turn-policy-v3", maxTurns: 36, maxReservations: 5, maxLogicalCallsPerTurn: 4,
+  return ReservedTurnPolicySchema.parse({ revision: "reserved-turn-policy-v4", maxTurns: 36, maxReservations: 5, maxLogicalCallsPerTurn: 4,
     maxPhysicalAttempts: 200, durationMs: 1800000, softDurationMs: 600000, deadlineMs: 120000, softDeadlineMs: 60000, adjudicationDeadlineMs: 300000, softAdjudicationDeadlineMs: 180000, characterOutputTokens: 2000, adjudicationOutputTokens: 10000, inputCharacters: 128000,
     character: { provider: roles.consciousness.identity.provider, model: roles.consciousness.identity.fastModel },
     adjudication: { provider: roles.adjudication.identity.provider, model: roles.adjudication.identity.engineModel },
@@ -14,8 +14,8 @@ export function bindReservedBattleState(state: BattleState, reservedTurnPolicy: 
   if (!reservedTurnPolicy) return state;
   state = { ...state, prologuePending: false, aftermathPending: false, turn: 0, turnLimit: reservedTurnPolicy.maxTurns,
     assetManifest: BattleAssetManifestV7Schema.parse({ ...state.assetManifest, schemaVersion: 7,
-      consciousOutputContract: "reserved-turns-v1", outputRevision: "reserved-turn-output-v1", reservedTurnPolicy,
-      reservedTurnPromptRevision: "reserved-turn-prompt-v3",
+      consciousOutputContract: "reserved-turns-v1", outputRevision: "reserved-turn-output-v2", reservedTurnPolicy,
+      reservedTurnPromptRevision: "reserved-turn-prompt-v4",
       rules: { ...state.assetManifest?.rules, battleEngine: "reserved-turns-v1", temporalRules: "reserved-order-v1", psycheReaction: "reserved-turns-v1" } }) };
   delete state.sceneBeat;
   delete state.combatTick;

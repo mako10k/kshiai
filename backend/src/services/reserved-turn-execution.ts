@@ -1,5 +1,5 @@
 // R: Prepare three/four logical turn requests with durable identities and no unknown-send replay.
-import { ReservedTurnRuntimeSchema, ReservedTurnTraceSchema, ReservedTurnNarrationSchema,
+import { ReservedTurnRuntimeSchema, ReservedTurnNarrationSchema,
   validateReservedPlan, orderReservedActions, applyReservedTurnTrace, applyConsciousnessMemorySnapshot,
   type ReservedTurnPromptRevision, type ReservedTurnRuntime, type ReservedTurnRequest, type ReservedTurnWorld, type ReservedTurnPlan } from "@kshiai/shared";
 import type { AwarenessJsonTransport } from "../llm/awareness-provider-contract.js";
@@ -24,7 +24,7 @@ export async function executeReservedTurn(input: {
   const now = input.now ?? Date.now;
   const initial = ReservedTurnRuntimeSchema.parse(await input.port.read());
   const policy = initial.policy; const turn = initial.turn + 1;
-  const promptRevision = input.promptRevision ?? "reserved-turn-prompt-v3";
+  const promptRevision = input.promptRevision ?? (initial.policy.revision === "reserved-turn-policy-v4" ? "reserved-turn-prompt-v4" : "reserved-turn-prompt-v3");
   if (initial.status !== "active" || input.start.turn !== turn || turn > policy.maxTurns || now() >= initial.deadlineAt) throw new Error("RESERVED_TURN_BOUNDARY_INVALID");
   if (input.character.identity.provider !== policy.character.provider || input.character.identity.fastModel !== policy.character.model ||
       input.adjudication.identity.provider !== policy.adjudication.provider || input.adjudication.identity.engineModel !== policy.adjudication.model ||
@@ -35,9 +35,9 @@ export async function executeReservedTurn(input: {
     if (system.length + user.length > policy.inputCharacters) throw new Error("RESERVED_INPUT_LIMIT");
     const roleDeadlineMs = role === "adjudication" && policy.revision !== "reserved-turn-policy-v1" ? policy.adjudicationDeadlineMs : policy.deadlineMs;
     const logicalDeadlineAt = Math.min(initial.deadlineAt, now() + roleDeadlineMs);
-    const softDeadlineMs = policy.revision === "reserved-turn-policy-v3" ? role === "adjudication" ? policy.softAdjudicationDeadlineMs : policy.softDeadlineMs : null;
+    const softDeadlineMs = "softDurationMs" in policy ? role === "adjudication" ? policy.softAdjudicationDeadlineMs : policy.softDeadlineMs : null;
     const logicalStartedAt = now();
-    if (policy.revision === "reserved-turn-policy-v3" && now() >= initial.startedAt + policy.softDurationMs) {
+    if ("softDurationMs" in policy && now() >= initial.startedAt + policy.softDurationMs) {
       console.warn("[reserved-turns] soft-limit", { battleId: input.battleId, turn, scope: "battle", elapsedMs: now() - initial.startedAt, softLimitMs: policy.softDurationMs, hardLimitMs: policy.durationMs });
     }
     for (let attempt = 0; attempt < 3; attempt += 1) {
@@ -49,7 +49,7 @@ export async function executeReservedTurn(input: {
         if (existing.status === "failed" && existing.failure === "RATE_LIMIT" && !existing.physicalOutstanding) continue;
         throw new Error("RESERVED_SEND_NOT_REPLAYABLE");
       }
-      const deadlineAt = policy.revision === "reserved-turn-policy-v3" ? logicalDeadlineAt : Math.min(initial.deadlineAt, now() + roleDeadlineMs);
+      const deadlineAt = "softDurationMs" in policy ? logicalDeadlineAt : Math.min(initial.deadlineAt, now() + roleDeadlineMs);
       await input.port.update((runtime) => {
         if (runtime.turn !== initial.turn || runtime.status !== "active" || now() >= deadlineAt || runtime.requests.some((r) => r.id === id)) throw new Error("RESERVED_RESERVATION_CONFLICT");
         if (runtime.requests.length + runtime.budget.physicalAttempts >= policy.maxPhysicalAttempts) throw new Error("RESERVED_ATTEMPT_LIMIT");
@@ -66,7 +66,7 @@ export async function executeReservedTurn(input: {
       const softTimer = softDeadlineMs === null ? undefined : setTimeout(() => {
         console.warn("[reserved-turns] soft-limit", { battleId: input.battleId, turn, scope: role, side, elapsedMs: now() - logicalStartedAt, softLimitMs: softDeadlineMs, hardLimitMs: roleDeadlineMs });
       }, Math.max(1, logicalStartedAt + softDeadlineMs - now()));
-      const battleSoftTimer = policy.revision !== "reserved-turn-policy-v3" || now() >= initial.startedAt + policy.softDurationMs ? undefined : setTimeout(() => {
+      const battleSoftTimer = !("softDurationMs" in policy) || now() >= initial.startedAt + policy.softDurationMs ? undefined : setTimeout(() => {
         console.warn("[reserved-turns] soft-limit", { battleId: input.battleId, turn, scope: "battle", elapsedMs: now() - initial.startedAt, softLimitMs: policy.softDurationMs, hardLimitMs: policy.durationMs });
       }, Math.max(1, initial.startedAt + policy.softDurationMs - now()));
       const processed = send.then(async (raw) => {
@@ -113,9 +113,9 @@ export async function executeReservedTurn(input: {
   if (b.status !== "fulfilled") throw b.reason;
   const plans = { a: a.value, b: b.value };
   const order = orderReservedActions(turn, { a: input.start.actors.a.initiative, b: input.start.actors.b.initiative }, plans);
-  const judged = await request("adjudication", null, reservedAdjudicationSystem(promptRevision), reservedAdjudicationUser(input.start, order, { ...input.assets, observedReferences: { a: input.frames.a.references, b: input.frames.b.references } }, promptRevision), (raw) => ({ role: "adjudication", trace: applyReservedTurnTrace(input.start, order, ReservedTurnTraceSchema.parse(raw)).trace }));
+  const judged = await request("adjudication", null, reservedAdjudicationSystem(promptRevision), reservedAdjudicationUser(input.start, order, { ...input.assets, observedReferences: { a: input.frames.a.references, b: input.frames.b.references } }, promptRevision), (raw) => ({ role: "adjudication", trace: applyReservedTurnTrace(input.start, order, raw, initial.policy.revision === "reserved-turn-policy-v4" ? "reserved-turn-output-v2" : "reserved-turn-output-v1").trace }));
   if (judged.role !== "adjudication") throw new Error("RESERVED_TRACE_ROLE");
-  const resolved = applyReservedTurnTrace(input.start, order, judged.trace);
+  const resolved = applyReservedTurnTrace(input.start, order, judged.trace, initial.policy.revision === "reserved-turn-policy-v4" ? "reserved-turn-output-v2" : "reserved-turn-output-v1");
   const narrated = await request("narration", null, reservedNarrationSystem, JSON.stringify({ turn, scene: input.publicScene, style: input.narrationStyle, consequences: judged.trace.results.flatMap((r) => r.observations.public) }), (raw) => ({ role: "narration", narration: ReservedTurnNarrationSchema.parse(raw) }));
   if (narrated.role !== "narration") throw new Error("RESERVED_NARRATION_ROLE");
   const memories = { a: applyConsciousnessMemorySnapshot(initial.memories.a, plans.a.memory, `${input.battleId}:turn:${turn}:a`), b: applyConsciousnessMemorySnapshot(initial.memories.b, plans.b.memory, `${input.battleId}:turn:${turn}:b`) };
