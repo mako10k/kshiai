@@ -1996,7 +1996,7 @@ export type BattleAssetManifest = BattleAssetManifestFields & (
   | { schemaVersion: 4; consciousOutputContract?: "dynamic-v4" }
   | { schemaVersion: 5; consciousOutputContract: "awareness-v5"; awarenessPolicy: AwarenessPolicyV1; promptRevision: AwarenessPromptRevision; outputRevision: string }
   | { schemaVersion: 6; consciousOutputContract: "unified-consciousness-v1"; awarenessPolicy: AwarenessPolicyV1; promptRevision: AwarenessPromptRevision; outputRevision: "unified-consciousness-output-v1" | "unified-consciousness-output-v2"; consciousnessPolicy: UnifiedConsciousnessPolicy; consciousnessPromptRevision: "unified-consciousness-prompt-v1" | "unified-consciousness-prompt-v2" | "unified-consciousness-prompt-v3" }
-  | { schemaVersion: 7; consciousOutputContract: "reserved-turns-v1"; awarenessPolicy: AwarenessPolicyV1; promptRevision: AwarenessPromptRevision; outputRevision: "reserved-turn-output-v1" | "reserved-turn-output-v2" | "reserved-turn-output-v3"; reservedTurnPolicy: ReservedTurnPolicy; reservedTurnPromptRevision: ReservedTurnPromptRevision }
+  | { schemaVersion: 7; consciousOutputContract: "reserved-turns-v1"; awarenessPolicy: AwarenessPolicyV1; promptRevision: AwarenessPromptRevision; outputRevision: "reserved-turn-output-v1" | "reserved-turn-output-v2" | "reserved-turn-output-v3" | "reserved-turn-output-v4"; reservedTurnPolicy: ReservedTurnPolicy; reservedTurnPromptRevision: ReservedTurnPromptRevision }
 );
 
 export const BattleBasicAttackSourceSchema = z.discriminatedUnion("kind", [
@@ -2230,16 +2230,22 @@ export type BattleAssetManifestV6 = z.infer<typeof BattleAssetManifestV6Schema>;
 
 
 /** V7 owns a turn-only planner/judge runtime; older manifests retain their engines. */
+function validateReservedIndependentBinding(output: string, prompt: string, ctx: z.RefinementCtx): void {
+  if (output !== "reserved-turn-output-v4" || prompt !== "reserved-turn-prompt-v7") ctx.addIssue({ code: "custom", message: "Reserved independent narration revision mismatch" });
+}
 export const BattleAssetManifestV7Schema = BattleAssetManifestV5Schema.extend({
   schemaVersion: z.literal(7),
   consciousOutputContract: z.literal("reserved-turns-v1"),
-  outputRevision: z.enum(["reserved-turn-output-v1", "reserved-turn-output-v2", "reserved-turn-output-v3"]),
+  outputRevision: z.enum(["reserved-turn-output-v1", "reserved-turn-output-v2", "reserved-turn-output-v3", "reserved-turn-output-v4"]),
   reservedTurnPolicy: ReservedTurnPolicySchema,
   reservedTurnPromptRevision: ReservedTurnPromptRevisionSchema,
   rules: BattleAssetManifestV5Schema.shape.rules.extend({
     battleEngine: z.literal("reserved-turns-v1"), temporalRules: z.literal("reserved-order-v1"), psycheReaction: z.literal("reserved-turns-v1"),
   }).strict(),
 }).strict().superRefine((manifest, ctx) => {
+  if ("canonicalNarration" in manifest.reservedTurnPolicy) {
+    return validateReservedIndependentBinding(manifest.outputRevision, manifest.reservedTurnPromptRevision, ctx);
+  }
   const planRecovery = "maxCharacterCorrections" in manifest.reservedTurnPolicy;
   if (planRecovery || manifest.reservedTurnPromptRevision === "reserved-turn-prompt-v6") {
     if (!planRecovery || manifest.outputRevision !== "reserved-turn-output-v3" || manifest.reservedTurnPromptRevision !== "reserved-turn-prompt-v6") ctx.addIssue({ code: "custom", message: "Reserved plan recovery revision mismatch" });
@@ -2888,6 +2894,7 @@ export const BattleStateSchema: z.ZodType<
 export const BattlePublicSchema = z.object({
   id: z.string(),
   status: BattleStatusSchema,
+  resultPending: z.boolean().optional(),
   incompleteReason: z.string().min(1).max(200).optional(),
   turn: z.number(),
   turnLimit: z.number(),

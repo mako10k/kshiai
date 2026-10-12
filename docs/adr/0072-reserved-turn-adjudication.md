@@ -1,6 +1,7 @@
 # ADR-0072: Parallel turn plans and one sequential adjudication trace
 
-- Status: Accepted
+- Status: Superseded
+- Partial supersession: [ADR-0080 revision2](0080-reserved-turn-limit-completion.md) replaces narration-before-canonical-commit and restores omitted inherited turn rules; all other decisions remain authoritative.
 - Revision: 1
 - Date: 2026-10-11
 - Decision owner: Repository owner

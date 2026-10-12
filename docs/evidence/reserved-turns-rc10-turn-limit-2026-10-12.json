@@ -1,0 +1,65 @@
+{
+  "runId": "stage-38227163875-1",
+  "battleId": "btl_8c162cc05b95e891ad5a0f312bb9a068",
+  "status": "incomplete",
+  "turn": 36,
+  "runtimeStatus": "incomplete",
+  "failure": "RESERVED_TURN_BOUNDARY_INVALID",
+  "recovery": {
+    "narrationFallbackReceipts": 4,
+    "invalidClosedPlanReceipts": 0,
+    "rejectedPlanReceipts": 0,
+    "correctivePhysicalReceipts": 0,
+    "invalidClosedReceipts": 0,
+    "fallbackReceipts": 0,
+    "rejectedReservations": 0,
+    "physicalOutstanding": 0
+  },
+  "traceMismatches": [],
+  "memoryMismatches": 0,
+  "attempts": [
+    {
+      "operation": "reserved-turns-v1:narration",
+      "layer": "narration",
+      "status": "succeeded",
+      "count": 36
+    },
+    {
+      "operation": "reserved-turns-v1:character",
+      "layer": "characterExpression",
+      "status": "succeeded",
+      "count": 72
+    },
+    {
+      "operation": "prepareBattleEncounter",
+      "layer": "encounter",
+      "status": "succeeded",
+      "count": 1
+    },
+    {
+      "operation": "reserved-turns-v1:adjudication",
+      "layer": "environment",
+      "status": "succeeded",
+      "count": 36
+    }
+  ],
+  "application": "v0.25.0-rc.10",
+  "commitSha": "56ff6d8430efe24eb19e8594418b4e4b8fa00f0b",
+  "stageRunId": 38227163875,
+  "physicalAttempts": 145,
+  "approvedAttemptCeiling": 200,
+  "cumulativeAttempts": 406,
+  "cumulativeApprovedCeiling": 461,
+  "providerLedgerUnresolved": 0,
+  "productionPromoted": false,
+  "finalHp": {
+    "a": 62,
+    "b": 62
+  },
+  "rootCause": "At policy maxTurns36 battle and runtime remain active; the next advance is rejected by RESERVED_TURN_BOUNDARY_INVALID. Existing design specifies incomplete at limits, but Stage requires finished/terminal.",
+  "normalLogicalCalls": 144,
+  "narrationFallbacks": 4,
+  "correctiveCalls": 0,
+  "pricing": "unset; token usage retained privately; unknown cost is not zero",
+  "pendingOwnerDecision": "Explicit max-turn draw vs accepted no-winner limit completion; no policy migration or paid rerun authorized by this evidence."
+}

@@ -1,0 +1,10 @@
+domain ADR0080:
+  description "Accepted revision2: restore12public turns and existing terminal mechanics; canonical-first ordered narration and migration repairs."
+evidence LIVE:
+  "Application v0.25.0-rc.10 Stage38227163875 committed36turns/145closed attempts, then failed boundary. Migration audit confirms wrong public clock, omitted turn-limit decision, narration blocking canonical commit and missing fatigue integration. Preserve paid evidence; cumulative406/461 attempts."
+evidence OWNER_ACCEPTANCE:
+  "Owner confirms12turns and existing turn-end victory restoration, then directs: narration never affects canonical state; canonical state does not wait for narration, result display and next narration wait; correct all other migration defects."
+premise CONTRACT:
+  "New immutable reserved policy v8:12turns, existing deterministic incapacitation and combatScore turn-limit winner with exact-once rating; no unconditional draw. Canonical plans/trace/memory/receipt and durable narration outbox commit together before narration dispatch. Existing fenced ordered worker owns terminal prose; next narration waits for predecessor terminal snapshot, result projection hides terminal outcome until required narration terminal. Narration cannot mutate canonical world/memory/winner/rating. Preserve actual physical receipts, known429 bounds, no unknown-send replay. Keep historical policies unchanged. Restore typed action effort/cost/penalty integration, personality/received speech input and safe final verdict without extra character/judge calls."
+decision ACCEPTANCE based_on LIVE, OWNER_ACCEPTANCE, CONTRACT:
+  "Accept revision2. Partially replace ADR0072 atomic-narration-before-world boundary with ADR0006 canonical-first durable ordered publication under owner clarification. Restore ADR0017 clock and ADR0006/0009 terminal authority/presentation and ADR0062 effort requirements. Only new policy bindings change; retain saved histories. Implement and individually verify affected contracts/full checks. No new paid run granted by this record."

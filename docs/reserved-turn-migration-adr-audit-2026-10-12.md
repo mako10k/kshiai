@@ -1,0 +1,31 @@
+# Reserved turn pipeline v1 migration ADR audit — 2026-10-12
+
+Scope: current application v0.25.0-rc.10 implementation and ADR0001–0079 relevant to runtime migration. This is a source/document audit, not proof of live behavior or exhaustive absence of defects. Owner has confirmed12public turns and restoration of existing turn-end victory determination. Proposed ADR0080 draw/no-winner question is withdrawn; it is not an accepted product decision.
+
+## Confirmed migration defects and contract conflicts
+
+| Finding | Governing contract | Current evidence | Required disposition |
+| --- | --- | --- | --- |
+| Public turn count changed12→36 | Accepted ADR0017 explicitly rejects36public turns; ADR0050 distinguishes12turns×3beats from36ticks | backend/src/services/reserved-turn-policy.ts bindReservedTurnPolicy sets maxTurns36 and bindReservedBattleState overwrites turnLimit | Restore12 for new immutable bindings; retain old snapshots and paid evidence |
+| Turn-limit victory/adjudication omitted | ADR0006 canonical winner authority; ADR0009 immutable adjudication and audience-safe verdict; existing battle-engine.ts turn-limit combatScore and battle-service.ts final judgment | reserved-turn-battle.ts only checks incapacity; after maxTurns remains active and next advance fails | Restore canonical turn-limit decision, last-turn incapacity precedence, terminal/rating atomicity and safe verdict; do not replace with unconditional draw or technical incomplete |
+| Narration blocks canonical turn commit | ADR0006 says later canonical advances do not wait for narration, canonical state commits before narration work | executeReservedTurn awaits narration before returning resolved state/memory; advanceReservedTurn saves only afterward. ADR0072 explicitly includes narration in atomic turn and ADR0078 fixes received invalid narration but excludes transport failure | This is a conflict between Accepted ADRs, not merely a missing implementation. Document exact partial supersession or restore canonical-first publication. Owner's fewer-call/simpler-turn goal alone does not silently revoke failure independence. No bypassing current release gate |
+| Bound fatigue mechanics not applied in new engine | ADR0062 normal STA costs/floors, repeated basic/skill/reflect costs2/4, bounded free-action penalties, one-hit defense expiry and effort perception | Reserved plan has natural-language intent/targets/condition, no typed action kind; execution only applies model resource/world DSL; no fatigue policy evaluator or repetition accounting in reserved paths. Prompt generic appropriate effort is not deterministic enforcement | Map mechanically required rules explicitly into new reservation contract or obtain explicit partial replacement. Never classify free prose mechanically or impose blanket failure costs. Verify existing immutable fatigue binding is not falsely presented as enforced |
+
+## Further integration gaps needing regression verification
+
+- Character narration receives scene/style/public consequences, but no committed speech list. Speech is separately stored in final narrative block. This preserves output separation structurally but does not prove ADR0055/0056 exact speech continuity in narrator input. Test narration does not contradict source speech, duplicate it or invent dialogue; document intentional reduced-context boundary.
+- reserved-turn-battle.ts constructs awareness context but passes only characteristics/guidance/perception; consciousCharacteristics, actionEffort standalone field and speech-event flag are omitted. Perception may carry effort and utterances, so absence of the old top-level fields alone does not prove lost information. Verify both parties actually receive committed utterances, fatigue sensations and intended personality guidance in next-turn final requests. Repetition prohibition in reservedPlanSystem also needs review against ADR0025, which explicitly accepts repeated valid speech; do not introduce text-deduplication.
+- New pipeline writes only combat phase receipts and disables prologue/aftermath. ADR0072 removes intra-turn scheduler but does not explicitly enumerate which ADR0006/0009 phase/presentation obligations it replaces. Preserve required final outcome presentation; do not restore extra model calls by rote.
+
+## Intentional replacements and retained safeguards
+
+- ADR0072 intentionally replaces tick/beat/event-trigger character scheduling and separate free-action judgments with A/B parallel plans and one ordered trace; removal itself is not a defect.
+- ADR0070 ranked next-memory semantics are preserved by the shared memory projector and immutable old-rank resolution. ADR0077 explicitly replaces strict bad-plan stopping with bounded correction/rejection for new policies.
+- ADR0076/0077/0078 explicitly add correction and narration fallback after ADR0072 strict-failure policy. These are authorized later policy changes, not unexplained contradictions.
+- ADR0074 explicitly changes soft/hard timing; it does not justify the12→36clock error.
+- Canonical world and private perception remain separate inputs (ADR0022); private memories are not supplied to the other planner or narrator. Natural-language observation correctness still depends on adjudication quality, not structural proof.
+- Immutable asset generations, bound models/policies, fenced atomic world/memory save, physical attempt ledger, unknown-send refusal and historical engine routing remain present. Passing local tests is insufficient to establish every historical scenario or production acceptance.
+
+## Repair alignment
+
+Correct the pending terminal decision from new draw semantics to restoration of the owner's12-turn and existing victory contract. Resolve the canonical-first/atomic-narration ADR conflict explicitly before implementing that boundary. Extend migration regression coverage to terminal/rating/public verdict, fatigue rules and actual next-input speech/personality delivery. Preserve all original test cases and individually reseal affected authority. Re-run governed tests/typecheck/build/ADR checks and exact-source release gates before paid Stage or production promotion. No new paid call or deployment occurred during this audit.

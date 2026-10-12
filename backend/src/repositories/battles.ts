@@ -1,3 +1,4 @@
+import { reservedResultDisclosure } from "./reserved-result-disclosure.js";
 // R: Persist and read battle state with creation and fenced revision updates.
 import type { BattleListItem, BattleState } from "@kshiai/shared";
 import {
@@ -443,7 +444,7 @@ export async function listBattlesForUser(input: {
   for (const r of rows) {
     try {
       const parsed = parseBattleStateDetailed(r.state_json);
-      items.push(toListItem(parsed.state, parsed.repaired));
+      items.push(toListItem((await reservedResultDisclosure(parsed.state)).state, parsed.repaired));
     } catch (e) {
       console.warn("[battles] degraded unlistable battle", e);
       try {
@@ -550,7 +551,7 @@ export async function listBattleItemsForCharacter(input: {
     (r) => isOwner || r.meta.side_a_user_id === input.viewerUserId,
   );
   // Newest first (repo query already ORDER BY updated_at DESC)
-  const items = filtered.map((r) => toListItem(r.state));
+  const items = await Promise.all(filtered.map(async (r) => toListItem((await reservedResultDisclosure(r.state)).state)));
   items.sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
   return {
     battles: items.slice(0, limit),
@@ -682,8 +683,9 @@ export async function searchCharacterBattleHistory(input: {
   const rows = await listBattlesInvolvingCharacter(input.characterId);
   const hits: CharacterBattleSearchHit[] = [];
   for (const r of rows) {
-    if (finishedOnly && r.state.status !== "finished") continue;
-    const hit = toSearchHit(r.state, input.characterId);
+    const disclosed = (await reservedResultDisclosure(r.state)).state;
+    if (finishedOnly && disclosed.status !== "finished") continue;
+    const hit = toSearchHit(disclosed, input.characterId);
     if (needle) {
       const hay = [
         hit.opponentName,
@@ -713,12 +715,12 @@ export async function getCharacterBattleDetail(
   const rows = await listBattlesInvolvingCharacter(characterId);
   const row = rows.find((r) => r.state.id === battleId);
   if (!row) return null;
-  const presentationLog = config.battlePresentationReadModel
+  const presentationLog = (config.battlePresentationReadModel || (row.state.assetManifest?.schemaVersion === 7 && "canonicalNarration" in row.state.assetManifest.reservedTurnPolicy))
     ? await listBattlePresentations(row.state.id)
     : [];
-  const state = presentationLog.length > 0
+  const state = (await reservedResultDisclosure(presentationLog.length > 0
     ? { ...row.state, log: [...row.state.log, ...presentationLog] }
-    : row.state;
+    : row.state)).state;
   const hit = toSearchHit(state, characterId);
   const onA = state.sideA.characterId === characterId;
   const policies = onA ? state.policiesA : state.policiesB;
@@ -776,6 +778,7 @@ export async function findPriorMatchSummary(
     } catch {
       continue;
     }
+    state = (await reservedResultDisclosure(state)).state;
     if (state.status !== "finished") continue;
     const presentationLog = config.battlePresentationReadModel
       ? await listBattlePresentations(state.id)

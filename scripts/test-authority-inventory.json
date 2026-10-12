@@ -1033,6 +1033,14 @@
     {
       "path": "packages/shared/src/reserved-turns.test.ts",
       "ref": "reserved-turns-v1/test/packages-shared-src-reserved-turns.test"
+    },
+    {
+      "path": "packages/shared/src/reserved-turn-effort.test.ts",
+      "ref": "reserved-turns-v1/verification/effort-v1"
+    },
+    {
+      "path": "backend/src/services/reserved-turn-outcome.test.ts",
+      "ref": "reserved-turns-v1/verification/outcome-v2"
     }
   ]
 }

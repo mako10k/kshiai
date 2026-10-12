@@ -1,7 +1,7 @@
 // R: Prepare three/four logical turn requests with durable identities and no unknown-send replay.
 import { ReservedTurnRuntimeSchema, ReservedTurnNarrationSchema,
   isClosedRecoverableReservedRequest, validateReservedPlan, orderReservedActions, applyReservedTurnTrace, applyConsciousnessMemorySnapshot, failedReservedAdjudicationTrace,
-  type ReservedTurnPromptRevision, type ReservedTurnRuntime, type ReservedTurnRequest, type ReservedTurnWorld, type ReservedTurnPlan } from "@kshiai/shared";
+  applyReservedEffortTrace, ReservedEffortContextSchema, type ReservedEffortContext, type ReservedTurnPromptRevision, type ReservedTurnRuntime, type ReservedTurnRequest, type ReservedTurnWorld, type ReservedTurnPlan } from "@kshiai/shared";
 import { z, ZodError } from "zod";
 import { ProviderJsonSyntaxError } from "../llm/provider-json.js";
 import type { AwarenessJsonTransport } from "../llm/awareness-provider-contract.js";
@@ -17,6 +17,8 @@ export type ReservedExecutionPort = {
 };
 export type ReservedPlannerFrame = { context: object; references: readonly { id: string; text: string }[] };
 type Output = NonNullable<ReservedTurnRequest["output"]>;
+type RequestValidator = (raw: unknown) => Output;
+type RequestCorrection = { index: number; startedAt: number };
 class ReservedAdjudicationInvalidError extends Error {
   constructor(readonly diagnostic: string) { super("RESERVED_ADJUDICATION_INVALID"); }
 }
@@ -56,27 +58,28 @@ function replayInvalidAdjudication(raw: string | null, validate: (raw: unknown) 
 function closedInvalidAdjudication(request: ReservedTurnRequest): boolean {
   return request.role === "adjudication" && request.status === "failed" && request.failure === "ADJUDICATION_INVALID" && !request.physicalOutstanding && request.rawResponse !== null;
 }
-export async function executeReservedTurn(input: {
-  battleId: string; start: ReservedTurnWorld; frames: { a: ReservedPlannerFrame; b: ReservedPlannerFrame }; assets: object;
-  publicScene: string; narrationStyle?: string; port: ReservedExecutionPort;
+function reservedRoleDeadline(policy: ReservedTurnRuntime["policy"], role: ReservedTurnRequest["role"]): number {
+  return role === "adjudication" && policy.revision !== "reserved-turn-policy-v1" ? policy.adjudicationDeadlineMs : policy.deadlineMs;
+}
+function persistedReservedStart(initial: ReservedTurnRuntime, turn: number, role: ReservedTurnRequest["role"], side: "a" | "b" | null): number | undefined {
+  return "maxCharacterCorrections" in initial.policy ? initial.requests.find((r) => r.turn === turn && r.role === role && r.side === side)?.logicalStartedAt : undefined;
+}
+function requestBoundaryChanged(runtime: ReservedTurnRuntime, initialTurn: number, independentNarration: boolean, role: ReservedTurnRequest["role"]): boolean {
+  return (!independentNarration || role !== "narration") && (runtime.turn !== initialTurn || runtime.status !== "active");
+}
+export function reservedRequestRunner(input: {
+  battleId: string; port: ReservedExecutionPort;
   character: AwarenessJsonTransport; adjudication: AwarenessJsonTransport; narration: AwarenessJsonTransport;
-  promptRevision?: ReservedTurnPromptRevision; now?: () => number;
-}) {
-  const now = input.now ?? Date.now;
-  const initial = ReservedTurnRuntimeSchema.parse(await input.port.read());
-  const policy = initial.policy; const turn = initial.turn + 1;
-  let narrationRepaired = false;
-  const promptRevision = input.promptRevision ?? ("maxCharacterCorrections" in policy ? "reserved-turn-prompt-v6" : initial.policy.revision === "reserved-turn-policy-v5" ? "reserved-turn-prompt-v5" : initial.policy.revision === "reserved-turn-policy-v4" ? "reserved-turn-prompt-v4" : "reserved-turn-prompt-v3");
-  if (initial.status !== "active" || input.start.turn !== turn || turn > policy.maxTurns || now() >= initial.deadlineAt) throw new Error("RESERVED_TURN_BOUNDARY_INVALID");
-  if (input.character.identity.provider !== policy.character.provider || input.character.identity.fastModel !== policy.character.model ||
-      input.adjudication.identity.provider !== policy.adjudication.provider || input.adjudication.identity.engineModel !== policy.adjudication.model ||
-      input.narration.identity.provider !== policy.narration.provider || input.narration.identity.fastModel !== policy.narration.model) throw new Error("RESERVED_MODEL_BINDING_MISMATCH");
-  async function request(role: ReservedTurnRequest["role"], side: "a" | "b" | null, system: string, user: string, validate: (raw: unknown) => Output, correction?: { index: number; startedAt: number }): Promise<Output> {
+}, initial: ReservedTurnRuntime, turn: number, now: () => number = Date.now,
+  isNarrationRepaired: () => boolean = () => false) {
+  const policy = initial.policy;
+  const independentNarration = "canonicalNarration" in policy;
+  return async function request(role: ReservedTurnRequest["role"], side: "a" | "b" | null, system: string, user: string, validate: RequestValidator, correction?: RequestCorrection): Promise<Output> {
     const logicalId = `${input.battleId}:turn:${turn}:${role}:${side ?? "both"}${correction?.index ? `:correction:${correction.index}` : ""}`;
     const digest = requestDigest({ system, user, role, policy });
     if (system.length + user.length > policy.inputCharacters) throw new Error("RESERVED_INPUT_LIMIT");
-    const roleDeadlineMs = role === "adjudication" && policy.revision !== "reserved-turn-policy-v1" ? policy.adjudicationDeadlineMs : policy.deadlineMs;
-    const persistedStart = "maxCharacterCorrections" in policy ? initial.requests.find((r) => r.turn === turn && r.role === role && r.side === side)?.logicalStartedAt : undefined;
+    const roleDeadlineMs = reservedRoleDeadline(policy, role);
+    const persistedStart = persistedReservedStart(initial, turn, role, side);
     const logicalStartedAt = persistedStart ?? correction?.startedAt ?? now();
     const logicalDeadlineAt = Math.min(initial.deadlineAt, logicalStartedAt + roleDeadlineMs);
     const softDeadlineMs = "softDurationMs" in policy ? role === "adjudication" ? policy.softAdjudicationDeadlineMs : policy.softDeadlineMs : null;
@@ -95,7 +98,7 @@ export async function executeReservedTurn(input: {
       }
       const deadlineAt = "softDurationMs" in policy ? logicalDeadlineAt : Math.min(initial.deadlineAt, now() + roleDeadlineMs);
       await input.port.update((runtime) => {
-        if (runtime.turn !== initial.turn || runtime.status !== "active" || now() >= deadlineAt || runtime.requests.some((r) => r.id === id)) throw new Error("RESERVED_RESERVATION_CONFLICT");
+        if (requestBoundaryChanged(runtime, initial.turn, independentNarration, role) || now() >= deadlineAt || runtime.requests.some((r) => r.id === id)) throw new Error("RESERVED_RESERVATION_CONFLICT");
         if (runtime.requests.length + runtime.budget.physicalAttempts >= policy.maxPhysicalAttempts) throw new Error("RESERVED_ATTEMPT_LIMIT");
         return { ...runtime, requests: [...runtime.requests, { id, turn, role, side, inputDigest: digest, system, user,
           ...(timedRole(policy, role) ? { logicalStartedAt } : {}), status: "reserved", output: null, rawResponse: null, physicalOutstanding: true, failure: null }] };
@@ -126,8 +129,8 @@ export async function executeReservedTurn(input: {
         await input.port.account((runtime) => ({ ...runtime, requests: runtime.requests.map((r) => r.id === id ? { ...r, physicalOutstanding: false, rawResponse: rejectedNarrationText ?? JSON.stringify(raw) ?? "null" } : r) }));
         const output = validate(raw);
         await input.port.update((runtime) => {
-          if (runtime.turn !== initial.turn || runtime.status !== "active" || now() >= deadlineAt) throw new Error("RESERVED_LATE_RESPONSE");
-          return { ...runtime, requests: runtime.requests.map((r) => r.id === id ? { ...r, status: "prepared", output, failure: role === "narration" && narrationRepaired ? "NARRATION_FALLBACK" : r.failure } : r) };
+          if (requestBoundaryChanged(runtime, initial.turn, independentNarration, role) || now() >= deadlineAt) throw new Error("RESERVED_LATE_RESPONSE");
+          return { ...runtime, requests: runtime.requests.map((r) => r.id === id ? { ...r, status: "prepared", output, failure: role === "narration" && isNarrationRepaired() ? "NARRATION_FALLBACK" : r.failure } : r) };
         });
         return output;
       }, async (error: unknown) => {
@@ -156,7 +159,24 @@ export async function executeReservedTurn(input: {
       } finally { if (timer) clearTimeout(timer); if (softTimer) clearTimeout(softTimer); if (battleSoftTimer) clearTimeout(battleSoftTimer); }
     }
     throw new Error("RESERVED_RATE_LIMIT_EXHAUSTED");
-  }
+  };
+}
+export async function executeReservedTurn(input: {
+  battleId: string; start: ReservedTurnWorld; frames: { a: ReservedPlannerFrame; b: ReservedPlannerFrame }; assets: object;
+  publicScene: string; narrationStyle?: string; effort?: ReservedEffortContext; port: ReservedExecutionPort;
+  character: AwarenessJsonTransport; adjudication: AwarenessJsonTransport; narration: AwarenessJsonTransport;
+  promptRevision?: ReservedTurnPromptRevision; now?: () => number;
+}) {
+  const now = input.now ?? Date.now;
+  const initial = ReservedTurnRuntimeSchema.parse(await input.port.read());
+  const policy = initial.policy; const turn = initial.turn + 1;
+  let narrationRepaired = false;
+  const promptRevision = input.promptRevision ?? ("canonicalNarration" in policy ? "reserved-turn-prompt-v7" : "maxCharacterCorrections" in policy ? "reserved-turn-prompt-v6" : initial.policy.revision === "reserved-turn-policy-v5" ? "reserved-turn-prompt-v5" : initial.policy.revision === "reserved-turn-policy-v4" ? "reserved-turn-prompt-v4" : "reserved-turn-prompt-v3");
+  if (initial.status !== "active" || input.start.turn !== turn || turn > policy.maxTurns || now() >= initial.deadlineAt) throw new Error("RESERVED_TURN_BOUNDARY_INVALID");
+  if (input.character.identity.provider !== policy.character.provider || input.character.identity.fastModel !== policy.character.model ||
+      input.adjudication.identity.provider !== policy.adjudication.provider || input.adjudication.identity.engineModel !== policy.adjudication.model ||
+      input.narration.identity.provider !== policy.narration.provider || input.narration.identity.fastModel !== policy.narration.model) throw new Error("RESERVED_MODEL_BINDING_MISMATCH");
+  const request = reservedRequestRunner(input, initial, turn, now, () => narrationRepaired);
   async function preparePlanFailure(side: "a" | "b", startedAt: number): Promise<Output> {
     const output = { role: "character" as const, plan: { actions: [], memory: initial.memories[side].map((_entry, index) => String(index + 1)) } };
     await input.port.update((runtime) => {
@@ -172,7 +192,7 @@ export async function executeReservedTurn(input: {
     const user = JSON.stringify({ turn, side, ...frame, memory: initial.memories[side].map((entry, index) => ({ priority: String(index + 1), text: entry.text })), feedback: initial.feedback[side] });
     const startedAt = initial.requests.find((r) => r.turn === turn && r.role === "character" && r.side === side)?.logicalStartedAt ?? now();
     const validate = (raw: unknown): Output => {
-      try { return { role: "character", plan: validateReservedPlan(raw, initial.memories[side], new Set(frame.references.map((r) => r.id)), `${input.battleId}:turn:${turn}:${side}`) }; }
+      try { return { role: "character", plan: validateReservedPlan(raw, initial.memories[side], new Set(frame.references.map((r) => r.id)), `${input.battleId}:turn:${turn}:${side}`, "canonicalNarration" in policy) }; }
       catch (error) { if ("maxCharacterCorrections" in policy) throw invalidPlan(error); throw error; }
     };
     let output: Output;
@@ -194,11 +214,13 @@ export async function executeReservedTurn(input: {
   const preparedPlans = await input.port.read();
   const planFeedback = (side: "a" | "b") => preparedPlans.requests.some((r) => r.turn === turn && r.side === side && r.failure === "PLAN_FALLBACK") ? [rejectedPlanFeedback] : [];
   const order = orderReservedActions(turn, { a: input.start.actors.a.initiative, b: input.start.actors.b.initiative }, plans);
-  const outputRevision = "maxAdjudicationCorrections" in policy ? "reserved-turn-output-v3" : policy.revision === "reserved-turn-policy-v4" ? "reserved-turn-output-v2" : "reserved-turn-output-v1";
-  const judgeUser = reservedAdjudicationUser(input.start, order, { ...input.assets, observedReferences: { a: input.frames.a.references, b: input.frames.b.references } }, promptRevision);
+  const outputRevision = "canonicalNarration" in policy ? "reserved-turn-output-v4" : "maxAdjudicationCorrections" in policy ? "reserved-turn-output-v3" : policy.revision === "reserved-turn-policy-v4" ? "reserved-turn-output-v2" : "reserved-turn-output-v1";
+  const effort = "canonicalNarration" in policy ? ReservedEffortContextSchema.parse(input.effort) : null;
+  const applyTrace = (raw: unknown) => effort ? applyReservedEffortTrace(input.start, order, raw, effort) : { ...applyReservedTurnTrace(input.start, order, raw, outputRevision), effortState: undefined };
+  const judgeUser = reservedAdjudicationUser(input.start, order, { ...input.assets, ...(effort ? { effort } : {}), observedReferences: { a: input.frames.a.references, b: input.frames.b.references } }, promptRevision);
   const judgeStartedAt = initial.requests.find((r) => r.turn === turn && r.role === "adjudication")?.logicalStartedAt ?? now();
   const validateJudge = (raw: unknown): Output => {
-    try { return { role: "adjudication", trace: applyReservedTurnTrace(input.start, order, raw, outputRevision).trace }; }
+    try { return { role: "adjudication", trace: applyTrace(raw).trace }; }
     catch (error) { if ("maxAdjudicationCorrections" in policy) throw invalidAdjudication(error); throw error; }
   };
   async function judge(): Promise<Output> {
@@ -209,7 +231,8 @@ export async function executeReservedTurn(input: {
       try { return await request("adjudication", null, reservedAdjudicationSystem(promptRevision), correctionUser, validateJudge, { index: policy.maxAdjudicationCorrections, startedAt: judgeStartedAt }); }
       catch (correctedError) {
         if (!(correctedError instanceof ReservedAdjudicationInvalidError)) throw correctedError;
-        const output = { role: "adjudication" as const, trace: failedReservedAdjudicationTrace(input.start, order) };
+        const failedTrace = failedReservedAdjudicationTrace(input.start, order);
+        const output = { role: "adjudication" as const, trace: effort ? { results: failedTrace.results.map((result) => ({ ...result, attempted: false, penalty: null })) } : failedTrace };
         await input.port.update((runtime) => {
           if (runtime.turn !== initial.turn || runtime.status !== "active" || now() >= Math.min(initial.deadlineAt, judgeStartedAt + policy.adjudicationDeadlineMs)) throw new Error("RESERVED_LATE_RESPONSE");
           const target = [...runtime.requests].reverse().find((r) => r.turn === turn && closedInvalidAdjudication(r) && r.id.includes(":correction:1:"));
@@ -222,19 +245,25 @@ export async function executeReservedTurn(input: {
   }
   const judged = await judge();
   if (judged.role !== "adjudication") throw new Error("RESERVED_TRACE_ROLE");
-  const resolved = applyReservedTurnTrace(input.start, order, judged.trace, outputRevision);
+  const resolved = applyTrace(judged.trace);
   const consequences = judged.trace.results.flatMap((r) => r.observations.public);
-  const narrated = await request("narration", null, reservedNarrationSystem, JSON.stringify({ turn, scene: input.publicScene, style: input.narrationStyle, consequences }), (raw) => {
-    const parsed = ReservedTurnNarrationSchema.safeParse(raw);
-    if (parsed.success) return { role: "narration", narration: parsed.data };
-    if (!("narrationFallback" in policy)) throw parsed.error;
-    narrationRepaired = true;
-    console.warn("[reserved-turns] narration-fallback", { battleId: input.battleId, turn, code: "NARRATION_FALLBACK", publicConsequences: consequences.length });
-    const lines = consequences.length ? consequences.slice(0, 16).map((line) => Array.from(line).slice(0, 300).join("")) : ["このターンに公開された行動結果はありません。"];
-    return { role: "narration", narration: ReservedTurnNarrationSchema.parse({ lines }) };
-  });
-  if (narrated.role !== "narration") throw new Error("RESERVED_NARRATION_ROLE");
+  const narrated = "canonicalNarration" in policy
+    ? { role: "narration" as const, narration: { lines: [] } }
+    : await narrate();
+  async function narrate() {
+    const narrated = await request("narration", null, reservedNarrationSystem, JSON.stringify({ turn, scene: input.publicScene, style: input.narrationStyle, consequences }), (raw) => {
+      const parsed = ReservedTurnNarrationSchema.safeParse(raw);
+      if (parsed.success) return { role: "narration", narration: parsed.data };
+      if (!("narrationFallback" in policy)) throw parsed.error;
+      narrationRepaired = true;
+      console.warn("[reserved-turns] narration-fallback", { battleId: input.battleId, turn, code: "NARRATION_FALLBACK", publicConsequences: consequences.length });
+      const lines = consequences.length ? consequences.slice(0, 16).map((line) => Array.from(line).slice(0, 300).join("")) : ["このターンに公開された行動結果はありません。"];
+      return { role: "narration", narration: ReservedTurnNarrationSchema.parse({ lines }) };
+    });
+    if (narrated.role !== "narration") throw new Error("RESERVED_NARRATION_ROLE");
+    return narrated;
+  }
   const memories = { a: applyConsciousnessMemorySnapshot(initial.memories.a, plans.a.memory, `${input.battleId}:turn:${turn}:a`), b: applyConsciousnessMemorySnapshot(initial.memories.b, plans.b.memory, `${input.battleId}:turn:${turn}:b`) };
-  return { turn, plans, state: resolved.state, trace: judged.trace, narration: narrated.narration, memories,
+  return { turn, plans, state: resolved.state, trace: judged.trace, narration: narrated.narration, publicConsequences: consequences, memories, effortState: resolved.effortState,
     feedback: { a: [...planFeedback("a"), ...judged.trace.results.flatMap((r) => r.observations.a)], b: [...planFeedback("b"), ...judged.trace.results.flatMap((r) => r.observations.b)] } };
 }

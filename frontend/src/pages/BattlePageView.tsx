@@ -156,6 +156,7 @@ export function BattlePageView(input: {
             方針: <strong>{battle.policySummary}</strong>
           </p>
         ) : null}
+        {battle.resultPending && <p role="status">実況の完了を待っています。</p>}
         {battle.narrationStyleName ? (
           <p className="muted" style={{ marginBottom: "0.35rem" }}>
             語り: <strong>{battle.narrationStyleName}</strong>
